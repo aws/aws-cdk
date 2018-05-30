@@ -1,0 +1,37 @@
+{
+  "Resources": {
+    "DeadLetterQueue9F481546": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "Queue4A7E3555": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "DeadLetterQueue9F481546",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 5
+        }
+      }
+    },
+    "FifoQueueE5FF7273": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "FifoQueue": true
+      }
+    }
+  },
+  "Outputs": {
+    "QueueUrl": {
+      "Value": {
+        "Ref": "Queue4A7E3555"
+      },
+      "Export": {
+        "Name": "aws-cdk-sqs:QueueUrl"
+      }
+    }
+  }
+}
