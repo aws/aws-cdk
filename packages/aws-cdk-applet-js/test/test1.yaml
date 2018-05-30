@@ -1,0 +1,4 @@
+# applet is loaded from the local ./test-applet.js file
+applet: ./test-applet:TestApplet
+prop1: hello
+prop2: 123
