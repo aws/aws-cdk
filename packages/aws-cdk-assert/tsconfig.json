@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target":"es2018",
+        "lib": ["es2018"],
+        "module": "commonjs",
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": false,
+        "inlineSourceMap": true,
+        "inlineSources": true,
+        "strictPropertyInitialization": false,
+        "experimentalDecorators": true
+    }
+}
+
