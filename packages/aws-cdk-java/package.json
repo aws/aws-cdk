@@ -1,0 +1,31 @@
+{
+  "name": "aws-cdk-java",
+  "private": true,
+  "version": "0.6.0",
+  "description": "The AWS CDK for Java",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "pkglint": {
+    "ignore": true
+  },
+  "scripts": {
+    "prepare": "/bin/bash ./generate.sh && mvn package"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-cdk-all": "^0.6.0"
+  },
+  "devDependencies": {
+    "pkgtools": "^0.6.0"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
