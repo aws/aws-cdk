@@ -1,0 +1,74 @@
+{
+  "Resources": {
+    "Repo02AC86CF": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "aws-cdk-codecommit-events",
+        "Triggers": []
+      }
+    },
+    "RepoOnReferenceCreatedF1C66FF1": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "detail-type": [
+            "CodeCommit Repository State Change"
+          ],
+          "source": [
+            "aws.codecommit"
+          ],
+          "resources": [
+            {
+              "Fn::GetAtt": [
+                "Repo02AC86CF",
+                "Arn"
+              ]
+            }
+          ],
+          "detail": {
+            "event": [
+              "referenceCreated"
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Ref": "MyTopic86869434"
+            },
+            "Id": "MyTopic"
+          }
+        ]
+      }
+    },
+    "MyTopic86869434": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "MyTopicPolicy12A5EC17": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "MyTopic86869434"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Topics": [
+          {
+            "Ref": "MyTopic86869434"
+          }
+        ]
+      }
+    }
+  }
+}
