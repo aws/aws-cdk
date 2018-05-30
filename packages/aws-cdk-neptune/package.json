@@ -1,0 +1,47 @@
+{
+  "name": "aws-cdk-neptune",
+  "version": "0.6.0",
+  "description": "CDK Constructs for AWS Neptune",
+  "main": "lib/index.js",
+  "types": "lib/index.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [],
+    "names": {
+      "java": "com.amazonaws.cdk.neptune",
+      "dotnet": "Aws.Cdk.Neptune"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "rds"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "aws-cdk": "^0.6.0",
+    "aws-cdk-ec2": "^0.6.0",
+    "aws-cdk-iam": "^0.6.0",
+    "aws-cdk-rds": "^0.6.0",
+    "aws-cdk-resources": "^0.6.0"
+  }
+}
