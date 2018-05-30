@@ -1,0 +1,4 @@
+*.js
+tsconfig.json
+*.js.map
+dist
