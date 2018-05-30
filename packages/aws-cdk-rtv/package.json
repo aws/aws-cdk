@@ -1,0 +1,43 @@
+{
+  "name": "aws-cdk-rtv",
+  "version": "0.6.0",
+  "description": "Runtime values support for the AWS CDK",
+  "main": "lib/index.js",
+  "types": "lib/index.ts",
+  "jsii": {
+    "outdir": "dist",
+    "names": {
+      "java": "com.amazonaws.cdk.rtv",
+      "dotnet": "Aws.Cdk.Rtv"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nyc nodeunit test/test.*.js",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "rtv"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "aws-cdk": "^0.6.0",
+    "aws-cdk-iam": "^0.6.0",
+    "aws-cdk-resources": "^0.6.0"
+  }
+}
