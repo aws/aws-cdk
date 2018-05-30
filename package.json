@@ -1,0 +1,34 @@
+{
+  "name": "aws-cdk",
+  "pkglint": {
+    "ignore": true
+  },
+  "scripts": {
+    "pkglint": "packages/pkglint/bin/pkglint -f ."
+  },
+  "devDependencies": {
+    "lerna": "^2.11.0",
+    "@types/node": "^8.9.4",
+    "@types/nodeunit": "^0.0.30",
+    "nodeunit": "^0.11.2",
+    "typescript": "^2.8.3",
+    "tslint": "^5.10.0",
+    "nyc": "^11.8.0",
+    "jsii": "file:local-npm/jsii-0.4.0.tgz",
+    "jsii-java-runtime": "file:local-npm/jsii-java-runtime-0.4.0.tgz",
+    "jsii-pacmak": "file:local-npm/jsii-pacmak-0.4.0.tgz",
+    "jsii-runtime": "file:local-npm/jsii-runtime-0.4.0.tgz",
+    "jsii-spec": "file:local-npm/jsii-spec-0.4.0.tgz",
+    "jsii-kernel": "file:local-npm/jsii-kernel-0.4.0.tgz",
+    "codemaker": "file:local-npm/codemaker-0.4.0.tgz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  }
+}

@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - /bin/bash ./install.sh
+  build:
+    commands:
+      - /bin/bash ./build.sh
+
