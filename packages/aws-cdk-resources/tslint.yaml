@@ -1,0 +1,3 @@
+rules:
+    # Some interfaces end up empty
+    no-empty-interfacd: false
