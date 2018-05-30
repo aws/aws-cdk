@@ -1,0 +1,2 @@
+# applet class not found
+applet: ./test-applet:ClassNotFound
