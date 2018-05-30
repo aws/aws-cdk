@@ -1,0 +1,40 @@
+{
+  "name": "aws-cdk-assert",
+  "version": "0.6.0",
+  "description": "An assertion library for use with CDK Apps",
+  "main": "lib/index.js",
+  "types": "lib/index.ts",
+  "scripts": {
+    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
+    "watch": "tsc -w",
+    "lint": "tslint -p . --force",
+    "test": "nodeunit test/test.*.js",
+    "pkglint": "pkglint -f"
+  },
+  "bin": {
+    "cdk-integ": "bin/cdk-integ",
+    "cdk-integ-assert": "bin/cdk-integ-assert"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "aws-cdk": "^0.6.0",
+    "aws-cdk-cloudformation-diff": "^0.6.0",
+    "aws-cdk-cx-api": "^0.6.0",
+    "source-map-support": "^0.5.6"
+  },
+  "repository": {
+    "url": "git://github.com/awslabs/aws-cdk",
+    "type": "git"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
