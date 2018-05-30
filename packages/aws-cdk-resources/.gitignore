@@ -1,0 +1,6 @@
+dist
+lib
+node_modules
+tsconfig.json
+*.js
+README.md
