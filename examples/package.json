@@ -1,0 +1,44 @@
+{
+  "name": "examples",
+  "version": "0.6.0",
+  "description": "A bunch of CDK examples",
+  "scripts": {
+    "prepare": "tsc && tslint -p . && pkglint",
+    "watch": "tsc -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "echo ok",
+    "cdk": "cdk",
+    "pkglint": "pkglint -f"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "aws-cdk-toolkit": "^0.6.0",
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "aws-cdk": "^0.6.0",
+    "aws-cdk-dynamodb": "^0.6.0",
+    "aws-cdk-ec2": "^0.6.0",
+    "aws-cdk-iam": "^0.6.0",
+    "aws-cdk-lambda": "^0.6.0",
+    "aws-cdk-neptune": "^0.6.0",
+    "aws-cdk-rds": "^0.6.0",
+    "aws-cdk-resources": "^0.6.0",
+    "aws-cdk-rtv": "^0.6.0",
+    "aws-cdk-s3": "^0.6.0",
+    "aws-cdk-sns": "^0.6.0",
+    "aws-cdk-sqs": "^0.6.0"
+  },
+  "repository": {
+    "url": "git://github.com/awslabs/aws-cdk",
+    "type": "git"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
