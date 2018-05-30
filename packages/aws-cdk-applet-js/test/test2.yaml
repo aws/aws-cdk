@@ -1,0 +1,10 @@
+# applet is loaded from the local ./test-applet.js file
+applet: ./test-applet:TestApplet
+prop1: hello
+prop2: 123
+prop3:
+  - hello
+  - this
+  - is
+  - awesome
+  - 12345
