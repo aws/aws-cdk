@@ -1,0 +1,11 @@
+{
+  "Resources": {
+    "MyTopic86869434": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": "fooDisplayName",
+        "TopicName": "fooTopic"
+      }
+    }
+  }
+}
