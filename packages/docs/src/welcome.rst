@@ -30,7 +30,7 @@ the low-level building blocks.
 
 The |cdk| takes a code-first approach to cloud architectures and allows developers
 to use familiar object-oriented idioms to describe their architecture
-**constructs**. 
+**constructs**.
 
 .. note:: There is no charge for using the |cdk|, however you may incur AWS charges for creating or using AWS
 	  `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
@@ -53,7 +53,7 @@ The |cdk| uses the following terms.
 
 construct
    The building block of an |cdk| app or library. In code, they are instances of
-   the :py:class:`aws-cdk.Construct` class or a class that extends the 
+   the :py:class:`aws-cdk.Construct` class or a class that extends the
    :py:class:`aws-cdk.Construct` class.
 
 app
@@ -72,7 +72,7 @@ applet
    A reusable |cdk| construct that can be instantiated and deployed through a
    YAML-format file.
 
-|l1|
+CloudFormation Resource construct
    The lowest-level construct, which map directly to an |CFN| resource,
    as described in the
    `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
@@ -80,14 +80,16 @@ applet
    as the |CFN| name with a **Resource** suffix within the AWS service namespace,
    such as **sqs.QueueResource** representing an |SQS| queue.
 
-|l2|
+Construct Library construct
    A construct that provides high level APIs for a AWS services.
    Their names imply the underlying AWS service.
-   For example, |s3| resources are available through the **aws-cdk-s3** |l2|.
+   For example, |s3| resources are available through the **aws-cdk-s3**
+   Construct Library.
 
-|l3|
-   Purpose-built construct, designed to implement a specific task on AWS. For example,
-   the :py:mod:`???` library provides a construct API ???.
+Purpose-built construct
+   Purpose-built construct, designed to abstract away common architectural
+   patterns on AWS. These are not supplied with the standard CDK distribution,
+   but are shared within your organization or on GitHub.
 
 .. _aws_cdk_additional_resources:
 

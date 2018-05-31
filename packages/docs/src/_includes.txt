@@ -30,15 +30,6 @@
 
 .. |resource-construct| replace:: *Resource*
 
-.. |level1| replace:: AWS Resource
-.. |level2| replace:: AWS Construct Library
-.. |level3| replace:: purpose-built
-
-.. |l1| replace:: |level1| construct
-.. |l2| replace:: |level2| construct
-.. |l3| replace:: |level3| construct
-.. l4 App / Applet ???
-
 .. |aws-home| replace:: https://aws.amazon.com
 
 .. Installation entities
