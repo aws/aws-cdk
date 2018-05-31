@@ -7,5 +7,5 @@ for p in $(find-jsii-packages -k jsii.names.java); do
     jsii-pacmak --target java --outdir "${outdir}" $p
 done
 
-
-cp -f ../../node_modules/jsii-java-runtime/jsii-runtime-0.4.0.jar $PWD
+mkdir -p target
+cp -f ../../node_modules/jsii-java-runtime/jsii-runtime-0.4.0.jar $PWD/target
