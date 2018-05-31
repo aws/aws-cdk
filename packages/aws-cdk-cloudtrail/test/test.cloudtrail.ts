@@ -1,7 +1,7 @@
 import { Stack } from 'aws-cdk';
 import { expect, haveResource, not } from 'aws-cdk-assert';
 import { Test } from 'nodeunit';
-import { CloudTrail, LogRetention, ReadWriteType } from '..';
+import { CloudTrail, LogRetention, ReadWriteType } from '../lib';
 
 export = {
     'constructs the expected resources': {

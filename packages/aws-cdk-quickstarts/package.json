@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "AWS Quickstarts for the CDK",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "bundledDependencies": [

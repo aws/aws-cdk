@@ -1,6 +1,6 @@
 import { Construct, Token } from 'aws-cdk';
 import { kms } from 'aws-cdk-resources';
-import { EncryptionKeyRef } from '.';
+import { EncryptionKeyRef } from './key';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'AWS';

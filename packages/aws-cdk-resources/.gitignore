@@ -3,4 +3,5 @@ lib
 node_modules
 tsconfig.json
 *.js
+*.d.ts
 README.md

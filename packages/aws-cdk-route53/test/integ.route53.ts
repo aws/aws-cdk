@@ -1,6 +1,6 @@
 import { App, Output, Stack } from 'aws-cdk';
 import { VpcNetwork } from 'aws-cdk-ec2';
-import { PrivateHostedZone, PublicHostedZone, TXTRecord } from '..';
+import { PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';
 
 const app = new App(process.argv);
 
