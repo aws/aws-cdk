@@ -10,96 +10,19 @@
 
 .. _cloudformation:
 
-#########################
-Using |level1| Constructs
-#########################
+###################
+Using CloudFormation Resource Constructs
+###################
 
-|level1| constructs are low-level constructs that provide a direct, one-to-one,
-mapping to an |cfn| resource,
-as listed in the |cfn| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
+CloudFormation Resource constructs are found in the :py:mod:`aws-cdk-resources` package. They map directly onto |cfn|
+resources.
 
-Avoid using |level1| constructs if possible.
-Instead, use |level2| constructs where you don't really need to
-know anything about |cfn|. You just define your intent and the underlying resources are
-defined for you.
+.. important::
 
-However, there are use cases where you need to directly define |cfn| resources,
-such as when migrating from an existing template.
-In those case you can use |level1| constructs
-to define |cfn| entities such as resources, parameters, outputs, and conditions.
-
-If you decide to create an |l2|,
-especially one that you want to contribute to the |cdk| package,
-see :doc:`creating-constructs`.
-
-.. _aws_constructs_versus_cfn_resources:
-
-|level2| Constructs versus CloudFormation Resources
-===================================================
-
-The |cdk| includes a set of libraries with constructs for defining AWS
-resources that we call |level2| constructs.
-For example, the :py:mod:`aws-cdk-sns` library includes the `Topic`
-construct that you can use to define an |SNS| topic:
-
-.. code-block:: js
-
-    import { Topic } from 'aws-cdk-sns';
-    const topic = new Topic(this, 'MyTopic');
-
-|level2| constructs encapsulate the
-details of working with these AWS resources. For example, to subscribe a queue to a topic,
-call the :py:meth:`aws-cdk-sns.Topic.subscribeQueue` method with a queue object as the second argument:
-
-.. code-block:: js
-
-    const topic = new Topic(this, 'MyTopic');
-    const queue = new Queue(this, 'MyQueue', {
-        visibilityTimeoutSec: 300
-    });
-
-    topic.subscribeQueue('TopicToQueue', queue);
-
-This method:
-
-1. Creates a subscription and associates it with the topic and the queue.
-
-2. Adds a queue policy with permissions for the topic to send messages to the queue.
-
-The |CDK| also includes a low-level library (:py:mod:`aws-cdk-resources`) which
-includes constructs for all |CFN| resources. This library is automatically
-generated based on the `CloudFormation resource specification
-<https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html>`_
-and exposes the declarative API of CloudFormation resources.
-
-To achieve a similar result using :py:mod:`aws-cdk-resources`, you have to explicitly define the
-subscription and queue policy, since there is no **subscribeToQueue** method in the **TopicResource** class:
-
-.. code-block:: js
-
-    const topic = new sns.TopicResource(this, 'MyTopic');
-    const queue = new sqs.QueueResource(this, 'MyQueue');
-
-    new sns.SubscriptionResource(this, 'TopicToQueue', {
-        topicArn: topic.ref, // ref == arn for topics
-        endpoint: queue.queueName,
-        protocol: 'sqs'
-    });
-
-    const policyDocument = new PolicyDocument();
-    policyDocument.addStatement(new PolicyStatement()
-        .addResource(queue.queueArn)
-        .addAction('sqs:SendMessage')
-        .addServicePrincipal('sns.amazonaws.com')
-        .setCondition('ArnEquals', { 'aws:SourceArn': topic.ref }));
-
-    new sqs.QueuePolicyResource(this, 'MyQueuePolicy', {
-        policyDocument: policyDocument,
-        queues: [ queue.ref ]
-    });
-
-This example shows one of the many benefits
-of using the |level2| constructs instead of the |level1| constructs.
+  In general, you shouldn't need to use this type of Constructs, unless you have
+  special requirements or there is no Construct Library for the AWS resource you
+  need yet. Prefer using other packages with higher-level constructs instead. See
+  :ref:`l1_vs_l2` for a comparison between the construct types.
 
 .. _construct_attributes:
 
@@ -210,31 +133,3 @@ Pseudo Parameters
 
     import { AwsRegion } from 'aws-cdk';
     new AwsRegion()
-
-.. _multiple_environments:
-
-Creating Multiple Environments
-==============================
-
-As described in :doc:`concepts`,
-an environment is the combination of account and Region.
-To deploy |cdk| constructs to multiple Regions, you need multiple environments.
-The simplest way to manage this action is to define your environments in the
-|cx-json| file, as shown in the following example,
-which defines a development environment in **us-west-2**
-and a production environment in **us-east-1**.
-
-.. SWAG coming:
-
-.. code:: json
-
-   "environments": {
-      "production": {
-         "account": "123456789012",
-         "region": "us-east-1"
-      },
-      "dev": {
-         "account": "123456789012",
-         "region": "us-west-2"
-      }
-   }

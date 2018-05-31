@@ -21,41 +21,44 @@ This topic provides information on how to create constructs in the |cdk|.
 What Are Constructs?
 ====================
 
-As described in :doc:`concepts`,
-constructs are components that developers can combine into other constructs and
-an application stack to create an |cdk| application.
+As described in :doc:`concepts`, constructs are components that developers can
+combine into other constructs and an application stack to create an |cdk|
+application.
 
-The lowest-level |cdk| construct is an |l1|,
-which represents a single AWS service resource,
-such as an SNS topic or an SQS queue.
+The lowest-level |cdk| construct is a Resource Construct, which represents a
+single AWS service resource, such as an SNS topic or an SQS queue.
 
-The next level of constructs,
-which we call an |l2|,
-consist of two or more |level1| constructs.
-For example, the stack described in the :doc:`getting-started` topic consists of an |SQS| queue,
-|SNS| topic, a subscription between the topic and the queue,
-and an |IAM| policy document.
+The next level of constructs, which we call a Construct Library Construct,
+typicall wraps one or more Resource Constructs and adds higher-level
+abstractions. These can include:
 
-The |cdk| includes a variety of |level2| constructs,
-and you can create your own for special needs.
+* Convenient defaults.
+* Automatic creation of related resources such as policy documents, IAM roles or encryption keys.
+* Methods to make the resource interact with other resources.
 
-The |cdk| also includes a library of |level3| constructs
-that consist of two or more |l2| objects,
-where some or most of the run-time attributes, such as the Region or availability zone, are specified.
+For example, the stack described in the :doc:`getting-started` topic consists of
+an |SQS| queue, |SNS| topic, a subscription between the topic and the queue, and
+an |IAM| policy document.
 
-To create an |l1|, see :doc:`cloudformation`.
+The |cdk| includes a variety of Library constructs, and you can create your own
+for special needs. You might even consider writing and publishing purpose-built
+constructs (:ref:`purpose_built_constructs`) to solve common business needs. Be
+sure to have a look at the :ref:`guidelines` section on tips for developing
+new constructs.
 
-The rest of this topic describes how to create an |l2|
-and contribute it to the |cdk| as a pull request.
+Whether you're planning to write a purpose-built construct for your own
+application or submit a new Construct Library construct to the CDK, the process
+is quite similar. It's described below:
 
 .. _creating_l2_constructs:
 
-Creating |level2| Constructs
-============================
+Creating Construct Library constructs
+=====================================
 
-To create a new |l2| as a pull request to the |cdk|:
+To create a new Construct Library construct as a pull request to the |cdk|:
 
-* Clone the |cdk| project to your computer:
+* Fork the |cdk| project to your own GitHub account.
+* Clone the repository to your computer:
 
 .. code-block:: sh
 
@@ -78,7 +81,7 @@ To create a new |l2| as a pull request to the |cdk|:
   where *NAME* indicates the functionality within the file.
 
 * Create *NAME.ts* for each set of related classes,
-  such as an L2 and its props.
+  such as the construct itself and its props interface.
 
 In *NAME.ts*:
 
@@ -97,11 +100,44 @@ In *NAME.ts*:
 
 Finally for the package:
 
-* Add a test, *test.NAME.ts*, for each L2 construct.
+* Add a test, *test.NAME.ts*, for each construct.
 
 * Create an integration test, *integ.everything.ts*.
 
-* Once everything looks good, navigate to the |cdk| project in GitHub,
-  select your branch, and next to the **Branch** menu select **New pull request**.
+* Commit your changes and push them back to GitHub.
+
+* Once everything looks good, navigate to the |cdk| project on the GitHub
+  website, select your branch, and next to the **Branch** menu select **New pull
+  request**.
 
 See the **aws-cdk-dynamodb** package for examples.
+
+Validation
+----------
+
+Validation happens in one of two places:
+
+* In the constructor, to validate the properties that are passed in.
+* If the Construct offers methods that mutate the state of the Construct,
+  in the Construct's :py:meth:`aws-cdk.Construct.validate` method. This
+  method is called by the framework after the Construct hierarchy has been set up,
+  and is expected to return a list of validation error messages.
+
+Construct implementors should prefer throwing validation errors in the constructor,
+falling back to overriding the :py:meth:`aws-cdk.Construct.validate` method
+only if the Construct offers mutating members.
+
+Example of implementing validate:
+
+.. code-block:: js
+
+    class MyConstruct extends Construct {
+      public validate() {
+        if (this.getChildren().length > 1) {
+          return [ 'this construct can only have a single child' ];
+        }
+        else {
+          return [ ];
+        }
+      }
+    }
