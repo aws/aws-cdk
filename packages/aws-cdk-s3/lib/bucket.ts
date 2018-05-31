@@ -254,6 +254,8 @@ export interface BucketProps {
 export class Bucket extends BucketRef {
     public readonly bucketArn: s3.BucketArn;
     public readonly bucketName: BucketName;
+    public readonly domainName: s3.BucketDomainName;
+    public readonly dualstackDomainName: s3.BucketDualStackDomainName;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
     protected policy?: BucketPolicy;
     protected autoCreatePolicy = true;
@@ -281,6 +283,8 @@ export class Bucket extends BucketRef {
         this.encryptionKey = encryptionKey;
         this.bucketArn = resource.bucketArn;
         this.bucketName = resource.ref;
+        this.domainName = resource.bucketDomainName;
+        this.dualstackDomainName = resource.bucketDualStackDomainName;
 
         // Add all lifecycle rules
         (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
