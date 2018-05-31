@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "AWS CloudWatch Events Construct Library",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "bundledDependencies": [
