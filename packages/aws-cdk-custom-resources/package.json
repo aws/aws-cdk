@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "CDK Constructs to make it easier to build custom resources",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "bundledDependencies": [],

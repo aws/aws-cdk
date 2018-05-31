@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { istoken, resolve, Token } from '../..';
+import { istoken, resolve, Token } from '../../lib';
 
 export = {
     'resolve a plain old object should just return the object'(test: Test) {

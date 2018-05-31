@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Root } from '../..';
+import { Construct, Root } from '../../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length

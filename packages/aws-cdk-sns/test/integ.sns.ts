@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk';
-import { Topic } from '..';
+import { Topic } from '../lib';
 
 class SNSInteg extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

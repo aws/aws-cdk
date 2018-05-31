@@ -13,7 +13,7 @@ export abstract class CertificateRef extends Construct {
     /**
      * Import a certificate
      */
-    public static import(parent: Construct, name: string, props: CertificateRefProps) {
+    public static import(parent: Construct, name: string, props: CertificateRefProps): CertificateRef {
         return new ImportedCertificate(parent, name, props);
     }
 

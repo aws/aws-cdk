@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Utility routines used for implementing CDK libraries",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"

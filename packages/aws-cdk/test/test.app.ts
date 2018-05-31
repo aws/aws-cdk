@@ -1,6 +1,6 @@
 import * as cxapi from 'aws-cdk-cx-api';
 import { Test } from 'nodeunit';
-import { Construct, Resource, Stack, StackProps } from '..';
+import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
 //

@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "bundledDependencies": [

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { AvailabilityZoneProvider, resolve, SSMParameterProvider, Stack } from '..';
+import { AvailabilityZoneProvider, resolve, SSMParameterProvider, Stack } from '../lib';
 
 export = {
     'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {

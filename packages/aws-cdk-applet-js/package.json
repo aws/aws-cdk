@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Javascript CDK applet host program",
   "main": "bin/cdk-applet-js.js",
-  "types": "bin/cdk-applet-js.ts",
+  "types": "bin/cdk-applet-js.d.ts",
   "bin": {
     "cdk-applet-js": "bin/cdk-applet-js"
   },

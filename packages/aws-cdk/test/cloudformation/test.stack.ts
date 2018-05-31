@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../..';
+import { App, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../../lib';
 
 export = {
     'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {

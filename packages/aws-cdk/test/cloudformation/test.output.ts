@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Output, resolve, Resource, Stack } from '../..';
+import { Construct, Output, resolve, Resource, Stack } from '../../lib';
 
 export = {
     'outputs can be added to the stack'(test: Test) {
