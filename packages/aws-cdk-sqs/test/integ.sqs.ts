@@ -1,5 +1,5 @@
 import { App, Output, Stack } from 'aws-cdk';
-import { Queue } from '..';
+import { Queue } from '../lib';
 
 const app = new App(process.argv);
 

@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk';
 import { Test } from 'nodeunit';
-import { User } from '..';
+import { User } from '../lib';
 
 export = {
     'default user'(test: Test) {

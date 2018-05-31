@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk';
 import { Test } from 'nodeunit';
-import { Group, User } from '..';
+import { Group, User } from '../lib';
 
 export = {
     'default group'(test: Test) {

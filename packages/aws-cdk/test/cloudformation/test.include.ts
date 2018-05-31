@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Include, Output, Parameter, Resource, Stack } from '../..';
+import { Include, Output, Parameter, Resource, Stack } from '../../lib';
 
 export = {
     'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {

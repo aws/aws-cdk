@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepare": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
     "watch": "tsc -w",

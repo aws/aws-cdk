@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, Parameter, resolve, Resource, Stack } from '../..';
+import { Construct, Parameter, resolve, Resource, Stack } from '../../lib';
 
 export = {
     'parameters can be used and referenced using param.ref'(test: Test) {

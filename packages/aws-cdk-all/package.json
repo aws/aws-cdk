@@ -4,6 +4,7 @@
   "version": "0.6.0",
   "description": "A single package that provides all of the CDK dependencies",
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
