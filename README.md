@@ -28,8 +28,10 @@ When building on CodeBuild, these toolchains are all included in the
 also be used locally as follows:
 
 ```shell
-docker pull 260708760616.dkr.ecr.us-east-1.amazonaws.com/superchain:latest
-docker run --net=host -it -v $PWD:$PWD -w $PWD superchain
+eval $(aws ecr get-login --no-include-email)
+IMAGE=260708760616.dkr.ecr.us-east-1.amazonaws.com/superchain:latest
+docker pull ${IMAGE}
+docker run --net=host -it -v $PWD:$PWD -w $PWD ${IMAGE}
 ```
 
 This will get you into an interactive docker shell. You can then run
