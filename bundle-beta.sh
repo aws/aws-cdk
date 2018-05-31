@@ -39,7 +39,12 @@ npm install --global-style --production --no-save repo/npm/*.tgz
 # Symlink 'bin' to the root
 ln -s node_modules/.bin bin
 
-# Copy to ./dist
+# Create an archive under ./dist
+version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
 dist=${root}/dist
+output=${dist}/aws-cdk-${version}.zip
 rm -fr ${dist}
-rsync -av ${staging}/ ${dist}
+mkdir -p ${dist}
+zip -r ${output} .
+echo ${output}
+
