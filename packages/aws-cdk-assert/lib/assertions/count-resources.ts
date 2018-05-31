@@ -4,7 +4,7 @@ import { StackInspector } from "../inspector";
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
  */
-export function countResources(resourceType: string, count = 1) {
+export function countResources(resourceType: string, count = 1): Assertion<StackInspector> {
     return new CountResourcesAssertion(resourceType, count);
 }
 

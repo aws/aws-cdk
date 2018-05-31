@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "description": "Utilities to diff CDK stacks against CloudFormation templates",
   "main": "lib/index.js",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepare": "tslint -p . && tsc && pkglint",
     "watch": "tsc -w",

@@ -14,7 +14,7 @@ export abstract class EventRuleRef extends Construct {
     /**
      * Imports a rule by ARN into this stack.
      */
-    public static import(parent: Construct, name: string, props: EventRuleRefProps) {
+    public static import(parent: Construct, name: string, props: EventRuleRefProps): EventRuleRef {
         return new ImportedEventRule(parent, name, props);
     }
 

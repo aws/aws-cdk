@@ -4,7 +4,7 @@ import { Group, User } from 'aws-cdk-iam';
 import { EncryptionKey } from 'aws-cdk-kms';
 import { s3 } from 'aws-cdk-resources';
 import { Test } from 'nodeunit';
-import { Bucket, BucketEncryption } from '..';
+import { Bucket, BucketEncryption } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes

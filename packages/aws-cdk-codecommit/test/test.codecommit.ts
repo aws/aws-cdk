@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk';
 import { Test } from 'nodeunit';
-import { Repository, RepositoryProps } from '..';
+import { Repository, RepositoryProps } from '../lib';
 
 export = {
     'default properties': {

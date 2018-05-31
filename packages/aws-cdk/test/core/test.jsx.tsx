@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, jsx, Root } from '../..';
+import { Construct, jsx, Root } from '../../lib';
 
 export = {
     'jsx can be used to create "trees" of constructs'(test: Test) {

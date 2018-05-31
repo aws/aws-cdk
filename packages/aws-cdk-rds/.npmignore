@@ -1,0 +1,3 @@
+# Don't include original .ts files when doing `npm pack`
+*.ts
+!*.d.ts

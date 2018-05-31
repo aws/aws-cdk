@@ -3,7 +3,7 @@ import { expect, haveResource } from 'aws-cdk-assert';
 import { Repository } from 'aws-cdk-codecommit';
 import { Bucket } from 'aws-cdk-s3';
 import { Test } from 'nodeunit';
-import { BuildProject, CodeCommitSource, CodePipelineBuildArtifacts, CodePipelineSource, NoBuildArtifacts, S3BucketSource } from '..';
+import { BuildProject, CodeCommitSource, CodePipelineBuildArtifacts, CodePipelineSource, NoBuildArtifacts, S3BucketSource } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 

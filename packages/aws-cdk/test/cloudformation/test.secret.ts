@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { resolve, Secret, SecretParameter, Stack } from '../..';
+import { resolve, Secret, SecretParameter, Stack } from '../../lib';
 
 export = {
     'Secret is merely a token'(test: Test) {

@@ -1,5 +1,5 @@
 import { App, Stack } from 'aws-cdk';
-import { KeyAttributeType, Table } from '..';
+import { KeyAttributeType, Table } from '../lib';
 
 const app = new App(process.argv);
 

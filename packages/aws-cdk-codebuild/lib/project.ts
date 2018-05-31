@@ -5,8 +5,8 @@ import { Role } from 'aws-cdk-iam';
 import { EncryptionKeyRef } from 'aws-cdk-kms';
 import { codebuild } from 'aws-cdk-resources';
 import { BucketRef } from 'aws-cdk-s3';
-import { BuildSource, CodePipelineBuildArtifacts } from '..';
-import { BuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { BuildSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, Stack } from '..';
+import { App, Stack } from '../lib';
 
 export = {
     'By default, environment region and account are not defined'(test: Test) {

@@ -2,7 +2,7 @@
 import { App, Stack } from 'aws-cdk';
 import { Repository } from 'aws-cdk-codecommit';
 import { Topic } from 'aws-cdk-sns';
-import { BuildProject, CodeCommitSource } from '..';
+import { BuildProject, CodeCommitSource } from '../lib';
 
 const app = new App(process.argv);
 

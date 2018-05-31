@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { FnAnd, FnContains, FnEquals, FnNot, Rule, Stack } from '../..';
+import { FnAnd, FnContains, FnEquals, FnNot, Rule, Stack } from '../../lib';
 
 export = {
     'Rule can be used to create rules'(test: Test) {
