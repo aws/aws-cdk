@@ -1,6 +1,7 @@
 import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from 'aws-cdk';
 import { iam } from 'aws-cdk-resources';
-import { IIdentityResource, Policy, User } from '.';
+import { IIdentityResource, Policy } from './policy';
+import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface GroupProps {
