@@ -2,7 +2,7 @@ import { App, Stack } from 'aws-cdk';
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from 'aws-cdk-assert';
 import { VpcNetwork } from 'aws-cdk-ec2';
 import { Test } from 'nodeunit';
-import { HostedZoneRef, PrivateHostedZone, PublicHostedZone, TXTRecord } from '..';
+import { HostedZoneRef, PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';
 
 export = {
     'default properties': {
