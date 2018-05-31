@@ -14,7 +14,8 @@
 Guidelines
 ##########
 
-This topic describes some guidelines for using the |cdk|.
+This topic describes helpful tips for using the |cdk|. These apply when you are
+writing Constructs.
 
 .. _general_guidelines:
 
@@ -30,17 +31,18 @@ but do not rename the construct as described in the
 |cfn| deletes the old construct, including any resources created by the construct,
 when you deploy the new construct.
 
-* Use TypeScript unless you are a single-language shop
+**Use TypeScript unless you are a single-language shop.**
+
   You can use constructs made in TypeScript in any other supported language.
   The converse is not supported.
 
-* Use compositions instead of inheritance
-  Most constructs should directly extend the `Construct` class
-  instead of another construct.
-  For example,
-  when defining a |level2| construct that represents an AWS resource,
-  do not extend the corresponding |level1| construct.
-  Instead, extend the `Construct` class and add the |level1| resource as a child.
+**Use compositions instead of inheritance.**
+
+  Most constructs should directly extend the **Construct** class instead of
+  another construct. For example, when defining a Library construct that
+  represents an AWS resource, do not extend the corresponding Resource
+  construct. Instead, extend the **Construct** class and add the resource as a
+  child. Give the primary Resource construct the name ``"Resource"``.
 
 .. _property_guidelines:
 
@@ -49,24 +51,30 @@ Property Guidelines
 
 These are the recommended guidelines for construct properties.
 
-* Use strongly-typed properties
+**Use strongly-typed properties.**
+
   This includes using enums instead of primitive types such as strings or ints.
 
-* Do not use tokens for property types
+**Do not use tokens for property types.**
+
   Since tokens are a functional interface,
   they provide no type information and may not translate into a type-safe member during translation
   to another programming language.
 
-* Provide reasonable default values wherever possible
+**Provide reasonable default values wherever possible.**
+
   Most properties should be optional so the user can `new` the construct and get a reasonable object.
 
-* Validate properties during initialization
+**Validate properties during initialization.**
+
   Fail early
 
-* Avoid renaming existing AWS resource property names
+**Avoid renaming existing AWS resource property names.**
+
   It adds another level of cognitive dissonance to debugging
 
-* Indicate units in primitive property type names
+**Indicate units in primitive property type names.**
+
   For example, if the property is an int and specifies how long to wait in seconds,
   the name could be **waitSec**.
 
@@ -77,21 +85,25 @@ Library Guidelines
 
 Use these guidelines when constructing a library.
 
-* Code should be under *lib/*.
+Code should be under *lib/*.
 
-* The entry point should be *lib/index.ts* and should only contain
+The entry point should be *lib/index.ts* and should only contain
   **import** statements (importing other TypeScript files in the same directory)
 
-* There is no need to put every class in a separate file. Think of the user.
+**There is no need to put every class in a separate file. Think of the user.**
 
-* Keep your unit test utility code separate from your constructs
+**Keep your unit test utility code separate from your constructs.**
+
   If you want to make them to be "package-private",
   put them in a separate file and import them (`import ../lib/my-util`) in your tests
 
-* Keep your integration tests in *test/* as *integ-xxx.ts*
+**Keep your integration tests in *test/* as *integ-xxx.ts*.**
+
   They should be |cdk| apps that can be deployed with |cx-deploy-bold|.
 
-* Always create a *README.md* file that includes:
+**Always create a *README.md* file.**
+
+  It should include:
 
   - The maturity level
   - An example for each common use case,

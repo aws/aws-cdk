@@ -50,26 +50,32 @@ to instantiate the ``StorageLayer`` construct.
 
 When you initialize a construct,
 add the construct to the construct tree by specifying the parent construct as the first initializer parameter,
-a unique (to your stack) identifier for the construct as the second parameter,
-and an optional set of properties for the final parameter,
+a identifier for the construct as the second parameter,
+and an set of properties for the final parameter,
 as shown in the following example.
 
 .. code-block:: js
 
-   new MyConstruct(parent, name[, props]);
+   new SomeConstruct(parent, name[, props]);
 
-From this point on, use the keyword |this| instead of |parent|,
-because in most cases the |cdk| initializes new
-constructs from within the context of their parent construct,
-so |this| represents the parent.
+In almost all cases, you will want to pass the keyword ``this`` for the ``parent``
+argument, because you will generally initialize new constructs in the context of
+the parent construct. Any descriptive string will do for the ``name``
+argument,
+and an in-line object for the set of properties.
 
 .. code-block:: js
 
-   new BeautifulConstruct(this, 'Foo', ...))
+   new BeautifulConstruct(this, 'Foo', {
+     applicationName: 'myApp',
+     timeout: 300
+   });
 
-The reason we associate the construct to its parent as part of its
-initialization is because the construct occasionally needs contextual
-information from its parent, such as to which the Region the stack is deployed.
+.. admonition:: Rationale
+
+   The reason we associate the construct to its parent as part of its
+   initialization is because the construct occasionally needs contextual
+   information from its parent, such as to which the Region the stack is deployed.
 
 Use the following operations to inspect the construct tree.
 
@@ -82,7 +88,7 @@ Use the following operations to inspect the construct tree.
 :py:meth:`aws-cdk.Construct.getChild`
    returns the child construct with the specified ID.
 
-:py:meth:`aws-cdk.Construct.toTreeString`
+
    returns a string representing the construct's tree.
 
 .. _construct_names:
@@ -90,15 +96,11 @@ Use the following operations to inspect the construct tree.
 Construct Names
 ---------------
 
-Every construct in a CDK app must have a **name** unique amongst it's siblings. Names
-are used to allocate stack-wide unique logical IDs for each CloudFormation
-resource.
-This value has nothing to do with any similar name attribute in the actual resource.
-For example, you could instantiate a construct that creates a table where you store your music files,
-hence you create the database table "music",
-and name your construct "LambdaMusicTable".
+Every construct in a CDK app must have a **name** unique amongst its siblings.
+Names are used to track Constructs in the Construct hierarchy, and to allocate
+logical IDs so that CloudFormation can keep track of the generated resources.
 
-When a construct is created, it's name is specified as the second
+When a construct is created, its name is specified as the second
 initializer argument:
 
 .. code-block:: js
@@ -111,37 +113,48 @@ initializer argument:
 Use the :py:attr:`aws-cdk.Construct.path` property to get the path of this
 construct from the root of the tree.
 
+Note that the name of a construct does not directly map onto the physical name
+of the resource when it is created! If you have a bucket or table that you want
+to give a concrete name, then specify the desired name using use the appropriate
+property, such as ``bucketName`` or ``tableName``. Example:
+
+.. code-block:: js
+
+    new Bucket(this, 'MyBucket', {
+      bucketName: 'physical-bucket-name'
+    });
+
+In general however, you should avoid specifying physical names. Instead, let
+CloudFormation generate names for you, and use attributes like bucket.bucketName
+to discover the generated names and pass them to your application's runtime
+code, as described in :ref:`creating_runtime_value`.
+
 When you synthesize an |cdk| tree into a |CFN| template, the |CFN| logical ID
 for each resource in the template is allocated according to the path of that
-resource in the construct tree. The IDs must be stable when you modify your
-stack, so that |CFN| can associate a deployed resource with a template resource
-across updates. This is important to know when you are refactoring your code -
-make sure to keep construct names stable.
-If you have to change the name, see
-*Changing Logical IDs*.
+resource in the construct tree. For more information, see :ref:`logical_ids`.
 
 .. _construct_properties:
 
 Construct Properties
 --------------------
 
-All constructs accept an optional property class through which you can set the construct's public properties.
-Since these classes are defined as TypeScript interfaces, you can pass a property object to your construct
-in two ways:
+Constructs can be customized by passing a property object as the third
+parameter. Every construct has its own set of parameters, defined as an
+interface. You can pass a property object to your construct in two ways:
 
 .. code-block:: js
 
+   // Inline (recommended)
+   new Queue(this, 'MyQueue', {
+     visibilityTimeout: 300
+   });
+
+   // Instantiate separate property object
    const props: QueueProps = {
      visibilityTimeout: 300
    };
 
    new Queue(this, 'MyQueue', props);
-
-   // OR the recommended way:
-
-   new Queue(this, 'MyQueue', {
-     visibilityTimeout: 300
-   });
 
 .. _construct_metadata:
 
@@ -153,32 +166,6 @@ py:meth:`aws-cdk.Construct.addMetadata` operation. Metadata entries
 automatically include the stack trace from which the metadata entry was added,
 so at any level of a construct you can find the code location, even if metadata
 was created by a lower-level library that you don't own.
-
-.. _construct_validation:
-
-Validating Constructs
----------------------
-
-Overload the :py:meth:`aws-cdk.Construct.validate` method in your construct.
-This method should return either a list of validation error messages,
-or an empty list to indicate there are no validation errors.
-Construct implementors can then use this method to perform custom
-validation to avoid synthesizing or deploying invalid stacks.
-
-For example:
-
-.. code-block:: js
-
-    class MyConstruct extends Construct {
-      validate() {
-        if (this.getChildren().length > 1) {
-          return [ 'this construct can only have a single child' ];
-        }
-        else {
-          return [ ];
-        }
-      }
-    }
 
 .. _stacks:
 
@@ -234,11 +221,13 @@ the |cdk| assigns a
 which must be unique within the template,
 to each resource in the stack.
 
-When you update the template, |CFN| uses these logical IDs to plan the update
-and apply changes. Therefore, logical IDs must remain "stable" across updates.
-If you make a modification in your code that results in a change to a logical ID
-of a resource, |CFN| deletes the resource and recreates a new resource when it
-updates the stack.
+.. important::
+
+    When you update the template, |CFN| uses these logical IDs to plan the update
+    and apply changes. Therefore, logical IDs must remain "stable" across updates.
+    If you make a modification in your code that results in a change to a logical ID
+    of a resource, |CFN| deletes the resource and recreates a new resource when it
+    updates the stack.
 
 Each resource in the construct tree has a unique path that represents its
 location within the tree. The logical ID of a resource is formed by
@@ -276,8 +265,7 @@ Logical IDs are unique within the stack
 
 Logical IDs remain unchanged across updates
    This is true as long as their location within the construct tree doesn't change.
-   See
-   *Changing Logical IDs*
+   See :ref:`creating_runtime_value`
    for information on how to retain
    logical IDs despite structural changes in your stack.
 
@@ -332,14 +320,13 @@ stacks. `cdk diff` will tell you which resources are about to be destroyed:
 
 .. _environments:
 
-Environments
-============
+Environments and authentication
+===============================
 
 The |cdk| refers to the combination of an account ID and a Region as an *environment*.
 The simplest environment is the one you get by default,
 which is the one you get when you have set up your credentials and a default Region as described in
-the *Specifying your Credentials and Region* section of the
-:doc:`getting-started` topic.
+:ref:`credentials_and_region`.
 
 When you create a |stack-class| instance, you can supply the target deployment environment
 for the stack using the **env** property, as shown in the following example,
@@ -349,32 +336,47 @@ where REGION is the Region in which you want to create the stack and ACCOUNT is 
 
    new MyStack(app, { env: { region: 'REGION', account: 'ACCOUNT' } });
 
-If you do not supply an account or Region for a stack, the |cdk|
-attempts to determine them in the following order.
+For each of the two arguments **region** and **account**, the |cdk| uses the
+following lookup procedure:
 
-#. It will attempt to read **default-account** and **default-region** from the application's context.
+#. If **region** or **account** are provided directly as an property to the
+   Stack, use that.
+#. Otherwise, read **default-account** and **default-region** from the application's context.
    These can be set in the |toolkit| in either the local |cx-json| file or the global version in
    *$HOME/.cdk* on Linux or MacOS or *%USERPROFILE%\\.cdk* on Windows.
-#. If these are not defined, it will attempt to determine the account based on the
-   access key ID and secret access key in *$HOME/.aws/credentials* on Linux or MacOS
-   or *%USERPROFILE%\\.aws\\credentials* on Windows,
-   and the Region based on the Region in
-   *$HOME/.aws/config* on Linux or MacOS or *%USERPROFILE%\\.aws\\config* on Windows.
-   You can set these values manually, but we recommend you use **aws configure**,
-   as described in the :doc:`getting-started` topic.
-#. Finally, if the account has not yet been identified,
-   it will call **STS.getCallerIdentity** to get the account information.
+#. If these are not defined, it will determine them as follows:
+    * **account**: use account from default SDK credentials. Environment
+      variables are tried first (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**),
+      followed by credentials in *$HOME/.aws/credentials* on Linux or MacOS
+      or *%USERPROFILE%\\.aws\\credentials* on Windows.
+    * **region**: use the default region configured in *$HOME/.aws/config* on
+      Linux or MacOS or *%USERPROFILE%\\.aws\\config* on Windows.
+    * You can set these defaults manually, but we recommend you use ``aws
+      configure``, as described in the :doc:`getting-started` topic.
 
 We recommend you use the default environment for development stacks,
 and explicitly specify accounts and Regions for production stacks.
 
+.. note::
+
+   Note that even though the region and account might explicitly be set on your
+   Stack, if you run ``cdk deploy`` the |cdk| will still use the
+   currently-configured SDK credentials, as provided via the **AWS_**
+   environment variables or ``aws configure``. This means that if you want to
+   deploy stacks to multiple accounts, you will have to set the correct
+   credentials for each invocation to ``cdk deploy STACK``.
+
+   In the future, we will provide the ability to specify credential sources for
+   individual accounts so that you can deploy to multiple accounts using one
+   invocation of ``cdk deploy``, but this feature is not available yet.
+
 .. _environment_context:
 
-Environment Context
--------------------
+Environmental Context
+---------------------
 
 When you synthesize a stack to create a |CFN| template, the |cdk| may need information based on the
-environment (account and Region), such as the AMIs available in the Region.
+environment (account and Region), such as the availability zones or AMIs available in the Region.
 To enable this feature, the |toolkit| uses *context providers*,
 and saves the context information into |cx-json|
 the first time you call |cx-synth-code|.
@@ -387,7 +389,7 @@ The |cdk| currently supports the following context providers.
 
 .. code:: js
 
-   const zones: string[] = new AvailabilityZoneProvider(this).getAZs();
+   const zones: string[] = new AvailabilityZoneProvider(this).availabilityZones;
 
    for (let zone of zones) {
       // do somethning for each zone!

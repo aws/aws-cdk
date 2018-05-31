@@ -10,23 +10,20 @@
 
 .. _using_l2_constructs:
 
-######################################
-Using |level2| Constructs in the |cdk|
-######################################
+#################
+Writing CDK Apps
+#################
 
-This topic provides information about using |level2| constructs in the |cdk|.
+*CDK Apps* are the applications you write using the CDK libraries. After writing
+and compiling them, you'll use the |toolkit| to synthesize or deploy the
+stacks they describe.
 
-An |l1| represents a single AWS service resource,
-such as an |s3| bucket, |sns| topic, or |sqs| queue;
-an |l2| represents two or more |l1| objects;
-and a |l3| represents two or more |l2| objects.
-You can create your own constructs, as described in
-:doc:`cloudformation`,
-or use constructs created by others.
+To write your CDK app, you can create your own constructs, as described in
+:doc:`cloudformation`, or use constructs created by others.
 
 .. _incorporating_external_constructs:
 
-Incorporating External Constructs
+Incorporating external constructs
 =================================
 
 To incorporate an external construct, use the **import** statement,
@@ -43,10 +40,52 @@ You can then instantiate an instance of **MyGroovyStack**.
 
    new MyGroovyStack(app, 'Test');
 
+.. _organizing_your_app:
+
+Organizing your application
+===========================
+
+The natural way to write CDK apps is by defining new constructs. The difference
+between your constructs and the Construct Library constructs is that the ones
+you will be writing are exactly tailored to your application.
+
+Defining a construct is as simple as declaring a class that inherits from
+**Construct**, and doing whatever work is appropriate in the constructor.
+
+The simplest custom Constructs you will be writing are **Stacks**. They define
+the individually deployable components of your application.
+
+The main entry point of your CDK App will instantiate an instance of **App**,
+add instantiate each of your stacks **Stacks** as a child of the **App** (or
+potentially, instantiate the same **Stack** multiple times but with different
+arguments, for example if you want to deploy the stame stack to different
+regions).
+
+See the :ref:`cdk_examples` section for a number of examples on writing a simple
+stack-plus-app combination. For real code, we recommend separating the
+entry point and the stack's class into different files, though.
+
+Evolving your application's constructs
+======================================
+
+Once your stack grows too big, it may make sense to define individual constructs
+for logical pieces that make sense together. For example, if your application
+contains a queue and some compute to work on that queue, it might make sense to
+define a new construct called **QueueProcessor** that codifies that pattern. If
+the new construct is successful, you might even consider adding some parameters
+to it to make it more reusable, and sharing it among your projects, or even
+sharing it with other people.
+
+Writing a CDK app means breaking down your desired infrastructure into logical
+constructs, and reusing them wherever it makes sense. For more information on
+writing constructs, see :ref:`creating_constructs`, :ref:`guidelines` and of
+course the :ref:`cdk_examples`.
+
+
 .. _runtime_discovery:
 
-Incorporating Constructs at Runtime
-===================================
+Referencing Resources at Runtime
+================================
 
 As you create constructs in the |cdk|,
 you will likely want to be able to refer to the created resources at runtime.
