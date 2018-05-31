@@ -6,7 +6,7 @@
 // We use identity mappers for the primitive types. These don't do anything but are there to make the code
 // generation work out nicely (so the code generator doesn't need to emit different code for primitive
 // vs. complex types).
-type Mapper = (x: any) => any;
+export type Mapper = (x: any) => any;
 
 function identity(x: any) {
     return x;
@@ -194,7 +194,7 @@ export class ValidationResults {
 // Singleton object to save on allocations
 export const VALIDATION_SUCCESS = new ValidationResult();
 
-type Validator = (x: any) => ValidationResult;
+export type Validator = (x: any) => ValidationResult;
 
 /**
  * Return whether this object can be validated at all
