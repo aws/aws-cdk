@@ -29,7 +29,7 @@
             <artifactId>jsii-runtime</artifactId>
             <version>0.4.0</version>
             <scope>system</scope>
-            <systemPath>${basedir}/../../node_modules/jsii-java-runtime/jsii-runtime-0.4.0.jar</systemPath>
+            <systemPath>${basedir}/jsii-runtime-0.4.0.jar</systemPath>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->

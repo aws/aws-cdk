@@ -11,7 +11,8 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "/bin/bash ./generate.sh && mvn package"
+    "prepare": "/bin/bash ./generate.sh && mvn package",
+    "prepack": "mv target/*.jar ."
   },
   "author": {
     "name": "Amazon Web Services",
