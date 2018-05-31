@@ -72,6 +72,29 @@ export class ServicePrincipal extends PolicyPrincipal {
     }
 }
 
+/**
+ * A policy prinicipal for canonicalUserIds - useful for S3 bucket policies that use
+ * Origin Access identities.
+ *
+ * See https://docs.aws.amazon.com/general/latest/gr/acct-identifiers.html
+ *
+ * and
+ *
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+ *
+ * for more details.
+ *
+ */
+export class CanonicalUserPrincipal extends PolicyPrincipal {
+    constructor(public readonly canonicalUserId: any) {
+        super();
+    }
+
+    public toJson(): any {
+        return { CanonicalUser: this.canonicalUserId };
+    }
+}
+
 export class FederatedPrincipal extends PolicyPrincipal {
     constructor(public readonly federated: any) {
         super();
