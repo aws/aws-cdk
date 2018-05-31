@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk';
 import { Test } from 'nodeunit';
-import { KeyAttributeType, Table } from '..';
+import { KeyAttributeType, Table } from '../lib';
 
 export = {
     'default properties': {

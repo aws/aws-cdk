@@ -5,7 +5,7 @@ import { User } from 'aws-cdk-iam';
 import { InlineJavaScriptLambda } from 'aws-cdk-lambda';
 import { Queue } from 'aws-cdk-sqs';
 import { Test } from 'nodeunit';
-import { Topic } from '..';
+import { Topic } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 

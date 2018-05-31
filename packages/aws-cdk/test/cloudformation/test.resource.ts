@@ -1,7 +1,7 @@
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Arn, Condition, Construct, DeletionPolicy,
         FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement, Referenceable,
-        RemovalPolicy, Resource, Root, Stack, Token } from '../..';
+        RemovalPolicy, Resource, Root, Stack, Token } from '../../lib';
 
 export = {
     'all resources derive from Resource, which derives from Entity'(test: Test) {

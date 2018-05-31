@@ -1,6 +1,6 @@
 import { App, Stack, StackProps } from 'aws-cdk';
 import { InlineJavaScriptLambda } from 'aws-cdk-lambda';
-import { Topic } from '..';
+import { Topic } from '../lib';
 
 class SnsToSqs extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

@@ -4,7 +4,7 @@
   "description": "Your first CDK program",
   "private": true,
   "main": "index.js",
-  "types": "index.ts",
+  "types": "index.d.ts",
   "scripts": {
     "prepare": "tsc",
     "watch": "tsc -w"

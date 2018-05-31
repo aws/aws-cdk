@@ -1,6 +1,6 @@
 import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from 'aws-cdk';
 import { iam } from 'aws-cdk-resources';
-import { IIdentityResource, Policy } from '.';
+import { IIdentityResource, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
