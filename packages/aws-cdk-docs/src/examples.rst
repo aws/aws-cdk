@@ -14,8 +14,8 @@
 Examples
 ########
 
-This topic contains some |level2| construct examples to help you get started
-understanding the |cdk|.
+This topic contains some usage examples to help you get started understanding
+the |cdk|.
 
 .. We'll include this if we ever implement DeploymentPipeline
    _multiple_stacks_example:
@@ -113,7 +113,7 @@ understanding the |cdk|.
 
 .. _dynamodb_example:
 
-Creating a |dynamodb| Table
+Creating a |ddb| Table
 ===========================
 
 The following example creates a

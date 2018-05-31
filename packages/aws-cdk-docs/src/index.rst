@@ -18,8 +18,9 @@ AWS Cloud Development Kit User Guide
    welcome
    getting-started
    concepts
+   l1-vs-l2
    cloudformation
-   using-constructs
+   writing-cdk-apps
    creating-constructs
    examples
    tools
