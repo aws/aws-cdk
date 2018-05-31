@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { FnConcat, PolicyDocument, PolicyStatement, resolve } from '../..';
+import { FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
 
 export = {
     'the Permission class is a programming model for iam'(test: Test) {

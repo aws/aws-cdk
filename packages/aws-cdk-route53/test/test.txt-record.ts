@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk';
 import { exactlyMatchTemplate, expect } from 'aws-cdk-assert';
 import { Test } from 'nodeunit';
-import { PublicHostedZone, TXTRecord } from '..';
+import { PublicHostedZone, TXTRecord } from '../lib';
 
 export = {
     'TXT records': {

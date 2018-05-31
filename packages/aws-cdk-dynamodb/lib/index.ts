@@ -1,4 +1,4 @@
-import { Construct } from 'aws-cdk';
+import { Construct, Token } from 'aws-cdk';
 import { dynamodb } from 'aws-cdk-resources';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -55,7 +55,7 @@ export class Table extends Construct {
     }
 
     public get tableName() {
-        return this.table.ref;
+        return this.table.ref as TableName;
     }
 
     public get tableStreamArn() {
@@ -110,6 +110,8 @@ export class Table extends Construct {
         }
     }
 }
+
+export class TableName extends Token {}
 
 export enum KeyAttributeType {
     Binary = 'B',
