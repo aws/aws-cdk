@@ -1,8 +1,6 @@
 import { Construct, Token } from 'aws-cdk';
 import { dynamodb } from 'aws-cdk-resources';
 
-export { Token }; // Return type of Table#tableName
-
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
 
@@ -57,7 +55,7 @@ export class Table extends Construct {
     }
 
     public get tableName() {
-        return this.table.ref;
+        return this.table.ref as TableName;
     }
 
     public get tableStreamArn() {
@@ -112,6 +110,8 @@ export class Table extends Construct {
         }
     }
 }
+
+export class TableName extends Token {}
 
 export enum KeyAttributeType {
     Binary = 'B',
