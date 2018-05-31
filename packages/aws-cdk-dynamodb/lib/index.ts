@@ -1,5 +1,7 @@
-import { Construct } from 'aws-cdk';
+import { Construct, Token } from 'aws-cdk';
 import { dynamodb } from 'aws-cdk-resources';
+
+export { Token }; // Return type of Table#tableName
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
