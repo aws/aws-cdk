@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { App, Stack } from 'aws-cdk';
 import { Bucket } from 'aws-cdk-s3';
-import { BuildProject, ComputeType, S3BucketSource } from '..';
+import { BuildProject, ComputeType, S3BucketSource } from '../lib';
 
 const app = new App(process.argv);
 
