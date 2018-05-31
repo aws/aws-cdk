@@ -1,5 +1,5 @@
 import { App, Stack } from 'aws-cdk';
-import { OutboundTrafficMode, VpcNetwork } from '..';
+import { OutboundTrafficMode, VpcNetwork } from '../lib';
 
 const app = new App(process.argv);
 

@@ -24,7 +24,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
     /**
      * Import an exported VPC
      */
-    public static import(parent: Construct, name: string, props: VpcNetworkRefProps) {
+    public static import(parent: Construct, name: string, props: VpcNetworkRefProps): VpcNetworkRef {
         return new ImportedVpcNetwork(parent, name, props);
     }
 
@@ -155,7 +155,7 @@ export class VpcNetworkId extends Token {
  * A new or imported VPC Subnet
  */
 export abstract class VpcSubnetRef extends Construct implements IDependable {
-    public static import(parent: Construct, name: string, props: VpcSubnetRefProps) {
+    public static import(parent: Construct, name: string, props: VpcSubnetRefProps): VpcSubnetRef {
         return new ImportedVpcSubnet(parent, name, props);
     }
 
