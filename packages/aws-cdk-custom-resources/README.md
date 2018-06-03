@@ -20,28 +20,59 @@ custom resource.
 Sample of a Custom Resource that copies files into an S3 bucket during deployment
 (implementation of actual `copy.py` operation elided).
 
+The below example creates a new resource provider.
+
 ```ts
 interface CopyOperationProps {
     sourceBucket: IBucket;
     targetBucket: IBucket;
 }
 
-class CopyOperation extends CustomResource {
-    constructor(parent: Construct, name: string, props: DemoResourceProps) {
+class CopyResourceProvider extends CustomResource {
+    constructor(parent: Construct, name: string) {
         super(parent, name, {
             provider: new LambdaBackedCustomResource({
-                uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 lambdaProperties: {
                     code: new LambdaInlineCode(resources['copy.py']),
                     handler: 'index.handler',
                     timeout: 60,
                     runtime: LambdaRuntime.Python3,
+                    permissions: [new PolicyStatement().addResource("*").addAction("s3:*")] //this is too broad and only for demo purposes
                 }
-            }),
-            properties: {
-                sourceBucketArn: props.sourceBucket.bucketArn,
-                targetBucketArn: props.targetBucket.bucketArn,
-            }
+            })
+        });
+    }
+
+    /**
+     * Overrides the parent resourceInstance method to take a specific type of props
+    **/
+    public resourceInstance(name: string, props: DemoResourceProps) {
+        return super.resourceInstance(name, props);
+    }
+}
+```
+
+Then, you need only call `resourceInstance` to add an instance of your custom resource!
+
+```ts
+class MyAmazingStack extends Stack {
+    constructor(parent: App, name: string, props?: StackProps) {
+        super(parent, name, props);
+
+        const resource = new CopyResourceProvider(this, 'CopyResource');
+
+        const sourceBucket = ...;
+        const destBucket = ...;
+
+        const copyResourceInstance = resource.resourceInstance('CopyInstance1', {
+            sourceBucket,
+            destBucket
+        });
+
+        // Publish the custom resource output
+        new Output(this, 'DestPath', {
+            description: 'The path as returned by the custom resource instance',
+            value: copyResourceInstance.getAtt('DestPath')
         });
     }
 }

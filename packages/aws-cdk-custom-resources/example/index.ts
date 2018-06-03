@@ -1,4 +1,4 @@
-import { App, Construct, Output, Stack, StackProps, Token } from 'aws-cdk';
+import { App, Construct, Output, Stack, StackProps } from 'aws-cdk';
 import { LambdaInlineCode, LambdaRuntime } from 'aws-cdk-lambda';
 import { s3 } from 'aws-cdk-resources';
 import fs = require('fs');
@@ -17,12 +17,9 @@ interface DemoResourceProps {
 }
 
 class DemoResource extends CustomResource {
-    public readonly response: Token;
-
-    constructor(parent: Construct, name: string, props: DemoResourceProps) {
+    constructor(parent: Construct, name: string) {
         super(parent, name, {
-            provider: new LambdaBackedCustomResource({
-                uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
+            provider: new LambdaBackedCustomResource(parent, 'LambdaProvider', {
                 lambdaProperties: {
                     // This makes the demo only work as top-level TypeScript program, but that's fine for now
                     code: new LambdaInlineCode(fs.readFileSync('provider.py', { encoding: 'utf-8' })),
@@ -31,10 +28,11 @@ class DemoResource extends CustomResource {
                     runtime: LambdaRuntime.Python27,
                 }
             }),
-            properties: props
         });
+    }
 
-        this.response = this.getAtt('Response');
+    public resourceInstance(name: string, props: DemoResourceProps) {
+        return super.resourceInstance(name, props);
     }
 }
 
@@ -45,14 +43,16 @@ class SucceedingStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
 
-        const resource = new DemoResource(this, 'DemoResource', {
+        const resource = new DemoResource(this, 'DemoResource');
+
+        const demoResourceInstance = resource.resourceInstance('DemoResourceInstance', {
             message: 'CustomResource says hello',
         });
 
         // Publish the custom resource output
         new Output(this, 'ResponseMessage', {
             description: 'The message that came back from the Custom Resource',
-            value: resource.response
+            value: demoResourceInstance.getAtt('Response')
         });
     }
 }
@@ -64,7 +64,8 @@ class FailCreationStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
 
-        new DemoResource(this, 'DemoResource', {
+        const resourceProvider = new DemoResource(this, 'DemoResource');
+        resourceProvider.resourceInstance('Instance', {
             message: 'CustomResource is silent',
             failCreate: true
         });
@@ -79,7 +80,9 @@ class FailAfterCreatingStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
 
-        const resource = new DemoResource(this, 'DemoResource', {
+        const resourceProvider = new DemoResource(this, 'DemoResource');
+
+        const resourceInstance = resourceProvider.resourceInstance('DemoResourceInstance', {
             message: 'CustomResource says hello',
         });
 
@@ -89,7 +92,7 @@ class FailAfterCreatingStack extends Stack {
         });
 
         // Make sure the rollback gets triggered only after the custom resource has been fully created.
-        bucket.addDependency(resource);
+        bucket.addDependency(resourceInstance);
     }
 }
 

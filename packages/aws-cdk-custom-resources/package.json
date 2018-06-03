@@ -42,6 +42,7 @@
     "aws-cdk": "^0.6.0",
     "aws-cdk-iam": "^0.6.0",
     "aws-cdk-lambda": "^0.6.0",
-    "aws-cdk-resources": "^0.6.0"
+    "aws-cdk-resources": "^0.6.0",
+    "@types/uuid": "^3.2.1"
   }
 }
