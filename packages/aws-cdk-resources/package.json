@@ -3,7 +3,7 @@
   "description": "Raw CloudFormation resources for CDK",
   "version": "0.6.0",
   "scripts": {
-    "prepare": "cfn2ts ../../cloudformation-specs/*.json && jsii && tslint -p . && pkglint",
+    "prepare": "cfn2ts ./cloudformation-specs/*.json && jsii && tslint -p . && pkglint",
     "test": "nodeunit test/test.*.js",
     "lint": "tsc && jsii && tslint -p . --force",
     "watch": "jsii -w",

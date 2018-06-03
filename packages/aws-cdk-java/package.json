@@ -1,8 +1,8 @@
 {
   "name": "aws-cdk-java",
-  "private": true,
   "version": "0.6.0",
   "description": "The AWS CDK for Java",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"

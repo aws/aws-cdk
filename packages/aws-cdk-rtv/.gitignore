@@ -4,3 +4,5 @@ tsconfig.json
 *.d.ts
 dist
 lib/generated/resources.ts
+.nyc_output
+coverage
