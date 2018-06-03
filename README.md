@@ -74,6 +74,27 @@ cd packages/aws-cdk-s3
 lr watch
 ```
 
+## Linking against this repository
+
+The script `./link-all.sh` can be used to generate symlinks to all modules in this repository under
+some `node_module` directory. This can be used to develop against this repo as a local dependency.
+
+One can use the `postinstall` script to symlink this repo:
+
+```json
+{
+  "scripts": {
+    "postinstall": "../aws-cdk/link-all.sh"
+  }
+}
+```
+
+This assumes this repo is a sibling of the target repo and will install the CDK as a linked dependency
+during __npm install__.
+
+
+```
+
 ## Package Linter
 
 The `pkglint` tool normalizes all packages in the repo. It verifies package.json
