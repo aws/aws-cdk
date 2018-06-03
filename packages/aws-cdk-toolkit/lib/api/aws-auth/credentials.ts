@@ -1,5 +1,7 @@
 import { CredentialProviderChain } from 'aws-sdk';
 
+export { CredentialProviderChain };
+
 export enum Mode {
     ForReading,
     ForWriting

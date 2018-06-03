@@ -4,3 +4,6 @@
 coverage
 .nyc_output
 *.tgz
+/*
+!/dist/docs
+/dist/staging

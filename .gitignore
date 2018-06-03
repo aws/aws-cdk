@@ -1,3 +1,5 @@
+.vscode
+.DS_Store
 node_modules
 lerna-debug.log
 dist
