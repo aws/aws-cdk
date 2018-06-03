@@ -1,4 +1,4 @@
-import { Construct, Token } from 'aws-cdk';
+import { Construct, resolve, Token } from 'aws-cdk';
 import { events } from 'aws-cdk-resources';
 import { EventPattern } from './event-pattern';
 import { TargetInputTemplate } from './input-options';
@@ -108,7 +108,7 @@ export class EventRule extends EventRuleRef {
         this.targets.push({
             ...target.eventRuleTarget,
             inputTransformer: inputOptions && {
-                inputTemplate: inputOptions.template && JSON.stringify(inputOptions.template),
+                inputTemplate: inputOptions.template && JSON.stringify(resolve(inputOptions.template)),
                 inputPathsMap: inputOptions.pathsMap
             },
         });
