@@ -1,10 +1,10 @@
 {
-  "name": "docs",
-  "private": true,
+  "name": "aws-cdk-docs",
   "version": "0.6.0",
   "description": "AWS CDK Documentation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
