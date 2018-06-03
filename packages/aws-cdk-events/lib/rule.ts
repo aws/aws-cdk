@@ -108,7 +108,9 @@ export class EventRule extends EventRuleRef {
         this.targets.push({
             ...target.eventRuleTarget,
             inputTransformer: inputOptions && {
-                inputTemplate: inputOptions.template && JSON.stringify(resolve(inputOptions.template)),
+                inputTemplate: typeof(inputOptions.template) === 'string'
+                    ? JSON.stringify(inputOptions.template)
+                    : resolve(inputOptions.template),
                 inputPathsMap: inputOptions.pathsMap
             },
         });

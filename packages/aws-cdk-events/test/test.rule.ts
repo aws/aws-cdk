@@ -207,9 +207,20 @@ export = {
                 kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
             }
         };
+        const t2: IEventRuleTarget = {
+            eventRuleTarget: {
+                id: 'T2',
+                arn: new Arn('ARN2'),
+                roleArn: new iam.RoleArn('IAM-ROLE-ARN')
+            }
+        };
+
         const rule = new EventRule(stack, 'EventRule');
         rule.addTarget(t1, {
             template: new FnConcat('a', 'b')
+        });
+        rule.addTarget(t2, {
+            template: 'Hello, world'
         });
 
         expect(stack).toMatch({
@@ -223,12 +234,28 @@ export = {
                       "Arn": "ARN1",
                       "Id": "T1",
                       "InputTransformer": {
-                        "InputTemplate": "{\"Fn::Join\":[\"\",[\"a\",\"b\"]]}"
+                        "InputTemplate": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "a",
+                                "b"
+                              ]
+                            ]
+                        }
                       },
                       "KinesisParameters": {
                         "PartitionKeyPath": "partitionKeyPath"
                       }
-                    }
+                    },
+                    {
+                        "Arn": "ARN2",
+                        "Id": "T2",
+                        "InputTransformer": {
+                          "InputTemplate": "\"Hello, world\""
+                        },
+                        "RoleArn": "IAM-ROLE-ARN"
+                    }                    
                   ]
                 }
               }
