@@ -1,4 +1,4 @@
-import { Construct, ServicePrincipal, Token } from 'aws-cdk';
+import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from 'aws-cdk';
 import { Role } from 'aws-cdk-iam';
 import { lambda } from 'aws-cdk-resources';
 import { LambdaCode } from './code';
@@ -70,6 +70,13 @@ export interface LambdaProps {
      * @default The default value is 128 MB
      */
     memorySize?: number;
+
+    /**
+     * Initial policy statements to add to the created Lambda Role.
+     *
+     * You can call `addToRolePolicy` to the created lambda to add statements post creation.
+     */
+    initialPolicy?: PolicyStatement[];
 }
 
 /**
@@ -113,8 +120,19 @@ export class Lambda extends LambdaRef {
 
         this.role = new Role(this, 'ServiceRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-            managedPolicyArns: [ 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ],
+            // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            managedPolicyArns: [  Arn.fromComponents({
+                service: "iam",
+                region: "", // no region for managed policy
+                account: "aws", // the account for a managed policy is 'aws'
+                resource: "policy",
+                resourceName: "service-role/AWSLambdaBasicExecutionRole",
+            })],
         });
+
+        for (const statement of (props.initialPolicy || [])) {
+            this.role.addToPolicy(statement);
+        }
 
         const resource = new lambda.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
