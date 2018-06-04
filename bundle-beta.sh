@@ -45,6 +45,5 @@ dist=${root}/dist
 output=${dist}/aws-cdk-${version}.zip
 rm -fr ${dist}
 mkdir -p ${dist}
-zip -r ${output} .
+zip -y -r ${output} .
 echo ${output}
-
