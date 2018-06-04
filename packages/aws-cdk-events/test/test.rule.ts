@@ -1,4 +1,4 @@
-import { App, Arn, Stack, FnConcat } from 'aws-cdk';
+import { App, Arn, FnConcat, Stack } from 'aws-cdk';
 import { expect } from 'aws-cdk-assert';
 import { iam } from 'aws-cdk-resources';
 import { Test } from 'nodeunit';
@@ -255,7 +255,7 @@ export = {
                           "InputTemplate": "\"Hello, world\""
                         },
                         "RoleArn": "IAM-ROLE-ARN"
-                    }                    
+                    }
                   ]
                 }
               }
