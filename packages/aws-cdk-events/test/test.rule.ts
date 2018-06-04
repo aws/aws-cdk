@@ -1,4 +1,4 @@
-import { App, Arn, Stack } from 'aws-cdk';
+import { App, Arn, FnConcat, Stack } from 'aws-cdk';
 import { expect } from 'aws-cdk-assert';
 import { iam } from 'aws-cdk-resources';
 import { Test } from 'nodeunit';
@@ -195,6 +195,73 @@ export = {
               }
             }
         });
+        test.done();
+    },
+
+    'input template can contain tokens'(test: Test) {
+        const stack = new Stack();
+        const t1: IEventRuleTarget = {
+            eventRuleTarget: {
+                id: 'T1',
+                arn: new Arn('ARN1'),
+                kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+            }
+        };
+        const t2: IEventRuleTarget = {
+            eventRuleTarget: {
+                id: 'T2',
+                arn: new Arn('ARN2'),
+                roleArn: new iam.RoleArn('IAM-ROLE-ARN')
+            }
+        };
+
+        const rule = new EventRule(stack, 'EventRule');
+        rule.addTarget(t1, {
+            template: new FnConcat('a', 'b')
+        });
+        rule.addTarget(t2, {
+            template: 'Hello, world'
+        });
+
+        expect(stack).toMatch({
+            "Resources": {
+              "EventRule5A491D2C": {
+                "Type": "AWS::Events::Rule",
+                "Properties": {
+                  "State": "ENABLED",
+                  "Targets": [
+                    {
+                      "Arn": "ARN1",
+                      "Id": "T1",
+                      "InputTransformer": {
+                        "InputTemplate": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "a",
+                                "b"
+                              ]
+                            ]
+                        }
+                      },
+                      "KinesisParameters": {
+                        "PartitionKeyPath": "partitionKeyPath"
+                      }
+                    },
+                    {
+                        "Arn": "ARN2",
+                        "Id": "T2",
+                        "InputTransformer": {
+                          "InputTemplate": "\"Hello, world\""
+                        },
+                        "RoleArn": "IAM-ROLE-ARN"
+                    }
+                  ]
+                }
+              }
+            }
+        });
+
         test.done();
     }
 };
