@@ -1,4 +1,4 @@
-import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, ServicePrincipal, Stack } from 'aws-cdk';
+import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from 'aws-cdk';
 import { expect } from 'aws-cdk-assert';
 import { Test } from 'nodeunit';
 import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
@@ -26,7 +26,8 @@ export = {
                             Principal: { Service: 'lambda.amazonaws.com' } } ],
                        Version: '2012-10-17' },
                     ManagedPolicyArns:
-                     [ 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] } },
+                     [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+                  }},
               MyLambdaCCE802FB:
                { Type: 'AWS::Lambda::Function',
                  Properties:
@@ -36,6 +37,60 @@ export = {
                     Runtime: 'nodejs6.10' },
                  DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
         test.done();
+    },
+
+    'adds policy permissions'(test: Test) {
+        const stack = new Stack();
+        new Lambda(stack, 'MyLambda', {
+            code: new LambdaInlineCode('foo'),
+            handler: 'index.handler',
+            runtime: LambdaRuntime.NodeJS610,
+            additionalPermissions: [new PolicyStatement().addAction("*").addResource("*")]
+        });
+        expect(stack).toMatch({ Resources:
+            { MyLambdaServiceRole4539ECB6:
+               { Type: 'AWS::IAM::Role',
+                 Properties:
+                  { AssumeRolePolicyDocument:
+                     { Statement:
+                        [ { Action: 'sts:AssumeRole',
+                            Effect: 'Allow',
+                            Principal: { Service: 'lambda.amazonaws.com' } } ],
+                       Version: '2012-10-17' },
+                    ManagedPolicyArns:
+                    [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}]
+                }},
+                MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
+                    Type: "AWS::IAM::Policy",
+                    Properties: {
+                        PolicyDocument: {
+                        Statement: [
+                            {
+                            Action: "*",
+                            Effect: "Allow",
+                            Resource: "*"
+                            }
+                        ],
+                        Version: "2012-10-17"
+                        },
+                        PolicyName: "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+                        Roles: [
+                        {
+                            Ref: "MyLambdaServiceRole4539ECB6"
+                        }
+                        ]
+                    }
+                },
+              MyLambdaCCE802FB:
+               { Type: 'AWS::Lambda::Function',
+                 Properties:
+                  { Code: { ZipFile: 'foo' },
+                    Handler: 'index.handler',
+                    Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+                    Runtime: 'nodejs6.10' },
+                 DependsOn: [ 'MyLambdaServiceRole4539ECB6', 'MyLambdaServiceRoleDefaultPolicy5BBC6F68' ] } } } );
+        test.done();
+
     },
 
     'fails if inline code is used for an invalid runtime'(test: Test) {
@@ -77,9 +132,8 @@ export = {
                         ],
                         "Version": "2012-10-17"
                     },
-                    "ManagedPolicyArns": [
-                        "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                    ]
+                    "ManagedPolicyArns":
+                    [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
                     }
                 },
                 "MyLambdaCCE802FB": {
