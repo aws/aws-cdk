@@ -76,7 +76,7 @@ export interface LambdaProps {
      *
      * You can call `addToRolePolicy` to the created lambda to add statements post creation.
      */
-    initialPolicyStatements?: PolicyStatement[];
+    initialPolicy?: PolicyStatement[];
 }
 
 /**
@@ -130,7 +130,7 @@ export class Lambda extends LambdaRef {
             })],
         });
 
-        for (const statement of (props.initialPolicyStatements || [])) {
+        for (const statement of (props.initialPolicy || [])) {
             this.role.addToPolicy(statement);
         }
 

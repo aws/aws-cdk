@@ -47,7 +47,7 @@ export = {
             code: new LambdaInlineCode('foo'),
             handler: 'index.handler',
             runtime: LambdaRuntime.NodeJS610,
-            initialPolicyStatements: [new PolicyStatement().addAction("*").addResource("*")]
+            initialPolicy: [new PolicyStatement().addAction("*").addResource("*")]
         });
         expect(stack).toMatch({ Resources:
             { MyLambdaServiceRole4539ECB6:
