@@ -194,4 +194,14 @@ export = {
             test.done();
         },
     },
+
+    'statementCount returns the number of statement in the policy document'(test: Test) {
+        const p = new PolicyDocument();
+        test.equal(p.statementCount, 0);
+        p.addStatement(new PolicyStatement());
+        test.equal(p.statementCount, 1);
+        p.addStatement(new PolicyStatement());
+        test.equal(p.statementCount, 2);
+        test.done();
+    }
 };
