@@ -13,7 +13,7 @@ if (fs.existsSync(path.join(os.homedir(), ".aws", "credentials")) && fs.existsSy
 import { Environment} from 'aws-cdk-cx-api';
 import { CloudFormation, config, CredentialProviderChain , EC2, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
-import { plugin } from '../../plugin';
+import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 
 /**
@@ -31,7 +31,7 @@ export class SDK {
     private credentialSources: CredentialProviderSource[];
 
     constructor() {
-        this.credentialSources = plugin.getCredentialProviderSources();
+        this.credentialSources = PluginHost.instance.credentialProviderSources;
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {

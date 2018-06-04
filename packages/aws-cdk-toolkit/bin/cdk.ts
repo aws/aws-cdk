@@ -17,6 +17,7 @@ import { printStackDiff } from '../lib/diff';
 import { cliInit } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { Settings } from '../lib/settings';
 
@@ -96,13 +97,7 @@ function loadPlugins(...settings: Settings[]) {
             const resolved = tryResolve(plugin);
             if (loaded.has(resolved)) { continue; }
             debug(`Loading plug-in: ${green(plugin)} from ${blue(resolved)}`);
-            try {
-                // tslint:disable-next-line:no-var-requires
-                require(resolved);
-            } catch (e) {
-                error(`Unable to load ${green(plugin)}: ${e.stack}`);
-                throw new Error(`Unable to load plug-in: ${plugin}`);
-            }
+            PluginHost.instance.load(plugin);
             loaded.add(resolved);
         }
     }
