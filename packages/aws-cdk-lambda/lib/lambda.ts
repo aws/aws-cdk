@@ -1,4 +1,4 @@
-import { Construct, ServicePrincipal, Token } from 'aws-cdk';
+import { AwsPartition, Construct, FnConcat, PolicyStatement, ServicePrincipal, Token } from 'aws-cdk';
 import { Role } from 'aws-cdk-iam';
 import { lambda } from 'aws-cdk-resources';
 import { LambdaCode } from './code';
@@ -70,6 +70,12 @@ export interface LambdaProps {
      * @default The default value is 128 MB
      */
     memorySize?: number;
+
+    /**
+     * Additional permissions to add to the created Lambda Role.
+     * You can also call addToRolePolicy to the created lambda.
+     */
+    additionalPermissions?: PolicyStatement[];
 }
 
 /**
@@ -113,8 +119,11 @@ export class Lambda extends LambdaRef {
 
         this.role = new Role(this, 'ServiceRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
-            managedPolicyArns: [ 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ],
+            managedPolicyArns: [ new FnConcat('arn:', new AwsPartition(), ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole')],
         });
+        if (props.additionalPermissions && props.additionalPermissions.length > 0) {
+            props.additionalPermissions.forEach(permission => this.role!.addToPolicy(permission));
+        }
 
         const resource = new lambda.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
