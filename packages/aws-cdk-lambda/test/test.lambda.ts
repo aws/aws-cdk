@@ -26,7 +26,9 @@ export = {
                             Principal: { Service: 'lambda.amazonaws.com' } } ],
                        Version: '2012-10-17' },
                     ManagedPolicyArns:
-                     [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+                    // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+                     // tslint:disable-next-line:max-line-length
+                     [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
                   }},
               MyLambdaCCE802FB:
                { Type: 'AWS::Lambda::Function',
@@ -45,7 +47,7 @@ export = {
             code: new LambdaInlineCode('foo'),
             handler: 'index.handler',
             runtime: LambdaRuntime.NodeJS610,
-            additionalPermissions: [new PolicyStatement().addAction("*").addResource("*")]
+            initialPolicyStatements: [new PolicyStatement().addAction("*").addResource("*")]
         });
         expect(stack).toMatch({ Resources:
             { MyLambdaServiceRole4539ECB6:
@@ -58,7 +60,8 @@ export = {
                             Principal: { Service: 'lambda.amazonaws.com' } } ],
                        Version: '2012-10-17' },
                     ManagedPolicyArns:
-                    [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}]
+                    // tslint:disable-next-line:max-line-length
+                    [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
                 }},
                 MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
                     Type: "AWS::IAM::Policy",
@@ -133,7 +136,8 @@ export = {
                         "Version": "2012-10-17"
                     },
                     "ManagedPolicyArns":
-                    [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+                    // tslint:disable-next-line:max-line-length
+                    [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
                     }
                 },
                 "MyLambdaCCE802FB": {
