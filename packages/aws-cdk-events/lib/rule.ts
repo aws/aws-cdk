@@ -1,4 +1,4 @@
-import { Construct, resolve, Token } from 'aws-cdk';
+import { Construct, FnConcat, Token } from 'aws-cdk';
 import { events } from 'aws-cdk-resources';
 import { EventPattern } from './event-pattern';
 import { TargetInputTemplate } from './input-options';
@@ -107,13 +107,37 @@ export class EventRule extends EventRuleRef {
 
         this.targets.push({
             ...target.eventRuleTarget,
-            inputTransformer: inputOptions && {
-                inputTemplate: typeof(inputOptions.template) === 'string'
-                    ? JSON.stringify(inputOptions.template)
-                    : resolve(inputOptions.template),
-                inputPathsMap: inputOptions.pathsMap
-            },
+            inputTransformer: renderTransformer(),
         });
+
+        function renderTransformer(): events.RuleResource.InputTransformerProperty | undefined {
+            if (!inputOptions) {
+                return undefined;
+            }
+
+            if (inputOptions.jsonTemplate && inputOptions.textTemplate) {
+                throw new Error('"jsonTemplate" and "textTemplate" are mutually exclusive');
+            }
+
+            if (!inputOptions.jsonTemplate && !inputOptions.textTemplate) {
+                throw new Error('One of "jsonTemplate" or "textTemplate" are required');
+            }
+
+            let inputTemplate: any;
+
+            if (inputOptions.jsonTemplate) {
+                inputTemplate = inputOptions.jsonTemplate;
+            } else if (typeof(inputOptions.textTemplate) === 'string') {
+                inputTemplate = JSON.stringify(inputOptions.textTemplate);
+            } else {
+                inputTemplate = new FnConcat('"', inputOptions.textTemplate, '"');
+            }
+
+            return {
+                inputPathsMap: inputOptions.pathsMap,
+                inputTemplate
+            };
+        }
     }
 
     /**
