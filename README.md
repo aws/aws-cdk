@@ -3,7 +3,54 @@
 The **AWS Cloud Development Kit (AWS CDK)** is a software development framework
 for defining cloud infrastructure in code.
 
-# Development Environment
+## Getting Started
+
+### Installation
+
+Make sure you have the required dependencies installed:
+* [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
+* The SDK for the language you intend to use (Java, .Net, Ruby, ...)
+
+Download the current release bundle from S3, and install it to `~/.cdk`:
+```shell
+tmpdir=/tmp/aws-cdk-install
+mkdir ${tmpdir}
+aws s3 cp s3://<bucket>/<key> ${tmpdir}/aws-cdk.zip
+unzip -o ${tmpdir}/aws-cdk.zip -d ~/.cdk
+```
+
+Then add the CDK to your `$PATH`:
+```shell
+# At the end of your ~/.bashrc or ~/.zshrc file
+export PATH=${PATH:+${PATH}:}${HOME}/.cdk/bin
+```
+
+### Creating a new project
+
+New projects can be initialized using `cdk init`.
+```shell
+mkdir ${PROJECT_NAME}
+cd ${PROJECT_NAME}
+cdk init
+```
+
+### Useful commands
+
+```shell
+# Initialize a new CDK project
+cdk init
+
+# Open the documentation in a web browser
+cdk docs
+
+# List available commands
+cdk help
+
+# Get help on a particular command (e.g: synth)
+cdk help synth
+```
+
+## Development Environment
 
 This is a monorepo which uses [lerna](https://github.com/lerna/lerna).
 
@@ -12,7 +59,7 @@ published to npm. Therefore, the jsii tarballs are checked-in to this repository
 under `./local-npm` and the install script will install them in the repo-global
 node_modules directory.
 
-## Prerequisites
+### Prerequisites
 
 Since this repo produces artifacts for multiple programming languages using
 __jsii__, it relies on the following toolchains:
@@ -37,7 +84,7 @@ docker run --net=host -it -v $PWD:$PWD -w $PWD ${IMAGE}
 This will get you into an interactive docker shell. You can then run
 ./install.sh and ./build.sh as described below.
 
-## Bootstrapping
+### Bootstrapping
 
 1. Clone this repository (or run `git clean -fdx` to clean up all build artifacts).
 2. Run `./install.sh` - this will install all repo-level dependencies, including
@@ -46,7 +93,7 @@ This will get you into an interactive docker shell. You can then run
    All external dependencies will be installed and internal deps will be
    cross-linked.
 
-## Development Iteration
+### Development Iteration
 
 After you've bootstrapped the repo, you would probably want to work on individual packages.
 
@@ -74,7 +121,7 @@ cd packages/aws-cdk-s3
 lr watch
 ```
 
-## Linking against this repository
+### Linking against this repository
 
 The script `./link-all.sh` can be used to generate symlinks to all modules in
 this repository under some `node_module` directory. This can be used to develop
@@ -93,13 +140,13 @@ One can use the `postinstall` script to symlink this repo:
 This assumes this repo is a sibling of the target repo and will install the CDK
 as a linked dependency during __npm install__.
 
-## Commits and Pull Requests
+### Commits and Pull Requests
 
 Commits should follow the
 [conventional-changelog-standard](https://github.com/bcoe/conventional-changelog-standard/blob/master/convention.md)
 to allow automatic changelog generation.
 
-## Package Linter
+### Package Linter
 
 The `pkglint` tool normalizes all packages in the repo. It verifies package.json
 is normalized and adheres to the set of rules. To evaluate (and potentially fix)
@@ -110,7 +157,7 @@ of the repository (after boostrapping):
 npm run pkglint
 ```
 
-## Updating jsii
+### Updating jsii
 
 Run `./pack.sh` in the jsii repository and copy the tarballs to `./local-npm`.
 Make sure all tarballs are defined in the root `package.json`.

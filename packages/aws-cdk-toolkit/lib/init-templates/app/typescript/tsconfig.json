@@ -17,9 +17,6 @@
         "inlineSources": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization":false
-    },
-    "exclude": [
-        "lib/init-templates/**/*"
-    ]
+    }
 }
 
