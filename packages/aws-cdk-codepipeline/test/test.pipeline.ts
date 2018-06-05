@@ -28,7 +28,7 @@ export = {
 
         new CodeBuildAction(buildStage, 'build', {
             project,
-            source
+            inputArtifact: source.artifact
         });
 
         test.notDeepEqual(stack.toCloudFormation(), {});
@@ -45,7 +45,7 @@ export = {
         new GitHubSource(new Stage(p, 'Source'), 'GH', {
             artifactName: 'A',
             branch: 'branch',
-            oathToken: secret,
+            oauthToken: secret,
             owner: 'foo',
             repo: 'bar'
         });
