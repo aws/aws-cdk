@@ -498,12 +498,12 @@ export interface BuildEnvironmentVariable {
 
 export enum BuildEnvironmentVariableType {
     /**
-     * An environment variable stored in Systems Manager Parameter Store.
+     * An environment variable in plaintext format.
      */
     PlainText = 'PLAINTEXT',
 
     /**
-     * An environment variable in plaintext format.
+     * An environment variable stored in Systems Manager Parameter Store.
      */
     ParameterStore = 'PARAMETER_STORE'
 }
