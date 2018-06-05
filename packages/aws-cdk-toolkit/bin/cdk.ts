@@ -97,7 +97,7 @@ function loadPlugins(...settings: Settings[]) {
             const resolved = tryResolve(plugin);
             if (loaded.has(resolved)) { continue; }
             debug(`Loading plug-in: ${green(plugin)} from ${blue(resolved)}`);
-            PluginHost.load(plugin);
+            PluginHost.instance.load(plugin);
             loaded.add(resolved);
         }
     }

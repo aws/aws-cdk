@@ -31,7 +31,7 @@ export class SDK {
     private credentialSources: CredentialProviderSource[];
 
     constructor() {
-        this.credentialSources = PluginHost.instance.getCredentialProviderSources();
+        this.credentialSources = PluginHost.instance.credentialProviderSources;
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {

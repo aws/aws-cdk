@@ -40,11 +40,23 @@ export class PluginHost {
     public static instance = new PluginHost();
 
     /**
-     * Loads a plug-in into the PluginHost.
+     * Access the currently registered CredentialProviderSources. New sources can
+     * be registered using the +registerCredentialProviderSource+ method.
+     */
+    public readonly credentialProviderSources = new Array<CredentialProviderSource>();
+
+    constructor() {
+        if (PluginHost.instance && PluginHost.instance !== this) {
+            throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
+        }
+    }
+
+    /**
+     * Loads a plug-in into this PluginHost.
      *
      * @param moduleSpec the specification (path or name) of the plug-in module to be loaded.
      */
-    public static load(moduleSpec: string) {
+    public load(moduleSpec: string) {
         try {
             // tslint:disable-next-line:no-var-requires
             const plugin = require(moduleSpec);
@@ -63,30 +75,12 @@ export class PluginHost {
         }
     }
 
-    private readonly CREDENTIAL_PROVIDER_SOURCES = new Array<CredentialProviderSource>();
-
-    constructor() {
-        if (PluginHost.instance && PluginHost.instance !== this) {
-            throw new Error('New instances of PluginHost must not be built. Use PluginHost.instance instead!');
-        }
-    }
-
-    /**
-     * Access the currently registered CredentialProviderSources. New sources can
-     * be registered using the +registerCredentialProviderSource+ function.
-     *
-     * @return the currently registered CredentialProviderSources.
-     */
-    public getCredentialProviderSources() {
-        return this.CREDENTIAL_PROVIDER_SOURCES;
-    }
-
     /**
      * Allows plug-ins to register new CredentialProviderSources.
      *
      * @param source a new CredentialProviderSource to register.
      */
     public registerCredentialProviderSource(source: CredentialProviderSource) {
-        this.CREDENTIAL_PROVIDER_SOURCES.push(source);
+        this.credentialProviderSources.push(source);
     }
 }
