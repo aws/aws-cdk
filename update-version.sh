@@ -2,5 +2,14 @@
 
 # HACK: lerna needs a git repo to work but publish will work nevertheless
 git init
+
 version="$(node -e "console.log(require('./lerna.json').version)")"
-exec node_modules/.bin/lerna publish --skip-git --skip-npm --repo-version=${version}-pre+${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7} --yes
+commit="${CODEBUILD_RESOLVED_SOURCE_VERSION}"
+
+# CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local build or CodePipeline build),
+# use the HEAD commit hash
+if [ -z "${commit}" ]; then
+  commit="$(git rev-parse --verify HEAD)"
+fi
+
+exec node_modules/.bin/lerna publish --skip-git --skip-npm --repo-version=${version}-pre+${commit:0:7} --yes
