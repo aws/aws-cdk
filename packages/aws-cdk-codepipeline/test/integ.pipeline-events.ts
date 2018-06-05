@@ -18,13 +18,13 @@ const repository = new Repository(stack, 'CodeCommitRepo', { repositoryName: 'fo
 const project = new BuildProject(stack, 'BuildProject', { source: new CodePipelineSource() });
 
 const sourceAction = new CodeCommitSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
-new CodeBuildAction(buildStage, 'CodeBuildAction', { source: sourceAction, project });
+new CodeBuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
 
 const topic = new Topic(stack, 'MyTopic');
 topic.subscribeEmail('benisrae', 'benisrae@amazon.com');
 
 pipeline.onStateChange('OnPipelineStateChange').addTarget(topic, {
-    template: 'Pipeline <pipeline> changed state to <state>',
+    textTemplate: 'Pipeline <pipeline> changed state to <state>',
     pathsMap: {
         pipeline: '$.detail.pipeline',
         state: '$.detail.state'
