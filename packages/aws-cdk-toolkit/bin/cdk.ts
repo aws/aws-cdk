@@ -3,7 +3,7 @@ import 'source-map-support/register';
 
 import * as cxapi from 'aws-cdk-cx-api';
 import { deepMerge, isEmpty, partition } from 'aws-cdk-util';
-import { spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
@@ -17,6 +17,7 @@ import { printStackDiff } from '../lib/diff';
 import { cliInit } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { Settings } from '../lib/settings';
 
@@ -42,6 +43,10 @@ const argv = yargs
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
     .demandCommand(1)
+    .command('docs', 'Opens the documentation in a browser', yargs => yargs
+        // tslint:disable-next-line:max-line-length
+        .option('browser', { type: 'string', alias: 'b', desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
+                             default: process.platform === 'win32' ? 'start %u' : 'open %u' }))
     .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
     // tslint:disable-next-line:max-line-length
     .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
@@ -96,13 +101,7 @@ function loadPlugins(...settings: Settings[]) {
             const resolved = tryResolve(plugin);
             if (loaded.has(resolved)) { continue; }
             debug(`Loading plug-in: ${green(plugin)} from ${blue(resolved)}`);
-            try {
-                // tslint:disable-next-line:no-var-requires
-                require(resolved);
-            } catch (e) {
-                error(`Unable to load ${green(plugin)}: ${e.stack}`);
-                throw new Error(`Unable to load plug-in: ${plugin}`);
-            }
+            PluginHost.instance.load(plugin);
             loaded.add(resolved);
         }
     }
@@ -142,6 +141,9 @@ async function main(command: string, args: any): Promise<number | string | {} |Â
     const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     switch (command) {
+        case 'docs':
+            return await openDocsite(completeConfig().get(['browser']));
+
         case 'ls':
         case 'list':
             return await listStacks();
@@ -201,6 +203,29 @@ function printWarnings(stacks: cxapi.SynthesizeResponse) {
         }
     }
     return found;
+}
+
+async function openDocsite(commandTemplate: string): Promise<number> {
+    let documentationIndexPath: string;
+    try {
+        // tslint:disable-next-line:no-var-require Taking an un-declared dep on aws-cdk-docs, to avoid a dependency circle
+        const docs = require('aws-cdk-docs');
+        documentationIndexPath = docs.documentationIndexPath;
+    } catch (err) {
+        error('Unable to open CDK documentation - the aws-cdk-docs package appears to be missing. Please run `npm install -g aws-cdk-docs`');
+        return -1;
+    }
+
+    const browserCommand = commandTemplate.replace(/%u/g, documentationIndexPath);
+    debug(`Opening documentation ${green(browserCommand)}`);
+    return await new Promise<number>((resolve, reject) => {
+        exec(browserCommand, (err, stdout, stderr) => {
+            if (err) { return reject(err); }
+            if (stdout) { debug(stdout); }
+            if (stderr) { warning(stderr); }
+            resolve(0);
+        });
+    });
 }
 
 /**
@@ -567,6 +592,7 @@ function argumentsToSettings() {
 
     return new Settings({
         app: argv.app,
+        browser: argv.browser,
         context,
         toolkitStackName: argv.toolkitStackName,
         plugin: argv.plugin,
