@@ -10,9 +10,38 @@ export interface TargetInputTemplate {
      * inputPathsMap to customize the data sent to the target. Enclose each
      * InputPathsMaps value in brackets: <value>
      *
-     * The value will be serialized as a JSON object (JSON.stringify).
+     * The value passed here will be double-quoted to indicate it's a string value.
+     * This option is mutually exclusive with `jsonTemplate`.
+     *
+     * @example
+     *
+     *      {
+     *        textTemplate: 'Build <buildid> started',
+     *        pathsMap: {
+     *          buildid: '$.detail.id'
+     *        }
+     *      }
      */
-    template?: any;
+    textTemplate?: any;
+
+    /**
+     * Input template where you can use the values of the keys from
+     * inputPathsMap to customize the data sent to the target. Enclose each
+     * InputPathsMaps value in brackets: <value>
+     *
+     * This option is mutually exclusive with `textTemplate`.
+     *
+     * @example
+     *
+     *     {
+     *       jsonTemplate: '{ "commands": <commandsToRun> }' ,
+     *       pathsMap: {
+     *         commandsToRun: '$.detail.commands'
+     *       }
+     *     }
+     *
+     */
+    jsonTemplate?: any;
 
     /**
      * Map of JSON paths to be extracted from the event. These are key-value
