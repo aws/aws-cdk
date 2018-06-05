@@ -4,7 +4,6 @@
   "description": "AWS CDK Documentation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
@@ -13,7 +12,9 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "/bin/bash ./build-docs.sh"
+    "prepare": "tslint -p . && tsc && /bin/bash ./build-docs.sh",
+    "watch": "tsc -w",
+    "lint": "tsc && tslint -p . --force"
   },
   "author": {
     "name": "Amazon Web Services",

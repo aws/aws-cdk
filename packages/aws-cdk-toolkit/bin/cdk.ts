@@ -2,8 +2,9 @@
 import 'source-map-support/register';
 
 import * as cxapi from 'aws-cdk-cx-api';
+import { documentationIndexPath } from 'aws-cdk-docs';
 import { deepMerge, isEmpty, partition } from 'aws-cdk-util';
-import { spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
@@ -43,6 +44,9 @@ const argv = yargs
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
     .demandCommand(1)
+    .command('docs', 'Opens the documentation in a browser', yargs => yargs
+        // tslint:disable-next-line:max-line-length
+        .option('browser', { type: 'string', alias: 'b', desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open', default: 'open %u' }))
     .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
     // tslint:disable-next-line:max-line-length
     .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
@@ -137,6 +141,18 @@ async function main(command: string, args: any): Promise<number | string | {} |Â
     const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     switch (command) {
+        case 'docs':
+            const browserCommand = completeConfig().get(['browser']).replace(/%u/g, documentationIndexPath);
+            debug(`Opening documentation ${green(browserCommand)}`);
+            return await new Promise((resolve, reject) => {
+                exec(browserCommand, (err, stdout, stderr) => {
+                    if (err) { return reject(err); }
+                    if (stdout) { debug(stdout); }
+                    if (stderr) { warning(stderr); }
+                    resolve(0);
+                });
+            });
+
         case 'ls':
         case 'list':
             return await listStacks();
@@ -562,6 +578,7 @@ function argumentsToSettings() {
 
     return new Settings({
         app: argv.app,
+        browser: argv.browser,
         context,
         toolkitStackName: argv.toolkitStackName,
         plugin: argv.plugin,
