@@ -1,9 +1,16 @@
-import { Stack } from 'aws-cdk';
+import { FnConcat, Stack } from 'aws-cdk';
 import { expect, haveResource } from 'aws-cdk-assert';
 import { Repository } from 'aws-cdk-codecommit';
 import { Bucket } from 'aws-cdk-s3';
 import { Test } from 'nodeunit';
-import { BuildProject, CodeCommitSource, CodePipelineBuildArtifacts, CodePipelineSource, NoBuildArtifacts, S3BucketSource } from '../lib';
+import {
+  BuildEnvironmentVariableType,
+  BuildProject,
+  CodeCommitSource,
+  CodePipelineBuildArtifacts,
+  CodePipelineSource,
+  NoBuildArtifacts,
+  S3BucketSource } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -817,4 +824,70 @@ export = {
 
         test.done();
     },
+
+    'environment variables can be overridden at the project level'(test: Test) {
+        const stack = new Stack();
+
+        new BuildProject(stack, 'Project', {
+          source: new CodePipelineSource(),
+          environment: {
+            environmentVariables: {
+              FOO: { value: '1234' },
+              BAR: { value: new FnConcat('111', '222'), type: BuildEnvironmentVariableType.ParameterStore }
+            }
+          },
+          environmentVariables: {
+            GOO: { value: 'ABC' },
+            FOO: { value: 'OVERRIDE!' }
+          }
+        });
+
+        expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+          "Source": {
+            "Type": "CODEPIPELINE"
+          },
+          "Artifacts": {
+            "Type": "CODEPIPELINE"
+          },
+          "ServiceRole": {
+            "Fn::GetAtt": [
+              "ProjectRole4CCB274E",
+              "Arn"
+            ]
+          },
+          "Environment": {
+            "Type": "LINUX_CONTAINER",
+            "EnvironmentVariables": [
+              {
+                "Type": "PLAINTEXT",
+                "Value": "OVERRIDE!",
+                "Name": "FOO"
+              },
+              {
+                "Type": "PARAMETER_STORE",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "111",
+                      "222"
+                    ]
+                  ]
+                },
+                "Name": "BAR"
+              },
+              {
+                "Type": "PLAINTEXT",
+                "Value": "ABC",
+                "Name": "GOO"
+              }
+            ],
+            "PrivilegedMode": false,
+            "Image": "aws/codebuild/ubuntu-base:14.04",
+            "ComputeType": "BUILD_GENERAL1_SMALL"
+          }
+        }));
+
+        test.done();
+    }
 };
