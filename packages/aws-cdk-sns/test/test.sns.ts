@@ -263,7 +263,28 @@ export = {
                       "Version": "2012-10-17"
                     },
                     "ManagedPolicyArns": [
-                      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn",
+                            ":",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":",
+                            "iam",
+                            ":",
+                            "",
+                            ":",
+                            "aws",
+                            ":",
+                            "policy",
+                            "/",
+                            "service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
                     ]
                   }
                 },
@@ -452,7 +473,28 @@ export = {
                       "Version": "2012-10-17"
                     },
                     "ManagedPolicyArns": [
-                      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn",
+                            ":",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":",
+                            "iam",
+                            ":",
+                            "",
+                            ":",
+                            "aws",
+                            ":",
+                            "policy",
+                            "/",
+                            "service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
                     ]
                   }
                 },
@@ -579,6 +621,7 @@ export = {
                 "PolicyDocument": {
                   "Statement": [
                     {
+                      "Sid": "0",
                       "Action": "sns:Publish",
                       "Effect": "Allow",
                       "Principal": {
@@ -609,6 +652,49 @@ export = {
                       "Ref": "MyTopic86869434"
                     },
                     "Id": "MyTopic"
+                  }
+                ]
+              }
+            }
+          }
+        });
+
+        test.done();
+    },
+    'topic resource policy includes unique SIDs'(test: Test) {
+        const stack = new Stack();
+
+        const topic = new Topic(stack, 'MyTopic');
+
+        topic.addToResourcePolicy(new PolicyStatement().addAction('statement0'));
+        topic.addToResourcePolicy(new PolicyStatement().addAction('statement1'));
+
+        expect(stack).toMatch({
+          "Resources": {
+            "MyTopic86869434": {
+              "Type": "AWS::SNS::Topic"
+            },
+            "MyTopicPolicy12A5EC17": {
+              "Type": "AWS::SNS::TopicPolicy",
+              "Properties": {
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "statement0",
+                      "Effect": "Allow",
+                      "Sid": "0"
+                    },
+                    {
+                      "Action": "statement1",
+                      "Effect": "Allow",
+                      "Sid": "1"
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "Topics": [
+                  {
+                    "Ref": "MyTopic86869434"
                   }
                 ]
               }
