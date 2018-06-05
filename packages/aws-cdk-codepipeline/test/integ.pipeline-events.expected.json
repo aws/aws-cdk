@@ -256,10 +256,7 @@
                 },
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::GetAtt": [
-                      "BuildProject097C5DB7",
-                      "Arn"
-                    ]
+                    "Ref": "BuildProject097C5DB7"
                   }
                 },
                 "InputArtifacts": [
@@ -667,7 +664,8 @@
               },
               "Resource": {
                 "Ref": "MyTopic86869434"
-              }
+              },
+              "Sid": "0"
             }
           ],
           "Version": "2012-10-17"

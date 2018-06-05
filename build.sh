@@ -5,6 +5,9 @@ if [ ! -d node_modules ]; then
     /bin/bash ./install.sh
 fi
 
+BUILD_INDICATOR=".BUILD_COMPLETED"
+rm -rf $BUILD_INDICATOR
+
 export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
@@ -14,5 +17,7 @@ lerna bootstrap --reject-cycles --loglevel=debug
 echo "============================================================================================="
 echo "testing..."
 lerna run test --stream
+
+touch $BUILD_INDICATOR
 
 
