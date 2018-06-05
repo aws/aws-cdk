@@ -7,13 +7,15 @@ import { CustomResource, LambdaBackedCustomResource } from '../lib';
 // tslint:disable:object-literal-key-quotes
 
 export = {
-    'custom resource is added twice, lambda is added once'(test: Test) {
+    'custom resource is instantiated twice, lambda is added once'(test: Test) {
         // GIVEN
         const stack = new Stack();
 
         // WHEN
-        new TestCustomResource(stack, 'Custom1');
-        new TestCustomResource(stack, 'Custom2');
+        const resourceProvider = new TestCustomResource(stack, 'Why');
+
+        resourceProvider.resourceInstance("Custom1");
+        resourceProvider.resourceInstance("Custom2");
 
         // THEN
         expect(stack).toMatch({
@@ -91,8 +93,7 @@ export = {
 class TestCustomResource extends CustomResource {
     constructor(parent: Construct, name: string) {
         super(parent, name, {
-            provider: new LambdaBackedCustomResource({
-                uuid: 'TestCustomResourceProvider',
+            provider: new LambdaBackedCustomResource(parent, 'TestCustomResourceProvider', {
                 lambdaProperties: {
                     code: new LambdaInlineCode('def hello(): pass'),
                     runtime: LambdaRuntime.Python27,
