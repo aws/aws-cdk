@@ -9,8 +9,9 @@ phases:
       - /bin/bash ./build.sh
   post_build:
     commands:
-      - /bin/bash if [ -f ".BUILD_COMPLETED" ]; then ./pack.sh; else echo "No .BUILD_COMPLETED file, failing"; exit 1; fi
-      - /bin/bash if [ -f ".BUILD_COMPLETED" ]; then ./bundle-beta.sh; fi
+      - if [[ ! -f ".BUILD_COMPLETED" ]]; then exit 1
+      - /bin/bash ./pack.sh
+      - /bin/bash ./bundle-beta.sh
 artifacts:
   files:
     - "**/*"
