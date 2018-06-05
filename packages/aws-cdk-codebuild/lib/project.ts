@@ -279,6 +279,11 @@ export interface BuildProjectProps {
      * @default NoBuildArtifacts
      */
     artifacts?: BuildArtifacts;
+
+    /**
+     * Additional environment variables to add to the build environment.
+     */
+    environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
 /**
@@ -308,7 +313,7 @@ export class BuildProject extends BuildProjectRef {
             assumedBy: new ServicePrincipal('codebuild.amazonaws.com')
         });
 
-        const environment = this.renderEnvironment(props.environment);
+        const environment = this.renderEnvironment(props.environment, props.environmentVariables);
 
         let cache: codebuild.ProjectResource.ProjectCacheProperty | undefined;
         if (props.cacheBucket) {
@@ -330,7 +335,6 @@ export class BuildProject extends BuildProjectRef {
         artifacts.bind(this);
 
         const sourceJson = source.toSourceJSON();
-
         if (props.buildSpec) {
             sourceJson.buildSpec = JSON.stringify(props.buildSpec);
         }
@@ -383,12 +387,34 @@ export class BuildProject extends BuildProjectRef {
         return p;
     }
 
-    private renderEnvironment(env: BuildEnvironment = {}): codebuild.ProjectResource.EnvironmentProperty {
+    private renderEnvironment(env: BuildEnvironment = {}, projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
+        codebuild.ProjectResource.EnvironmentProperty {
+
+        const vars: { [name: string]: BuildEnvironmentVariable } = {};
+        const containerVars = env.environmentVariables || {};
+
+        // first apply environment variables from the container definition
+        for (const name of Object.keys(containerVars)) {
+            vars[name] = containerVars[name];
+        }
+
+        // now apply project-level vars
+        for (const name of Object.keys(projectVars)) {
+            vars[name] = projectVars[name];
+        }
+
+        const hasEnvironmentVars = Object.keys(vars).length > 0;
+
         return {
             type: env.type || 'LINUX_CONTAINER',
             image: env.image || 'aws/codebuild/ubuntu-base:14.04',
             privilegedMode: env.priviledged || false,
-            computeType: env.computeType || ComputeType.Small
+            computeType: env.computeType || ComputeType.Small,
+            environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
+                name,
+                type: vars[name].type || BuildEnvironmentVariableType.PlainText,
+                value: vars[name].value
+            }))
         };
     }
 
@@ -449,6 +475,37 @@ export interface BuildEnvironment {
      * @default false
      */
     priviledged?: boolean;
+
+    /**
+     * The environment variables that your builds can use.
+     */
+    environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+}
+
+export interface BuildEnvironmentVariable {
+    /**
+     * The type of environment variable.
+     * @default PlainText
+     */
+    type?: BuildEnvironmentVariableType;
+
+    /**
+     * The value of the environment variable (or the name of the parameter in
+     * the SSM parameter store.)
+     */
+    value: any;
+}
+
+export enum BuildEnvironmentVariableType {
+    /**
+     * An environment variable in plaintext format.
+     */
+    PlainText = 'PLAINTEXT',
+
+    /**
+     * An environment variable stored in Systems Manager Parameter Store.
+     */
+    ParameterStore = 'PARAMETER_STORE'
 }
 
 /**
