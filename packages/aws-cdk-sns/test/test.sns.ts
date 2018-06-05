@@ -263,7 +263,7 @@ export = {
                       "Version": "2012-10-17"
                     },
                     "ManagedPolicyArns": [
-                    { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
+                      { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
                           "service-role/AWSLambdaBasicExecutionRole"]]}
                     ]
                   }
