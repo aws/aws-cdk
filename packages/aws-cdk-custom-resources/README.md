@@ -15,6 +15,10 @@ In general, consumers of your Construct will not need to care whether
 it is implemented in term of other CloudFormation resources or as a
 custom resource.
 
+Note: when implemeting your Custom Resource using a Lambda, use
+a `SingletonLambda` so that even if your custom resource is instantiated
+multiple times, the Lambda will only get uploaded once.
+
 ### Example
 
 Sample of a Custom Resource that copies files into an S3 bucket during deployment
@@ -26,18 +30,20 @@ interface CopyOperationProps {
     targetBucket: IBucket;
 }
 
-class CopyOperation extends CustomResource {
+class CopyOperation extends Construct {
     constructor(parent: Construct, name: string, props: DemoResourceProps) {
-        super(parent, name, {
-            provider: new LambdaBackedCustomResource({
-                uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
-                lambdaProperties: {
-                    code: new LambdaInlineCode(resources['copy.py']),
-                    handler: 'index.handler',
-                    timeout: 60,
-                    runtime: LambdaRuntime.Python3,
-                }
-            }),
+        super(parent, name);
+
+        const lambdaProvider = new SingletonLambda(this, 'Provider', {
+            uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
+            code: new LambdaInlineCode(resources['copy.py']),
+            handler: 'index.handler',
+            timeout: 60,
+            runtime: LambdaRuntime.Python3,
+        });
+
+        new CustomResource(this, 'Resource', {
+            lambdaProvider,
             properties: {
                 sourceBucketArn: props.sourceBucket.bucketArn,
                 targetBucketArn: props.targetBucket.bucketArn,
