@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
+import { CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
 
 export = {
     'the Permission class is a programming model for iam'(test: Test) {
@@ -88,6 +88,19 @@ export = {
     'PolicyDoc resolves to undefined if there are no permissions'(test: Test) {
         const p = new PolicyDocument();
         test.deepEqual(resolve(p), undefined);
+        test.done();
+    },
+
+    'canonicalUserPrincipal adds a principal to a policy with the passed canonical user id'(test: Test) {
+        const p = new PolicyStatement();
+        const canoncialUser = "averysuperduperlongstringfor";
+        p.addPrincipal(new CanonicalUserPrincipal(canoncialUser));
+        test.deepEqual(resolve(p), {
+            Effect: "Allow",
+            Principal: {
+              CanonicalUser: canoncialUser
+            }
+        });
         test.done();
     },
 
@@ -181,4 +194,14 @@ export = {
             test.done();
         },
     },
+
+    'statementCount returns the number of statement in the policy document'(test: Test) {
+        const p = new PolicyDocument();
+        test.equal(p.statementCount, 0);
+        p.addStatement(new PolicyStatement());
+        test.equal(p.statementCount, 1);
+        p.addStatement(new PolicyStatement());
+        test.equal(p.statementCount, 2);
+        test.done();
+    }
 };

@@ -30,6 +30,14 @@ export class PolicyDocument extends Token {
         return this.statements.length === 0;
     }
 
+    /**
+     * The number of statements already added to this policy.
+     * Can be used, for example, to generate uniuqe "sid"s within the policy.
+     */
+    get statementCount(): number {
+        return this.statements.length;
+    }
+
     public addStatement(statement: PolicyStatement): PolicyDocument {
         this.statements.push(statement);
         return this;
@@ -69,6 +77,29 @@ export class ServicePrincipal extends PolicyPrincipal {
 
     public toJson(): any {
         return { Service: this.service };
+    }
+}
+
+/**
+ * A policy prinicipal for canonicalUserIds - useful for S3 bucket policies that use
+ * Origin Access identities.
+ *
+ * See https://docs.aws.amazon.com/general/latest/gr/acct-identifiers.html
+ *
+ * and
+ *
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+ *
+ * for more details.
+ *
+ */
+export class CanonicalUserPrincipal extends PolicyPrincipal {
+    constructor(public readonly canonicalUserId: any) {
+        super();
+    }
+
+    public toJson(): any {
+        return { CanonicalUser: this.canonicalUserId };
     }
 }
 
@@ -115,7 +146,7 @@ export class PolicyStatement extends Token {
     private resource = new Array<any>();
     private condition: { [key: string]: any } = { };
     private effect?: PolicyStatement.Effect;
-    private sid?: string;
+    private sid?: any;
 
     constructor(effect: PolicyStatement.Effect = PolicyStatement.Effect.Allow) {
         super();
@@ -207,7 +238,7 @@ export class PolicyStatement extends Token {
         return this.resource && this.resource.length === 1 && this.resource[0] === '*';
     }
 
-    public describe(sid: string): PolicyStatement {
+    public describe(sid: any): PolicyStatement {
         this.sid = sid;
         return this;
     }
