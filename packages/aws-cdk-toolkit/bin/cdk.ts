@@ -2,7 +2,6 @@
 import 'source-map-support/register';
 
 import * as cxapi from 'aws-cdk-cx-api';
-import { documentationIndexPath } from 'aws-cdk-docs';
 import { deepMerge, isEmpty, partition } from 'aws-cdk-util';
 import { exec, spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
@@ -206,10 +205,20 @@ function printWarnings(stacks: cxapi.SynthesizeResponse) {
     return found;
 }
 
-async function openDocsite(commandTemplate: string) {
+async function openDocsite(commandTemplate: string): Promise<number> {
+    let documentationIndexPath: string;
+    try {
+        // tslint:disable-next-line:no-var-require Taking an un-declared dep on aws-cdk-docs, to avoid a dependency circle
+        const docs = require('aws-cdk-docs');
+        documentationIndexPath = docs.documentationIndexPath;
+    } catch (err) {
+        error('Unable to open CDK documentation - the aws-cdk-docs package appears to be missing. Please run `npm install -g aws-cdk-docs`');
+        return -1;
+    }
+
     const browserCommand = commandTemplate.replace(/%u/g, documentationIndexPath);
     debug(`Opening documentation ${green(browserCommand)}`);
-    return await new Promise((resolve, reject) => {
+    return await new Promise<number>((resolve, reject) => {
         exec(browserCommand, (err, stdout, stderr) => {
             if (err) { return reject(err); }
             if (stdout) { debug(stdout); }
