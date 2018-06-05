@@ -30,14 +30,14 @@ rsync -aL ${root}/local-npm/*.tgz repo/npm # jsii modules
 mkdir -p repo/maven
 cp ${root}/packages/aws-cdk-java/target/*.jar repo/maven
 
-# Deploy the docs website to docs/
-rsync -a ${root}/packages/aws-cdk-docs/dist/docs/ ./docs
-
 # Bootstrap a production-ready node_modules closure with all npm modules (jsii and CDK)
 npm install --global-style --production --no-save repo/npm/*.tgz
 
 # Symlink 'bin' to the root
 ln -s node_modules/.bin bin
+
+# Symlink the docs website to docs
+ln -s node_modules/aws-cdk-docs/dist/docs docs
 
 # Create an archive under ./dist
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"

@@ -9,7 +9,7 @@ export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
 echo "boostrapping..."
-lerna bootstrap --loglevel=debug
+lerna bootstrap --reject-cycles --loglevel=debug
 
 echo "============================================================================================="
 echo "testing..."
