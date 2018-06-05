@@ -1,4 +1,4 @@
-import { App, Arn, FnConcat, Stack } from 'aws-cdk';
+import { App, Arn, FnConcat, FnJoin, Stack } from 'aws-cdk';
 import { expect } from 'aws-cdk-assert';
 import { iam } from 'aws-cdk-resources';
 import { Test } from 'nodeunit';
@@ -158,7 +158,7 @@ export = {
         });
 
         rule.addTarget(t2, {
-            template: 'This is <bla>',
+            textTemplate: 'This is <bla>',
             pathsMap: {
                 bla: '$.detail.bla'
             }
@@ -201,26 +201,38 @@ export = {
     'input template can contain tokens'(test: Test) {
         const stack = new Stack();
         const t1: IEventRuleTarget = {
-            eventRuleTarget: {
-                id: 'T1',
-                arn: new Arn('ARN1'),
-                kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
-            }
-        };
-        const t2: IEventRuleTarget = {
-            eventRuleTarget: {
-                id: 'T2',
-                arn: new Arn('ARN2'),
-                roleArn: new iam.RoleArn('IAM-ROLE-ARN')
-            }
+            eventRuleTarget: { id: 'T1', arn: new Arn('ARN1'), kinesisParameters: { partitionKeyPath: 'partitionKeyPath' } }
         };
 
+        const t2: IEventRuleTarget = { eventRuleTarget: { id: 'T2', arn: new Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') } };
+        const t3: IEventRuleTarget = { eventRuleTarget: { id: 'T3', arn: new Arn('ARN3') } };
+        const t4: IEventRuleTarget = { eventRuleTarget: { id: 'T4', arn: new Arn('ARN4') } };
+
         const rule = new EventRule(stack, 'EventRule');
-        rule.addTarget(t1, {
-            template: new FnConcat('a', 'b')
-        });
+
+        // a plain string should just be stringified (i.e. double quotes added and escaped)
         rule.addTarget(t2, {
-            template: 'Hello, world'
+            textTemplate: 'Hello, "world"'
+        });
+
+        // tokens are used here (FnConcat), but this is a text template so we
+        // expect it to be wrapped in double quotes automatically for us.
+        rule.addTarget(t1, {
+            textTemplate: new FnConcat('a', 'b')
+        });
+
+        // jsonTemplate can be used to format JSON documents with replacements
+        rule.addTarget(t3, {
+            jsonTemplate: '{ "foo": <bar> }',
+            pathsMap: {
+                bar: '$.detail.bar'
+            }
+        });
+
+        // tokens can also used for JSON templates, but that means escaping is
+        // the responsibility of the user.
+        rule.addTarget(t4, {
+            jsonTemplate: new FnJoin(' ', '"', 'hello', '\"world\"', '"'),
         });
 
         expect(stack).toMatch({
@@ -228,35 +240,71 @@ export = {
               "EventRule5A491D2C": {
                 "Type": "AWS::Events::Rule",
                 "Properties": {
-                  "State": "ENABLED",
-                  "Targets": [
-                    {
-                      "Arn": "ARN1",
-                      "Id": "T1",
-                      "InputTransformer": {
-                        "InputTemplate": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "a",
-                                "b"
-                              ]
-                            ]
-                        }
-                      },
-                      "KinesisParameters": {
-                        "PartitionKeyPath": "partitionKeyPath"
-                      }
-                    },
-                    {
+                    "State": "ENABLED",
+                    "Targets": [
+                      {
                         "Arn": "ARN2",
                         "Id": "T2",
                         "InputTransformer": {
-                          "InputTemplate": "\"Hello, world\""
+                          "InputTemplate": "\"Hello, \\\"world\\\"\""
                         },
                         "RoleArn": "IAM-ROLE-ARN"
-                    }
-                  ]
+                      },
+                      {
+                        "Arn": "ARN1",
+                        "Id": "T1",
+                        "InputTransformer": {
+                          "InputTemplate": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "\"",
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "a",
+                                      "b"
+                                    ]
+                                  ]
+                                },
+                                "\""
+                              ]
+                            ]
+                          }
+                        },
+                        "KinesisParameters": {
+                          "PartitionKeyPath": "partitionKeyPath"
+                        }
+                      },
+                      {
+                        "Arn": "ARN3",
+                        "Id": "T3",
+                        "InputTransformer": {
+                          "InputPathsMap": {
+                            "bar": "$.detail.bar"
+                          },
+                          "InputTemplate": "{ \"foo\": <bar> }"
+                        }
+                      },
+                      {
+                        "Arn": "ARN4",
+                        "Id": "T4",
+                        "InputTransformer": {
+                          "InputTemplate": {
+                            "Fn::Join": [
+                              " ",
+                              [
+                                "\"",
+                                "hello",
+                                "\"world\"",
+                                "\""
+                              ]
+                            ]
+                          }
+                        }
+                      }
+                    ]
                 }
               }
             }
