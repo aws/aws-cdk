@@ -175,7 +175,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
         }
 
         if (this.policy) {
-            // statements must be unique, so we apply use the statement index.
+            // statements must be unique, so we use the statement index.
             // potantially SIDs can change as a result of order change, but this should
             // not have an impact on the policy evaluation.
             // https://docs.aws.amazon.com/sns/latest/dg/AccessPolicyLanguage_SpecialInfo.html
