@@ -9,7 +9,7 @@ phases:
       - /bin/bash ./build.sh
   post_build:
     commands:
-      - if [[ ! -f ".BUILD_COMPLETED" ]]; then exit 1
+      - /bin/bash if [[ ! -f ".BUILD_COMPLETED" ]]; then exit 1; fi
       - /bin/bash ./pack.sh
       - /bin/bash ./bundle-beta.sh
 artifacts:
