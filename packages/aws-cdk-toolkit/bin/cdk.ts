@@ -143,16 +143,7 @@ async function main(command: string, args: any): Promise<number | string | {} |Â
 
     switch (command) {
         case 'docs':
-            const browserCommand = completeConfig().get(['browser']).replace(/%u/g, documentationIndexPath);
-            debug(`Opening documentation ${green(browserCommand)}`);
-            return await new Promise((resolve, reject) => {
-                exec(browserCommand, (err, stdout, stderr) => {
-                    if (err) { return reject(err); }
-                    if (stdout) { debug(stdout); }
-                    if (stderr) { warning(stderr); }
-                    resolve(0);
-                });
-            });
+            return await openDocsite(completeConfig().get(['browser']));
 
         case 'ls':
         case 'list':
@@ -213,6 +204,19 @@ function printWarnings(stacks: cxapi.SynthesizeResponse) {
         }
     }
     return found;
+}
+
+async function openDocsite(commandTemplate: string) {
+    const browserCommand = commandTemplate.replace(/%u/g, documentationIndexPath);
+    debug(`Opening documentation ${green(browserCommand)}`);
+    return await new Promise((resolve, reject) => {
+        exec(browserCommand, (err, stdout, stderr) => {
+            if (err) { return reject(err); }
+            if (stdout) { debug(stdout); }
+            if (stderr) { warning(stderr); }
+            resolve(0);
+        });
+    });
 }
 
 /**
