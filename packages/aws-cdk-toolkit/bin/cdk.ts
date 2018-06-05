@@ -46,7 +46,8 @@ const argv = yargs
     .demandCommand(1)
     .command('docs', 'Opens the documentation in a browser', yargs => yargs
         // tslint:disable-next-line:max-line-length
-        .option('browser', { type: 'string', alias: 'b', desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open', default: 'open %u' }))
+        .option('browser', { type: 'string', alias: 'b', desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
+                             default: process.platform === 'win32' ? 'start %u' : 'open %u' }))
     .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
     // tslint:disable-next-line:max-line-length
     .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
