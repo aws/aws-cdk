@@ -355,6 +355,7 @@
         "PolicyDocument": {
           "Statement": [
             {
+              "Sid": "0",
               "Action": "sns:Publish",
               "Effect": "Allow",
               "Principal": {
