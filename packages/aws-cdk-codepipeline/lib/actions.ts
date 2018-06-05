@@ -1,7 +1,8 @@
-import { Construct, PolicyStatement, Secret, Token } from 'aws-cdk';
+import { Construct, PolicyStatement, Secret } from 'aws-cdk';
 import { BuildProjectRef } from 'aws-cdk-codebuild';
 import { RepositoryRef } from 'aws-cdk-codecommit';
 import { EventRule, EventRuleProps, IEventRuleTarget } from 'aws-cdk-events';
+import { LambdaRef } from 'aws-cdk-lambda';
 import { codepipeline } from 'aws-cdk-resources';
 import { BucketRef } from 'aws-cdk-s3';
 import { Artifact } from './artifact';
@@ -32,7 +33,7 @@ export interface ActionArtifactBounds {
     maxOutputs: number;
 }
 
-export function DefaultBounds(): ActionArtifactBounds {
+function defaultBounds(): ActionArtifactBounds {
     return {
         minInputs: 0,
         maxInputs: 5,
@@ -410,7 +411,7 @@ export interface GithubSourceProps {
      *     new GitHubSource(stage, 'GH' { oauthToken: oauth });
      *
      */
-    oathToken: Secret;
+    oauthToken: Secret;
 
     /**
      * Whether or not AWS CodePipeline should poll for source changes
@@ -432,7 +433,7 @@ export class GitHubSource extends Source {
                 Owner: props.owner,
                 Repo: props.repo,
                 Branch: props.branch || "master",
-                OAuthToken: props.oathToken,
+                OAuthToken: props.oauthToken,
                 PollForSourceChanges: props.pollForSourceChanges || true
             },
             artifactName: props.artifactName
@@ -447,7 +448,7 @@ export interface BuildActionProps {
     /**
      * The source to use as input for this build
      */
-    source: Source;
+    inputArtifact: Artifact;
 
     /**
      * The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild.
@@ -483,7 +484,7 @@ export abstract class BuildAction extends Action {
             configuration: props.configuration
         });
 
-        this.addInputArtifact(props.source.artifact);
+        this.addInputArtifact(props.inputArtifact);
         if (props.artifactName) {
             this.artifact = this.addOutputArtifact(props.artifactName);
         }
@@ -497,7 +498,7 @@ export interface CodeBuildActionProps {
     /**
      * The source to use as input for this build
      */
-    source: Source;
+    inputArtifact: Artifact;
 
     /**
      * The name of the build's output artifact
@@ -515,11 +516,16 @@ export interface CodeBuildActionProps {
  */
 export class CodeBuildAction extends BuildAction {
     constructor(parent: Stage, name: string, props: CodeBuildActionProps) {
+        // This happened when ProjectName was accidentally set to the project's ARN:
+        // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
+
         super(parent, name, {
             provider: 'CodeBuild',
-            source: props.source,
+            inputArtifact: props.inputArtifact,
             artifactName: props.artifactName,
-            configuration: { ProjectName: props.project.projectArn }
+            configuration: {
+                ProjectName: props.project.projectName
+            }
         });
 
         const actions = [
@@ -555,43 +561,78 @@ export class ApprovalAction extends Action {
 }
 
 export interface InvokeLambdaProps {
-    // TODO: replace Token with L2 Lambda construct
     /**
-     * The name of the lambda function to invoke. The lambda function must be in
-     * the same region as the pipeline.
+     * The lambda function to invoke.
      */
-    functionName: Token;
+    lambda: LambdaRef;
 
     /**
-     * String to be used in the event data parameter passed to the Lambda function
+     * String to be used in the event data parameter passed to the Lambda
+     * function
      *
      * See an example JSON event in the CodePipeline documentation.
      *
      * https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
      */
-    userParameters?: string;
+    userParameters?: any;
+
+    /**
+     * Adds the "codepipeline:PutJobSuccessResult" and
+     * "codepipeline:PutJobFailureResult" for '*' resource to the Lambda
+     * execution role policy.
+     *
+     * NOTE: the reason we can't add the specific pipeline ARN as a resource is
+     * to avoid a cyclic dependency between the pipeline and the Lambda function
+     * (the pipeline references) the Lambda and the Lambda needs permissions on
+     * the pipeline.
+     *
+     * @see
+     * https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-create-function
+     *
+     * @default true
+     */
+    addPutJobResultPolicy?: boolean;
 }
 /**
  * @link https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
-export class InvokeLambda extends Action {
+export class InvokeLambdaAction extends Action {
     constructor(parent: Stage, name: string, props: InvokeLambdaProps) {
         super(parent, name, {
             category: ActionCategory.Invoke,
             provider: 'Lambda',
-            artifactBounds: DefaultBounds(),
+            artifactBounds: defaultBounds(),
             configuration: {
-                FunctionName: props.functionName,
+                FunctionName: props.lambda.functionName,
                 UserParameters: props.userParameters
             }
         });
+
+        // allow pipeline to list functions
+        parent.pipeline.addToRolePolicy(new PolicyStatement()
+            .addAction('lambda:ListFunctions')
+            .addResource('*'));
+
+        // allow pipeline to invoke this lambda functionn
+        parent.pipeline.addToRolePolicy(new PolicyStatement()
+            .addAction('lambda:InvokeFunction')
+            .addResource(props.lambda.functionArn));
+
+        // allow lambda to put job results for this pipeline.
+        const addToPolicy = props.addPutJobResultPolicy !== undefined ? props.addPutJobResultPolicy : true;
+        if (addToPolicy) {
+            props.lambda.addToRolePolicy(new PolicyStatement()
+                .addResource('*') // to avoid cycles (see docs)
+                .addAction('codepipeline:PutJobSuccessResult')
+                .addAction('codepipeline:PutJobFailureResult'));
+        }
     }
 
     /**
      * Add an input artifact
      * @param artifact
      */
-    public addInputArtifact(artifact: Artifact): InvokeLambda {
+    public addInputArtifact(artifact: Artifact): InvokeLambdaAction {
         super.addInputArtifact(artifact);
         return this;
     }

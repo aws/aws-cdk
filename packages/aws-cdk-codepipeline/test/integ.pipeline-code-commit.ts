@@ -23,7 +23,7 @@ const project = new BuildProject(stack, 'MyBuildProject', {
 
 new CodeBuildAction(buildStage, 'build', {
     project,
-    source
+    inputArtifact: source.artifact
 });
 
 process.stdout.write(app.run());
