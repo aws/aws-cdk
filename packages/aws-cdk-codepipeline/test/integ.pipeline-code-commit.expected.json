@@ -263,10 +263,7 @@
                 },
                 "Configuration": {
                   "ProjectName": {
-                    "Fn::GetAtt": [
-                      "MyBuildProject30DB9D6E",
-                      "Arn"
-                    ]
+                    "Ref": "MyBuildProject30DB9D6E"
                   }
                 },
                 "InputArtifacts": [
