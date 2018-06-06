@@ -35,7 +35,7 @@ export class SDK {
         this.credentialSources = PluginHost.instance.credentialProviderSources;
 
         // Find the package.json from the main toolkit
-        const pkg = (require.main as any).require('package.json');
+        const pkg = (require.main as any).require('../package.json');
         this.userAgent = `${pkg.name}/${pkg.version}`;
 
         // tslint:disable-next-line:no-console
