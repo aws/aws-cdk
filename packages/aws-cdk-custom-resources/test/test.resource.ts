@@ -2,7 +2,7 @@ import { Construct, Stack } from 'aws-cdk';
 import { expect } from 'aws-cdk-assert';
 import { LambdaInlineCode, LambdaRuntime } from 'aws-cdk-lambda';
 import { Test } from 'nodeunit';
-import { CustomResource, LambdaBackedCustomResource } from '../lib';
+import { CustomResource, SingletonLambda } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -18,7 +18,7 @@ export = {
         // THEN
         expect(stack).toMatch({
             "Resources": {
-              "TestCustomResourceProviderServiceRole3D68371D": {
+              "SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C": {
                 "Type": "AWS::IAM::Role",
                 "Properties": {
                   "AssumeRolePolicyDocument": {
@@ -40,7 +40,7 @@ export = {
                   ]
                 }
               },
-              "TestCustomResourceProvider10987C61": {
+              "SingletonLambdaTestCustomResourceProviderA9255269": {
                 "Type": "AWS::Lambda::Function",
                 "Properties": {
                   "Code": {
@@ -49,7 +49,7 @@ export = {
                   "Handler": "index.hello",
                   "Role": {
                     "Fn::GetAtt": [
-                      "TestCustomResourceProviderServiceRole3D68371D",
+                      "SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C",
                       "Arn"
                     ]
                   },
@@ -57,26 +57,26 @@ export = {
                   "Timeout": 300
                 },
                 "DependsOn": [
-                  "TestCustomResourceProviderServiceRole3D68371D"
+                  "SingletonLambdaTestCustomResourceProviderServiceRole81FEAB5C"
                 ]
               },
-              "Custom1": {
+              "Custom1D319B237": {
                 "Type": "AWS::CloudFormation::CustomResource",
                 "Properties": {
                   "ServiceToken": {
                     "Fn::GetAtt": [
-                      "TestCustomResourceProvider10987C61",
+                      "SingletonLambdaTestCustomResourceProviderA9255269",
                       "Arn"
                     ]
                   }
                 }
               },
-              "Custom2": {
+              "Custom2DD5FB44D": {
                 "Type": "AWS::CloudFormation::CustomResource",
                 "Properties": {
                   "ServiceToken": {
                     "Fn::GetAtt": [
-                      "TestCustomResourceProvider10987C61",
+                      "SingletonLambdaTestCustomResourceProviderA9255269",
                       "Arn"
                     ]
                   }
@@ -88,18 +88,20 @@ export = {
     }
 };
 
-class TestCustomResource extends CustomResource {
-    constructor(parent: Construct, name: string) {
-        super(parent, name, {
-            provider: new LambdaBackedCustomResource({
-                uuid: 'TestCustomResourceProvider',
-                lambdaProperties: {
-                    code: new LambdaInlineCode('def hello(): pass'),
-                    runtime: LambdaRuntime.Python27,
-                    handler: 'index.hello',
-                    timeout: 300,
-                }
-            })
-        });
-    }
+class TestCustomResource extends Construct {
+  constructor(parent: Construct, name: string) {
+    super(parent, name);
+
+    const singletonLambda = new SingletonLambda(this, 'Lambda', {
+      uuid: 'TestCustomResourceProvider',
+      code: new LambdaInlineCode('def hello(): pass'),
+      runtime: LambdaRuntime.Python27,
+      handler: 'index.hello',
+      timeout: 300,
+    });
+
+    new CustomResource(this, 'Resource', {
+      lambdaProvider: singletonLambda
+    });
+  }
 }
