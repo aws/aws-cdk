@@ -15,7 +15,7 @@ In general, consumers of your Construct will not need to care whether
 it is implemented in term of other CloudFormation resources or as a
 custom resource.
 
-Note: when implemeting your Custom Resource using a Lambda, use
+Note: when implementing your Custom Resource using a Lambda, use
 a `SingletonLambda` so that even if your custom resource is instantiated
 multiple times, the Lambda will only get uploaded once.
 
