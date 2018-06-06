@@ -34,7 +34,12 @@ export class SDK {
     constructor() {
         this.credentialSources = PluginHost.instance.credentialProviderSources;
 
-        this.userAgent = 'aws-cdk/' + require('package').version;
+        // Find the package.json from the main toolkit
+        const pkg = (require.main as any).require('package.json');
+        this.userAgent = `${pkg.name}/${pkg.version}`;
+
+        // tslint:disable-next-line:no-console
+        console.error('useragent', this.userAgent);
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {
