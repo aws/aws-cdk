@@ -32,7 +32,7 @@ export class SingletonLambda extends LambdaRef {
     constructor(parent: Construct, name: string, props: SingletonLambdaProps) {
         super(parent, name);
 
-        this.lambdaFunction = this.ensureLambda(slugify(props.uuid), props);
+        this.lambdaFunction = this.ensureLambda(props.uuid, props);
 
         this.functionArn = this.lambdaFunction.functionArn;
         this.functionName = this.lambdaFunction.functionName;
@@ -46,7 +46,7 @@ export class SingletonLambda extends LambdaRef {
     }
 
     private ensureLambda(uuid: string, props: LambdaProps): LambdaRef {
-        const constructName = 'SingletonLambda' + uuid;
+        const constructName = 'SingletonLambda' + slugify(uuid);
         const stack = Stack.find(this);
         const existing = stack.tryFindChild(constructName);
         if (existing) {
