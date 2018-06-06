@@ -1,6 +1,7 @@
-import { Construct, Stack } from 'aws-cdk';
+import { Construct } from 'aws-cdk';
+import { LambdaRef } from 'aws-cdk-lambda';
 import { cloudformation } from 'aws-cdk-resources';
-import { CustomResourceImplementation } from './provider';
+import { TopicRef } from 'aws-cdk-sns';
 
 /**
  * Collection of arbitrary properties
@@ -12,9 +13,20 @@ export type Properties = {[key: string]: any};
  */
 export interface CustomResourceProps {
     /**
-     * The provider that is going to implement this custom resource
+     * The Lambda provider that implements this custom resource.
+     *
+     * We recommend using a SingletonLambda for this.
+     *
+     * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    provider: CustomResourceImplementation;
+    lambdaProvider?: LambdaRef;
+
+    /**
+     * The SNS Topic for the provider that implements this custom resource.
+     *
+     * Optional, exactly one of lamdaProvider or topicProvider must be set.
+     */
+    topicProvider?: TopicRef;
 
     /**
      * Properties to pass to the Lambda
@@ -36,9 +48,12 @@ export class CustomResource extends cloudformation.CustomResource {
     private readonly userProperties?: Properties;
 
     constructor(parent: Construct, name: string, props: CustomResourceProps) {
-        const stack = Stack.find(parent);
+        if (!!props.lambdaProvider === !!props.topicProvider) {
+            throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
+        }
+
         super(parent, name, {
-            serviceToken: props.provider.providerArn(stack),
+            serviceToken: props.lambdaProvider ? props.lambdaProvider.functionArn : props.topicProvider!.topicArn
         });
 
         this.userProperties = props.properties;

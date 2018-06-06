@@ -20,7 +20,8 @@
     "prepare": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f"
   },
   "keywords": [
@@ -36,12 +37,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "aws-cdk-assert": "^0.6.0",
+    "aws-cdk-toolkit": "^0.6.0",
     "pkglint": "^0.6.0"
   },
   "dependencies": {
     "aws-cdk": "^0.6.0",
     "aws-cdk-iam": "^0.6.0",
     "aws-cdk-lambda": "^0.6.0",
+    "aws-cdk-sns": "^0.6.0",
     "aws-cdk-resources": "^0.6.0"
   }
 }
