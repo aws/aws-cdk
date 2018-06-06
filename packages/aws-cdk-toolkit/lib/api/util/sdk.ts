@@ -29,25 +29,44 @@ export class SDK {
     private defaultAccountFetched = false;
     private defaultAccountId?: string = undefined;
     private credentialSources: CredentialProviderSource[];
+    private readonly userAgent: string;
 
     constructor() {
         this.credentialSources = PluginHost.instance.credentialProviderSources;
+
+        this.userAgent = 'aws-cdk/' + require('package').version;
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {
-        return new CloudFormation({ region: environment.region, credentialProvider: await this.getCredentialProvider(environment.account, mode) });
+        return new CloudFormation({
+            region: environment.region,
+            credentialProvider: await this.getCredentialProvider(environment.account, mode),
+            customUserAgent: this.userAgent
+        });
     }
 
     public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<EC2> {
-        return new EC2({ region, credentialProvider: await this.getCredentialProvider(awsAccountId, mode) });
+        return new EC2({
+            region,
+            credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
+            customUserAgent: this.userAgent
+        });
     }
 
     public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<SSM> {
-        return new SSM({ region, credentialProvider: await this.getCredentialProvider(awsAccountId, mode) });
+        return new SSM({
+            region,
+            credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
+            customUserAgent: this.userAgent
+        });
     }
 
     public async s3(environment: Environment, mode: Mode): Promise<S3> {
-        return new S3({ region: environment.region, credentialProvider: await this.getCredentialProvider(environment.account, mode) });
+        return new S3({
+            region: environment.region,
+            credentialProvider: await this.getCredentialProvider(environment.account, mode),
+            customUserAgent: this.userAgent
+        });
     }
 
     public defaultRegion() {
