@@ -8,10 +8,15 @@ if [[ "${2:-}" == "" ]]; then
     exit 1
 fi
 
+if [[ "${SIGNING_KEY_SCOPE:-}" == "" ]]; then
+    echo "SIGNING_KEY_SCOPE not set; not signing artifacts." >&2
+    exit 0
+fi
+
 tmpdir=$(mktemp -d)
 trap "shred $tmpdir/* && rm -rf $tmpdir" EXIT
 
-SECRET=CDK/$1/SigningKey
+SECRET=$SIGNING_KEY_SCOPE/$1/SigningKey
 
 # Use secrets manager to obtain the key and passphrase into a JSON file
 echo "Retrieving key $SECRET..." >&2
