@@ -1,6 +1,5 @@
 import { App, Construct, Output, Stack, StackProps, Token } from 'aws-cdk';
 import { LambdaInlineCode, LambdaRuntime } from 'aws-cdk-lambda';
-import { s3 } from 'aws-cdk-resources';
 import fs = require('fs');
 import { CustomResource, SingletonLambda } from '../lib';
 
@@ -56,47 +55,8 @@ class SucceedingStack extends Stack {
         });
     }
 }
-
-/**
- * A stack that sets up a failing CustomResource creation
- */
-class FailCreationStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
-        super(parent, name, props);
-
-        new DemoResource(this, 'DemoResource', {
-            message: 'CustomResource is silent',
-            failCreate: true
-        });
-    }
-}
-
-/**
- * A stack that sets up the CustomResource and fails afterwards, to check that cleanup gets
- * done properly.
- */
-class FailAfterCreatingStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
-        super(parent, name, props);
-
-        const resource = new DemoResource(this, 'DemoResource', {
-            message: 'CustomResource says hello',
-        });
-
-        // Bucket with an invalid name will fail the deployment and cause a rollback
-        const bucket = new s3.BucketResource(this, 'FailingBucket', {
-            bucketName: 'hello!@#$^'
-        });
-
-        // Make sure the rollback gets triggered only after the custom resource has been fully created.
-        bucket.addDependency(resource);
-    }
-}
-
 const app = new App(process.argv);
 
 new SucceedingStack(app, 'SucceedingStack');
-new FailCreationStack(app, 'FailCreationStack');
-new FailAfterCreatingStack(app, 'FailAfterCreatingStack');
 
 process.stdout.write(app.run());
