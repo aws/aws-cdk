@@ -114,3 +114,23 @@ npm run pkglint
 
 Run `./pack.sh` in the jsii repository and copy the tarballs to `./local-npm`.
 Make sure all tarballs are defined in the root `package.json`.
+
+# Language Support
+
+The CDK uses [jsii](https://github.com/awslabs/jsii) to generate language
+bindings for CDK classes, which proxy interaction to a node.js child process in
+runtime.
+
+To vend another language for the CDK (given there's jsii support for it):
+
+1. Create a directory `packages/aws-cdk-xxx` (where "xxx" is the language).
+2. Look at [aws-cdk-java/package.json](packages/aws-cdk-java/package.json) as a reference
+   on how to setup npm build that uses pacmak to generate the code for all CDK modules and
+   then compile and wrap the package up.
+3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
+   your language under `repo/xxx`
+4. Add a **cdk init** template for your language (see
+   [packages/aws-cdk-toolkit/lib/init-templates](packages/aws-cdk-toolkit/lib/init-templates)).
+5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
+   make there there's a getting started sections and examples for the new
+   language.
