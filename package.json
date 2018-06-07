@@ -14,13 +14,13 @@
     "typescript": "^2.8.3",
     "tslint": "^5.10.0",
     "nyc": "^11.8.0",
-    "jsii": "file:local-npm/jsii-0.4.0.tgz",
-    "jsii-java-runtime": "file:local-npm/jsii-java-runtime-0.4.0.tgz",
-    "jsii-pacmak": "file:local-npm/jsii-pacmak-0.4.0.tgz",
-    "jsii-runtime": "file:local-npm/jsii-runtime-0.4.0.tgz",
-    "jsii-spec": "file:local-npm/jsii-spec-0.4.0.tgz",
-    "jsii-kernel": "file:local-npm/jsii-kernel-0.4.0.tgz",
-    "codemaker": "file:local-npm/codemaker-0.4.0.tgz"
+    "jsii": "file:local-npm/jsii-0.4.0-pre.tgz",
+    "jsii-java-runtime": "file:local-npm/jsii-java-runtime-0.4.0-pre.tgz",
+    "jsii-pacmak": "file:local-npm/jsii-pacmak-0.4.0-pre.tgz",
+    "jsii-runtime": "file:local-npm/jsii-runtime-0.4.0-pre.tgz",
+    "jsii-spec": "file:local-npm/jsii-spec-0.4.0-pre.tgz",
+    "jsii-kernel": "file:local-npm/jsii-kernel-0.4.0-pre.tgz",
+    "codemaker": "file:local-npm/codemaker-0.4.0-pre.tgz"
   },
   "repository": {
     "type": "git",
