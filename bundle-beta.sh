@@ -47,3 +47,7 @@ rm -fr ${dist}
 mkdir -p ${dist}
 zip -y -r ${output} .
 echo ${output}
+
+# Sign the bundle
+/bin/bash $root/sign.sh Archive $output
+
