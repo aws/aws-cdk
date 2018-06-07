@@ -548,7 +548,7 @@ export class CloudFrontWebDistribution extends Construct {
             };
         }
 
-        const distribution = new cloudfront.DistributionResource(parent, 'Distribution', {distributionConfig});
+        const distribution = new cloudfront.DistributionResource(this, 'CFDistribution', {distributionConfig});
         this.domainName = distribution.distributionDomainName;
 
     }
