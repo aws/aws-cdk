@@ -8,7 +8,8 @@ for p in $(find-jsii-packages -k jsii.names.java); do
 done
 
 # Moving the "resources" folder where mvn expects it to be...
-[ -d ${outdir}/java/resources ] && mv ${outdir}/java/resources ${outdir}
+[ -d ${outdir}/java/resources ] && mv ${outdir}/java/resources ${outdir}/resources
 
 mkdir -p target
-cp -f ../../node_modules/jsii-java-runtime/jsii-runtime-0.4.0.jar $PWD/target
+
+cp -f $(node -e 'console.log(path.dirname(require.resolve("jsii-java-runtime/package.json")));')/target/jsii-runtime-0.4.0.jar $PWD/target
