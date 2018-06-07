@@ -1,9 +1,6 @@
-# Don't include original .ts files when doing `npm pack`
-*.ts
-!*.d.ts
-coverage
-.nyc_output
-*.tgz
-/*
-!/target
-/target/*
+.project
+src
+target
+generate.sh
+*.iml
+pom.xml
