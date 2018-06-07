@@ -26,6 +26,7 @@ AWS Cloud Development Kit User Guide
    tools
    guidelines
    reference
+   validating-downloads
 
 .. installing on various systems:
    C++: NuGet
