@@ -12,4 +12,4 @@ done
 
 mkdir -p target
 
-cp -f $(node -e 'console.log(path.dirname(require.resolve("jsii-java-runtime/package.json")));')/target/jsii-runtime-0.4.0.jar $PWD/target
+cp -f $(node -e 'console.log(path.dirname(require.resolve("jsii-java-runtime/package.json")));')/jsii-runtime-0.4.0.jar $PWD/target
