@@ -1,5 +1,5 @@
 import { Construct,  } from 'aws-cdk';
-import { CertificateRef } from 'aws-cdk-acm';
+import { CertificateArn } from 'aws-cdk-acm';
 import { cloudfront } from 'aws-cdk-resources';
 import { Bucket, BucketRef } from 'aws-cdk-s3';
 
@@ -40,7 +40,7 @@ export enum ViewerProtocolPolicy {
  */
 export interface AliasConfiguration {
     readonly names: string[],
-    readonly acmCertRef: CertificateRef,
+    readonly acmCertRef: CertificateArn,
     readonly sslMethod?: SSLMethod,
 }
 
@@ -542,7 +542,7 @@ export class CloudFrontWebDistribution extends Construct {
         if (props.aliasConfiguration) {
             distributionConfig.aliases = props.aliasConfiguration.names;
             distributionConfig.viewerCertificate = {
-                acmCertificateArn: props.aliasConfiguration.acmCertRef.export().certificateArn,
+                acmCertificateArn: props.aliasConfiguration.acmCertRef,
                 cloudFrontDefaultCertificate: true,
                 sslSupportMethod: props.aliasConfiguration.sslMethod || SSLMethod.SNI,
             };
