@@ -7,4 +7,3 @@ coverage
 /*
 !/target
 /target/*
-!/target/*.jar
