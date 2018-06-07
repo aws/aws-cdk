@@ -1,5 +1,5 @@
 ## Low-level AWS CloudFormation Resources Library
-The `aws-cdk-resources` library is automatically generated from the
+The `@aws-cdk/resources` library is automatically generated from the
 [CloudFormation Resource specification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html).
 It provides access to all resource types CloudFormation supports, in a low-level API. You should prefer depending on
 higher level construct libraries (such as `aws-cdk-ec2`, `aws-cdk-s3`, ...) as they will offer more expressive APIs and in many cases will
@@ -10,8 +10,8 @@ The library bundles each AWS service resources in a dedicated namespace. Simply 
 with the classes it defines:
 
 ```ts
-import { Construct } from 'aws-cdk';
-import { kms, s3 } from 'aws-cdk-resources';
+import { Construct } from '@aws-cdk/core';
+import { kms, s3 } from '@aws-cdk/resources';
 
 /**
  * The Bucket class in the aws-cdk-s3 library provides much better

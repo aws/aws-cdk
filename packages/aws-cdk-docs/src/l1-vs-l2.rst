@@ -57,17 +57,17 @@ Construct Library constructs vs CloudFormation Resource constructs
 To illustrate the advantages that Construct Library constructs have over
 CloudFormation Resource constructs, let's look at an example.
 
-The :py:mod:`aws-cdk-sns` Construct Library includes the `Topic` construct that
+The :py:mod:`@aws-cdk/sns` Construct Library includes the `Topic` construct that
 you can use to define an |SNS| topic:
 
 .. code-block:: js
 
-    import { Topic } from 'aws-cdk-sns';
+    import { Topic } from '@aws-cdk/sns';
     const topic = new Topic(this, 'MyTopic');
 
 Library constructs encapsulate the
 details of working with these AWS resources. For example, to subscribe a queue to a topic,
-call the :py:meth:`aws-cdk-sns.Topic.subscribeQueue` method with a queue object as the second argument:
+call the :py:meth:`@aws-cdk/sns.Topic.subscribeQueue` method with a queue object as the second argument:
 
 .. code-block:: js
 

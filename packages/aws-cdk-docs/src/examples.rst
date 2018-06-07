@@ -38,7 +38,7 @@ the |cdk|.
 
    code-block:: js
 
-   import { Stack, StackProps } from 'aws-cdk'
+   import { Stack, StackProps } from '@aws-cdk/core'
 
    interface MyStackProps extends StackProps {
      encryptedStorage: boolean;
@@ -64,7 +64,7 @@ the |cdk|.
 
    code-block:: js
 
-   import { App } from 'aws-cdk'
+   import { App } from '@aws-cdk/core'
    import { MyStack } from './my-stack'
    import { DeploymentPipeline } from './my-deployment'
 
@@ -122,8 +122,8 @@ and sort key **Timestamp**.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps } from 'aws-cdk';
-   import { KeyAttributeType, Table } from 'aws-cdk-dynamodb'
+   import { App, Stack, StackProps } from '@aws-cdk/core';
+   import { KeyAttributeType, Table } from '@aws-cdk/dynamodb'
 
    class MyStack extends Stack {
      constructor(parent: App, name: string, props?: StackProps) {
@@ -155,9 +155,9 @@ The following example creates the Aurora database **MyAuroraDatabase**.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps, Token } from 'aws-cdk';
-   import { InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork } from 'aws-cdk-ec2';
-   import { DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-rds';
+   import { App, Stack, StackProps, Token } from '@aws-cdk/core';
+   import { InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork } from '@aws-cdk/ec2';
+   import { DatabaseCluster, DatabaseClusterEngine } from '@aws-cdk/rds';
 
    class MyStack extends Stack {
      constructor(parent: App, name: string, props?: StackProps) {
@@ -199,8 +199,8 @@ encryption provided by |s3|.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps } from 'aws-cdk';
-   import { Bucket, BucketEncryption } from 'aws-cdk-s3';
+   import { App, Stack, StackProps } from '@aws-cdk/core';
+   import { Bucket, BucketEncryption } from '@aws-cdk/s3';
 
    class MyStack extends Stack {
      constructor(parent: App, name: string, props?: StackProps) {

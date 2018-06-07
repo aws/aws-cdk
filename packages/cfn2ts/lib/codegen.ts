@@ -36,7 +36,7 @@ export default class CodeGenerator {
 
         // We're going to generate lots of long lines. Might as well ignore this for these files.
         this.code.line('// tslint:disable:max-line-length');
-        this.code.line(`import * as ${CORE} from 'aws-cdk';`);
+        this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
         this.code.line(`import * as ${REGISTRY} from '../registry';`);
         this.code.line(`import * as ${RUNTIME} from '../runtime';`);
         this.code.line();

@@ -1,5 +1,5 @@
-import { App, Output, Stack, StackProps } from 'aws-cdk';
-import { s3 } from 'aws-cdk-resources';
+import { App, Output, Stack, StackProps } from '@aws-cdk/core';
+import { s3 } from '@aws-cdk/resources';
 
 /**
  * The CDK Toolkit stack provides resources necessary to deploy cloud executables into an AWS environment.

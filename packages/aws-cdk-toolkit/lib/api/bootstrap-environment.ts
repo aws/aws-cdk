@@ -1,4 +1,4 @@
-import { App } from 'aws-cdk';
+import { App } from '@aws-cdk/core';
 import { Environment } from 'aws-cdk-cx-api';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { SDK } from './util/sdk';

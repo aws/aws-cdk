@@ -185,7 +185,7 @@ shown in the following example.
 
 .. code-block:: js
 
-   import { Stack, StackProps } from 'aws-cdk'
+   import { Stack, StackProps } from '@aws-cdk/core'
 
    interface MyStackProps extends StackProps {
        encryptedStorage: boolean;
@@ -419,7 +419,7 @@ as shown in the following example.
 
 .. code-block:: js
 
-   import { App } from 'aws-cdk'
+   import { App } from '@aws-cdk/core'
 
    const app = new App(process.argv); // input: ARGV
 
@@ -432,7 +432,7 @@ example.
 
 .. code-block:: js
 
-   import { App } from 'aws-cdk'
+   import { App } from '@aws-cdk/core'
    import { MyStack } from './my-stack'
 
    const app = new App(process.argv);

@@ -7,7 +7,13 @@ import { deepGet, expectJSON } from './util';
  */
 export class PackageNameMatchesDirectoryName extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        expectJSON(pkg, 'name', path.basename(pkg.packageRoot));
+        const parts = pkg.packageRoot.split(path.sep);
+
+        const expectedName = parts[parts.length - 2].startsWith('@')
+                           ? parts.slice(parts.length - 2).join('/')
+                           : parts[parts.length - 1];
+
+        expectJSON(pkg, 'name', expectedName);
     }
 }
 
@@ -151,10 +157,8 @@ export class NoJsiiDep extends ValidationRule {
  * Strips off 'aws-cdk-' if the module name starts with it.
  */
 function cdkModuleName(name: string) {
-    const prefix = 'aws-cdk-';
-    if (name.startsWith(prefix)) {
-        return name.substr(prefix.length);
-    }
+    name = name.replace(/^aws-cdk-/, '');
+    name = name.replace(/^@aws-cdk\//, '');
     return name;
 }
 

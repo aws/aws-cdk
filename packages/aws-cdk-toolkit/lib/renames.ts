@@ -1,5 +1,5 @@
+import { makeObject } from '@aws-cdk/util';
 import * as cxapi from 'aws-cdk-cx-api';
-import { makeObject } from 'aws-cdk-util';
 
 type RenameTable = {[key: string]: string};
 

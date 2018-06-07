@@ -1,5 +1,5 @@
 {
-  "name": "aws-cdk",
+  "name": "@aws-cdk/core",
   "pkglint": {
     "ignore": true
   },

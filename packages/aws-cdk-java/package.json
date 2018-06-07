@@ -21,7 +21,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-cdk-all": "^0.6.0"
+    "@aws-cdk/all": "^0.6.0"
   },
   "devDependencies": {
     "pkgtools": "^0.6.0"

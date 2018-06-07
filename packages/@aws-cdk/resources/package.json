@@ -1,0 +1,41 @@
+{
+  "name": "@aws-cdk/resources",
+  "description": "Raw CloudFormation resources for CDK",
+  "version": "0.6.0",
+  "scripts": {
+    "prepare": "cfn2ts ./cloudformation-specs/*.json && jsii && tslint -p . && pkglint",
+    "test": "nodeunit test/test.*.js",
+    "lint": "tsc && jsii && tslint -p . --force",
+    "watch": "jsii -w",
+    "pkglint": "pkglint -f"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "names": {
+      "java": "com.amazonaws.cdk.resources",
+      "dotnet": "Aws.Cdk.Resources"
+    }
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.6.0"
+  },
+  "devDependencies": {
+    "cfn2ts": "^0.6.0",
+    "pkglint": "^0.6.0"
+  },
+  "repository": {
+    "url": "git://github.com/awslabs/aws-cdk",
+    "type": "git"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
