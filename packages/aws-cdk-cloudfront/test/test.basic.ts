@@ -31,7 +31,7 @@ export = {
               "Bucket83908E77": {
                 "Type": "AWS::S3::Bucket"
               },
-              "Distribution": {
+              "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
                 "Type": "AWS::CloudFront::Distribution",
                 "Properties": {
                   "DistributionConfig": {
@@ -101,7 +101,7 @@ export = {
               "Bucket83908E77": {
                 "Type": "AWS::S3::Bucket"
               },
-              "Distribution": {
+              "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
                 "Type": "AWS::CloudFront::Distribution",
                 "Properties": {
                   "DistributionConfig": {
