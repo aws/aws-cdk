@@ -28,15 +28,21 @@ value-from-secret() {
 
 passphrase=$(value-from-secret Passphrase)
 
+# GnuPG will occasionally bail out with "gpg: <whatever> failed: Inappropriate ioctl for device", the following attempts to fix
+export GPG_TTY=$(tty)
+
 echo "Importing key..." >&2
-gpg --homedir $tmpdir --allow-secret-key-import --batch --import <(value-from-secret PrivateKey)
+gpg --homedir $tmpdir \
+    --allow-secret-key-import \
+    --batch --yes --no-tty \
+    --import <(value-from-secret PrivateKey)
 
 while [[ "${1:-}" != "" ]]; do
     echo "Signing $1..." >&2
     echo $passphrase | gpg \
         --homedir $tmpdir \
         --local-user aws-cdk@amazon.com \
-        --batch --yes \
+        --batch --yes --no-tty \
         --passphrase-fd 0 \
         --output $1.sig \
         --detach-sign $1
