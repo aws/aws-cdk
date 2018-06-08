@@ -29,7 +29,7 @@ value-from-secret() {
 passphrase=$(value-from-secret Passphrase)
 
 echo "Importing key..." >&2
-gpg --homedir $tmpdir --import <(value-from-secret PrivateKey) --allow-secret-key-import --batch
+gpg --homedir $tmpdir --allow-secret-key-import --batch --import <(value-from-secret PrivateKey)
 
 while [[ "${1:-}" != "" ]]; do
     echo "Signing $1..." >&2
