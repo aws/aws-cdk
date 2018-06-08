@@ -537,7 +537,7 @@ export = {
             {
               "Action": "sns:Publish",
               "Effect": "Allow",
-              "Principal": resolve(user.principal.toJson()),
+              "Principal": resolve(user.principal.policyFragment().principalJson),
               "Resource": "*"
             }
           ],

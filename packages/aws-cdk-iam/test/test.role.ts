@@ -1,5 +1,5 @@
-import { PolicyStatement, Resource, ServicePrincipal, Stack } from 'aws-cdk';
-import { expect } from 'aws-cdk-assert';
+import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from 'aws-cdk';
+import { expect, haveResource } from 'aws-cdk-assert';
 import { Test } from 'nodeunit';
 import { Role } from '../lib';
 
@@ -89,6 +89,33 @@ export = {
 
         const roleResource = role.dependencyElements[0] as Resource;
         test.equal(roleResource.resourceType, 'AWS::IAM::Role');
+        test.done();
+    },
+
+    'federated principal can change AssumeRoleAction'(test: Test) {
+        const stack = new Stack();
+        const cognitoPrincipal = new FederatedPrincipal(
+            'foo',
+            { StringEquals: { key: 'value' } },
+            'sts:AssumeSomething');
+
+        new Role(stack, 'MyRole', { assumedBy: cognitoPrincipal });
+
+        expect(stack).to(haveResource('AWS::IAM::Role', {
+            AssumeRolePolicyDocument: {
+                Statement: [
+                    {
+                        Principal: { Federated: "foo" },
+                        Condition: {
+                            StringEquals: { key: "value" }
+                        },
+                        Action: "sts:AssumeSomething",
+                        Effect: "Allow",
+                    }
+                ],
+            }
+        }));
+
         test.done();
     }
 };

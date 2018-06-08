@@ -129,11 +129,14 @@ export = {
 
     'addFederatedPrincipal adds a Federated principal with the passed value'(test: Test) {
         const p = new PolicyStatement();
-        p.addFederatedPrincipal("com.amazon.cognito");
+        p.addFederatedPrincipal("com.amazon.cognito", { StringEquals: { key: 'value' }});
         test.deepEqual(resolve(p), {
             Effect: "Allow",
             Principal: {
                 Federated: "com.amazon.cognito"
+            },
+            Condition: {
+                StringEquals: { key: 'value' }
             }
         });
         test.done();

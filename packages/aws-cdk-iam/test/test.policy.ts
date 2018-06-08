@@ -277,5 +277,5 @@ export = {
             }
             return r;
         }
-    }
+    },
 };

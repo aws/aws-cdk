@@ -138,5 +138,5 @@ function createAssumeRolePolicy(principal: PolicyPrincipal) {
     return new PolicyDocument()
         .addStatement(new PolicyStatement()
             .addPrincipal(principal)
-            .addAction('sts:AssumeRole'));
+            .addAction(principal.assumeRoleAction));
 }
