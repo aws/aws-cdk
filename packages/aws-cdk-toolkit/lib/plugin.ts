@@ -6,7 +6,7 @@ import { error } from './logging';
 /**
  * The basic contract for plug-ins to adhere to::
  *
- *     import { Plugin, PluginHost } from 'aws-cdk';
+ *     import { Plugin, PluginHost } from 'aws-cdk-toolkit';
  *     import { CustomCredentialProviderSource } from './custom-credential-provider-source';
  *
  *     export default class FooCDKPlugIn implements PluginHost {
