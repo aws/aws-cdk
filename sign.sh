@@ -6,6 +6,11 @@ if [[ "${1:-}" == "" ]]; then
     echo "">&2
     echo "Creates detached signature as FILE.sig." >&2
     exit 1
+else
+    if [ ! -f ${1} ]; then
+        echo "Asked to sign ${1}, but no such file exists."
+        exit 1
+    fi
 fi
 
 if [[ "${SIGNING_KEY_SCOPE:-}" == "" ]]; then
@@ -14,7 +19,7 @@ if [[ "${SIGNING_KEY_SCOPE:-}" == "" ]]; then
 fi
 
 tmpdir=$(mktemp -d)
-trap "shred $tmpdir/* && rm -rf $tmpdir" EXIT
+trap "find $tmpdir -type f -exec shred {} \\; && rm -rf $tmpdir" EXIT
 
 SECRET=$SIGNING_KEY_SCOPE/SigningKey
 
@@ -28,18 +33,25 @@ value-from-secret() {
 
 passphrase=$(value-from-secret Passphrase)
 
+# GnuPG will occasionally bail out with "gpg: <whatever> failed: Inappropriate ioctl for device", the following attempts to fix
+export GPG_TTY=$(tty)
+
 echo "Importing key..." >&2
-gpg --homedir $tmpdir --import <(value-from-secret PrivateKey)
+gpg --homedir $tmpdir \
+    --allow-secret-key-import \
+    --batch --yes --no-tty \
+    --import <(value-from-secret PrivateKey)
 
 while [[ "${1:-}" != "" ]]; do
     echo "Signing $1..." >&2
     echo $passphrase | gpg \
         --homedir $tmpdir \
         --local-user aws-cdk@amazon.com \
-        --batch --yes \
+        --batch --yes --no-tty \
+        --pinentry-mode loopback \
         --passphrase-fd 0 \
-        --output $2.sig \
-        --detach-sign $2
+        --output $1.sig \
+        --detach-sign $1
     shift
 done
 

@@ -14,7 +14,7 @@ import * as yargs from 'yargs';
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import * as contextplugins from '../lib/contextplugins';
 import { printStackDiff } from '../lib/diff';
-import { cliInit } from '../lib/init';
+import { availableInitTemplates, cliInit } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
@@ -61,7 +61,9 @@ const argv = yargs
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
         .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
-    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template')
+    .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template', yargs => yargs
+        .option('type', { type: 'string', desc: 'the type of package to initialize', choices: availableInitTemplates.map(t => t.name) })
+        .option('language', { type: 'string', alias: 'lang', desc: 'the language to be used for the new project' }))
     .epilogue([
         'If your app has a single stack, there is no need to specify the stack name',
         'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
@@ -170,7 +172,7 @@ async function main(command: string, args: any): Promise<number | string | {} |Â
             return await cliMetadata(await findStack(args.STACK));
 
         case 'init':
-            return await cliInit(args.TEMPLATE);
+            return await cliInit(args.type, args.language);
 
         default:
             throw new Error('Unknown command: ' + command);

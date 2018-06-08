@@ -48,7 +48,28 @@ export class PolicyDocument extends Token {
  * Represents an IAM principal.
  */
 export abstract class PolicyPrincipal {
-    public abstract toJson(): any;
+    /**
+     * When this Principal is used in an AssumeRole policy, the action to use.
+     */
+    public readonly assumeRoleAction: string = 'sts:AssumeRole';
+
+    /**
+     * Return the policy fragment that identifies this principal in a Policy.
+     */
+    public abstract policyFragment(): PrincipalPolicyFragment;
+}
+
+/**
+ * A collection of the fields in a PolicyStatement that can be used to identify a principal.
+ *
+ * This consists of the JSON used in the "Principal" field, and optionally a
+ * set of "Condition"s that need to be applied to the policy.
+ */
+export class PrincipalPolicyFragment {
+    constructor(
+        public readonly principalJson: any,
+        public readonly conditions: {[key: string]: any} = {}) {
+    }
 }
 
 export class ArnPrincipal extends PolicyPrincipal {
@@ -56,8 +77,8 @@ export class ArnPrincipal extends PolicyPrincipal {
         super();
     }
 
-    public toJson(): any {
-        return { AWS: this.arn };
+    public policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({ AWS: this.arn });
     }
 }
 
@@ -75,8 +96,8 @@ export class ServicePrincipal extends PolicyPrincipal {
         super();
     }
 
-    public toJson(): any {
-        return { Service: this.service };
+    public policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({ Service: this.service });
     }
 }
 
@@ -98,18 +119,21 @@ export class CanonicalUserPrincipal extends PolicyPrincipal {
         super();
     }
 
-    public toJson(): any {
-        return { CanonicalUser: this.canonicalUserId };
+    public policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({ CanonicalUser: this.canonicalUserId });
     }
 }
 
 export class FederatedPrincipal extends PolicyPrincipal {
-    constructor(public readonly federated: any) {
+    constructor(
+        public readonly federated: any,
+        public readonly conditions: {[key: string]: any},
+        public readonly assumeRoleAction: string = 'sts:AssumeRole') {
         super();
     }
 
-    public toJson(): any {
-        return { Federated: this.federated };
+    public policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment({ Federated: this.federated }, this.conditions);
     }
 }
 
@@ -132,8 +156,8 @@ export class Anyone extends PolicyPrincipal {
      */
     public readonly accountId = '*';
 
-    public toJson() {
-        return '*';
+    public policyFragment(): PrincipalPolicyFragment {
+        return new PrincipalPolicyFragment('*');
     }
 }
 
@@ -179,7 +203,9 @@ export class PolicyStatement extends Token {
     }
 
     public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
-        this.principal.push(principal.toJson());
+        const fragment = principal.policyFragment();
+        this.principal.push(fragment.principalJson);
+        this.addConditions(fragment.conditions);
         return this;
     }
 
@@ -195,8 +221,8 @@ export class PolicyStatement extends Token {
         return this.addPrincipal(new ServicePrincipal(service));
     }
 
-    public addFederatedPrincipal(federated: any): PolicyStatement {
-        return this.addPrincipal(new FederatedPrincipal(federated));
+    public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): PolicyStatement {
+        return this.addPrincipal(new FederatedPrincipal(federated, conditions));
     }
 
     public addAccountRootPrincipal(): PolicyStatement {
@@ -267,13 +293,35 @@ export class PolicyStatement extends Token {
     // Condition
     //
 
-    public setCondition(key: string, value: any): PolicyStatement {
+    /**
+     * Add a condition to the Policy
+     */
+    public addCondition(key: string, value: any): PolicyStatement {
         this.condition[key] = value;
         return this;
     }
 
+    /**
+     * Add multiple conditions to the Policy
+     */
+    public addConditions(conditions: {[key: string]: any}): PolicyStatement {
+        Object.keys(conditions).map(key => {
+            this.addCondition(key, conditions[key]);
+        });
+        return this;
+    }
+
+    /**
+     * Add a condition to the Policy.
+     *
+     * @deprecated For backwards compatibility. Use addCondition() instead.
+     */
+    public setCondition(key: string, value: any): PolicyStatement {
+        return this.addCondition(key, value);
+    }
+
     public limitToAccount(accountId: any): PolicyStatement {
-        return this.setCondition('StringEquals', new Token(() => {
+        return this.addCondition('StringEquals', new Token(() => {
             return { 'sts:ExternalId': accountId };
         }));
     }
