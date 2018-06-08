@@ -14,7 +14,7 @@ if [[ "${SIGNING_KEY_SCOPE:-}" == "" ]]; then
 fi
 
 tmpdir=$(mktemp -d)
-trap "shred $tmpdir/* && rm -rf $tmpdir" EXIT
+trap "find $tmpdir -type f -exec shred {} \\; && rm -rf $tmpdir" EXIT
 
 SECRET=$SIGNING_KEY_SCOPE/SigningKey
 
