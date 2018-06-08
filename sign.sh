@@ -6,6 +6,11 @@ if [[ "${1:-}" == "" ]]; then
     echo "">&2
     echo "Creates detached signature as FILE.sig." >&2
     exit 1
+else
+    if [ ! -f ${1} ]; then
+        echo "Asked to sign ${1}, but no such file exists."
+        exit 1
+    fi
 fi
 
 if [[ "${SIGNING_KEY_SCOPE:-}" == "" ]]; then
@@ -43,6 +48,7 @@ while [[ "${1:-}" != "" ]]; do
         --homedir $tmpdir \
         --local-user aws-cdk@amazon.com \
         --batch --yes --no-tty \
+        --pinentry-mode loopback \
         --passphrase-fd 0 \
         --output $1.sig \
         --detach-sign $1
