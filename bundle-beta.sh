@@ -49,5 +49,5 @@ zip -y -r ${output} .
 echo ${output}
 
 # Sign the bundle
-/bin/bash $root/sign.sh Archive $output
+/bin/bash $root/sign.sh $output
 
