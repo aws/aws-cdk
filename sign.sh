@@ -38,8 +38,8 @@ while [[ "${1:-}" != "" ]]; do
         --local-user aws-cdk@amazon.com \
         --batch --yes \
         --passphrase-fd 0 \
-        --output $2.sig \
-        --detach-sign $2
+        --output $1.sig \
+        --detach-sign $1
     shift
 done
 
