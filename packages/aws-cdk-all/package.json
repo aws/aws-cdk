@@ -17,6 +17,7 @@
   "dependencies": {
     "aws-cdk": "^0.6.0",
     "aws-cdk-acm": "^0.6.0",
+    "aws-cdk-cloudfront": "^0.6.0",
     "aws-cdk-cloudtrail": "^0.6.0",
     "aws-cdk-codebuild": "^0.6.0",
     "aws-cdk-codecommit": "^0.6.0",
