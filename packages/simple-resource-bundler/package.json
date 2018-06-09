@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "fs-extra": "^4.0.2",
-    "yargs": "^9.0.1"
+    "yargs": "^9.0.1",
+    "source-map-support": "^0.5.6"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",
