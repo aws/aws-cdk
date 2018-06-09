@@ -1,5 +1,6 @@
 # Don't include original .ts files when doing `npm pack`
 *.ts
+!*.template.ts
 !*.d.ts
 coverage
 .nyc_output
