@@ -543,8 +543,11 @@ export class CloudFrontWebDistribution extends Construct {
             distributionConfig.aliases = props.aliasConfiguration.names;
             distributionConfig.viewerCertificate = {
                 acmCertificateArn: props.aliasConfiguration.acmCertRef,
-                cloudFrontDefaultCertificate: true,
                 sslSupportMethod: props.aliasConfiguration.sslMethod || SSLMethod.SNI,
+            };
+        } else {
+            distributionConfig.viewerCertificate = {
+                cloudFrontDefaultCertificate: true
             };
         }
 

@@ -47,6 +47,9 @@ export = {
                         "Id": "origin1"
                       }
                     ],
+                    "ViewerCertificate": {
+                      "CloudFrontDefaultCertificate": true
+                    },
                     "PriceClass": "PriceClass_100",
                     "DefaultCacheBehavior": {
                       "AllowedMethods": [
@@ -117,6 +120,9 @@ export = {
                         "Id": "origin1"
                       }
                     ],
+                    "ViewerCertificate": {
+                      "CloudFrontDefaultCertificate": true
+                    },
                     "PriceClass": "PriceClass_100",
                     "DefaultCacheBehavior": {
                       "AllowedMethods": [
