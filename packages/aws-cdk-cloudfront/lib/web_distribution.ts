@@ -1,4 +1,4 @@
-import { Construct,  } from 'aws-cdk';
+import { Construct, FnConcat,  } from 'aws-cdk';
 import { CertificateArn } from 'aws-cdk-acm';
 import { cloudfront } from 'aws-cdk-resources';
 import { Bucket, BucketRef } from 'aws-cdk-s3';
@@ -504,7 +504,7 @@ export class CloudFrontWebDistribution extends Construct {
 
             if (originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity) {
                 originProperty.s3OriginConfig = {
-                    originAccessIdentity: originConfig.s3OriginSource.originAccessIdentity.ref,
+                    originAccessIdentity: new FnConcat("origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref),
                 };
             }
             if (originConfig.customOriginSource) {
