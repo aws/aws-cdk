@@ -41,7 +41,7 @@
     "pkglint": "^0.6.0"
   },
   "dependencies": {
-    "aws-cdk-cx-api": "^0.6.0",
+    "@aws-cdk/cx-api": "^0.6.0",
     "json-diff": "^0.3.1"
   }
 }

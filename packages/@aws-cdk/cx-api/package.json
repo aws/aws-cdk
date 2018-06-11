@@ -1,5 +1,5 @@
 {
-  "name": "aws-cdk-cx-api",
+  "name": "@aws-cdk/cx-api",
   "version": "0.6.0",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",

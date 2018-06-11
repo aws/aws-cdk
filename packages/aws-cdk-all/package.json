@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/all",
+  "name": "aws-cdk-all",
   "private": true,
   "version": "0.6.0",
   "description": "A single package that provides all of the CDK dependencies",
@@ -23,7 +23,7 @@
     "@aws-cdk/codecommit": "^0.6.0",
     "@aws-cdk/codepipeline": "^0.6.0",
     "@aws-cdk/custom-resources": "^0.6.0",
-    "aws-cdk-cx-api": "^0.6.0",
+    "@aws-cdk/cx-api": "^0.6.0",
     "@aws-cdk/dynamodb": "^0.6.0",
     "@aws-cdk/ec2": "^0.6.0",
     "@aws-cdk/events": "^0.6.0",

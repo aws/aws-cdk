@@ -10,7 +10,7 @@ if (fs.existsSync(path.join(os.homedir(), ".aws", "credentials")) && fs.existsSy
     process.env.AWS_SDK_LOAD_CONFIG = '1';
 }
 
-import { Environment} from 'aws-cdk-cx-api';
+import { Environment} from '@aws-cdk/cx-api';
 import { CloudFormation, config, CredentialProviderChain , EC2, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';

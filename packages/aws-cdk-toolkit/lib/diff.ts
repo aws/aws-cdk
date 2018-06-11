@@ -1,7 +1,7 @@
 import {
     diffTemplate, formatDifferences
 } from '@aws-cdk/cloudformation-diff';
-import { SynthesizedStack } from 'aws-cdk-cx-api';
+import { SynthesizedStack } from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { print } from './logging';
 

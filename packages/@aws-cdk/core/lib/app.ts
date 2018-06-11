@@ -1,4 +1,4 @@
-import * as cxapi from 'aws-cdk-cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import { PATH_SEP } from '.';
 import { Stack } from './cloudformation/stack';
 import { Construct, MetadataEntry, Root } from './core/construct';

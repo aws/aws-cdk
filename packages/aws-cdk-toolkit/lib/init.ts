@@ -89,7 +89,7 @@ export class InitTemplate {
     }
 
     private expand(template: string, project: ProjectInfo) {
-        const cdkVersion = require('aws-cdk/package.json').version;
+        const cdkVersion = require('@aws-cdk/core/package.json').version;
         return template.replace(/%name%/g, project.name)
                        .replace(/%name\.camelCased%/g, camelCase(project.name))
                        .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
@@ -164,8 +164,8 @@ async function postInstallTypescript() {
         // "Manually" adding them to package.json so `npm install` doesn't remove everything
         const packageJson = await fs.readJSON('package.json');
         const exclusions = [
-            'aws-cdk-all', 'aws-cdk-applet-js', 'aws-cdk-assert', 'aws-cdk-cloudformation-diff', 'aws-cdk-cx-api',
-            'aws-cdk-docs', 'aws-cdk-toolkit', 'aws-cdk-util'
+            'aws-cdk-all', '@aws-cdk/applet-js', '@aws-cdk/assert', '@aws-cdk/cloudformation-diff', '@aws-cdk/cx-api',
+            'aws-cdk-docs', 'aws-cdk-toolkit', '@aws-cdk/util'
         ];
         for (const module of (await fs.readdir('node_modules')).filter(n => n.startsWith('aws-cdk'))) {
             if (module in packageJson.dependencies) { continue; }

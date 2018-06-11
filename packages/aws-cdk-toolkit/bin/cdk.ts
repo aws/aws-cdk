@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 
 import { deepMerge, isEmpty, partition } from '@aws-cdk/util';
-import * as cxapi from 'aws-cdk-cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import { exec, spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
 import * as fs from 'fs-extra';

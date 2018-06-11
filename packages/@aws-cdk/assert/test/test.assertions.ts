@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 
 import * as cdk from '@aws-cdk/core';
-import * as cx from 'aws-cdk-cx-api';
+import * as cx from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 
 import { Stack } from '@aws-cdk/core';

@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-cdk/core": "^0.6.0",
     "@aws-cdk/cloudformation-diff": "^0.6.0",
-    "aws-cdk-cx-api": "^0.6.0",
+    "@aws-cdk/cx-api": "^0.6.0",
     "@aws-cdk/resources": "^0.6.0",
     "@aws-cdk/util": "^0.6.0",
     "aws-sdk": "^2.135.0",

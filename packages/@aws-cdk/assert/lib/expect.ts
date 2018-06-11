@@ -1,5 +1,5 @@
 import { Stack } from '@aws-cdk/core';
-import * as api from 'aws-cdk-cx-api';
+import * as api from '@aws-cdk/cx-api';
 import { StackInspector } from './inspector';
 
 export function expect(stack: api.SynthesizedStack | Stack): StackInspector {
