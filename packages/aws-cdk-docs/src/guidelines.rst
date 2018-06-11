@@ -10,12 +10,74 @@
 
 .. _guidelines:
 
-##########
-Guidelines
-##########
+##########################
+Developing |cdk| Libraries
+##########################
 
-This topic describes helpful tips for using the |cdk|. These apply when you are
-writing Constructs.
+This topic provides information to help you develop a |l2| for the |cdk|.
+
+.. _creating_l2_constructs:
+
+Creating Construct Library constructs
+=====================================
+
+To submit a new |l2| to the CDK, the process
+starts with a pull request to the |cdk|:
+
+* Fork the |cdk| project to your own GitHub account.
+* Clone the repository to your computer:
+
+.. code-block:: sh
+
+   mkdir ~/cdk
+   cd ~/cdk
+   git clone ...
+
+* Create a new branch to hold your code
+
+.. code-block:: sh
+
+   git checkout my-branch
+
+* Create a new folder, *aws-cdk-RESOURCE*, in *packages/*,
+  where *RESOURCE* is the name of a |CFN| resource.
+
+* Code goes in *lib/*; tests in *test/*.
+
+* Create an *index.ts* file that only imports the other *NAME.ts* files,
+  where *NAME* indicates the functionality within the file.
+
+* Create *NAME.ts* for each set of related classes,
+  such as the construct itself and its props interface.
+
+In *NAME.ts*:
+
+* Create a class.
+
+* Create the related props interface.
+
+* Instantiate the resource.
+
+* Add enhancements as methods.
+
+* Set props to reasonable default values
+  (think clicking through the console and accepting those defaults).
+
+* Don't forget to implement **validate()**.
+
+Finally for the package:
+
+* Add a test, *test.NAME.ts*, for each construct.
+
+* Create an integration test, *integ.everything.ts*.
+
+* Commit your changes and push them back to GitHub.
+
+* Once everything looks good, navigate to the |cdk| project on the GitHub
+  website, select your branch, and next to the **Branch** menu select **New pull
+  request**.
+
+See the **aws-cdk-dynamodb** package for examples.
 
 .. _general_guidelines:
 
@@ -28,7 +90,7 @@ Although not a guideline,
 don't forget that if you change the name of a deployed construct,
 but do not rename the construct as described in the
 *Changing Logical IDs* section of the :ref:`concepts` topic,
-|cfn| deletes the old construct, including any resources created by the construct,
+|CFN| deletes the old construct, including any resources created by the construct,
 when you deploy the new construct.
 
 **Use TypeScript unless you are a single-language shop.**

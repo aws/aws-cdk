@@ -37,3 +37,13 @@
 .. |npm-package| replace:: aws-cdk-tools
 .. |nuget-package| replace:: aws-cdk
 .. |maven-id| replace:: aws-cdk
+
+.. Construct levels
+
+.. |l1| replace:: CloudFormation Resource
+.. |l2| replace:: AWS Construct Library
+.. |l3| replace:: Purpose-built Library
+
+.. So back-to-back entities have a space between them
+
+.. |space| unicode:: 0x20
