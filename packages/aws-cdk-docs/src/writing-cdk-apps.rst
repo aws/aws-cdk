@@ -8,18 +8,19 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _using_l2_constructs:
+.. _developing_cdk_apps:
 
-#################
-Writing CDK Apps
-#################
+#####################
+Developing |cdk| Apps
+#####################
 
 *CDK Apps* are the applications you write using the CDK libraries. After writing
 and compiling them, you'll use the |toolkit| to synthesize or deploy the
 stacks they describe.
 
 To write your CDK app, you can create your own constructs, as described in
-:doc:`cloudformation`, or use constructs created by others.
+:doc:`cloudformation`, or use higher-level constructs.
+See the :doc:`concepts` section for an overview of which constructs you should use or create.
 
 .. _incorporating_external_constructs:
 
@@ -77,10 +78,7 @@ to it to make it more reusable, and sharing it among your projects, or even
 sharing it with other people.
 
 Writing a CDK app means breaking down your desired infrastructure into logical
-constructs, and reusing them wherever it makes sense. For more information on
-writing constructs, see :ref:`creating_constructs`, :ref:`guidelines` and of
-course the :ref:`cdk_examples`.
-
+constructs, and reusing them wherever it makes sense.
 
 .. _runtime_discovery:
 

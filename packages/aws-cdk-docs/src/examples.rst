@@ -10,9 +10,9 @@
 
 .. _cdk_examples:
 
-########
-Examples
-########
+##############
+|cdk| Examples
+##############
 
 This topic contains some usage examples to help you get started understanding
 the |cdk|.
@@ -113,11 +113,11 @@ the |cdk|.
 
 .. _dynamodb_example:
 
-Creating a |ddb| Table
-===========================
+Creating a |DDB| Table
+======================
 
 The following example creates a
-|dynamodb| table with the partition key **Alias**
+|DDB| table with the partition key **Alias**
 and sort key **Timestamp**.
 
 .. code-block:: js
@@ -148,7 +148,7 @@ and sort key **Timestamp**.
 
 .. _creating_rds_example:
 
-Creating an |rds| Database
+Creating an |RDS| Database
 ==========================
 
 The following example creates the Aurora database **MyAuroraDatabase**.
@@ -191,11 +191,11 @@ The following example creates the Aurora database **MyAuroraDatabase**.
 
 .. _creating_s3_example:
 
-Creating an |s3| Bucket
+Creating an |S3| Bucket
 =======================
 
-The following example creates the |s3| bucket **MyS3Bucket** with server-side KMS
-encryption provided by |s3|.
+The following example creates the |S3| bucket **MyS3Bucket** with server-side KMS
+encryption provided by |S3|.
 
 .. code-block:: js
 
@@ -246,7 +246,7 @@ Creating a CloudFormation Template
 ==================================
 
 Use the |cx-synth-bold| command to create an |CFN| template from the stack in your app.
-You should see output similar to the following for your |dynamodb| table.
+You should see output similar to the following for your |DDB| table.
 
 .. code-block:: yaml
 

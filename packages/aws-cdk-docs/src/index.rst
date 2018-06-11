@@ -10,22 +10,25 @@
 
 .. _top:
 
-####################################
-AWS Cloud Development Kit User Guide
-####################################
+##########
+User Guide
+##########
 
 .. toctree::
-   welcome
-   getting-started
-   concepts
-   l1-vs-l2
-   cloudformation
-   writing-cdk-apps
-   creating-constructs
-   examples
-   tools
-   guidelines
-   reference
+   Welcome <welcome>
+   Getting Started <getting-started>
+   Developing Apps <writing-cdk-apps>
+   Developing Libraries <guidelines>
+   Examples <examples>
+   Concepts <concepts>
+   Tools <tools>
+   Advanced Topics <cloudformation>
+   Glossary <glossary>
+   Reference <reference>
+
+.. Incorporated into concepts: l1-vs-l2
+.. Incorporated into guidelines: creating-constructs
+.. Skipping: validating-downloads as that info should go in the "Start Here" doc
 
 .. installing on various systems:
    C++: NuGet

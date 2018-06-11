@@ -10,12 +10,13 @@
 
 .. _concepts:
 
-########
-Concepts
-########
+##############
+|cdk| Concepts
+##############
 
 This topic describes some of the concepts (the why and how)
 behind the |cdk|.
+It also discusses the advantages of a |l2| over a low-level |l1|.
 
 |cdk| apps are represented as a hierarchal structure we call the *construct
 tree*. Every node in the tree is a |construct-class| object. The
@@ -24,24 +25,71 @@ contain one or more |stack-class| constructs, which are deployable
 units of your app.
 
 This composition of constructs gives you the flexibility to architect your app, such as
-having a stack deployed in multiple regions. Stacks contain, either directly or
-indirectly through a child construct that represent AWS resources, such as |SQS|
-queues, |SNS| topics, |LAM| functions, and |DDB| tables.
+having a stack deployed in multiple regions. Stacks represent a collection of AWS resources, either directly or
+indirectly through a child construct that itself represents an AWS resource, such as an |SQS|
+queue, an |SNS| topic, an |LAM| function, or an |DDB| table.
 
 This composition of constructs also means you can easily create sharable constructs,
 and make changes to any construct and have those changes available to consumers
 as shared class libraries.
 
-.. _constructs:
+.. _construct_overview:
 
-Constructs
-==========
+Construct Overview
+==================
 
-Constructs are the building blocks of |cdk| applications. Constructs may have
+Constructs are the building blocks of |cdk| applications. Constructs can have
 child constructs, which in turn can have child constructs, forming a
 hierarchical tree structure.
 
-This tree structure is a powerful design pattern for composing high-level
+The |cdk| standard library comes with two different levels of constructs:
+
+|l1|
+
+  These constructs are low-level constructs that provide a direct, one-to-one,
+  mapping to an |CFN| resource,
+  as listed in the |CFN| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
+
+  All |l1| members are found in the :py:mod:`aws-cdk-resources` package.
+
+|l2|
+
+  These constructs have been handwritten by AWS engineers and come with
+  convenient defaults and additional knowledge about the inner workings of the
+  AWS resources they represent. In general, you will be able to express your
+  intent without worrying about the details too much, and the correct resources
+  will automatically be defined for you.
+
+  |l2| members are found in the :py:mod:`aws-cdk-RESOURCE` package,
+  where RESOURCE is the short name for the associated service,
+  such as SQS for the |l2| for the |SQS| service.
+  See the :ref:`reference` section for descriptions of the |cdk|
+  packages and constructs.
+
+Use an |l2| whenever possible, as they provide the
+best developer experience.
+See the :ref:`l2_advantages` section for more information about the advantages
+of an |l2| over a |l1|.
+
+At an even higher-level than an |l2|, a |l3|
+aggregates multiple, other constructs together
+into common architectural patterns, such as a *queue processor* or an *HTTP
+service*.
+
+By leveraging these common patterns, you can assemble your
+application even faster than by using an |l2| directly.
+
+A |l3|
+is not included with the standard CDK Construct
+Library. Instead, we encourage you to develop and share them inside your
+organization or on GitHub.
+
+.. _construct_structure:
+
+Construct Structure
+===================
+
+The construct tree structure is a powerful design pattern for composing high-level
 abstractions. For example, you can define a ``StorageLayer`` construct that
 represents your application's storage layer and include all the AWS resources,
 such as |DDB| tables and |S3| buckets, needed to implement your storage layer in
@@ -50,7 +98,7 @@ to instantiate the ``StorageLayer`` construct.
 
 When you initialize a construct,
 add the construct to the construct tree by specifying the parent construct as the first initializer parameter,
-a identifier for the construct as the second parameter,
+an identifier for the construct as the second parameter,
 and an set of properties for the final parameter,
 as shown in the following example.
 
@@ -58,7 +106,7 @@ as shown in the following example.
 
    new SomeConstruct(parent, name[, props]);
 
-In almost all cases, you will want to pass the keyword ``this`` for the ``parent``
+In almost all cases, you should pass the keyword ``this`` for the ``parent``
 argument, because you will generally initialize new constructs in the context of
 the parent construct. Any descriptive string will do for the ``name``
 argument,
@@ -71,34 +119,38 @@ and an in-line object for the set of properties.
      timeout: 300
    });
 
-.. admonition:: Rationale
+.. note::
 
-   The reason we associate the construct to its parent as part of its
-   initialization is because the construct occasionally needs contextual
-   information from its parent, such as to which the Region the stack is deployed.
+   Associating the construct to its parent as part of
+   initialization is necessary because the construct occasionally needs contextual
+   information from its parent, such as to which the region the stack is deployed.
 
 Use the following operations to inspect the construct tree.
 
 :py:attr:`aws-cdk.Construct.parent`
-   returns the construct's parent construct.
+   Gets the construct's parent construct.
 
 :py:meth:`aws-cdk.Construct.getChildren`
-   returns an array of all of the contruct's children.
+   Gets an array of all of the contruct's children.
 
 :py:meth:`aws-cdk.Construct.getChild`
-   returns the child construct with the specified ID.
+   Gets the child construct with the specified ID.
 
+:py:meth:`aws-cdk.Construct.toTreeString()`
 
-   returns a string representing the construct's tree.
+   Gets a string representing the construct's tree.
+
+We discuss the advantages of an |l2| over a |l1|
+in the :ref:`l2_advantages` section.
 
 .. _construct_names:
 
 Construct Names
 ---------------
 
-Every construct in a CDK app must have a **name** unique amongst its siblings.
-Names are used to track Constructs in the Construct hierarchy, and to allocate
-logical IDs so that CloudFormation can keep track of the generated resources.
+Every construct in a CDK app must have a **name** unique among its siblings.
+Names are used to track constructs in the construct hierarchy, and to allocate
+logical IDs so that |CFN| can keep track of the generated resources.
 
 When a construct is created, its name is specified as the second
 initializer argument:
@@ -114,8 +166,8 @@ Use the :py:attr:`aws-cdk.Construct.path` property to get the path of this
 construct from the root of the tree.
 
 Note that the name of a construct does not directly map onto the physical name
-of the resource when it is created! If you have a bucket or table that you want
-to give a concrete name, then specify the desired name using use the appropriate
+of the resource when it is created! If you want to give a physical name to a bucket or table,
+specify the physical name using use the appropriate
 property, such as ``bucketName`` or ``tableName``. Example:
 
 .. code-block:: js
@@ -124,12 +176,13 @@ property, such as ``bucketName`` or ``tableName``. Example:
       bucketName: 'physical-bucket-name'
     });
 
-In general however, you should avoid specifying physical names. Instead, let
-CloudFormation generate names for you, and use attributes like bucket.bucketName
+Avoid specifying physical names. Instead, let
+|CFN| generate names for you.
+Use attributes, such as **bucket.bucketName**,
 to discover the generated names and pass them to your application's runtime
 code, as described in :ref:`creating_runtime_value`.
 
-When you synthesize an |cdk| tree into a |CFN| template, the |CFN| logical ID
+When you synthesize an |cdk| tree into an |CFN| template, the |CFN| logical ID
 for each resource in the template is allocated according to the path of that
 resource in the construct tree. For more information, see :ref:`logical_ids`.
 
@@ -138,7 +191,7 @@ resource in the construct tree. For more information, see :ref:`logical_ids`.
 Construct Properties
 --------------------
 
-Constructs can be customized by passing a property object as the third
+Customize constructs by passing a property object as the third
 parameter. Every construct has its own set of parameters, defined as an
 interface. You can pass a property object to your construct in two ways:
 
@@ -162,10 +215,77 @@ Construct Metadata
 ------------------
 
 You can attach metadata to a construct using the
-py:meth:`aws-cdk.Construct.addMetadata` operation. Metadata entries
-automatically include the stack trace from which the metadata entry was added,
-so at any level of a construct you can find the code location, even if metadata
+:py:meth:`aws-cdk.Construct.addMetadata` operation. Metadata entries
+automatically include the stack trace from which the metadata entry was added.
+Therefore, at any level of a construct you can find the code location, even if metadata
 was created by a lower-level library that you don't own.
+
+.. _l2_advantages:
+
+Using an |l2| Versusf a |l1|
+============================
+
+To illustrate the advantages that an |l2| has over
+a |l1|, let's look at an example.
+
+The :py:mod:`aws-cdk-sns` Construct Library includes the `Topic` construct that
+you can use to define an |SNS| topic:
+
+.. code-block:: js
+
+    import { Topic } from '@aws-cdk/sns';
+    const topic = new Topic(this, 'MyTopic');
+
+An |l2| encapsulate the
+details of working with these AWS resources. For example, to subscribe a queue to a topic,
+call the :py:meth:`aws-cdk-sns.Topic.subscribeQueue` method with a queue object as the second argument:
+
+.. code-block:: js
+
+    const topic = new Topic(this, 'MyTopic');
+    const queue = new Queue(this, 'MyQueue', {
+        visibilityTimeoutSec: 300
+    });
+
+    topic.subscribeQueue('TopicToQueue', queue);
+
+This method:
+
+1. Creates a subscription and associates it with the topic and the queue.
+
+2. Adds a queue policy with permissions for the topic to send messages to the queue.
+
+To achieve a similar result using :py:mod:`aws-cdk-resources`, you have to explicitly define the
+subscription and queue policy, since there is no **subscribeToQueue** method in the **TopicResource** class:
+
+.. code-block:: js
+
+    const topic = new sns.TopicResource(this, 'MyTopic');
+    const queue = new sqs.QueueResource(this, 'MyQueue');
+
+    new sns.SubscriptionResource(this, 'TopicToQueue', {
+        topicArn: topic.ref, // ref == arn for topics
+        endpoint: queue.queueName,
+        protocol: 'sqs'
+    });
+
+    const policyDocument = new PolicyDocument();
+    policyDocument.addStatement(new PolicyStatement()
+        .addResource(queue.queueArn)
+        .addAction('sqs:SendMessage')
+        .addServicePrincipal('sns.amazonaws.com')
+        .setCondition('ArnEquals', { 'aws:SourceArn': topic.ref }));
+
+    new sqs.QueuePolicyResource(this, 'MyQueuePolicy', {
+        policyDocument: policyDocument,
+        queues: [ queue.ref ]
+    });
+
+Notice how much cleaner the first version is. There is more focus on intent,
+rather than mechanism.
+
+This example shows one of the many benefits
+of using an |l2| instead of a |l1|.
 
 .. _stacks:
 
@@ -226,19 +346,19 @@ to each resource in the stack.
     When you update the template, |CFN| uses these logical IDs to plan the update
     and apply changes. Therefore, logical IDs must remain "stable" across updates.
     If you make a modification in your code that results in a change to a logical ID
-    of a resource, |CFN| deletes the resource and recreates a new resource when it
+    of a resource, |CFN| deletes the resource and creates a new resource when it
     updates the stack.
 
 Each resource in the construct tree has a unique path that represents its
 location within the tree. The logical ID of a resource is formed by
 concatenating the names of all of the constructs in the resource's path, and
 appending an eight-character MD5 hash of the path. This final component is
-necessary since CloudFormation logical IDs cannot include the delimiting slash
+necessary since |CFN| logical IDs cannot include the delimiting slash
 character (/), so simply concatenating the component values does not work. For
 example, concatenating the components of the path */a/b/c* produces **abc**,
 which is the same as concatenating the components of the path */ab/c*.
 
-Since logical IDs may only use alphanumeric characters and also restricted in
+Since logical IDs can only use alphanumeric characters and also restricted in
 length, we are unable to simply use a delimited path as the logical ID. Instead
 IDs are allocated by concatenating a human-friendly rendition from the path
 (concatenation, de-duplicate, trim) with a short MD5 hash of the delimited path:
@@ -295,14 +415,14 @@ Depending on the nature of the resource,
 this can be disastrous in production, such as when deleting a |DDB| table.
 
 You could use
-`CloudFormation Stack Policies
+`AWS CloudFormation Stack Policies
 <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/protect-stack-resources.html>`_
 to protect critical resources in your stack from accidental deletion.
 Although this |CFN| feature is not supported in the |cdk| and |toolkit|,
 the |cdk| does provide a few other mechanisms to help deal with logical ID changes.
 
 If you have CDK stacks deployed with persistent resources such as S3 buckets or
-DynamoDB tables, you may want to explicitly "rename" the new logical IDs to
+DynamoDB tables, you might want to explicitly "rename" the new logical IDs to
 match your existing resources.
 
 First, make sure you compare the newly synthesized template with any deployed
@@ -313,14 +433,14 @@ stacks. `cdk diff` will tell you which resources are about to be destroyed:
     [-] ☢️ Destroying MyTable (type: AWS::DynamoDB::Table)
     [+] 🆕 Creating MyTableCD117FA1 (type: AWS::DynamoDB::Table)
 
-# :py:meth:`aws-cdk.Stack.renameLogical` where :code:`from` is either an explicit logical ID or a path.
+- :py:meth:`aws-cdk.Stack.renameLogical` where :code:`from` is either an explicit logical ID or a path.
   Call this method after the resource has been added to the stack.
-# :py:attr:`aws-cdk.Resource.logicalId` allows assigning a fixed logical ID to a resource,
+- :py:attr:`aws-cdk.Resource.logicalId` allows assigning a fixed logical ID to a resource,
   and opt-out from using the scheme described above.
 
 .. _environments:
 
-Environments and authentication
+Environments and Authentication
 ===============================
 
 The |cdk| refers to the combination of an account ID and a Region as an *environment*.
@@ -339,20 +459,20 @@ where REGION is the Region in which you want to create the stack and ACCOUNT is 
 For each of the two arguments **region** and **account**, the |cdk| uses the
 following lookup procedure:
 
-#. If **region** or **account** are provided directly as an property to the
-   Stack, use that.
-#. Otherwise, read **default-account** and **default-region** from the application's context.
-   These can be set in the |toolkit| in either the local |cx-json| file or the global version in
-   *$HOME/.cdk* on Linux or MacOS or *%USERPROFILE%\\.cdk* on Windows.
-#. If these are not defined, it will determine them as follows:
-    * **account**: use account from default SDK credentials. Environment
-      variables are tried first (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**),
-      followed by credentials in *$HOME/.aws/credentials* on Linux or MacOS
-      or *%USERPROFILE%\\.aws\\credentials* on Windows.
-    * **region**: use the default region configured in *$HOME/.aws/config* on
-      Linux or MacOS or *%USERPROFILE%\\.aws\\config* on Windows.
-    * You can set these defaults manually, but we recommend you use ``aws
-      configure``, as described in the :doc:`getting-started` topic.
+- If **region** or **account** are provided directly as an property to the
+  Stack, use that.
+- Otherwise, read **default-account** and **default-region** from the application's context.
+  These can be set in the |toolkit| in either the local |cx-json| file or the global version in
+  *$HOME/.cdk* on Linux or MacOS or *%USERPROFILE%\\.cdk* on Windows.
+- If these are not defined, it will determine them as follows:
+  - **account**: use account from default SDK credentials. Environment
+    variables are tried first (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**),
+    followed by credentials in *$HOME/.aws/credentials* on Linux or MacOS
+    or *%USERPROFILE%\\.aws\\credentials* on Windows.
+  - **region**: use the default region configured in *$HOME/.aws/config* on
+    Linux or MacOS or *%USERPROFILE%\\.aws\\config* on Windows.
+  - You can set these defaults manually, but we recommend you use ``aws
+    configure``, as described in the :doc:`getting-started` topic.
 
 We recommend you use the default environment for development stacks,
 and explicitly specify accounts and Regions for production stacks.
@@ -375,7 +495,7 @@ and explicitly specify accounts and Regions for production stacks.
 Environmental Context
 ---------------------
 
-When you synthesize a stack to create a |CFN| template, the |cdk| may need information based on the
+When you synthesize a stack to create a |CFN| template, the |cdk| might need information based on the
 environment (account and Region), such as the availability zones or AMIs available in the Region.
 To enable this feature, the |toolkit| uses *context providers*,
 and saves the context information into |cx-json|
@@ -527,7 +647,7 @@ create a script similar to the following.
       - npm test
       - npm pack --unsafe-perm
 
-To execute the applet and synthesize a CloudFormation template,
+To execute the applet and synthesize an |CFN| template,
 use the following command.
 
 .. code-block:: sh

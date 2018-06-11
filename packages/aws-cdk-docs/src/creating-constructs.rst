@@ -26,7 +26,7 @@ combine into other constructs and an application stack to create an |cdk|
 application.
 
 The lowest-level |cdk| construct is a Resource Construct, which represents a
-single AWS service resource, such as an SNS topic or an SQS queue.
+single AWS service resource, such as an |SNS| topic or an |SQS| queue.
 
 The next level of constructs, which we call a Construct Library Construct,
 typicall wraps one or more Resource Constructs and adds higher-level
@@ -73,7 +73,7 @@ To create a new Construct Library construct as a pull request to the |cdk|:
    git checkout my-branch
 
 * Create a new folder, *aws-cdk-RESOURCE*, in *packages/*,
-  where *RESOURCE* is the name of a |cfn| resource.
+  where *RESOURCE* is the name of a |CFN| resource.
 
 * Code goes in *lib/*; tests in *test/*.
 

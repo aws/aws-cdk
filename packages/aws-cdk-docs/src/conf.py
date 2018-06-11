@@ -32,7 +32,7 @@ import os, codecs
 service_name_long = u'AWS Cloud Development Kit'
 service_docs_home = u'http://aws.amazon.com/documentation/CDK/'
 
-project = u'AWS Cloud Development Kit User Guide'
+project = u'User Guide'
 project_desc = u'AWS Cloud Development Kit User Guide'
 project_basename = u'CDK/ug'
 
@@ -48,6 +48,11 @@ forum_id = u'0'
 docset_path_slug = u'CDK'
 version_path_slug = u'latest'
 guide_path_slug = u'ug'
+
+# Add beta banner
+guide_banner = """
+This documentation is for the beta release of the AWS Cloud Development Kit (CDK).
+"""
 
 build_html = True
 build_pdf = True

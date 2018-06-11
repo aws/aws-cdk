@@ -8,26 +8,36 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _cloudformation:
+.. _advanced_topics:
 
-###################
-Using CloudFormation Resource Constructs
-###################
+###############
+Advanced Topics
+###############
 
-CloudFormation Resource constructs are found in the :py:mod:`_aws-cdk_resources` package. They map directly onto |cfn|
+This section includes information about |cdk| features that most developers do not use.
+
+.. _creating_l1_constructs:
+
+Creating |l1| Constructs
+========================
+
+|l1| constructs are found in the :py:mod:`aws-cdk-resources` package. They map directly onto |cfn|
 resources.
 
 .. important::
 
   In general, you shouldn't need to use this type of Constructs, unless you have
   special requirements or there is no Construct Library for the AWS resource you
-  need yet. Prefer using other packages with higher-level constructs instead. See
+  need yet. You should use other packages with higher-level constructs instead. See
   :ref:`l1_vs_l2` for a comparison between the construct types.
+
+The remainder of this section is for those who need to create a stack using a |l1| construct,
+or want to create a |l2| construct from |l1| constructs.
 
 .. _construct_attributes:
 
 Construct Attributes
-====================
+--------------------
 
 To reference the runtime attributes of constructs,
 use one of the properties available on the construct object.
@@ -56,7 +66,7 @@ named attribute instead of *ref*.
 .. _resource_options:
 
 Resource Options
-================
+----------------
 
 The :py:attr:`aws-cdk.Resource.options` object includes |CFN| options, such as
 :code:`condition`, :code:`updatePolicy`, :code:`createPolicy` and
@@ -65,7 +75,7 @@ The :py:attr:`aws-cdk.Resource.options` object includes |CFN| options, such as
 .. _parameters:
 
 Parameters
-==========
+----------
 
 .. NEEDS SOME INTRO TEXT
 
@@ -79,7 +89,7 @@ Parameters
 .. _outputs:
 
 Outputs
-=======
+-------
 
 .. NEEDS SOME INTRO TEXT
 
@@ -96,7 +106,7 @@ Outputs
 .. _conditions:
 
 Conditions
-==========
+----------
 
 .. NEEDS SOME INTRO TEXT
 
@@ -113,7 +123,7 @@ Conditions
 .. _intrinsic_functions:
 
 Intrinsic Functions
-===================
+-------------------
 
 .. NEEDS SOME INTRO TEXT
 
@@ -125,7 +135,7 @@ Intrinsic Functions
 .. _pseudo_parameters:
 
 Pseudo Parameters
-=================
+-----------------
 
 .. NEEDS SOME INTRO TEXT
 
@@ -133,3 +143,7 @@ Pseudo Parameters
 
     import { AwsRegion } from '@aws-cdk/core';
     new AwsRegion()
+
+.. Add a new topic in "Advanced Topics" about integrating
+   cdk synch > mytemplate
+   into a CI/CD pipeline
