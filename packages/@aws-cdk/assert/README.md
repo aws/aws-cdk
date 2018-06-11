@@ -89,7 +89,7 @@ Add the following to your `package.json`':
     ...
     devDependencies: {
         "@aws-cdk/assert": "*",
-        "aws-cdk-toolkit": "*"
+        "aws-cdk": "*"
     }
 }
 ```

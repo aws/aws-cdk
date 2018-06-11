@@ -17,7 +17,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk-toolkit": "^0.6.0",
+    "aws-cdk": "^0.6.0",
     "pkglint": "^0.6.0"
   },
   "dependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "aws-cdk-toolkit",
+  "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
   "version": "0.6.0",
   "main": "lib/index.js",

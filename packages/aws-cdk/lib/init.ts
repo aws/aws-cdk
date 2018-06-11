@@ -165,7 +165,7 @@ async function postInstallTypescript() {
         const packageJson = await fs.readJSON('package.json');
         const exclusions = [
             'aws-cdk-all', '@aws-cdk/applet-js', '@aws-cdk/assert', '@aws-cdk/cloudformation-diff', '@aws-cdk/cx-api',
-            'aws-cdk-docs', 'aws-cdk-toolkit', '@aws-cdk/util'
+            'aws-cdk-docs', 'aws-cdk', '@aws-cdk/util'
         ];
         for (const module of (await fs.readdir('node_modules')).filter(n => n.startsWith('aws-cdk'))) {
             if (module in packageJson.dependencies) { continue; }
