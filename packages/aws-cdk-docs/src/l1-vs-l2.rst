@@ -8,23 +8,23 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _l1_vs_l2:
+.. _the_cdk_construct_library:
 
-#####################
-The Construct Library
-#####################
+###########################
+The |cdk| Construct Library
+###########################
 
-The |cdk| standard library comes with two different types of Constructs:
+The |cdk| standard library comes with two different levels of constructs:
 
-AWS CloudFormation Resource Constructs
+|l1| Constructs
 
-  CloudFormation Resource constructs are low-level constructs that provide a direct, one-to-one,
-  mapping to an |cfn| resource,
-  as listed in the |cfn| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
+  These constructs are low-level constructs that provide a direct, one-to-one,
+  mapping to an |CFN| resource,
+  as listed in the |CFN| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
 
-  All Resource constructs are found in the :py:mod:`_aws-cdk_resources` package.
+  All |l1| constructs are found in the :py:mod:`_aws-cdk_resources` package.
 
-AWS Construct Library Constructs
+|l2| Constructs
 
   These constructs have been handwritten by AWS engineers and come with
   convenient defaults and additional knowledge about the inner workings of the
@@ -32,30 +32,32 @@ AWS Construct Library Constructs
   intent without worrying about the details too much, and the correct resources
   will automatically be defined for you.
 
-  Construt Library constructs are those that are found in all of the other
-  **aws-cdk-** packages. See the :ref:`reference` section for a list of all
-  available Construct Library packages and constructs.
+  |l2| constructs are found in the :py:mod:`aws-cdk-RESOURCE` package,
+  where RESOURCE is the short name for the associated service,
+  such as SQS for the |l2| constructs for the |SQS| service.
+  See the :ref:`reference` section for descriptions of the |cdk|
+  packages and constructs.
 
-Prefer using Construct Library constructs whenever possible, as they will provide the
+Use |l2| constructs whenever possible, as they provide the
 best developer experience.
 
-Sometimes there are use cases where you need to directly define |cfn| resources,
+Sometimes there are use cases where you need to directly define |CFN| resources,
 such as when migrating from an existing template, or when there is no Construct
-Library for the AWS resources you need yet. In those case you can use Resource
-constructs to define CloudFormation entities such as Resources, Parameters, Outputs, and
+Library for the AWS resources you need yet. In those case you can use |l1|
+constructs to define |CFN| entities such as Resources, Parameters, Outputs, and
 Conditions.
 
-Of course, it's always possible to define your own higher-level constructs in
-addition to the ones already provided, simply by defining a new class that
-describes your construct. For more information, see :doc:`creating-constructs`.
+You can define your own higher-level constructs in
+addition to the ones already provided, by creating a new class that
+pdescribes your construct.
 
 .. _aws_constructs_versus_cfn_resources:
 
-Construct Library constructs vs CloudFormation Resource constructs
-==================================================================
+|l2| Constructs vs |l1| Constructs
+==================================
 
-To illustrate the advantages that Construct Library constructs have over
-CloudFormation Resource constructs, let's look at an example.
+To illustrate the advantages that |l2| constructs have over
+|l1| constructs, let's look at an example.
 
 The :py:mod:`_aws-cdk_sns` Construct Library includes the `Topic` construct that
 you can use to define an |SNS| topic:
@@ -65,7 +67,7 @@ you can use to define an |SNS| topic:
     import { Topic } from '@aws-cdk/sns';
     const topic = new Topic(this, 'MyTopic');
 
-Library constructs encapsulate the
+|l2| constructs encapsulate the
 details of working with these AWS resources. For example, to subscribe a queue to a topic,
 call the :py:meth:`_aws-cdk_sns.Topic.subscribeQueue` method with a queue object as the second argument:
 
@@ -114,22 +116,22 @@ Notice how much cleaner the first version is. There is more focus on intent,
 rather than mechanism.
 
 This example shows one of the many benefits
-of using the Library constructs instead of the Resource constructs.
+of using the |l2| constructs instead of the |l1| constructs.
 
 .. _purpose_built_constructs:
 
-Purpose-built constructs
-========================
+|l3| Constructs
+===============
 
-At an even higher-level than Construct Library constructs, *Purpose-built
-constructs* are constructs that aggregate multiple other constructs together
+At an even higher-level than |l2| constructs, |l3|
+constructs aggregate multiple, other constructs together
 into common architectural patterns, such as a *queue processor* or an *HTTP
 service*.
 
-By leveraging these common patterns, you will be able to assemble your
-application even faster than by using Construct Library constructs directly.
+By leveraging these common patterns, you can assemble your
+application even faster than by using |l2| constructs directly.
 
-Because these constructs will depend on your application's specific goals and
-requirements, they are not included with the standard CDK Construct
+The |l3| constructs
+are not included with the standard CDK Construct
 Library. Instead, we encourage you to develop and share them inside your
 organization or on GitHub.

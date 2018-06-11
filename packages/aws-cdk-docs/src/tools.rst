@@ -10,9 +10,9 @@
 
 .. _tools:
 
-#####
-Tools
-#####
+###########
+|cdk| Tools
+###########
 
 cdk
 ===
@@ -46,6 +46,7 @@ Below are the actions you can take on your CDK app:
    Usage: cdk -a <cloud-executable> COMMAND
 
    Commands:
+     docs                        Opens the documentation in a browser
      list                        Lists all stacks in the cloud executable (alias:
                                  ls)
      synth [STACKS..]            Synthesizes and prints the cloud formation
@@ -59,20 +60,24 @@ Below are the actions you can take on your CDK app:
      diff [STACK]                Compares the specified stack with the deployed
                                  stack or a local template file
      metadata [STACK]            Returns all metadata associated with this stack
-     init [TEMPLATE]             Create a new, empty CDK project from a template
+     init [TEMPLATE]             Create a new, empty CDK project from a template.
+                                 Invoked without TEMPLATE, the app template will be
+                                 used.
 
    Options:
      --help         Show help                                             [boolean]
-     --version      Show version number                                   [boolean]
      --app, -a      REQUIRED: Command-line of cloud executable (e.g. "node
-                    bin/my-app.js")                                        [string]
+                   bin/my-app.js")                                        [string]
      --context, -c  Add contextual string parameter.                        [array]
+     --plugin, -p   Name or path of a node package that extend the CDK features.
+                   Can be specified multiple times                         [array]
      --rename       Rename stack name if different then the one defined in the
-                    cloud executable                                       [string]
+                   cloud executable                                       [string]
      --trace        Print trace for stack warnings                        [boolean]
      --strict       Do not construct stacks with warnings                 [boolean]
      --json, -j     Use JSON output instead of YAML                       [boolean]
      --verbose, -v  Show debug logs                                       [boolean]
+     --version      Show version number                                   [boolean]
 
    If your app has a single stack, there is no need to specify the stack name
 

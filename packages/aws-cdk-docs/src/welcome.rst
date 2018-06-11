@@ -8,8 +8,6 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. Synched with release 1.0.200180 on 3/15/2018
-
 .. _welcome:
 
 #######
@@ -18,99 +16,83 @@ Welcome
 
 Welcome to the |cdk-long| (|cdk|) User Guide.
 
-The |cdk| is a software development framework which allows
-developers to model model AWS infrastructure components as code.
+The |cdk| is a software development framework for defining cloud infrastructure in code.
 
-Modern web services rely more and more on infrastructure to achieve their goals.
-As the complexity of these applications increases, there is a growing need for
-modeling techniques and tools to enable sharing and reusing higher-level
-infrastructure building blocks. Previously, achieving even seemingly trivial tasks on
-AWS, such as deploying a service on an EC2 fleet, require deep understanding of
-the low-level building blocks.
+The |cdk| consists of a core software package,
+language bindings, and command-line interface tools.
+The |cdk| also provides reusable component libraries, which we call *constructs*.
+Constructs are abstractions of cloud infrastructure logic that create AWS resources and are packaged for reuse.
+They expose a rich programmatic interface and can be composed together to form |cdk| apps that generate |CFN| templates.
 
-The |cdk| takes a code-first approach to cloud architectures and allows developers
-to use familiar object-oriented idioms to describe their architecture
-**constructs**.
+Here's a short example of creating an |SNS| topic, an |SQS| queue,
+and subscribing the topic to the queue.
+We'll explain the code in more detail,
+including how to see your |CFN| template before you deploy it,
+in :doc:`getting-started`.
+
+.. code-block:: js
+
+    import { App, Stack, StackProps } from '@aws-cdk/core';
+    import { Topic } from '@aws-cdk/sns';
+    import { Queue } from '@aws-cdk/sqs';
+
+    class HelloStack extends Stack {
+        constructor(parent: App, name: string, props?: StackProps) {
+            super(parent, name, props);
+
+            const topic = new Topic(this, 'MyTopic');
+
+	    const queue = new Queue(this, 'MyQueue', {
+              visibilityTimeoutSec: 300
+            });
+
+            topic.subscribeQueue('TopicToQueue', queue);
+        }
+    }
+
+    const app = new App(process.argv);
+    new HelloStack(app, 'hello-cdk');
+
+    process.stdout.write(app.run());
+
+The process of creating your AWS resources using the |cdk| is straightforward:
+
+1. Install the |cdk| on your development machine
+2. Run the **cdk init** command to create the skeleton of your program
+   in one of the supported programming lanuages
+3. Use your favorite development environment to define your AWS application infrastructure
+   using the |l2|
+4. Compile your code, if necessary
+5. (Optional) Run the |cdk| toolkit **cdk synth** command to see what your |CFN| temlate looks like
+6. Run the |cdk| toolkit **cdk deploy** command to deploy the resulting |CFN| template
+   and create the AWS resources in your AWS account
+7. Repeats steps 3-6 until you are satisfied with your resources
 
 .. note:: There is no charge for using the |cdk|, however you may incur AWS charges for creating or using AWS
 	  `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
-	  such as running Amazon EC2 instances or using Amazon S3 storage.
+	  such as running |EC2| instances or using |S3| storage.
 	  Use the
 	  `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
           to estimate charges for the use of various AWS resources.
-
-.. _terminology:
-
-Terminology
-===========
-
-The |cdk| uses the following terms.
-
-|cdk-long| (|cdk|)
-   An AWS toolkit that enables infrastructure as code (IaC), exposing AWS
-   resources and high level constructs for use in popular DevOps programming
-   languages.
-
-construct
-   The building block of an |cdk| app or library. In code, they are instances of
-   the :py:class:`_aws-cdk_core.Construct` class or a class that extends the
-   :py:class:`_aws-cdk_core.Construct` class.
-
-app
-   An executable program that the |cdk| uses to synthesize artifacts
-   that can contain multiple stacks and be deployed into multiple AWS environments.
-   Apps extend the :py:class:`_aws-cdk_core.App` class.
-
-environment
-   An AWS deployment target for |cdk| stacks, defined by a specific AWS account and region.
-
-stack
-   An |cdk| construct that can be deployed into an environment.
-   Stacks extend the :py:class:`_aws-cdk_core.Stack` class.
-
-applet
-   A reusable |cdk| construct that can be instantiated and deployed through a
-   YAML-format file.
-
-CloudFormation Resource construct
-   The lowest-level construct, which map directly to an |CFN| resource,
-   as described in the
-   `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
-   These constructs are available in the :py:mod:`_aws-cdk_resources` package
-   as the |CFN| name with a **Resource** suffix within the AWS service namespace,
-   such as **sqs.QueueResource** representing an |SQS| queue.
-
-Construct Library construct
-   A construct that provides high level APIs for a AWS services.
-   Their names imply the underlying AWS service.
-   For example, |s3| resources are available through the **aws-cdk-s3**
-   Construct Library.
-
-Purpose-built construct
-   Purpose-built construct, designed to abstract away common architectural
-   patterns on AWS. These are not supplied with the standard CDK distribution,
-   but are shared within your organization or on GitHub.
 
 .. _aws_cdk_additional_resources:
 
 Additional Documentation and Resources
 ======================================
 
-In addition to this guide, there are a number of other resources available for |cdk| users:
+In addition to this guide, the following are other resources available to |cdk| users:
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
-* GitHub
-
-  * documentation source (link TBD)
-  * documentation issues (link TBD)
-  * toolkit source (link TBD)
-  * toolkit issues (link TBD)
-
-* License (link TBD)
-* FAQ (link TBD)
+* `GitHub repository <https://github.com/awslabs/aws-cdk>`_
+  * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
+  * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
 * :doc:`getting-started`
-* Installing the |cdk| (video) (link TBD)
 * `TypeScriptLang.org <https://www.typescriptlang.org/>`_
+
+.. TBD:
+   * License (link)
+   * FAQ (link)
+   * Installing the |cdk| (video) (link)
 
 .. _about-aws:
 
@@ -124,7 +106,7 @@ application synchronization (messaging and queuing).
 AWS uses a pay-as-you-go service model. You are charged only for the services that you |mdash| or
 your applications |mdash| use. Also, to make AWS useful as a platform for prototyping and
 experimentation, AWS offers a free usage tier, in which services are free below a certain level of
-usage. For more information about AWS costs and the free usage tier go to
+usage. For more information about AWS costs and the free usage tier, see
 `Test-Driving AWS in the Free Usage Tier <http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-free-tier.html>`_.
 
 To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and click :guilabel:`Create a Free Account`.
