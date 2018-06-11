@@ -3,6 +3,7 @@
   "packages": [
     "packages/*",
     "packages/@aws-cdk/*",
+    "tools/*",
     "examples"
   ],
   "rejectCycles": "true",
