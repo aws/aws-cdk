@@ -177,7 +177,7 @@ To vend another language for the CDK (given there's jsii support for it):
 3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
    your language under `repo/xxx`
 4. Add a **cdk init** template for your language (see
-   [packages/aws-cdk-toolkit/lib/init-templates](packages/aws-cdk-toolkit/lib/init-templates)).
+   [packages/aws-cdk/lib/init-templates](packages/aws-cdk/lib/init-templates)).
 5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
    make there there's a getting started sections and examples for the new
    language.

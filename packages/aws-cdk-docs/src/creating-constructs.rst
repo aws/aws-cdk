@@ -119,12 +119,12 @@ Validation happens in one of two places:
 
 * In the constructor, to validate the properties that are passed in.
 * If the Construct offers methods that mutate the state of the Construct,
-  in the Construct's :py:meth:`aws-cdk.Construct.validate` method. This
+  in the Construct's :py:meth:`_aws-cdk_core.Construct.validate` method. This
   method is called by the framework after the Construct hierarchy has been set up,
   and is expected to return a list of validation error messages.
 
 Construct implementors should prefer throwing validation errors in the constructor,
-falling back to overriding the :py:meth:`aws-cdk.Construct.validate` method
+falling back to overriding the :py:meth:`_aws-cdk_core.Construct.validate` method
 only if the Construct offers mutating members.
 
 Example of implementing validate:

@@ -1,7 +1,7 @@
-import { App, PolicyDocument, PolicyStatement, Stack } from "aws-cdk";
-import { sns, sqs } from 'aws-cdk-resources';
-import { Topic } from 'aws-cdk-sns';
-import { Queue } from 'aws-cdk-sqs';
+import { App, PolicyDocument, PolicyStatement, Stack } from "@aws-cdk/core";
+import { sns, sqs } from '@aws-cdk/resources';
+import { Topic } from '@aws-cdk/sns';
+import { Queue } from '@aws-cdk/sqs';
 
 class ACL extends Stack {
     constructor(parent: App, name: string) {

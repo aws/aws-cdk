@@ -1,0 +1,39 @@
+{
+  "name": "@aws-cdk/applet-js",
+  "version": "0.6.0",
+  "description": "Javascript CDK applet host program",
+  "main": "bin/cdk-applet-js.js",
+  "types": "bin/cdk-applet-js.d.ts",
+  "bin": {
+    "cdk-applet-js": "bin/cdk-applet-js"
+  },
+  "scripts": {
+    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
+    "watch": "tsc -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "/bin/bash test/test-applet.sh",
+    "pkglint": "pkglint -f"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/yamljs": "^0.2.0",
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.6.0",
+    "source-map-support": "^0.5.6",
+    "yamljs": "^0.2.0"
+  },
+  "repository": {
+    "url": "git://github.com/awslabs/aws-cdk",
+    "type": "git"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}

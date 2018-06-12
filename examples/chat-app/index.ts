@@ -1,6 +1,6 @@
-import { App, Construct, Stack, StackProps } from 'aws-cdk';
-import { Lambda, LambdaRuntime, LambdaS3Code } from 'aws-cdk-lambda';
-import { BucketName, BucketRef } from '../../packages/aws-cdk-s3/lib/bucket';
+import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
+import { BucketName, BucketRef } from '@aws-cdk/s3';
 import { CognitoChatRoomPool } from './CognitoChatRoomPool';
 import { DynamoPostsTable } from './DynamodbPostsTable';
 

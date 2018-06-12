@@ -1,7 +1,7 @@
-import { App, Stack, StackProps } from 'aws-cdk';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import {
     AmazonLinuxImage, ClassicLoadBalancer, Fleet, InstanceClass, InstanceSize,
-    InstanceTypePair, VpcNetwork, VpcNetworkRefProps } from 'aws-cdk-ec2';
+    InstanceTypePair, VpcNetwork, VpcNetworkRefProps } from '@aws-cdk/ec2';
 
 class AppWithVpc extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

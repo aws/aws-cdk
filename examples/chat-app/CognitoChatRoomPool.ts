@@ -1,5 +1,5 @@
-import { Construct } from 'aws-cdk';
-import { cognito } from 'aws-cdk-resources';
+import { Construct } from '@aws-cdk/core';
+import { cognito } from '@aws-cdk/resources';
 
 export class CognitoChatRoomPool extends Construct {
     constructor(parent: Construct, name: string) {

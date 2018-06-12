@@ -1,0 +1,51 @@
+{
+  "name": "@aws-cdk/ec2",
+  "version": "0.6.0",
+  "description": "CDK Constructs for AWS EC2",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [
+      "@aws-cdk/util"
+    ],
+    "names": {
+      "java": "com.amazonaws.cdk.ec2",
+      "dotnet": "Aws.Cdk.Ec2"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "ec2"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.6.0",
+    "aws-cdk": "^0.6.0",
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.6.0",
+    "@aws-cdk/iam": "^0.6.0",
+    "@aws-cdk/resources": "^0.6.0",
+    "@aws-cdk/util": "^0.6.0"
+  }
+}

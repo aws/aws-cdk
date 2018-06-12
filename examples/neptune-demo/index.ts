@@ -1,7 +1,7 @@
-import { App, Stack, StackProps } from 'aws-cdk';
-import { AnyIPv4, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork } from 'aws-cdk-ec2';
-import { NeptuneDatabase } from 'aws-cdk-neptune';
-import { Password, Username } from 'aws-cdk-rds';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { AnyIPv4, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork } from '@aws-cdk/ec2';
+import { NeptuneDatabase } from '@aws-cdk/neptune';
+import { Password, Username } from '@aws-cdk/rds';
 
 class NeptuneDemoStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

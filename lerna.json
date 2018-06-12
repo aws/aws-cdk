@@ -2,6 +2,8 @@
   "lerna": "2.5.1",
   "packages": [
     "packages/*",
+    "packages/@aws-cdk/*",
+    "tools/*",
     "examples"
   ],
   "rejectCycles": "true",

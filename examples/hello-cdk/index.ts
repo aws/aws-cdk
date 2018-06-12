@@ -1,5 +1,5 @@
-import { App, Stack, StackProps } from 'aws-cdk';
-import { KeyAttributeType, Table } from 'aws-cdk-dynamodb';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { KeyAttributeType, Table } from '@aws-cdk/dynamodb';
 
 class HelloCDK extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

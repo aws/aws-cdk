@@ -1,6 +1,6 @@
-import { App, Construct, PolicyStatement, Stack } from "aws-cdk";
-import { User } from "aws-cdk-iam";
-import { Bucket, BucketRef, BucketRefProps } from "aws-cdk-s3";
+import { App, Construct, PolicyStatement, Stack } from "@aws-cdk/core";
+import { User } from "@aws-cdk/iam";
+import { Bucket, BucketRef, BucketRefProps } from "@aws-cdk/s3";
 
 // Define a stack with an S3 bucket and export it using `bucket.export()`.
 // bucket.export returns a `BucketRef` object which can later be used in
