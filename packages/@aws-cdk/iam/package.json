@@ -1,0 +1,47 @@
+{
+  "name": "@aws-cdk/iam",
+  "version": "0.6.0",
+  "description": "CDK routines for easily assigning correct and minimal IAM permissions",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [],
+    "names": {
+      "java": "com.amazonaws.cdk.iam",
+      "dotnet": "Aws.Cdk.Iam"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "cloudlib",
+    "aws-cloudlib",
+    "aws-clib",
+    "iam"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.6.0",
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.6.0",
+    "@aws-cdk/resources": "^0.6.0"
+  }
+}

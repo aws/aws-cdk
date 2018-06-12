@@ -1,5 +1,5 @@
-import { App, Stack } from 'aws-cdk';
-import { sqs } from 'aws-cdk-resources';
+import { App, Stack } from '@aws-cdk/core';
+import { sqs } from '@aws-cdk/resources';
 
 class CloudFormationExample extends Stack {
     constructor(parent: App) {

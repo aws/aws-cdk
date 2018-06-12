@@ -17,12 +17,12 @@
 .. |xxxx| replace:: *xxxx*
 .. |xxxx-scope| replace:: |at-aws-cdk| |xxxx|
 
-.. |construct-class| replace:: :py:class:`aws-cdk.Construct`
-.. |app-construct| replace:: :py:class:`aws-cdk.Stack`
-.. |app-class| replace:: :py:class:`aws-cdk.App`
+.. |construct-class| replace:: :py:class:`_aws-cdk_core.Construct`
+.. |app-construct| replace:: :py:class:`_aws-cdk_core.Stack`
+.. |app-class| replace:: :py:class:`_aws-cdk_core.App`
 .. |this| replace:: **this**
 .. |parent| replace:: **parent**
-.. |stack| replace:: :py:class:`aws-cdk.Stack`
+.. |stack| replace:: :py:class:`_aws-cdk_core.Stack`
 .. |stack-class| replace:: |stack|
 .. |stack-construct| replace:: |stack|
 .. |storagelayer| replace:: *StorageLayer*
