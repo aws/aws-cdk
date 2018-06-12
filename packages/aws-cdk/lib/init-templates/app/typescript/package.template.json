@@ -1,21 +1,22 @@
 {
     "name": "%name%",
-    "version": "%cdk-version%",
-    "description": "A CDK Application",
-    "private": "true",
+    "version": "0.1.0",
     "main": "bin/index.js",
     "types": "bin/index.d.ts",
     "bin": {
         "%name%": "bin/%name%.js"
     },
     "scripts": {
-        "prepare": "tslint -p . && tsc && chmod a+x bin/%name%.js",
-        "watch": "tsc -w",
-        "lint": "tslint -p . --force"
+        "prepare": "tsc && chmod a+x bin/%name%.js",
+        "watch": "tsc -w"
     },
     "devDependencies": {
         "@types/node": "^8.9.4",
-        "tslint": "^5.10.0",
         "typescript": "^2.8.3"
+    },
+    "dependencies": {
+        "@aws-cdk/core": "^%cdk-version%",
+        "@aws-cdk/sns": "^%cdk-version%",
+        "@aws-cdk/sqs": "^%cdk-version%"
     }
 }
