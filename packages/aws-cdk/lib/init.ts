@@ -167,7 +167,7 @@ async function postInstallTypescript() {
             'aws-cdk-all', '@aws-cdk/applet-js', '@aws-cdk/assert', '@aws-cdk/cloudformation-diff', '@aws-cdk/cx-api',
             'aws-cdk-docs', 'aws-cdk', '@aws-cdk/util'
         ];
-        for (const module of (await fs.readdir('node_modules')).filter(n => n.startsWith('aws-cdk'))) {
+        for (const module of (await fs.readdir('node_modules')).filter(n => n.startsWith('@aws-cdk/'))) {
             if (module in packageJson.dependencies) { continue; }
             if (packageJson.devDependencies && module in packageJson.devDependencies) { continue; }
             if (exclusions.indexOf(module) !== -1) { continue; }

@@ -25,9 +25,9 @@
         "typescript": "^2.8.3"
     },
     "dependencies": {
-        "aws-cdk": "^%cdk-version%",
-        "aws-cdk-resources": "^%cdk-version%",
-        "aws-cdk-sns": "^%cdk-version%",
-        "aws-cdk-sqs": "^%cdk-version%"
+        "@aws-cdk/core": "^%cdk-version%",
+        "@aws-cdk/resources": "^%cdk-version%",
+        "@aws-cdk/sns": "^%cdk-version%",
+        "@aws-cdk/sqs": "^%cdk-version%"
     }
 }

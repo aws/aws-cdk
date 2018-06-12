@@ -1,7 +1,7 @@
-import { Construct } from 'aws-cdk';
-import { sqs } from 'aws-cdk-resources';
-import { Topic } from 'aws-cdk-sns';
-import { Queue } from 'aws-cdk-sqs';
+import { Construct } from '@aws-cdk/core';
+import { sqs } from '@aws-cdk/resources';
+import { Topic } from '@aws-cdk/sns';
+import { Queue } from '@aws-cdk/sqs';
 
 export interface %name.PascalCased%Props {
     /**
