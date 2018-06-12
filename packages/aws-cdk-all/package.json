@@ -28,6 +28,7 @@
     "aws-cdk-ec2": "^0.6.0",
     "aws-cdk-events": "^0.6.0",
     "aws-cdk-iam": "^0.6.0",
+    "aws-cdk-kinesis": "^0.6.0",
     "aws-cdk-kms": "^0.6.0",
     "aws-cdk-lambda": "^0.6.0",
     "aws-cdk-neptune": "^0.6.0",
