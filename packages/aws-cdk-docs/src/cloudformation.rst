@@ -14,7 +14,7 @@
 Using CloudFormation Resource Constructs
 ###################
 
-CloudFormation Resource constructs are found in the :py:mod:`aws-cdk-resources` package. They map directly onto |cfn|
+CloudFormation Resource constructs are found in the :py:mod:`_aws-cdk_resources` package. They map directly onto |cfn|
 resources.
 
 .. important::
@@ -37,7 +37,7 @@ the ARN of an |SQS| queue resource.
 
 .. code-block:: js
 
-   import { lambda, sqs } from 'aws-cdk-resources'
+   import { lambda, sqs } from '@aws-cdk/resources'
 
    const dlq = new sqs.QueueResource(this, { name: 'DLQ' });
 
@@ -71,7 +71,7 @@ Parameters
 
 .. code-block:: js
 
-    import { Parameter } from 'aws-cdk';
+    import { Parameter } from '@aws-cdk/core';
 
     const p = new Parameter(this, 'MyParam', { type: 'String' });
     new sns.TopicResource(this, 'MyTopic', { displayName: p.ref });
@@ -85,7 +85,7 @@ Outputs
 
 .. code-block:: js
 
-    import { Output } from 'aws-cdk';
+    import { Output } from '@aws-cdk/core';
 
     const queue = new sqs.QueueResource(this, 'MyQueue');
     const out = new Output(this, 'MyQueueArn', { value: queue.queueArn });
@@ -102,7 +102,7 @@ Conditions
 
 .. code-block:: js
 
-    import { Condition } from 'aws-cdk';
+    import { Condition } from '@aws-cdk/core';
     const cond = new Condition(this, 'MyCondition', {
         expression: new FnIf(...)
     });
@@ -119,7 +119,7 @@ Intrinsic Functions
 
 .. code-block:: js
 
-    import { FnJoin } from 'aws-cdk';
+    import { FnJoin } from '@aws-cdk/core';
     new FnJoin(",", ...)
 
 .. _pseudo_parameters:
@@ -131,5 +131,5 @@ Pseudo Parameters
 
 .. code-block:: js
 
-    import { AwsRegion } from 'aws-cdk';
+    import { AwsRegion } from '@aws-cdk/core';
     new AwsRegion()

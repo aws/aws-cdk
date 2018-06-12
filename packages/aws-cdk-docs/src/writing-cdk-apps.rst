@@ -109,11 +109,11 @@ First import the required packages.
 
 .. code-block:: js
 
-   import { App, Stack } from 'aws-cdk';
-   import { Lambda, LambdaRuntime, LambdaS3Code } from 'aws-cdk-lambda';
-   import { RuntimeValue } from 'aws-cdk-rtv';
-   import { Bucket } from 'aws-cdk-s3';
-   import { Topic } from 'aws-cdk-sns';
+   import { App, Stack } from '@aws-cdk/core';
+   import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
+   import { RuntimeValue } from '@aws-cdk/rtv';
+   import { Bucket } from '@aws-cdk/s3';
+   import { Topic } from '@aws-cdk/sns';
 
 Add an SNS topic to the stack and advertise the topic ARN as a runtime value.
 

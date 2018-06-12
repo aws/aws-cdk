@@ -1,0 +1,48 @@
+{
+  "name": "@aws-cdk/quickstarts",
+  "version": "0.6.0",
+  "description": "AWS Quickstarts for the CDK",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [
+      "@aws-cdk/util"
+    ],
+    "names": {
+      "java": "com.amazonaws.cdk.quickstarts",
+      "dotnet": "Aws.Cdk.QuickStarts"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "quickstarts"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "pkglint": "^0.6.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.6.0",
+    "@aws-cdk/ec2": "^0.6.0",
+    "@aws-cdk/iam": "^0.6.0",
+    "@aws-cdk/resources": "^0.6.0",
+    "@aws-cdk/util": "^0.6.0"
+  }
+}
