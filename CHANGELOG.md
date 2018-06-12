@@ -1,3 +1,14 @@
+## [UNRELEASED]
+
+### Toolkit
+
+ * `cdk init` interface changed to accept the template name as a positional
+   argument, and the language as an option. A `--list` option was added to
+   allow listing available templates.
+ * `cdk-beta-npm` is a wrapper to `npm` that executes commands with a local registry
+   that has the CDK packages available. It should be used instead of `npm` for
+   subcommands such as `npm install`.
+
 ## 0.7.0 - 2018-06-13
 
 ### Framework

@@ -10,10 +10,11 @@
   },
   "bin": {
     "cdk-version": "bin/cdk-version",
-    "find-jsii-packages": "bin/find-jsii-packages"
+    "find-jsii-packages": "bin/find-jsii-packages",
+    "publish-to-verdaccio": "bin/publish-to-verdaccio"
   },
   "scripts": {
-    "prepare": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
+    "prepare": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && chmod +x bin/publish-to-verdaccio && pkglint",
     "watch": "tsc -w",
     "lint": "tslint -p . --force",
     "pkglint": "pkglint -f"
@@ -29,6 +30,7 @@
   "dependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
+    "aws-cdk-npm": "^0.7.0",
     "fs-extra": "^4.0.2",
     "yargs": "^9.0.1"
   },

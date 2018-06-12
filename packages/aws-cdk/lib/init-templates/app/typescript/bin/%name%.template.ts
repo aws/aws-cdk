@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { App, Stack, StackProps } from 'aws-cdk';
-import { Topic } from 'aws-cdk-sns';
-import { Queue } from 'aws-cdk-sqs';
+import { App, Stack, StackProps } from '@aws-cdk/core';
+import { Topic } from '@aws-cdk/sns';
+import { Queue } from '@aws-cdk/sqs';
 
 class %name.PascalCased%Stack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

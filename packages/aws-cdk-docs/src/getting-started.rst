@@ -157,7 +157,7 @@ Currently only TypeScript is supported.
 
    mkdir hello-cdk
    cd hello-cdk
-   cdk init typescript
+   cdk init --language=typescript
 
 **cdk init** creates a skeleton |cdk| program for you to work with
 and displays some useful commands to help you get started.

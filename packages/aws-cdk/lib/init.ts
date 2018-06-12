@@ -1,7 +1,7 @@
+import { execCdkBetaNpm } from 'aws-cdk-npm';
 import { exec } from 'child_process';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
-import { homedir } from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
 import { error, print, warning } from './logging';
@@ -16,14 +16,10 @@ const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type: string | undefined, language: string | undefined) {
-    if (!type) {
-        printAvailableTemplates();
-        throw new Error('No template was selected');
-    }
-    const template = availableInitTemplates.find(t => t.hasName(type));
+export async function cliInit(type: string, language: string | undefined) {
+    const template = (await availableInitTemplates).find(t => t.hasName(type));
     if (!template) {
-        printAvailableTemplates();
+        await printAvailableTemplates(language);
         throw new Error(`Unknown init template: ${type}`);
     }
     if (!language && template.languages.length === 1) {
@@ -40,45 +36,62 @@ export async function cliInit(type: string | undefined, language: string | undef
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
+    public static async fromName(name: string) {
+        const basePath = path.join(TEMPLATES_DIR, name);
+        const languages = (await listDirectory(basePath)).filter(f => f !== INFO_DOT_JSON);
+        const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
+        return new InitTemplate(basePath, name, languages, info);
+    }
+
     public readonly description: string;
-    public readonly aliases = new Array<string>();
-    public readonly languages: string[];
+    public readonly aliases = new Set<string>();
 
-    private readonly basePath: string;
-
-    constructor(public readonly name: string) {
-        this.basePath = path.join(TEMPLATES_DIR, name);
-        this.languages = listDirectory(this.basePath).filter(f => f !== INFO_DOT_JSON);
-        const info = fs.readJsonSync(path.join(this.basePath, INFO_DOT_JSON));
+    constructor(private readonly basePath: string,
+                public readonly name: string,
+                public readonly languages: string[],
+                info: any) {
         this.description = info.description;
+        for (const alias of info.aliases || []) {
+            this.aliases.add(alias);
+        }
     }
 
+    /**
+     * @param name the name that is being checked
+     * @returns ``true`` if ``name`` is the name of this template or an alias of it.
+     */
     public hasName(name: string): boolean {
-        return name === this.name || this.aliases.indexOf(name) !== -1;
+        return name === this.name || this.aliases.has(name);
     }
 
-    public async install(language: string, into: string) {
+    /**
+     * Creates a new instance of this ``InitTemplate`` for a given language to a specified folder.
+     *
+     * @param language        the language to instantiate this template with
+     * @param targetDirectory the directory where the template is to be instantiated into
+     */
+    public async install(language: string, targetDirectory: string) {
         if (this.languages.indexOf(language) === -1) {
             error(`The ${colors.blue(language)} language is not supported for ${colors.green(this.name)} `
                   + `(it supports: ${this.languages.map(l => colors.blue(l)).join(', ')})`);
             throw new Error(`Unsupported language: ${language}`);
         }
-        await this.installFiles(path.join(this.basePath, language), into, {
-            name: decamelize(path.basename(path.resolve(into)))
+        await this.installFiles(path.join(this.basePath, language), targetDirectory, {
+            name: decamelize(path.basename(path.resolve(targetDirectory)))
         });
     }
 
-    private async installFiles(from: string, to: string, project: ProjectInfo) {
-        for (const file of await fs.readdir(from)) {
-            const fromFile = path.join(from, file);
-            const toFile = path.join(to, this.expand(file, project));
+    private async installFiles(srcDir: string, tgtDir: string, project: ProjectInfo) {
+        for (const file of await fs.readdir(srcDir)) {
+            const fromFile = path.join(srcDir, file);
+            const toFile = path.join(tgtDir, this.expand(file, project));
             if ((await fs.stat(fromFile)).isDirectory()) {
                 await fs.mkdir(toFile);
                 await this.installFiles(fromFile, toFile, project);
             } else if (file.match(/^.*\.template\.[^.]+$/)) {
                 await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
             } else {
-                await promisify(fs.copyFile)(fromFile, toFile);
+                await fs.copy(fromFile, toFile);
             }
         }
     }
@@ -89,7 +102,7 @@ export class InitTemplate {
     }
 
     private expand(template: string, project: ProjectInfo) {
-        const cdkVersion = require('@aws-cdk/core/package.json').version;
+        const cdkVersion = require('@aws-cdk/core/package.json').version.replace(/\+[a-f0-9]+$/, '');
         return template.replace(/%name%/g, project.name)
                        .replace(/%name\.camelCased%/g, camelCase(project.name))
                        .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
@@ -102,23 +115,45 @@ interface ProjectInfo {
     readonly name: string;
 }
 
-export const availableInitTemplates = listDirectory(TEMPLATES_DIR).map(name => new InitTemplate(name));
-
+export const availableInitTemplates: Promise<InitTemplate[]> =
+    new Promise(async resolve => {
+        const templateNames = await listDirectory(TEMPLATES_DIR);
+        const templates = new Array<InitTemplate>();
+        for (const templateName of templateNames) {
+            templates.push(await InitTemplate.fromName(templateName));
+        }
+        resolve(templates);
+    });
+export const availableInitLanguages: Promise<string[]> =
+    new Promise(async resolve => {
+        const templates = await availableInitTemplates;
+        const result = new Set<string>();
+        for (const template of templates) {
+            for (const language of template.languages) {
+                result.add(language);
+            }
+        }
+        resolve([...result]);
+    });
 /**
  * @param dirPath is the directory to be listed.
  * @returns the list of file or directory names contained in ``dirPath``, excluding any dot-file, and sorted.
  */
-function listDirectory(dirPath: string) {
-    return fs.readdirSync(dirPath)
-             .filter(p => !p.startsWith('.'))
-             .sort();
+async function listDirectory(dirPath: string) {
+    return (await fs.readdir(dirPath))
+                    .filter(p => !p.startsWith('.'))
+                    .sort();
 }
 
-function printAvailableTemplates() {
+export async function printAvailableTemplates(language?: string) {
     print('Available templates:');
-    for (const template of availableInitTemplates) {
+    for (const template of await availableInitTemplates) {
+        if (language && template.languages.indexOf(language) === -1) { continue; }
         print(`* ${colors.green(template.name)}: ${template.description}`);
-        print(`   └─ ${colors.blue(`cdk init --type=${template.name} --language=[${template.languages.join('|')}]`)}`);
+        const languageArg = language ? colors.bold(language)
+                                     : template.languages.length > 1 ? `[${template.languages.map(t => colors.bold(t)).join('|')}]`
+                                                                     : colors.bold(template.languages[0]);
+        print(`   └─ ${colors.blue(`cdk init ${colors.bold(template.name)} --language=${languageArg}`)}`);
     }
 }
 
@@ -126,7 +161,7 @@ async function initializeProject(template: InitTemplate, language: string) {
     await assertIsEmptyDirectory();
     await initializeGitRepository();
     print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
-    template.install(language, process.cwd());
+    await template.install(language, process.cwd());
     await postInstall(language);
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
@@ -156,38 +191,13 @@ async function postInstall(language: string) {
 }
 
 async function postInstallTypescript() {
-    const localCdkPath = path.join(homedir(), '.cdk', 'repo', 'npm');
-    if (await fs.pathExists(localCdkPath)) {
-        // TODO: This won't be necessary any longer once the packages are published to an NPM registry.
-        print(`Installing CDK modules from ${colors.green(localCdkPath)}...`);
-        await execute(`npm install --global-style --no-save ${localCdkPath}/*.tgz`);
-        // "Manually" adding them to package.json so `npm install` doesn't remove everything
-        const packageJson = await fs.readJSON('package.json');
-        const exclusions = [
-            'aws-cdk-all', '@aws-cdk/applet-js', '@aws-cdk/assert', '@aws-cdk/cloudformation-diff', '@aws-cdk/cx-api',
-            'aws-cdk-docs', 'aws-cdk', '@aws-cdk/util'
-        ];
-        for (const module of (await fs.readdir('node_modules')).filter(n => n.startsWith('@aws-cdk/'))) {
-            if (module in packageJson.dependencies) { continue; }
-            if (packageJson.devDependencies && module in packageJson.devDependencies) { continue; }
-            if (exclusions.indexOf(module) !== -1) { continue; }
-            const moduleVersion = require(`${process.cwd()}/node_modules/${module}/package.json`).version;
-            packageJson.dependencies[module] = `^${moduleVersion}`;
-        }
-        await fs.writeFile('package.json', JSON.stringify(packageJson, null, 2));
+    print(`Executing ${colors.green('cdk-beta-npm install')}...`);
+    if (await execCdkBetaNpm('install') !== 0) {
+        throw new Error('cdk-beta-npm install failed!');
     }
-    print(`Executing ${colors.green('npm install')}...`);
-    await execute('npm install');
-
-    async function execute(command: string) {
-        const { stdout, stderr } = await promisify(exec)(command);
-        if (stdout) {
-            print(stdout);
-        }
-        if (stderr) {
-            print(stderr);
-        }
-    }
+    print(`Use ${colors.blue('cdk synth')} to see the generated CloudFormation template`);
+    print(`Use ${colors.blue('cdk deploy')} to deploy the application to CloudFormation`);
+    print(`Use ${colors.blue('cdk-beta-npm install')} instead of ${colors.blue('npm install')}`);
 }
 
 /**
