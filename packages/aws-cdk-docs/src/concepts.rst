@@ -383,7 +383,7 @@ the first time you call |cx-synth-code|.
 
 The |cdk| currently supports the following context providers.
 
-:py:class:`aws-cdk.AvailabilityZoneProvider`
+:py:class:`_aws-cdk_core.AvailabilityZoneProvider`
    Use this provider to get the list of all supported availability zones in this environment.
    For example, the following code iterates over all of the AZs in the current environment.
 
@@ -395,7 +395,7 @@ The |cdk| currently supports the following context providers.
       // do somethning for each zone!
    }
 
-:py:class:`aws-cdk.SSMParameterProvider`
+:py:class:`_aws-cdk_core.SSMParameterProvider`
    Use this provider to read values from the current Region's SSM parameter store.
    For example, the follow code returns the value of the 'my-awesome-value' key:
 

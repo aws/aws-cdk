@@ -14,7 +14,7 @@
 Using CloudFormation Resource Constructs
 ###################
 
-CloudFormation Resource constructs are found in the :py:mod:`@aws-cdk/resources` package. They map directly onto |cfn|
+CloudFormation Resource constructs are found in the :py:mod:`_aws-cdk_resources` package. They map directly onto |cfn|
 resources.
 
 .. important::

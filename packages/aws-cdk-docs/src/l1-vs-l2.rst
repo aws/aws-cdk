@@ -22,7 +22,7 @@ AWS CloudFormation Resource Constructs
   mapping to an |cfn| resource,
   as listed in the |cfn| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
 
-  All Resource constructs are found in the :py:mod:`aws-cdk-resources` package.
+  All Resource constructs are found in the :py:mod:`_aws-cdk_resources` package.
 
 AWS Construct Library Constructs
 
@@ -57,7 +57,7 @@ Construct Library constructs vs CloudFormation Resource constructs
 To illustrate the advantages that Construct Library constructs have over
 CloudFormation Resource constructs, let's look at an example.
 
-The :py:mod:`@aws-cdk/sns` Construct Library includes the `Topic` construct that
+The :py:mod:`_aws-cdk_sns` Construct Library includes the `Topic` construct that
 you can use to define an |SNS| topic:
 
 .. code-block:: js
@@ -67,7 +67,7 @@ you can use to define an |SNS| topic:
 
 Library constructs encapsulate the
 details of working with these AWS resources. For example, to subscribe a queue to a topic,
-call the :py:meth:`@aws-cdk/sns.Topic.subscribeQueue` method with a queue object as the second argument:
+call the :py:meth:`_aws-cdk_sns.Topic.subscribeQueue` method with a queue object as the second argument:
 
 .. code-block:: js
 
@@ -84,7 +84,7 @@ This method:
 
 2. Adds a queue policy with permissions for the topic to send messages to the queue.
 
-To achieve a similar result using :py:mod:`aws-cdk-resources`, you have to explicitly define the
+To achieve a similar result using :py:mod:`_aws-cdk_resources`, you have to explicitly define the
 subscription and queue policy, since there is no **subscribeToQueue** method in the **TopicResource** class:
 
 .. code-block:: js

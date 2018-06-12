@@ -268,8 +268,8 @@ You should see output similar to the following:
                         Ref: MyQueueE6CA6235
 
 
-As you can see, the call to :py:meth:`aws-cdk-sns.TopicRef.subscribeQueue` on
-the :py:class:`aws-cdk-sns.Topic` resulted in:
+As you can see, the call to :py:meth:`_aws-cdk_sns.TopicRef.subscribeQueue` on
+the :py:class:`_aws-cdk_sns.Topic` resulted in:
 
 1. Creating an **AWS::SNS::Subscription** associated with the queue and the topic.
 2. Adding a statement to the **AWS::SQS::QueuePolicy**, which allows the topic to send messages to the queue.

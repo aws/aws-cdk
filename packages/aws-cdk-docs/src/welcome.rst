@@ -53,20 +53,20 @@ The |cdk| uses the following terms.
 
 construct
    The building block of an |cdk| app or library. In code, they are instances of
-   the :py:class:`aws-cdk.Construct` class or a class that extends the
-   :py:class:`aws-cdk.Construct` class.
+   the :py:class:`_aws-cdk_core.Construct` class or a class that extends the
+   :py:class:`_aws-cdk_core.Construct` class.
 
 app
    An executable program that the |cdk| uses to synthesize artifacts
    that can contain multiple stacks and be deployed into multiple AWS environments.
-   Apps extend the :py:class:`aws-cdk.App` class.
+   Apps extend the :py:class:`_aws-cdk_core.App` class.
 
 environment
    An AWS deployment target for |cdk| stacks, defined by a specific AWS account and region.
 
 stack
    An |cdk| construct that can be deployed into an environment.
-   Stacks extend the :py:class:`aws-cdk.Stack` class.
+   Stacks extend the :py:class:`_aws-cdk_core.Stack` class.
 
 applet
    A reusable |cdk| construct that can be instantiated and deployed through a
@@ -76,7 +76,7 @@ CloudFormation Resource construct
    The lowest-level construct, which map directly to an |CFN| resource,
    as described in the
    `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
-   These constructs are available in the :py:mod:`aws-cdk-resources` package
+   These constructs are available in the :py:mod:`_aws-cdk_resources` package
    as the |CFN| name with a **Resource** suffix within the AWS service namespace,
    such as **sqs.QueueResource** representing an |SQS| queue.
 
