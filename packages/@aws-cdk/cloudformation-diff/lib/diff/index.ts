@@ -51,7 +51,7 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
 
     function _diffProperty(oldV: any, newV: any, key: string, resourceClass?: ResourceClass) {
         let changeImpact: types.ResourceImpact | undefined;
-        const spec = resourceClass && resourceClass.RESOURCE_PROPERTIES[key];
+        const spec = resourceClass && resourceClass.resourceProperties[key];
         if (spec) {
             switch (spec.updateType) {
             case 'Immutable':

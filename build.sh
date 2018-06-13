@@ -12,7 +12,7 @@ export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
 echo "boostrapping..."
-lerna bootstrap --reject-cycles --loglevel=debug
+lerna bootstrap --reject-cycles
 
 echo "============================================================================================="
 echo "testing..."
