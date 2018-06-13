@@ -5,50 +5,69 @@ for defining cloud infrastructure in code.
 
 ## Getting Started
 
-### Installation
+### Prerequisites
 
-Make sure you have the required dependencies installed:
+Make sure you have the following prerequisites installed:
+
 * [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
-* The SDK for the language you intend to use (Java, .Net, Ruby, ...)
+* [AWS CLI](https://aws.amazon.com/cli/) (only needed if you intend to download the release from S3).
+* The development toolchain of the language you intend to use (TypeScript,
+  Python, Java, .NET, Ruby...)
 
-Download the current release bundle from S3, and install it to `~/.cdk`:
+### Downloading the bits
+
+The CDK is distributed as a single zip file which contains:
+
+1. The CDK command-line toolkit
+2. Documentation HTML
+2. JavaScript/TypeScript Framework and AWS Constructs
+3. Java Framework and AWS Constructs
+
+You can either download the zip file from the
+[Releases](http://github.com/awslabs/aws-cdk/releases) page on GitHub or if you
+prefer, download them bits from S3 using the URL provided by our team.
+
+To download from S3:
+
 ```shell
-tmpdir=/tmp/aws-cdk-install
-mkdir ${tmpdir}
-aws s3 cp s3://<bucket>/<key> ${tmpdir}/aws-cdk.zip
-unzip -o ${tmpdir}/aws-cdk.zip -d ~/.cdk
+aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
-Then add the CDK to your `$PATH`:
+### Install to ~/.cdk
+
+Once you've downloaded the bits, install them into `~/.cdk`:
+
 ```shell
-# At the end of your ~/.bashrc or ~/.zshrc file
-export PATH=${PATH:+${PATH}:}${HOME}/.cdk/bin
+rm -fr ~/.cdk
+mkdir ~/.cdk
+unzip <path-to-zip-file> -d ~/.cdk
 ```
 
-### Creating a new project
+Make sure the ~/.cdk/bin is in your `PATH`
 
-New projects can be initialized using `cdk init`.
 ```shell
-mkdir ${PROJECT_NAME}
-cd ${PROJECT_NAME}
-cdk init
+# at the end of your ~/.bashrc or ~/.zshrc file
+export PATH=$PATH:$HOME/.cdk/bin
 ```
 
-### Useful commands
+To check which CDK version you have installed:
 
 ```shell
-# Initialize a new CDK project
-cdk init
+cdk --version
+```
 
-# Open the documentation in a web browser
+### Viewing Documentation
+
+To view CDK documentation bundled with the release, run:
+
+```shell
 cdk docs
-
-# List available commands
-cdk help
-
-# Get help on a particular command (e.g: synth)
-cdk help synth
 ```
+
+### Next steps?
+
+Follow the "Getting Started" guide in CDK docs to initialize your first CDK
+project and deploy it to an AWS account.
 
 ## Development Environment
 
