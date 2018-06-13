@@ -5,3 +5,4 @@ lerna-debug.log
 dist
 pack
 .BUILD_COMPLETED
+.local-npm

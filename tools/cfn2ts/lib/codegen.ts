@@ -206,12 +206,12 @@ export default class CodeGenerator {
         this.code.line('/**');
         this.code.line(` * The CloudFormation resource type name for this resource class.`);
         this.code.line(' */');
-        this.code.line(`public static readonly RESOURCE_TYPE_NAME = ${JSON.stringify(resourceName.specName!.fqn)};`);
+        this.code.line(`public static readonly resourceTypeName = ${JSON.stringify(resourceName.specName!.fqn)};`);
         this.code.line();
         this.code.line('/**');
         this.code.line(' * The list of properties on the CloudFormation model for this resource, with their attache metadata.');
         this.code.line(' */');
-        this.code.open(`public static readonly RESOURCE_PROPERTIES: { [name: string]: ${REGISTRY}.PropertySpecification } = {`);
+        this.code.open(`public static readonly resourceProperties: { [name: string]: ${REGISTRY}.PropertySpecification } = {`);
         for (const pname of Object.keys(spec.Properties).sort()) {
             const prop = spec.Properties[pname];
             this.code.line(`${pname}: { isRequired: ${JSON.stringify(prop.Required)}, updateType: ${JSON.stringify(prop.UpdateType)} },`);

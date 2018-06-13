@@ -4,8 +4,8 @@ export interface PropertySpecification {
 }
 
 export interface ResourceClass {
-    readonly RESOURCE_PROPERTIES: { [name: string]: PropertySpecification | undefined };
-    readonly RESOURCE_TYPE_NAME: string;
+    readonly resourceProperties: { [name: string]: PropertySpecification | undefined };
+    readonly resourceTypeName: string;
 }
 
 const catalog: { [resourceType: string]: ResourceClass } = {};
@@ -17,7 +17,7 @@ const catalog: { [resourceType: string]: ResourceClass } = {};
  * @param resourceClass the corresponding Resource implementation.
  */
 export function registerResourceType(resourceClass: ResourceClass) {
-    const typeName = resourceClass.RESOURCE_TYPE_NAME;
+    const typeName = resourceClass.resourceTypeName;
     if (catalog.hasOwnProperty(typeName)) {
         throw new Error(`Attempted to re-define CloudFormation resource ${typeName}`);
     }
