@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cloudtrail",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "CDK Constructs for AWS CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -35,17 +35,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.6.0",
-    "aws-cdk": "^0.6.0",
+    "@aws-cdk/assert": "^0.7.0",
+    "aws-cdk": "^0.7.0",
     "aws-sdk": "^2.135.0",
     "colors": "^1.2.1",
-    "pkglint": "^0.6.0"
+    "pkglint": "^0.7.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.6.0",
-    "@aws-cdk/iam": "^0.6.0",
-    "@aws-cdk/kms": "^0.6.0",
-    "@aws-cdk/resources": "^0.6.0",
-    "@aws-cdk/s3": "^0.6.0"
+    "@aws-cdk/core": "^0.7.0",
+    "@aws-cdk/iam": "^0.7.0",
+    "@aws-cdk/kms": "^0.7.0",
+    "@aws-cdk/resources": "^0.7.0",
+    "@aws-cdk/s3": "^0.7.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/core",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "AWS Cloud Development Kit for Javascript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -37,11 +37,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cfn2ts": "^0.6.0",
-    "pkglint": "^0.6.0"
+    "cfn2ts": "^0.7.0",
+    "pkglint": "^0.7.0"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.6.0",
+    "@aws-cdk/cx-api": "^0.7.0",
     "json-diff": "^0.3.1"
   }
 }
