@@ -90,36 +90,6 @@ export = {
 
         test.done();
     },
-    "attaches tags to stream"(test: Test) {
-        const stack = new Stack();
-
-        new Stream(stack, 'MyStream', {
-            tags: [{
-                key: "key",
-                value: "value"
-            }]
-        });
-
-        expect(stack).toMatch({
-            "Resources": {
-                "MyStream5C050E93": {
-                    "Type": "AWS::Kinesis::Stream",
-                    "Properties": {
-                        "RetentionPeriodHours": 24,
-                        "ShardCount": 1,
-                        "Tags": [
-                            {
-                                "Key": "key",
-                                "Value": "value"
-                            }
-                        ]
-                    }
-                }
-            }
-        });
-
-        test.done();
-    },
     "auto-creates KMS key if encryption type is KMS but no key is provided"(test: Test) {
         const stack = new Stack();
 

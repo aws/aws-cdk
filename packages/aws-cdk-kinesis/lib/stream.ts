@@ -1,4 +1,4 @@
-import { Construct, Output, PolicyStatement, Tag, Token } from 'aws-cdk';
+import { Construct, Output, PolicyStatement, Token } from 'aws-cdk';
 import { IIdentityResource } from 'aws-cdk-iam';
 import * as kms from 'aws-cdk-kms';
 import { kinesis } from 'aws-cdk-resources';
@@ -76,7 +76,7 @@ export abstract class StreamRef extends Construct {
     }
 
     /**
-     * Grant write permissions for this stream and it's contents to an IAM
+     * Grant write permissions for this stream and its contents to an IAM
      * principal (Role/Group/User).
      *
      * If an encryption key is used, permission to ues the key to decrypt the
@@ -88,19 +88,21 @@ export abstract class StreamRef extends Construct {
         }
         this.grant(
             identity,
-            [
-                'kinesis:DescribeStream',
-                'kinesis:GetRecords',
-                'kinesis:GetShardIterator'
-            ],
-            [
-                'kms:Decrypt'
-            ]
+            {
+                streamActions: [
+                    'kinesis:DescribeStream',
+                    'kinesis:GetRecords',
+                    'kinesis:GetShardIterator'
+                ],
+                keyActions: [
+                    'kms:Decrypt'
+                ]
+            }
         );
     }
 
     /**
-     * Grant read permissions for this stream and it's contents to an IAM
+     * Grant read permissions for this stream and its contents to an IAM
      * principal (Role/Group/User).
      *
      * If an encryption key is used, permission to ues the key to decrypt the
@@ -113,20 +115,22 @@ export abstract class StreamRef extends Construct {
 
         this.grant(
             identity,
-            [
-                'kinesis:DescribeStream',
-                'kinesis:PutRecord',
-                'kinesis:PutRecords'
-            ],
-            [
-                'kms:GenerateDataKey',
-                'kms:Encrypt'
-            ]
+            {
+                streamActions: [
+                    'kinesis:DescribeStream',
+                    'kinesis:PutRecord',
+                    'kinesis:PutRecords'
+                ],
+                keyActions: [
+                    'kms:GenerateDataKey',
+                    'kms:Encrypt'
+                ]
+            }
         );
     }
 
     /**
-     * Grants read/write permissions for this stream and it's contents to an IAM
+     * Grants read/write permissions for this stream and its contents to an IAM
      * principal (Role/Group/User).
      *
      * If an encryption key is used, permission to use the key for
@@ -138,31 +142,33 @@ export abstract class StreamRef extends Construct {
         }
         this.grant(
             identity,
-            [
-                'kinesis:DescribeStream',
-                'kinesis:GetRecords',
-                'kinesis:GetShardIterator',
-                'kinesis:PutRecord',
-                'kinesis:PutRecords'
-            ],
-            [
-                'kms:Decrypt',
-                'kms:GenerateDataKey',
-                'kms:Encrypt'
-            ]
+            {
+                streamActions: [
+                    'kinesis:DescribeStream',
+                    'kinesis:GetRecords',
+                    'kinesis:GetShardIterator',
+                    'kinesis:PutRecord',
+                    'kinesis:PutRecords'
+                ],
+                keyActions: [
+                    'kms:Decrypt',
+                    'kms:GenerateDataKey',
+                    'kms:Encrypt'
+                ]
+            }
         );
     }
 
-    private grant(identity: IIdentityResource, streamActions: string[], keyActions: string[]) {
+    private grant(identity: IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
         identity.addToPolicy(new PolicyStatement()
             .addResource(this.streamArn)
-            .addActions(...streamActions));
+            .addActions(...actions.streamActions));
 
         // grant key permissions if there's an associated key.
         if (this.encryptionKey) {
             identity.addToPolicy(new PolicyStatement()
                 .addResource(this.encryptionKey.keyArn)
-                .addActions(...keyActions));
+                .addActions(...actions.keyActions));
         }
     }
 }
@@ -205,11 +211,6 @@ export interface StreamProps {
      * new KMS key will be created and associated with this stream.
      */
     encryptionKey?: kms.EncryptionKeyRef;
-
-    /**
-     * An arbitrary set of tags (key–value pairs) to associate with the Kinesis stream.
-     */
-    tags?: Array<Token | Tag> | Token;
 }
 
 /**
@@ -237,8 +238,7 @@ export class Stream extends StreamRef {
             streamName: props.streamName,
             retentionPeriodHours,
             shardCount,
-            streamEncryption,
-            tags: props.tags
+            streamEncryption
         });
         this.streamArn = this.stream.streamArn;
         this.streamName = this.stream.ref;
