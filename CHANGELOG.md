@@ -2,8 +2,12 @@
 
 ### Framework
 
- * __BREAKING__: All CDK packages are non under the scope `@aws-cdk` (e.g.
+ * _BREAKING_: All CDK packages are non under the scope `@aws-cdk` (e.g.
    `@aws-cdk/s3`).
+ * _BREAKING_: The `jsii` compiler now configures `tsconfig.json` to produce definition
+   files (files with a .d.ts extension). This requires updating your existing
+   `package.json` files `types` key to replace the .ts extension with a .d.ts
+   extension.
  * Java bindings now include static methods and constants.
  * `SecretParameter` can be used to load values from the SSM parameter store
    during deployment and use them as `Secret`s.
@@ -29,11 +33,11 @@
  * Fix: GitHub action "owner" changed to `ThirdParty`.
  * Removed all fluent APIs
  * Use "master" as the default branch for Source actions
- * `AmazonS3SourceProps` - renamed `key` to `bucketKey`
+ * _BREAKING_: `AmazonS3SourceProps` - renamed `key` to `bucketKey`
 
 ### Custom Resources
 
- * Require that Lambda is referenced explicitly when defining a custom resource.
+ * _BREAKING_: Require that Lambda is referenced explicitly when defining a custom resource.
    `SingletonLambda` can be used to encapsulate the custom resource's lambda
    function but only have a single instance of it in the stack.
 
@@ -90,7 +94,7 @@ Supported sources:
 
 ### SNS
 
- * __BREAKING__: `subscribeXxx` APIs now do not require a name when possible
+ * _BREAKING_: `subscribeXxx` APIs now do not require a name when possible
    (for queue, Lambda).
  * Unique SID assigned to resource policy statements.
 
