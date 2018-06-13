@@ -1,5 +1,6 @@
 *.js
 tsconfig.json
+tslint.json
 *.js.map
 *.d.ts
 dist

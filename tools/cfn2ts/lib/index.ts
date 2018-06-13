@@ -22,7 +22,7 @@ export default async function(specFiles: string[], enrichmentsDir?: string) {
     await fs.mkdirp(jsonPath);
     await fs.copy(templateDir, outPath, { recursive: true });
     const indexFile = fs.createWriteStream(indexPath);
-    indexFile.write('export { PropertySpecification, ResourceClass, resourceImplementationFor } from \'./registry\';\n\n');
+    indexFile.write('export * from \'./registry\';\n\n');
 
     for (const mod of Object.keys(specByModule).sort()) {
         const spec = specByModule[mod];

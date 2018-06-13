@@ -24,7 +24,7 @@ echo "Staging: ${staging}"
 # Create a local npm repository
 mkdir -p repo/npm
 rsync -aL ${root}/pack/*.tgz repo/npm      # cdk modules
-rsync -aL ${root}/local-npm/*.tgz repo/npm # jsii modules
+rsync -aL ${root}/.local-npm/*.tgz repo/npm # jsii modules
 
 # Create a local maven repository
 mkdir -p repo/maven

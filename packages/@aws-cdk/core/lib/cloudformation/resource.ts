@@ -24,8 +24,9 @@ export class Resource extends Referenceable {
     /**
      * A decoration used to create a CloudFormation attribute property.
      * @param customName Custom name for the attribute (default is the name of the property)
+     * NOTE: we return "any" here to satistfy jsii, which doesn't support lambdas.
      */
-    public static attribute(customName?: string) {
+    public static attribute(customName?: string): any {
         return (prototype: any, key: string) => {
             const name = customName || key;
             Object.defineProperty(prototype, key, {

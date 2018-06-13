@@ -159,8 +159,8 @@ npm run pkglint
 
 ### Updating jsii
 
-Run `./pack.sh` in the jsii repository and copy the tarballs to `./local-npm`.
-Make sure all tarballs are defined in the root `package.json`.
+Download an official jsii zip bundle and replace the file under `./vendor`.
+Any added dependencies, they will need to be added to the root `package.json`.
 
 # Language Support
 
