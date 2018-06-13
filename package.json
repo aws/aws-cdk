@@ -4,7 +4,7 @@
     "ignore": true
   },
   "scripts": {
-    "pkglint": "packages/pkglint/bin/pkglint -f ."
+    "pkglint": "tools/pkglint/bin/pkglint -f ."
   },
   "devDependencies": {
     "lerna": "^2.11.0",

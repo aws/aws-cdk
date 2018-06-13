@@ -23,7 +23,7 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "license": "Apache-2.0",
+  "license": "LicenseRef-LICENSE",
   "dependencies": {
     "colors": "^1.2.1",
     "fast-json-patch": "^2.0.6",

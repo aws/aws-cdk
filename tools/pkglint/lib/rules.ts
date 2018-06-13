@@ -39,11 +39,11 @@ export class RepositoryCorrect extends ValidationRule {
 }
 
 /**
- * The license must be Apache-2.0
+ * The license must be LicenseRef-LICENSE (beta).
  */
-export class ApacheLicense extends ValidationRule {
+export class License extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        expectJSON(pkg, 'license', 'Apache-2.0');
+        expectJSON(pkg, 'license', 'LicenseRef-LICENSE');
     }
 }
 

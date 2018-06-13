@@ -29,7 +29,7 @@
     "url": "git://github.com/awslabs/aws-cdk",
     "type": "git"
   },
-  "license": "Apache-2.0",
+  "license": "LicenseRef-LICENSE",
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
