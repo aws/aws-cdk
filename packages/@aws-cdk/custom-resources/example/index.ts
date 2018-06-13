@@ -1,4 +1,4 @@
-import { App, Construct, Output, Stack, StackProps, Token } from '@aws-cdk/core';
+import { App, Construct, IDependable, Output, Stack, StackProps, Token } from '@aws-cdk/core';
 import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
 import { s3 } from '@aws-cdk/resources';
 import fs = require('fs');
@@ -16,7 +16,8 @@ interface DemoResourceProps {
     failCreate?: boolean;
 }
 
-class DemoResource extends Construct {
+class DemoResource extends Construct implements IDependable {
+    public readonly dependencyElements: IDependable[];
     public readonly response: Token;
 
     constructor(parent: Construct, name: string, props: DemoResourceProps) {
@@ -35,6 +36,7 @@ class DemoResource extends Construct {
         });
 
         this.response = resource.getAtt('Response');
+        this.dependencyElements = [resource];
     }
 }
 
