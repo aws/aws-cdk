@@ -1,6 +1,6 @@
 {
   "name": "examples",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
@@ -17,22 +17,22 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "aws-cdk": "^0.6.0",
-    "pkglint": "^0.6.0"
+    "aws-cdk": "^0.7.0",
+    "pkglint": "^0.7.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.6.0",
-    "@aws-cdk/dynamodb": "^0.6.0",
-    "@aws-cdk/ec2": "^0.6.0",
-    "@aws-cdk/iam": "^0.6.0",
-    "@aws-cdk/lambda": "^0.6.0",
-    "@aws-cdk/neptune": "^0.6.0",
-    "@aws-cdk/rds": "^0.6.0",
-    "@aws-cdk/resources": "^0.6.0",
-    "@aws-cdk/rtv": "^0.6.0",
-    "@aws-cdk/s3": "^0.6.0",
-    "@aws-cdk/sns": "^0.6.0",
-    "@aws-cdk/sqs": "^0.6.0"
+    "@aws-cdk/core": "^0.7.0",
+    "@aws-cdk/dynamodb": "^0.7.0",
+    "@aws-cdk/ec2": "^0.7.0",
+    "@aws-cdk/iam": "^0.7.0",
+    "@aws-cdk/lambda": "^0.7.0",
+    "@aws-cdk/neptune": "^0.7.0",
+    "@aws-cdk/rds": "^0.7.0",
+    "@aws-cdk/resources": "^0.7.0",
+    "@aws-cdk/rtv": "^0.7.0",
+    "@aws-cdk/s3": "^0.7.0",
+    "@aws-cdk/sns": "^0.7.0",
+    "@aws-cdk/sqs": "^0.7.0"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",
