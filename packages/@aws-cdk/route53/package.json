@@ -34,7 +34,7 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "license": "Apache-2.0",
+  "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^0.6.0",
     "aws-cdk": "^0.6.0",
