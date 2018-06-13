@@ -181,3 +181,8 @@ To vend another language for the CDK (given there's jsii support for it):
 5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
    make there there's a getting started sections and examples for the new
    language.
+
+# License
+
+Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+See [LICENSE](./LICENSE) file for license terms.
