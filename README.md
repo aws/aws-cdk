@@ -204,4 +204,5 @@ To vend another language for the CDK (given there's jsii support for it):
 # License
 
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-See [LICENSE](./LICENSE) file for license terms.
+
+See [LICENSE](./LICENSE.md) file for license terms.
