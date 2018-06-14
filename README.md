@@ -33,6 +33,30 @@ To download from S3:
 aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
+### Verifying the integrity of your download
+
+You can verify that your download is complete and correct by validating
+its signature against our public signing key. To do so, you need
+the following things:
+
+* [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
+* Download our public key: [cdk-team.asc](https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc)
+* Make sure you have downloaded both `aws-cdk-x.y.z.zip`
+  and `aws-cdk-x.y.z.zip.sig`.
+
+Then run the following commands:
+
+```shell
+gpg --import cdk-team.asc
+gpg --validate aws-cdk-x.y.z.zip.sig
+```
+
+If everything is correct, the output will contain the line:
+
+```
+gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
+```
+
 ### Install to ~/.cdk
 
 Once you've downloaded the bits, install them into `~/.cdk`:
@@ -76,7 +100,7 @@ This is a monorepo which uses [lerna](https://github.com/lerna/lerna).
 The CDK depends on [jsii](https://github.com/awslabs/jsii), which is still not
 published to npm. Therefore, the jsii tarballs are checked-in to this repository
 under `./local-npm` and the install script will install them in the repo-global
-node_modules directory.
+`node_modules` directory.
 
 ### Prerequisites
 
