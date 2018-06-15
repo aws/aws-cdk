@@ -601,8 +601,9 @@ async function initCommandLine() {
             app: argv.app,
             browser: argv.browser,
             context,
-            toolkitStackName: argv.toolkitStackName,
+            language: argv.language,
             plugin: argv.plugin,
+            toolkitStackName: argv.toolkitStackName,
         });
     }
 
