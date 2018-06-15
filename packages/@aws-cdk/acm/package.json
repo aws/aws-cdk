@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/acm",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "CDK Constructs for AWS ACM",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -35,14 +35,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.0",
-    "aws-cdk": "^0.7.0",
+    "@aws-cdk/assert": "^0.7.1",
+    "aws-cdk": "^0.7.1",
     "aws-sdk": "^2.135.0",
-    "pkglint": "^0.7.0"
+    "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.0",
-    "@aws-cdk/iam": "^0.7.0",
-    "@aws-cdk/resources": "^0.7.0"
+    "@aws-cdk/core": "^0.7.1",
+    "@aws-cdk/iam": "^0.7.1",
+    "@aws-cdk/resources": "^0.7.1"
   }
 }
