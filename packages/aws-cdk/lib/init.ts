@@ -195,9 +195,6 @@ async function postInstallTypescript() {
     if (await execCdkBetaNpm('install') !== 0) {
         throw new Error('cdk-beta-npm install failed!');
     }
-    print(`Use ${colors.blue('cdk synth')} to see the generated CloudFormation template`);
-    print(`Use ${colors.blue('cdk deploy')} to deploy the application to CloudFormation`);
-    print(`Use ${colors.blue('cdk-beta-npm install')} instead of ${colors.blue('npm install')}`);
 }
 
 /**
