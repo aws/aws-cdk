@@ -3,21 +3,13 @@
     "version": "0.1.0",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
-    "jsii": {
-        "outdir": "dist",
-        "names": {
-            "java": "com.acme.cdk.%name.camelCased%",
-            "dotnet": "Acme.Cdk.%name.PascalCased%"
-        }
-    },
     "scripts": {
-        "prepare": "jsii",
-        "watch": "jsii -w",
+        "prepare": "tsc",
+        "watch": "tsc -w",
         "test": "nodeunit test/test.*.js"
     },
     "devDependencies": {
         "@types/nodeunit": "^0.0.30",
-        "jsii": "^0.4.0-pre",
         "nodeunit": "^0.11.2",
         "typescript": "^2.8.3"
     },
