@@ -313,5 +313,5 @@ You should see something like the following.
     └─ [+] .VisibilityTimeout:
         └─ New value: 300
 
-If the changes area acceptable, use **cdk deploy** to update your
+If the changes are acceptable, use **cdk deploy** to update your
 infrastructure.
