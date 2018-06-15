@@ -72,8 +72,15 @@ export class SDK {
     }
 
     public defaultRegion() {
-        debug('Obtaining default region from AWS configuration');
-        return config.region;
+        if (process.env.AWS_DEFAULT_REGION) {
+            debug('Obtaining default region from environment');
+            return process.env.AWS_DEFAULT_REGION;
+        }
+        if (config.region) {
+            debug('Obtaining default region from AWS configuration');
+            return config.region;
+        }
+        return undefined;
     }
 
     public async defaultAccount() {
