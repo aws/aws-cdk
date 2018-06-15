@@ -531,19 +531,6 @@ export = {
       topic.grantPublish(user);
 
       // THEN
-      expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sns:Publish",
-              "Effect": "Allow",
-              "Principal": resolve(user.principal.policyFragment().principalJson),
-              "Resource": "*"
-            }
-          ],
-        }
-      }));
-
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
           "Statement": [

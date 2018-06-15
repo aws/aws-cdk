@@ -21,11 +21,6 @@ class PolicyExample extends cdk.Stack {
         // when you call `addToPolicy`, a default policy is defined and attached
         // to the bucket.
         const bucket = new Bucket(this, 'MyBucket');
-        bucket.addToResourcePolicy(new PolicyStatement()
-            .addPrincipal(role.principal)
-            .addActions('s3:*')
-            .addResource(bucket.bucketArn)
-            .addResource(bucket.arnForObjects('*')));
 
         // the role also has a policy attached to it.
         role.addToPolicy(new PolicyStatement()
