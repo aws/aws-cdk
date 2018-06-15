@@ -79,7 +79,6 @@ export class InitTemplate {
         await this.installFiles(path.join(this.basePath, language), targetDirectory, {
             name: decamelize(path.basename(path.resolve(targetDirectory)))
         });
-        await promisify(exec)(`git commit --no-gpg-sign -m "Initial commit"`);
     }
 
     private async installFiles(srcDir: string, tgtDir: string, project: ProjectInfo) {
@@ -166,7 +165,8 @@ async function initializeProject(template: InitTemplate, language: string) {
     await template.install(language, process.cwd());
     await postInstall(language);
     if (useGit) {
-        await promisify(exec)('git commit --all -m "Initial commit"');
+        await promisify(exec)('git add .');
+        await promisify(exec)('git commit --message="Initial commit" --no-gpg-sign');
     }
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
