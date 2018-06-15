@@ -1,5 +1,12 @@
 ## [UNRELEASED]
 
+### Framework
+
+ * Two-way IAM policy statement additions have been removed for S3 and SNS,
+   because those services treat resource and identity policies as additive.
+   KMS grants are still added on both resource and identity because KMS
+   requires permissions set from both sides.
+
 ### Toolkit
 
  * `cdk init` interface changed to accept the template name as a positional
@@ -8,6 +15,7 @@
  * `cdk-beta-npm` is a wrapper to `npm` that executes commands with a local registry
    that has the CDK packages available. It should be used instead of `npm` for
    subcommands such as `npm install`.
+ * CDK now respects `AWS_DEFAULT_REGION` environment variable if set.
 
 ## 0.7.0 - 2018-06-13
 
