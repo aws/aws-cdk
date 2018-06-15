@@ -106,8 +106,9 @@ export async function execCdkBetaNpm(options: { storage?: string } | string, ..
         options = {};
     }
     if (!options.storage) {
-        options.storage = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME)
-                                               : path.join(homedir(), '.cdk');
+        const cdkHome = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME)
+                                             : path.join(homedir(), '.cdk');
+        options.storage = path.join(cdkHome, 'repo', 'npm');
     }
     const [server, endpoint] = await startVerdaccio(options.storage);
     const npmrc = path.join(options.storage, '.npmrc');
