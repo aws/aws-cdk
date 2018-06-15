@@ -376,58 +376,6 @@ export = {
                 "MyBucketF68F3FF0": {
                   "Type": "AWS::S3::Bucket"
                 },
-                "MyBucketPolicyE7FBAC7B": {
-                  "Type": "AWS::S3::BucketPolicy",
-                  "Properties": {
-                    "Bucket": {
-                      "Ref": "MyBucketF68F3FF0"
-                    },
-                    "PolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": [
-                            "s3:GetObject*",
-                            "s3:GetBucket*",
-                            "s3:List*"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::GetAtt": [
-                                "MyProjectRole9BBE5233",
-                                "Arn"
-                              ]
-                            }
-                          },
-                          "Resource": [
-                            {
-                              "Fn::GetAtt": [
-                                "MyBucketF68F3FF0",
-                                "Arn"
-                              ]
-                            },
-                            {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  {
-                                    "Fn::GetAtt": [
-                                      "MyBucketF68F3FF0",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "/",
-                                  "*"
-                                ]
-                              ]
-                            }
-                          ]
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
                 "MyProjectRole9BBE5233": {
                   "Type": "AWS::IAM::Role",
                   "Properties": {

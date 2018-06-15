@@ -195,11 +195,6 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
         identity.addToPolicy(new PolicyStatement()
             .addResource(this.topicArn)
             .addActions('sns:Publish'));
-
-        this.addToResourcePolicy(new PolicyStatement()
-            .addResource('*')
-            .addPrincipal(identity.principal)
-            .addActions('sns:Publish'));
     }
 
     /**
