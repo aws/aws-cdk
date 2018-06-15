@@ -79,6 +79,7 @@ export class InitTemplate {
         await this.installFiles(path.join(this.basePath, language), targetDirectory, {
             name: decamelize(path.basename(path.resolve(targetDirectory)))
         });
+        await promisify(exec)(`git commit --no-gpg-sign -m "Initial commit"`);
     }
 
     private async installFiles(srcDir: string, tgtDir: string, project: ProjectInfo) {
@@ -88,6 +89,7 @@ export class InitTemplate {
             if ((await fs.stat(fromFile)).isDirectory()) {
                 await fs.mkdir(toFile);
                 await this.installFiles(fromFile, toFile, project);
+                continue;
             } else if (file.match(/^.*\.template\.[^.]+$/)) {
                 await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
             } else {
@@ -159,10 +161,13 @@ export async function printAvailableTemplates(language?: string) {
 
 async function initializeProject(template: InitTemplate, language: string) {
     await assertIsEmptyDirectory();
-    await initializeGitRepository();
+    const useGit = await initializeGitRepository();
     print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
     await template.install(language, process.cwd());
     await postInstall(language);
+    if (useGit) {
+        await promisify(exec)('git commit --all -m "Initial commit"');
+    }
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
     } else {
@@ -178,9 +183,10 @@ async function assertIsEmptyDirectory() {
 }
 
 async function initializeGitRepository() {
-    if (await isInGitRepository(process.cwd())) { return; }
+    if (await isInGitRepository(process.cwd())) { return false; }
     print('Initializing a new git repository...');
-    promisify(exec)('git init');
+    await promisify(exec)('git init');
+    return true;
 }
 
 async function postInstall(language: string) {
