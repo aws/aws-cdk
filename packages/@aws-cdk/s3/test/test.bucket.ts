@@ -579,58 +579,6 @@ export = {
             "MyBucketF68F3FF0": {
               "Type": "AWS::S3::Bucket"
             },
-            "MyBucketPolicyE7FBAC7B": {
-              "Type": "AWS::S3::BucketPolicy",
-              "Properties": {
-                "Bucket": {
-                  "Ref": "MyBucketF68F3FF0"
-                },
-                "PolicyDocument": {
-                  "Statement": [
-                    {
-                      "Action": [
-                        "s3:GetObject*",
-                        "s3:GetBucket*",
-                        "s3:List*"
-                      ],
-                      "Effect": "Allow",
-                      "Principal": {
-                        "AWS": {
-                          "Fn::GetAtt": [
-                            "ReaderF7BF189D",
-                            "Arn"
-                          ]
-                        }
-                      },
-                      "Resource": [
-                        {
-                          "Fn::GetAtt": [
-                            "MyBucketF68F3FF0",
-                            "Arn"
-                          ]
-                        },
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Fn::GetAtt": [
-                                  "MyBucketF68F3FF0",
-                                  "Arn"
-                                ]
-                              },
-                              "/",
-                              "*"
-                            ]
-                          ]
-                        }
-                      ]
-                    }
-                  ],
-                  "Version": "2012-10-17"
-                }
-              }
-            }
           }
         });
         test.done();
@@ -647,61 +595,6 @@ export = {
                 "Resources": {
                   "MyBucketF68F3FF0": {
                     "Type": "AWS::S3::Bucket"
-                  },
-                  "MyBucketPolicyE7FBAC7B": {
-                    "Type": "AWS::S3::BucketPolicy",
-                    "Properties": {
-                      "Bucket": {
-                        "Ref": "MyBucketF68F3FF0"
-                      },
-                      "PolicyDocument": {
-                        "Statement": [
-                          {
-                            "Action": [
-                              "s3:GetObject*",
-                              "s3:GetBucket*",
-                              "s3:List*",
-                              "s3:PutObject*",
-                              "s3:DeleteObject*",
-                              "s3:Abort*"
-                            ],
-                            "Effect": "Allow",
-                            "Principal": {
-                              "AWS": {
-                                "Fn::GetAtt": [
-                                  "MyUserDC45028B",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            "Resource": [
-                              {
-                                "Fn::GetAtt": [
-                                  "MyBucketF68F3FF0",
-                                  "Arn"
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MyBucketF68F3FF0",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/",
-                                    "*"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        ],
-                        "Version": "2012-10-17"
-                      }
-                    }
                   },
                   "MyUserDC45028B": {
                     "Type": "AWS::IAM::User"
@@ -854,61 +747,6 @@ export = {
                             }
                           }
                         ]
-                      }
-                    }
-                  },
-                  "MyBucketPolicyE7FBAC7B": {
-                    "Type": "AWS::S3::BucketPolicy",
-                    "Properties": {
-                      "Bucket": {
-                        "Ref": "MyBucketF68F3FF0"
-                      },
-                      "PolicyDocument": {
-                        "Statement": [
-                          {
-                            "Action": [
-                              "s3:GetObject*",
-                              "s3:GetBucket*",
-                              "s3:List*",
-                              "s3:PutObject*",
-                              "s3:DeleteObject*",
-                              "s3:Abort*"
-                            ],
-                            "Effect": "Allow",
-                            "Principal": {
-                              "AWS": {
-                                "Fn::GetAtt": [
-                                  "MyUserDC45028B",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            "Resource": [
-                              {
-                                "Fn::GetAtt": [
-                                  "MyBucketF68F3FF0",
-                                  "Arn"
-                                ]
-                              },
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MyBucketF68F3FF0",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/",
-                                    "*"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        ],
-                        "Version": "2012-10-17"
                       }
                     }
                   },

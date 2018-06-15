@@ -166,13 +166,9 @@ export abstract class BucketRef extends Construct {
             .addResources(...resources)
             .addActions(...bucketActions));
 
-        this.addToResourcePolicy(new PolicyStatement()
-            .addResources(...resources)
-            .addPrincipal(identity.principal)
-            .addActions(...bucketActions));
-
         // grant key permissions if there's an associated key.
         if (this.encryptionKey) {
+            // KMS permissions need to be granted both directions
             identity.addToPolicy(new PolicyStatement()
                 .addResource(this.encryptionKey.keyArn)
                 .addActions(...keyActions));
