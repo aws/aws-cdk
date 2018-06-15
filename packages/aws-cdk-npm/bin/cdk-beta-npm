@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('./cdk-npm.js');
+require('./cdk-beta-npm.js');
