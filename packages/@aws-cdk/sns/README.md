@@ -25,12 +25,7 @@ myTopic.subscribeUrl('MyHttpsSubscription', 'https://foobar.com/');
 
 Subscribe a queue to the topic:
 
-```ts
-const myTopic = new Topic(stack, 'MyTopic');
-const queue = new Queue(stack, 'MyQueue');
-
-myTopic.subscribeQueue(queue);
-```
+[Example of subscribing a queue to a topic](test/integ.sns-sqs.lit.ts)
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
@@ -39,15 +34,7 @@ reading the initial message from the queue and visiting the link found in it.
 
 SNS topics can be used as targets for CloudWatch event rules:
 
-```ts
-const myTopic = new Topic(this, 'MyTopic');
-const rule = new EventRule(this, 'Rule', { /* ... */ });
+[Example of CloudWatch Event rules](test/integ.sns-codecommit-event-rule-target.lit.ts)
 
-rule.addTarget(myTopic);
-
-// or use as a target in an onXxx method
-codeCommitRepo.onCommit('OnCommit', myTopic);
-```
-
-This will result in adding a target to the event rule and will also modify the topic resource
-policy to allow CloudWatch events to publish to the topic.
+This will result in adding a target to the event rule and will also modify
+the topic resource policy to allow CloudWatch events to publish to the topic.
