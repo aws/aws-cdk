@@ -15,14 +15,15 @@ Welcome
 #######
 
 Welcome to the |cdk-long| (|cdk|) User Guide.
-
 The |cdk| is a software development framework for defining cloud infrastructure in code.
-
-The |cdk| consists of a core software package,
-language bindings, and command-line interface tools.
-The |cdk| also provides reusable component libraries, which we call *constructs*.
-Constructs are abstractions of cloud infrastructure logic that create AWS resources and are packaged for reuse.
-They expose a rich programmatic interface and can be composed together to form |cdk| apps that generate |CFN| templates.
+It consists of a core framework library,
+which implements the basic programming model;
+a command-line toolkit;
+and a set of AWS-vended class libraries for defining AWS resources
+using rich object-oriented APIs.
+CDK libraries are is written in TypeScript and vended to multiple programming languages
+using a mechanism called *jsii*,
+which executes JavaScript code behind generated proxy classes.
 
 Here's a short example of creating an |SNS| topic, an |SQS| queue,
 and subscribing the topic to the queue.
@@ -46,7 +47,7 @@ in :doc:`getting-started`.
               visibilityTimeoutSec: 300
             });
 
-            topic.subscribeQueue('TopicToQueue', queue);
+            topic.subscribeQueue(queue);
         }
     }
 
@@ -86,11 +87,11 @@ In addition to this guide, the following are other resources available to |cdk| 
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
   * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
+  * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE.md>`_
 * :doc:`getting-started`
 * `TypeScriptLang.org <https://www.typescriptlang.org/>`_
 
 .. TBD:
-   * License (link)
    * FAQ (link)
    * Installing the |cdk| (video) (link)
 

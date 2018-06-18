@@ -18,8 +18,13 @@ The |cdk| uses the following terms.
 Some are based on AWS CloudFormation `concepts <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html>`_.
 
 app
-   An executable program that the |cdk| uses to synthesize artifacts
-   that can contain multiple stacks and be deployed into multiple AWS environments.
+   An executable program that the |cdk| uses to synthesize a |CFN| template.
+   Apps are:
+
+   * Written by a user
+   * Contain one or more stacks that can be deployed into multiple AWS environments
+   * Define the infrastructure of your application
+
    Apps extend the :py:class:`aws-cdk.App` class.
 
 applet

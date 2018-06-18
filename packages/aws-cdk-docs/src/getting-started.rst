@@ -89,7 +89,7 @@ extends **Stack**, and include some construction logic.
             });
 
 	    // Subscribe the topic to the queue
-            topic.subscribeQueue('TopicToQueue', queue);
+            topic.subscribeQueue(queue);
         }
     }
 
@@ -116,15 +116,15 @@ You must compile your app every time you change it.
     - Compilation Command
 
   * - TypeScript
-    - `npm run prepare`
-      (use `npm run watch` in a separate command window to watch for source changes and automatically recompile)
+    - **npm run prepare**
+      (use **npm run watch** in a separate command window to watch for source changes and automatically recompile)
 
 .. _create_cloud_formation:
 
 Synthesizing a CloudFormation Template
 --------------------------------------
 
-Use the **cdk synth** command to synthesize a |CFN| template for a stack in your app.
+Use the **cdk synth** command to synthesize an |CFN| template for a stack in your app.
 You do not need to synthesize your |CFN| template to deploy it.
 
 .. code-block:: console
@@ -135,46 +135,45 @@ You should see output similar to the following:
 
 .. code-block:: yaml
 
-    Resources:
-        MyTopic86869434:
-            Type: 'AWS::SNS::Topic'
-        MyTopicTopicToQueue2F98E5BA:
-            Type: 'AWS::SNS::Subscription'
-            Properties:
-                Endpoint:
-                    'Fn::GetAtt':
-                        - MyQueueE6CA6235
-                        - Arn
-                Protocol: sqs
-                TopicArn:
-                    Ref: MyTopic86869434
-        MyQueueE6CA6235:
-            Type: 'AWS::SQS::Queue'
-	    Properties:
-                VisibilityTimeout: 300
-        MyQueuePolicy6BBEDDAC:
-            Type: 'AWS::SQS::QueuePolicy'
-            Properties:
-                PolicyDocument:
-                    Statement:
-                        -
-                            Action: 'sqs:SendMessage'
-                            Condition:
-                                ArnEquals:
-                                    'aws:SourceArn':
-                                        Ref: MyTopic86869434
-                            Effect: Allow
-                            Principal:
-                                Service: sns.amazonaws.com
-                            Resource:
-                                'Fn::GetAtt':
-                                    - MyQueueE6CA6235
-                                    - Arn
-                    Version: '2012-10-17'
-                Queues:
-                    -
-                        Ref: MyQueueE6CA6235
-
+   Resources:
+   MyTopic86869434:
+       Type: 'AWS::SNS::Topic'
+   MyTopicMyQueueSubscription3245B11E:
+       Type: 'AWS::SNS::Subscription'
+       Properties:
+           Endpoint:
+               'Fn::GetAtt':
+                   - MyQueueE6CA6235
+                   - Arn
+           Protocol: sqs
+           TopicArn:
+              Ref: MyTopic86869434
+   MyQueueE6CA6235:
+       Type: 'AWS::SQS::Queue'
+       Properties:
+           VisibilityTimeout: 300
+   MyQueuePolicy6BBEDDAC:
+       Type: 'AWS::SQS::QueuePolicy'
+       Properties:
+           PolicyDocument:
+               Statement:
+                   -
+                       Action: 'sqs:SendMessage'
+                       Condition:
+                           ArnEquals:
+                               'aws:SourceArn':
+                                   Ref: MyTopic86869434
+                       Effect: Allow
+                       Principal:
+                           Service: sns.amazonaws.com
+                       Resource:
+                           'Fn::GetAtt':
+                               - MyQueueE6CA6235
+                               - Arn
+               Version: '2012-10-17'
+           Queues:
+               -
+                   Ref: MyQueueE6CA6235
 
 As you can see, the call to :py:meth:`_aws-cdk_sns.TopicRef.subscribeQueue` on
 the :py:class:`_aws-cdk_sns.Topic` resulted in:
@@ -233,9 +232,8 @@ You should see something like the following.
 
 .. code-block:: sh
 
-    [~] 🛠 Updating MyQueueE6CA6235 (type: AWS::SQS::Queue)
-    └─ [+] .VisibilityTimeout:
-        └─ New value: 300
+   [~] 🛠 Updating CdkBetaQueue3CF282DF (type: AWS::SQS::Queue)
+    └─ [~] .VisibilityTimeout:
 
 If the changes are acceptable, use **cdk deploy** to update your
 infrastructure.
