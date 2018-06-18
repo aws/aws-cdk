@@ -1,0 +1,22 @@
+{
+    "name": "%name%",
+    "version": "0.1.0",
+    "main": "bin/index.js",
+    "types": "bin/index.d.ts",
+    "bin": {
+        "%name%": "bin/%name%.js"
+    },
+    "scripts": {
+        "prepare": "tsc && chmod a+x bin/%name%.js",
+        "watch": "tsc -w"
+    },
+    "devDependencies": {
+        "@types/node": "^8.9.4",
+        "typescript": "^2.8.3"
+    },
+    "dependencies": {
+        "@aws-cdk/core": "^%cdk-version%",
+        "@aws-cdk/sns": "^%cdk-version%",
+        "@aws-cdk/sqs": "^%cdk-version%"
+    }
+}

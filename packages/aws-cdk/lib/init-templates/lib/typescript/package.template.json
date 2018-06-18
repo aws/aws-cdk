@@ -1,0 +1,21 @@
+{
+    "name": "%name%",
+    "version": "0.1.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+        "prepare": "tsc",
+        "watch": "tsc -w",
+        "test": "nodeunit test/test.*.js"
+    },
+    "devDependencies": {
+        "@types/nodeunit": "^0.0.30",
+        "nodeunit": "^0.11.2",
+        "typescript": "^2.8.3"
+    },
+    "dependencies": {
+        "@aws-cdk/core": "^%cdk-version%",
+        "@aws-cdk/sns": "^%cdk-version%",
+        "@aws-cdk/sqs": "^%cdk-version%"
+    }
+}

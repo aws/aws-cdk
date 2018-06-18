@@ -1,0 +1,23 @@
+{
+    "name": "aws-cdk-npm",
+    "description": "Wraps NPM commands to make local CDK modules available",
+    "version": "0.7.1",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "bin": {
+        "cdk-beta-npm": "bin/cdk-beta-npm"
+    },
+    "scripts": {
+        "prepare": "tslint -p . && tsc && chmod +x bin/cdk-beta-npm"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^5.0.3",
+        "@types/node": "^8.9.4",
+        "tslint": "^5.10.0",
+        "typescript": "^2.9.1"
+    },
+    "dependencies": {
+        "fs-extra": "^6.0.1",
+        "verdaccio": "^3.1.2"
+    }
+}

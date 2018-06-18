@@ -157,7 +157,7 @@ Currently only TypeScript is supported.
 
    mkdir hello-cdk
    cd hello-cdk
-   cdk init typescript
+   cdk init --language=typescript
 
 **cdk init** creates a skeleton |cdk| program for you to work with
 and displays some useful commands to help you get started.
@@ -167,9 +167,9 @@ extends **Stack**, and include some construction logic.
 
 .. code-block:: js
 
-    import { App, Stack, StackProps } from "aws-cdk";
-    import { Topic } from 'aws-cdk-sns';
-    import { Queue } from 'aws-cdk-sqs';
+    import { App, Stack, StackProps } from "@aws-cdk/core";
+    import { Topic } from '@aws-cdk/sns';
+    import { Queue } from '@aws-cdk/sqs';
 
     class HelloStack extends Stack {
         constructor(parent: App, name: string, props?: StackProps) {
@@ -268,8 +268,8 @@ You should see output similar to the following:
                         Ref: MyQueueE6CA6235
 
 
-As you can see, the call to :py:meth:`aws-cdk-sns.TopicRef.subscribeQueue` on
-the :py:class:`aws-cdk-sns.Topic` resulted in:
+As you can see, the call to :py:meth:`_aws-cdk_sns.TopicRef.subscribeQueue` on
+the :py:class:`_aws-cdk_sns.Topic` resulted in:
 
 1. Creating an **AWS::SNS::Subscription** associated with the queue and the topic.
 2. Adding a statement to the **AWS::SQS::QueuePolicy**, which allows the topic to send messages to the queue.
@@ -313,5 +313,5 @@ You should see something like the following.
     └─ [+] .VisibilityTimeout:
         └─ New value: 300
 
-If the changes area acceptable, use **cdk deploy** to update your
+If the changes are acceptable, use **cdk deploy** to update your
 infrastructure.

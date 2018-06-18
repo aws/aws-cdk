@@ -1,9 +1,9 @@
-import * as cdk from 'aws-cdk';
-import { PolicyStatement, ServicePrincipal } from 'aws-cdk';
-import { WindowsImage, WindowsVersion } from 'aws-cdk-ec2';
-import { Role } from 'aws-cdk-iam';
-import { cloudformation, ec2, sns, sqs } from 'aws-cdk-resources';
-import { Bucket } from 'aws-cdk-s3';
+import * as cdk from '@aws-cdk/core';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
+import { WindowsImage, WindowsVersion } from '@aws-cdk/ec2';
+import { Role } from '@aws-cdk/iam';
+import { cloudformation, ec2, sns, sqs } from '@aws-cdk/resources';
+import { Bucket } from '@aws-cdk/s3';
 
 /**
  * This stack demonstrates the use of the IAM policy library shipped with the CDK.
@@ -21,11 +21,6 @@ class PolicyExample extends cdk.Stack {
         // when you call `addToPolicy`, a default policy is defined and attached
         // to the bucket.
         const bucket = new Bucket(this, 'MyBucket');
-        bucket.addToResourcePolicy(new PolicyStatement()
-            .addPrincipal(role.principal)
-            .addActions('s3:*')
-            .addResource(bucket.bucketArn)
-            .addResource(bucket.arnForObjects('*')));
 
         // the role also has a policy attached to it.
         role.addToPolicy(new PolicyStatement()

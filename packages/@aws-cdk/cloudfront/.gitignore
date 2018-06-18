@@ -1,0 +1,8 @@
+*.js
+*.d.ts
+tsconfig.json
+tslint.json
+*.js.map
+dist
+coverage
+.nyc_output

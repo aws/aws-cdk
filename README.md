@@ -5,49 +5,92 @@ for defining cloud infrastructure in code.
 
 ## Getting Started
 
-### Installation
+### Prerequisites
 
-Make sure you have the required dependencies installed:
+Make sure you have the following prerequisites installed:
+
 * [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
-* The SDK for the language you intend to use (Java, .Net, Ruby, ...)
+* [AWS CLI](https://aws.amazon.com/cli/) (only needed if you intend to download the release from S3).
+* The development toolchain of the language you intend to use (TypeScript,
+  Python, Java, .NET, Ruby...)
 
-Download the current release bundle from S3, and install it to `~/.cdk`:
+### Downloading the bits
+
+The CDK is distributed as a single zip file which contains:
+
+1. The CDK command-line toolkit
+2. Documentation HTML
+2. JavaScript/TypeScript Framework and AWS Constructs
+3. Java Framework and AWS Constructs
+
+You can either download the zip file from the
+[Releases](http://github.com/awslabs/aws-cdk/releases) page on GitHub or if you
+prefer, download them bits from S3 using the URL provided by our team.
+
+To download from S3:
+
 ```shell
-tmpdir=/tmp/aws-cdk-install
-mkdir ${tmpdir}
-aws s3 cp s3://<bucket>/<key> ${tmpdir}/aws-cdk.zip
-unzip -o ${tmpdir}/aws-cdk.zip -d ~/.cdk
+aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
-Then add the CDK to your `$PATH`:
+### Install to ~/.cdk
+
+Once you've downloaded the bits, install them into `~/.cdk`:
+
 ```shell
-# At the end of your ~/.bashrc or ~/.zshrc file
-export PATH=${PATH:+${PATH}:}${HOME}/.cdk/bin
+rm -fr ~/.cdk
+mkdir ~/.cdk
+unzip <path-to-zip-file> -d ~/.cdk
 ```
 
-### Creating a new project
+Make sure the ~/.cdk/bin is in your `PATH`
 
-New projects can be initialized using `cdk init`.
 ```shell
-mkdir ${PROJECT_NAME}
-cd ${PROJECT_NAME}
-cdk init
+# at the end of your ~/.bashrc or ~/.zshrc file
+export PATH=$PATH:$HOME/.cdk/bin
 ```
 
-### Useful commands
+To check which CDK version you have installed:
 
 ```shell
-# Initialize a new CDK project
-cdk init
+cdk --version
+```
 
-# Open the documentation in a web browser
+### Viewing Documentation
+
+To view CDK documentation bundled with the release, run:
+
+```shell
 cdk docs
+```
 
-# List available commands
-cdk help
+### Next steps?
 
-# Get help on a particular command (e.g: synth)
-cdk help synth
+Follow the "Getting Started" guide in CDK docs to initialize your first CDK
+project and deploy it to an AWS account.
+
+### Verifying the integrity of your download
+
+You can verify that your download is complete and correct by validating
+its signature against our public signing key. To do so, you need
+the following things:
+
+* [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
+* Download our public key: [cdk-team.asc](https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc)
+* Make sure you have downloaded both `aws-cdk-x.y.z.zip`
+  and `aws-cdk-x.y.z.zip.sig`.
+
+Then run the following commands:
+
+```shell
+gpg --import cdk-team.asc
+gpg --validate aws-cdk-x.y.z.zip.sig
+```
+
+If everything is correct, the output will contain the line:
+
+```
+gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
 ```
 
 ## Development Environment
@@ -57,7 +100,7 @@ This is a monorepo which uses [lerna](https://github.com/lerna/lerna).
 The CDK depends on [jsii](https://github.com/awslabs/jsii), which is still not
 published to npm. Therefore, the jsii tarballs are checked-in to this repository
 under `./local-npm` and the install script will install them in the repo-global
-node_modules directory.
+`node_modules` directory.
 
 ### Prerequisites
 
@@ -159,8 +202,8 @@ npm run pkglint
 
 ### Updating jsii
 
-Run `./pack.sh` in the jsii repository and copy the tarballs to `./local-npm`.
-Make sure all tarballs are defined in the root `package.json`.
+Download an official jsii zip bundle and replace the file under `./vendor`.
+Any added dependencies, they will need to be added to the root `package.json`.
 
 # Language Support
 
@@ -177,7 +220,13 @@ To vend another language for the CDK (given there's jsii support for it):
 3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
    your language under `repo/xxx`
 4. Add a **cdk init** template for your language (see
-   [packages/aws-cdk-toolkit/lib/init-templates](packages/aws-cdk-toolkit/lib/init-templates)).
+   [packages/aws-cdk/lib/init-templates](packages/aws-cdk/lib/init-templates)).
 5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
    make there there's a getting started sections and examples for the new
    language.
+
+# License
+
+Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+See [LICENSE](./LICENSE.md) file for license terms.

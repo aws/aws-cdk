@@ -1,0 +1,41 @@
+{
+  "name": "pkgtools",
+  "private": true,
+  "version": "0.7.1",
+  "description": "Tools for generating cross-package artifacts",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "bin": {
+    "cdk-version": "bin/cdk-version",
+    "find-jsii-packages": "bin/find-jsii-packages",
+    "publish-to-verdaccio": "bin/publish-to-verdaccio"
+  },
+  "scripts": {
+    "prepare": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && chmod +x bin/publish-to-verdaccio && pkglint",
+    "watch": "tsc -w",
+    "lint": "tslint -p . --force",
+    "pkglint": "pkglint -f"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "pkglint": "^0.7.1"
+  },
+  "dependencies": {
+    "@types/fs-extra": "^4.0.8",
+    "@types/yargs": "^8.0.3",
+    "aws-cdk-npm": "^0.7.1",
+    "fs-extra": "^4.0.2",
+    "yargs": "^9.0.1"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}

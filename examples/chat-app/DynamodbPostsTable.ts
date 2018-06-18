@@ -1,5 +1,5 @@
-import { Construct } from 'aws-cdk';
-import * as dynamodb from 'aws-cdk-dynamodb';
+import { Construct } from '@aws-cdk/core';
+import * as dynamodb from '@aws-cdk/dynamodb';
 
 export class DynamoPostsTable extends Construct {
     constructor(parent: Construct, name: string) {

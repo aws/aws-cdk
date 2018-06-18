@@ -1,0 +1,52 @@
+{
+  "name": "@aws-cdk/events",
+  "version": "0.7.1",
+  "description": "AWS CloudWatch Events Construct Library",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [
+      "@aws-cdk/util"
+    ],
+    "names": {
+      "java": "com.amazonaws.cdk.events",
+      "dotnet": "Aws.Cdk.Events"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "cloudlib",
+    "aws-cloudlib",
+    "aws-clib"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.1",
+    "aws-cdk": "^0.7.1",
+    "pkglint": "^0.7.1"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.7.1",
+    "@aws-cdk/iam": "^0.7.1",
+    "@aws-cdk/resources": "^0.7.1",
+    "@aws-cdk/util": "^0.7.1"
+  }
+}

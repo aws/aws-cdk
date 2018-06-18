@@ -1,0 +1,37 @@
+{
+  "name": "@aws-cdk/cx-api",
+  "version": "0.7.1",
+  "description": "Cloud executable protocol",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "names": {
+      "java": "com.amazonaws.cdk.cxapi",
+      "dotnet": "Aws.Cdk.CxApi"
+    }
+  },
+  "scripts": {
+    "prepare": "jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "echo ok",
+    "pkglint": "pkglint -f"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "pkglint": "^0.7.1"
+  },
+  "repository": {
+    "url": "git://github.com/awslabs/aws-cdk",
+    "type": "git"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
