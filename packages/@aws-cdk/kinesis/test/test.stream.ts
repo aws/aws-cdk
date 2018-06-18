@@ -1,7 +1,7 @@
-import { Stack } from 'aws-cdk';
-import { expect } from 'aws-cdk-assert';
-import { User } from 'aws-cdk-iam';
-import { EncryptionKey } from 'aws-cdk-kms';
+import { expect } from '@aws-cdk/assert';
+import { Stack } from '@aws-cdk/core';
+import { User } from '@aws-cdk/iam';
+import { EncryptionKey } from '@aws-cdk/kms';
 import { Test } from 'nodeunit';
 import { Stream, StreamEncryption } from '../lib';
 
