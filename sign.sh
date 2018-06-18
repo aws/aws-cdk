@@ -48,7 +48,6 @@ while [[ "${1:-}" != "" ]]; do
         --homedir $tmpdir \
         --local-user aws-cdk@amazon.com \
         --batch --yes --no-tty \
-        --pinentry-mode loopback \
         --passphrase-fd 0 \
         --output $1.sig \
         --detach-sign $1
