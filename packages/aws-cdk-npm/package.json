@@ -12,12 +12,12 @@
     },
     "devDependencies": {
         "@types/fs-extra": "^5.0.3",
-        "@types/node": "^8.9.4",
+        "@types/node": "^8.10.20",
         "tslint": "^5.10.0",
-        "typescript": "^2.9.1"
+        "typescript": "^2.9.2"
     },
     "dependencies": {
         "fs-extra": "^6.0.1",
-        "verdaccio": "^3.1.2"
+        "verdaccio": "^3.2.0"
     }
 }
