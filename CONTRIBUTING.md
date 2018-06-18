@@ -186,4 +186,41 @@ To vend another language for the CDK (given there's jsii support for it):
    make there there's a getting started sections and examples for the new
    language.
 
+## Dependencies
+
+### Adding Dependencies
+
+The root [package.json](./package.json) includes global devDependencies (see
+[lerna docs](https://github.com/lerna/lerna#common-devdependencies)) on the
+topic.
+
+ * To add a global dependency, run `npm i --save-dev <dep>` at  the root.
+ * To add a dependency for a specific module, run `npm i <dep>` inside the
+   module's directory.
+
+Guidelines:
+
+ * We cannot accept dependencies that use non-permissive open source licenses (Apache, MIT, etc).
+ * Make sure dependencies are defined using [caret
+   ranges](https://docs.npmjs.com/misc/semver#caret-ranges-123-025-004) (e.g.
+   `^1.2.3`). This enables non-breaking updates to automatically be picked up.
+ * Make sure `package-lock.json` files are included in your commit.
+
+### Updating all Dependencies
+
+We use `npm update` to
+
+1. Obtain a fresh clone from “master”
+2. Run `./install.sh` and `./build.sh` to make sure the current HEAD is not broken
+(should never be...).
+3. Once build succeeded, run:
+    ```shell
+    $ npm update # to update the root deps
+    $ lerna exec npm update # to update deps in all modules
+    ```
+4. This will probably install some new versions and update `package.json` and
+`package-lock.json` files.
+5. Now, run `./build.sh` again to verify all tests pass.
+6. Submit a Pull Request.
+
 [CHANGELOG]: [./CHANGELOG.md]
