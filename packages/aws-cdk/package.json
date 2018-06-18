@@ -8,7 +8,7 @@
     "cdk": "bin/cdk"
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cdk && pkglint",
+    "prepare": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "pkglint": "pkglint -f"
