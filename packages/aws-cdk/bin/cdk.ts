@@ -20,6 +20,7 @@ import { data, debug, error, highlight, print, setVerbose, success, warning } fr
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { Settings } from '../lib/settings';
+import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
@@ -68,6 +69,7 @@ async function parseCommandLineArguments() {
             // tslint:disable-next-line:max-line-length
             .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
             .option('list', { type: 'boolean', desc: 'list the available templates' }))
+        .version(VERSION)
         .epilogue([
             'If your app has a single stack, there is no need to specify the stack name',
             'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
