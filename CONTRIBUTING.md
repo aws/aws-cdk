@@ -17,7 +17,7 @@ contributions to this project.
       introduce a little bit of housekeeping changes along the way, but try to
       avoid conflating multiple features. Eventually all these are going to go
       into a single commit, so you can use that to frame your scope.
-2. Push to a branch (naming convention: `<user>/<feature-bug-name>`)
+2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 3. Submit a Pull Requests on GitHub. When authoring your pull request
    description:
     * Think about your code reviewers and what information they need in order to
@@ -28,10 +28,10 @@ contributions to this project.
     * Shout out to collaborators.
     * If not obvious (i.e. from unit tests), describe how you verified that your
       change works.
-4. Assign at least one reviewer
-5. Discuss review comments and iterate until you get at least on “Approve”. When
-   iterating, push new commits to the same branch. Eventually you'll sqaush them
-   all together when you merge to master. The commit messages should be hints
+4. Assign the PR for a review to the "awslabs/aws-cdk" team.
+5. Discuss review comments and iterate until you get at least one “Approve”. When
+   iterating, push new commits to the same branch. Usually all these are going
+   to be squashed when you merge to master. The commit messages should be hints
    for you when you finalize your merge commit message.
 6. Make sure your PR builds successfully (we have CodeBuild setup to
    automatically build all PRs)
@@ -72,7 +72,7 @@ docker run --net=host -it -v $PWD:$PWD -w $PWD ${IMAGE}
 ```
 
 This will get you into an interactive docker shell. You can then run
-./install.sh and ./build.sh as described below.
+`./install.sh` and `./build.sh` as described below.
 
 ### Bootstrapping
 
@@ -142,10 +142,29 @@ of the repository (after boostrapping):
 npm run pkglint
 ```
 
-## Updating jsii
+## jsii
+
+The CDK uses [jsii](https://github.com/awslabs/jsii) to vend the framework to
+multiple programming languages. Since jsii is still not published to npm, we
+consume it as a bundled dependency.
+
+### Updating to a new version
 
 Download an official jsii zip bundle and replace the file under `./vendor`.
 Any added dependencies, they will need to be added to the root `package.json`.
+
+### Linking against a local jsii repository
+
+If you are making changes locally to jsii itself and wish to bind this repository to
+a local jsii repository, the best way we currently have is to use `npm link` to link
+various jsii modules from the other repository into the root of this repository.
+
+For example, if you wish to link against the `jsii` module:
+
+1. Go to `jsii/packages/jsii`
+2. Run `npm link .`
+3. Go to `aws-cdk/`
+4. Run `npm link jsii`.
 
 ## Adding Language Support
 
@@ -156,7 +175,7 @@ runtime.
 To vend another language for the CDK (given there's jsii support for it):
 
 1. Create a directory `packages/aws-cdk-xxx` (where "xxx" is the language).
-2. Look at [aws-cdk-java/package.json](packages/aws-cdk-java/package.json) as a reference
+2. Look at [`aws-cdk-java/package.json`](packages/aws-cdk-java/package.json) as a reference
    on how to setup npm build that uses pacmak to generate the code for all CDK modules and
    then compile and wrap the package up.
 3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
