@@ -1,0 +1,7 @@
+*.js
+*.js.map
+*.d.ts
+node_modules
+dist
+tsconfig.json
+tslint.json
