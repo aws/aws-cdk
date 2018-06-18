@@ -39,7 +39,7 @@
     "@aws-cdk/assert": "^0.7.1",
     "@aws-cdk/sns": "^0.7.1",
     "aws-cdk": "^0.7.1",
-    "aws-sdk": "^2.135.0",
+    "aws-sdk": "^2.259.1",
     "pkglint": "^0.7.1"
   },
   "dependencies": {
