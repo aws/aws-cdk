@@ -25,7 +25,7 @@ The |cdk| includes with two different levels of constructs:
   mapping to an |CFN| resource,
   as listed in the |CFN| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
 
-  All |l1| members are found in the :py:mod:`aws-cdk-resources` package.
+  All |l1| members are found in the :py:mod:`@aws-cdk/resources` package.
 
 |l2|
 
@@ -35,7 +35,7 @@ The |cdk| includes with two different levels of constructs:
   intent without worrying about the details too much, and the correct resources
   will automatically be defined for you.
 
-  |l2| members are found in the :py:mod:`aws-cdk-NAMESPACE` packages,
+  |l2| members are found in the :py:mod:`@aws-cdk/NAMESPACE` packages,
   where RESOURCE is the short name for the associated service,
   such as SQS for the |l2| for the |SQS| service.
   See the :ref:`reference` section for descriptions of the |cdk|

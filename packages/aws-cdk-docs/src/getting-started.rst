@@ -27,8 +27,6 @@ Let's use the |cdk| to create an |CFN| an |SQS| queue, an |SNS| topic, a subscri
 and an |IAM| policy document that enables the
 topic to send messages to the queue.
 
-.. _hello_cdk_typescript
-
 .. _create_dirs:
 
 Create Your Project Structure
@@ -53,7 +51,7 @@ The **cdk init** command creates the following:
    * *hello-cdk.ts* is TypeScript source for the entry point to your app
      (the file we'll update later)
 
-* *cdk.json* specifies the entry point to your app, 
+* *cdk.json* specifies the entry point to your app,
   so that you can omit the **--app** option,
   such as when running **cdk synth**
 * *node_module* contains the Node packages you need to develop your TypeScript source
@@ -64,8 +62,7 @@ The **cdk init** command creates the following:
 
 The command displays README.md as it finishes to give you information about some useful commands.
 
-Replace the contents of the file *hello-cdk.ts* with the following code to create a class that
-extends **Stack**, and include some construction logic.
+Let's take a look at an annotated version of the file *hello-cdk.ts*.
 
 .. note:: You can use an IDE, such as
    `Microsoft Visual Code <https://code.visualstudio.com/>`_,
@@ -88,24 +85,24 @@ extends **Stack**, and include some construction logic.
 
     class HelloStack extends Stack {
         // Instantiate HelloStack with a reference to its parent,
-	// as it might need some context;
-	// a name; and some optional properties.
-	// You'll almost always use these same two lines.
+      	// as it might need some context;
+	      // a name; and some optional properties.
+    	  // You'll almost always use these same two lines.
         constructor(parent: App, name: string, props?: StackProps) {
             super(parent, name, props);
 
-	    // Create an SNS topic
+	          // Create an SNS topic
             const topic = new Topic(this, 'MyTopic');
 
-	    // Create an SQS queue
-	    const queue = new Queue(this, 'MyQueue', {
-	      // By default you only get 30 seconds to delete a read message after you've read it;
-	      // otherwise it becomes available to other consumers.
-	      // This extends that duration to 5 minutes.
-              visibilityTimeoutSec: 300
+            // Create an SQS queue
+      	    const queue = new Queue(this, 'MyQueue', {
+	              // By default you only get 30 seconds to delete a read message after you've read it;
+	              // otherwise it becomes available to other consumers.
+                // This extends that duration to 5 minutes.
+                visibilityTimeoutSec: 300
             });
 
-	    // Subscribe the topic to the queue
+            // Subscribe the topic to the queue
             topic.subscribeQueue(queue);
         }
     }
@@ -122,7 +119,7 @@ extends **Stack**, and include some construction logic.
 Compiling the App
 -----------------
 
-Use one of the commands in the following table to compile your app.
+Use the command for your programming language in the following table to compile your app.
 You must compile your app every time you change it.
 
 .. list-table::
@@ -210,12 +207,16 @@ should see information messages, such as feedback from CloudFormation logs.
 
    cdk deploy
 
-.. note:: You must specify your default credentials and region to use the **cdk deploy** command.
+.. note:: You must specify your default credentials and region to use the **cdk deploy** command,
+   unless you explicitly set them when you create a stack.
+   The following examples creates a stack for account *ACCOUNT* in the region *REGION*.
+
+   :code:`new MyStack(app, { env: { region: 'REGION', account: 'ACCOUNT' } });`
 
    Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
    ``aws configure`` command to specify your default credentials and region.
 
-   You can also set environment variables for your default credentials and region.
+.. You can also set environment variables for your default credentials and region.
    Environment variables take precedence over settings in the credentials or config file.
 
    * *AWS_ACCESS_KEY_ID* specifies your access key

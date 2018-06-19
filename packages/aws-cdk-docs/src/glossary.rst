@@ -48,17 +48,16 @@ environment
    The lowest-level construct, which maps directly to an |CFN| resource,
    as described in the
    `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
-   These constructs are available in the :py:mod:`aws-cdk-resources` package
-   as the |CFN| name with a **Resource** suffix within the AWS service namespace,
+   These constructs are available in the :py:mod:`@aws-cdk/resources` package,
+   as the |CFN| name, in lower case, with a **Resource** suffix within the AWS service namespace,
    such as **sqs.QueueResource**, which represents an |SQS| queue.
 
 |l2|
    A construct that provides high-level APIs for AWS services.
    Their names imply the underlying AWS service.
-   For example, |S3| resources are available through the **aws-cdk-s3**
-   Construct Library.
+   For example, |S3| resources are available through the **@aws-cdk/s3** package.
 
-|l3|
+.. |l3|
    A construct that abstracts common architectural
    patterns on AWS. These are not supplied with the standard |cdk| distribution,
    but are shared within your organization or on GitHub.
@@ -66,4 +65,3 @@ environment
 stack
    An |cdk| construct that can be deployed into an environment.
    Stacks extend the :py:class:`aws-cdk.Stack` class.
-

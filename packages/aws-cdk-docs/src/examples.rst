@@ -224,21 +224,16 @@ encryption provided by |S3|.
 Compiling the Examples
 ======================
 
-Compile the TypeScript app *index.ts* into the JavaScript code *index.js* using **jsii**.
+These examples apply to a `hello-cdk` app.
 
-:code:`jsii`
+Compile the TypeScript app *hello-cdk.ts* into the JavaScript code *hello-cdk.js* using
+the following command.
 
-**jsii** creates the file *tsconfig.json* to get code completion in a TypeScript IDE, such as
-`Microsoft Visual Code <https://code.visualstudio.com/>`_,
-`Sublime Text <https://www.sublimetext.com/>`_ with the
-`TypeScript <https://github.com/Microsoft/TypeScript-Sublime-Plugin>`_ plugin,
-or
-`Atom <https://atom.io/>`_ with the
-`TypeScript <https://atom.io/packages/atom-typescript>`_ plugin.
+:code:`npm run prepare`
 
-You can have **jsii** watch for source changes and automatically re-compile those changes using the **watch** option.
+You can have **npm** watch for source changes and automatically re-compile those changes using the **watch** option.
 
-:code:`jsii -w`
+:code:`npm run watch`
 
 .. _create_cloud_formation:
 

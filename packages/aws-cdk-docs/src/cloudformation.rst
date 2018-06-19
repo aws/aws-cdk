@@ -21,7 +21,7 @@ This section includes information about |cdk| features that most developers do n
 Creating |l1| Constructs
 ========================
 
-|l1| constructs are found in the :py:mod:`aws-cdk-resources` package. They map directly onto |cfn|
+|l1| constructs are found in the :py:mod:`@aws-cdk/resources` package. They map directly onto |cfn|
 resources.
 
 .. important::
