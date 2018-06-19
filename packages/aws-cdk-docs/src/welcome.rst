@@ -21,9 +21,6 @@ which implements the basic programming model;
 a command-line toolkit;
 and a set of AWS-vended class libraries for defining AWS resources
 using rich object-oriented APIs.
-CDK libraries are is written in TypeScript and vended to multiple programming languages
-using a mechanism called *jsii*,
-which executes JavaScript code behind generated proxy classes.
 
 Here's a short example of creating an |SNS| topic, an |SQS| queue,
 and subscribing the topic to the queue.
@@ -47,7 +44,7 @@ in :doc:`getting-started`.
               visibilityTimeoutSec: 300
             });
 
-            topic.subscribeQueue(queue);
+            topic.subscribeQueue('TopicToQueue', queue);
         }
     }
 
@@ -60,11 +57,11 @@ The process of creating your AWS resources using the |cdk| is straightforward:
 
 1. Install the |cdk| on your development machine
 2. Run the **cdk init** command to create the skeleton of your program
-   in one of the supported programming lanuages
+   in one of the supported programming languages
 3. Use your favorite development environment to define your AWS application infrastructure
    using the |l2|
 4. Compile your code, if necessary
-5. (Optional) Run the |cdk| toolkit **cdk synth** command to see what your |CFN| temlate looks like
+5. (Optional) Run the |cdk| toolkit **cdk synth** command to see what your |CFN| template looks like
 6. Run the |cdk| toolkit **cdk deploy** command to deploy the resulting |CFN| template
    and create the AWS resources in your AWS account
 7. Repeats steps 3-6 until you are satisfied with your resources
@@ -85,9 +82,11 @@ In addition to this guide, the following are other resources available to |cdk| 
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
+
   * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE.md>`_
+
 * :doc:`getting-started`
 * `TypeScriptLang.org <https://www.typescriptlang.org/>`_
 
@@ -110,4 +109,4 @@ experimentation, AWS offers a free usage tier, in which services are free below 
 usage. For more information about AWS costs and the free usage tier, see
 `Test-Driving AWS in the Free Usage Tier <http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-free-tier.html>`_.
 
-To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and click :guilabel:`Create a Free Account`.
+To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and click :guilabel:`Create an AWS Account`.

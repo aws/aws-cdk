@@ -10,9 +10,8 @@
 
 .. _construct_overview:
 
-##################
 Construct Overview
-##################
+------------------
 
 Constructs are the building blocks of |cdk| applications. Constructs can have
 child constructs, which in turn can have child constructs, forming a

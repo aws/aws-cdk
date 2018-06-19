@@ -44,15 +44,25 @@ For the examples in this section we'll use TypeScript.
    cd hello-cdk
    cdk init --language=typescript
 
-The **cdk init** command creates the following files:
+The **cdk init** command creates the following:
 
-* *bin/hello-cdk.ts* is TypeScript source for the entry point to your app
-* *bin/hello-cdk.js* is the compiled JavaScript for the entry point to your app
-* *cdk.json* contains configuration information so that the
-  |cdk| tools know the entry point to your app, and thus you can omit the **--app** option,
+* *bin* contains the following files:
+
+   * *hello-cdk.d.ts* is TypeScript source for the entry point to your app
+   * *hello-cdk.js* is the compiled JavaScript for the entry point to your app
+   * *hello-cdk.ts* is TypeScript source for the entry point to your app
+     (the file we'll update later)
+
+* *cdk.json* specifies the entry point to your app, 
+  so that you can omit the **--app** option,
   such as when running **cdk synth**
+* *node_module* contains the Node packages you need to develop your TypeScript source
+* *package.json* contains metadata for the app.
+* *package-lock.json* is the Git lockfile for package.json
+* *README.md* contains a description of a few |toolkit| commands
+* *tsconfig.json* contains definitions for the TypeScript compiler
 
-The command also displays some useful commands to help you get started.
+The command displays README.md as it finishes to give you information about some useful commands.
 
 Replace the contents of the file *hello-cdk.ts* with the following code to create a class that
 extends **Stack**, and include some construction logic.

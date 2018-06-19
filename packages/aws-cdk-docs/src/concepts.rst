@@ -34,8 +34,9 @@ and make changes to any construct and have those changes available to consumers
 as shared class libraries.
 
 .. toctree::
-  :maxdepth: 1
-  :titlesonly:
+   :titlesonly:
+   :caption: Topics
+   :maxdepth: 1
 
    construct-overview
    construct-structure
