@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-docs",
-  "version": "0.7.2-beta",
+  "version": "0.7.2",
   "description": "AWS CDK Documentation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,8 +22,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk-all": "^0.7.2-beta",
-    "pkgtools": "^0.7.2-beta"
+    "aws-cdk-all": "^0.7.2",
+    "pkgtools": "^0.7.2"
   },
   "keywords": [
     "aws",
