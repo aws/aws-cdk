@@ -44,10 +44,17 @@ For the examples in this section we'll use TypeScript.
    cd hello-cdk
    cdk init --language=typescript
 
-The **cdk init** command creates a skeleton |cdk| program for you to work with
-and displays some useful commands to help you get started.
+The **cdk init** command creates the following files:
 
-Replace the contents of the file *index.ts* with the following code to create a class that
+* *bin/hello-cdk.ts* is TypeScript source for the entry point to your app
+* *bin/hello-cdk.js* is the compiled JavaScript for the entry point to your app
+* *cdk.json* contains configuration information so that the
+  |cdk| tools know the entry point to your app, and thus you can omit the **--app** option,
+  such as when running **cdk synth**
+
+The command also displays some useful commands to help you get started.
+
+Replace the contents of the file *hello-cdk.ts* with the following code to create a class that
 extends **Stack**, and include some construction logic.
 
 .. note:: You can use an IDE, such as
@@ -63,10 +70,10 @@ extends **Stack**, and include some construction logic.
     // You'll need this statement in every app
     import { App, Stack, StackProps } from '@aws-cdk/core';
 
-    // The SNS resources, such as Topic, are defined in aws-cdk-sns
+    // The SNS resources, such as Topic, are defined in @aws-cdk/sns
     import { Topic } from '@aws-cdk/sns';
 
-    // The SQS resources, such as Queue, are defined in aws-cdk-sqs
+    // The SQS resources, such as Queue, are defined in @aws-cdk/sqs
     import { Queue } from '@aws-cdk/sqs';
 
     class HelloStack extends Stack {
