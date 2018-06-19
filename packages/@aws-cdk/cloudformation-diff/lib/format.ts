@@ -143,7 +143,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
      * @param linePrefix a prefix (indent-like) to be used on every line.
      */
     function formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
-        if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string') {
+        if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
             if (oldObject !== undefined && newObject !== undefined) {
                 print('%s   ├─ %s Old value: %s', linePrefix, REMOVAL, formatValue(oldObject, colors.red));
                 print('%s   └─ %s New value: %s', linePrefix, ADDITION, formatValue(newObject, colors.green));
