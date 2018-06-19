@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
+// Ensure the AWS SDK is properly initialized before anything else.
+import '../lib/api/util/sdk-load-aws-config';
+
 import * as cxapi from '@aws-cdk/cx-api';
 import { deepMerge, isEmpty, partition } from '@aws-cdk/util';
 import { exec, spawn } from 'child_process';
@@ -91,8 +94,8 @@ async function initCommandLine() {
         'ssm': new contextplugins.SSMContextProviderPlugin(aws),
     };
 
-    const userConfig = new Settings().load(PER_USER_DEFAULTS);
-    const projectConfig = new Settings().load(DEFAULTS);
+    const userConfig = await new Settings().load(PER_USER_DEFAULTS);
+    const projectConfig = await new Settings().load(DEFAULTS);
     const commandLineArguments = argumentsToSettings();
     const renames = parseRenames(argv.rename);
 
@@ -341,7 +344,7 @@ async function initCommandLine() {
                 await contextplugins.provideContextValues(allMissing, projectConfig, availableContextProviders);
 
                 // Cache the new context to disk
-                projectConfig.save(DEFAULTS);
+                await projectConfig.save(DEFAULTS);
                 continue;
             }
 
@@ -401,7 +404,7 @@ async function initCommandLine() {
         for (const stack of synthesizedStacks) {
             if (stackIds.length !== 1) { highlight(stack.name); }
             if (!stack.environment) {
-                throw new Error(`Stack ${stack.name} has no environment`);
+                throw new Error(`Stack ${stack.name} does not define an environment, and no usable default environment was found.`);
             }
             const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
             const deployName = renames.finalName(stack.name);
@@ -414,12 +417,12 @@ async function initCommandLine() {
 
             try {
                 const result = await deployStack(stack, aws, toolkitInfo, deployName);
-                const message = result.noOp ? ' ✅  Stack was already up-to-date!'
-                                            : ' ✅  Deployment of stack %s completed successfully!';
+                const message = result.noOp ? ` ✅  Stack was already up-to-date, it has ARN ${blue(result.stackArn)}`
+                                            : ` ✅  Deployment of stack %s completed successfully, it has ARN ${blue(result.stackArn)}`;
                 success(message, blue(stack.name));
                 for (const name of Object.keys(result.outputs)) {
                     const value = result.outputs[name];
-                    print('Output %s = %s', blue(name), green(value));
+                    print('%s.%s = %s', blue(deployName), blue(name), green(value));
                 }
             } catch (e) {
                 error(' ❌  Deployment of stack %s failed: %s', blue(stack.name), e);
@@ -593,6 +596,9 @@ async function initCommandLine() {
             const parts = assignment.split('=', 2);
             if (parts.length === 2) {
                 debug('CLI argument context: %s=%s', parts[0], parts[1]);
+                if (parts[0].match(/^aws:.+/)) {
+                    throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
+                }
                 context[parts[0]] = parts[1];
             } else {
                 warning('Context argument is not an assignment (key=value): %s', assignment);

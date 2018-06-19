@@ -1,8 +1,10 @@
 import { deepClone, deepGet, deepMerge, deepSet } from '@aws-cdk/util';
 import * as fs from 'fs-extra';
 import * as os from 'os';
+import * as fs_path from 'path';
+import { warning } from './logging';
 
-type SettingsMap = {[key: string]: any};
+export type SettingsMap = {[key: string]: any};
 
 export class Settings {
     public static mergeAll(...settings: Settings[]): Settings {
@@ -19,20 +21,42 @@ export class Settings {
         this.settings = settings || {};
     }
 
-    public load(fileName: string) {
+    public async load(fileName: string) {
         this.settings = {};
 
         const expanded = expandHomeDir(fileName);
-        if (fs.existsSync(expanded)) {
-            this.settings = JSON.parse(fs.readFileSync(expanded, { encoding: 'utf-8' }));
+        if (await fs.pathExists(expanded)) {
+            this.settings = await fs.readJson(expanded);
         }
 
+        // See https://github.com/awslabs/aws-cdk/issues/59
+        prohibitContextKey(this, 'default-account');
+        prohibitContextKey(this, 'default-region');
+        warnAboutContextKey(this, 'aws:');
+
         return this;
+
+        function prohibitContextKey(self: Settings, key: string) {
+            if (!self.settings.context) { return; }
+            if (key in self.settings.context) {
+                throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is illegal. Please remove it.`);
+            }
+        }
+
+        function warnAboutContextKey(self: Settings, prefix: string) {
+            if (!self.settings.context) { return; }
+            for (const contextKey of Object.keys(self.settings.context)) {
+                if (contextKey.startsWith(prefix)) {
+                    // tslint:disable-next-line:max-line-length
+                    warning(`A key starting with '${prefix}' key was found in ${fs_path.resolve(fileName)} ('context.${prefix}'), it might cause surprising behavior and should be removed.`);
+                }
+            }
+        }
     }
 
-    public save(fileName: string) {
+    public async save(fileName: string) {
         const expanded = expandHomeDir(fileName);
-        fs.writeFileSync(expanded, JSON.stringify(this.settings, undefined, 2), { encoding: 'utf-8' });
+        await fs.writeJson(expanded, this.settings, { spaces: 2 });
 
         return this;
     }
@@ -57,7 +81,7 @@ export class Settings {
 
 function expandHomeDir(x: string) {
     if (x.startsWith('~')) {
-        return os.homedir + '/' + x.substr(1);
+        return fs_path.join(os.homedir(), x.substr(1));
     }
     return x;
 }
