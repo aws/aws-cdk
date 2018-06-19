@@ -84,7 +84,7 @@ Then run the following commands:
 
 ```shell
 gpg --import cdk-team.asc
-gpg --validate aws-cdk-x.y.z.zip.sig
+gpg --verify aws-cdk-x.y.z.zip.sig
 ```
 
 If everything is correct, the output will contain the line:
