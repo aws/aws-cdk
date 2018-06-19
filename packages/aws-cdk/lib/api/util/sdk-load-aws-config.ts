@@ -5,6 +5,8 @@
  * loads up configruation stored in the shared credentials file (usually
  * found at ~/.aws/credentials) and the aws config file (usually found at
  * ~/.aws/config), if either is present.
+ *
+ * @see https://github.com/awslabs/aws-cdk/pull/128
  */
 
 import * as fs from 'fs';
@@ -20,7 +22,7 @@ export const awsConfigFile =
 
 if (fs.existsSync(awsConfigFile) && !fs.existsSync(sharedCredentialsFile)) {
     /*
-     * Write an empty credentials file if there's a config fil, otherwise the SDK will simply bail out,
+     * Write an empty credentials file if there's a config file, otherwise the SDK will simply bail out,
      * since the credentials file is loaded before the config file is.
      */
     fs.writeFileSync(sharedCredentialsFile, '');

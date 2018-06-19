@@ -48,7 +48,7 @@ export class Settings {
             for (const contextKey of Object.keys(self.settings.context)) {
                 if (contextKey.startsWith(prefix)) {
                     // tslint:disable-next-line:max-line-length
-                    warning(`A key starting with '${prefix}' key was found in ${fs_path.resolve(fileName)} ('context.${prefix}'), it might cause surprising behavior and should be removed.`);
+                    warning(`A reserved context key ('context.${prefix}') key was found in ${fs_path.resolve(fileName)}, it might cause surprising behavior and should be removed.`);
                 }
             }
         }
