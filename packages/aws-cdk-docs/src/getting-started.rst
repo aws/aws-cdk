@@ -47,9 +47,6 @@ For the examples in this section we'll use TypeScript.
 The **cdk init** command creates a skeleton |cdk| program for you to work with
 and displays some useful commands to help you get started.
 
-Replace the contents of the file *index.ts* with the following code to create a class that
-extends **Stack**, and include some construction logic.
-
 .. note:: You can use an IDE, such as
    `Microsoft Visual Code <https://code.visualstudio.com/>`_,
    `Sublime Text <https://www.sublimetext.com/>`_ with the
@@ -57,6 +54,9 @@ extends **Stack**, and include some construction logic.
    `Atom <https://atom.io/>`_ with the
    `Atom TypeScript <https://atom.io/packages/atom-typescript>`_ plugin,
    to get auto-completion in your Typescript code.
+
+Replace the contents of the file *index.ts* with the following code to create a class that
+extends **Stack**, and include some construction logic.
 
 .. code-block:: js
 
@@ -89,7 +89,7 @@ extends **Stack**, and include some construction logic.
             });
 
 	    // Subscribe the topic to the queue
-            topic.subscribeQueue('TopicToQueue', queue);
+            topic.subscribeQueue(queue);
         }
     }
 
@@ -198,6 +198,8 @@ should see information messages, such as feedback from CloudFormation logs.
 
    Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
    ``aws configure`` command to specify your default credentials and region.
+   
+   Important: make sure that you explicitly specify a **region**.
 
    You can also set environment variables for your default credentials and region.
    Environment variables take precedence over settings in the credentials or config file.
@@ -235,7 +237,8 @@ You should see something like the following.
 
     [~] 🛠 Updating MyQueueE6CA6235 (type: AWS::SQS::Queue)
     └─ [+] .VisibilityTimeout:
-        └─ New value: 300
+        |  Old value: 300
+        └─ New value: 500
 
 If the changes are acceptable, use **cdk deploy** to update your
 infrastructure.
