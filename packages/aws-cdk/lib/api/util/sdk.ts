@@ -1,15 +1,3 @@
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-
-if (fs.existsSync(path.join(os.homedir(), ".aws", "credentials")) && fs.existsSync(path.join(os.homedir(), ".aws", "config"))) {
-    // Ensures that region is loaded from ~/.aws/config (https://github.com/aws/aws-sdk-js/pull/1391)
-
-    // Only set this value if if the requisite files exist, otherwise this is
-    // just going to throw an unhelpful error.
-    process.env.AWS_SDK_LOAD_CONFIG = '1';
-}
-
 import { Environment} from '@aws-cdk/cx-api';
 import { CloudFormation, config, CredentialProviderChain , EC2, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
@@ -28,12 +16,9 @@ import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 export class SDK {
     private defaultAccountFetched = false;
     private defaultAccountId?: string = undefined;
-    private credentialSources: CredentialProviderSource[];
     private readonly userAgent: string;
 
     constructor() {
-        this.credentialSources = PluginHost.instance.credentialProviderSources;
-
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.userAgent = `${pkg.name}/${pkg.version}`;
@@ -72,15 +57,7 @@ export class SDK {
     }
 
     public defaultRegion() {
-        if (process.env.AWS_DEFAULT_REGION) {
-            debug('Obtaining default region from environment');
-            return process.env.AWS_DEFAULT_REGION;
-        }
-        if (config.region) {
-            debug('Obtaining default region from AWS configuration');
-            return config.region;
-        }
-        return undefined;
+        return config.region;
     }
 
     public async defaultAccount() {
@@ -113,7 +90,7 @@ export class SDK {
         const triedSources: CredentialProviderSource[] = [];
 
         // Otherwise, inspect the various credential sources we have
-        for (const source of this.credentialSources) {
+        for (const source of PluginHost.instance.credentialProviderSources) {
             if (!(await source.isAvailable())) {
                 debug('Credentials source %s is not available, ignoring it.', source.name);
                 continue;
