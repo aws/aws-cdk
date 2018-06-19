@@ -1,4 +1,5 @@
 // Helper functions for integration tests
+import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { spawnSync } from 'child_process';
 import fs = require('fs');
 import path = require('path');
@@ -80,8 +81,8 @@ export class IntegrationTest {
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const STATIC_TEST_CONTEXT = {
-    "default-account": "12345678",
-    "default-region": "test-region",
+    [DEFAULT_ACCOUNT_CONTEXT_KEY]: "12345678",
+    [DEFAULT_REGION_CONTEXT_KEY]: "test-region",
     "availability-zones:12345678:test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
     "ssm:12345678:test-region:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-1234",
 };

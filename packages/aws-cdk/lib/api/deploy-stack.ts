@@ -21,6 +21,7 @@ type TemplateBodyParameter = {
 export interface DeployStackResult {
     readonly noOp: boolean;
     readonly outputs: { [name: string]: string };
+    readonly stackArn: string;
 }
 
 export async function deployStack(stack: SynthesizedStack,
@@ -60,7 +61,7 @@ export async function deployStack(stack: SynthesizedStack,
     if (!changeSetDescription || !changeSetDescription.Changes || changeSetDescription.Changes.length === 0) {
         debug('No changes are to be performed on %s, assuming success.', deployName);
         await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-        return { noOp: true, outputs: await getStackOutputs(cfn, deployName) };
+        return { noOp: true, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
     }
 
     debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
@@ -70,7 +71,7 @@ export async function deployStack(stack: SynthesizedStack,
     await waitForStack(cfn, deployName);
     if (monitor) { monitor.stop(); }
     debug('Stack %s has completed updating', deployName);
-    return { noOp: false, outputs: await getStackOutputs(cfn, deployName) };
+    return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
 async function getStackOutputs(cfn: CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
