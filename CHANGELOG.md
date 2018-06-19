@@ -6,6 +6,15 @@
  * Fix: Adopt SDK-standard behavior when no environment is specified ([@RomainMuller] in [#128])
  * Fix: Have cdk diff output render 'number' value changes ([@RomainMuller] in [#136])
 
+### Known issues
+
+ * Windows setup has not been vetted and might be broken - __no workaround__
+   ([#138])
+ * If region is not defined, error message is unclear - __workaround__: make sure
+   to define `region` when running `aws configure` ([#131])
+ * `cdk docs` opens the index instead of the welcome page - __workaround__:
+   click on "Welcome" in the sidebar ([#129])
+
 [CloudFormation resource specification]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
 [AWS Kinesis Data Streams]: https://aws.amazon.com/kinesis/data-streams
 
