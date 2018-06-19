@@ -405,7 +405,7 @@ async function initCommandLine() {
             if (stackIds.length !== 1) { highlight(stack.name); }
             if (!stack.environment) {
                 // tslint:disable-next-line:max-line-length
-                throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentails could not be obtained from standard locations.`);
+                throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
             }
             const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
             const deployName = renames.finalName(stack.name);
