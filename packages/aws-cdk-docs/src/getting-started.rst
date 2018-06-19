@@ -236,9 +236,9 @@ You should see something like the following.
 .. code-block:: sh
 
     [~] 🛠 Updating MyQueueE6CA6235 (type: AWS::SQS::Queue)
-    └─ [+] .VisibilityTimeout:
-        |  Old value: 300
-        └─ New value: 500
+     └─ [+] .VisibilityTimeout:
+         ├  Old value: 300
+         └─ New value: 500
 
 If the changes are acceptable, use **cdk deploy** to update your
 infrastructure.
