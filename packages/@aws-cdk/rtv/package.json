@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/rtv",
-  "version": "0.7.2-beta",
+  "version": "0.7.2",
   "description": "Runtime values support for the AWS CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,8 +36,8 @@
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/iam": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta"
+    "@aws-cdk/core": "^0.7.2",
+    "@aws-cdk/iam": "^0.7.2",
+    "@aws-cdk/resources": "^0.7.2"
   }
 }
