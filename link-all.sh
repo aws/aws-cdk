@@ -4,7 +4,7 @@
 set -euo pipefail
 root="$(cd $(dirname $0) && pwd)"
 
-mkdir -p node_modules
+mkdir -p node_modules node_modules/.bin
 
 modules="$(find ${root}/packages -name package.json | grep -v node_modules | grep -v init-templates | xargs -n1 dirname)"
 for module in ${modules}; do
@@ -19,4 +19,12 @@ for module in ${modules}; do
 
   echo "${module} => $link_dir/$(basename $module)"
   ln -fs ${module} $link_dir
+
+  # Symlink executable scripts into place as well. This is not completely
+  # according to spec (we look in the bin/ directory instead of the { "scripts"
+  # } entry in package.json but it's quite a bit easier.
+  [[ -d $module/bin ]] && for script in $(find $module/bin -perm +111); do
+    echo "${script} => node_modules/.bin/$(basename $script)"
+    ln -fs ${script} node_modules/.bin
+  done
 done
