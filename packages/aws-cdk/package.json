@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.7.1",
+  "version": "0.7.2-beta",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -28,12 +28,12 @@
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.7.1",
-    "@aws-cdk/core": "^0.7.1",
-    "@aws-cdk/cx-api": "^0.7.1",
-    "@aws-cdk/resources": "^0.7.1",
-    "@aws-cdk/util": "^0.7.1",
-    "aws-cdk-npm": "^0.7.1",
+    "@aws-cdk/cloudformation-diff": "^0.7.2-beta",
+    "@aws-cdk/core": "^0.7.2-beta",
+    "@aws-cdk/cx-api": "^0.7.2-beta",
+    "@aws-cdk/resources": "^0.7.2-beta",
+    "@aws-cdk/util": "^0.7.2-beta",
+    "aws-cdk-npm": "^0.7.2-beta",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
     "colors": "^1.2.1",

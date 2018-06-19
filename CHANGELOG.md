@@ -1,3 +1,23 @@
+## 0.7.2 - 2018-06-19
+
+ * Add: initial construct library for [AWS Kinesis Data Streams] ([@sam-goodwin] in [#86])
+ * Update low-level resources from [CloudFormation resource specification]
+ * Update dependencies ([@eladb] in [#119])
+ * Fix: Adopt SDK-standard behavior when no environment is specified ([@RomainMuller] in [#128])
+ * Fix: Have cdk diff output render 'number' value changes ([@RomainMuller] in [#136])
+
+[CloudFormation resource specification]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
+[AWS Kinesis Data Streams]: https://aws.amazon.com/kinesis/data-streams
+
+[@sam-goodwin]:  https://github.com/sam-goodwin
+[@RomainMuller]: https://github.com/RomainMuller
+[@eladb]:        https://github.com/eladb
+
+[#86]:  https://github.com/awslabs/aws-cdk/pull/86
+[#128]: https://github.com/awslabs/aws-cdk/pull/128
+[#136]: https://github.com/awslabs/aws-cdk/pull/136
+[#119]: https://github.com/awslabs/aws-cdk/pull/119
+
 ## 0.7.1 - 2018-06-15
 
 ### Framework
