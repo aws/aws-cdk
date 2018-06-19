@@ -3,7 +3,6 @@ import { CloudFormation, config, CredentialProviderChain , EC2, S3, SSM, STS } f
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
-import { awsConfigFile, sharedCredentialsFile } from './sdk-load-aws-config';
 
 /**
  * Source for SDK client objects
@@ -58,19 +57,7 @@ export class SDK {
     }
 
     public defaultRegion() {
-        if (process.env.AWS_REGION) {
-            debug('Obtaining default region from environment ($AWS_REGION)');
-            return process.env.AWS_DEFAULT_REGION;
-        }
-        if (process.env.AWS_DEFAULT_REGION) {
-            debug('Obtaining default region from environment ($AWS_DEFAULT_REGION)');
-            return process.env.AWS_DEFAULT_REGION;
-        }
-        if (config.region) {
-            debug(`Obtaining default region from AWS configuration (${sharedCredentialsFile} or ${awsConfigFile})`);
-            return config.region;
-        }
-        return undefined;
+        return config.region;
     }
 
     public async defaultAccount() {

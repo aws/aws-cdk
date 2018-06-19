@@ -13,10 +13,10 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
-export const sharedCredentialsFile =
+const sharedCredentialsFile =
     process.env.AWS_SHARED_CREDENTIALS_FILE ? process.env.AWS_SHARED_CREDENTIALS_FILE
                                             : path.join(os.homedir(), '.aws', 'credentials');
-export const awsConfigFile =
+const awsConfigFile =
     process.env.AWS_CONFIG_FILE ? process.env.AWS_CONFIG_FILE
                                 : path.join(os.homedir(), '.aws', 'config');
 

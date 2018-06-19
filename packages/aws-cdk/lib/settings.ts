@@ -39,7 +39,8 @@ export class Settings {
         function prohibitContextKey(self: Settings, key: string) {
             if (!self.settings.context) { return; }
             if (key in self.settings.context) {
-                throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is illegal. Please remove it.`);
+                // tslint:disable-next-line:max-line-length
+                throw new Error(`The 'context.${key}' key was found in ${fs_path.resolve(fileName)}, but it is no longer supported. Please remove it.`);
             }
         }
 
