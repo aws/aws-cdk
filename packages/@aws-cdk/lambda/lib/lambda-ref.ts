@@ -1,5 +1,6 @@
 import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
+import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { lambda } from '@aws-cdk/resources';
 import { LambdaPermission } from './permission';
@@ -21,8 +22,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct {
-
+export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -59,6 +59,12 @@ export abstract class LambdaRef extends Construct {
      * True for new Lambdas, false for imported Lambdas (they might live in different accounts).
      */
     protected abstract readonly canCreatePermissions: boolean;
+
+    /**
+     * Indicates if the resource policy that allows CloudWatch events to publish
+     * notifications to this topic have been added.
+     */
+    private eventRuleTargetPolicyAdded = false;
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -108,6 +114,26 @@ export abstract class LambdaRef extends Construct {
 
         throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(resolve(principal))}. ` +
             'Supported: AccountPrincipal, ServicePrincipal');
+    }
+
+    /**
+     * Returns a RuleTarget that can be used to trigger this Lambda as a
+     * result from a CloudWatch event.
+     */
+    public get eventRuleTarget(): EventRuleTarget {
+        if (!this.eventRuleTargetPolicyAdded) {
+            this.addPermission('InvokedByCloudWatch', {
+                action: 'lambda:InvokeFunction',
+                principal: new ServicePrincipal('events.amazonaws.com')
+            });
+
+            this.eventRuleTargetPolicyAdded = true;
+        }
+
+        return {
+            id: this.name,
+            arn: this.functionArn,
+        };
     }
 }
 
