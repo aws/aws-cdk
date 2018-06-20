@@ -44,10 +44,11 @@ For the examples in this section we'll use TypeScript.
 
 The **cdk init** command creates the following:
 
-* *bin* contains the following files:
+* *bin* contains the following files. The command creates *hello-cdk.ts* from a template,
+  and the other two files as it runs the TypeScript compiler:
 
-   * *hello-cdk.d.ts* is TypeScript source for the entry point to your app
-   * *hello-cdk.js* is the compiled JavaScript for the entry point to your app
+   * *hello-cdk.d.ts*
+   * *hello-cdk.js*
    * *hello-cdk.ts* is TypeScript source for the entry point to your app
      (the file we'll update later)
 
@@ -56,8 +57,8 @@ The **cdk init** command creates the following:
   such as when running **cdk synth**
 * *node_module* contains the Node packages you need to develop your TypeScript source
 * *package.json* contains metadata for the app.
-* *package-lock.json* is the Git lockfile for package.json
-* *README.md* contains a description of a few |toolkit| commands
+* *package-lock.json* is the npm lockfile for package.json
+* *README.md* contains some information to help you from this point on
 * *tsconfig.json* contains definitions for the TypeScript compiler
 
 The command displays README.md as it finishes to give you information about some useful commands.

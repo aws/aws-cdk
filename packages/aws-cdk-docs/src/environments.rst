@@ -36,6 +36,7 @@ following lookup procedure:
   These can be set in the |toolkit| in either the local |cx-json| file or the global version in
   *$HOME/.cdk* on Linux or MacOS or *%USERPROFILE%\\.cdk* on Windows.
 - If these are not defined, it will determine them as follows:
+  
   - **account**: use account from default SDK credentials. Environment
     variables are tried first (**AWS_ACCESS_KEY_ID** and **AWS_SECRET_ACCESS_KEY**),
     followed by credentials in *$HOME/.aws/credentials* on Linux or MacOS
@@ -64,7 +65,7 @@ and explicitly specify accounts and Regions for production stacks.
 .. _environment_context:
 
 Environmental Context
----------------------
+=====================
 
 When you synthesize a stack to create a |CFN| template, the |cdk| might need information based on the
 environment (account and Region), such as the availability zones or AMIs available in the Region.

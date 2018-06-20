@@ -38,8 +38,7 @@ as shared class libraries.
    :caption: Topics
    :maxdepth: 1
 
-   construct-overview
-   construct-structure
+   constructs
    stacks
    logical-ids
    environments

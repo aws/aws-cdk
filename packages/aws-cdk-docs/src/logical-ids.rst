@@ -64,7 +64,8 @@ Logical IDs are unique within the stack
 
 Logical IDs remain unchanged across updates
    This is true as long as their location within the construct tree doesn't change.
-   See :ref:`creating_runtime_value`
+
+.. See :ref:`creating_runtime_value`
    for information on how to retain
    logical IDs despite structural changes in your stack.
 
@@ -80,7 +81,7 @@ The |cdk| applies some heuristics to improve the human-friendliness of the prefi
 .. _changing_logical_ids:
 
 Changing Logical IDs
---------------------
+====================
 
 In some cases changing a resource
 results in a structural change,

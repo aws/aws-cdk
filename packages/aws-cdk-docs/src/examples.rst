@@ -231,9 +231,8 @@ the following command.
 
 :code:`npm run prepare`
 
-You can have **npm** watch for source changes and automatically re-compile those changes using the **watch** option.
-
-:code:`npm run watch`
+Use **npm run watch** to automatically re-compile those changes.
+Run the command in another command window and do not run it in the background.
 
 .. _create_cloud_formation:
 

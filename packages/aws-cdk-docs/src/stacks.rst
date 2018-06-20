@@ -10,12 +10,13 @@
 
 .. _stacks:
 
+######
 Stacks
-======
+######
 
 A |stack| is an |cdk| construct that can be deployed into an AWS environment.
 The combination of region and account becomes the stack's *environment*, as
-described in `Environments`_. Most production apps consist of multiple stacks of
+described in :doc:`environments`_. Most production apps consist of multiple stacks of
 resources that are deployed as a single transaction using a resource
 provisioning service like |CFN|. Any resources added directly or indirectly as
 children of a stack are included in the stack's template as it is synthesized by

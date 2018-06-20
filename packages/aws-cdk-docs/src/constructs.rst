@@ -8,11 +8,58 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
+.. _constructs:
+
+##########
+Constructs
+##########
+
+Constructs are the building blocks of |cdk| applications. Constructs can have
+child constructs, which in turn can have child constructs, forming a
+hierarchical tree structure.
+
+The |cdk| includes two different levels of constructs:
+
+|l1|
+
+  These constructs are low-level constructs that provide a direct, one-to-one,
+  mapping to an |CFN| resource,
+  as listed in the |CFN| topic `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
+
+  All |l1| members are found in the :py:mod:`@aws-cdk/resources` package.
+
+|l2|
+
+  These constructs have been handwritten by AWS and come with
+  convenient defaults and additional knowledge about the inner workings of the
+  AWS resources they represent. In general, you will be able to express your
+  intent without worrying about the details too much, and the correct resources
+  will automatically be defined for you.
+
+  |l2| members are found in the :py:mod:`@aws-cdk/NAMESPACE` packages,
+  where NAMESPACE is the short name for the associated service,
+  such as SQS for the |l2| for the |SQS| service.
+  See the :ref:`reference` section for descriptions of the |cdk|
+  packages and constructs.
+
+.. Hide for now
+   At an even higher-level than an |l2|, a |l3|
+   aggregates multiple, other constructs together
+   into common architectural patterns, such as a *queue processor* or an *HTTP
+   service*.
+
+   By leveraging these common patterns, you can assemble your
+   application even faster than by using an |l2| directly.
+
+   A |l3|
+   is not included with the standard CDK Construct
+   Library. Instead, we encourage you to develop and share them inside your
+   organization or on GitHub.
+
 .. _construct_structure:
 
-###################
 Construct Structure
-###################
+===================
 
 The construct tree structure is a powerful design pattern for composing high-level
 abstractions. For example, you can define a ``StorageLayer`` construct that
@@ -65,13 +112,12 @@ Use the following operations to inspect the construct tree.
 
    Gets a string representing the construct's tree.
 
-We discuss the advantages of an |l2| over a |l1|
-in the :ref:`l2_advantages` section.
+.. We discuss the advantages of an |l2| over a |l1| in the :ref:`l2_advantages` section.
 
 .. _construct_names:
 
 Construct Names
----------------
+===============
 
 Every construct in a CDK app must have a **name** unique among its siblings.
 Names are used to track constructs in the construct hierarchy, and to allocate
@@ -104,8 +150,10 @@ property, such as ``bucketName`` or ``tableName``. Example:
 Avoid specifying physical names. Instead, let
 |CFN| generate names for you.
 Use attributes, such as **bucket.bucketName**,
-to discover the generated names and pass them to your application's runtime
-code, as described in :ref:`creating_runtime_value`.
+to discover the generated names.
+
+.. and pass them to your application's runtime
+   code, as described in :ref:`creating_runtime_value`.
 
 When you synthesize an |cdk| tree into an |CFN| template, the |CFN| logical ID
 for each resource in the template is allocated according to the path of that
@@ -114,7 +162,7 @@ resource in the construct tree. For more information, see :ref:`logical_ids`.
 .. _construct_properties:
 
 Construct Properties
---------------------
+====================
 
 Customize constructs by passing a property object as the third
 parameter (*props*). Every construct has its own set of parameters, defined as an
@@ -137,7 +185,7 @@ interface. You can pass a property object to your construct in two ways:
 .. _construct_metadata:
 
 Construct Metadata
-------------------
+==================
 
 You can attach metadata to a construct using the
 :py:meth:`aws-cdk.Construct.addMetadata` operation. Metadata entries
