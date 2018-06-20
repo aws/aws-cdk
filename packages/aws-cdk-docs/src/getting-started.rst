@@ -71,9 +71,9 @@ extends **Stack**, and include some construction logic.
 
     class HelloStack extends Stack {
         // Instantiate HelloStack with a reference to its parent,
-	// as it might need some context;
-	// a name; and some optional properties.
-	// You'll almost always use these same two lines.
+        // as it might need some context from the app;
+        // a name; and some optional properties.
+        // You'll almost always use these same two lines.
         constructor(parent: App, name: string, props?: StackProps) {
             super(parent, name, props);
 
@@ -81,14 +81,14 @@ extends **Stack**, and include some construction logic.
             const topic = new Topic(this, 'MyTopic');
 
 	    // Create an SQS queue
-	    const queue = new Queue(this, 'MyQueue', {
-	      // By default you only get 30 seconds to delete a read message after you've read it;
-	      // otherwise it becomes available to other consumers.
-	      // This extends that duration to 5 minutes.
-              visibilityTimeoutSec: 300
+            const queue = new Queue(this, 'MyQueue', {
+                // By default you only get 30 seconds to delete a read message after you've read it;
+                // otherwise it becomes available to other consumers.
+                // This extends that duration to 5 minutes.
+                visibilityTimeoutSec: 300
             });
 
-	    // Subscribe the topic to the queue
+            // Subscribe the topic to the queue
             topic.subscribeQueue(queue);
         }
     }
@@ -229,7 +229,8 @@ Run the following command to see the difference between the *deployed* stack and
 
 .. code-block:: sh
 
-   cdk diff
+    # compile your code (depends on your language)
+    cdk diff
 
 You should see something like the following.
 
