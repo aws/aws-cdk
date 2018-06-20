@@ -39,11 +39,12 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "cfn2ts": "^0.7.1",
+    "@types/js-base64": "^2.3.1",
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.7.2",,
-    "@types/js-base64": "^2.3.1",
+    "@aws-cdk/cx-api": "^0.7.2",
+    "js-base64": "^2.4.5",
     "json-diff": "^0.3.1"
   }
 }
