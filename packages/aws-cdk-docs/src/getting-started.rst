@@ -239,7 +239,10 @@ Let's change the visibility timeout of the queue from 300 to 500.
         visibilityTimeoutSec: 500
     });
 
-Run the following command to see the difference between the *deployed* stack and your |cdk| project
+Compile your app with **npm run prepare** if you aren't running **npm run watch** in a separate window.
+
+If you've deployed your stack previously,
+run the following command to see the difference between the *deployed* stack and your |cdk| project
 (if you haven't deployed the stack, you won't see any output):
 
 .. code-block:: sh
@@ -250,8 +253,33 @@ You should see something like the following.
 
 .. code-block:: sh
 
-   [~] 🛠 Updating CdkBetaQueue3CF282DF (type: AWS::SQS::Queue)
+   [~] 🛠 Updating HelloCdkPbQueue8837C78B (type: AWS::SQS::Queue)
     └─ [~] .VisibilityTimeout:
+        ├─ [-] Old value: 300
+        └─ [+] New value: 500
 
-If the changes are acceptable, use **cdk deploy** to update your
+If the changes are acceptable, run **cdk deploy** to update your
 infrastructure.
+
+Let's make a bigger change by adding an |S3| bucket to our stack.
+Run the following command to install the |S3| package.
+
+.. code-block:: sh
+
+   npm install @aws-cdk/s3
+
+Add the following to the top of *hello-cdk.ts* (we recommend you keep your import statements sorted):
+
+.. code-block:: js
+
+   import { Bucket } from '@aws-cdk/s3';
+
+Finally, create a bucket by adding the following to your constructor.
+Don't forget that |S3| has restrictions on bucket names.
+See `Rules for Bucket Naming <https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html#bucketnamingrules>`_.
+
+.. code-block:: js
+
+   new Bucket(this, "MyBucket", {
+       bucketName: "mygroovybucket"
+   })
