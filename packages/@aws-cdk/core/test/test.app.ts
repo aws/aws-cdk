@@ -299,7 +299,31 @@ export = {
         });
 
         test.done();
-    }
+    },
+
+    'requests can also be base64 encoded'(test: Test) {
+        const req = {
+            type: 'list'
+        };
+        const resp = main('base64:' + new Buffer(JSON.stringify(req)).toString('base64'));
+        test.deepEqual(resp, {
+            stacks: [
+              {
+                name: "stack1",
+                environment: {
+                  name: "12345/us-east-1",
+                  account: "12345",
+                  region: "us-east-1"
+                }
+              },
+              {
+                name: "stack2"
+              }
+            ]
+        });
+
+        test.done();
+    },
 };
 
 class MyConstruct extends Construct {
