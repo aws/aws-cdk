@@ -324,6 +324,11 @@ export = {
 
         test.done();
     },
+
+    'fails when base64 cannot be encoded'(test: Test) {
+        test.throws(() => main('base64:'), /Unexpected end of JSON input/);
+        test.done();
+    }
 };
 
 class MyConstruct extends Construct {
