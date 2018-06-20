@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/resources",
   "description": "Raw CloudFormation resources for CDK",
-  "version": "0.7.2",
+  "version": "0.7.2-beta",
   "scripts": {
     "prepare": "cfn2ts ./cloudformation-specs/*.json && jsii && tslint -p . && pkglint",
     "test": "nodeunit test/test.*.js",
@@ -19,7 +19,7 @@
     }
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2"
+    "@aws-cdk/core": "^0.7.2-beta"
   },
   "devDependencies": {
     "cfn2ts": "^0.7.1",
