@@ -1,4 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { BASE64_REQ_PREFIX, CXRequest } from '@aws-cdk/cx-api';
+import { Base64 } from 'js-base64';
 import { PATH_SEP } from '.';
 import { Stack } from './cloudformation/stack';
 import { Construct, MetadataEntry, Root } from './core/construct';
@@ -32,9 +34,9 @@ export class App extends Root {
 
         if (argv.length > 1) {
             try {
-                this.request = JSON.parse(argv[1]);
+                this.request = this.parseRequest(argv[1]);
             } catch (e) {
-                throw new Error('Request object does not parse: "' + argv[1] + '"');
+                throw new Error(`Cannot parse request '${argv[1]}': ${e.message}`);
             }
             this.loadContext();
         }
@@ -63,7 +65,6 @@ export class App extends Root {
         }
 
         const result = this.runCommand();
-
         return JSON.stringify(result, undefined, 2);
     }
 
@@ -206,6 +207,18 @@ REQUEST is a JSON-encoded request object.
         for (const key of Object.keys(context)) {
             this.setContext(key, context[key]);
         }
+    }
+
+    private parseRequest(req: string): CXRequest {
+        // allow toolkit to send request in base64 if they begin with "base64:"
+        // this is in order to avoid shell escaping issues when defining "--app"
+        // in the toolkit.
+        if (req.startsWith(BASE64_REQ_PREFIX)) {
+            req = Base64.fromBase64(req.slice(BASE64_REQ_PREFIX.length));
+        }
+
+        // parse as JSON
+        return JSON.parse(req);
     }
 }
 

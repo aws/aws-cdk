@@ -5,6 +5,7 @@
 import { Environment } from './environment';
 
 export const VERSION = '1';
+export const BASE64_REQ_PREFIX = 'base64:';
 
 export interface ListStacksRequest {
     type: 'list',

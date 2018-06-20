@@ -14,6 +14,7 @@ import { promisify } from 'util';
 import * as YAML from 'yamljs';
 import * as yargs from 'yargs';
 
+import { BASE64_REQ_PREFIX } from '@aws-cdk/cx-api';
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import * as contextplugins from '../lib/contextplugins';
 import { printStackDiff } from '../lib/diff';
@@ -530,7 +531,10 @@ async function initCommandLine() {
         }
 
         const commandLine = appToArray(app);
-        commandLine.push(JSON.stringify(request));
+
+        // encode in base64 to make it easier to pass through shell scripts without escaping-hell
+        const req = BASE64_REQ_PREFIX + Buffer.from(JSON.stringify(request)).toString('base64');
+        commandLine.push(req);
 
         debug(commandArrayToString(commandLine));
 
@@ -571,10 +575,11 @@ async function initCommandLine() {
                     }
                     return ok(parsed);
                 } else {
+                    error(buf.toString());
                     return fail(new Error('Subprocess exited with error ' + code.toString()));
                 }
             });
-        });
+       });
     }
 
     function logDefaults() {
