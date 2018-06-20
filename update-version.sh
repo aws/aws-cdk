@@ -13,4 +13,4 @@ if [ -z "${commit}" ]; then
   commit="$(git rev-parse --verify HEAD || echo "head")"
 fi
 
-exec node_modules/.bin/lerna publish --skip-git --skip-npm --repo-version=${version}-beta+${commit:0:7} --yes
+exec node_modules/.bin/lerna publish --skip-git --skip-npm --repo-version=${version}+${commit:0:7} --yes

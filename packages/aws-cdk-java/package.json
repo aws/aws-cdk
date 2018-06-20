@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-java",
-  "version": "0.7.2",
+  "version": "0.7.2-beta",
   "description": "The AWS CDK for Java",
   "private": true,
   "main": "index.js",
@@ -21,7 +21,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-cdk-all": "^0.7.2"
+    "aws-cdk-all": "^0.7.2-beta"
   },
   "devDependencies": {
     "pkgtools": "^0.7.2"
