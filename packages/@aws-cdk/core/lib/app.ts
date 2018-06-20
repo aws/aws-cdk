@@ -36,7 +36,7 @@ export class App extends Root {
             try {
                 this.request = this.parseRequest(argv[1]);
             } catch (e) {
-                throw new Error('Request object does not parse: "' + argv[1] + '": ' + e.message);
+                throw new Error(`Cannot parse request '${argv[1]}': ${e.message}`);
             }
             this.loadContext();
         }
@@ -65,10 +65,7 @@ export class App extends Root {
         }
 
         const result = this.runCommand();
-
-        // we need newline because some command line tools don't behave well without it
-        // for example "mvn -q" will omit the last line from STDOUT.
-        return JSON.stringify(result, undefined, 2) + '\n';
+        return JSON.stringify(result, undefined, 2);
     }
 
     /**
