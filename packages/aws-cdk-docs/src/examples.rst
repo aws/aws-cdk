@@ -84,7 +84,7 @@ the |cdk|.
    const prod = [
      new MyStack(app, {
        name: 'NAEast',
-	     env: { region: 'us-east-1' }
+       env: { region: 'us-east-1' }
    }),
 
    new MyStack(app, {

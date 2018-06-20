@@ -40,8 +40,8 @@ in :doc:`getting-started`.
 
             const topic = new Topic(this, 'MyTopic');
 
-	    const queue = new Queue(this, 'MyQueue', {
-              visibilityTimeoutSec: 300
+            const queue = new Queue(this, 'MyQueue', {
+                visibilityTimeoutSec: 300
             });
 
             topic.subscribeQueue('TopicToQueue', queue);
@@ -67,10 +67,10 @@ The process of creating your AWS resources using the |cdk| is straightforward:
 7. Repeats steps 3-6 until you are satisfied with your resources
 
 .. note:: There is no charge for using the |cdk|, however you may incur AWS charges for creating or using AWS
-	  `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
-	  such as running |EC2| instances or using |S3| storage.
-	  Use the
-	  `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
+          `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
+          such as running |EC2| instances or using |S3| storage.
+          Use the
+          `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
           to estimate charges for the use of various AWS resources.
 
 .. _aws_cdk_additional_resources:
