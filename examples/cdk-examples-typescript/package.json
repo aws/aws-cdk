@@ -1,6 +1,6 @@
 {
-  "name": "examples",
-  "version": "0.7.2",
+  "name": "cdk-examples-typescript",
+  "version": "0.7.0",
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
