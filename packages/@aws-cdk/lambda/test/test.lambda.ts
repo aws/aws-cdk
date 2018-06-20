@@ -1,5 +1,6 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
+import { EventRule } from '@aws-cdk/events';
 import { Test } from 'nodeunit';
 import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
 
@@ -198,6 +199,36 @@ export = {
             test.done();
         },
     },
+
+    'Lambda can serve as EventRule target, permission gets added'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const lambda = newTestLambda(stack);
+        const rule = new EventRule(stack, 'Rule');
+
+        // WHEN
+        rule.addTarget(lambda);
+
+        // THEN
+        const lambdaId = "MyLambdaCCE802FB";
+
+        expect(stack).to(haveResource('AWS::Lambda::Permission', {
+            "Action": "lambda:InvokeFunction",
+            "FunctionName": { "Ref": lambdaId },
+            "Principal": "events.amazonaws.com"
+        }));
+
+        expect(stack).to(haveResource('AWS::Events::Rule', {
+            "Targets": [
+              {
+                "Arn": { "Fn::GetAtt": [ lambdaId, "Arn" ] },
+                "Id": "MyLambda"
+              }
+            ]
+        }));
+
+        test.done();
+    }
 };
 
 function newTestLambda(parent: Construct) {
