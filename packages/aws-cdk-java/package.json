@@ -3,6 +3,7 @@
   "version": "0.7.2",
   "description": "The AWS CDK for Java",
   "private": true,
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
@@ -11,8 +12,7 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "/bin/bash ./generate.sh && mvn package",
-    "prepack": "cp -f target/*.jar .",
+    "prepare": "/bin/bash ./generate.sh && cd project && mvn package",
     "test": "echo ok"
   },
   "author": {
