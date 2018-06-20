@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/route53",
-  "version": "0.7.2",
+  "version": "0.7.2-beta",
   "description": "CDK Constructs for AWS Route53",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,14 +36,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.2",
-    "aws-cdk": "^0.7.2",
+    "@aws-cdk/assert": "^0.7.2-beta",
+    "aws-cdk": "^0.7.2-beta",
     "aws-sdk": "^2.259.1",
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2",
-    "@aws-cdk/ec2": "^0.7.2",
-    "@aws-cdk/resources": "^0.7.2"
+    "@aws-cdk/core": "^0.7.2-beta",
+    "@aws-cdk/ec2": "^0.7.2-beta",
+    "@aws-cdk/resources": "^0.7.2-beta"
   }
 }
