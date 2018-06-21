@@ -42,9 +42,9 @@
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.2-beta",
+    "@aws-cdk/events": "^0.7.2-beta",
     "@aws-cdk/iam": "^0.7.2-beta",
     "@aws-cdk/resources": "^0.7.2-beta",
-    "@aws-cdk/s3": "^0.7.2-beta",
-    "@aws-cdk/events": "^0.7.2-beta"
+    "@aws-cdk/s3": "^0.7.2-beta"
   }
 }

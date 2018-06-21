@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
-    "pkglint": "^0.7.2-beta"
+    "pkglint": "^0.7.1"
   },
   "keywords": [
     "aws",
