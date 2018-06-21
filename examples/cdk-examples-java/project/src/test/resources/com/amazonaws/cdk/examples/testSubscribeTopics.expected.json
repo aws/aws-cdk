@@ -1,0 +1,112 @@
+{
+  "Resources" : {
+    "Topic3DEAE47A7" : {
+      "Type" : "AWS::SNS::Topic"
+    },
+    "MySinkQueueEFCD79C2" : {
+      "Type" : "AWS::SQS::Queue"
+    },
+    "Topic1ResourceSubscriptionD55B1556" : {
+      "Type" : "AWS::SNS::Subscription",
+      "Properties" : {
+        "Endpoint" : {
+          "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+        },
+        "TopicArn" : {
+          "Ref" : "Topic198E71B3E"
+        },
+        "Protocol" : "sqs"
+      }
+    },
+    "MySinkQueuePolicy3E2D0B9E" : {
+      "Type" : "AWS::SQS::QueuePolicy",
+      "Properties" : {
+        "PolicyDocument" : {
+          "Version" : "2012-10-17",
+          "Statement" : [ {
+            "Condition" : {
+              "ArnEquals" : {
+                "aws:SourceArn" : {
+                  "Ref" : "Topic198E71B3E"
+                }
+              }
+            },
+            "Action" : "sqs:SendMessage",
+            "Resource" : {
+              "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+            },
+            "Effect" : "Allow",
+            "Principal" : {
+              "Service" : "sns.amazonaws.com"
+            }
+          }, {
+            "Condition" : {
+              "ArnEquals" : {
+                "aws:SourceArn" : {
+                  "Ref" : "Topic269377B75"
+                }
+              }
+            },
+            "Action" : "sqs:SendMessage",
+            "Resource" : {
+              "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+            },
+            "Effect" : "Allow",
+            "Principal" : {
+              "Service" : "sns.amazonaws.com"
+            }
+          }, {
+            "Condition" : {
+              "ArnEquals" : {
+                "aws:SourceArn" : {
+                  "Ref" : "Topic3DEAE47A7"
+                }
+              }
+            },
+            "Action" : "sqs:SendMessage",
+            "Resource" : {
+              "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+            },
+            "Effect" : "Allow",
+            "Principal" : {
+              "Service" : "sns.amazonaws.com"
+            }
+          } ]
+        },
+        "Queues" : [ {
+          "Ref" : "MySinkQueueEFCD79C2"
+        } ]
+      }
+    },
+    "Topic3ResourceSubscriptionA1D64BEE" : {
+      "Type" : "AWS::SNS::Subscription",
+      "Properties" : {
+        "Endpoint" : {
+          "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+        },
+        "TopicArn" : {
+          "Ref" : "Topic3DEAE47A7"
+        },
+        "Protocol" : "sqs"
+      }
+    },
+    "Topic269377B75" : {
+      "Type" : "AWS::SNS::Topic"
+    },
+    "Topic2ResourceSubscription88B54B51" : {
+      "Type" : "AWS::SNS::Subscription",
+      "Properties" : {
+        "Endpoint" : {
+          "Fn::GetAtt" : [ "MySinkQueueEFCD79C2", "Arn" ]
+        },
+        "TopicArn" : {
+          "Ref" : "Topic269377B75"
+        },
+        "Protocol" : "sqs"
+      }
+    },
+    "Topic198E71B3E" : {
+      "Type" : "AWS::SNS::Topic"
+    }
+  }
+}
