@@ -29,11 +29,11 @@ import os, codecs
 
 # The long version of the service or SDK name, such as "Amazon Simple Workflow
 # Service", "AWS Flow Framework for Ruby" or "AWS SDK for Java"
-service_name_long = u'AWS Cloud Development Kit'
+service_name_long = u'AWS Cloud Development Kit (BETA)'
 service_docs_home = u'http://aws.amazon.com/documentation/CDK/'
 
 project = u'User Guide'
-project_desc = u'AWS Cloud Development Kit User Guide'
+project_desc = u'User Guide'
 project_basename = u'CDK/ug'
 
 # This name is used as the manual / PDF name. Don't include the extension
