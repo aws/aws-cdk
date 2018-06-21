@@ -39,7 +39,7 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
-    "cfn2ts": "^0.7.1",
+    "cfn2ts": "^0.7.2-beta",
     "pkglint": "^0.7.1"
   },
   "dependencies": {
