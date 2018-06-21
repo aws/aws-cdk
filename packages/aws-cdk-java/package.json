@@ -24,7 +24,7 @@
     "aws-cdk-all": "^0.7.2-beta"
   },
   "devDependencies": {
-    "pkgtools": "^0.7.2"
+    "pkgtools": "^0.7.2-beta"
   },
   "keywords": [
     "aws",
