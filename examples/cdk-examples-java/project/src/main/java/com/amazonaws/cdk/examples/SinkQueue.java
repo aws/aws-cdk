@@ -5,6 +5,7 @@ import com.amazonaws.cdk.sns.Topic;
 import com.amazonaws.cdk.sqs.Queue;
 import com.amazonaws.cdk.sqs.QueueProps;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,7 +69,10 @@ public class SinkQueue extends Construct {
     @Override
     public List<String> validate() {
         if (actualTopicCount < expectedTopicCount) {
-            return List.of("There are not enough subscribers to the sink. Expecting " + this.expectedTopicCount + ", actual is " + this.actualTopicCount);
+            return Arrays.asList(
+                "There are not enough subscribers to the sink. Expecting " +
+                    this.expectedTopicCount +
+                    ", actual is " + this.actualTopicCount);
         }
 
         return super.validate();
