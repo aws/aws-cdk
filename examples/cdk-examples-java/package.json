@@ -1,6 +1,6 @@
 {
   "name": "cdk-examples-java",
-  "version": "0.7.0",
+  "version": "0.7.2-beta",
   "description": "CDK examples in Java",
   "private": true,
   "repository": {
@@ -20,9 +20,9 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-cdk-java": "^0.7.0"
+    "aws-cdk-java": "^0.7.2-beta"
   },
   "devDependencies": {
-    "pkgtools": "^0.7.0"
+    "pkgtools": "^0.7.2-beta"
   }
 }
