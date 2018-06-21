@@ -12,6 +12,7 @@ import com.amazonaws.cdk.ec2.WindowsImage;
 import com.amazonaws.cdk.ec2.WindowsVersion;
 import com.amazonaws.cdk.resources.s3.BucketResource;
 import com.amazonaws.cdk.resources.s3.BucketResourceProps;
+import com.amazonaws.cdk.sns.Topic;
 import com.amazonaws.cdk.sqs.Queue;
 import com.amazonaws.cdk.sqs.QueueProps;
 
@@ -29,6 +30,14 @@ class HelloJavaStack extends Stack {
 
         MyFleetProps fleetProps = new MyFleetProps();
         fleetProps.vpc = vpc;
+
+        int topicCount = 5;
+
+        SinkQueue sinkQueue = new SinkQueue(this, "MySinkQueue", SinkQueueProps.builder().withRequiredTopicCount(5).build());
+
+        for (int i = 0; i < topicCount; ++i) {
+            sinkQueue.subscribe(new Topic(this, "Topic" + (i+1)));
+        }
 
         new MyFleet(this, "MyFleet", fleetProps);
     }

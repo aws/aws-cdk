@@ -1,25 +1,67 @@
 package com.amazonaws.cdk.examples;
 
 import com.amazonaws.cdk.sqs.QueueProps;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * Props for {@link SinkQueue}
+ * Props for {@link SinkQueue}.
  */
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class SinkQueueProps {
+    private QueueProps queueProps;
+    private Number requiredTopicCount;
+
+    /**
+     * @return A builder for {@link SinkQueueProps}.
+     */
+    public static SinkQueuePropsBuilder builder() {
+        return new SinkQueuePropsBuilder();
+    }
+
+    /**
+     * The exact number of topics required to subscribe to the queue.
+     * You must call {@link SinkQueue::subscribe} to subscribe topics to this queue.
+     * @default 0
+     */
+    public Number getRequiredTopicCount() {
+        return requiredTopicCount;
+    }
+
     /**
      * Props for the queue itself
      * @default See {@link com.amazonaws.cdk.sqs.Queue} defaults
      */
-    private QueueProps queueProps;
+    public QueueProps getQueueProps() {
+        return queueProps;
+    }
 
     /**
-     * The maximum number of topics allowed to subscribe to this queue.
-     * @default 10
+     * Builder for {@link SinkQueue}.
      */
-    private Number maxTopics;
+    public static final class SinkQueuePropsBuilder {
+        private QueueProps queueProps;
+        private Number requiredTopicCount;
+
+        private SinkQueuePropsBuilder() {
+        }
+
+        public static SinkQueuePropsBuilder aSinkQueueProps() {
+            return new SinkQueuePropsBuilder();
+        }
+
+        public SinkQueuePropsBuilder withQueueProps(QueueProps queueProps) {
+            this.queueProps = queueProps;
+            return this;
+        }
+
+        public SinkQueuePropsBuilder withRequiredTopicCount(Number requiredTopicCount) {
+            this.requiredTopicCount = requiredTopicCount;
+            return this;
+        }
+
+        public SinkQueueProps build() {
+            SinkQueueProps sinkQueueProps = new SinkQueueProps();
+            sinkQueueProps.requiredTopicCount = this.requiredTopicCount;
+            sinkQueueProps.queueProps = this.queueProps;
+            return sinkQueueProps;
+        }
+    }
 }

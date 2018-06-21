@@ -5,14 +5,16 @@ import com.amazonaws.cdk.sns.Topic;
 import com.amazonaws.cdk.sqs.Queue;
 import com.amazonaws.cdk.sqs.QueueProps;
 
+import java.util.List;
+
 /**
  * A sink queue is a queue aggregates messages published to any number of SNS topics.
  */
 public class SinkQueue extends Construct {
     private final Queue queue;
-    private final int maxTopics;
+    private final int expectedTopicCount;
 
-    private int numberOfTopics = 0;
+    private int actualTopicCount = 0;
 
     /**
      * Defines a SinkQueue.
@@ -29,7 +31,7 @@ public class SinkQueue extends Construct {
 
         // defaults
         QueueProps queueProps = props.getQueueProps();
-        this.maxTopics = props.getMaxTopics() != null ? props.getMaxTopics().intValue() : 10;
+        this.expectedTopicCount = props.getRequiredTopicCount() != null ? props.getRequiredTopicCount().intValue() : 10;
 
         // WORKAROUND: https://github.com/awslabs/aws-cdk/issues/157
         if (queueProps == null) {
@@ -55,11 +57,20 @@ public class SinkQueue extends Construct {
      */
     public void subscribe(final Topic... topics) {
         for (Topic topic: topics) {
-            if (numberOfTopics == maxTopics) {
-                throw new RuntimeException("Cannot add more topics to the sink. Maximum topics is configured to " + this.maxTopics);
+            if (actualTopicCount == expectedTopicCount) {
+                throw new RuntimeException("Cannot add more topics to the sink. Maximum topics is configured to " + this.expectedTopicCount);
             }
             topic.subscribeQueue(this.queue);
-            numberOfTopics++;
+            actualTopicCount++;
         }
+    }
+
+    @Override
+    public List<String> validate() {
+        if (actualTopicCount < expectedTopicCount) {
+            return List.of("There are not enough subscribers to the sink. Expecting " + this.expectedTopicCount + ", actual is " + this.actualTopicCount);
+        }
+
+        return super.validate();
     }
 }

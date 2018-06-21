@@ -1,10 +1,12 @@
 package com.amazonaws.cdk.examples;
 
+import com.amazonaws.cdk.App;
 import com.amazonaws.cdk.Stack;
 import com.amazonaws.cdk.sns.Topic;
 import com.amazonaws.cdk.sqs.QueueProps;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsii.JsiiException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,7 +30,7 @@ public class SinkQueueTest {
     @Test public void testQueueProps() throws IOException {
         Stack stack = new Stack();
         new SinkQueue(stack, "MySinkQueue", SinkQueueProps.builder()
-                .queueProps(QueueProps.builder()
+                .withQueueProps(QueueProps.builder()
                         .withVisibilityTimeoutSec(500)
                         .build())
                 .build());
@@ -58,11 +60,11 @@ public class SinkQueueTest {
     }
 
     /** Verifies that if we exceed the number of allows topics, an exception is thrown */
-    @Test public void failsIfExceedMaxTopic() throws IOException {
+    @Test public void failsIfExceedMaxTopic() {
         Stack stack = new Stack();
 
         SinkQueue sink = new SinkQueue(stack, "MySinkQueue", SinkQueueProps.builder()
-                .maxTopics(3)
+                .withRequiredTopicCount(3)
                 .build());
 
         sink.subscribe(new Topic(stack, "Topic1"));
@@ -76,6 +78,21 @@ public class SinkQueueTest {
             thrown = true;
         }
         assertTrue(thrown);
+    }
+
+    /** Verifies that the sink queue validates that the exact number of subscribers was added */
+    @Test(expected = JsiiException.class) public void failsIfNotEnoughTopics() {
+        App app = new App();
+        Stack stack = new Stack(app, "test");
+
+        SinkQueue sink = new SinkQueue(stack, "MySinkQueue", SinkQueueProps.builder()
+                .withRequiredTopicCount(80).build());
+
+        for (int i = 0; i < 77; ++i) {
+            sink.subscribe(new Topic(stack, "Topic" + i));
+        }
+
+        app.synthesizeStack(stack.getName());
     }
 
     private static void assertTemplate(final Stack stack, final URL expectedResource) throws IOException {
