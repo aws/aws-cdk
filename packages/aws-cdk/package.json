@@ -33,7 +33,7 @@
     "@aws-cdk/cx-api": "^0.7.2-beta",
     "@aws-cdk/resources": "^0.7.2-beta",
     "@aws-cdk/util": "^0.7.2-beta",
-    "aws-cdk-npm": "^0.7.2",
+    "aws-cdk-npm": "^0.7.2-beta",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
     "colors": "^1.2.1",

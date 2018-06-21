@@ -22,7 +22,7 @@
     "@aws-cdk/core": "^0.7.2-beta"
   },
   "devDependencies": {
-    "cfn2ts": "^0.7.1",
+    "cfn2ts": "^0.7.2-beta",
     "pkglint": "^0.7.1"
   },
   "repository": {

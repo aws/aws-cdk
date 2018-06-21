@@ -32,7 +32,8 @@ ${root}/tools/pkgtools/bin/publish-to-verdaccio \
 # Create a local maven repository
 echo "Preparing local MVN registry"
 mkdir -p repo/maven
-cp ${root}/packages/aws-cdk-java/target/*.jar repo/maven
+rsync -av ${root}/packages/aws-cdk-java/maven-repo/ repo/maven/
+rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ repo/maven/
 
 # Bootstrap a production-ready node_modules closure with all npm modules (jsii and CDK)
 echo "Bootstrapping a production-ready npm closure"
