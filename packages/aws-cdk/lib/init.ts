@@ -1,9 +1,8 @@
-import { execCdkBetaNpm } from 'aws-cdk-npm';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+import * as os from 'os';
 import * as path from 'path';
-import { promisify } from 'util';
 import { error, print, warning } from './logging';
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
@@ -165,8 +164,8 @@ async function initializeProject(template: InitTemplate, language: string) {
     await template.install(language, process.cwd());
     await postInstall(language);
     if (useGit) {
-        await promisify(exec)('git add .');
-        await promisify(exec)('git commit --message="Initial commit" --no-gpg-sign');
+        await execute('git', 'add', '.');
+        await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
     }
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
@@ -185,7 +184,7 @@ async function assertIsEmptyDirectory() {
 async function initializeGitRepository() {
     if (await isInGitRepository(process.cwd())) { return false; }
     print('Initializing a new git repository...');
-    await promisify(exec)('git init');
+    await execute('git', 'init');
     return true;
 }
 
@@ -197,9 +196,12 @@ async function postInstall(language: string) {
 }
 
 async function postInstallTypescript() {
-    print(`Executing ${colors.green('cdk-beta-npm install')}...`);
-    if (await execCdkBetaNpm('install') !== 0) {
-        throw new Error('cdk-beta-npm install failed!');
+    const cdkHome = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
+    const yNpm = path.join(cdkHome, 'bin', 'y-npm');
+    const command = await fs.pathExists(yNpm) ? yNpm : 'npm';
+    print(`Executing ${colors.green(`${command} install`)}...`);
+    if (await execute(command, 'install') !== 0) {
+        throw new Error(`${colors.green(`${command} install`)} failed!`);
     }
 }
 
@@ -221,4 +223,21 @@ async function isInGitRepository(dir: string) {
  */
 function isRoot(dir: string) {
     return path.dirname(dir) === dir;
+}
+
+function execute(cmd: string, ...args: string[]): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+        try {
+            const child = spawn(cmd, args, { stdio: 'inherit' });
+            child.on('exit', (code, _signal) => {
+                if (code != null) {
+                    resolve(code);
+                } else {
+                    resolve(128);
+                }
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
