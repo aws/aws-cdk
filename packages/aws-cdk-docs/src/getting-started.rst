@@ -73,6 +73,9 @@ Let's take a look at an annotated version of the file *hello-cdk.ts*.
    `Atom TypeScript <https://atom.io/packages/atom-typescript>`_ plugin,
    to get auto-completion in your Typescript code.
 
+Replace the contents of the file *index.ts* with the following code to create a class that
+extends **Stack**, and include some construction logic.
+
 .. code-block:: js
 
     // You'll need this statement in every app
@@ -87,6 +90,7 @@ Let's take a look at an annotated version of the file *hello-cdk.ts*.
     class HelloStack extends Stack {
         // Instantiate HelloStack with a reference to its parent,
         // as it might need some context;
+        // as it might need some context from the app;
         // a name; and some optional properties.
         // You'll almost always use these same two lines.
         constructor(parent: App, name: string, props?: StackProps) {
@@ -216,6 +220,8 @@ should see information messages, such as feedback from CloudFormation logs.
 
    Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
    ``aws configure`` command to specify your default credentials and region.
+   
+   Important: make sure that you explicitly specify a **region**.
 
 .. You can also set environment variables for your default credentials and region.
    Environment variables take precedence over settings in the credentials or config file.
@@ -248,7 +254,8 @@ run the following command to see the difference between the *deployed* stack and
 
 .. code-block:: sh
 
-   cdk diff
+    # compile your code (depends on your language)
+    cdk diff
 
 You should see something like the following.
 

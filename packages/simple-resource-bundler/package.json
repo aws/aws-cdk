@@ -1,14 +1,14 @@
 {
   "name": "simple-resource-bundler",
-  "version": "0.7.1",
+  "version": "0.7.2-beta",
   "description": "Command-line tool to embed resources into JS libraries",
   "main": "bundler.js",
   "types": "bundler.d.ts",
   "bin": {
-    "simple-resource-bundler": "./simple-resource-bundler"
+    "simple-resource-bundler": "bin/simple-resource-bundler"
   },
   "scripts": {
-    "prepare": "tsc && chmod +x ./simple-resource-bundler && tslint -p . && pkglint",
+    "prepare": "tsc && chmod +x bin/simple-resource-bundler && tslint -p . && pkglint",
     "lint": "tsc && tslint *.ts --force",
     "watch": "tsc -w",
     "pkglint": "pkglint -f"

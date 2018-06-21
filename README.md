@@ -76,7 +76,7 @@ its signature against our public signing key. To do so, you need
 the following things:
 
 * [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
-* Download our public key: [cdk-team.asc](https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc)
+* Download our public key: https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc
 * Make sure you have downloaded both `aws-cdk-x.y.z.zip`
   and `aws-cdk-x.y.z.zip.sig`.
 
@@ -84,13 +84,20 @@ Then run the following commands:
 
 ```shell
 gpg --import cdk-team.asc
-gpg --validate aws-cdk-x.y.z.zip.sig
+gpg --verify aws-cdk-x.y.z.zip.sig aws-cdk-x.y.z.zip
 ```
 
 If everything is correct, the output will contain the line:
 
 ```
 gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
+```
+
+If you obtained via the above URL, you can ignore the following message:
+
+```
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
 ```
 
 ## Development

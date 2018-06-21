@@ -5,6 +5,7 @@
 import { Environment } from './environment';
 
 export const VERSION = '1';
+export const BASE64_REQ_PREFIX = 'base64:';
 
 export interface ListStacksRequest {
     type: 'list',
@@ -88,9 +89,9 @@ export type StackMetadata = { [path: string]: MetadataEntry[] };
 /**
  * Context parameter for the default AWS account to use if a stack's environment is not set.
  */
-export const DEFAULT_ACCOUNT_CONTEXT_KEY = 'default-account';
+export const DEFAULT_ACCOUNT_CONTEXT_KEY = 'aws:cdk:toolkit:default-account';
 
 /**
  * Context parameter for the default AWS region to use if a stack's environment is not set.
  */
-export const DEFAULT_REGION_CONTEXT_KEY = 'default-region';
+export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';

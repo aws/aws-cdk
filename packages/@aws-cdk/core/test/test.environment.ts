@@ -1,3 +1,4 @@
+import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, Stack } from '../lib';
 
@@ -10,11 +11,11 @@ export = {
         test.done();
     },
 
-    'Default account and region can be set in contrext (`default-account` and `default-region`)'(test: Test) {
+    'Default account and region can be set in context (`aws:cdk:toolkit:default-account` and `aws:cdk:toolkit:default-region`)'(test: Test) {
         const app = new App();
 
-        app.setContext('default-account', 'my-default-account');
-        app.setContext('default-region', 'my-default-region');
+        app.setContext(DEFAULT_ACCOUNT_CONTEXT_KEY, 'my-default-account');
+        app.setContext(DEFAULT_REGION_CONTEXT_KEY, 'my-default-region');
 
         const stack = new Stack(app);
 
@@ -27,8 +28,8 @@ export = {
     'If only `env.region` or `env.account` are specified, defaults will be used for the other'(test: Test) {
         const app = new App();
 
-        app.setContext('default-account', 'my-default-account');
-        app.setContext('default-region', 'my-default-region');
+        app.setContext(DEFAULT_ACCOUNT_CONTEXT_KEY, 'my-default-account');
+        app.setContext(DEFAULT_REGION_CONTEXT_KEY, 'my-default-region');
 
         const stack1 = new Stack(app, 'S1', { env: { region: 'only-region' } });
         const stack2 = new Stack(app, 'S2', { env: { account: 'only-account' } });
