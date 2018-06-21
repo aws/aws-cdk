@@ -8,11 +8,13 @@
     },
     "scripts": {
         "prepare": "tsc && chmod a+x bin/%name%.js",
-        "watch": "tsc -w"
+        "watch": "tsc -w",
+        "cdk": "cdk"
     },
     "devDependencies": {
         "@types/node": "^8.9.4",
-        "typescript": "^2.8.3"
+        "typescript": "^2.8.3",
+        "aws-cdk": "^%cdk-version%"
     },
     "dependencies": {
         "@aws-cdk/core": "^%cdk-version%",
