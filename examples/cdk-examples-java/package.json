@@ -1,0 +1,30 @@
+{
+  "name": "cdk-examples-java",
+  "version": "0.7.2-beta",
+  "description": "CDK examples in Java",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "pkglint": {
+    "ignore": true
+  },
+  "scripts": {
+    "prepare": "/bin/bash generate.sh && cd project && mvn package",
+    "cdk": "cdk",
+    "test": "echo ok"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-cdk-java": "^0.7.2-beta"
+  },
+  "devDependencies": {
+    "aws-cdk": "^0.7.2-beta",
+    "pkgtools": "^0.7.2-beta"
+  }
+}

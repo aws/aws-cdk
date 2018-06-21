@@ -1,0 +1,3 @@
+{
+  "app": "java -jar project/target/cdk-examples-java-0.7.2-beta-jar-with-dependencies.jar app"
+}
