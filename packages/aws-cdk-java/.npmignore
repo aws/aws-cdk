@@ -1,6 +1,3 @@
-.project
-src
-target
-generate.sh
-*.iml
-pom.xml
+project
+*.sh
+*.t.js
