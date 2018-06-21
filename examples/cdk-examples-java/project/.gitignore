@@ -4,3 +4,6 @@ target
 pom.xml
 
 .idea
+.classpath
+.project
+.settings

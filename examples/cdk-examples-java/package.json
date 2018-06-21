@@ -12,6 +12,7 @@
   },
   "scripts": {
     "prepare": "/bin/bash generate.sh && cd project && mvn package",
+    "cdk": "cdk",
     "test": "echo ok"
   },
   "author": {
@@ -23,6 +24,7 @@
     "aws-cdk-java": "^0.7.2-beta"
   },
   "devDependencies": {
+    "aws-cdk": "^0.7.2-beta",
     "pkgtools": "^0.7.2-beta"
   }
 }
