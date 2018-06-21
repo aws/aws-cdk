@@ -1,3 +1,12 @@
+## [UNRELEASED]
+
+ * Stopped bundling all dependencies in the release ZIP ([@RomainMuller] in [#161] and [awslabs/jsii#43])
+ * Replaced `cdk-beta-npm` with more generic `y-npm` tool ([@RomainMuller] in [#162])
+
+[#161]: https://github.com/awslabs/aws-cdk/pull/161
+[#162]: https://github.com/awslabs/aws-cdk/pull/162
+[awslabs/jsii#43]: https://github.com/awslabs/jsii/pull/43
+
 ## 0.7.2 - 2018-06-19
 
  * Add: initial construct library for [AWS Kinesis Data Streams] ([@sam-goodwin] in [#86])

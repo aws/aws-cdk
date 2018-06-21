@@ -6,42 +6,46 @@ set -euo pipefail
 root=$PWD
 
 staging="$(mktemp -d)"
+cleanup() {
+    # Clean-up after yourself
+    echo "Cleaning up staging directory: ${staging}"
+    cd ${root}
+    rm -rf ${staging}
+}
+trap cleanup EXIT
 cd ${staging}
 
 echo "Staging: ${staging}"
 
 # Bundle structure
 # ================
-#
-#   + bin
-#   + docs
-#   + repo
-#      + npm
-#      + maven
-#   + node_modules
-#
+#   aws-cdk-${version}.zip
+#   ├─ bin
+#   ├─ docs
+#   ├─ repo
+#   │  └ maven
+#   ├─ y
+#   │  └─ npm
+#   └─ node_modules
 
-# Create a local npm repository
+# Creating a `y-npm` registry
 echo "Preparing local NPM registry"
-mkdir -p repo/npm
-${root}/tools/pkgtools/bin/publish-to-verdaccio \
-    repo/npm                                    \
-    ${root}/pack                                \
-    ${root}/.local-npm
+mkdir -p y/npm
+export Y_NPM_REPOSITORY="${staging}/y/npm"
+Y_NPM="${root}/tools/y-npm/bin/y-npm"
+for tarball in $(find ${root}/.local-npm -iname '*.tgz') $(find ${root}/pack -iname '*.tgz'); do
+    ${Y_NPM} publish ${tarball}
+done
+
+echo "Installing y-npm" # using y-npm, we're so META!
+${Y_NPM} install --global-style --no-save y-npm
+ln -s node_modules/.bin bin
 
 # Create a local maven repository
 echo "Preparing local MVN registry"
 mkdir -p repo/maven
 rsync -av ${root}/packages/aws-cdk-java/maven-repo/ repo/maven/
 rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ repo/maven/
-
-# Bootstrap a production-ready node_modules closure with all npm modules (jsii and CDK)
-echo "Bootstrapping a production-ready npm closure"
-npm install --global-style --production --no-save $(find repo/npm -iname '*.tgz')
-
-# Symlink 'bin' to the root
-echo "Symlinking bin"
-ln -s node_modules/.bin bin
 
 # Symlink the docs website to docs
 echo "Symlinking docs"
