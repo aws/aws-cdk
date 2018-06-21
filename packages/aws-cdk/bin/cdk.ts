@@ -563,8 +563,9 @@ async function initCommandLine() {
             proc.on('error', fail);
 
             proc.on('exit', code => {
+                const stdout = Buffer.concat(buf).toString();
+
                 if (code === 0) {
-                    const stdout = Buffer.concat(buf).toString();
                     let parsed = null;
                     try {
                         parsed = JSON.parse(stdout);
@@ -575,7 +576,7 @@ async function initCommandLine() {
                     }
                     return ok(parsed);
                 } else {
-                    error(buf.toString());
+                    error(stdout);
                     return fail(new Error('Subprocess exited with error ' + code.toString()));
                 }
             });
