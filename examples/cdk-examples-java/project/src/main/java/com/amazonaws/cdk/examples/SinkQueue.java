@@ -10,8 +10,9 @@ import com.amazonaws.cdk.sqs.QueueProps;
  */
 public class SinkQueue extends Construct {
     private final Queue queue;
-    private int numberOfTopics = 0;
     private final int maxTopics;
+
+    private int numberOfTopics = 0;
 
     /**
      * Defines a SinkQueue.
