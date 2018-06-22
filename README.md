@@ -33,6 +33,35 @@ To download from S3:
 aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
+### Verifying the integrity of your download
+
+You can verify that the zip file you downloaded is complete and correct by validating
+its signature (.zip.sig) against our public signing key. To do so, you need
+the following things:
+
+1. Install [GNU Privacy Guard](https://gnupg.org/)
+2. Download the CDK public key: https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc
+3. Downloaded both the ZIP file, `aws-cdk-RELEASE.zip` and the SIG file, `aws-cdk-RELEASE.sig`,
+   where `RELEASE` is the release you want to install.
+4. Run the following commands:
+   ```shell
+   gpg --import cdk-team.asc
+   gpg --verify aws-cdk-RELEASE.zip.sig aws-cdk-RELEASE.zip
+   ```
+
+   If everything is correct, the output should contain the line:
+   
+   ```shell
+   gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
+   ```
+
+   If you obtained via the above URL, you can ignore the following message:
+
+   ```shell
+   gpg: WARNING: This key is not certified with a trusted signature!
+   gpg:          There is no indication that the signature belongs to the owner.
+   ```
+
 ### Install to ~/.cdk
 
 Once you've downloaded the bits, install them into `~/.cdk`:
@@ -68,37 +97,6 @@ cdk docs
 
 Follow the "Getting Started" guide in CDK docs to initialize your first CDK
 project and deploy it to an AWS account.
-
-### Verifying the integrity of your download
-
-You can verify that your download is complete and correct by validating
-its signature against our public signing key. To do so, you need
-the following things:
-
-* [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
-* Download our public key: https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc
-* Make sure you have downloaded both `aws-cdk-x.y.z.zip`
-  and `aws-cdk-x.y.z.zip.sig`.
-
-Then run the following commands:
-
-```shell
-gpg --import cdk-team.asc
-gpg --verify aws-cdk-x.y.z.zip.sig aws-cdk-x.y.z.zip
-```
-
-If everything is correct, the output will contain the line:
-
-```
-gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
-```
-
-If you obtained via the above URL, you can ignore the following message:
-
-```
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-```
 
 ## Development
 
