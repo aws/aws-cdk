@@ -86,8 +86,8 @@ Below are the actions you can take on your CDK app:
 
 .. _jsii:
 
-jsii
-====
+   jsii
+   ====
 
 .. Hang on, we tell them to use
    npm run prepare
@@ -95,6 +95,6 @@ jsii
    npm run watch
    in the getting started topic. Which is it???
 
-Use this tool to compile your |cdk| TypeScript code into JavaScript.
-You can add the **-w** option to have the tool watch for changes in your code,
-and automatically compile the changes, using **jsii**, as you save the file.
+   Use this tool to compile your |cdk| TypeScript code into JavaScript.
+   You can add the **-w** option to have the tool watch for changes in your code,
+   and automatically compile the changes, using **jsii**, as you save the file.
