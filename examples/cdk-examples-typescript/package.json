@@ -1,5 +1,5 @@
 {
-  "name": "examples",
+  "name": "cdk-examples-typescript",
   "version": "0.7.2-beta",
   "description": "A bunch of CDK examples",
   "private": true,
