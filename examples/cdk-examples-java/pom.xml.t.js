@@ -2,7 +2,7 @@ const path = require('path');
 const version = require('./package.json').version;
 
 const mavenFromNpm = name => ({
-    version: require(`${name}/package.json`).version,
+    version: require(`${name}/package.json`).version.replace(/\+.+$/, ''), // remove "+build" component from version when building in ci
     repo: path.join(path.dirname(require.resolve(name)), 'maven-repo'),
 });
 

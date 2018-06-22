@@ -1,5 +1,5 @@
 const path = require('path');
-const version = require('./package.json').version;
+const version = require('./package.json').version.replace(/\+.+$/, ''); // omit "+build" postfix
 
 const jsiiRuntime = {
     version: require('jsii-java-runtime/package.json').version,
