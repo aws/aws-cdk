@@ -27,8 +27,6 @@ Let's use the |cdk| to create an |CFN| an |SQS| queue, an |SNS| topic, a subscri
 and an |IAM| policy document that enables the
 topic to send messages to the queue.
 
-.. _hello_cdk_typescript
-
 .. _create_dirs:
 
 Create Your Project Structure
@@ -44,8 +42,28 @@ For the examples in this section we'll use TypeScript.
    cd hello-cdk
    cdk init --language=typescript
 
-The **cdk init** command creates a skeleton |cdk| program for you to work with
-and displays some useful commands to help you get started.
+The **cdk init** command creates the following:
+
+* *bin* contains the following files. The command creates *hello-cdk.ts* from a template,
+  and the other two files as it runs the TypeScript compiler:
+
+   * *hello-cdk.d.ts*
+   * *hello-cdk.js*
+   * *hello-cdk.ts* is TypeScript source for the entry point to your app
+     (the file we'll update later)
+
+* *cdk.json* specifies the entry point to your app,
+  so that you can omit the **--app** option,
+  such as when running **cdk synth**
+* *node_module* contains the Node packages you need to develop your TypeScript source
+* *package.json* contains metadata for the app.
+* *package-lock.json* is the npm lockfile for package.json
+* *README.md* contains some information to help you from this point on
+* *tsconfig.json* contains definitions for the TypeScript compiler
+
+The command displays README.md as it finishes to give you information about some useful commands.
+
+Let's take a look at an annotated version of the file *hello-cdk.ts*.
 
 .. note:: You can use an IDE, such as
    `Microsoft Visual Code <https://code.visualstudio.com/>`_,
@@ -63,24 +81,25 @@ extends **Stack**, and include some construction logic.
     // You'll need this statement in every app
     import { App, Stack, StackProps } from '@aws-cdk/core';
 
-    // The SNS resources, such as Topic, are defined in aws-cdk-sns
+    // The SNS resources, such as Topic, are defined in @aws-cdk/sns
     import { Topic } from '@aws-cdk/sns';
 
-    // The SQS resources, such as Queue, are defined in aws-cdk-sqs
+    // The SQS resources, such as Queue, are defined in @aws-cdk/sqs
     import { Queue } from '@aws-cdk/sqs';
 
     class HelloStack extends Stack {
         // Instantiate HelloStack with a reference to its parent,
+        // as it might need some context;
         // as it might need some context from the app;
         // a name; and some optional properties.
         // You'll almost always use these same two lines.
         constructor(parent: App, name: string, props?: StackProps) {
             super(parent, name, props);
 
-	    // Create an SNS topic
+            // Create an SNS topic
             const topic = new Topic(this, 'MyTopic');
 
-	    // Create an SQS queue
+            // Create an SQS queue
             const queue = new Queue(this, 'MyQueue', {
                 // By default you only get 30 seconds to delete a read message after you've read it;
                 // otherwise it becomes available to other consumers.
@@ -105,7 +124,7 @@ extends **Stack**, and include some construction logic.
 Compiling the App
 -----------------
 
-Use one of the commands in the following table to compile your app.
+Use the command for your programming language in the following table to compile your app.
 You must compile your app every time you change it.
 
 .. list-table::
@@ -116,15 +135,15 @@ You must compile your app every time you change it.
     - Compilation Command
 
   * - TypeScript
-    - `npm run prepare`
-      (use `npm run watch` in a separate command window to watch for source changes and automatically recompile)
+    - **npm run prepare**
+      (use **npm run watch** in a separate command window to watch for source changes and automatically recompile)
 
 .. _create_cloud_formation:
 
 Synthesizing a CloudFormation Template
 --------------------------------------
 
-Use the **cdk synth** command to synthesize a |CFN| template for a stack in your app.
+Use the **cdk synth** command to synthesize an |CFN| template for a stack in your app.
 You do not need to synthesize your |CFN| template to deploy it.
 
 .. code-block:: console
@@ -135,46 +154,45 @@ You should see output similar to the following:
 
 .. code-block:: yaml
 
-    Resources:
-        MyTopic86869434:
-            Type: 'AWS::SNS::Topic'
-        MyTopicTopicToQueue2F98E5BA:
-            Type: 'AWS::SNS::Subscription'
-            Properties:
-                Endpoint:
-                    'Fn::GetAtt':
-                        - MyQueueE6CA6235
-                        - Arn
-                Protocol: sqs
-                TopicArn:
-                    Ref: MyTopic86869434
-        MyQueueE6CA6235:
-            Type: 'AWS::SQS::Queue'
-	    Properties:
-                VisibilityTimeout: 300
-        MyQueuePolicy6BBEDDAC:
-            Type: 'AWS::SQS::QueuePolicy'
-            Properties:
-                PolicyDocument:
-                    Statement:
-                        -
-                            Action: 'sqs:SendMessage'
-                            Condition:
-                                ArnEquals:
-                                    'aws:SourceArn':
-                                        Ref: MyTopic86869434
-                            Effect: Allow
-                            Principal:
-                                Service: sns.amazonaws.com
-                            Resource:
-                                'Fn::GetAtt':
-                                    - MyQueueE6CA6235
-                                    - Arn
-                    Version: '2012-10-17'
-                Queues:
-                    -
-                        Ref: MyQueueE6CA6235
-
+   Resources:
+   MyTopic86869434:
+       Type: 'AWS::SNS::Topic'
+   MyTopicMyQueueSubscription3245B11E:
+       Type: 'AWS::SNS::Subscription'
+       Properties:
+           Endpoint:
+               'Fn::GetAtt':
+                   - MyQueueE6CA6235
+                   - Arn
+           Protocol: sqs
+           TopicArn:
+              Ref: MyTopic86869434
+   MyQueueE6CA6235:
+       Type: 'AWS::SQS::Queue'
+       Properties:
+           VisibilityTimeout: 300
+   MyQueuePolicy6BBEDDAC:
+       Type: 'AWS::SQS::QueuePolicy'
+       Properties:
+           PolicyDocument:
+               Statement:
+                   -
+                       Action: 'sqs:SendMessage'
+                       Condition:
+                           ArnEquals:
+                               'aws:SourceArn':
+                                   Ref: MyTopic86869434
+                       Effect: Allow
+                       Principal:
+                           Service: sns.amazonaws.com
+                       Resource:
+                           'Fn::GetAtt':
+                               - MyQueueE6CA6235
+                               - Arn
+               Version: '2012-10-17'
+           Queues:
+               -
+                   Ref: MyQueueE6CA6235
 
 As you can see, the call to :py:meth:`_aws-cdk_sns.TopicRef.subscribeQueue` on
 the :py:class:`_aws-cdk_sns.Topic` resulted in:
@@ -194,14 +212,18 @@ should see information messages, such as feedback from CloudFormation logs.
 
    cdk deploy
 
-.. note:: You must specify your default credentials and region to use the **cdk deploy** command.
+.. note:: You must specify your default credentials and region to use the **cdk deploy** command,
+   unless you explicitly set them when you create a stack.
+   The following examples creates a stack for account *ACCOUNT* in the region *REGION*.
+
+   :code:`new MyStack(app, { env: { region: 'REGION', account: 'ACCOUNT' } });`
 
    Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
    ``aws configure`` command to specify your default credentials and region.
    
    Important: make sure that you explicitly specify a **region**.
 
-   You can also set environment variables for your default credentials and region.
+.. You can also set environment variables for your default credentials and region.
    Environment variables take precedence over settings in the credentials or config file.
 
    * *AWS_ACCESS_KEY_ID* specifies your access key
@@ -224,7 +246,10 @@ Let's change the visibility timeout of the queue from 300 to 500.
         visibilityTimeoutSec: 500
     });
 
-Run the following command to see the difference between the *deployed* stack and your |cdk| project
+Compile your app with **npm run prepare** if you aren't running **npm run watch** in a separate window.
+
+If you've deployed your stack previously,
+run the following command to see the difference between the *deployed* stack and your |cdk| project
 (if you haven't deployed the stack, you won't see any output):
 
 .. code-block:: sh
@@ -236,10 +261,33 @@ You should see something like the following.
 
 .. code-block:: sh
 
-    [~] 🛠 Updating MyQueueE6CA6235 (type: AWS::SQS::Queue)
-     └─ [+] .VisibilityTimeout:
-         ├  Old value: 300
-         └─ New value: 500
+   [~] 🛠 Updating HelloCdkPbQueue8837C78B (type: AWS::SQS::Queue)
+    └─ [~] .VisibilityTimeout:
+        ├─ [-] Old value: 300
+        └─ [+] New value: 500
 
-If the changes are acceptable, use **cdk deploy** to update your
+If the changes are acceptable, run **cdk deploy** to update your
 infrastructure.
+
+Let's make a bigger change by adding an |S3| bucket to our stack.
+Run the following command to install the |S3| package.
+
+.. code-block:: sh
+
+   npm install @aws-cdk/s3
+
+Add the following to the top of *hello-cdk.ts* (we recommend you keep your import statements sorted):
+
+.. code-block:: js
+
+   import { Bucket } from '@aws-cdk/s3';
+
+Finally, create a bucket by adding the following to your constructor.
+Don't forget that |S3| has restrictions on bucket names.
+See `Rules for Bucket Naming <https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html#bucketnamingrules>`_.
+
+.. code-block:: js
+
+   new Bucket(this, "MyBucket", {
+       bucketName: "mygroovybucket"
+   })
