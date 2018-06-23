@@ -17,7 +17,6 @@ User Guide
 .. toctree::
    Welcome <welcome>
    Getting Started <getting-started>
-   Developing Apps <writing-cdk-apps>
    Developing Libraries <guidelines>
    Examples <examples>
    Concepts <concepts>
@@ -26,6 +25,7 @@ User Guide
    Glossary <glossary>
    Reference <reference>
 
+.. Removed on 6/20/2018: Developing Apps <writing-cdk-apps> (see https://github.com/awslabs/aws-cdk/pull/142)
 .. Incorporated into concepts: l1-vs-l2
 .. Incorporated into guidelines: creating-constructs
 .. Skipping: validating-downloads as that info should go in the "Start Here" doc
