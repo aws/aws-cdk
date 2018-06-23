@@ -84,7 +84,7 @@ the |cdk|.
    const prod = [
      new MyStack(app, {
        name: 'NAEast',
-	     env: { region: 'us-east-1' }
+       env: { region: 'us-east-1' }
    }),
 
    new MyStack(app, {
@@ -224,21 +224,15 @@ encryption provided by |S3|.
 Compiling the Examples
 ======================
 
-Compile the TypeScript app *index.ts* into the JavaScript code *index.js* using **jsii**.
+These examples apply to a `hello-cdk` app.
 
-:code:`jsii`
+Compile the TypeScript app *hello-cdk.ts* into the JavaScript code *hello-cdk.js* using
+the following command.
 
-**jsii** creates the file *tsconfig.json* to get code completion in a TypeScript IDE, such as
-`Microsoft Visual Code <https://code.visualstudio.com/>`_,
-`Sublime Text <https://www.sublimetext.com/>`_ with the
-`TypeScript <https://github.com/Microsoft/TypeScript-Sublime-Plugin>`_ plugin,
-or
-`Atom <https://atom.io/>`_ with the
-`TypeScript <https://atom.io/packages/atom-typescript>`_ plugin.
+:code:`npm run prepare`
 
-You can have **jsii** watch for source changes and automatically re-compile those changes using the **watch** option.
-
-:code:`jsii -w`
+Use **npm run watch** to automatically re-compile those changes.
+Run the command in another command window and do not run it in the background.
 
 .. _create_cloud_formation:
 

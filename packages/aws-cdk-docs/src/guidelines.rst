@@ -39,7 +39,7 @@ starts with a pull request to the |cdk|:
 
    git checkout my-branch
 
-* Create a new folder, *aws-cdk-RESOURCE*, in *packages/*,
+* Create a new folder, *RESOURCE*, in *packages/@aws-cdk*,
   where *RESOURCE* is the name of a |CFN| resource.
 
 * Code goes in *lib/*; tests in *test/*.
@@ -77,7 +77,7 @@ Finally for the package:
   website, select your branch, and next to the **Branch** menu select **New pull
   request**.
 
-See the **aws-cdk-dynamodb** package for examples.
+See the **dynamodb** package for examples.
 
 .. _general_guidelines:
 

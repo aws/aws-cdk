@@ -15,14 +15,12 @@ Welcome
 #######
 
 Welcome to the |cdk-long| (|cdk|) User Guide.
-
 The |cdk| is a software development framework for defining cloud infrastructure in code.
-
-The |cdk| consists of a core software package,
-language bindings, and command-line interface tools.
-The |cdk| also provides reusable component libraries, which we call *constructs*.
-Constructs are abstractions of cloud infrastructure logic that create AWS resources and are packaged for reuse.
-They expose a rich programmatic interface and can be composed together to form |cdk| apps that generate |CFN| templates.
+It consists of a core framework library,
+which implements the basic programming model;
+a command-line toolkit;
+and a set of AWS-vended class libraries for defining AWS resources
+using rich object-oriented APIs.
 
 Here's a short example of creating an |SNS| topic, an |SQS| queue,
 and subscribing the topic to the queue.
@@ -42,8 +40,8 @@ in :doc:`getting-started`.
 
             const topic = new Topic(this, 'MyTopic');
 
-	    const queue = new Queue(this, 'MyQueue', {
-              visibilityTimeoutSec: 300
+            const queue = new Queue(this, 'MyQueue', {
+                visibilityTimeoutSec: 300
             });
 
             topic.subscribeQueue('TopicToQueue', queue);
@@ -59,20 +57,20 @@ The process of creating your AWS resources using the |cdk| is straightforward:
 
 1. Install the |cdk| on your development machine
 2. Run the **cdk init** command to create the skeleton of your program
-   in one of the supported programming lanuages
+   in one of the supported programming languages
 3. Use your favorite development environment to define your AWS application infrastructure
    using the |l2|
 4. Compile your code, if necessary
-5. (Optional) Run the |cdk| toolkit **cdk synth** command to see what your |CFN| temlate looks like
+5. (Optional) Run the |cdk| toolkit **cdk synth** command to see what your |CFN| template looks like
 6. Run the |cdk| toolkit **cdk deploy** command to deploy the resulting |CFN| template
    and create the AWS resources in your AWS account
 7. Repeats steps 3-6 until you are satisfied with your resources
 
 .. note:: There is no charge for using the |cdk|, however you may incur AWS charges for creating or using AWS
-	  `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
-	  such as running |EC2| instances or using |S3| storage.
-	  Use the
-	  `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
+          `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
+          such as running |EC2| instances or using |S3| storage.
+          Use the
+          `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
           to estimate charges for the use of various AWS resources.
 
 .. _aws_cdk_additional_resources:
@@ -84,13 +82,15 @@ In addition to this guide, the following are other resources available to |cdk| 
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
+
   * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
+  * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE.md>`_
+
 * :doc:`getting-started`
 * `TypeScriptLang.org <https://www.typescriptlang.org/>`_
 
 .. TBD:
-   * License (link)
    * FAQ (link)
    * Installing the |cdk| (video) (link)
 
@@ -109,4 +109,4 @@ experimentation, AWS offers a free usage tier, in which services are free below 
 usage. For more information about AWS costs and the free usage tier, see
 `Test-Driving AWS in the Free Usage Tier <http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/billing-free-tier.html>`_.
 
-To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and click :guilabel:`Create a Free Account`.
+To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and click :guilabel:`Create an AWS Account`.

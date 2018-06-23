@@ -21,18 +21,14 @@ This section includes information about |cdk| features that most developers do n
 Creating |l1| Constructs
 ========================
 
-|l1| constructs are found in the :py:mod:`aws-cdk-resources` package. They map directly onto |cfn|
+|l1| constructs are found in the :py:mod:`@aws-cdk/resources` package. They map directly onto |cfn|
 resources.
 
 .. important::
 
   In general, you shouldn't need to use this type of Constructs, unless you have
   special requirements or there is no Construct Library for the AWS resource you
-  need yet. You should use other packages with higher-level constructs instead. See
-  :ref:`l1_vs_l2` for a comparison between the construct types.
-
-The remainder of this section is for those who need to create a stack using a |l1| construct,
-or want to create a |l2| construct from |l1| constructs.
+  need yet. You should use other packages with higher-level constructs instead.
 
 .. _construct_attributes:
 

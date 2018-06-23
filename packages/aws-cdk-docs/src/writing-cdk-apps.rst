@@ -19,8 +19,76 @@ and compiling them, you'll use the |toolkit| to synthesize or deploy the
 stacks they describe.
 
 To write your CDK app, you can create your own constructs, as described in
-:doc:`cloudformation`, or use higher-level constructs.
-See the :doc:`concepts` section for an overview of which constructs you should use or create.
+:doc:`cloudformation`, or use higher-level constructs, as described in the next section.
+
+.. _l2_advantages:
+
+Using an |l2| Versus a |l1|
+===========================
+We recommend that you use an |l2| whenever possible,
+as they provide the best developer experience.
+
+To illustrate the advantages that an |l2| has over
+a |l1|, let's look at an example.
+
+The :py:mod:`@aws-cdk/sns` Construct Library includes the `Topic` construct that
+you can use to define an |SNS| topic:
+
+.. code-block:: js
+
+    import { Topic } from '@aws-cdk/sns';
+    const topic = new Topic(this, 'MyTopic');
+
+An |l2| encapsulate the
+details of working with these AWS resources. For example, to subscribe a queue to a topic,
+call the :py:meth:`@aws-cdk/sns.Topic.subscribeQueue` method with a queue object as the second argument:
+
+.. code-block:: js
+
+    const topic = new Topic(this, 'MyTopic');
+    const queue = new Queue(this, 'MyQueue', {
+        visibilityTimeoutSec: 300
+    });
+
+    topic.subscribeQueue('TopicToQueue', queue);
+
+This method:
+
+1. Creates a subscription and associates it with the topic and the queue.
+
+2. Adds a queue policy with permissions for the topic to send messages to the queue.
+
+To achieve a similar result using :py:mod:`@aws-cdk/resources`, you have to explicitly define the
+subscription and queue policy, since there is no **subscribeToQueue** method in the **TopicResource** class:
+
+.. code-block:: js
+
+    const topic = new sns.TopicResource(this, 'MyTopic');
+    const queue = new sqs.QueueResource(this, 'MyQueue');
+
+    new sns.SubscriptionResource(this, 'TopicToQueue', {
+        topicArn: topic.ref, // ref == arn for topics
+        endpoint: queue.queueName,
+        protocol: 'sqs'
+    });
+
+    const policyDocument = new PolicyDocument();
+    policyDocument.addStatement(new PolicyStatement()
+        .addResource(queue.queueArn)
+        .addAction('sqs:SendMessage')
+        .addServicePrincipal('sns.amazonaws.com')
+        .setCondition('ArnEquals', { 'aws:SourceArn': topic.ref }));
+
+    new sqs.QueuePolicyResource(this, 'MyQueuePolicy', {
+        policyDocument: policyDocument,
+        queues: [ queue.ref ]
+    });
+
+Notice how much cleaner the first version is. There is more focus on intent,
+rather than mechanism.
+
+This example shows one of the many benefits
+of using an |l2| instead of a |l1|.
 
 .. _incorporating_external_constructs:
 
