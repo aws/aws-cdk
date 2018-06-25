@@ -6,7 +6,7 @@ import '../lib/api/util/sdk-load-aws-config';
 
 import * as cxapi from '@aws-cdk/cx-api';
 import { deepMerge, isEmpty, partition } from '@aws-cdk/util';
-import { exec, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
@@ -50,10 +50,6 @@ async function parseCommandLineArguments() {
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
-        .command('docs', 'Opens the documentation in a browser', yargs => yargs
-            // tslint:disable-next-line:max-line-length
-            .option('browser', { type: 'string', alias: 'b', desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
-                                default: process.platform === 'win32' ? 'start %u' : 'open %u' }))
         .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
         // tslint:disable-next-line:max-line-length
         .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
@@ -73,6 +69,7 @@ async function parseCommandLineArguments() {
             // tslint:disable-next-line:max-line-length
             .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
             .option('list', { type: 'boolean', desc: 'list the available templates' }))
+        .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
         .version(VERSION)
         .epilogue([
             'If your app has a single stack, there is no need to specify the stack name',
@@ -81,6 +78,25 @@ async function parseCommandLineArguments() {
         .argv;
 }
 // tslint:enable:no-shadowed-variable
+
+/**
+ * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
+ * options as appropriate.
+ *
+ * @param commandObject is the command to be decorated.
+ * @returns a decorated ``CommandModule``.
+ */
+function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModule {
+    return {
+        ...commandObject,
+        handler(args: yargs.Arguments) {
+            if (args.verbose) {
+                setVerbose();
+            }
+            return commandObject.handler(args);
+        }
+    };
+}
 
 async function initCommandLine() {
     const argv = await parseCommandLineArguments();
@@ -148,9 +164,6 @@ async function initCommandLine() {
         const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
         switch (command) {
-            case 'docs':
-                return await openDocsite(completeConfig().get(['browser']));
-
             case 'ls':
             case 'list':
                 return await listStacks();
@@ -215,29 +228,6 @@ async function initCommandLine() {
             }
         }
         return found;
-    }
-
-    async function openDocsite(commandTemplate: string): Promise<number> {
-        let documentationIndexPath: string;
-        try {
-            // tslint:disable-next-line:no-var-require Taking an un-declared dep on aws-cdk-docs, to avoid a dependency circle
-            const docs = require('aws-cdk-docs');
-            documentationIndexPath = docs.documentationIndexPath;
-        } catch (err) {
-            error('Unable to open CDK documentation - the aws-cdk-docs package appears to be missing. Please run `npm install -g aws-cdk-docs`');
-            return -1;
-        }
-
-        const browserCommand = commandTemplate.replace(/%u/g, documentationIndexPath);
-        debug(`Opening documentation ${green(browserCommand)}`);
-        return await new Promise<number>((resolve, reject) => {
-            exec(browserCommand, (err, stdout, stderr) => {
-                if (err) { return reject(err); }
-                if (stdout) { debug(stdout); }
-                if (stderr) { warning(stderr); }
-                resolve(0);
-            });
-        });
     }
 
     /**
