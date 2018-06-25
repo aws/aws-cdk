@@ -31,3 +31,15 @@ if (fs.existsSync(sharedCredentialsFile)) {
     // Ensures that region is loaded from ~/.aws/config (https://github.com/aws/aws-sdk-js/pull/1391)
     process.env.AWS_SDK_LOAD_CONFIG = '1';
 }
+
+/*
+ * Set environment variables so JS AWS SDK behaves as close as possible to AWS CLI.
+ * @see https://github.com/aws/aws-sdk-js/issues/373
+ * @see https://github.com/awslabs/aws-cdk/issues/131
+ */
+if (process.env.AWS_DEFAULT_PROFILE && !process.env.AWS_PROFILE) {
+    process.env.AWS_PROFILE = process.env.AWS_DEFAULT_PROFILE;
+}
+if (process.env.AWS_DEFAULT_REGION && !process.env.AWS_REGION) {
+    process.env.AWS_REGION = process.env.AWS_DEFAULT_REGION;
+}
