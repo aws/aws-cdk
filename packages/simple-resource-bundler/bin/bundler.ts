@@ -6,6 +6,7 @@ import * as yargs from 'yargs';
 
 const argv = yargs
     .option('output', { type: 'string', alias: 'o', desc: 'Where to write resources.js' })
+    .option('ts',  { type: 'boolean', alias: 't', default: true, desc: 'Generate a .d.ts file in addition for TypeScript users' })
     .argv;
 
 const RESOURCE_DIR = "resources";
@@ -25,6 +26,20 @@ async function main() {
     // Write the file
     await fs.mkdirp(output);
     await fs.writeFile(path.join(output, 'resources.js'), fragments.join('\n'));
+
+    // Write type definition file if requested
+    if (argv.ts) {
+        const fileDecls: string[] = files.map(file => `  "${file}": Buffer,`);
+
+        const declContents = [
+            'declare const resources: {',
+            ...fileDecls,
+            '}',
+            'export = resources;'
+        ];
+
+        fs.writeFile(path.join(output, 'resources.d.ts'), declContents.join('\n'));
+    }
 }
 
 main().catch(err => {
