@@ -71,7 +71,15 @@ export function runCommand(command: string, args: string[], additionalEnv?: Node
         try {
             debug(`Additional environment variables: ${JSON.stringify(additionalEnv)}`);
             debug(`Command: ${command} ${args.join(' ')}`);
-            const env = { ...process.env, ...additionalEnv };
+            const env = { ...process.env };
+            for (const key of Object.keys(additionalEnv || {})) {
+                const value = additionalEnv![key];
+                if (value == null) {
+                    delete env[key];
+                } else {
+                    env[key] = value;
+                }
+            }
             const child = spawn(command, args, { detached: false, env, stdio: ['inherit', 'pipe', 'pipe'] });
             debug(`Command PID: ${child.pid}`);
             const stdout = new Array<Buffer>();
