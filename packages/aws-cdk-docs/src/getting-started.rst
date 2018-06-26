@@ -291,3 +291,23 @@ See `Rules for Bucket Naming <https://docs.aws.amazon.com/AmazonS3/latest/dev/Bu
    new Bucket(this, "MyBucket", {
        bucketName: "mygroovybucket"
    })
+
+.. _including_existing_template:
+
+Including an Existing |CFN| Template
+------------------------------------
+
+The |cdk| provides a mechanism that you can use in your code to include an
+existing |CFN| template in your app.
+
+The following example includes the template *my-template.json* into the
+existing app and gets the ARN of the bucket **MyBucket** from the
+template.
+
+.. code-block:: js
+
+   new Include(this, 'ExistingInfra', {
+        template: JSON.parse(fs.readFileSync('./my-template.json'))
+   });
+
+   const bucketArn = new FnGetAtt('MyBucket', 'Arn');
