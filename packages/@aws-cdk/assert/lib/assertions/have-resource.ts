@@ -3,6 +3,11 @@ import { StackInspector } from "../inspector";
 
 /**
  * An assertion to check whether a resource of a given type and with the given properties exists, disregarding properties
+ *
+ * Properties can be:
+ *
+ * - An object, in which case its properties will be compared to those of the actual resource found
+ * - A callablage, in which case it will be treated as a predicate that is applied to the Properties of the found resources.
  */
 export function haveResource(resourceType: string, properties?: any): Assertion<StackInspector> {
     return new HaveResourceAssertion(resourceType, properties);
@@ -21,7 +26,17 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
             const resource = inspector.value.Resources[logicalId];
             if (resource.Type === this.resourceType) {
                 this.inspected.push(resource);
-                if (isSuperObject(resource.Properties, this.properties)) {
+
+                let matches: boolean;
+                if (typeof this.properties === 'function') {
+                    // If 'properties' is a callable, invoke it
+                    matches = this.properties(resource.Properties);
+                } else {
+                    // Otherwise treat as property bag that we check superset of
+                    matches = isSuperObject(resource.Properties, this.properties);
+                }
+
+                if (matches) {
                     return true;
                 }
             }
@@ -47,7 +62,7 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
  *
  * A super-object has the same or more property values, recursing into nested objects.
  */
-function isSuperObject(superObj: any, obj: any): boolean {
+export function isSuperObject(superObj: any, obj: any): boolean {
     if (obj == null) { return true; }
     if (Array.isArray(superObj) !== Array.isArray(obj)) { return false; }
     if (Array.isArray(superObj)) {
