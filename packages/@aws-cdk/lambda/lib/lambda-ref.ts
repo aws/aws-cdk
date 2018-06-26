@@ -1,3 +1,4 @@
+import { Metric } from '@aws-cdk/cloudwatch';
 import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
@@ -134,6 +135,86 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
             id: this.name,
             arn: this.functionArn,
         };
+    }
+
+    /**
+     * Metric for the Errors executing this Lambda
+     *
+     * @default sum over 5 minutes
+     */
+    public get errorsMetric(): Metric {
+        return LambdaRef.allErrorsMetric.with({
+            dimensions: { FunctionName: this.functionName }
+        });
+    }
+
+    /**
+     * Metric for the Duration of this Lambda
+     *
+     * @default average over 5 minutes
+     */
+    public get durationMetric(): Metric {
+        return LambdaRef.allDurationMetric.with({
+            dimensions: { FunctionName: this.functionName }
+        });
+    }
+
+    /**
+     * Metric for the number of invocations of this Lambda
+     *
+     * @default sum over 5 minutes
+     */
+    public get invocationsMetric(): Metric {
+        return LambdaRef.allInvocationsMetric.with({
+            dimensions: { FunctionName: this.functionName }
+        });
+    }
+
+    /**
+     * Metric for the number of throttled invocations of this Lambda
+     *
+     * @default sum over 5 minutes
+     */
+    public get throttlesMetric(): Metric {
+        return LambdaRef.allThrottlesMetric.with({
+            dimensions: { FunctionName: this.functionName }
+        });
+    }
+
+    /**
+     * Metric for the number of Errors executing all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static get allErrorsMetric(): Metric {
+        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Errors', statistic: 'sum' });
+    }
+
+    /**
+     * Metric for the Duration executing all Lambdas
+     *
+     * @default average over 5 minutes
+     */
+    public static get allDurationMetric(): Metric {
+        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Duration' });
+    }
+
+    /**
+     * Metric for the number of invocations of all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static get allInvocationsMetric(): Metric {
+        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Invocations', statistic: 'sum' });
+    }
+
+    /**
+     * Metric for the number of throttled invocations of all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static get allThrottlesMetric(): Metric {
+        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Throttles', statistic: 'sum' });
     }
 }
 
