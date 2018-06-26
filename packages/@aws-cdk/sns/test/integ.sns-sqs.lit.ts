@@ -6,10 +6,12 @@ class SnsToSqs extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
 
+        /// !show
         const topic = new Topic(this, 'MyTopic');
         const queue = new Queue(this, 'MyQueue');
 
         topic.subscribeQueue(queue);
+        /// !hide
     }
 }
 
