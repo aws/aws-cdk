@@ -1,3 +1,12 @@
+## [UNRELEASED]
+
+ * Stopped bundling all dependencies in the release ZIP ([@RomainMuller] in [#161] and [awslabs/jsii#43])
+ * Replaced `cdk-beta-npm` with more generic `y-npm` tool ([@RomainMuller] in [#162])
+
+[#161]: https://github.com/awslabs/aws-cdk/pull/161
+[#162]: https://github.com/awslabs/aws-cdk/pull/162
+[awslabs/jsii#43]: https://github.com/awslabs/jsii/pull/43
+
 ## 0.7.2 - 2018-06-19
 
  * Add: initial construct library for [AWS Kinesis Data Streams] ([@sam-goodwin] in [#86])
@@ -14,6 +23,7 @@
    to define `region` when running `aws configure` ([#131])
  * `cdk docs` opens the index instead of the welcome page - __workaround__:
    click on "Welcome" in the sidebar ([#129])
+ * The runtime values library (__@aws-cdk/rtv__) is broken ([#151])
 
 [CloudFormation resource specification]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
 [AWS Kinesis Data Streams]: https://aws.amazon.com/kinesis/data-streams
@@ -26,6 +36,10 @@
 [#128]: https://github.com/awslabs/aws-cdk/pull/128
 [#136]: https://github.com/awslabs/aws-cdk/pull/136
 [#119]: https://github.com/awslabs/aws-cdk/pull/119
+[#131]: https://github.com/awslabs/aws-cdk/pull/131
+[#138]: https://github.com/awslabs/aws-cdk/pull/138
+[#129]: https://github.com/awslabs/aws-cdk/pull/129
+[#151]: https://github.com/awslabs/aws-cdk/issues/151
 
 ## 0.7.1 - 2018-06-15
 

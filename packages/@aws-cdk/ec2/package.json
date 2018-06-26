@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/ec2",
-  "version": "0.7.2",
+  "version": "0.7.2-beta",
   "description": "CDK Constructs for AWS EC2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -38,14 +38,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.2",
-    "aws-cdk": "^0.7.2",
+    "@aws-cdk/assert": "^0.7.2-beta",
+    "aws-cdk": "^0.7.2-beta",
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2",
-    "@aws-cdk/iam": "^0.7.2",
-    "@aws-cdk/resources": "^0.7.2",
-    "@aws-cdk/util": "^0.7.2"
+    "@aws-cdk/core": "^0.7.2-beta",
+    "@aws-cdk/iam": "^0.7.2-beta",
+    "@aws-cdk/resources": "^0.7.2-beta",
+    "@aws-cdk/util": "^0.7.2-beta"
   }
 }

@@ -4,8 +4,8 @@
     "packages/*",
     "packages/@aws-cdk/*",
     "tools/*",
-    "examples"
+    "examples/*"
   ],
   "rejectCycles": "true",
-  "version": "0.7.2"
+  "version": "0.7.2-beta"
 }
