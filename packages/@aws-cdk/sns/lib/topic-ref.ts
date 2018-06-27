@@ -1,4 +1,4 @@
-import { Metric } from '@aws-cdk/cloudwatch';
+import { ChangeMetricProps, IAlarmAction, Metric } from '@aws-cdk/cloudwatch';
 import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
@@ -20,7 +20,7 @@ export class TopicName extends Token { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends Construct implements IEventRuleTarget {
+export abstract class TopicRef extends Construct implements IEventRuleTarget, IAlarmAction {
     /**
      * Import a Topic defined elsewhere
      */
@@ -226,17 +226,29 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
         };
     }
 
+    public get alarmActionArn(): Arn {
+        return this.topicArn;
+    }
+
+    /**
+     * Construct a Metric object for the current topic for the given metric
+     */
+    public metric(metricName: string, props?: ChangeMetricProps): Metric {
+        return new Metric({
+            namespace: 'AWS/SNS',
+            dimensions: { TopicName: this.topicName },
+            metricName,
+            ...props
+        });
+    }
+
     /**
      * Metric for the size of messages published through this topic
      *
      * @default average over 5 minutes
      */
-    public get publishSizeMetric(): Metric {
-        return new Metric({
-            namespace: 'AWS/SNS',
-            metricName: 'PublishSize',
-            dimensions: { TopicName: this.topicName }
-        });
+    public metricPublishSize(props?: ChangeMetricProps): Metric {
+        return this.metric('PublishSize', props);
     }
 
     /**
@@ -244,13 +256,8 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public get numberOfMessagesPublishedMetric(): Metric {
-        return new Metric({
-            namespace: 'AWS/SNS',
-            metricName: 'NumberOfMessagesPublished',
-            dimensions: { TopicName: this.topicName },
-            statistic: 'sum'
-        });
+    public metricNumberOfMessagesPublished(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesPublished', { statistic: 'sum', ...props });
     }
 
     /**
@@ -258,13 +265,8 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public get numberOfMessagesFailedMetric(): Metric {
-        return new Metric({
-            namespace: 'AWS/SNS',
-            metricName: 'NumberOfMessagesFailed',
-            dimensions: { TopicName: this.topicName },
-            statistic: 'sum'
-        });
+    public metricNumberOfMessagesFailed(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesFailed', { statistic: 'sum', ...props });
     }
 
     /**
@@ -272,13 +274,8 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public get numberOfMessagesDeliveredMetric(): Metric {
-        return new Metric({
-            namespace: 'AWS/SNS',
-            metricName: 'NumberOfMessagesDelivered',
-            dimensions: { TopicName: this.topicName },
-            statistic: 'sum'
-        });
+    public metricNumberOfMessagesDelivered(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
     }
 }
 

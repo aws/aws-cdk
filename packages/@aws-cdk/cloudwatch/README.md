@@ -1,9 +1,98 @@
 Add alarms and graphs to CDK applications
 =========================================
 
+Metric objects
+--------------
 
-Making Alarms
--------------
+Metric objects represent a metric that is emitted by AWS services or your own
+application, such as `CPUUsage`, `FailureCount` or `Bandwidth`.
+
+Metric objects can be constructed directly or are exposed by resources as
+attributes. Resources that expose metrics will have functions that look
+like `metricXxx()` which will return a Metric object, initialized with defaults
+that make sense.
+
+For example, `Lambda` objects have the `lambda.metricErrors()` method, which
+represents the amount of errors reported by that Lambda function:
+
+```ts
+const errors = lambda.metricErrors();
+```
+
+Aggregation
+-----------
+
+To graph or alarm on metrics you must aggregate them first, using a function
+like `Average` or a percentile function like `P99`. By default, most Metric objects
+returned by CDK libraries will be configured as `Average` over `300 seconds` (5 minutes).
+The exception is if the metric represents a count of discrete events, such as
+failures. In that case, the Metric object will be configured as `Sum` over `300
+seconds`, i.e. it represents the number of times that event occurred over the
+time period.
+
+If you want to change the default aggregation of the Metric object (for example,
+the function or the period), you can do so by passing additional parameters
+to the metric function call:
+
+```ts
+const minuteErrorRate = lambda.metricErrors({
+    statistic: 'avg',
+    periodSec: 60,
+    label: 'Lambda failure rate'
+});
+```
+
+This function also allows changing the metric label or color (which will be
+useful when embedding them in graphs, see below).
+
+> Rates versus Sums
+>
+> The reason for using `Sum` to count discrete events is that *some* events are
+> emitted as either `0` or `1` (for example `Errors` for a Lambda) and some are
+> only emitted as `1` (for example `NumberOfMessagesPublished` for an SNS
+> topic).
+>
+> In case `0`-metrics are emitted, it makes sense to take the `Average` of this
+> metric: the result will be the fraction of errors over all executions.
+>
+> If `0`-metrics are not emitted, the `Average` will always be equal to `1`,
+> and not be very useful.
+>
+> In order to simplify the mental model of `Metric` objects, we default to
+> aggregating using `Sum`, which will be the same for both metrics types. If you
+> happen to know the Metric you want to alarm on makes sense as a rate
+> (`Average`) you can always choose to change the statistic.
+
+Alarms
+------
+
+Alarms can be created on metrics in one of two ways. Either create an `Alarm`
+object, passing the `Metric` object to set the alarm on:
+
+
+```ts
+new Alarm(this, 'Alarm', {
+    metric: lambda.metricErrors(),
+    threshold: 100,
+    evaluationPeriods: 2,
+});
+```
+
+Alternatively, you can call `metric.newAlarm()`:
+
+```ts
+lambda.metricErrors().newAlarm(this, 'Alarm', {
+    threshold: 100,
+    evaluationPeriods: 2,
+});
+```
+
+The most important properties to set while creating an Alarms are:
+
+- `threshold`: the value to compare the metric against.
+- `comparisonOperator`: the comparison operation to use, defaults to `metric >= threshold`.
+- `evaluationPeriods`: how many consecutive periods the metric has to be
+  breaching the the threshold for the alarm to trigger.
 
 Making Dashboards
 -----------------
@@ -21,6 +110,23 @@ The following widgets are available:
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
 
+### Graph widget
+
+A graph widget can display any number of metrics on either the `left` or
+`right` vertical axis:
+
+```ts
+new GraphWidget({
+    title: 'Executions vs error rate',
+    left:
+});
+```
+
+### Alarm widget
+
+### Single value widget
+
+### Text widget
 
 Dashboard Layout
 ----------------

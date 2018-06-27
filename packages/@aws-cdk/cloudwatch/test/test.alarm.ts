@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Arn, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, Metric } from '../lib';
+import { Alarm, IAlarmAction, Metric } from '../lib';
 
 const testMetric = new Metric({
     namespace: 'CDK/Test',
@@ -45,9 +45,9 @@ export = {
             evaluationPeriods: 2
         });
 
-        alarm.onAlarm(new Arn('A'));
-        alarm.onInsufficientData(new Arn('B'));
-        alarm.onOk(new Arn('C'));
+        alarm.onAlarm(new TestAlarmAction('A'));
+        alarm.onInsufficientData(new TestAlarmAction('B'));
+        alarm.onOk(new TestAlarmAction('C'));
 
         // THEN
         expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
@@ -104,3 +104,12 @@ export = {
         test.done();
     }
 };
+
+class TestAlarmAction implements IAlarmAction {
+    constructor(private readonly arn: string) {
+    }
+
+    public get alarmActionArn(): Arn {
+        return new Arn(this.arn);
+    }
+}

@@ -6,7 +6,7 @@ export const GRID_WIDTH = 24;
 /**
  * A single dashboard widget
  */
-export interface Widget {
+export interface IWidget {
     /**
      * The width of the widget
      *
@@ -37,7 +37,7 @@ export interface Widget {
  *
  * This is in contrast to other widgets which exist for layout purposes.
  */
-export abstract class ConcreteWidget implements Widget {
+export abstract class ConcreteWidget implements IWidget {
     public readonly width: number;
     public readonly height: number;
     protected x?: number;

@@ -1,0 +1,51 @@
+{
+  "Resources": {
+    "queue": {
+      "Type": "AWS::SQS::Queue"
+    },
+    "Alarm7103F465": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "QueueName",
+            "Value": {
+              "Fn::GetAtt": [
+                "queue",
+                "QueueName"
+              ]
+            }
+          }
+        ],
+        "EvaluationPeriods": 3,
+        "MetricName": "ApproximateNumberOfMessagesVisible",
+        "Namespace": "AWS/SQS",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 100
+      }
+    },
+    "DashCCD7F836": {
+      "Type": "AWS::CloudWatch::Dashboard",
+      "Properties": {
+        "DashboardBody": {
+          "Fn::Sub": [
+            "{\"widgets\":[{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Messages in queue\",\"region\":\"${ref0}\",\"annotations\":{\"alarms\":[\"${ref1}\"]},\"yAxis\":{\"left\":{\"min\":0}}}}]}",
+            {
+              "ref0": {
+                "Ref": "AWS::Region"
+              },
+              "ref1": {
+                "Fn::GetAtt": [
+                  "Alarm7103F465",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

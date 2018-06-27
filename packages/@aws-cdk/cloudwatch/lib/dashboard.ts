@@ -1,7 +1,7 @@
-import { Construct, resolve, Token } from "@aws-cdk/core";
+import { Construct, Token, tokenAwareJsonify } from "@aws-cdk/core";
 import { cloudwatch } from "@aws-cdk/resources";
 import { Column, Row } from "./layout";
-import { Widget } from "./widget";
+import { IWidget } from "./widget";
 
 export interface DashboardProps {
     /**
@@ -16,7 +16,7 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 export class Dashboard extends Construct {
-    private readonly rows: Widget[] = [];
+    private readonly rows: IWidget[] = [];
 
     constructor(parent: Construct, name: string, props?: DashboardProps) {
         super(parent, name);
@@ -26,7 +26,7 @@ export class Dashboard extends Construct {
             dashboardBody: new Token(() => {
                 const column = new Column(...this.rows);
                 column.position(0, 0);
-                return JSON.stringify(resolve({ widgets: column.toJson() }));
+                return tokenAwareJsonify({ widgets: column.toJson() });
             })
         });
     }
@@ -40,7 +40,7 @@ export class Dashboard extends Construct {
      * Multiple widgets added in the same call to add() will be laid out next
      * to each other.
      */
-    public add(...widgets: Widget[]) {
+    public add(...widgets: IWidget[]) {
         if (widgets.length === 0) {
             return;
         }

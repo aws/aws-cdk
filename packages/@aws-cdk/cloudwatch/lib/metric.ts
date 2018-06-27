@@ -68,6 +68,13 @@ export interface MetricProps {
 /**
  * A metric emitted by a service
  *
+ * The metric is a combination of a metric identifier (namespace, name and dimensions)
+ * and an aggregation function (statistic, period and unit).
+ *
+ * It also contains metadata which is used only in graphs, such as color and label.
+ * It makes sense to embed this in here, so that compound constructs can attach
+ * that metadata to metrics they expose.
+ *
  * This class does not represent a resource, so hence is not a construct. Instead,
  * Metric is an abstraction that makes it easy to specify metrics for use in both
  * alarms and graphs.
@@ -123,8 +130,8 @@ export class Metric {
      * Combines both properties that may adjust the metric (aggregation) as well
      * as alarm properties.
      */
-    public newAlarm(parent: Construct, name: string, props: NewAlarmProps) {
-        new Alarm(parent, name, {
+    public newAlarm(parent: Construct, name: string, props: NewAlarmProps): Alarm {
+        return new Alarm(parent, name, {
             metric: this.with({
                 statistic: props.statistic,
                 periodSec: props.periodSec,
@@ -134,7 +141,6 @@ export class Metric {
             comparisonOperator: props.comparisonOperator,
             threshold: props.threshold,
             evaluationPeriods: props.evaluationPeriods,
-            datapointsToAlarm: props.datapointsToAlarm,
             evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
             treatMissingData: props.treatMissingData,
             actionsEnabled: props.actionsEnabled,
@@ -187,13 +193,43 @@ export class Metric {
     }
 }
 
+/**
+ * Properties used to construct the Metric identifying part of an Alarm
+ */
 export interface MetricAlarmJson {
+    /**
+     * The dimensions to apply to the alarm
+     */
     dimensions?: Dimension[];
+
+    /**
+     * Namespace of the metric
+     */
     namespace: string;
+
+    /**
+     * Name of the metric
+     */
     metricName: string;
+
+    /**
+     * How many seconds to aggregate over
+     */
     period: number;
+
+    /**
+     * Simple aggregation function to use
+     */
     statistic?: Statistic;
+
+    /**
+     * Percentile aggregation function to use
+     */
     extendedStatistic?: string;
+
+    /**
+     * The unit of the alarm
+     */
     unit?: Unit;
 }
 
@@ -369,15 +405,6 @@ export interface NewAlarmProps {
     evaluationPeriods: number;
 
     /**
-     * Number of datapoints that must be breaching to trigger the alarm
-     *
-     * This is used only if you are setting an "M out of N" alarm. In that case, this value is the M.
-     *
-     * @default Not an "M out of N" alarm.
-     */
-    datapointsToAlarm?: number;
-
-    /**
      * Specifies whether to evaluate the data and potentially change the alarm state if there are too few data points to be statistically significant.
      *
      * Used only for alarms that are based on percentiles.
@@ -430,7 +457,7 @@ interface PercentileStatistic {
 }
 
 /**
- * Parse a statistic, returning a value of the parsed type
+ * Parse a statistic, returning the type of metric that was used (simple or percentile)
  */
 function parseStatistic(stat: string): SimpleStatistic | PercentileStatistic {
     const lowerStat = stat.toLowerCase();

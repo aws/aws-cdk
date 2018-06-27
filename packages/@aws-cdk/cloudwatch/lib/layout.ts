@@ -1,4 +1,4 @@
-import { GRID_WIDTH, Widget } from "./widget";
+import { GRID_WIDTH, IWidget } from "./widget";
 
 // This file contains widgets that exist for layout purposes
 
@@ -7,21 +7,21 @@ import { GRID_WIDTH, Widget } from "./widget";
  *
  * Widgets will be laid out next to each other
  */
-export class Row implements Widget {
+export class Row implements IWidget {
     public readonly width: number;
     public readonly height: number;
 
     /**
      * List of contained widgets
      */
-    private readonly widgets: Widget[];
+    private readonly widgets: IWidget[];
 
     /**
      * Relative position of each widget inside this row
      */
     private readonly offsets: Vector[] = [];
 
-    constructor(...widgets: Widget[]) {
+    constructor(...widgets: IWidget[]) {
         this.widgets = widgets;
 
         this.width = 0;
@@ -63,16 +63,16 @@ export class Row implements Widget {
  *
  * Widgets will be laid out next to each other
  */
-export class Column implements Widget {
+export class Column implements IWidget {
     public readonly width: number;
     public readonly height: number;
 
     /**
      * List of contained widgets
      */
-    private readonly widgets: Widget[];
+    private readonly widgets: IWidget[];
 
-    constructor(...widgets: Widget[]) {
+    constructor(...widgets: IWidget[]) {
         this.widgets = widgets;
 
         // There's no vertical wrapping so this one's a lot easier
@@ -119,7 +119,7 @@ export interface SpacerProps {
 /**
  * A widget that doesn't display anything but takes up space
  */
-export class Spacer implements Widget {
+export class Spacer implements IWidget {
     public readonly width: number;
     public readonly height: number;
 

@@ -50,18 +50,11 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
     alarm: Alarm;
 
     /**
-     * Minimum of left Y axis
+     * Range of left Y axis
      *
-     * @default 0
+     * @default 0..automatic
      */
-    leftAxisMin?: number;
-
-    /**
-     * Maximum of left Y axis
-     *
-     * @default Automatic
-     */
-    leftAxisMax?: number;
+    leftAxisRange?: YAxisRange;
 }
 
 /**
@@ -90,10 +83,7 @@ export class AlarmWidget extends ConcreteWidget {
                     alarms: [this.props.alarm.alarmArn]
                 },
                 yAxis: {
-                    left: {
-                        min: this.props.leftAxisMin,
-                        max: this.props.leftAxisMax
-                    }
+                    left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 }
                 }
             }
         }];
@@ -130,32 +120,18 @@ export interface GraphWidgetProps extends MetricWidgetProps {
     stacked?: boolean;
 
     /**
-     * Minimum of left Y axis
+     * Range of left Y axis
      *
-     * @default 0
+     * @default 0..automatic
      */
-    leftAxisMin?: number;
+    leftAxisRange?: YAxisRange;
 
     /**
-     * Maximum of left Y axis
+     * Range of right Y axis
      *
-     * @default Automatic
+     * @default 0..automatic
      */
-    leftAxisMax?: number;
-
-    /**
-     * Minimum of right Y axis
-     *
-     * @default 0
-     */
-    rightAxisMin?: number;
-
-    /**
-     * Maximum of right Y axis
-     *
-     * @default Automatic
-     */
-    rightAxisMax?: number;
+    rightAxisRange?: YAxisRange;
 }
 
 /**
@@ -184,17 +160,11 @@ export class GraphWidget extends ConcreteWidget {
                          (this.props.right || []).map(m => m.toGraphJson('right'))),
                 annotations: {
                     horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
-                                (this.props.leftAnnotations || []).map(mapAnnotation('right')))
+                                (this.props.rightAnnotations || []).map(mapAnnotation('right')))
                 },
                 yAxis: {
-                    left: {
-                        min: this.props.leftAxisMin,
-                        max: this.props.leftAxisMax
-                    },
-                    right: {
-                        min: this.props.rightAxisMin,
-                        max: this.props.rightAxisMax
-                    },
+                    left: this.props.leftAxisRange !== undefined ? this.props.leftAxisRange : { min: 0 },
+                    right: this.props.rightAxisRange !== undefined ? this.props.rightAxisRange : { min: 0 },
                 }
             }
         }];
@@ -237,6 +207,25 @@ export class SingleValueWidget extends ConcreteWidget {
             }
         }];
     }
+}
+
+/**
+ * A minimum and maximum value for either the left or right Y axis
+ */
+export interface YAxisRange {
+    /**
+     * The minimum value
+     *
+     * @default Automatic
+     */
+    min?: number;
+
+    /**
+     * The maximum value
+     *
+     * @default Automatic
+     */
+    max?: number;
 }
 
 /**

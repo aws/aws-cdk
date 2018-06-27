@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Column, Row, Spacer, TextWidget, Widget } from '../lib';
+import { Column, IWidget, Row, Spacer, TextWidget } from '../lib';
 
 export = {
     'row has the height of the tallest element'(test: Test) {
@@ -49,7 +49,7 @@ export = {
             test.equal(21, row.width);
             test.equal(5, row.height);
 
-            function assertWidgetPos(x: number, y: number, w: Widget) {
+            function assertWidgetPos(x: number, y: number, w: IWidget) {
                 const json = w.toJson()[0];
                 test.equal(x, json.x);
                 test.equal(y, json.y);

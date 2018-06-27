@@ -1,4 +1,4 @@
-import { Metric } from '@aws-cdk/cloudwatch';
+import { ChangeMetricProps, Metric } from '@aws-cdk/cloudwatch';
 import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
@@ -37,6 +37,52 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      */
     public static import(parent: Construct, name: string, ref: LambdaRefProps): LambdaRef {
         return new LambdaRefImport(parent, name, ref);
+    }
+
+    /**
+     * Return the given named metric for this Lambda
+     */
+    public static metricAll(metricName: string, props?: ChangeMetricProps): Metric {
+        return new Metric({
+            namespace: 'AWS/Lambda',
+            metricName,
+            ...props
+        });
+    }
+    /**
+     * Metric for the number of Errors executing all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static metricAllErrors(props?: ChangeMetricProps): Metric {
+        return LambdaRef.metricAll('Errors', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Metric for the Duration executing all Lambdas
+     *
+     * @default average over 5 minutes
+     */
+    public static metricAllDuration(props?: ChangeMetricProps): Metric {
+        return LambdaRef.metricAll('Duration', props);
+    }
+
+    /**
+     * Metric for the number of invocations of all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static metricAllInvocations(props?: ChangeMetricProps): Metric {
+        return LambdaRef.metricAll('Invocations', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Metric for the number of throttled invocations of all Lambdas
+     *
+     * @default sum over 5 minutes
+     */
+    public static metricAllThrottles(props?: ChangeMetricProps): Metric {
+        return LambdaRef.metricAll('Throttles', { statistic: 'sum', ...props });
     }
 
     /**
@@ -98,25 +144,6 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
         this.role.addToPolicy(statement);
     }
 
-    private parsePermissionPrincipal(principal?: PolicyPrincipal) {
-        if (!principal) {
-            return undefined;
-        }
-
-        // use duck-typing, not instance of
-
-        if ('accountId' in principal) {
-            return (principal as AccountPrincipal).accountId;
-        }
-
-        if (`service` in principal) {
-            return (principal as ServicePrincipal).service;
-        }
-
-        throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(resolve(principal))}. ` +
-            'Supported: AccountPrincipal, ServicePrincipal');
-    }
-
     /**
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
@@ -138,14 +165,24 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     }
 
     /**
+     * Return the given named metric for this Lambda
+     */
+    public metric(metricName: string, props?: ChangeMetricProps): Metric {
+        return new Metric({
+            namespace: 'AWS/Lambda',
+            metricName,
+            dimensions: { FunctionName: this.functionName },
+            ...props
+        });
+    }
+
+    /**
      * Metric for the Errors executing this Lambda
      *
      * @default sum over 5 minutes
      */
-    public get errorsMetric(): Metric {
-        return LambdaRef.allErrorsMetric.with({
-            dimensions: { FunctionName: this.functionName }
-        });
+    public metricErrors(props?: ChangeMetricProps): Metric {
+        return this.metric('Errors', { statistic: 'sum', ...props });
     }
 
     /**
@@ -153,10 +190,8 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default average over 5 minutes
      */
-    public get durationMetric(): Metric {
-        return LambdaRef.allDurationMetric.with({
-            dimensions: { FunctionName: this.functionName }
-        });
+    public metricDuration(props?: ChangeMetricProps): Metric {
+        return this.metric('Duration', props);
     }
 
     /**
@@ -164,10 +199,8 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public get invocationsMetric(): Metric {
-        return LambdaRef.allInvocationsMetric.with({
-            dimensions: { FunctionName: this.functionName }
-        });
+    public metricInvocations(props?: ChangeMetricProps): Metric {
+        return this.metric('Invocations', { statistic: 'sum', ...props });
     }
 
     /**
@@ -175,46 +208,27 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public get throttlesMetric(): Metric {
-        return LambdaRef.allThrottlesMetric.with({
-            dimensions: { FunctionName: this.functionName }
-        });
+    public metricThrottles(props?: ChangeMetricProps): Metric {
+        return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    /**
-     * Metric for the number of Errors executing all Lambdas
-     *
-     * @default sum over 5 minutes
-     */
-    public static get allErrorsMetric(): Metric {
-        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Errors', statistic: 'sum' });
-    }
+    private parsePermissionPrincipal(principal?: PolicyPrincipal) {
+        if (!principal) {
+            return undefined;
+        }
 
-    /**
-     * Metric for the Duration executing all Lambdas
-     *
-     * @default average over 5 minutes
-     */
-    public static get allDurationMetric(): Metric {
-        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Duration' });
-    }
+        // use duck-typing, not instance of
 
-    /**
-     * Metric for the number of invocations of all Lambdas
-     *
-     * @default sum over 5 minutes
-     */
-    public static get allInvocationsMetric(): Metric {
-        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Invocations', statistic: 'sum' });
-    }
+        if ('accountId' in principal) {
+            return (principal as AccountPrincipal).accountId;
+        }
 
-    /**
-     * Metric for the number of throttled invocations of all Lambdas
-     *
-     * @default sum over 5 minutes
-     */
-    public static get allThrottlesMetric(): Metric {
-        return new Metric({ namespace: 'AWS/Lambda', metricName: 'Throttles', statistic: 'sum' });
+        if (`service` in principal) {
+            return (principal as ServicePrincipal).service;
+        }
+
+        throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(resolve(principal))}. ` +
+            'Supported: AccountPrincipal, ServicePrincipal');
     }
 }
 
