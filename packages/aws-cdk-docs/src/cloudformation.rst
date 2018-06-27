@@ -16,6 +16,48 @@ Advanced Topics
 
 This section includes information about |cdk| features that most developers do not use.
 
+.. _using_cfn_templates:
+
+Using Existing |CFN| Templates
+==============================
+
+The |cdk| provides a mechanism that you can use to
+incorporate resources from an existing |CFN| template
+into your |cdk| app.
+For example, suppose you have a template,
+*my-template.json*,
+with the following resource,
+where **ABCDWXYZ** is the 8-character hash that the |cdk| creates to ensure
+your resource ID is unique:
+
+.. code-block:: json
+
+   "TheBucketABCDWXYZ": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+         "BucketName": "mybucket"
+      }
+   }
+   
+You can include this bucket in your |cdk| app,
+as shown in the following example
+(note that you cannot use this method in an |l2| construct):
+
+.. code-block:: js
+
+   import { FnGetAtt } from '@aws-cdk/core';
+   import { readFileSync } from 'fs'
+   
+   new Include(this, "ExistingInfrastructure", {
+      template: JSON.parse(readFileSync('my-template.json').toString())
+   })
+
+Then to access an attibute of the resource, such as the bucket's ARN:
+
+.. code-block:: js
+
+   const bucketArn = new FnGetAtt('mybucket', 'Arn');
+
 .. _creating_l1_constructs:
 
 Creating |l1| Constructs
