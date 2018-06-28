@@ -15,7 +15,7 @@ import { FnSub } from './fn';
  *
  * Will only work correctly for intrinsics that return a string value.
  */
-export function tokenAwareJsonify(structure: any): FnSub {
+export function tokenAwareJsonify(structure: any): any {
   // Our strategy is as follows:
   //
   // - Find all tokens, replace each of them with a string
@@ -65,6 +65,11 @@ export function tokenAwareJsonify(structure: any): FnSub {
   structure = replaceTokens(structure);
 
   let stringified = JSON.stringify(structure);
+
+  if (counter === 0) {
+    // No replacements
+    return stringified;
+  }
 
   // Escape things that shouldn't be substituted
   // Translate ${Oops} -> ${!Oops}

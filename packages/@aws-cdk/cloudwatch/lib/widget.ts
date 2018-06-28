@@ -8,16 +8,12 @@ export const GRID_WIDTH = 24;
  */
 export interface IWidget {
     /**
-     * The width of the widget
-     *
-     * Will only ever be queried after 'determineSize' has been called.
+     * The amount of horizontal grid units the widget will take up
      */
     readonly width: number;
 
     /**
-     * The height of the widget
-     *
-     * Will only ever be queried after 'determineSize' has been called.
+     * The amount of vertical grid units the widget will take up
      */
     readonly height: number;
 

@@ -49,7 +49,7 @@ export = {
         test.deepEqual(resolve(widget.toJson()), [{
             type: 'metric',
             width: 6,
-            height: 6,
+            height: 3,
             properties: {
                 view: 'singleValue',
                 region: { Ref: 'AWS::Region' },

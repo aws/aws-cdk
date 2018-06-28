@@ -1,7 +1,7 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Dashboard, TextWidget } from '../lib';
+import { Dashboard, GraphWidget, TextWidget } from '../lib';
 
 export = {
     'widgets in different adds are laid out underneath each other'(test: Test) {
@@ -68,7 +68,32 @@ export = {
         ])));
 
         test.done();
-    }
+    },
+
+    'tokens in widgets are retained through FnSub'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const dashboard = new Dashboard(stack, 'Dash');
+
+        // WHEN
+        dashboard.add(
+            new GraphWidget({ width: 1, height: 1 }) // GraphWidget has internal reference to current region
+        );
+
+        // THEN
+        expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
+            DashboardBody: { "Fn::Sub": [
+                // tslint:disable-next-line:max-line-length
+                "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"${ref0}\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{\"left\":{\"min\":0},\"right\":{\"min\":0}}}}]}",
+                {
+                  ref0: { Ref: "AWS::Region" }
+                }
+              ]
+            }
+        }));
+
+        test.done();
+    },
 };
 
 /**
@@ -76,7 +101,13 @@ export = {
  */
 function thatHasWidgets(widgets: any): (props: any) => boolean {
     return (props: any) => {
-        const actualWidgets = JSON.parse(props.DashboardBody).widgets;
-        return isSuperObject(actualWidgets, widgets);
+        try {
+            const actualWidgets = JSON.parse(props.DashboardBody).widgets;
+            return isSuperObject(actualWidgets, widgets);
+        } catch (e) {
+            // tslint:disable-next-line:no-console
+            console.error('Error parsing', props);
+            throw e;
+        }
     };
 }

@@ -19,7 +19,7 @@ export interface TextWidgetProps {
     /**
      * Height of the widget
      *
-     * @default 6
+     * @default 2
      */
     height?: number;
 }
@@ -31,7 +31,7 @@ export class TextWidget extends ConcreteWidget {
     private readonly markdown: string;
 
     constructor(props: TextWidgetProps) {
-        super(props.width || 6, props.height || 6);
+        super(props.width || 6, props.height || 2);
         this.markdown = props.markdown;
     }
 

@@ -35,7 +35,7 @@ export interface MetricWidgetProps {
     /**
      * Height of the widget
      *
-     * @default 6
+     * @default Depends on the type of widget
      */
     height?: number;
 }
@@ -188,7 +188,7 @@ export class SingleValueWidget extends ConcreteWidget {
     private readonly props: SingleValueWidgetProps;
 
     constructor(props: SingleValueWidgetProps) {
-        super(props.width || 6, props.height || 6);
+        super(props.width || 6, props.height || 3);
         this.props = props;
     }
 

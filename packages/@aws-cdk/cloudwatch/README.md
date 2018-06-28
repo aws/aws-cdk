@@ -110,23 +110,63 @@ The following widgets are available:
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
 
+> Warning! Due to a bug in CloudFormation, you cannot update a Dashboard after
+> initially creating it if you let its name automatically be generated. You
+> must set `dashboardName` if you intend to update the dashboard after creation.
+>
+> (This note will be removed once the bug is fixed).
+
 ### Graph widget
 
 A graph widget can display any number of metrics on either the `left` or
 `right` vertical axis:
 
 ```ts
-new GraphWidget({
-    title: 'Executions vs error rate',
-    left:
-});
+dashboard.add(new GraphWidget({
+    title: "Executions vs error rate",
+
+    left: [executionCountMetric],
+
+    right: [errorCountMetric.with({
+        statistic: "average",
+        label: "Error rate",
+        color: "00FF00"
+    })]
+}));
 ```
 
 ### Alarm widget
 
+An alarm widget shows the graph and the alarm line of a single alarm:
+
+```ts
+dashboard.add(new AlarmWidget({
+    title: "Errors",
+    alarm: errorAlarm,
+}));
+```
+
 ### Single value widget
 
+A single-value widget shows the latest value of a set of metrics (as opposed
+to a graph of the value over time):
+
+```ts
+dashboard.add(new SingleValueWidget({
+    metrics: [visitorCount, purchaseCount],
+}));
+```
+
 ### Text widget
+
+A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
+to your dashboard:
+
+```ts
+dashboard.add(new TextWidget({
+    markdown: '# Key Performance Indicators'
+}));
+```
 
 Dashboard Layout
 ----------------

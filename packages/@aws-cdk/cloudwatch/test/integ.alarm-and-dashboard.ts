@@ -5,7 +5,7 @@
 // library support.
 
 import { App, Resource, Stack } from '@aws-cdk/core';
-import { AlarmWidget, Dashboard, Metric } from '../lib';
+import { AlarmWidget, Dashboard, GraphWidget, Metric, SingleValueWidget, TextWidget } from '../lib';
 
 const app = new App(process.argv);
 
@@ -25,9 +25,22 @@ const alarm = metric.newAlarm(stack, 'Alarm', {
 });
 
 const dashboard = new Dashboard(stack, 'Dash');
+dashboard.add(
+    new TextWidget({ markdown: '# This is my dashboard' }),
+    new TextWidget({ markdown: 'you like?' }),
+);
 dashboard.add(new AlarmWidget({
     title: 'Messages in queue',
     alarm,
+}));
+dashboard.add(new GraphWidget({
+    title: 'More messages in queue with alarm annotation',
+    left: [metric],
+    leftAnnotations: [alarm.toAnnotation()]
+}));
+dashboard.add(new SingleValueWidget({
+    title: 'Current messages in queue',
+    metrics: [metric]
 }));
 
 process.stdout.write(app.run());
