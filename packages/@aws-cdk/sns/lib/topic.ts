@@ -1,6 +1,6 @@
 import { Construct,  } from '@aws-cdk/core';
 import { sns } from '@aws-cdk/resources';
-import { TopicArn, TopicRef } from './topic-ref';
+import { TopicArn, TopicName, TopicRef } from './topic-ref';
 
 /**
  * Properties for a new SNS topic
@@ -30,7 +30,7 @@ export interface TopicProps {
  */
 export class Topic extends TopicRef {
     public readonly topicArn: TopicArn;
-    public readonly topicName?: sns.TopicName;
+    public readonly topicName: TopicName;
 
     protected autoCreatePolicy: boolean = true;
 
