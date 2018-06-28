@@ -1,5 +1,5 @@
-import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
-import { IIdentityResource } from '@aws-cdk/iam';
+import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, ServicePrincipal, Token } from '@aws-cdk/core';
+import { IIdentityResource, Role } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
 import { s3 } from '@aws-cdk/resources';
 import { BucketPolicy } from './bucket-policy';
@@ -168,15 +168,7 @@ export abstract class BucketRef extends Construct {
 
         // grant key permissions if there's an associated key.
         if (this.encryptionKey) {
-            // KMS permissions need to be granted both directions
-            identity.addToPolicy(new PolicyStatement()
-                .addResource(this.encryptionKey.keyArn)
-                .addActions(...keyActions));
-
-            this.encryptionKey.addToResourcePolicy(new PolicyStatement()
-                .addResource('*')
-                .addPrincipal(identity.principal)
-                .addActions(...keyActions));
+            grantKeyActions(identity, this.encryptionKey, keyActions);
         }
     }
 }
@@ -257,6 +249,7 @@ export class Bucket extends BucketRef {
     protected autoCreatePolicy = true;
     private readonly lifecycleRules: LifecycleRule[] = [];
     private readonly versioned?: boolean;
+    private replicationConfiguration?: s3.BucketResource.ReplicationConfigurationProperty;
 
     constructor(parent: Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
@@ -270,6 +263,7 @@ export class Bucket extends BucketRef {
             bucketEncryption,
             versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
             lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+            replicationConfiguration: new Token(() => this.replicationConfiguration),
         });
 
         applyRemovalPolicy(resource, props.removalPolicy);
@@ -299,6 +293,53 @@ export class Bucket extends BucketRef {
         }
 
         this.lifecycleRules.push(rule);
+    }
+
+    /**
+     * Switch on bucket replication to the given bucket
+     *
+     * Can specify details about prefixes to replicate by giving rules. If no rules are given,
+     * all objects are replicated with default settings.
+     *
+     * Note that the indicated bucket MUST reside in a different region! Bucket replication
+     * will not work inside the same region.
+     */
+    public enableBucketReplication(destinationBucket: BucketRef, rules?: ReplicationRule[]) {
+        if (!this.versioned) {
+            throw new Error('Bucket replication can only be enabled on buckets with versioning');
+        }
+        if (this.replicationConfiguration) {
+            throw new Error('Replication configured for this bucket, can only replicate to one bucket');
+        }
+
+        // If not given, make an object that has all defaults, which effectively replicates everything.
+        rules = rules || [{}];
+
+        // Need a role to replicate to this bucket
+        // https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-how-setup.html
+        const role = new Role(this, 'ReplicationRole', {
+            assumedBy: new ServicePrincipal('s3.amazonaws.com')
+        });
+        role.addToPolicy(new PolicyStatement()
+            .addResource(this.bucketArn)
+            .addActions('s3:GetReplicationConfiguration', 's3:ListBucket'));
+        role.addToPolicy(new PolicyStatement()
+            .addResource(this.arnForObjects('*'))
+            .addActions('s3:GetObjectVersion', 's3:GetObjectVersionAcl', 's3:GetObjectVersionTagging'));
+        role.addToPolicy(new PolicyStatement()
+            .addResource(destinationBucket.arnForObjects('*'))
+            .addActions('s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags'));
+
+        // Also give the role permissions to encrypt objects if the target bucket has an encryption key.
+        if (destinationBucket.encryptionKey) {
+            grantKeyActions(role, destinationBucket.encryptionKey, perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS));
+        }
+
+        // Set config
+        this.replicationConfiguration = {
+            role: role.roleArn,
+            rules: rules.map(r => renderReplicationRule(destinationBucket, r))
+        } as s3.BucketResource.ReplicationConfigurationProperty;
     }
 
     /**
@@ -424,6 +465,87 @@ export class BucketName extends Token {
 
 }
 
+/**
+ * Custom rule to use for bucket replication
+ */
+export interface ReplicationRule {
+    /**
+     * Prefix of objects to replicate
+     *
+     * Empty string is all objects. Prefixes for multiple replication rules cannot overlap.
+     *
+     * @default ''
+     */
+    prefix?: string;
+
+    /**
+     * The AWS account you want to own the destination objects.
+     *
+     * Only specify a cross-account replication setup, and only specify the owner
+     * account of the destination bucket. If not specified, the source AWS account
+     * still owns the replicated objects.
+     *
+     * @default No ownership change
+     */
+    newOwnerAccount?: string;
+
+    /**
+     * Whether you want to replicate objects that have been SSE encrypted with a managed keys.
+     *
+     * Note that objects that have been encrypted with a Custom Key are never replicated!
+     *
+     * @default true
+     */
+    replicateSseEncryptedObjects?: boolean;
+
+    /**
+     * Whether the rule is enabled.
+     *
+     * If set to 'false', the rule exists but it disabled.
+     *
+     * @default true
+     */
+    enabled?: boolean;
+
+    /**
+     * What storage class to use for the replicated objects.
+     *
+     * @default Same storage class as original object.
+     */
+    storageClass?: ReplicationStorageClass;
+}
+
+/**
+ * Storage class of replicated objects
+ */
+export enum ReplicationStorageClass {
+    /**
+     * Standard storage class.
+     */
+    Standard = 'STANDARD',
+
+    /**
+     * Storage class for data that is accessed less frequently, but requires rapid access when needed.
+     *
+     * Has lower availability than Standard storage.
+     */
+    InfrequentAccess = 'STANDARD_ID',
+
+    /**
+     * Infrequent Access that's only stored in one availability zone.
+     *
+     * Has lower availability than standard InfrequentAccess.
+     */
+    OneZoneInfrequentAccess = 'ONEZONE_IA',
+
+    /**
+     * Reduced Redundancy is for data that can be recreated on demand.
+     *
+     * It has lower durability than the other storage classes.
+     */
+    ReducedRedundancy = 'REDUCED_REDUNDANCY'
+}
+
 class ImportedBucketRef extends BucketRef {
     public readonly bucketArn: s3.BucketArn;
     public readonly bucketName: BucketName;
@@ -440,4 +562,43 @@ class ImportedBucketRef extends BucketRef {
         this.autoCreatePolicy = false;
         this.policy = undefined;
     }
+}
+
+/**
+ * Turn one of our ReplicationRule objects into an S3 ReplicationRule object
+ */
+function renderReplicationRule(destinationBucket: BucketRef, rule: ReplicationRule): s3.BucketResource.ReplicationRuleProperty {
+    return {
+        prefix: rule.prefix || '',
+        destination: {
+            accessControlTranslation: rule.newOwnerAccount ? { owner: 'Destination' } : undefined,
+            account: rule.newOwnerAccount,
+            bucket: destinationBucket.bucketArn,
+            storageClass: rule.storageClass,
+            encryptionConfiguration: destinationBucket.encryptionKey ? { replicaKmsKeyId: destinationBucket.encryptionKey.keyArn } : undefined,
+        },
+        sourceSelectionCriteria: {
+            sseKmsEncryptedObjects: {
+                status: rule.replicateSseEncryptedObjects === false ? 'Disabled' : 'Enabled'
+            }
+        },
+        status: rule.enabled === false ? 'Disabled' : 'Enabled'
+    };
+}
+
+/**
+ * Establish bidirectional grant between identity and KMS key for the given actions.
+ *
+ * Normally we can do it one way, but for KMS keys we must add the grants on
+ * both resources.
+ */
+function grantKeyActions(identity: IIdentityResource, encryptionKey: kms.EncryptionKeyRef, keyActions: string[]) {
+    identity.addToPolicy(new PolicyStatement()
+        .addResource(encryptionKey.keyArn)
+        .addActions(...keyActions));
+
+    encryptionKey.addToResourcePolicy(new PolicyStatement()
+        .addResource('*')
+        .addPrincipal(identity.principal)
+        .addActions(...keyActions));
 }
