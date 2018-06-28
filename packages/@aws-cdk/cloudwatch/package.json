@@ -1,15 +1,15 @@
 {
-  "name": "@aws-cdk/lambda",
+  "name": "@aws-cdk/cloudwatch",
   "version": "0.7.2-beta",
-  "description": "CDK Constructs for AWS Lambda",
+  "description": "CDK Constructs for AWS CloudWatch",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "bundledDependencies": [],
     "names": {
-      "java": "com.amazonaws.cdk.lambda",
-      "dotnet": "Aws.Cdk.Lambda"
+      "java": "com.amazonaws.cdk.cloudwatch",
+      "dotnet": "Aws.Cdk.CloudWatch"
     }
   },
   "repository": {
@@ -28,7 +28,7 @@
     "aws",
     "cdk",
     "constructs",
-    "lambda"
+    "cloudwatch"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -41,11 +41,7 @@
     "pkglint": "^0.7.1"
   },
   "dependencies": {
-    "@aws-cdk/cloudwatch": "^0.7.2-beta",
     "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/events": "^0.7.2-beta",
-    "@aws-cdk/iam": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta",
-    "@aws-cdk/s3": "^0.7.2-beta"
+    "@aws-cdk/resources": "^0.7.2-beta"
   }
 }

@@ -1,4 +1,5 @@
-import { Arn, Construct, Output, PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
+import { ChangeMetricProps, IAlarmAction, Metric } from '@aws-cdk/cloudwatch';
+import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
 import { LambdaRef } from '@aws-cdk/lambda';
@@ -12,9 +13,14 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 export class TopicArn extends Arn { }
 
 /**
+ * Name of a Topic
+ */
+export class TopicName extends Token { }
+
+/**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends Construct implements IEventRuleTarget {
+export abstract class TopicRef extends Construct implements IEventRuleTarget, IAlarmAction {
     /**
      * Import a Topic defined elsewhere
      */
@@ -23,6 +29,8 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
     }
 
     public abstract readonly topicArn: TopicArn;
+
+    public abstract readonly topicName: TopicName;
 
     /**
      * Controls automatic creation of policy objects.
@@ -45,6 +53,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
     public export(): TopicRefProps {
         return {
             topicArn: new Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue(),
+            topicName: new Output(this, 'TopicName', { value: this.topicName }).makeImportValue(),
         };
     }
 
@@ -216,6 +225,58 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
             arn: this.topicArn,
         };
     }
+
+    public get alarmActionArn(): Arn {
+        return this.topicArn;
+    }
+
+    /**
+     * Construct a Metric object for the current topic for the given metric
+     */
+    public metric(metricName: string, props?: ChangeMetricProps): Metric {
+        return new Metric({
+            namespace: 'AWS/SNS',
+            dimensions: { TopicName: this.topicName },
+            metricName,
+            ...props
+        });
+    }
+
+    /**
+     * Metric for the size of messages published through this topic
+     *
+     * @default average over 5 minutes
+     */
+    public metricPublishSize(props?: ChangeMetricProps): Metric {
+        return this.metric('PublishSize', props);
+    }
+
+    /**
+     * Metric for the number of messages published through this topic
+     *
+     * @default sum over 5 minutes
+     */
+    public metricNumberOfMessagesPublished(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesPublished', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Metric for the number of messages that failed to publish through this topic
+     *
+     * @default sum over 5 minutes
+     */
+    public metricNumberOfMessagesFailed(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesFailed', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Metric for the number of messages that were successfully delivered through this topic
+     *
+     * @default sum over 5 minutes
+     */
+    public metricNumberOfMessagesDelivered(props?: ChangeMetricProps): Metric {
+        return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
+    }
 }
 
 /**
@@ -223,12 +284,14 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget {
  */
 class ImportedTopic extends TopicRef {
     public readonly topicArn: TopicArn;
+    public readonly topicName: TopicName;
 
     protected autoCreatePolicy: boolean = false;
 
     constructor(parent: Construct, name: string, props: TopicRefProps) {
         super(parent, name);
         this.topicArn = props.topicArn;
+        this.topicName = props.topicName;
     }
 }
 
@@ -237,6 +300,7 @@ class ImportedTopic extends TopicRef {
  */
 export interface TopicRefProps {
     topicArn: TopicArn;
+    topicName: TopicName;
 }
 
 /**
