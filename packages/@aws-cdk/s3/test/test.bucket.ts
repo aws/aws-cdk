@@ -340,7 +340,8 @@ export = {
             const bucketRef = bucket.export();
             test.deepEqual(resolve(bucketRef), {
                 bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
-                bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' }
+                bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
+                keyArn: { 'Fn::ImportValue': 'MyStack:MyBucketKeyKeyArnC89AA790' }
             });
             test.done();
         },

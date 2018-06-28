@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
+import { EncryptionKey } from '@aws-cdk/kms';
 import { Test } from 'nodeunit';
-import { Bucket } from '../lib';
+import { Bucket, BucketEncryption } from '../lib';
 
 export = {
     'can set up replication'(test: Test) {
@@ -22,7 +23,6 @@ export = {
                         Bucket: { "Fn::GetAtt": [ "DestC383B82A", "Arn" ] }
                     },
                     Prefix: "",
-                    SourceSelectionCriteria: { SseKmsEncryptedObjects: { Status: "Enabled" } },
                     Status: "Enabled"
                 }]
             },
@@ -62,6 +62,38 @@ export = {
                 }]
             },
         }));
+
+        test.done();
+    },
+
+    'if source bucket has KMS encryption, an encryption key must be supplied'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const source = new Bucket(stack, 'Source', { versioned: true, encryption: BucketEncryption.KmsManaged });
+        const unencryptedDest = new Bucket(stack, 'Dest', { versioned: true });
+        const key = new EncryptionKey(stack, 'Key');
+
+        // WHEN: throws
+        test.throws(() => {
+            source.enableBucketReplication(unencryptedDest);
+        });
+
+        // WHEN: does not throw
+        source.enableBucketReplication(unencryptedDest, [{
+            replicationEncryptionKey: key
+        }]);
+
+        test.done();
+    },
+
+    'if source bucket has KMS encryption, encryption key of target bucket can be used'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const source = new Bucket(stack, 'Source', { versioned: true, encryption: BucketEncryption.KmsManaged });
+        const encryptedDest = new Bucket(stack, 'Dest', { versioned: true, encryption: BucketEncryption.Kms });
+
+        // WHEN: does not throw
+        source.enableBucketReplication(encryptedDest);
 
         test.done();
     }

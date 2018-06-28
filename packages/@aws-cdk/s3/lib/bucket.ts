@@ -26,6 +26,11 @@ export interface BucketRefProps {
      * policy, won't work.
      */
     bucketName?: BucketName;
+
+    /**
+     * The ARN of the bucket's encryption key
+     */
+    keyArn?: Arn;
 }
 
 /**
@@ -94,6 +99,7 @@ export abstract class BucketRef extends Construct {
         return {
             bucketArn: new Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
             bucketName: new Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            ...(this.encryptionKey ? this.encryptionKey.export() : undefined)
         };
     }
 
@@ -250,13 +256,15 @@ export class Bucket extends BucketRef {
     private readonly lifecycleRules: LifecycleRule[] = [];
     private readonly versioned?: boolean;
     private replicationConfiguration?: s3.BucketResource.ReplicationConfigurationProperty;
+    private readonly encryptionType: BucketEncryption;
 
     constructor(parent: Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
 
         validateBucketName(props && props.bucketName);
 
-        const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+        this.encryptionType = props.encryption || BucketEncryption.Unencrypted;
+        const { bucketEncryption, encryptionKey } = this.parseEncryption(this.encryptionType, props);
 
         const resource = new s3.BucketResource(this, 'Resource', {
             bucketName: props && props.bucketName,
@@ -304,6 +312,12 @@ export class Bucket extends BucketRef {
      * Note that the indicated bucket MUST reside in a different region! Bucket replication
      * will not work inside the same region.
      *
+     * If the source bucket is encrypted, a KMS key must be available for replication. This
+     * key can be passed in to this call, or is taken from the destinationBucket if not given.
+     * Note that the IAM role created for replication must be allowed to use this key. Because
+     * the IAM role cannot be identified by ARN before it's created, it will be easiest to give
+     * wildcard permissions on the key to encrypt things with it.
+     *
      * @param destinationBucket The bucket to replicate to. Must be in a different region.
      * @param rules Selective replication rules, if required.
      */
@@ -318,7 +332,11 @@ export class Bucket extends BucketRef {
         // If not given, make an object that has all defaults, which effectively replicates everything.
         rules = rules || [{}];
 
+        // Mapping also involves validation, don't proceed unless this succeeds
+        const mappedRules = rules.map(r => this.renderReplicationRule(destinationBucket, r));
+
         // Need a role to replicate to this bucket
+        //
         // https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-how-setup.html
         const role = new Role(this, 'ReplicationRole', {
             assumedBy: new ServicePrincipal('s3.amazonaws.com')
@@ -333,15 +351,46 @@ export class Bucket extends BucketRef {
             .addResource(destinationBucket.arnForObjects('*'))
             .addActions('s3:ReplicateObject', 's3:ReplicateDelete', 's3:ReplicateTags'));
 
-        // Also give the role permissions to encrypt objects if the target bucket has an encryption key.
+        // TODO:
+        // 1. Add the conditional KMS-using policies that are shown on this page to the key:
+        //    https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-walkthrough-4.html
+        // 2. Add a similar policy to the key itself which doesn't mention principal (see PR).
+        //    Probably make a function to make it possible for the user to call
+        //    this function before they export the key.
+        // 3. Figure out if an alias can be used in place of a key. The S3 console doesn't
+        //    show it if we do that, but it might still work. File a bug against the S3 console
+        //    if so.
+        // 4. S3 console also requires us to specify a decryption key, which the model has no
+        //    notion of. File a bug against CloudFormation implementation of bucket resource
+        //    if it turns out that this is required.
+
+        // If the source bucket has an encryptionKey, the role must be allowed to use it to read.
+        if (this.encryptionKey) {
+            grantKeyActions(role, this.encryptionKey, perms.KEY_READ_ACTIONS);
+        }
+
+        // Also give the role permissions on all destination keys involved.
+        //
+        // NOTE: THIS CODE LOOKS NICE BUT DOESN'T ACTUALLY WORK.
+        //
+        // The destination bucket and key must live in a different region, so MUST live in a different stack.
+        // At this point, we're trying to create a bidirectional grant between the key in the other stack and the role
+        // in this stack, which we don't have a solution for yet!
+        //
+        // The user should take care to manually add wildcarding to the target key.
         if (destinationBucket.encryptionKey) {
             grantKeyActions(role, destinationBucket.encryptionKey, perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS));
+        }
+        for (const rule of rules) {
+            if (rule.replicationEncryptionKey) {
+                grantKeyActions(role, rule.replicationEncryptionKey, perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS));
+            }
         }
 
         // Set config
         this.replicationConfiguration = {
             role: role.roleArn,
-            rules: rules.map(r => renderReplicationRule(destinationBucket, r))
+            rules: mappedRules
         };
     }
 
@@ -349,14 +398,10 @@ export class Bucket extends BucketRef {
      * Set up key properties and return the Bucket encryption property from the
      * user's configuration.
      */
-    private parseEncryption(props: BucketProps): {
+    private parseEncryption(encryptionType: BucketEncryption, props: BucketProps): {
         bucketEncryption?: s3.BucketResource.BucketEncryptionProperty,
         encryptionKey?: kms.EncryptionKeyRef
     } {
-
-        // default to unencrypted.
-        const encryptionType = props.encryption || BucketEncryption.Unencrypted;
-
         // if encryption key is set, encryption must be set to KMS.
         if (encryptionType !== BucketEncryption.Kms && props.encryptionKey) {
             throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
@@ -438,6 +483,41 @@ export class Bucket extends BucketRef {
             }));
         }
     }
+
+    /**
+     * Turn one of our ReplicationRule objects into an S3 ReplicationRule object
+     */
+    private renderReplicationRule(destinationBucket: BucketRef, rule: ReplicationRule): s3.BucketResource.ReplicationRuleProperty {
+        // Encryption handling:
+        //
+        // - Replicate encrypted defaults to true, can be disabled.
+        // - Replication key defaults to target bucket one, can be overridden.
+        // - When replicating encrypted objects, there must be a key.
+        const replicateKmsEncryptedObjects = rule.replicateKmsEncryptedObjects !== undefined
+                                        ? rule.replicateKmsEncryptedObjects
+                                        : (this.encryptionType !== BucketEncryption.Unencrypted);
+
+        const replicationEncryptionKey = rule.replicationEncryptionKey !== undefined
+                                       ? rule.replicationEncryptionKey
+                                       : destinationBucket.encryptionKey;
+
+        if (replicateKmsEncryptedObjects && !replicationEncryptionKey) {
+            throw new Error('Can only replicate encrypted objects if the destination bucket has a custom KMS key or a key is provided');
+        }
+
+        return {
+            prefix: rule.prefix || '',
+            destination: {
+                accessControlTranslation: rule.newOwnerAccount ? { owner: 'Destination' } : undefined,
+                account: rule.newOwnerAccount,
+                bucket: destinationBucket.bucketArn,
+                storageClass: rule.storageClass,
+                encryptionConfiguration: replicationEncryptionKey ? { replicaKmsKeyId: replicationEncryptionKey.keyArn } : undefined,
+            },
+            sourceSelectionCriteria: replicateKmsEncryptedObjects ? { sseKmsEncryptedObjects: { status: "Enabled" } } : undefined,
+            status: rule.enabled === false ? 'Disabled' : 'Enabled'
+        };
+    }
 }
 
 /**
@@ -493,13 +573,22 @@ export interface ReplicationRule {
     newOwnerAccount?: string;
 
     /**
-     * Whether you want to replicate objects that have been SSE encrypted with a managed keys.
+     * Whether you want to replicate objects that have been encrypted with KMS keys.
      *
-     * Note that objects that have been encrypted with a Custom Key are never replicated!
+     * If you set this to true, either the target bucket must be encrypted with a
+     * custom KMS key, or you must pass an encryption key to use for KMS encryption
+     * on the rule.
      *
-     * @default true
+     * @default true if the current bucket is encrypted.
      */
-    replicateSseEncryptedObjects?: boolean;
+    replicateKmsEncryptedObjects?: boolean;
+
+    /**
+     * KMS encryption key to use to encrypt the replicated objects.
+     *
+     * @default Custom KMS key of the destination bucket, if available.
+     */
+    replicationEncryptionKey?: kms.EncryptionKeyRef;
 
     /**
      * Whether the rule is enabled.
@@ -552,7 +641,7 @@ export enum ReplicationStorageClass {
 class ImportedBucketRef extends BucketRef {
     public readonly bucketArn: s3.BucketArn;
     public readonly bucketName: BucketName;
-    public readonly encryptionKey?: kms.EncryptionKey;
+    public readonly encryptionKey?: kms.EncryptionKeyRef;
 
     protected policy?: BucketPolicy;
     protected autoCreatePolicy: boolean;
@@ -562,31 +651,15 @@ class ImportedBucketRef extends BucketRef {
 
         this.bucketArn = parseBucketArn(props);
         this.bucketName = parseBucketName(props);
+        if (props.keyArn) {
+            this.encryptionKey = kms.EncryptionKeyRef.import(this, 'EncryptionKey', {
+                keyArn: props.keyArn
+            });
+        }
+
         this.autoCreatePolicy = false;
         this.policy = undefined;
     }
-}
-
-/**
- * Turn one of our ReplicationRule objects into an S3 ReplicationRule object
- */
-function renderReplicationRule(destinationBucket: BucketRef, rule: ReplicationRule): s3.BucketResource.ReplicationRuleProperty {
-    return {
-        prefix: rule.prefix || '',
-        destination: {
-            accessControlTranslation: rule.newOwnerAccount ? { owner: 'Destination' } : undefined,
-            account: rule.newOwnerAccount,
-            bucket: destinationBucket.bucketArn,
-            storageClass: rule.storageClass,
-            encryptionConfiguration: destinationBucket.encryptionKey ? { replicaKmsKeyId: destinationBucket.encryptionKey.keyArn } : undefined,
-        },
-        sourceSelectionCriteria: {
-            sseKmsEncryptedObjects: {
-                status: rule.replicateSseEncryptedObjects === false ? 'Disabled' : 'Enabled'
-            }
-        },
-        status: rule.enabled === false ? 'Disabled' : 'Enabled'
-    };
 }
 
 /**
