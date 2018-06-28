@@ -19,6 +19,7 @@ export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
 export * from './cloudformation/arn';
 export * from './cloudformation/secret';
+export * from './cloudformation/token-aware-jsonify';
 
 export * from './app';
 export * from './context';
