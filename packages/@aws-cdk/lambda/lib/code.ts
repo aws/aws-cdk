@@ -38,16 +38,8 @@ export class LambdaInlineCode extends LambdaCode {
     }
 
     public toJSON(runtime: LambdaRuntime): lambda.FunctionResource.CodeProperty {
-        const allowed = [
-            LambdaRuntime.NodeJS,
-            LambdaRuntime.NodeJS43,
-            LambdaRuntime.NodeJS610,
-            LambdaRuntime.Python27,
-            LambdaRuntime.Python36
-        ];
-
-        if (!allowed.find(a => a === runtime)) {
-            throw new Error(`Inline source only allowed for: ${allowed.join(', ')}`);
+        if (!runtime.supportsInlineCode) {
+            throw new Error(`Inline source not supported for: ${runtime.name}`);
         }
 
         return {

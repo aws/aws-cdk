@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { LambdaInlineCode } from './code';
 import { Lambda } from './lambda';
-import { LambdaRuntime } from './runtime';
+import { InlinableJavascriptLambdaRuntime, LambdaRuntime } from './runtime';
 
 /**
  * Defines the handler code for an inline JavaScript lambda function.
@@ -28,15 +28,6 @@ export interface IJavaScriptLambdaHandler {
      * to the caller. Signature is `callback(err, response)`.
      */
     fn(event: any, context: any, callback: any): void;
-}
-
-/**
- * The set of runtime that support inline javascript code.
- */
-export enum InlineJavaScriptLambdaRuntime {
-    NodeJS = LambdaRuntime.NodeJS,
-    NodeJS43 = LambdaRuntime.NodeJS43,
-    NodeJS610 = LambdaRuntime.NodeJS610,
 }
 
 export interface InlineJavaScriptLambdaProps {
@@ -75,9 +66,9 @@ export interface InlineJavaScriptLambdaProps {
      * For valid values, see the Runtime property in the AWS Lambda Developer
      * Guide.
      *
-     * @default NodeJS610
+     * @default NodeJS810
      */
-    runtime?: InlineJavaScriptLambdaRuntime;
+    runtime?: InlinableJavascriptLambdaRuntime;
 
     /**
      * A name for the function. If you don't specify a name, AWS CloudFormation
@@ -117,7 +108,7 @@ export interface InlineJavaScriptLambdaProps {
 export class InlineJavaScriptLambda extends Lambda {
     constructor(parent: Construct, name: string, props: InlineJavaScriptLambdaProps) {
         const code = new LambdaInlineCode(renderCode(props.handler));
-        const runtime = (props.runtime || InlineJavaScriptLambdaRuntime.NodeJS610) as any;
+        const runtime: InlinableJavascriptLambdaRuntime = props.runtime || LambdaRuntime.NodeJS610;
         const handler = 'index.handler';
         const timeout = props.timeout || 30;
         super(parent, name, {
