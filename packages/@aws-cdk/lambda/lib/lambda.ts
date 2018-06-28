@@ -140,7 +140,7 @@ export class Lambda extends LambdaRef {
             code: props.code.toJSON(props.runtime),
             handler: props.handler,
             timeout: props.timeout,
-            runtime: props.runtime,
+            runtime: props.runtime.name,
             role: this.role.roleArn,
             environment: new Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
