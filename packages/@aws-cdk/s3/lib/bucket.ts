@@ -303,6 +303,9 @@ export class Bucket extends BucketRef {
      *
      * Note that the indicated bucket MUST reside in a different region! Bucket replication
      * will not work inside the same region.
+     *
+     * @param destinationBucket The bucket to replicate to. Must be in a different region.
+     * @param rules Selective replication rules, if required.
      */
     public enableBucketReplication(destinationBucket: BucketRef, rules?: ReplicationRule[]) {
         if (!this.versioned) {
@@ -339,7 +342,7 @@ export class Bucket extends BucketRef {
         this.replicationConfiguration = {
             role: role.roleArn,
             rules: rules.map(r => renderReplicationRule(destinationBucket, r))
-        } as s3.BucketResource.ReplicationConfigurationProperty;
+        };
     }
 
     /**
