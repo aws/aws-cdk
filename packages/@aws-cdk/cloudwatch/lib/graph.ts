@@ -156,8 +156,8 @@ export class GraphWidget extends ConcreteWidget {
                 view: 'timeSeries',
                 title: this.props.title,
                 region: this.props.region || new AwsRegion(),
-                metrics: (this.props.left || []).map(m => m.toGraphJson('left')).concat(
-                         (this.props.right || []).map(m => m.toGraphJson('right'))),
+                metrics: (this.props.left || []).map(m => m.graphJson('left')).concat(
+                         (this.props.right || []).map(m => m.graphJson('right'))),
                 annotations: {
                     horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
                                 (this.props.rightAnnotations || []).map(mapAnnotation('right')))
@@ -203,7 +203,7 @@ export class SingleValueWidget extends ConcreteWidget {
                 view: 'singleValue',
                 title: this.props.title,
                 region: this.props.region || new AwsRegion(),
-                metrics: this.props.metrics.map(m => m.toGraphJson('left'))
+                metrics: this.props.metrics.map(m => m.graphJson('left'))
             }
         }];
     }

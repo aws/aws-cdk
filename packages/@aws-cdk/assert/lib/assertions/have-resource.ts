@@ -7,7 +7,7 @@ import { StackInspector } from "../inspector";
  * Properties can be:
  *
  * - An object, in which case its properties will be compared to those of the actual resource found
- * - A callablage, in which case it will be treated as a predicate that is applied to the Properties of the found resources.
+ * - A callable, in which case it will be treated as a predicate that is applied to the Properties of the found resources.
  */
 export function haveResource(resourceType: string, properties?: any): Assertion<StackInspector> {
     return new HaveResourceAssertion(resourceType, properties);

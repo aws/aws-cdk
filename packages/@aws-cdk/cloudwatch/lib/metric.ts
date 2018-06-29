@@ -101,6 +101,8 @@ export class Metric {
         this.metricName = props.metricName;
         this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
         this.statistic = props.statistic || "Average";
+        this.label = props.label;
+        this.color = props.color;
         this.unit = props.unit;
 
         // Try parsing, this will throw if it's not a valid stat
@@ -108,10 +110,13 @@ export class Metric {
     }
 
     /**
-     * Return a copy of Metric with properties changed
-     * @param props Re
+     * Return a copy of Metric with properties changed.
+     *
+     * All properties except namespace and metricName can be changed.
+     *
+     * @param props The set of properties to change.
      */
-    public with(props: ChangeMetricProps): Metric {
+    public with(props: MetricCustomizations): Metric {
         return new Metric({
             dimensions: ifUndefined(props.dimensions, this.dimensions),
             namespace: this.namespace,
@@ -149,8 +154,10 @@ export class Metric {
 
     /**
      * Return the JSON structure which represents this metric in an alarm
+     *
+     * This will be called by Alarm, no need for clients to call this.
      */
-    public toAlarmJson(): MetricAlarmJson {
+    public alarmInfo(): AlarmMetricInfo {
         const stat = parseStatistic(this.statistic);
 
         return {
@@ -166,8 +173,10 @@ export class Metric {
 
     /**
      * Return the JSON structure which represents this metric in a graph
+     *
+     * This will be called by GraphWidget, no need for clients to call this.
      */
-    public toGraphJson(yAxis: string): any[] {
+    public graphJson(yAxis: string): any[] {
         // Namespace and metric Name
         const ret: any[] = [
             this.namespace,
@@ -196,7 +205,7 @@ export class Metric {
 /**
  * Properties used to construct the Metric identifying part of an Alarm
  */
-export interface MetricAlarmJson {
+export interface AlarmMetricInfo {
     /**
      * The dimensions to apply to the alarm
      */
@@ -295,7 +304,7 @@ export enum Unit {
 /**
  * Properties of a metric that can be changed
  */
-export interface ChangeMetricProps {
+export interface MetricCustomizations {
     /**
      * Dimensions of the metric
      *

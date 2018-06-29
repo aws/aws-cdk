@@ -21,8 +21,13 @@ export class Dashboard extends Construct {
     constructor(parent: Construct, name: string, props?: DashboardProps) {
         super(parent, name);
 
+        // WORKAROUND -- Dashboard cannot be updated if the DashboardName is missing.
+        // This is a bug in CloudFormation, but we don't want CDK users to have a bad
+        // experience. We'll generate a name here if you did not supply one.
+        const dashboardName = (props && props.dashboardName) || this.generateDashboardName();
+
         new cloudwatch.DashboardResource(this, 'Resource', {
-            dashboardName: props && props.dashboardName,
+            dashboardName,
             dashboardBody: new Token(() => {
                 const column = new Column(...this.rows);
                 column.position(0, 0);
@@ -47,5 +52,13 @@ export class Dashboard extends Construct {
 
         const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
         this.rows.push(w);
+    }
+
+    /**
+     * Generate a unique dashboard name in case the user didn't supply one
+     */
+    private generateDashboardName(): string {
+        // This will include the Stack name and is hence unique
+        return this.path.replace('/', '-');
     }
 }

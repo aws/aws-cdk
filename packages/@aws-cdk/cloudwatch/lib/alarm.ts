@@ -158,7 +158,7 @@ export class Alarm extends Construct {
             okActions: new Token(() => this.okActions),
 
             // Metric
-            ...props.metric.toAlarmJson()
+            ...props.metric.alarmInfo()
         });
 
         this.alarmArn = alarm.alarmArn;
@@ -175,12 +175,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onAlarm(action: IAlarmAction) {
+    public onAlarm(...actions: IAlarmAction[]) {
         if (this.alarmActions === undefined) {
             this.alarmActions = [];
         }
 
-        this.alarmActions.push(action.alarmActionArn);
+        this.alarmActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -188,12 +188,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onInsufficientData(action: IAlarmAction) {
+    public onInsufficientData(...actions: IAlarmAction[]) {
         if (this.insufficientDataActions === undefined) {
             this.insufficientDataActions = [];
         }
 
-        this.insufficientDataActions.push(action.alarmActionArn);
+        this.insufficientDataActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -201,12 +201,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onOk(action: IAlarmAction) {
+    public onOk(...actions: IAlarmAction[]) {
         if (this.okActions === undefined) {
             this.okActions = [];
         }
 
-        this.okActions.push(action.alarmActionArn);
+        this.okActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
