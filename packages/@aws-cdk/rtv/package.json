@@ -35,6 +35,7 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "pkglint": "^0.7.1",
+    "aws-cdk": "^0.7.2-beta",
     "@aws-cdk/assert": "^0.7.2-beta",
     "@aws-cdk/ec2": "^0.7.2-beta",
     "@aws-cdk/sqs": "^0.7.2-beta",
