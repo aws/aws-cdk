@@ -19,8 +19,9 @@
     "prepare": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
-    "test": "nyc nodeunit test/test.*.js",
-    "pkglint": "pkglint -f"
+    "test": "nyc nodeunit test/test.*.js && cdk-integ-assert",
+    "pkglint": "pkglint -f",
+    "integ": "cdk-integ"
   },
   "keywords": [
     "aws",
@@ -33,7 +34,11 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.1",
+    "@aws-cdk/assert": "^0.7.2-beta",
+    "@aws-cdk/ec2": "^0.7.2-beta",
+    "@aws-cdk/sqs": "^0.7.2-beta",
+    "@aws-cdk/lambda": "^0.7.2-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.2-beta",
