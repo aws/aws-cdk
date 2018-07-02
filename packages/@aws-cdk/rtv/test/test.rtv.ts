@@ -54,6 +54,6 @@ class RuntimeValueTest extends Construct {
             new RuntimeValue(this, 'MyQueueName', { package: RTV_PACKAGE, value: queue.queueName })
         ];
 
-        runtimeValues.forEach(rtv => rtv.grantReadPermissions(role));
+        runtimeValues.forEach(rtv => rtv.grantRead(role));
     }
 }
