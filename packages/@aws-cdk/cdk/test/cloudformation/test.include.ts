@@ -5,7 +5,7 @@ export = {
     'the Include construct can be used to embed an existing template as-is into a stack'(test: Test) {
         const stack = new Stack();
 
-        new Include(stack, 'T1', { template });
+        new Include(stack, 'T1', { template: clone(template) });
 
         test.deepEqual(stack.toCloudFormation(), {
             Parameters: { MyParam: { Type: 'String', Default: 'Hello' } },
@@ -19,7 +19,7 @@ export = {
     'included templates can co-exist with elements created programmatically'(test: Test) {
         const stack = new Stack();
 
-        new Include(stack, 'T1', { template });
+        new Include(stack, 'T1', { template: clone(template) });
         new Resource(stack, 'MyResource3', { type: 'ResourceType3', properties: { P3: 'Hello' } });
         new Output(stack, 'MyOutput', { description: 'Out!', disableExport: true });
         new Parameter(stack, 'MyParam2', { type: 'Integer' });
@@ -71,3 +71,24 @@ const template = {
         }
     }
 };
+
+/**
+ * @param obj an object to clone
+ * @returns a deep clone of ``obj`.
+ */
+function clone(obj: any): any {
+    switch (typeof obj) {
+    case 'object':
+        if (Array.isArray(obj)) {
+            return obj.map(elt => clone(elt));
+        } else {
+            const cloned: any = {};
+            for (const key of Object.keys(obj)) {
+                cloned[key] = clone(obj[key]);
+            }
+            return cloned;
+        }
+    default:
+        return obj;
+    }
+}
