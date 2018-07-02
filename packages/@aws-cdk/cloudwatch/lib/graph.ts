@@ -1,6 +1,6 @@
 import { AwsRegion, Token } from "@aws-cdk/core";
 import { Alarm } from "./alarm";
-import { Metric } from "./metric";
+import { Metric, parseStatistic } from "./metric";
 import { ConcreteWidget } from "./widget";
 
 /**
@@ -156,8 +156,8 @@ export class GraphWidget extends ConcreteWidget {
                 view: 'timeSeries',
                 title: this.props.title,
                 region: this.props.region || new AwsRegion(),
-                metrics: (this.props.left || []).map(m => m.toGraphJson('left')).concat(
-                         (this.props.right || []).map(m => m.toGraphJson('right'))),
+                metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
+                         (this.props.right || []).map(m => metricJson(m, 'right'))),
                 annotations: {
                     horizontal: (this.props.leftAnnotations || []).map(mapAnnotation('left')).concat(
                                 (this.props.rightAnnotations || []).map(mapAnnotation('right')))
@@ -203,7 +203,7 @@ export class SingleValueWidget extends ConcreteWidget {
                 view: 'singleValue',
                 title: this.props.title,
                 region: this.props.region || new AwsRegion(),
-                metrics: this.props.metrics.map(m => m.toGraphJson('left'))
+                metrics: this.props.metrics.map(m => metricJson(m, 'left'))
             }
         }];
     }
@@ -287,4 +287,34 @@ function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
     return (a: HorizontalAnnotation) => {
         return { ...a, yAxis };
     };
+}
+
+/**
+ * Return the JSON structure which represents this metric in a graph
+ *
+ * This will be called by GraphWidget, no need for clients to call this.
+ */
+function metricJson(metric: Metric, yAxis: string): any[] {
+    // Namespace and metric Name
+    const ret: any[] = [
+        metric.namespace,
+        metric.metricName,
+    ];
+
+    // Dimensions
+    for (const dim of metric.dimensionsAsList()) {
+        ret.push(dim.name, dim.value);
+    }
+
+    // Options
+    const stat = parseStatistic(metric.statistic);
+    ret.push({
+        yAxis,
+        label: metric.label,
+        color: metric.color,
+        period: metric.periodSec,
+        stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
+    });
+
+    return ret;
 }

@@ -1,4 +1,4 @@
-import { ChangeMetricProps, Metric } from '@aws-cdk/cloudwatch';
+import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
 import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
@@ -42,7 +42,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     /**
      * Return the given named metric for this Lambda
      */
-    public static metricAll(metricName: string, props?: ChangeMetricProps): Metric {
+    public static metricAll(metricName: string, props?: MetricCustomization): Metric {
         return new Metric({
             namespace: 'AWS/Lambda',
             metricName,
@@ -54,7 +54,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public static metricAllErrors(props?: ChangeMetricProps): Metric {
+    public static metricAllErrors(props?: MetricCustomization): Metric {
         return LambdaRef.metricAll('Errors', { statistic: 'sum', ...props });
     }
 
@@ -63,7 +63,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default average over 5 minutes
      */
-    public static metricAllDuration(props?: ChangeMetricProps): Metric {
+    public static metricAllDuration(props?: MetricCustomization): Metric {
         return LambdaRef.metricAll('Duration', props);
     }
 
@@ -72,7 +72,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public static metricAllInvocations(props?: ChangeMetricProps): Metric {
+    public static metricAllInvocations(props?: MetricCustomization): Metric {
         return LambdaRef.metricAll('Invocations', { statistic: 'sum', ...props });
     }
 
@@ -81,7 +81,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public static metricAllThrottles(props?: ChangeMetricProps): Metric {
+    public static metricAllThrottles(props?: MetricCustomization): Metric {
         return LambdaRef.metricAll('Throttles', { statistic: 'sum', ...props });
     }
 
@@ -167,7 +167,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     /**
      * Return the given named metric for this Lambda
      */
-    public metric(metricName: string, props?: ChangeMetricProps): Metric {
+    public metric(metricName: string, props?: MetricCustomization): Metric {
         return new Metric({
             namespace: 'AWS/Lambda',
             metricName,
@@ -181,7 +181,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public metricErrors(props?: ChangeMetricProps): Metric {
+    public metricErrors(props?: MetricCustomization): Metric {
         return this.metric('Errors', { statistic: 'sum', ...props });
     }
 
@@ -190,7 +190,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default average over 5 minutes
      */
-    public metricDuration(props?: ChangeMetricProps): Metric {
+    public metricDuration(props?: MetricCustomization): Metric {
         return this.metric('Duration', props);
     }
 
@@ -199,7 +199,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public metricInvocations(props?: ChangeMetricProps): Metric {
+    public metricInvocations(props?: MetricCustomization): Metric {
         return this.metric('Invocations', { statistic: 'sum', ...props });
     }
 
@@ -208,7 +208,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      *
      * @default sum over 5 minutes
      */
-    public metricThrottles(props?: ChangeMetricProps): Metric {
+    public metricThrottles(props?: MetricCustomization): Metric {
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 

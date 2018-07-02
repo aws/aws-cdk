@@ -101,6 +101,8 @@ export class Metric {
         this.metricName = props.metricName;
         this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
         this.statistic = props.statistic || "Average";
+        this.label = props.label;
+        this.color = props.color;
         this.unit = props.unit;
 
         // Try parsing, this will throw if it's not a valid stat
@@ -108,10 +110,13 @@ export class Metric {
     }
 
     /**
-     * Return a copy of Metric with properties changed
-     * @param props Re
+     * Return a copy of Metric with properties changed.
+     *
+     * All properties except namespace and metricName can be changed.
+     *
+     * @param props The set of properties to change.
      */
-    public with(props: ChangeMetricProps): Metric {
+    public with(props: MetricCustomization): Metric {
         return new Metric({
             dimensions: ifUndefined(props.dimensions, this.dimensions),
             namespace: this.namespace,
@@ -148,89 +153,19 @@ export class Metric {
     }
 
     /**
-     * Return the JSON structure which represents this metric in an alarm
+     * Return the dimensions of this Metric as a list of Dimension.
      */
-    public toAlarmJson(): MetricAlarmJson {
-        const stat = parseStatistic(this.statistic);
+    public dimensionsAsList(): Dimension[] {
+        const dims = this.dimensions;
 
-        return {
-            dimensions: hashToDimensions(this.dimensions),
-            namespace: this.namespace,
-            metricName: this.metricName,
-            period: this.periodSec,
-            statistic: stat.type === 'simple' ? stat.statistic : undefined,
-            extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-            unit: this.unit
-        };
-    }
-
-    /**
-     * Return the JSON structure which represents this metric in a graph
-     */
-    public toGraphJson(yAxis: string): any[] {
-        // Namespace and metric Name
-        const ret: any[] = [
-            this.namespace,
-            this.metricName,
-        ];
-
-        // Dimensions
-        for (const dim of hashToDimensions(this.dimensions) || []) {
-            ret.push(dim.name, dim.value);
+        if (dims === undefined) {
+            return [];
         }
 
-        // Options
-        const stat = parseStatistic(this.statistic);
-        ret.push({
-            yAxis,
-            label: this.label,
-            color: this.color,
-            period: this.periodSec,
-            stat: stat.type === 'simple' ? stat.statistic : 'p' + stat.percentile.toString(),
-        });
+        const list = Object.keys(dims).map(key => ({ name: key, value: dims[key] }));
 
-        return ret;
+        return list;
     }
-}
-
-/**
- * Properties used to construct the Metric identifying part of an Alarm
- */
-export interface MetricAlarmJson {
-    /**
-     * The dimensions to apply to the alarm
-     */
-    dimensions?: Dimension[];
-
-    /**
-     * Namespace of the metric
-     */
-    namespace: string;
-
-    /**
-     * Name of the metric
-     */
-    metricName: string;
-
-    /**
-     * How many seconds to aggregate over
-     */
-    period: number;
-
-    /**
-     * Simple aggregation function to use
-     */
-    statistic?: Statistic;
-
-    /**
-     * Percentile aggregation function to use
-     */
-    extendedStatistic?: string;
-
-    /**
-     * The unit of the alarm
-     */
-    unit?: Unit;
 }
 
 /**
@@ -295,7 +230,7 @@ export enum Unit {
 /**
  * Properties of a metric that can be changed
  */
-export interface ChangeMetricProps {
+export interface MetricCustomization {
     /**
      * Dimensions of the metric
      *
@@ -426,19 +361,6 @@ export interface NewAlarmProps {
     actionsEnabled?: boolean;
 }
 
-function hashToDimensions(x?: DimensionHash): Dimension[] | undefined {
-    if (x === undefined) {
-        return undefined;
-    }
-
-    const list = Object.keys(x).map(key => ({ name: key, value: x[key] }));
-    if (list.length === 0) {
-        return undefined;
-    }
-
-    return list;
-}
-
 function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
     if (x !== undefined) {
         return x;
@@ -459,7 +381,7 @@ interface PercentileStatistic {
 /**
  * Parse a statistic, returning the type of metric that was used (simple or percentile)
  */
-function parseStatistic(stat: string): SimpleStatistic | PercentileStatistic {
+export function parseStatistic(stat: string): SimpleStatistic | PercentileStatistic {
     const lowerStat = stat.toLowerCase();
 
     // Simple statistics

@@ -1,5 +1,5 @@
 import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, TextWidget } from '../lib';
 
@@ -94,6 +94,24 @@ export = {
 
         test.done();
     },
+
+    'work around CloudFormation bug'(test: Test) {
+        // See: https://github.com/awslabs/aws-cdk/issues/213
+
+        // GIVEN
+        const app = new App();
+        const stack = new Stack(app, 'MyStack');
+
+        // WHEN
+        new Dashboard(stack, 'MyDashboard');
+
+        // THEN
+        expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
+            DashboardName: 'MyStack-MyDashboardCD351363'
+        }));
+
+        test.done();
+    }
 };
 
 /**

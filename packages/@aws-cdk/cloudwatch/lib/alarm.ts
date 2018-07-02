@@ -1,7 +1,7 @@
 import { Arn, Construct, Token } from '@aws-cdk/core';
 import { cloudwatch } from '@aws-cdk/resources';
 import { HorizontalAnnotation } from './graph';
-import { Metric } from './metric';
+import { Dimension, Metric, parseStatistic, Statistic, Unit } from './metric';
 
 /**
  * Properties for Alarms
@@ -158,7 +158,7 @@ export class Alarm extends Construct {
             okActions: new Token(() => this.okActions),
 
             // Metric
-            ...props.metric.toAlarmJson()
+            ...metricJson(props.metric)
         });
 
         this.alarmArn = alarm.alarmArn;
@@ -175,12 +175,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onAlarm(action: IAlarmAction) {
+    public onAlarm(...actions: IAlarmAction[]) {
         if (this.alarmActions === undefined) {
             this.alarmActions = [];
         }
 
-        this.alarmActions.push(action.alarmActionArn);
+        this.alarmActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -188,12 +188,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onInsufficientData(action: IAlarmAction) {
+    public onInsufficientData(...actions: IAlarmAction[]) {
         if (this.insufficientDataActions === undefined) {
             this.insufficientDataActions = [];
         }
 
-        this.insufficientDataActions.push(action.alarmActionArn);
+        this.insufficientDataActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -201,12 +201,12 @@ export class Alarm extends Construct {
      *
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
-    public onOk(action: IAlarmAction) {
+    public onOk(...actions: IAlarmAction[]) {
         if (this.okActions === undefined) {
             this.okActions = [];
         }
 
-        this.okActions.push(action.alarmActionArn);
+        this.okActions.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -256,4 +256,63 @@ export interface IAlarmAction {
      * Return the ARN that should be used for a CloudWatch Alarm action
      */
     readonly alarmActionArn: Arn;
+}
+
+/**
+ * Return the JSON structure which represents the given metric in an alarm.
+ */
+function metricJson(metric: Metric): AlarmMetricJson {
+    const stat = parseStatistic(metric.statistic);
+
+    const dims = metric.dimensionsAsList();
+
+    return {
+        dimensions: dims.length > 0 ? dims : undefined,
+        namespace: metric.namespace,
+        metricName: metric.metricName,
+        period: metric.periodSec,
+        statistic: stat.type === 'simple' ? stat.statistic : undefined,
+        extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+        unit: metric.unit
+    };
+}
+
+/**
+ * Properties used to construct the Metric identifying part of an Alarm
+ */
+export interface AlarmMetricJson {
+    /**
+     * The dimensions to apply to the alarm
+     */
+    dimensions?: Dimension[];
+
+    /**
+     * Namespace of the metric
+     */
+    namespace: string;
+
+    /**
+     * Name of the metric
+     */
+    metricName: string;
+
+    /**
+     * How many seconds to aggregate over
+     */
+    period: number;
+
+    /**
+     * Simple aggregation function to use
+     */
+    statistic?: Statistic;
+
+    /**
+     * Percentile aggregation function to use
+     */
+    extendedStatistic?: string;
+
+    /**
+     * The unit of the alarm
+     */
+    unit?: Unit;
 }
