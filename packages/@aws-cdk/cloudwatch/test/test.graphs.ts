@@ -36,6 +36,31 @@ export = {
         test.done();
     },
 
+    'label and color are respected in constructor'(test: Test) {
+        // WHEN
+        const widget = new GraphWidget({
+            left: [new Metric({ namespace: 'CDK', metricName: 'Test', label: 'MyMetric', color: '000000' }) ],
+        });
+
+        // THEN
+        test.deepEqual(resolve(widget.toJson()), [{
+            type: 'metric',
+            width: 6,
+            height: 6,
+            properties: {
+                view: 'timeSeries',
+                region: { Ref: 'AWS::Region' },
+                metrics: [
+                    ['CDK', 'Test', { yAxis: 'left', period: 300, stat: 'Average', label: 'MyMetric', color: '000000' }],
+                ],
+                annotations: { horizontal: [] },
+                yAxis: { left: { min: 0 }, right: { min: 0 } }
+            }
+        }]);
+
+        test.done();
+    },
+
     'singlevalue widget'(test: Test) {
         // GIVEN
         const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });

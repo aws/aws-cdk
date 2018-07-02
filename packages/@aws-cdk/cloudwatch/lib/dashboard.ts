@@ -1,4 +1,4 @@
-import { Construct, Token, tokenAwareJsonify } from "@aws-cdk/core";
+import { Construct, Stack, Token, tokenAwareJsonify } from "@aws-cdk/core";
 import { cloudwatch } from "@aws-cdk/resources";
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
@@ -17,12 +17,19 @@ export interface DashboardProps {
  */
 export class Dashboard extends Construct {
     private readonly rows: IWidget[] = [];
+    private readonly dashboard: cloudwatch.DashboardResource;
 
     constructor(parent: Construct, name: string, props?: DashboardProps) {
         super(parent, name);
 
-        new cloudwatch.DashboardResource(this, 'Resource', {
-            dashboardName: props && props.dashboardName,
+        // WORKAROUND -- Dashboard cannot be updated if the DashboardName is missing.
+        // This is a bug in CloudFormation, but we don't want CDK users to have a bad
+        // experience. We'll generate a name here if you did not supply one.
+        // See: https://github.com/awslabs/aws-cdk/issues/213
+        const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName());
+
+        this.dashboard = new cloudwatch.DashboardResource(this, 'Resource', {
+            dashboardName,
             dashboardBody: new Token(() => {
                 const column = new Column(...this.rows);
                 column.position(0, 0);
@@ -47,5 +54,14 @@ export class Dashboard extends Construct {
 
         const w = widgets.length > 1 ? new Row(...widgets) : widgets[0];
         this.rows.push(w);
+    }
+
+    /**
+     * Generate a unique dashboard name in case the user didn't supply one
+     */
+    private generateDashboardName(): string {
+        // Combination of stack name and LogicalID, which are guaranteed to be unique.
+        const stack = Stack.find(this);
+        return stack.name + '-' + this.dashboard.logicalId;
     }
 }
