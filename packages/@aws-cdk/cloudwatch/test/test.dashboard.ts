@@ -96,6 +96,8 @@ export = {
     },
 
     'work around CloudFormation bug'(test: Test) {
+        // See: https://github.com/awslabs/aws-cdk/issues/213
+
         // GIVEN
         const app = new App();
         const stack = new Stack(app, 'MyStack');
@@ -105,7 +107,7 @@ export = {
 
         // THEN
         expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-            DashboardName: 'MyStack-MyDashboard'
+            DashboardName: 'MyStack-MyDashboardCD351363'
         }));
 
         test.done();
