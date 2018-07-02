@@ -1,4 +1,4 @@
-import { ChangeMetricProps, IAlarmAction, Metric } from '@aws-cdk/cloudwatch';
+import { IAlarmAction, Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
 import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
@@ -233,7 +233,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
     /**
      * Construct a Metric object for the current topic for the given metric
      */
-    public metric(metricName: string, props?: ChangeMetricProps): Metric {
+    public metric(metricName: string, props?: MetricCustomization): Metric {
         return new Metric({
             namespace: 'AWS/SNS',
             dimensions: { TopicName: this.topicName },
@@ -247,7 +247,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default average over 5 minutes
      */
-    public metricPublishSize(props?: ChangeMetricProps): Metric {
+    public metricPublishSize(props?: MetricCustomization): Metric {
         return this.metric('PublishSize', props);
     }
 
@@ -256,7 +256,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesPublished(props?: ChangeMetricProps): Metric {
+    public metricNumberOfMessagesPublished(props?: MetricCustomization): Metric {
         return this.metric('NumberOfMessagesPublished', { statistic: 'sum', ...props });
     }
 
@@ -265,7 +265,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesFailed(props?: ChangeMetricProps): Metric {
+    public metricNumberOfMessagesFailed(props?: MetricCustomization): Metric {
         return this.metric('NumberOfMessagesFailed', { statistic: 'sum', ...props });
     }
 
@@ -274,7 +274,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesDelivered(props?: ChangeMetricProps): Metric {
+    public metricNumberOfMessagesDelivered(props?: MetricCustomization): Metric {
         return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
     }
 }
