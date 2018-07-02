@@ -23,6 +23,7 @@ User Guide
    Examples <examples>
    Tools <tools>
    Advanced Topics <cloudformation>
+   Version Reporting <version-reporting>
    Glossary <glossary>
    AWS Construct Library <reference>
 

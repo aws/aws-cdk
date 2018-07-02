@@ -49,6 +49,8 @@ async function parseCommandLineArguments() {
         .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
+        // tslint:disable-next-line:max-line-length
+        .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
         .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
             .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
         // tslint:disable-next-line:max-line-length
@@ -115,6 +117,7 @@ async function initCommandLine() {
         'ssm': new contextplugins.SSMContextProviderPlugin(aws),
     };
 
+    const defaultConfig = new Settings({ versionReporting: true });
     const userConfig = await new Settings().load(PER_USER_DEFAULTS);
     const projectConfig = await new Settings().load(DEFAULTS);
     const commandLineArguments = argumentsToSettings();
@@ -124,7 +127,7 @@ async function initCommandLine() {
 
     /** Function to return the complete merged config */
     function completeConfig(): Settings {
-        return userConfig.merge(projectConfig).merge(commandLineArguments);
+        return defaultConfig.merge(userConfig).merge(projectConfig).merge(commandLineArguments);
     }
 
     /** Function to load plug-ins, using configurations additively. */
@@ -166,6 +169,7 @@ async function initCommandLine() {
 
     async function main(command: string, args: any): Promise<number | string | {} | void> {
         const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+        const trackVersions = completeConfig().get(['versionReporting']);
 
         args.STACKS = args.STACKS || [];
         args.ENVIRONMENTS = args.ENVIRONMENTS || [];
@@ -182,14 +186,14 @@ async function initCommandLine() {
                 return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName);
 
             case 'deploy':
-                return await cliDeploy(args.STACKS, toolkitStackName);
+                return await cliDeploy(args.STACKS, toolkitStackName, trackVersions);
 
             case 'destroy':
                 return await cliDestroy(args.STACKS, args.force);
 
             case 'synthesize':
             case 'synth':
-                return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);
+                return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json, trackVersions);
 
             case 'metadata':
                 return await cliMetadata(await findStack(args.STACK));
@@ -208,7 +212,7 @@ async function initCommandLine() {
     }
 
     async function cliMetadata(stack: cxapi.StackId) {
-        const s = await synthesizeStack(stack);
+        const s = await synthesizeStack(stack, false);
         return s.metadata;
     }
 
@@ -296,7 +300,8 @@ async function initCommandLine() {
     async function cliSynthesize(stackNames: string[],
                                  doInteractive: boolean,
                                  outputDir: string|undefined,
-                                 json: boolean): Promise<void> {
+                                 json: boolean,
+                                 trackVersions: boolean): Promise<void> {
         const stackIds = await selectStacks(...stackNames);
         renames.validateSelectedStacks(stackIds);
 
@@ -304,7 +309,7 @@ async function initCommandLine() {
             if (stackIds.length !== 1) {
                 throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stackIds)}`);
             }
-            return await interactive(stackIds[0], argv.verbose, synthesizeStack);
+            return await interactive(stackIds[0], argv.verbose, (stack) => synthesizeStack(stack, trackVersions));
         }
 
         if (stackIds.length > 1 && outputDir == null) {
@@ -312,7 +317,7 @@ async function initCommandLine() {
             throw new Error(`Multiple stacks selected (${listStackNames(stackIds)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
         }
 
-        const synthesizedStacks = await synthesizeStacks(stackIds);
+        const synthesizedStacks = await synthesizeStacks(stackIds, trackVersions);
 
         if (outputDir == null) {
             return synthesizedStacks[0].template;  // Will be printed in main()
@@ -333,15 +338,15 @@ async function initCommandLine() {
     /**
      * Synthesize a single stack
      */
-    async function synthesizeStack(stack: cxapi.StackId): Promise<cxapi.SynthesizedStack> {
-        const resp = await synthesizeStacks([stack]);
+    async function synthesizeStack(stack: cxapi.StackId, trackVersions: boolean): Promise<cxapi.SynthesizedStack> {
+        const resp = await synthesizeStacks([stack], trackVersions);
         return resp[0];
     }
 
     /**
      * Synthesize a set of stacks
      */
-    async function synthesizeStacks(stacks: cxapi.StackId[]): Promise<cxapi.SynthesizedStack[]> {
+    async function synthesizeStacks(stacks: cxapi.StackId[], trackVersions: boolean): Promise<cxapi.SynthesizedStack[]> {
         // We may need to run the cloud executable multiple times in order to satisfy all missing context
         while (true) {
             debug(`Synthesizing ${listStackNames(stacks)}`);
@@ -368,8 +373,35 @@ async function initCommandLine() {
                 throw new Error('Found warnings (--strict mode)');
             }
 
+            if (trackVersions && response.runtime) {
+                const modules = formatModules(response.runtime);
+                for (const stack of response.stacks) {
+                    if (!stack.template.Resources) {
+                        stack.template.Resources = {};
+                    }
+                    if (!stack.template.Resources.CDKMetadata) {
+                        stack.template.Resources.CDKMetadata = {
+                            Type: 'AWS::CDK::Metadata',
+                            Properties: {
+                                Modules: modules
+                            }
+                        };
+                    } else {
+                        warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
+                    }
+                }
+            }
+
             // All good, return
             return response.stacks;
+
+            function formatModules(runtime: cxapi.AppRuntime): string {
+                const modules = new Array<string>();
+                for (const key of Object.keys(runtime.libraries).sort()) {
+                    modules.push(`${key}=${runtime.libraries[key]}`);
+                }
+                return modules.join(',');
+            }
         }
     }
 
@@ -427,11 +459,11 @@ async function initCommandLine() {
         return response.stacks;
     }
 
-    async function cliDeploy(stackNames: string[], toolkitStackName: string) {
+    async function cliDeploy(stackNames: string[], toolkitStackName: string, trackVersions: boolean) {
         const stackIds = await selectStacks(...stackNames);
         renames.validateSelectedStacks(stackIds);
 
-        const synthesizedStacks = await synthesizeStacks(stackIds);
+        const synthesizedStacks = await synthesizeStacks(stackIds, trackVersions);
 
         for (const stack of synthesizedStacks) {
             if (stackIds.length !== 1) { highlight(stack.name); }
@@ -490,11 +522,11 @@ async function initCommandLine() {
         }
     }
 
-    async function diffStack(stack: cxapi.StackInfo, templatePath?: string): Promise<number> {
+    async function diffStack(stack: cxapi.StackInfo, trackVersions: boolean, templatePath?: string): Promise<number> {
         if (!stack.environment) {
             throw new Error(`Stack ${stack.name} has no environment`);
         }
-        const s = await synthesizeStack(stack);
+        const s = await synthesizeStack(stack, trackVersions);
         const currentTemplate = await readCurrentTemplate(stack, templatePath);
         if (printStackDiff(currentTemplate, s) === 0) {
             return 0;
@@ -650,6 +682,7 @@ async function initCommandLine() {
             language: argv.language,
             plugin: argv.plugin,
             toolkitStackName: argv.toolkitStackName,
+            versionReporting: argv.versionReporting,
         });
     }
 

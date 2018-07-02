@@ -10,6 +10,9 @@ function outputPatchedJson(text: string) {
             }
         }
     }
+    if ('runtime' in document) {
+        delete document.runtime;
+    }
     process.stdout.write(JSON.stringify(document, null, 2));
 }
 

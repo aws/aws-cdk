@@ -35,7 +35,8 @@ export interface ListStacksResponse {
 }
 
 export interface SynthesizeResponse {
-    stacks: SynthesizedStack[]
+    stacks: SynthesizedStack[];
+    runtime?: AppRuntime;
 }
 
 /**
@@ -85,6 +86,16 @@ export interface MetadataEntry {
  * Metadata associated with the objects in the stack's Construct tree
  */
 export type StackMetadata = { [path: string]: MetadataEntry[] };
+
+/**
+ * Information about the application's runtime components.
+ */
+export interface AppRuntime {
+    /**
+     * The list of libraries loaded in the application, associated with their versions.
+     */
+    libraries: { [name: string]: string };
+}
 
 /**
  * Context parameter for the default AWS account to use if a stack's environment is not set.
