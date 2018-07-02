@@ -43,7 +43,7 @@ export class IntegrationTest {
         // Write context to cdk.json, afterwards delete. We need to do this because there is no way
         // to pass structured context data from the command-line, currently.
         if (options.context) {
-            await this.writeCdkConfig({ context: options.context });
+            await this.writeCdkConfig({ context: options.context, versionReporting: false });
         } else {
             this.deleteCdkConfig();
         }
