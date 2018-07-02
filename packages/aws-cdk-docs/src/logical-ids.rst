@@ -14,7 +14,7 @@
 Logical IDs
 ###########
 
-When you synthesize a stack into a |CFN| template,
+When you synthesize a stack into an |CFN| template,
 the |cdk| assigns a
 `logical ID <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html>`_,
 which must be unique within the template,
@@ -29,25 +29,25 @@ to each resource in the stack.
     updates the stack.
 
 Each resource in the construct tree has a unique path that represents its
-location within the tree. The logical ID of a resource is formed by
-concatenating the names of all of the constructs in the resource's path, and
-appending an eight-character MD5 hash of the path. This final component is
-necessary since |CFN| logical IDs cannot include the delimiting slash
-character (/), so simply concatenating the component values does not work. For
-example, concatenating the components of the path */a/b/c* produces **abc**,
-which is the same as concatenating the components of the path */ab/c*.
-
+location within the tree.
 Since logical IDs can only use alphanumeric characters and also restricted in
-length, we are unable to simply use a delimited path as the logical ID. Instead
-IDs are allocated by concatenating a human-friendly rendition from the path
-(concatenation, de-duplicate, trim) with a short MD5 hash of the delimited path:
+length, we are unable to simply use a delimited path as the logical ID.
+Instead, logical IDs are allocated by concatenating a human-friendly rendition 
+from the path (concatenation, de-duplicate, trim) with an eight-character MD5 
+hash of the delimited path. 
+This final component is necessary since |CFN| logical IDs cannot include 
+the delimiting slash character (/), so simply concatenating the component 
+values does not work. For example, concatenating the components of the 
+path */a/b/c* produces **abc**, which is the same as concatenating the components of 
+the path */ab/c*.
 
 .. code-block:: text
 
     VPCPrivateSubnet2RouteTable0A19E10E
     <-----------human---------><-hash->
 
-Resources that are direct children of the |stack-class| class use
+Low-level CloudFormation resources (from `@aws-cdk/resources`) 
+that are direct children of the |stack-class| class use
 their name as their logical ID without modification. This makes it easier to
 port existing templates into a CDK app.
 
@@ -65,10 +65,6 @@ Logical IDs are unique within the stack
 Logical IDs remain unchanged across updates
    This is true as long as their location within the construct tree doesn't change.
 
-.. See :ref:`creating_runtime_value`
-   for information on how to retain
-   logical IDs despite structural changes in your stack.
-
 The |cdk| applies some heuristics to improve the human-friendliness of the prefix:
 
 - If a path component is **Resource**, it is omitted.
@@ -80,8 +76,27 @@ The |cdk| applies some heuristics to improve the human-friendliness of the prefi
 
 .. _changing_logical_ids:
 
-Changing Logical IDs
+Renaming Logical IDs
 ====================
+
+The :py:meth:`aws-cdk.Stack.renameLogical` method can be used to explicitly assign
+logical IDs to certain resources, given either their full path or
+
+.. code-block:: javascript
+
+    class MyStack extends Stack {
+      constructor(parent: App, name: string, props: StackProps) {
+        super(parent, name);
+
+        // note that `renameLogical` must be called /before/ defining the construct.
+        // a good practice would be to always put these at the top of your stack initializer.
+        this.renameLogical('MyTableCD117FA1', 'MyTable');
+        this.renameLogical('MyQueueAB4432A3', 'MyAwesomeQueue');
+        
+        new Table(this, 'MyTable');
+        new Queue(this, 'MyQueue');
+      }
+    }
 
 In some cases changing a resource
 results in a structural change,
@@ -113,7 +128,5 @@ stacks. `cdk diff` will tell you which resources are about to be destroyed:
     [-] ☢️ Destroying MyTable (type: AWS::DynamoDB::Table)
     [+] 🆕 Creating MyTableCD117FA1 (type: AWS::DynamoDB::Table)
 
-- :py:meth:`aws-cdk.Stack.renameLogical` where :code:`from` is either an explicit logical ID or a path.
-  Call this method after the resource has been added to the stack.
-- :py:attr:`aws-cdk.Resource.logicalId` allows assigning a fixed logical ID to a resource,
-  and opt-out from using the scheme described above.
+Now, you can add a :py:meth:`aws-cdk.Stack.renameLogical` call before the 
+table is defined to rename **MyTableCD117FA1** to **MyTable**.
