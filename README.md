@@ -43,17 +43,11 @@ mkdir ~/.cdk
 unzip <path-to-zip-file> -d ~/.cdk
 ```
 
-Make sure the ~/.cdk/bin is in your `PATH`
+Make sure the `~/.cdk/bin` is in your `PATH`
 
 ```shell
 # at the end of your ~/.bashrc or ~/.zshrc file
 export PATH=$PATH:$HOME/.cdk/bin
-```
-
-Install (or update) `aws-cdk` and `aws-cdk-docs` globally
-
-```shell
-y-npm install --global aws-cdk aws-cdk-docs
 ```
 
 To check which CDK version you have installed:
