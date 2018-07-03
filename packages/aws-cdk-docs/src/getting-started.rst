@@ -73,7 +73,7 @@ Let's take a look at an annotated version of the file *hello-cdk.ts*.
    `Atom TypeScript <https://atom.io/packages/atom-typescript>`_ plugin,
    to get auto-completion in your Typescript code.
 
-Replace the contents of the file *index.ts* with the following code to create a class that
+Replace the contents of the file *hello-cdk.ts* with the following code to create a class that
 extends **Stack**, and include some construction logic.
 
 .. code-block:: js
