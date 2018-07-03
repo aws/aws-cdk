@@ -11,8 +11,8 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertEquals;
 
 public class HelloStackTest {
-    private static ObjectMapper JSON = new ObjectMapper()
-            .configure(SerializationFeature.INDENT_OUTPUT, true);
+    private final static ObjectMapper JSON =
+        new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
     @Test
     public void testStack() throws IOException {
