@@ -1,10 +1,7 @@
 const path = require('path');
 const version = require('./package.json').version.replace(/\+.+$/, ''); // omit "+build" postfix
 
-const jsiiRuntime = {
-    version: require('jsii-java-runtime/package.json').version,
-    repo: path.join(path.dirname(require.resolve('jsii-java-runtime')), 'maven-repo'),
-};
+const jsiiRuntimeVersion = require('jsii-java-runtime/package.json').version;
 
 process.stdout.write(`<?xml version="1.0" encoding="UTF-8"?>
 <project
@@ -22,13 +19,6 @@ process.stdout.write(`<?xml version="1.0" encoding="UTF-8"?>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>jsii</id>
-            <url>file://${jsiiRuntime.repo}</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
@@ -75,6 +65,7 @@ process.stdout.write(`<?xml version="1.0" encoding="UTF-8"?>
                             <groupId>\${project.groupId}</groupId>
                             <artifactId>\${project.artifactId}</artifactId>
                             <version>\${project.version}</version>
+                            <pomFile>\${project.basedir}/pom.xml</pomFile>
                             <packaging>jar</packaging>
                         </configuration>
                     </execution>
@@ -88,7 +79,7 @@ process.stdout.write(`<?xml version="1.0" encoding="UTF-8"?>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>jsii-runtime</artifactId>
-            <version>${jsiiRuntime.version}</version>
+            <version>${jsiiRuntimeVersion}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
