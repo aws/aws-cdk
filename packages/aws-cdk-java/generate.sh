@@ -3,6 +3,11 @@ set -euo pipefail
 
 mkdir -p project
 
+# deploy jsii-runtime to the local maven repo so it will be discoverable
+jsii_runtime_repo=$(node -e "console.log(path.join(path.dirname(require.resolve('jsii-java-runtime/package.json')), 'maven-repo'))")
+mkdir -p ~/.m2/repository
+rsync -av ${jsii_runtime_repo}/ ~/.m2/repository/
+
 echo "Generating pom.xml..."
 node ./pom.xml.t.js > project/pom.xml
 
