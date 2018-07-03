@@ -50,7 +50,14 @@ export = {
         test.deepEqual(azs, 'abc');
 
         test.done();
-    }
+    },
+
+    'Return default values if "env" is undefined to facilitate unit tests'(test: Test) {
+        const stack = new Stack();
+        test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+        test.deepEqual(new SSMParameterProvider(stack).getString('foo'), '');
+        test.done();
+    },
 };
 
 function firstKey(obj: any): string {

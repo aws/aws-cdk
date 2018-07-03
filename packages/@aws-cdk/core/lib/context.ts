@@ -24,7 +24,12 @@ export class ContextProvider {
     /**
      * Read a provider value, verifying it's a string
      */
-    public getStringValue(provider: string, scope: string[], args: string[]): string {
+    public getStringValue(provider: string, scope: undefined | string[], args: string[], defaultValue = ''): string {
+        // if scope is undefined, this is probably a test mode, so we just
+        // return the default value
+        if (!scope) {
+            return defaultValue;
+        }
         const key = colonQuote([provider].concat(scope).concat(args)).join(':');
         const value = this.context.getContext(key);
         if (value != null) {
@@ -35,13 +40,19 @@ export class ContextProvider {
         }
 
         this.stack.reportMissingContext(key, { provider, scope, args });
-        return '';
+        return defaultValue;
     }
 
     /**
      * Read a provider value, verifying it's a list
      */
-    public getStringListValue(provider: string, scope: string[], args: string[], defaultValue = ['']): string[] {
+    public getStringListValue(provider: string, scope: undefined | string[], args: string[], defaultValue = ['']): string[] {
+        // if scope is undefined, this is probably a test mode, so we just
+        // return the default value
+        if (!scope) {
+            return defaultValue;
+        }
+
         const key = colonQuote([provider].concat(scope).concat(args)).join(':');
         const value = this.context.getContext(key);
 
@@ -59,7 +70,7 @@ export class ContextProvider {
     /**
      * Helper function to wrap up account and region into a scope tuple
      */
-    public accountRegionScope(providerDescription: string): string[] {
+    public accountRegionScope(providerDescription: string): undefined | string[] {
         const stack = Stack.find(this.context);
         if (!stack) {
             throw new Error(`${providerDescription}: construct must be in a stack`);
@@ -69,8 +80,7 @@ export class ContextProvider {
         const region = stack.env.region;
 
         if (account == null || region == null) {
-            // tslint:disable-next-line:max-line-length
-            throw new Error(`${providerDescription}: requires account and region information, but ${stack.name} doesn't have an "env" defined`);
+            return undefined;
         }
 
         return [account, region];
