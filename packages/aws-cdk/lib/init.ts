@@ -11,6 +11,7 @@ const decamelize = require('decamelize');
 // tslint:enable:no-var-requires
 
 const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
+const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
 
 /**
  * Initialize a CDK package in the current directory
@@ -102,11 +103,13 @@ export class InitTemplate {
     }
 
     private expand(template: string, project: ProjectInfo) {
-        const cdkVersion = require('@aws-cdk/core/package.json').version.replace(/\+[a-f0-9]+$/, '');
+        const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+        const cdkVersion = require('@aws-cdk/core/package.json').version.replace(MATCH_VER_BUILD, '');
         return template.replace(/%name%/g, project.name)
                        .replace(/%name\.camelCased%/g, camelCase(project.name))
                        .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
-                       .replace(/%cdk-version%/g, cdkVersion);
+                       .replace(/%cdk-version%/g, cdkVersion)
+                       .replace(/%cdk-home%/g, CDK_HOME);
     }
 }
 
@@ -192,17 +195,25 @@ async function postInstall(language: string) {
     switch (language) {
     case 'typescript':
         return await postInstallTypescript();
+    case 'java':
+        return await postInstallJava();
     }
 }
 
 async function postInstallTypescript() {
-    const cdkHome = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : path.join(os.homedir(), '.cdk');
-    const yNpm = path.join(cdkHome, 'bin', 'y-npm');
+    const yNpm = path.join(CDK_HOME, 'bin', 'y-npm');
     const command = await fs.pathExists(yNpm) ? yNpm : 'npm';
     print(`Executing ${colors.green(`${command} install`)}...`);
-    if (await execute(command, 'install') !== 0) {
-        throw new Error(`${colors.green(`${command} install`)} failed!`);
+    try {
+        await execute(command, 'install');
+    } catch (e) {
+        throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
     }
+}
+
+async function postInstallJava() {
+    print(`Executing ${colors.green('mvn package')}...`);
+    await execute('mvn', 'package');
 }
 
 /**
@@ -225,19 +236,27 @@ function isRoot(dir: string) {
     return path.dirname(dir) === dir;
 }
 
-function execute(cmd: string, ...args: string[]): Promise<number> {
-    return new Promise<number>((resolve, reject) => {
-        try {
-            const child = spawn(cmd, args, { stdio: 'inherit' });
-            child.on('exit', (code, _signal) => {
-                if (code != null) {
-                    resolve(code);
-                } else {
-                    resolve(128);
-                }
-            });
-        } catch (e) {
-            reject(e);
-        }
+/**
+ * Executes `command`. STDERR is emitted in real-time.
+ *
+ * If command exits with non-zero exit code, an exceprion is thrown and includes
+ * the contents of STDOUT.
+ *
+ * @returns STDOUT (if successful).
+ */
+async function execute(cmd: string, ...args: string[]) {
+    const child = spawn(cmd, args, { stdio: [ 'ignore', 'pipe', 'inherit' ] });
+    let stdout = '';
+    child.stdout.on('data', chunk => stdout += chunk.toString());
+    return new Promise<string>((ok, fail) => {
+        child.once('error', err => fail(err));
+        child.once('exit', status => {
+            if (status === 0) {
+                return ok(stdout);
+            } else {
+                process.stderr.write(stdout);
+                return fail(new Error(`${cmd} exited with status ${status}`));
+            }
+        });
     });
 }

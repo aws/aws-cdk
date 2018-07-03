@@ -20,10 +20,8 @@
     "url": "https://aws.amazon.com"
   },
   "license": "Apache-2.0",
-  "dependencies": {
-    "aws-cdk-all": "^0.7.2-beta"
-  },
   "devDependencies": {
+    "aws-cdk-all": "^0.7.2-beta",
     "pkgtools": "^0.7.2-beta"
   },
   "keywords": [

@@ -1,0 +1,255 @@
+{
+    "Resources": {
+        "MyFirstTopic0ED1F8A4": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "DisplayName": "My First Topic Yeah"
+            }
+        },
+        "MyFirstQueuePolicy596EEC78": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": {
+                                        "Ref": "MyFirstTopic0ED1F8A4"
+                                    }
+                                }
+                            },
+                            "Action": "sqs:SendMessage",
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "MyFirstQueueFF09316A",
+                                    "Arn"
+                                ]
+                            },
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "sns.amazonaws.com"
+                            }
+                        }
+                    ]
+                },
+                "Queues": [
+                    {
+                        "Ref": "MyFirstQueueFF09316A"
+                    }
+                ]
+            }
+        },
+        "BucketsBucket1B98A5B53": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "MyFirstQueueFF09316A": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "VisibilityTimeout": 300
+            }
+        },
+        "MyFirstTopicMyFirstQueueSubscription04CBE05C": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+                "Endpoint": {
+                    "Fn::GetAtt": [
+                        "MyFirstQueueFF09316A",
+                        "Arn"
+                    ]
+                },
+                "TopicArn": {
+                    "Ref": "MyFirstTopic0ED1F8A4"
+                },
+                "Protocol": "sqs"
+            }
+        },
+        "BucketsBucket351AD8978": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "BucketsBucket237F4E9C5": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "BucketsBucket4AEE1AAD9": {
+            "Type": "AWS::S3::Bucket"
+        },
+        "MyUserDC45028B": {
+            "Type": "AWS::IAM::User"
+        },
+        "MyUserDefaultPolicy7B897426": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "MyUserDefaultPolicy7B897426",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BucketsBucket04F23AD6D",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BucketsBucket04F23AD6D",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        },
+                        {
+                            "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BucketsBucket1B98A5B53",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BucketsBucket1B98A5B53",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        },
+                        {
+                            "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BucketsBucket237F4E9C5",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BucketsBucket237F4E9C5",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        },
+                        {
+                            "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BucketsBucket351AD8978",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BucketsBucket351AD8978",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        },
+                        {
+                            "Action": [
+                                "s3:GetObject*",
+                                "s3:GetBucket*",
+                                "s3:List*"
+                            ],
+                            "Resource": [
+                                {
+                                    "Fn::GetAtt": [
+                                        "BucketsBucket4AEE1AAD9",
+                                        "Arn"
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "BucketsBucket4AEE1AAD9",
+                                                    "Arn"
+                                                ]
+                                            },
+                                            "/",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "Effect": "Allow"
+                        }
+                    ]
+                },
+                "Users": [
+                    {
+                        "Ref": "MyUserDC45028B"
+                    }
+                ]
+            }
+        },
+        "BucketsBucket04F23AD6D": {
+            "Type": "AWS::S3::Bucket"
+        }
+    }
+}
