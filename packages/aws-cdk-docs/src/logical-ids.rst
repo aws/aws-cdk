@@ -31,7 +31,7 @@ to each resource in the stack.
 Each resource in the construct tree has a unique path that represents its
 location within the tree.
 Since logical IDs can only use alphanumeric characters and also restricted in
-length, we are unable to simply use a delimited path as the logical ID.
+length, the CDK is unable to simply use a delimited path as the logical ID.
 Instead, logical IDs are allocated by concatenating a human-friendly rendition 
 from the path (concatenation, de-duplicate, trim) with an eight-character MD5 
 hash of the delimited path. 
