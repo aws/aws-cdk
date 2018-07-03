@@ -45,5 +45,15 @@ export = {
         });
 
         test.done();
+    },
+
+    async 'fetch(k, resolver) can be used to "atomically" get + resolve + put'(test: Test) {
+        const self = this as any;
+        const cache: AccountAccessKeyCache = self.cache;
+
+        test.deepEqual(await cache.get('foo'), undefined, 'no value for "foo" yet');
+        test.deepEqual(await cache.fetch('foo', async () => 'bar'), 'bar', 'resolved by fetch and returned');
+        test.deepEqual(await cache.get('foo'), 'bar', 'stored in cache by fetch()');
+        test.done();
     }
 };

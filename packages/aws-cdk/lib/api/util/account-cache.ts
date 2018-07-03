@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import { debug } from '../../logging';
 
 /**
  * Disk cache which maps access key IDs to account IDs.
@@ -15,11 +16,42 @@ export class AccountAccessKeyCache {
      * @param filePath Path to the cache file
      */
     constructor(filePath?: string) {
-        this.cacheFile = filePath || path.join(os.homedir(), '.cdk/cache/accounts.json');
+        this.cacheFile = filePath || path.join(os.homedir(), '.cdk', 'cache', 'accounts.json');
+    }
+
+    /**
+     * Tries to fetch the account ID from cache. If it's not in the cache, invokes
+     * the resolver function which should retrieve the account ID and return it.
+     * Then, it will be stored into disk cache returned.
+     *
+     * Example:
+     *
+     *      const accountId = cache.fetch(accessKey, async () => {
+     *          return await fetchAccountIdFromSomewhere(accessKey);
+     *      });
+     *
+     * @param accessKeyId
+     * @param resolver
+     */
+    public async fetch(accessKeyId: string, resolver: () => Promise<string | undefined>) {
+        // try to get account ID based on this access key ID from disk.
+        const cached = await this.get(accessKeyId);
+        if (cached) {
+            debug(`Retrieved account ID ${cached} from disk cache`);
+            return cached;
+        }
+
+        // if it's not in the cache, resolve and put in cache.
+        const accountId = await resolver();
+        if (accountId) {
+            await this.put(accessKeyId, accountId);
+        }
+
+        return accountId;
     }
 
     /** Get the account ID from an access key or undefined if not in cache */
-    public async get(accessKeyId: string) {
+    public async get(accessKeyId: string): Promise<string | undefined> {
         const map = await this.loadMap();
         return map[accessKeyId];
     }
@@ -31,7 +63,7 @@ export class AccountAccessKeyCache {
         await this.saveMap(map);
     }
 
-    private async loadMap() {
+    private async loadMap(): Promise<{ [accessKeyId: string]: string }> {
         if (!(await fs.pathExists(this.cacheFile))) {
             return { };
         }

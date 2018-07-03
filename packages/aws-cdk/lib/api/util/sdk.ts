@@ -77,28 +77,25 @@ export class SDK {
             const creds = await chain.resolvePromise();
             const accessKeyId = creds.accessKeyId;
             if (!accessKeyId) {
-                throw new Error('Unable to resolve AWS credentials');
+                throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
             }
 
-            // try to get account ID based on this access key ID from disk.
-            const cached = await this.accountCache.get(creds.accessKeyId);
-            if (cached) {
-                debug(`Retrieved account ID ${cached} from disk cache`);
-                return cached;
-            }
+            const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
+                // if we don't have one, resolve from STS and store in cache.
+                debug('Looking up default account ID from STS');
+                const result = await new STS().getCallerIdentity().promise();
+                const aid = result.Account;
+                if (!aid) {
+                    debug('STS didn\'t return an account ID');
+                    return undefined;
+                }
+                debug('Default account ID:', aid);
+                return aid;
+            });
 
-            // if we don't have one, resolve from STS and store in cache.
-            debug('Looking up default account ID from STS');
-            const result = await new STS().getCallerIdentity().promise();
-            const accountId = result.Account;
-            if (!accountId) {
-                debug('STS didn\'t return an account ID');
-                return undefined;
-            }
-            await this.accountCache.put(accessKeyId, accountId);
             return accountId;
         } catch (e) {
-            debug('Unable to determine the default AWS account (use "aws configure" to set up):', e);
+            debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
             return undefined;
         }
     }
@@ -132,4 +129,3 @@ export class SDK {
         throw new Error(`Need to perform AWS calls for account ${awsAccountId}, but no credentials found. Tried: ${sourceNames}.`);
     }
 }
-
