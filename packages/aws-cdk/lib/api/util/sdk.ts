@@ -1,8 +1,9 @@
 import { Environment} from '@aws-cdk/cx-api';
-import { CloudFormation, config, CredentialProviderChain , EC2, S3, SSM, STS } from 'aws-sdk';
+import { CloudFormation, config, CredentialProviderChain, EC2, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
+import { AccountAccessKeyCache } from './account-cache';
 
 /**
  * Source for SDK client objects
@@ -17,6 +18,7 @@ export class SDK {
     private defaultAccountFetched = false;
     private defaultAccountId?: string = undefined;
     private readonly userAgent: string;
+    private readonly accountCache = new AccountAccessKeyCache();
 
     constructor() {
         // Find the package.json from the main toolkit
@@ -70,11 +72,30 @@ export class SDK {
 
     private async lookupDefaultAccount() {
         try {
-            debug('Looking up default account ID from STS');
-            const result = await new STS().getCallerIdentity().promise();
-            return result.Account;
+            debug('Resolving default credentials');
+            const chain = new CredentialProviderChain();
+            const creds = await chain.resolvePromise();
+            const accessKeyId = creds.accessKeyId;
+            if (!accessKeyId) {
+                throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
+            }
+
+            const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
+                // if we don't have one, resolve from STS and store in cache.
+                debug('Looking up default account ID from STS');
+                const result = await new STS().getCallerIdentity().promise();
+                const aid = result.Account;
+                if (!aid) {
+                    debug('STS didn\'t return an account ID');
+                    return undefined;
+                }
+                debug('Default account ID:', aid);
+                return aid;
+            });
+
+            return accountId;
         } catch (e) {
-            debug('Unable to retrieve default account from STS:', e);
+            debug('Unable to determine the default AWS account (did you configure "aws configure"?):', e);
             return undefined;
         }
     }
