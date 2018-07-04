@@ -3,7 +3,6 @@ import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
 
-
 /**
  * Disk cache which maps access key IDs to account IDs.
  * Usage:
