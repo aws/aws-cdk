@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { debug } from '../../logging';
 
+
 /**
  * Disk cache which maps access key IDs to account IDs.
  * Usage:
@@ -10,6 +11,11 @@ import { debug } from '../../logging';
  *   cache.put(accessKey, accountId)
  */
 export class AccountAccessKeyCache {
+    /**
+     * Max number of entries in the cache, after which the cache will be reset.
+     */
+    public static readonly MAX_ENTRIES = 1000;
+
     private readonly cacheFile: string;
 
     /**
@@ -58,7 +64,13 @@ export class AccountAccessKeyCache {
 
     /** Put a mapping betweenn access key and account ID */
     public async put(accessKeyId: string, accountId: string) {
-        const map = await this.loadMap();
+        let map = await this.loadMap();
+
+        // nuke cache if it's too big.
+        if (Object.keys(map).length >= AccountAccessKeyCache.MAX_ENTRIES) {
+            map = { };
+        }
+
         map[accessKeyId] = accountId;
         await this.saveMap(map);
     }

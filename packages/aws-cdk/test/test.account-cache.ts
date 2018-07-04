@@ -55,5 +55,31 @@ export = {
         test.deepEqual(await cache.fetch('foo', async () => 'bar'), 'bar', 'resolved by fetch and returned');
         test.deepEqual(await cache.get('foo'), 'bar', 'stored in cache by fetch()');
         test.done();
+    },
+
+    async 'cache is nuked if it exceeds 1000 entries'(test: Test) {
+        const self = this as any;
+        const cache: AccountAccessKeyCache = self.cache;
+
+        for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
+            await cache.put(`key${i}`, `value${i}`);
+        }
+
+        // verify all 1000 values are on disk
+        const otherCache = new AccountAccessKeyCache(self.file);
+        for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
+            test.equal(await otherCache.get(`key${i}`), `value${i}`);
+        }
+
+        // add another value
+        await cache.put('nuke-me', 'genesis');
+
+        // now, we expect only `nuke-me` to exist on disk
+        test.equal(await otherCache.get('nuke-me'), 'genesis');
+        for (let i = 0; i < AccountAccessKeyCache.MAX_ENTRIES; ++i) {
+            test.equal(await otherCache.get(`key${i}`), undefined);
+        }
+
+        test.done();
     }
 };

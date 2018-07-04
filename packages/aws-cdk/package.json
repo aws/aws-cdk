@@ -11,7 +11,8 @@
     "prepare": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "test": "nodeunit test/test.*.js"
   },
   "author": {
     "name": "Amazon Web Services",
