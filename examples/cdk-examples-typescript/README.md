@@ -9,7 +9,7 @@ file at the root.
 To synthesize or deploy and example app, you will first need to build it:
 
 ```shell
-npm run prepare
+npm run build
 ```
 
 Or you can watch:

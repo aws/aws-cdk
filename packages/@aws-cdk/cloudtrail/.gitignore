@@ -3,4 +3,5 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
+cfn
 dist

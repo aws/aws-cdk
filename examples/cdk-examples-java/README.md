@@ -11,7 +11,7 @@ This an example of a CDK program written in Java.
 
 ## Building
 
-To build this app, run `npm run prepare`. This will:
+To build this app, run `npm run build`. This will:
 
 1. Generate `project/pom.xml` with correct references to jsii and CDK
    dependencies.
@@ -48,4 +48,4 @@ $ cdk diff
 ```
 
 If you make modifications, make sure to rebuild the app, either by callign `mvn
-package` from `./project` or `npm run prepare` from the root.
+package` from `./project` or `npm run build` from the root.

@@ -9,7 +9,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && pkglint",
+    "build": "tslint -p . && tsc && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nodeunit test/test.*.js",
@@ -32,6 +32,6 @@
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
-    "@aws-cdk/resources": "^0.7.3-beta"
+    "@aws-cdk/runtime": "^0.7.3-beta"
   }
 }

@@ -1,5 +1,5 @@
-import { lambda } from '@aws-cdk/resources';
 import { BucketName, BucketRef } from '@aws-cdk/s3';
+import * as lambda from '../cfn/lambda';
 import { LambdaRuntime } from './runtime';
 
 export abstract class LambdaCode {

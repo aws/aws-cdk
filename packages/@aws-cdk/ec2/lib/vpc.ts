@@ -1,5 +1,5 @@
 import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/core';
-import { ec2 } from '@aws-cdk/resources';
+import * as ec2 from '../cfn/ec2';
 import { NetworkUtils } from './network-util';
 import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**

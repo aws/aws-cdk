@@ -4,7 +4,7 @@
     "version": "0.7.3-beta",
     "scripts": {
         "update": "/bin/bash build-tools/update.sh",
-        "prepare": "tsc && tslint -p . && node build-tools/build",
+        "build": "tsc && tslint -p . && node build-tools/build",
         "test": "nodeunit test/test.*.js",
         "watch": "tsc -w",
         "lint": "tslint -p ."

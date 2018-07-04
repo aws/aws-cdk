@@ -2,9 +2,9 @@ import { Arn, Construct, PolicyStatement, RemovalPolicy, ServicePrincipal, Token
 import { EventRule, EventRuleProps, EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import * as iam from '@aws-cdk/iam';
 import { Role } from '@aws-cdk/iam';
-import { codepipeline } from '@aws-cdk/resources';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
 import { flatMap, flatten } from '@aws-cdk/util';
+import * as codepipeline from '../cfn/codepipeline';
 import { Stage } from './stage';
 import * as validation from './validation';
 

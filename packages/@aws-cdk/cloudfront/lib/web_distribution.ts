@@ -1,7 +1,7 @@
 import { CertificateArn } from '@aws-cdk/acm';
 import { Construct, FnConcat,  } from '@aws-cdk/core';
-import { cloudfront } from '@aws-cdk/resources';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
+import * as cloudfront from '../cfn/cloudfront';
 
 export enum HttpVersion {
     HTTP1_1 = "http1.1",

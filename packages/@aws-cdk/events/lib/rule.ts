@@ -1,5 +1,5 @@
 import { Construct, FnConcat, Token } from '@aws-cdk/core';
-import { events } from '@aws-cdk/resources';
+import * as events from '../cfn/events';
 import { EventPattern } from './event-pattern';
 import { TargetInputTemplate } from './input-options';
 import { EventRuleRef } from './rule-ref';

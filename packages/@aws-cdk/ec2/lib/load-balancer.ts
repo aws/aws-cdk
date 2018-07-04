@@ -1,5 +1,5 @@
 import { Arn, Construct, Token } from '@aws-cdk/core';
-import { elasticloadbalancing } from '@aws-cdk/resources';
+import * as elasticloadbalancing from '@aws-cdk/elasticloadbalancing';
 import { AnyIPv4, IConnectionPeer, IPortRange, TcpPort } from './connection';
 import { Connections, DefaultConnections, IConnectable, IDefaultConnectable } from './connections';
 import { ISecurityGroup, SecurityGroup } from './security-group';

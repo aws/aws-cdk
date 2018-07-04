@@ -1,5 +1,5 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import { s3 } from '@aws-cdk/resources';
+import * as s3 from '../cfn/s3';
 import { BucketRef } from './bucket';
 
 export interface BucketPolicyProps {

@@ -1,7 +1,7 @@
 import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import { s3 } from '@aws-cdk/resources';
+import * as s3 from '../cfn/s3';
 import { BucketPolicy } from './bucket-policy';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';

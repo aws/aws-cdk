@@ -1,5 +1,5 @@
 import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
-import { sqs } from '@aws-cdk/resources';
+import * as sqs from '../cfn/sqs';
 import { QueuePolicy } from './policy';
 
 /**

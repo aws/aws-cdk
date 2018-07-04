@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { certificatemanager } from '@aws-cdk/resources';
+import * as certificatemanager from '../cfn/certificatemanager';
 import { CertificateArn, CertificateRef } from './certificate-ref';
 import { apexDomain } from './util';
 

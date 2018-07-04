@@ -1,6 +1,7 @@
 import { AwsRegion, Construct, Token } from '@aws-cdk/core';
 import { VpcNetworkRef } from '@aws-cdk/ec2';
-import { logs, route53 } from '@aws-cdk/resources';
+import { LogGroupArn } from '@aws-cdk/logs';
+import * as route53 from '../cfn/route53';
 import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';
 import { validateZoneName } from './util';
 
@@ -25,7 +26,7 @@ export interface PublicHostedZoneProps {
      *
      * @default no DNS query logging
      */
-    queryLogsLogGroupArn?: logs.LogGroupArn;
+    queryLogsLogGroupArn?: LogGroupArn;
 }
 
 /**
@@ -45,7 +46,7 @@ export class PublicHostedZone extends HostedZoneRef {
     /**
      * Nameservers for this public hosted zone
      */
-    public readonly nameServers: HostedZoneNameServers;
+    public readonly nameServers: route53.HostedZoneNameServers;
 
     constructor(parent: Construct, name: string, props: PublicHostedZoneProps) {
         super(parent, name);
@@ -122,9 +123,6 @@ export class PrivateHostedZone extends HostedZoneRef {
 
 function toVpcProperty(vpc: VpcNetworkRef): route53.HostedZoneResource.VPCProperty {
     return { vpcId: vpc.vpcId, vpcRegion: new AwsRegion() };
-}
-
-export class HostedZoneNameServers extends Token {
 }
 
 function determineHostedZoneProps(props: PublicHostedZoneProps) {

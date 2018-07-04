@@ -1,5 +1,5 @@
 import { Construct, Token } from '@aws-cdk/core';
-import { kms } from '@aws-cdk/resources';
+import * as kms from '../cfn/kms';
 import { EncryptionKeyRef } from './key';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';

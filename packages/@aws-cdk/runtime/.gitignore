@@ -1,0 +1,7 @@
+dist
+node_modules
+tsconfig.json
+tslint.json
+*.js
+*.d.ts
+README.md

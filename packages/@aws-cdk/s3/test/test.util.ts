@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/core';
-import { s3 } from '@aws-cdk/resources';
 import { Test } from 'nodeunit';
+import * as s3 from '../cfn/s3';
 import { BucketName } from '../lib';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 

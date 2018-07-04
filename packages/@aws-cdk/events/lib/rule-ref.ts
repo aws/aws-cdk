@@ -1,5 +1,5 @@
 import { Construct, Output } from '@aws-cdk/core';
-import { events } from '@aws-cdk/resources';
+import * as events from '../cfn/events';
 
 export interface EventRuleRefProps {
     /**

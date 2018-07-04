@@ -1,5 +1,5 @@
 import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement } from '@aws-cdk/core';
-import { kms } from '@aws-cdk/resources';
+import * as kms from '../cfn/kms';
 import { EncryptionKeyAlias } from './alias';
 
 export interface EncryptionKeyRefProps {

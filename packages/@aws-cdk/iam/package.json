@@ -17,7 +17,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "cfn2ts --scope=AWS::IAM && jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nodeunit test/test.*.js",
@@ -38,10 +38,11 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
+    "@aws-cdk/runtime": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/resources": "^0.7.3-beta"
+    "@aws-cdk/core": "^0.7.3-beta"
   }
 }

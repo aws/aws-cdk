@@ -3,6 +3,7 @@
 tsconfig.json
 tslint.json
 *.js.map
+cfn
 dist
 coverage
 .nyc_output

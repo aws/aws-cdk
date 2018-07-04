@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
-import { codepipeline } from '@aws-cdk/resources';
+import * as codepipeline from '../cfn/codepipeline';
 import { Action } from './actions';
 import { Pipeline } from './pipeline';
 import * as validation from './validation';

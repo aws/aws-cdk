@@ -1,6 +1,6 @@
 import { Arn, Construct, Output } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
-import { codecommit } from '@aws-cdk/resources';
+import * as codecommit from '../cfn/codecommit';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.

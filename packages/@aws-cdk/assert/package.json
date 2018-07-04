@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
+    "build": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
     "watch": "tsc -w",
     "lint": "tslint -p . --force",
     "test": "nodeunit test/test.*.js",

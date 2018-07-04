@@ -1,6 +1,7 @@
+import * as autoscaling from '@aws-cdk/autoscaling';
 import { Construct, FnBase64, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
-import { Role } from '@aws-cdk/iam';
-import { autoscaling, iam, sns } from '@aws-cdk/resources';
+import * as iam from '@aws-cdk/iam';
+import * as sns from '@aws-cdk/sns';
 import { AllConnections, AnyIPv4, IConnectionPeer } from './connection';
 import { Connections } from './connections';
 import { InstanceType } from './instance-types';
@@ -98,7 +99,7 @@ export class Fleet extends Construct implements IClassicLoadBalancerTarget {
     /**
      * The IAM role assumed by instances of this fleet.
      */
-    public readonly role: Role;
+    public readonly role: iam.Role;
 
     private readonly userDataLines = new Array<string>();
     private readonly autoScalingGroup: autoscaling.AutoScalingGroupResource;
@@ -116,7 +117,7 @@ export class Fleet extends Construct implements IClassicLoadBalancerTarget {
             this.connections.allowTo(new AnyIPv4(), new AllConnections(), 'Outbound traffic allowed by default');
         }
 
-        this.role = new Role(this, 'InstanceRole', {
+        this.role = new iam.Role(this, 'InstanceRole', {
             assumedBy: new ServicePrincipal('ec2.amazonaws.com')
         });
 

@@ -92,15 +92,18 @@ export const STATIC_TEST_CONTEXT = {
  */
 function exec(commandLine: string[], cwd?: string, json?: boolean): any {
     const proc = spawnSync(commandLine[0], commandLine.slice(1), {
-        stdio: ['ignore', 'pipe', 'inherit'],
+        stdio: ['ignore', 'pipe', 'pipe'],
         cwd
     });
 
-    if (proc.error) {
-        throw proc.error;
+    if (proc.error) { throw proc.error; }
+    if (proc.status !== 0) {
+        process.stderr.write(proc.stderr);
+        throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
     }
 
     const output = proc.stdout.toString('utf-8').trim();
+
     try {
         if (json) {
             if (output.length === 0) { return {}; }

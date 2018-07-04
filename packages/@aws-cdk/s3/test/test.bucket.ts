@@ -2,8 +2,8 @@ import { expect } from '@aws-cdk/assert';
 import { PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/core';
 import { Group, User } from '@aws-cdk/iam';
 import { EncryptionKey } from '@aws-cdk/kms';
-import { s3 } from '@aws-cdk/resources';
 import { Test } from 'nodeunit';
+import * as s3 from '../cfn/s3';
 import { Bucket, BucketEncryption } from '../lib';
 
 // to make it easy to copy & paste from output:

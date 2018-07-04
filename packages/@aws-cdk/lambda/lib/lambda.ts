@@ -1,10 +1,10 @@
 import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
-import { lambda } from '@aws-cdk/resources';
+import * as lambda from '../cfn/lambda';
 import { LambdaCode } from './code';
 import { FunctionName, LambdaRef } from './lambda-ref';
+import { LambdaVersion } from './lambda-version';
 import { LambdaRuntime } from './runtime';
-import { Version } from './version';
 
 export interface LambdaProps {
     /**
@@ -182,8 +182,8 @@ export class Lambda extends LambdaRef {
      * @param description A description for this version.
      * @returns A new Version object.
      */
-    public addVersion(name: string, codeSha256?: string, description?: string): Version {
-        return new Version(this, 'Version' + name, {
+    public addVersion(name: string, codeSha256?: string, description?: string): LambdaVersion {
+        return new LambdaVersion(this, 'Version' + name, {
             lambda: this,
             codeSha256,
             description,

@@ -1,5 +1,8 @@
 import { Construct, Token } from '@aws-cdk/core';
-import { dynamodb } from '@aws-cdk/resources';
+import * as dynamodb from '../cfn/dynamodb';
+
+// The L1 library for AWS::DynamoDB:
+export * from '../cfn/dynamodb';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';

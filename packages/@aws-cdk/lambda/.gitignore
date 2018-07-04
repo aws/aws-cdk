@@ -2,6 +2,7 @@
 *.js.map
 *.d.ts
 node_modules
+cfn
 dist
 tsconfig.json
 tslint.json

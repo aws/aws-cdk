@@ -1,7 +1,7 @@
 import { Repository } from '@aws-cdk/codecommit';
 import { FnConcat, PolicyStatement } from '@aws-cdk/core';
-import { codebuild } from '@aws-cdk/resources';
 import { BucketRef } from '@aws-cdk/s3';
+import * as codebuild from '../cfn/codebuild';
 import { BuildProject } from './project';
 
 /**

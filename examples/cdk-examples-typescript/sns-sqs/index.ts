@@ -1,7 +1,6 @@
 import { App, PolicyDocument, PolicyStatement, Stack } from "@aws-cdk/core";
-import { sns, sqs } from '@aws-cdk/resources';
-import { Topic } from '@aws-cdk/sns';
-import { Queue } from '@aws-cdk/sqs';
+import { SubscriptionResource, Topic, TopicResource } from '@aws-cdk/sns';
+import { Queue, QueuePolicyResource, QueueResource } from '@aws-cdk/sqs';
 
 class ACL extends Stack {
     constructor(parent: App, name: string) {
@@ -20,10 +19,10 @@ class CFN extends Stack {
     constructor(parent: App, name: string) {
         super(parent, name);
 
-        const topic = new sns.TopicResource(this, 'MyTopic');
-        const queue = new sqs.QueueResource(this, 'MyQueue');
+        const topic = new TopicResource(this, 'MyTopic');
+        const queue = new QueueResource(this, 'MyQueue');
 
-        new sns.SubscriptionResource(this, 'TopicToQueue', {
+        new SubscriptionResource(this, 'TopicToQueue', {
             topicArn: topic.ref, // ref == arn for topics
             endpoint: queue.queueName,
             protocol: 'sqs'
@@ -36,7 +35,7 @@ class CFN extends Stack {
             .addServicePrincipal('sns.amazonaws.com')
             .setCondition('ArnEquals', { 'aws:SourceArn': topic.ref }));
 
-        new sqs.QueuePolicyResource(this, 'MyQueuePolicy', {
+        new QueuePolicyResource(this, 'MyQueuePolicy', {
             policyDocument,
             queues: [ queue.ref ]
         });

@@ -1,5 +1,6 @@
 import { Arn } from '@aws-cdk/core';
-import { events, iam } from '@aws-cdk/resources';
+import * as iam from '@aws-cdk/iam';
+import * as events from '../cfn/events';
 
 export interface EventRuleTarget {
     /**

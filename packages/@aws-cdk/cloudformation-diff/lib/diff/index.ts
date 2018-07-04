@@ -1,4 +1,4 @@
-import { ResourceClass, resourceImplementationFor } from '@aws-cdk/resources';
+import { filteredSpecification, schema } from '@aws-cdk/cloudformation-resource-spec';
 import * as types from './types';
 import { diffKeyedEntities } from './util';
 
@@ -38,7 +38,8 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
         if (oldType !== newType) {
             resourceType = { oldType, newType };
         } else {
-            const impl = resourceImplementationFor(oldType);
+            const typeSpec = filteredSpecification(oldType);
+            const impl = typeSpec.ResourceTypes[oldType];
             propertyChanges = diffKeyedEntities(oldValue.Properties,
                                                 newValue.Properties,
                                                 (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
@@ -49,11 +50,11 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
 
     return new types.ResourceDifference(oldValue, newValue, { resourceType, propertyChanges, otherChanges });
 
-    function _diffProperty(oldV: any, newV: any, key: string, resourceClass?: ResourceClass) {
+    function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: schema.ResourceType) {
         let changeImpact: types.ResourceImpact | undefined;
-        const spec = resourceClass && resourceClass.resourceProperties[key];
+        const spec = resourceSpec && resourceSpec.Properties && resourceSpec.Properties[key];
         if (spec) {
-            switch (spec.updateType) {
+            switch (spec.UpdateType) {
             case 'Immutable':
                 changeImpact = types.ResourceImpact.WILL_REPLACE;
                 break;

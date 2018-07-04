@@ -1,7 +1,7 @@
 import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import { kinesis } from '@aws-cdk/resources';
+import * as kinesis from '../cfn/kinesis';
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call

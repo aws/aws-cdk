@@ -3,8 +3,8 @@ import { EventRule, EventRuleProps, EventRuleTarget } from '@aws-cdk/events';
 import { IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
-import { codebuild } from '@aws-cdk/resources';
 import { BucketRef } from '@aws-cdk/s3';
+import * as codebuild from '../cfn/codebuild';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { BuildSource } from './source';
 

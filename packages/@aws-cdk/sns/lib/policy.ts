@@ -1,5 +1,5 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import { sns } from '@aws-cdk/resources';
+import * as sns from '../cfn/sns';
 import { TopicRef } from './topic-ref';
 
 export interface TopicPolicyProps {

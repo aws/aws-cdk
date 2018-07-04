@@ -1,11 +1,11 @@
 import { App, Stack } from '@aws-cdk/core';
-import { sqs } from '@aws-cdk/resources';
+import { QueueResource } from '@aws-cdk/sqs';
 
 class CloudFormationExample extends Stack {
     constructor(parent: App) {
         super(parent);
 
-        new sqs.QueueResource(this, 'MyQueue', {
+        new QueueResource(this, 'MyQueue', {
             visibilityTimeout: 300
         });
     }

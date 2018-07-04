@@ -1,5 +1,5 @@
 import { Construct, Stack, Token, tokenAwareJsonify } from "@aws-cdk/core";
-import { cloudwatch } from "@aws-cdk/resources";
+import * as cloudwatch from '../cfn/cloudwatch';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
 

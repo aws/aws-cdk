@@ -1,5 +1,5 @@
 import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import { iam } from '@aws-cdk/resources';
+import * as iam from '../cfn/iam';
 import { IIdentityResource, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 

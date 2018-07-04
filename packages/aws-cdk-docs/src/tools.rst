@@ -90,7 +90,7 @@ Below are the actions you can take on your CDK app:
    ====
 
 .. Hang on, we tell them to use
-   npm run prepare
+   npm run build
    to compile and
    npm run watch
    in the getting started topic. Which is it???

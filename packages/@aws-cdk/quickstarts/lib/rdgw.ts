@@ -1,6 +1,6 @@
+import { StackResource } from '@aws-cdk/cloudformation';
 import { Construct } from '@aws-cdk/core';
 import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupRef, TcpPort, VpcNetworkRef } from '@aws-cdk/ec2';
-import { cloudformation } from '@aws-cdk/resources';
 
 export interface RemoteDesktopGatewayProps {
     rdgwCIDR: string;
@@ -43,7 +43,7 @@ export class RemoteDesktopGateway extends Construct implements IDefaultConnectab
             RDGWInstanceType: props.rdgwInstanceType,
         };
 
-        const nestedStack = new cloudformation.StackResource(this, 'Resource', {
+        const nestedStack = new StackResource(this, 'Resource', {
             templateUrl: 'https://s3.amazonaws.com/quickstart-reference/microsoft/rdgateway/latest/templates/rdgw-standalone.template',
             parameters: params
         });

@@ -1,6 +1,8 @@
 import { Construct } from '@aws-cdk/core';
-import { DefaultConnections, InstanceType, IPortRange, SecurityGroup, TcpPortFromAttribute } from '@aws-cdk/ec2';
-import { ec2, kms, rds } from '@aws-cdk/resources';
+// tslint:disable-next-line:ordered-imports
+import { DefaultConnections, InstanceType, IPortRange, SecurityGroup, TcpPortFromAttribute, SecurityGroupId } from '@aws-cdk/ec2';
+import { KeyArn } from '@aws-cdk/kms';
+import * as rds from '../cfn/rds';
 import { ClusterIdentifier, DatabaseClusterRef, Endpoint, InstanceIdentifier } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
 
@@ -70,7 +72,7 @@ export interface DatabaseClusterProps {
     /**
      * ARN of KMS key if you want to enable storage encryption
      */
-    kmsKeyArn?: kms.KeyArn;
+    kmsKeyArn?: KeyArn;
 
     /**
      * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -129,7 +131,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Security group identifier of this database
      */
-    protected securityGroupId: ec2.SecurityGroupId;
+    protected securityGroupId: SecurityGroupId;
 
     constructor(parent: Construct, name: string, props: DatabaseClusterProps) {
         super(parent, name);

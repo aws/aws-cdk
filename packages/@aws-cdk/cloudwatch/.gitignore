@@ -3,6 +3,7 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
+cfn
 dist
 lib/generated/resources.ts
 *.tgz

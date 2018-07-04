@@ -1,5 +1,5 @@
 import { Construct, Token } from '@aws-cdk/core';
-import { ec2 } from '@aws-cdk/resources';
+import * as ec2 from '../cfn/ec2';
 import { IConnectionPeer, IPortRange } from './connection';
 import { slugify } from './util';
 import { VpcNetworkRef } from './vpc-ref';

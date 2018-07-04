@@ -2,8 +2,9 @@
 //
 // Does not include the actual code generation itself.
 
+import { schema } from '@aws-cdk/cloudformation-resource-spec';
 import { toCamelCase, toPascalCase } from 'codemaker';
-import * as cfnspec from './cfnspec';
+import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import * as util from './util';
 
 const RESOURCE_CLASS_POSTFIX = 'Resource';
@@ -14,7 +15,7 @@ const RESOURCE_CLASS_POSTFIX = 'Resource';
  * This refers to TypeScript constructs (typically a class)
  */
 export class CodeName {
-    public static forResource(specName: cfnspec.SpecName): CodeName {
+    public static forResource(specName: SpecName): CodeName {
         let className = specName.resourceName;
 
         // add a "Resource" postfix to the class name (unless there is already a resource postfix).
@@ -33,7 +34,7 @@ export class CodeName {
         return new CodeName(resourceName.packageName, resourceName.namespace, `${resourceName.className}Props`, resourceName.specName);
     }
 
-    public static forPropertyType(specName: cfnspec.PropertyAttributeName): CodeName {
+    public static forPropertyType(specName: PropertyAttributeName): CodeName {
         // Exception for an intrinsic type
         if (specName.propAttrName === 'Tag' && specName.resourceName === '') {
             return TAG_NAME;
@@ -55,7 +56,7 @@ export class CodeName {
     constructor(readonly packageName: string,
                 readonly namespace: string,
                 readonly className: string,
-                readonly specName?: cfnspec.SpecName,
+                readonly specName?: SpecName,
                 readonly methodName?: string) {
     }
     // tslint:enable:no-shadowed-variable
@@ -100,7 +101,7 @@ export const TAG_NAME = new CodeName('', 'core', 'Tag');
 export const TOKEN_NAME = new CodeName('', 'core', 'Token');
 
 export class Attribute {
-    constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink: string) {
+    constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {
     }
 }
 
@@ -111,8 +112,8 @@ export class Attribute {
  *
  * Example: AWS::EC2 -> ec2
  */
-export function packageName(module: cfnspec.SpecName | string): string {
-    if (module instanceof cfnspec.SpecName) {
+export function packageName(module: SpecName | string): string {
+    if (module instanceof SpecName) {
         module = module.module;
     }
 
@@ -160,9 +161,9 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The type we will generate for the attribute, including its base class and docs.
  * - The property name we will use to refer to the attribute.
  */
-export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink: string): Attribute {
+export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink?: string): Attribute {
     // Original, unmodified CloudFormation name
-    const specName = new cfnspec.PropertyAttributeName(resourceName.specName!.module, resourceName.specName!.resourceName, attributeName); // "Arn"
+    const specName = new PropertyAttributeName(resourceName.specName!.module, resourceName.specName!.resourceName, attributeName); // "Arn"
 
     const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
     const propertyName = cloudFormationToScriptName(descriptiveName);            // "bucketArn"
@@ -228,15 +229,15 @@ export function cloudFormationToScriptName(name: string): string {
     return ret;
 }
 
-function specPrimitiveToCodePrimitive(type: cfnspec.PrimitiveType): CodeName {
+function specPrimitiveToCodePrimitive(type: schema.PrimitiveType): CodeName {
     switch (type) {
-        case cfnspec.PrimitiveType.Boolean: return CodeName.forPrimitive('boolean');
-        case cfnspec.PrimitiveType.Double: return CodeName.forPrimitive('number');
-        case cfnspec.PrimitiveType.Integer: return CodeName.forPrimitive('number');
-        case cfnspec.PrimitiveType.Json: return CodeName.forPrimitive('object');
-        case cfnspec.PrimitiveType.Long: return CodeName.forPrimitive('number');
-        case cfnspec.PrimitiveType.String: return CodeName.forPrimitive('string');
-        case cfnspec.PrimitiveType.Timestamp: return CodeName.forPrimitive('Date');
+        case 'Boolean': return CodeName.forPrimitive('boolean');
+        case 'Double': return CodeName.forPrimitive('number');
+        case 'Integer': return CodeName.forPrimitive('number');
+        case 'Json': return CodeName.forPrimitive('object');
+        case 'Long': return CodeName.forPrimitive('number');
+        case 'String': return CodeName.forPrimitive('string');
+        case 'Timestamp': return CodeName.forPrimitive('Date');
         default: throw new Error(`Invalid primitive type: ${type}`);
     }
 }
@@ -249,9 +250,9 @@ export function isPrimitive(type: CodeName): boolean {
         || type.className === 'Date';
 }
 
-export function specTypeToCodeType(contextResource: cfnspec.SpecName, type: string): CodeName {
-    if (cfnspec.isPrimitive(type)) {
-        return specPrimitiveToCodePrimitive(type as cfnspec.PrimitiveType);
+export function specTypeToCodeType(contextResource: SpecName, type: string): CodeName {
+    if (schema.isPrimitiveType(type)) {
+        return specPrimitiveToCodePrimitive(type);
     } else if (type === 'Tag') {
         // Tags are not considered primitive by the CloudFormation spec (even though they are intrinsic)
         // so we won't consider them primitive either.
@@ -265,7 +266,7 @@ export function specTypeToCodeType(contextResource: cfnspec.SpecName, type: stri
 /**
  * Translate a list of type references in a resource context to a list of code names
  */
-export function specTypesToCodeTypes(contextResource: cfnspec.SpecName, types: string[]): CodeName[] {
+export function specTypesToCodeTypes(contextResource: SpecName, types: string[]): CodeName[] {
     const ret = [];
 
     for (const type of types) {
@@ -285,15 +286,15 @@ export interface PropertyVisitor<T> {
     visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
 }
 
-export function typeDispatch<T>(resource: cfnspec.SpecName, spec: cfnspec.PropertySpec, visitor: PropertyVisitor<T>): T {
-    const scalarTypes = specTypesToCodeTypes(resource, cfnspec.scalarTypeNames(spec));
-    const itemTypes = specTypesToCodeTypes(resource, cfnspec.itemTypeNames(spec));
+export function typeDispatch<T>(resource: SpecName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
+    const scalarTypes = specTypesToCodeTypes(resource, scalarTypeNames(spec));
+    const itemTypes = specTypesToCodeTypes(resource, itemTypeNames(spec));
 
     if (scalarTypes.length && itemTypes.length) {
         // Can accept both a list and a scalar
         return visitor.visitListOrScalar(scalarTypes, itemTypes);
-    } else if (cfnspec.isCollection(spec)) {
-        if (cfnspec.isMap(spec)) {
+    } else if (schema.isCollectionProperty(spec)) {
+        if (schema.isMapProperty(spec)) {
             if (itemTypes.length > 1) {
                 return visitor.visitUnionMap(itemTypes);
             } else {

@@ -1,8 +1,12 @@
 import { AwsAccountId, Construct, FnConcat, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
-import { cloudtrail, logs } from '@aws-cdk/resources';
+import { LogGroupResource } from '@aws-cdk/logs';
 import { Bucket, BucketEncryption } from '@aws-cdk/s3';
+import * as cloudtrail from '../cfn/cloudtrail';
+
+// The L1 library for AWS::CloudTrail:
+export * from '../cfn/cloudtrail';
 
 export interface CloudTrailProps {
     /**
@@ -140,7 +144,7 @@ export class CloudTrail extends Construct {
             .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
 
         if (props.sendToCloudWatchLogs) {
-            const logGroup = new logs.LogGroupResource(this, "LogGroup", {
+            const logGroup = new LogGroupResource(this, "LogGroup", {
                 retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
             });
             this.cloudWatchLogsGroupArn = logGroup.ref;

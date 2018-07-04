@@ -1,6 +1,6 @@
+import { WaitConditionHandleResource } from '@aws-cdk/cloudformation';
 import { App, Stack } from '@aws-cdk/core';
 import { StackInfo, SynthesizedStack } from '@aws-cdk/cx-api';
-import { cloudformation } from '@aws-cdk/resources';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as crypto from 'crypto';
@@ -90,7 +90,7 @@ async function createEmptyStack(cfn: CloudFormation, stackName: string, quiet: b
     const app = new App();
     const stack = new Stack(app, stackName);
     stack.templateOptions.description = 'This is an empty stack created by AWS CDK during a deployment attempt';
-    new cloudformation.WaitConditionHandleResource(stack, 'WaitCondition');
+    new WaitConditionHandleResource(stack, 'WaitCondition');
     const template = (await app.synthesizeStack(stackName)).template;
 
     const response = await cfn.createStack({ StackName: stackName, TemplateBody: JSON.stringify(template, null, 2) }).promise();

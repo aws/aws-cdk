@@ -17,7 +17,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nodeunit test/test.*.js",
@@ -41,7 +41,8 @@
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/ec2": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
+    "@aws-cdk/kms": "^0.7.3-beta",
     "@aws-cdk/rds": "^0.7.3-beta",
-    "@aws-cdk/resources": "^0.7.3-beta"
+    "@aws-cdk/runtime": "^0.7.3-beta"
   }
 }

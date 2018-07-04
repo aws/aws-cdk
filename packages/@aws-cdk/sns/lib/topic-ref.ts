@@ -1,9 +1,10 @@
 import { IAlarmAction, Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { Arn, Construct, Output, PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { QueueRef } from '@aws-cdk/sqs';
+import * as sns from '../cfn/sns';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
@@ -11,11 +12,6 @@ import { Subscription, SubscriptionProtocol } from './subscription';
  * ARN of a Topic
  */
 export class TopicArn extends Arn { }
-
-/**
- * Name of a Topic
- */
-export class TopicName extends Token { }
 
 /**
  * Either a new or imported Topic
@@ -30,7 +26,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
 
     public abstract readonly topicArn: TopicArn;
 
-    public abstract readonly topicName: TopicName;
+    public abstract readonly topicName: sns.TopicName;
 
     /**
      * Controls automatic creation of policy objects.
@@ -284,7 +280,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
  */
 class ImportedTopic extends TopicRef {
     public readonly topicArn: TopicArn;
-    public readonly topicName: TopicName;
+    public readonly topicName: sns.TopicName;
 
     protected autoCreatePolicy: boolean = false;
 
@@ -300,7 +296,7 @@ class ImportedTopic extends TopicRef {
  */
 export interface TopicRefProps {
     topicArn: TopicArn;
-    topicName: TopicName;
+    topicName: sns.TopicName;
 }
 
 /**

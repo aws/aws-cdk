@@ -1,9 +1,12 @@
+import { StackResource } from '@aws-cdk/cloudformation';
 import * as cdk from '@aws-cdk/core';
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
-import { WindowsImage, WindowsVersion } from '@aws-cdk/ec2';
+import { InstanceResource, WindowsImage, WindowsVersion } from '@aws-cdk/ec2';
+import { } from '@aws-cdk/ec2';
 import { Role } from '@aws-cdk/iam';
-import { cloudformation, ec2, sns, sqs } from '@aws-cdk/resources';
 import { Bucket } from '@aws-cdk/s3';
+import { SubscriptionResource, TopicResource } from '@aws-cdk/sns';
+import { QueueResource } from '@aws-cdk/sqs';
 
 /**
  * This stack demonstrates the use of the IAM policy library shipped with the CDK.
@@ -54,7 +57,7 @@ class EnvContextExample extends cdk.Stack {
             // render construct name based on it's availablity zone
             const constructName = `InstanceFor${az.replace(/-/g, '').toUpperCase()}`;
 
-            new ec2.InstanceResource(this, constructName, {
+            new InstanceResource(this, constructName, {
                 imageId: ami.imageId,
                 availabilityZone: az,
             });
@@ -89,7 +92,7 @@ class IncludeExample extends cdk.Stack {
 
         // add constructs (and resources) programmatically
         new EnvContextExample(parent, 'Example');
-        new sqs.QueueResource(this, 'CDKQueue', {});
+        new QueueResource(this, 'CDKQueue', {});
     }
 }
 
@@ -103,7 +106,7 @@ class NestedStackExample extends cdk.Stack {
         // add an "AWS::CloudFormation::Stack" resource which uses the MongoDB quickstart
         // https://aws.amazon.com/quickstart/architecture/mongodb/
         // only non-default values are provided here.
-        new cloudformation.StackResource(this, 'NestedStack', {
+        new StackResource(this, 'NestedStack', {
             templateUrl: 'https://s3.amazonaws.com/quickstart-reference/mongodb/latest/templates/mongodb-master.template',
             parameters: {
                 KeyPairName: 'my-key-pair',
@@ -124,10 +127,10 @@ class ResourceReferencesExample extends cdk.Stack {
     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const topic = new sns.TopicResource(this, 'Topic', {});
-        const queue = new sqs.QueueResource(this, 'Queue', {});
+        const topic = new TopicResource(this, 'Topic', {});
+        const queue = new QueueResource(this, 'Queue', {});
 
-        new sns.SubscriptionResource(this, 'Subscription', {
+        new SubscriptionResource(this, 'Subscription', {
             topicArn: topic.ref, // resolves to { Ref: <topic-id> }
             protocol: 'sqs',
             endpoint: queue.queueArn // resolves to { "Fn::GetAtt": [ <queue-id>, "Arn" ] }

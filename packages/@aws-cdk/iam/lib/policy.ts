@@ -1,5 +1,5 @@
 import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import { iam } from '@aws-cdk/resources';
+import * as iam from '../cfn/iam';
 import { Group } from './group';
 import { Role } from './role';
 import { User } from './user';

@@ -1,6 +1,6 @@
 import { Arn, AwsStackName, Construct, FnConcat, PolicyStatement, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
-import { ssm } from '@aws-cdk/resources';
+import { ParameterResource } from '@aws-cdk/ssm';
 
 export interface RuntimeValueProps {
     /**
@@ -56,7 +56,7 @@ export class RuntimeValue extends Construct {
 
         this.parameterName = new FnConcat('/rtv/', new AwsStackName(), '/', props.package, '/', name);
 
-        new ssm.ParameterResource(this, 'Parameter', {
+        new ParameterResource(this, 'Parameter', {
             parameterName: this.parameterName,
             type: 'String',
             value: props.value,

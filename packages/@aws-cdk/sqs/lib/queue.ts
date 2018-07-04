@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
-import { EncryptionKey, EncryptionKeyRef } from '@aws-cdk/kms';
-import { kms, sqs } from '@aws-cdk/resources';
+import { EncryptionKey, EncryptionKeyRef, KeyArn } from '@aws-cdk/kms';
+import * as sqs from '../cfn/sqs';
 import { QueueRef, QueueUrl } from './queue-ref';
 import { validateProps } from './validate-props';
 
@@ -293,6 +293,6 @@ interface FifoProps {
 }
 
 interface EncryptionProps {
-    readonly kmsMasterKeyId?: string | kms.KeyArn;
+    readonly kmsMasterKeyId?: string | KeyArn;
     readonly kmsDataKeyReusePeriodSeconds?: number;
 }

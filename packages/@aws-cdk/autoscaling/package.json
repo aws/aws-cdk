@@ -1,0 +1,48 @@
+{
+  "name": "@aws-cdk/autoscaling",
+  "version": "0.7.3-beta",
+  "description": "The CDK Construct Library for Application AutoScaling",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [],
+    "names": {
+      "java": "com.amazonaws.cdk.autoscaling",
+      "dotnet": "Aws.Cdk.AutoScaling"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cfn2ts --scope=AWS::AutoScaling && jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "cloudlib",
+    "aws-cloudlib",
+    "aws-clib",
+    "autoscaling"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/runtime": "^0.7.3-beta"
+  }
+}

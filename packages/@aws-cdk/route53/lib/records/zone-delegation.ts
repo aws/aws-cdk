@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { route53 } from '@aws-cdk/resources';
+import * as route53 from '../../cfn/route53';
 import { HostedZoneRef } from '../hosted-zone-ref';
 import { determineFullyQualifiedDomainName } from './_util';
 

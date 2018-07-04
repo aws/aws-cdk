@@ -8,7 +8,7 @@
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
   "scripts": {
-    "prepare": "tsc && chmod +x bin/simple-resource-bundler && tslint -p . && pkglint",
+    "build": "tsc && chmod +x bin/simple-resource-bundler && tslint -p . && pkglint",
     "lint": "tsc && tslint *.ts --force",
     "watch": "tsc -w",
     "pkglint": "pkglint -f"

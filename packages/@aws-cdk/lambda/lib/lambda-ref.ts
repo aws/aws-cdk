@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import { lambda } from '@aws-cdk/resources';
+import * as lambda from '../cfn/lambda';
 import { LambdaPermission } from './permission';
 
 /**

@@ -1,5 +1,5 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import { sqs } from '@aws-cdk/resources';
+import * as sqs from '../cfn/sqs';
 import { QueueRef } from './queue-ref';
 
 export interface QueuePolicyProps {
