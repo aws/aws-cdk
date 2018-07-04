@@ -30,7 +30,7 @@ in :doc:`getting-started`.
 
 .. tabs::
 
-   .. code-tab:: js
+   .. code-tab:: ts
 
       import { App, Stack, StackProps } from '@aws-cdk/core';
       import { Topic } from '@aws-cdk/sns';
