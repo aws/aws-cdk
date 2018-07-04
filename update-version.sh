@@ -15,6 +15,9 @@ fi
 
 set -x
 
+git fetch --unshallow
+
+
 git log
 
 git tag
