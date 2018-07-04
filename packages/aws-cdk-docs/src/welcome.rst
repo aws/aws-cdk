@@ -28,30 +28,51 @@ We'll explain the code in more detail,
 including how to see your |CFN| template before you deploy it,
 in :doc:`getting-started`.
 
-.. code-block:: js
+.. tabs::
 
-    import { App, Stack, StackProps } from '@aws-cdk/core';
-    import { Topic } from '@aws-cdk/sns';
-    import { Queue } from '@aws-cdk/sqs';
+   .. code-tab:: js
 
-    class HelloStack extends Stack {
+      import { App, Stack, StackProps } from '@aws-cdk/core';
+      import { Topic } from '@aws-cdk/sns';
+      import { Queue } from '@aws-cdk/sqs';
+
+      class HelloStack extends Stack {
         constructor(parent: App, name: string, props?: StackProps) {
-            super(parent, name, props);
+          super(parent, name, props);
 
-            const topic = new Topic(this, 'MyTopic');
+          const topic = new Topic(this, 'MyTopic');
 
-            const queue = new Queue(this, 'MyQueue', {
-                visibilityTimeoutSec: 300
-            });
+          const queue = new Queue(this, 'MyQueue', {
+            visibilityTimeoutSec: 300
+          });
 
-            topic.subscribeQueue('TopicToQueue', queue);
+          topic.subscribeQueue(queue);
         }
-    }
+      }
 
-    const app = new App(process.argv);
-    new HelloStack(app, 'hello-cdk');
+   .. code-tab:: java
 
-    process.stdout.write(app.run());
+      import com.amazonaws.cdk.App;
+      import com.amazonaws.cdk.Stack;
+      import com.amazonaws.cdk.StackProps;
+      import com.amazonaws.cdk.sns.Topic;
+      import com.amazonaws.cdk.sns.TopicProps;
+      import com.amazonaws.cdk.sqs.Queue;
+      import com.amazonaws.cdk.sqs.QueueProps;
+
+      public class HelloStack extends Stack {
+          public HelloStack(final App parent, final String name, final StackProps props) {
+              super(parent, name, props);
+
+              Topic topic = new Topic(this, "MyTopic");
+
+              Queue queue = new Queue(this, "MyQueue", QueueProps.builder()
+                      .withVisibilityTimeoutSec(300)
+                      .build());
+
+              topic.subscribeQueue(queue);
+          }
+      }
 
 The process of creating your AWS resources using the |cdk| is straightforward:
 
