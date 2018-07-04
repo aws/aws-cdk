@@ -15,6 +15,9 @@ fi
 
 set -x
 
+git remote prune origin
+
+
 git fetch --unshallow
 
 
