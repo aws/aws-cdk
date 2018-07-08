@@ -8,6 +8,9 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
+.. note:: Some of the instructions in this topic will change when the CDK will be published
+   to the public package repositories.
+
 .. _getting_started:
 
 #############
