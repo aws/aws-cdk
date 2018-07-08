@@ -1,8 +1,4 @@
-Add alarms and graphs to CDK applications
-=========================================
-
-Metric objects
---------------
+## Metrics
 
 Metric objects represent a metric that is emitted by AWS services or your own
 application, such as `CPUUsage`, `FailureCount` or `Bandwidth`.
@@ -19,8 +15,7 @@ represents the amount of errors reported by that Lambda function:
 const errors = lambda.metricErrors();
 ```
 
-Aggregation
------------
+### Aggregation
 
 To graph or alarm on metrics you must aggregate them first, using a function
 like `Average` or a percentile function like `P99`. By default, most Metric objects
@@ -63,8 +58,7 @@ useful when embedding them in graphs, see below).
 > happen to know the Metric you want to alarm on makes sense as a rate
 > (`Average`) you can always choose to change the statistic.
 
-Alarms
-------
+## Alarms
 
 Alarms can be created on metrics in one of two ways. Either create an `Alarm`
 object, passing the `Metric` object to set the alarm on:
@@ -94,8 +88,7 @@ The most important properties to set while creating an Alarms are:
 - `evaluationPeriods`: how many consecutive periods the metric has to be
   breaching the the threshold for the alarm to trigger.
 
-Making Dashboards
------------------
+## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
 from the AWS console. Available widgets are graphs of a metric over time, the
@@ -168,8 +161,7 @@ dashboard.add(new TextWidget({
 }));
 ```
 
-Dashboard Layout
-----------------
+### Dashboard Layout
 
 The widgets on a dashboard are visually laid out in a grid that is 24 columns
 wide. Normally you specify X and Y coordinates for the widgets on a Dashboard,

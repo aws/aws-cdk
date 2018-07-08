@@ -30,14 +30,33 @@ in :doc:`getting-started`.
 
 .. tabs::
 
+   .. code-tab:: js
+
+      const cdk = require('@aws-cdk/core');
+      const sqs = require('@aws-cdk/sqs');
+      const sns = require('@aws-cdk/sns');
+
+      class HelloStack extends cdk.Stack {
+        constructor(parent, id, props) {
+          super(parent, id, props);
+
+          const topic = new Topic(this, 'MyTopic');
+          const queue = new Queue(this, 'MyQueue', {
+            visibilityTimeoutSec: 300
+          });
+
+          topic.subscribeQueue(queue);
+        }
+      }
+
    .. code-tab:: ts
 
-      import { App, Stack, StackProps } from '@aws-cdk/core';
+      import * as cdk from '@aws-cdk/core';
       import { Topic } from '@aws-cdk/sns';
       import { Queue } from '@aws-cdk/sqs';
 
-      class HelloStack extends Stack {
-        constructor(parent: App, name: string, props?: StackProps) {
+      class HelloStack extends cdk.Stack {
+        constructor(parent: App, name: string, props?: cdk.StackProps) {
           super(parent, name, props);
 
           const topic = new Topic(this, 'MyTopic');
@@ -76,7 +95,7 @@ in :doc:`getting-started`.
 
 The process of creating your AWS resources using the |cdk| is straightforward:
 
-1. Install the |cdk| on your development machine
+1. Install the |cdk| on your development machine (see setup instructions in README).
 2. Run the **cdk init** command to create the skeleton of your program
    in one of the supported programming languages
 3. Use your favorite development environment to define your AWS application infrastructure
