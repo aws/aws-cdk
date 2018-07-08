@@ -5,7 +5,7 @@
 The **AWS Cloud Development Kit (AWS CDK)** is a software development framework
 for defining cloud infrastructure in code.
 
-## Setup
+## Getting Started
 
 ### Prerequisites
 
