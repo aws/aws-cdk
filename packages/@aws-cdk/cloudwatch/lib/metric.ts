@@ -88,11 +88,11 @@ export class Metric {
      * @param identity The IAM identity to give permissions to.
      */
     public static grantPutMetricData(identity?: IIdentityResource) {
-        if (identity) {
-            identity.addToPolicy(new PolicyStatement()
-                .addAllResources()
-                .addAction("cloudwatch:PutMetricData"));
-        }
+        if (!identity) { return; }
+
+        identity.addToPolicy(new PolicyStatement()
+            .addAllResources()
+            .addAction("cloudwatch:PutMetricData"));
     }
 
     public readonly dimensions?: DimensionHash;
