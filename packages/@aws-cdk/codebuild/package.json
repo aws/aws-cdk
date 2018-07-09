@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/codebuild",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "CDK Constructs for AWS CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,19 +36,19 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.2-beta",
-    "@aws-cdk/sns": "^0.7.2-beta",
-    "aws-cdk": "^0.7.2-beta",
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "@aws-cdk/sns": "^0.7.3-beta",
+    "aws-cdk": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/codecommit": "^0.7.2-beta",
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/events": "^0.7.2-beta",
-    "@aws-cdk/iam": "^0.7.2-beta",
-    "@aws-cdk/kms": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta",
-    "@aws-cdk/s3": "^0.7.2-beta"
+    "@aws-cdk/codecommit": "^0.7.3-beta",
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/events": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta",
+    "@aws-cdk/kms": "^0.7.3-beta",
+    "@aws-cdk/resources": "^0.7.3-beta",
+    "@aws-cdk/s3": "^0.7.3-beta"
   }
 }

@@ -1,14 +1,87 @@
 ## [UNRELEASED]
 
- * Stopped bundling all dependencies in the release ZIP ([@RomainMuller] in [#161] and [awslabs/jsii#43])
- * Replaced `cdk-beta-npm` with more generic `y-npm` tool ([@RomainMuller] in [#162])
  * CloudWatch: add `Metric.grantPutMetricData()` to give `PutMetricData` permissions to IAM
-   identities. ([@rix0rrr] in [#258])
+   identities. ([#258])
+* [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
 
+[#258]: https://github.com/awslabs/aws-cdk/pull/258
+
+## 0.7.3 - 2018-07-09
+
+### Highlights
+
+ * Introducing Java support (see the __Getting Started__ documentation topic for
+   instructions on how to set up a Java project).
+ * Introduce a new programming model for CloudWatch metrics, alarms and
+   dashboards (see the [@aws-cdk/cloudwatch documentation]).
+ * Multiple documentation improvements (open with `cdk docs`).
+
+[@aws-cdk/cloudwatch documentation]: https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/cloudwatch/README.md
+
+### Known Issues
+
+ * Missing instructions for Windows Setup ([#138])
+ * `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
+ * Java: passing `null` behaves differently than no arguments. Workaround is to
+   build an empty object ([#157])
+
+### Changes
+
+ * Introduce Java support ([@eladb] in [#229], [#245], [#148], [#149])
+ * Changed the way the beta archive is structured to no longer bundle a
+   pre-installed `node_modules` directory but rather only a local npm
+   repository. This changes the setup instructions to require `y-npm i -g
+   aws-cdk` to install the toolkit on the system, which is more inline with the
+   setup experience post-beta  ([@RomainMuller] in [#161], [#162] and
+   [awslabs/jsii#43]).
+ * CloudWatch (new): introduce a rich programming model for metrics, alarms and
+   dashboards ([@rix0rrr] in [#180], [#194])
+ * S3 (feature): add support for SSE-S3 encryption ([@rix0rrr] in [#257])
+ * Lambda (feature): add support for node.js 8.10 runtime ([@RomainMuller] in
+   [#187])
+ * Runtime Values (fix): use allowed characters in SSM parameter name when
+   advertising a runtime value ([@eladb] in [#208])
+ * SNS (docs): convert examples in README into compiled code ([@rix0rrr] in
+   [#107])
+ * Toolkit (feature): introduce `cdk doctor` to collect information for
+   diagnostics ([@RomainMuller] in [#177])
+ * Toolkit (feature): align AWS credentials behavior to AWS CLI ([@RomainMuller]
+   in [#175])
+ * Toolkit (performance): cache default AWS account ID on disk ([@eladb] in
+   [#220])
+ * Docs: multiple updates ([@Doug-AWS] in [#142])
+ * Docs: improve topic on logical IDs ([@eladb] in [#209])
+ * Docs: add support for code snippets in multiple tabs ([@eladb] in [#231])
+ * Docs: rewrote the "Getting Started" documentation topic to include
+   step-by-step project setup details instead of using `cdk-init`. This is in
+   order to improve understanding of how the CDK works when users get started
+   ([@eladb] in [#245])
+ * Resource bundler: generate `.d.ts` ([@rix0rrr] in [#172])
+
+[#157]: https://github.com/awslabs/aws-cdk/pull/157
+[#256]: https://github.com/awslabs/aws-cdk/pull/256
+[#194]: https://github.com/awslabs/aws-cdk/pull/194
+[#180]: https://github.com/awslabs/aws-cdk/pull/180
+[#107]: https://github.com/awslabs/aws-cdk/pull/107
+[#175]: https://github.com/awslabs/aws-cdk/pull/175
+[#172]: https://github.com/awslabs/aws-cdk/pull/172
+[#142]: https://github.com/awslabs/aws-cdk/pull/142
+[#149]: https://github.com/awslabs/aws-cdk/pull/149
+[#148]: https://github.com/awslabs/aws-cdk/pull/148
+[#177]: https://github.com/awslabs/aws-cdk/pull/177
+[#257]: https://github.com/awslabs/aws-cdk/pull/257
+[#187]: https://github.com/awslabs/aws-cdk/pull/187
+[#209]: https://github.com/awslabs/aws-cdk/pull/209
+[#208]: https://github.com/awslabs/aws-cdk/pull/208
+[#229]: https://github.com/awslabs/aws-cdk/pull/229
+[#231]: https://github.com/awslabs/aws-cdk/pull/231
+[#220]: https://github.com/awslabs/aws-cdk/pull/220
 [#161]: https://github.com/awslabs/aws-cdk/pull/161
 [#162]: https://github.com/awslabs/aws-cdk/pull/162
-[#258]: https://github.com/awslabs/aws-cdk/pull/258
+[#245]: https://github.com/awslabs/aws-cdk/pull/245
 [awslabs/jsii#43]: https://github.com/awslabs/jsii/pull/43
+
+[@rix0rrr]: https://github.com/rix0rrr
 
 ## 0.7.2 - 2018-06-19
 
