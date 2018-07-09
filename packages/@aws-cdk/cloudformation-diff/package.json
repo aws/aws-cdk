@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cloudformation-diff",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "Utilities to diff CDK stacks against CloudFormation templates",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,10 +17,10 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/resources": "^0.7.2-beta",
+    "@aws-cdk/resources": "^0.7.3-beta",
     "colors": "^1.2.1",
     "source-map-support": "^0.5.6"
   },
