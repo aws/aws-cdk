@@ -11,7 +11,12 @@ const bucket = new Bucket(stack, 'MyBucket', {
     encryption: BucketEncryption.Kms
 });
 
+const otherwiseEncryptedBucket = new Bucket(stack, 'MyOtherBucket', {
+    encryption: BucketEncryption.S3Managed
+});
+
 const user = new User(stack, 'MyUser');
 bucket.grantReadWrite(user);
+otherwiseEncryptedBucket.grantRead(user);
 
 process.stdout.write(app.run());
