@@ -1,5 +1,7 @@
-import { Construct } from "@aws-cdk/core";
+import { Construct, PolicyStatement } from "@aws-cdk/core";
+import { IIdentityResource } from "@aws-cdk/iam";
 import { Alarm, ComparisonOperator, TreatMissingData } from "./alarm";
+import { parseStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
@@ -80,6 +82,19 @@ export interface MetricProps {
  * alarms and graphs.
  */
 export class Metric {
+    /**
+     * Grant permissions to the given identity to write metrics.
+     *
+     * @param identity The IAM identity to give permissions to.
+     */
+    public static grantPutMetricData(identity?: IIdentityResource) {
+        if (identity) {
+            identity.addToPolicy(new PolicyStatement()
+                .addAllResources()
+                .addAction("cloudwatch:PutMetricData"));
+        }
+    }
+
     public readonly dimensions?: DimensionHash;
     public readonly namespace: string;
     public readonly metricName: string;
@@ -366,53 +381,4 @@ function ifUndefined<T>(x: T | undefined, def: T | undefined): T | undefined {
         return x;
     }
     return def;
-}
-
-interface SimpleStatistic {
-    type: 'simple';
-    statistic: Statistic;
-}
-
-interface PercentileStatistic {
-    type: 'percentile';
-    percentile: number;
-}
-
-/**
- * Parse a statistic, returning the type of metric that was used (simple or percentile)
- */
-export function parseStatistic(stat: string): SimpleStatistic | PercentileStatistic {
-    const lowerStat = stat.toLowerCase();
-
-    // Simple statistics
-    const statMap: {[k: string]: Statistic} = {
-        average: Statistic.Average,
-        avg: Statistic.Average,
-        minimum: Statistic.Minimum,
-        min: Statistic.Minimum,
-        maximum: Statistic.Maximum,
-        max: Statistic.Maximum,
-        samplecount: Statistic.SampleCount,
-        n: Statistic.SampleCount,
-        sum: Statistic.Sum,
-    };
-
-    if (lowerStat in statMap) {
-        return {
-            type: 'simple',
-            statistic: statMap[lowerStat]
-        };
-    }
-
-    // Percentile statistics
-    const re = /^p([\d.]+)$/;
-    const m = re.exec(lowerStat);
-    if (m) {
-        return {
-            type: 'percentile',
-            percentile: parseFloat(m[1])
-        };
-    }
-
-    throw new Error(`Not a valid statistic: '${stat}', must be one of Average | Minimum | Maximum | SampleCount | Sum | pNN.NN`);
 }
