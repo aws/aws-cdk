@@ -77,6 +77,18 @@ export interface LambdaProps {
      * You can call `addToRolePolicy` to the created lambda to add statements post creation.
      */
     initialPolicy?: PolicyStatement[];
+
+    /**
+     * Lambda execution role.
+     *
+     * This is the role that will be assumed by the function upon execution.
+     * It controls the permissions that the function will have. The Role must
+     * be assumable by the 'lambda.amazonaws.com' service principal.
+     *
+     * @default a unique role will be generated for this lambda function.
+     * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
+     */
+    role?: Role;
 }
 
 /**
@@ -118,7 +130,7 @@ export class Lambda extends LambdaRef {
 
         this.environment = props.environment || { };
 
-        this.role = new Role(this, 'ServiceRole', {
+        this.role = props.role || new Role(this, 'ServiceRole', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
             // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
             managedPolicyArns: [  Arn.fromComponents({
