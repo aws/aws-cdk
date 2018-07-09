@@ -1,8 +1,8 @@
 import { Construct } from "@aws-cdk/core";
 import { Role } from "@aws-cdk/iam";
 import { lambda } from "@aws-cdk/resources";
-import { FunctionName, LambdaRef } from "./lambda-ref";
-import { LambdaPermission } from './permission';
+import { FunctionName, FunctionRef } from "./function-ref";
+import { FunctionPermission } from './permission';
 import { Version } from "./version";
 
 /**
@@ -51,7 +51,7 @@ export interface AliasProps {
 /**
  * A new alias to a particular version of a Lambda function.
  */
-export class Alias extends LambdaRef {
+export class Alias extends FunctionRef {
     /**
      * ARN of this alias
      *
@@ -78,7 +78,7 @@ export class Alias extends LambdaRef {
     /**
      * The actual Lambda function object that this Alias is pointing to
      */
-    private readonly underlyingLambda: LambdaRef;
+    private readonly underlyingLambda: FunctionRef;
 
     constructor(parent: Construct, name: string, props: AliasProps) {
         super(parent, name);
@@ -97,7 +97,7 @@ export class Alias extends LambdaRef {
         this.functionArn = alias.ref;
     }
 
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(name: string, permission: FunctionPermission) {
         // Forward addPermission() to the underlying Lambda object
         this.underlyingLambda.addPermission(name, permission);
     }

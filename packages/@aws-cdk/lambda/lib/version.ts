@@ -1,6 +1,6 @@
 import { Construct } from "@aws-cdk/core";
 import { lambda } from "@aws-cdk/resources";
-import { LambdaRef } from "./lambda-ref";
+import { FunctionRef } from "./function-ref";
 
 /**
  * Properties for a new Lambda version
@@ -25,7 +25,7 @@ export interface VersionProps {
     /**
      * Function to get the value of
      */
-    lambda: LambdaRef;
+    lambda: FunctionRef;
 }
 
 /**
@@ -53,7 +53,7 @@ export class Version extends Construct {
     /**
      * Lambda object this version is associated with
      */
-    public readonly lambda: LambdaRef;
+    public readonly lambda: FunctionRef;
 
     constructor(parent: Construct, name: string, props: VersionProps) {
         super(parent, name);

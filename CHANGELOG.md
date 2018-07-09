@@ -1,3 +1,8 @@
+## [UNRELEASED]
+
+* _BREAKING_: naming change in Lambda library. Classes that used to be named "Lambda"
+  are now named "Function" to match service terminology.
+
 ## 0.7.3 - 2018-07-09
 
 ### Highlights

@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
-import { LambdaInlineCode } from './code';
-import { Lambda } from './lambda';
-import { InlinableJavascriptLambdaRuntime, LambdaRuntime } from './runtime';
+import { FunctionInlineCode } from './code';
+import { Function } from './function';
+import { FunctionRuntime, InlinableJavascriptFunctionRuntime } from './runtime';
 
 /**
  * Defines the handler code for an inline JavaScript lambda function.
@@ -30,7 +30,7 @@ export interface IJavaScriptLambdaHandler {
     fn(event: any, context: any, callback: any): void;
 }
 
-export interface InlineJavaScriptLambdaProps {
+export interface InlineJavaScriptFunctionProps {
     /**
      * The lambda handler as a javascript function.
      *
@@ -68,7 +68,7 @@ export interface InlineJavaScriptLambdaProps {
      *
      * @default NodeJS810
      */
-    runtime?: InlinableJavascriptLambdaRuntime;
+    runtime?: InlinableJavascriptFunctionRuntime;
 
     /**
      * A name for the function. If you don't specify a name, AWS CloudFormation
@@ -93,7 +93,7 @@ export interface InlineJavaScriptLambdaProps {
  *
  * Usage:
  *
- *    new InlineJavaScriptLambda(this, 'MyFunc', {
+ *    new InlineJavaScriptFunction(this, 'MyFunc', {
  *      handler: {
  *        fn: (event, context, callback) => {
  *          console.log('hello, world');
@@ -105,10 +105,10 @@ export interface InlineJavaScriptLambdaProps {
  * This will define a node.js 6.10 function with the provided function has
  * the handler code.
  */
-export class InlineJavaScriptLambda extends Lambda {
-    constructor(parent: Construct, name: string, props: InlineJavaScriptLambdaProps) {
-        const code = new LambdaInlineCode(renderCode(props.handler));
-        const runtime: InlinableJavascriptLambdaRuntime = props.runtime || LambdaRuntime.NodeJS610;
+export class InlineJavaScriptFunction extends Function {
+    constructor(parent: Construct, name: string, props: InlineJavaScriptFunctionProps) {
+        const code = new FunctionInlineCode(renderCode(props.handler));
+        const runtime: InlinableJavascriptFunctionRuntime = props.runtime || FunctionRuntime.NodeJS610;
         const handler = 'index.handler';
         const timeout = props.timeout || 30;
         super(parent, name, {

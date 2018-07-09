@@ -1,5 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
-import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
+import { InlineJavaScriptFunction } from '@aws-cdk/lambda';
 import { Queue } from '@aws-cdk/sqs';
 import { RuntimeValue } from '../lib';
 
@@ -12,7 +12,7 @@ class TestStack extends Stack {
         super(parent, name);
 
         const queue = new Queue(this, 'MyQueue');
-        const fn = new InlineJavaScriptLambda(this, 'MyFunction', {
+        const fn = new InlineJavaScriptFunction(this, 'MyFunction', {
             handler: { fn: runtimeCode },
         });
 

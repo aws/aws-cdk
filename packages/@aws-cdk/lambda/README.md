@@ -1,9 +1,9 @@
 ## AWS Lambda Construct Library
 
 ```ts
-const fn = new Lambda(this, 'MyFunction', {
-    runtime: LambdaRuntime.DOTNETCORE_2,
-    code: new LambdaS3Code(bucket, 'myKey'),
+const fn = new Function(this, 'MyFunction', {
+    runtime: FunctionRuntime.DOTNETCORE_2,
+    code: new FunctionS3Code(bucket, 'myKey'),
     handler: 'index.handler'
 });
 
@@ -31,7 +31,7 @@ A few things to note:
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
 
-const lambda = new InlineJavaScriptLambda(this, 'MyLambda', {
+const lambda = new InlineJavaScriptFunction(this, 'MyLambda', {
     environment: {
         BUCKET_NAME: bucket.bucketName
     },

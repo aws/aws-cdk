@@ -1,14 +1,14 @@
 import { App, PolicyStatement, Stack } from '@aws-cdk/core';
-import { Alias, Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
+import { Alias, Function, FunctionInlineCode, FunctionRuntime } from '../lib';
 
 const app = new App(process.argv);
 
 const stack = new Stack(app, 'aws-cdk-lambda-1');
 
-const fn = new Lambda(stack, 'MyLambda', {
-    code: new LambdaInlineCode('foo'),
+const fn = new Function(stack, 'MyLambda', {
+    code: new FunctionInlineCode('foo'),
     handler: 'index.handler',
-    runtime: LambdaRuntime.NodeJS610,
+    runtime: FunctionRuntime.NodeJS610,
 });
 
 fn.addToRolePolicy(new PolicyStatement().addResource('*').addAction('*'));

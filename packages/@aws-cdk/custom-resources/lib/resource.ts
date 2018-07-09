@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { LambdaRef } from '@aws-cdk/lambda';
+import { FunctionRef } from '@aws-cdk/lambda';
 import { cloudformation } from '@aws-cdk/resources';
 import { TopicRef } from '@aws-cdk/sns';
 
@@ -15,11 +15,11 @@ export interface CustomResourceProps {
     /**
      * The Lambda provider that implements this custom resource.
      *
-     * We recommend using a SingletonLambda for this.
+     * We recommend using a SingletonLambdaFunction for this.
      *
      * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    lambdaProvider?: LambdaRef;
+    lambdaProvider?: FunctionRef;
 
     /**
      * The SNS Topic for the provider that implements this custom resource.

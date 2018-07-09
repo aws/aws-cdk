@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
 import { EventRule } from '@aws-cdk/events';
 import { Test } from 'nodeunit';
-import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
+import { Function, FunctionInlineCode, FunctionRuntime } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -10,10 +10,10 @@ export = {
     'default function'(test: Test) {
         const stack = new Stack();
 
-        new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('foo'),
             handler: 'index.handler',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
         });
 
         expect(stack).toMatch({ Resources:
@@ -44,10 +44,10 @@ export = {
 
     'adds policy permissions'(test: Test) {
         const stack = new Stack();
-        new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('foo'),
             handler: 'index.handler',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
             initialPolicy: [new PolicyStatement().addAction("*").addResource("*")]
         });
         expect(stack).toMatch({ Resources:
@@ -99,10 +99,10 @@ export = {
 
     'fails if inline code is used for an invalid runtime'(test: Test) {
         const stack = new Stack();
-        test.throws(() => new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        test.throws(() => new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('foo'),
             handler: 'bar',
-            runtime: LambdaRuntime.DotNetCore2
+            runtime: FunctionRuntime.DotNetCore2
         }));
         test.done();
     },
@@ -195,7 +195,7 @@ export = {
     },
 
     'import/export': {
-        'lambda.export() can be used to add Outputs to the stack and returns a LambdaRef object'(test: Test) {
+        'lambda.export() can be used to add Outputs to the stack and returns a FunctionRef object'(test: Test) {
             test.done();
         },
     },
@@ -232,9 +232,9 @@ export = {
 };
 
 function newTestLambda(parent: Construct) {
-    return new Lambda(parent, 'MyLambda', {
-        code: new LambdaInlineCode('foo'),
+    return new Function(parent, 'MyLambda', {
+        code: new FunctionInlineCode('foo'),
         handler: 'bar',
-        runtime: LambdaRuntime.Python27
+        runtime: FunctionRuntime.Python27
     });
 }

@@ -4,14 +4,14 @@ import { Bucket } from '@aws-cdk/s3';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';
 import * as path from 'path';
-import { InlineJavaScriptLambda } from '../lib';
+import { InlineJavaScriptFunction } from '../lib';
 
 export = {
     'inline node lambda allows plugging in javascript functions as handlers'(test: Test) {
 
         const stack = new Stack();
         const bucket = new Bucket(stack, 'MyBucket');
-        const lambda = new InlineJavaScriptLambda(stack, 'MyLambda', {
+        const lambda = new InlineJavaScriptFunction(stack, 'MyLambda', {
             environment: {
                 BUCKET_NAME: bucket.bucketName
             },

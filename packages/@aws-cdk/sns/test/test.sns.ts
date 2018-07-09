@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/core';
 import { EventRule } from '@aws-cdk/events';
 import { User } from '@aws-cdk/iam';
-import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
+import { InlineJavaScriptFunction } from '@aws-cdk/lambda';
 import { Queue } from '@aws-cdk/sqs';
 import { Test } from 'nodeunit';
 import { Topic } from '../lib';
@@ -215,7 +215,7 @@ export = {
                 displayName: 'displayName'
             });
 
-            const lambda = new InlineJavaScriptLambda(stack, 'MyFunc', {
+            const lambda = new InlineJavaScriptFunction(stack, 'MyFunc', {
                 handler: {
                     fn: (_event, _context, callback) => callback()
                 }
@@ -351,7 +351,7 @@ export = {
             });
 
             const queue = new Queue(stack, 'MyQueue');
-            const func = new InlineJavaScriptLambda(stack, 'MyLambda', {
+            const func = new InlineJavaScriptFunction(stack, 'MyLambda', {
                 handler: {
                     fn: (_event, _context, callback: any) => callback()
                 }

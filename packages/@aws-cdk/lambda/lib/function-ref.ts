@@ -4,12 +4,12 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { lambda } from '@aws-cdk/resources';
-import { LambdaPermission } from './permission';
+import { FunctionPermission } from './permission';
 
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface LambdaRefProps {
+export interface FunctionRefProps {
     /**
      * The ARN of the Lambda function.
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
@@ -23,20 +23,20 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget {
+export abstract class FunctionRef extends Construct implements IEventRuleTarget {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
      *
-     *      Lambda.import(this, 'MyImportedFunction', { lambdaArn: new LambdaArn('arn:aws:...') });
+     *      FunctionRef.import(this, 'MyImportedFunction', { functionArn: new FunctionArn('arn:aws:...') });
      *
      * @param parent The parent construct
      * @param name The name of the lambda construct
      * @param ref A reference to a Lambda function. Can be created manually (see
      * example above) or obtained through a call to `lambda.export()`.
      */
-    public static import(parent: Construct, name: string, ref: LambdaRefProps): LambdaRef {
-        return new LambdaRefImport(parent, name, ref);
+    public static import(parent: Construct, name: string, ref: FunctionRefProps): FunctionRef {
+        return new FunctionRefImport(parent, name, ref);
     }
 
     /**
@@ -55,7 +55,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * @default sum over 5 minutes
      */
     public static metricAllErrors(props?: MetricCustomization): Metric {
-        return LambdaRef.metricAll('Errors', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Errors', { statistic: 'sum', ...props });
     }
 
     /**
@@ -64,7 +64,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * @default average over 5 minutes
      */
     public static metricAllDuration(props?: MetricCustomization): Metric {
-        return LambdaRef.metricAll('Duration', props);
+        return FunctionRef.metricAll('Duration', props);
     }
 
     /**
@@ -73,7 +73,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * @default sum over 5 minutes
      */
     public static metricAllInvocations(props?: MetricCustomization): Metric {
-        return LambdaRef.metricAll('Invocations', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Invocations', { statistic: 'sum', ...props });
     }
 
     /**
@@ -82,7 +82,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * @default sum over 5 minutes
      */
     public static metricAllThrottles(props?: MetricCustomization): Metric {
-        return LambdaRef.metricAll('Throttles', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Throttles', { statistic: 'sum', ...props });
     }
 
     /**
@@ -117,7 +117,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * Adds a permission to the Lambda resource policy.
      * @param name A name for the permission construct
      */
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(name: string, permission: FunctionPermission) {
         if (!this.canCreatePermissions) {
             // FIXME: Report metadata
             return;
@@ -232,14 +232,14 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     }
 }
 
-class LambdaRefImport extends LambdaRef {
+class FunctionRefImport extends FunctionRef {
     public readonly functionName: FunctionName;
     public readonly functionArn: lambda.FunctionArn;
     public readonly role?: Role;
 
     protected readonly canCreatePermissions = false;
 
-    constructor(parent: Construct, name: string, props: LambdaRefProps) {
+    constructor(parent: Construct, name: string, props: FunctionRefProps) {
         super(parent, name);
 
         this.functionArn = props.functionArn;

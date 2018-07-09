@@ -1,12 +1,12 @@
 import { Construct, Stack } from "@aws-cdk/core";
 import { Role } from "@aws-cdk/iam";
-import { FunctionName, Lambda, LambdaPermission, LambdaProps, LambdaRef } from "@aws-cdk/lambda";
+import { Function, FunctionName, FunctionPermission, FunctionProps, FunctionRef } from "@aws-cdk/lambda";
 import { lambda } from "@aws-cdk/resources";
 
 /**
  * Properties for a newly created singleton Lambda
  */
-export interface SingletonLambdaProps extends LambdaProps {
+export interface SingletonLambdaProps extends FunctionProps {
     /**
      * A unique identifier to identify this lambda
      *
@@ -22,17 +22,17 @@ export interface SingletonLambdaProps extends LambdaProps {
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
  */
-export class SingletonLambda extends LambdaRef {
+export class SingletonLambda extends FunctionRef {
     public functionName: FunctionName;
     public functionArn: lambda.FunctionArn;
     public role?: Role | undefined;
     protected canCreatePermissions: boolean;
-    private lambdaFunction: LambdaRef;
+    private lambdaFunction: FunctionRef;
 
     constructor(parent: Construct, name: string, props: SingletonLambdaProps) {
         super(parent, name);
 
-        this.lambdaFunction = this.ensureLambda(props.uuid, props);
+        this.lambdaFunction = this.ensureFunction(props.uuid, props);
 
         this.functionArn = this.lambdaFunction.functionArn;
         this.functionName = this.lambdaFunction.functionName;
@@ -41,20 +41,20 @@ export class SingletonLambda extends LambdaRef {
         this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
     }
 
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(name: string, permission: FunctionPermission) {
         return this.lambdaFunction.addPermission(name, permission);
     }
 
-    private ensureLambda(uuid: string, props: LambdaProps): LambdaRef {
+    private ensureFunction(uuid: string, props: FunctionProps): FunctionRef {
         const constructName = 'SingletonLambda' + slugify(uuid);
         const stack = Stack.find(this);
         const existing = stack.tryFindChild(constructName);
         if (existing) {
             // Just assume this is true
-            return existing as LambdaRef;
+            return existing as FunctionRef;
         }
 
-        return new Lambda(stack, constructName, props);
+        return new Function(stack, constructName, props);
     }
 }
 

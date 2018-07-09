@@ -1,15 +1,15 @@
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal, resolve, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alias, Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
+import { Alias, Function, FunctionInlineCode, FunctionRuntime } from '../lib';
 
 export = {
     'version and aliases'(test: Test): void {
         const stack = new Stack();
-        const lambda = new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('hello()'),
+        const lambda = new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('hello()'),
             handler: 'index.hello',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
         });
 
         const version = lambda.addVersion('1');
@@ -42,10 +42,10 @@ export = {
     'can add additional versions to alias'(test: Test) {
         const stack = new Stack();
 
-        const lambda = new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('hello()'),
+        const lambda = new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('hello()'),
             handler: 'index.hello',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
         });
 
         const version1 = lambda.addVersion('1');
@@ -75,10 +75,10 @@ export = {
     'sanity checks on version weights'(test: Test) {
         const stack = new Stack();
 
-        const lambda = new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('hello()'),
+        const lambda = new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('hello()'),
             handler: 'index.hello',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
         });
 
         const version = lambda.addVersion('1');
@@ -106,10 +106,10 @@ export = {
         const stack = new Stack();
 
         // GIVEN
-        const lambda = new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('hello()'),
+        const lambda = new Function(stack, 'MyLambda', {
+            code: new FunctionInlineCode('hello()'),
             handler: 'index.hello',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: FunctionRuntime.NodeJS610,
         });
 
         const version = lambda.addVersion('1');

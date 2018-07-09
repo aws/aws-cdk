@@ -1,6 +1,6 @@
 import { expect } from '@aws-cdk/assert';
 import { Construct, Stack } from '@aws-cdk/core';
-import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
+import { FunctionInlineCode, FunctionRuntime } from '@aws-cdk/lambda';
 import { Test } from 'nodeunit';
 import { CustomResource, SingletonLambda } from '../lib';
 
@@ -94,8 +94,8 @@ class TestCustomResource extends Construct {
 
     const singletonLambda = new SingletonLambda(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
-      code: new LambdaInlineCode('def hello(): pass'),
-      runtime: LambdaRuntime.Python27,
+      code: new FunctionInlineCode('def hello(): pass'),
+      runtime: FunctionRuntime.Python27,
       handler: 'index.hello',
       timeout: 300,
     });

@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
-import { Lambda, LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
+import { Function, FunctionInlineCode, FunctionRuntime } from '@aws-cdk/lambda';
 import { Test } from 'nodeunit';
 import { Action, ActionArtifactBounds, ActionCategory, Artifact, InvokeLambdaAction, Pipeline, Stage } from '../lib';
 import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
@@ -92,10 +92,10 @@ export = {
     'InvokeLambdaAction can be used to invoke lambda functions from a pipeline'(test: Test) {
         const stack = new Stack();
 
-        const lambda = new Lambda(stack, 'Function', {
-            code: new LambdaInlineCode('bla'),
+        const lambda = new Function(stack, 'Function', {
+            code: new FunctionInlineCode('bla'),
             handler: 'index.handler',
-            runtime: LambdaRuntime.NodeJS43,
+            runtime: FunctionRuntime.NodeJS43,
         });
 
         const pipeline = new Pipeline(stack, 'Pipeline');

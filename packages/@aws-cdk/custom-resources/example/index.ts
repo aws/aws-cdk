@@ -1,5 +1,5 @@
 import { App, Construct, IDependable, Output, Stack, StackProps, Token } from '@aws-cdk/core';
-import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
+import { FunctionInlineCode, FunctionRuntime } from '@aws-cdk/lambda';
 import { s3 } from '@aws-cdk/resources';
 import fs = require('fs');
 import { CustomResource, SingletonLambda } from '../lib';
@@ -27,10 +27,10 @@ class DemoResource extends Construct implements IDependable {
             lambdaProvider: new SingletonLambda(this, 'Singleton', {
                 uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 // This makes the demo only work as top-level TypeScript program, but that's fine for now
-                code: new LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
+                code: new FunctionInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
                 handler: 'index.main',
                 timeout: 300,
-                runtime: LambdaRuntime.Python27,
+                runtime: FunctionRuntime.Python27,
             }),
             properties: props
         });
