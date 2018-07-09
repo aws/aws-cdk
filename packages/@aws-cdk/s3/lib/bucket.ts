@@ -340,6 +340,16 @@ export class Bucket extends BucketRef {
             return { encryptionKey, bucketEncryption };
         }
 
+        if (encryptionType === BucketEncryption.S3Managed) {
+            const bucketEncryption = {
+                serverSideEncryptionConfiguration: [
+                    { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
+                ]
+            };
+
+            return { bucketEncryption };
+        }
+
         if (encryptionType === BucketEncryption.KmsManaged) {
             const bucketEncryption = {
                 serverSideEncryptionConfiguration: [
@@ -406,9 +416,14 @@ export enum BucketEncryption {
     Unencrypted = 'NONE',
 
     /**
-     * Server-side KMS encryption with a master key managed by S3.
+     * Server-side KMS encryption with a master key managed by KMS.
      */
     KmsManaged = 'MANAGED',
+
+    /**
+     * Server-side encryption with a master key managed by S3.
+     */
+    S3Managed = 'S3MANAGED',
 
     /**
      * Server-side encryption with a KMS key managed by the user.
