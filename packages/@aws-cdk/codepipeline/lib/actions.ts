@@ -2,7 +2,7 @@ import { BuildProjectRef } from '@aws-cdk/codebuild';
 import { RepositoryRef } from '@aws-cdk/codecommit';
 import { Construct, PolicyStatement, Secret } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
-import { LambdaRef } from '@aws-cdk/lambda';
+import { FunctionRef } from '@aws-cdk/lambda';
 import { codepipeline } from '@aws-cdk/resources';
 import { BucketRef } from '@aws-cdk/s3';
 import { Artifact } from './artifact';
@@ -564,7 +564,7 @@ export interface InvokeLambdaProps {
     /**
      * The lambda function to invoke.
      */
-    lambda: LambdaRef;
+    lambda: FunctionRef;
 
     /**
      * String to be used in the event data parameter passed to the Lambda

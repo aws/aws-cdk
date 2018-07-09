@@ -1,18 +1,18 @@
 import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
 import { lambda } from '@aws-cdk/resources';
-import { LambdaCode } from './code';
-import { FunctionName, LambdaRef } from './lambda-ref';
-import { LambdaRuntime } from './runtime';
+import { FunctionCode } from './code';
+import { FunctionName, FunctionRef } from './function-ref';
+import { FunctionRuntime } from './runtime';
 import { Version } from './version';
 
-export interface LambdaProps {
+export interface FunctionProps {
     /**
      * The source code of your Lambda function. You can point to a file in an
      * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
      * code as inline text.
      */
-    code: LambdaCode;
+    code: FunctionCode;
 
     /**
      * A description of the function.
@@ -52,7 +52,7 @@ export interface LambdaProps {
      * For valid values, see the Runtime property in the AWS Lambda Developer
      * Guide.
      */
-    runtime: LambdaRuntime;
+    runtime: FunctionRuntime;
 
     /**
      * A name for the function. If you don't specify a name, AWS CloudFormation
@@ -90,7 +90,7 @@ export interface LambdaProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Lambda extends LambdaRef {
+export class Function extends FunctionRef {
     /**
      * Name of this function
      */
@@ -113,7 +113,7 @@ export class Lambda extends LambdaRef {
      */
     private readonly environment?: { [key: string]: any };
 
-    constructor(parent: Construct, name: string, props: LambdaProps) {
+    constructor(parent: Construct, name: string, props: FunctionProps) {
         super(parent, name);
 
         this.environment = props.environment || { };

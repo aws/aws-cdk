@@ -176,7 +176,7 @@ First import the required packages.
 .. code-block:: js
 
    import { App, Stack } from '@aws-cdk/core';
-   import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
+   import { Function, FunctionRuntime, FunctionS3Code } from '@aws-cdk/lambda';
    import { RuntimeValue } from '@aws-cdk/rtv';
    import { Bucket } from '@aws-cdk/s3';
    import { Topic } from '@aws-cdk/sns';
@@ -205,9 +205,9 @@ read permission for **MyTopicARN**.
 
    const bucket = new Bucket(this, 'MyBucket');
 
-   const lambda = new Lambda(this, 'MyFunction', {
-     runtime: LambdaRuntime.NodeJS610,
-     code: new LambdaS3Code(bucket, 'myKey'),
+   const lambda = new Function(this, 'MyFunction', {
+     runtime: FunctionRuntime.NodeJS610,
+     code: new FunctionS3Code(bucket, 'myKey'),
      handler: 'index.handler'
    });
 

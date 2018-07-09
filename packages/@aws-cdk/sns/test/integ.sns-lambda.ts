@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
-import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
+import { InlineJavaScriptFunction } from '@aws-cdk/lambda';
 import { Topic } from '../lib';
 
 class SnsToSqs extends Stack {
@@ -8,7 +8,7 @@ class SnsToSqs extends Stack {
 
         const topic = new Topic(this, 'MyTopic');
 
-        const lambda = new InlineJavaScriptLambda(this, 'Echo', {
+        const lambda = new InlineJavaScriptFunction(this, 'Echo', {
             handler: {
                 fn: (event, _context, callback) => {
                     // tslint:disable:no-console

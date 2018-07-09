@@ -1,6 +1,6 @@
 import { expect, matchTemplate } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
-import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
+import { FunctionInlineCode, FunctionRuntime } from '@aws-cdk/lambda';
 import { Test } from 'nodeunit';
 import { SingletonLambda } from '../lib';
 
@@ -13,8 +13,8 @@ export = {
     for (let i = 0; i < 5; i++) {
       new SingletonLambda(stack, `Singleton${i}`, {
         uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-        code: new LambdaInlineCode('def hello(): pass'),
-        runtime: LambdaRuntime.Python27,
+        code: new FunctionInlineCode('def hello(): pass'),
+        runtime: FunctionRuntime.Python27,
         handler: 'index.hello',
         timeout: 300,
       });

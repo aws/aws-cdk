@@ -2,7 +2,7 @@ import { IAlarmAction, Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
 import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
-import { LambdaRef } from '@aws-cdk/lambda';
+import { FunctionRef } from '@aws-cdk/lambda';
 import { QueueRef } from '@aws-cdk/sqs';
 import { TopicPolicy } from './policy';
 import { Subscription, SubscriptionProtocol } from './subscription';
@@ -113,7 +113,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      * @param name A name for the subscription
      * @param lambdaFunction The Lambda function to invoke
      */
-    public subscribeLambda(lambdaFunction: LambdaRef) {
+    public subscribeLambda(lambdaFunction: FunctionRef) {
         const subscriptionName = lambdaFunction.name + 'Subscription';
 
         if (this.tryFindChild(subscriptionName)) {

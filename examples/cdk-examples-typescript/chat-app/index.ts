@@ -1,5 +1,5 @@
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
+import { Function, FunctionRuntime, FunctionS3Code } from '@aws-cdk/lambda';
 import { BucketName, BucketRef } from '@aws-cdk/s3';
 import { CognitoChatRoomPool } from './CognitoChatRoomPool';
 import { DynamoPostsTable } from './DynamodbPostsTable';
@@ -76,11 +76,11 @@ interface ChatAppFuncProps {
 /*
  * Extend Function as all of the Chat app functions have these common props.
  */
-class ChatAppFunction extends Lambda {
+class ChatAppFunction extends Function {
     constructor(parent: Construct, name: string, props: ChatAppFuncProps) {
         super(parent, name, {
-            code: new LambdaS3Code(props.bucket, props.zipFile),
-            runtime: LambdaRuntime.NodeJS610,
+            code: new FunctionS3Code(props.bucket, props.zipFile),
+            runtime: FunctionRuntime.NodeJS610,
             handler: 'index.handler'
         });
     }

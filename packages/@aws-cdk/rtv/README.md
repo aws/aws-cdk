@@ -25,7 +25,7 @@ For example, say we want to publish a queue's URL to a lambda function.
 import { RuntimeValue } from '@aws-cdk/rtv'
 
 const queue = new Queue(this, 'MyQueue', { /* props.... */ });
-const fn = new Lambda(this, 'MyFunction', { /* props... */ });
+const fn = new Function(this, 'MyFunction', { /* props... */ });
 const fleet = new Fleet(this, 'MyFleet', { /* props... */ });
 
 // this line defines an AWS::SSM::Parameter resource with the

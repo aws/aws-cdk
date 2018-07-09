@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/s3';
-import { InlineJavaScriptLambda } from '../lib/inline';
+import { InlineJavaScriptFunction } from '../lib/inline';
 
 const app = new App(process.argv);
 
@@ -8,7 +8,7 @@ const stack = new Stack(app, 'aws-cdk-lambda-2');
 
 const bucket = new Bucket(stack, 'MyBucket');
 
-const lambda = new InlineJavaScriptLambda(stack, 'MyLambda', {
+const lambda = new InlineJavaScriptFunction(stack, 'MyLambda', {
     environment: {
         BUCKET_NAME: bucket.bucketName
     },
