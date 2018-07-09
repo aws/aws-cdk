@@ -93,7 +93,7 @@ function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModul
             if (args.verbose) {
                 setVerbose();
             }
-            return commandObject.handler(args);
+            return args.result = commandObject.handler(args);
         }
     };
 }
@@ -151,7 +151,7 @@ async function initCommandLine() {
 
     const cmd = argv._[0];
 
-    const returnValue = await main(cmd, argv);
+    const returnValue = await (argv.result || main(cmd, argv));
     if (typeof returnValue === 'object') {
         return toJsonOrYaml(returnValue);
     } else if (typeof returnValue === 'string') {

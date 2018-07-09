@@ -1,3 +1,7 @@
+## [UNRELEASED]
+
+* [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
+
 ## 0.7.3 - 2018-07-09
 
 ### Highlights

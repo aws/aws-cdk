@@ -7,14 +7,14 @@ export const command = 'doctor';
 export const describe = 'Check your set-up for potential problems';
 export const builder = {};
 
-export async function handler(): Promise<never> {
+export async function handler(): Promise<number> {
     let exitStatus: number = 0;
     for (const verification of verifications) {
         if (!await verification()) {
             exitStatus = -1;
         }
     }
-    return process.exit(exitStatus);
+    return exitStatus;
 }
 
 const verifications: Array<() => boolean | Promise<boolean>> = [
