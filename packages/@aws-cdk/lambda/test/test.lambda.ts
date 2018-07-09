@@ -203,9 +203,9 @@ export = {
             role.addToPolicy(new PolicyStatement().addAction('confirm:itsthesame'));
 
             // WHEN
-            const fn = new Function(stack, 'Function', {
-                code: new FunctionInlineCode('test'),
-                runtime: FunctionRuntime.Python36,
+            const fn = new Lambda(stack, 'Function', {
+                code: new LambdaInlineCode('test'),
+                runtime: LambdaRuntime.Python36,
                 handler: 'index.test',
                 role,
                 initialPolicy: [
