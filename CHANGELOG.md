@@ -1,6 +1,10 @@
 ## [UNRELEASED]
 
+ * CloudWatch: add `Metric.grantPutMetricData()` to give `PutMetricData` permissions to IAM
+   identities. ([#258])
 * [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
+
+[#258]: https://github.com/awslabs/aws-cdk/pull/258
 
 ## 0.7.3 - 2018-07-09
 
