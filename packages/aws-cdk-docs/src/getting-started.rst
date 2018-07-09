@@ -8,286 +8,779 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. note:: These instructions are only for the Amazon-internal preview of the |cdk|.
+.. note:: Some of the instructions in this topic will change when the CDK will be published
+   to the public package repositories.
 
 .. _getting_started:
 
-##############################
-Getting Started With the |cdk|
-##############################
+#############
+Hello, |cdk|!
+#############
 
-This topic provides information for those getting started with the |cdk-long| (|cdk|).
+This topic will walk you through creating and deploying your first CDK app.
 
-.. _hello_cdk:
-
-Hello, CDK!
-===========
-
-Let's use the |cdk| to create an |CFN| an |SQS| queue, an |SNS| topic, a subscription between the topic and the queue,
-and an |IAM| policy document that enables the
-topic to send messages to the queue.
-
-.. _create_dirs:
-
-Create Your Project Structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Use **cdk init --lang** *LANGUAGE* to create a skeleton for your |cdk| project
-in one of the supported programming languages.
-For the examples in this section we'll use TypeScript.
+The following instructions assume that you have already installed the CDK on
+your system. To verify, run the following command to verify that the installed
+version matches the version of this guide (|cdk-version|):
 
 .. code-block:: sh
 
-   mkdir hello-cdk
-   cd hello-cdk
-   cdk init --language=typescript
+    cdk --version
 
-The **cdk init** command creates the following:
+Initialize the project
+----------------------
 
-* *bin* contains the following files. The command creates *hello-cdk.ts* from a template,
-  and the other two files as it runs the TypeScript compiler:
+In this section we will create an empty project structure for your CDK app.
 
-   * *hello-cdk.d.ts*
-   * *hello-cdk.js*
-   * *hello-cdk.ts* is TypeScript source for the entry point to your app
-     (the file we'll update later)
+.. tabs::
 
-* *cdk.json* specifies the entry point to your app,
-  so that you can omit the **--app** option,
-  such as when running **cdk synth**
-* *node_module* contains the Node packages you need to develop your TypeScript source
-* *package.json* contains metadata for the app.
-* *package-lock.json* is the npm lockfile for package.json
-* *README.md* contains some information to help you from this point on
-* *tsconfig.json* contains definitions for the TypeScript compiler
+    .. group-tab:: JavaScript
 
-The command displays README.md as it finishes to give you information about some useful commands.
+        Create an empty source-controlled directory for your project and an
+        initial npm **package.json** file:
 
-Let's take a look at an annotated version of the file *hello-cdk.ts*.
+        .. code-block:: sh
 
-.. note:: You can use an IDE, such as
-   `Microsoft Visual Code <https://code.visualstudio.com/>`_,
-   `Sublime Text <https://www.sublimetext.com/>`_ with the
-   `Sublime TypeScript <https://github.com/Microsoft/TypeScript-Sublime-Plugin>`_ plugin, or
-   `Atom <https://atom.io/>`_ with the
-   `Atom TypeScript <https://atom.io/packages/atom-typescript>`_ plugin,
-   to get auto-completion in your Typescript code.
+            mkdir hello-cdk
+            cd hello-cdk
+            git init
+            npm init -y
 
-Replace the contents of the file *hello-cdk.ts* with the following code to create a class that
-extends **Stack**, and include some construction logic.
+    .. group-tab:: TypeScript
 
-.. code-block:: js
+        Create an empty source-controlled directory for your project and an
+        initial npm **package.json** file:
 
-    // You'll need this statement in every app
-    import { App, Stack, StackProps } from '@aws-cdk/core';
+        .. code-block:: sh
 
-    // The SNS resources, such as Topic, are defined in @aws-cdk/sns
-    import { Topic } from '@aws-cdk/sns';
+            mkdir hello-cdk
+            cd hello-cdk
+            git init
+            npm init -y # creates package.json
 
-    // The SQS resources, such as Queue, are defined in @aws-cdk/sqs
-    import { Queue } from '@aws-cdk/sqs';
+        Create a minimal **tsconfig.json**:
 
-    class HelloStack extends Stack {
-        // Instantiate HelloStack with a reference to its parent,
-        // as it might need some context;
-        // as it might need some context from the app;
-        // a name; and some optional properties.
-        // You'll almost always use these same two lines.
-        constructor(parent: App, name: string, props?: StackProps) {
-            super(parent, name, props);
+        .. code-block:: json
 
-            // Create an SNS topic
-            const topic = new Topic(this, 'MyTopic');
+            {
+                "compilerOptions": {
+                    "target": "es2018",
+                    "module": "commonjs"
+                }
+            }
 
-            // Create an SQS queue
-            const queue = new Queue(this, 'MyQueue', {
-                // By default you only get 30 seconds to delete a read message after you've read it;
-                // otherwise it becomes available to other consumers.
-                // This extends that duration to 5 minutes.
-                visibilityTimeoutSec: 300
-            });
+        Setup TypeScript build commands in **package.json**:
 
-            // Subscribe the topic to the queue
-            topic.subscribeQueue(queue);
+        .. code-block:: json
+
+            {
+                "scripts": {
+                    "build": "tsc",
+                    "watch": "tsc -w"
+                }
+            }
+
+    .. group-tab:: Java
+
+        Use your favorite IDE to create a Maven-based empty Java 8 project.
+
+        Set the Java **source** and **target** to 1.8 in your **pom.xml** file:
+
+        .. code-block:: xml
+
+            <!-- pom.xml -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+Add @aws-cdk/core as a dependency
+---------------------------------
+
+Now, we will install the CDK core library (:py:mod:`_aws-cdk_core`). This
+library includes the basic classes needed to write CDK stacks and apps.
+
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        Use **y-npm** to install the **@aws-cdk/core** package:
+
+        .. code-block:: sh
+
+            y-npm install @aws-cdk/core
+
+        .. note:: We are using **y-npm** instead of **npm** in order to install npm
+            modules from the local npm repository included with your CDK
+            installation. These instructions will change once the CDK will be
+            published publically.
+
+    .. group-tab:: TypeScript
+
+        Use **y-npm** to install the **@aws-cdk/core** package. We also need **@types/node**
+        since we will be using **process.argv** in our code:
+
+        .. code-block:: sh
+
+            y-npm install @aws-cdk/core @types/node
+
+        .. note:: We are using **y-npm** instead of **npm** in order to install npm
+            modules from the local npm repository included with your CDK
+            installation. These instructions will change once the CDK will be
+            published publically.
+
+    .. group-tab:: Java
+
+        Add the following to your project's `pom.xml` file:
+
+        .. code-block:: xml
+
+            <repositories>
+                <!-- Beta only: local CDK maven repo -->
+                <repository>
+                    <id>cdk</id>
+                    <url>file:///${env.HOME}/.cdk/repo/maven</url>
+                </repository>
+            </repositories>
+
+            <dependencies>
+                <dependency>
+                    <groupId>com.amazonaws.cdk</groupId>
+                    <artifactId>aws-cdk</artifactId>
+
+                    <!-- make sure to use the CDK installed version here (i.e. "0.7.3-beta") -->
+                    <version>0.7.3-beta</version>
+                </dependency>
+            </dependencies>
+
+        .. note:: The **<repository>** section is only needed during private Beta.
+
+Define your CDK app
+-------------------
+
+CDK apps are modeled as classes which extend the :py:class:`_aws-cdk_core.App`
+class. Let's create our first, empty **App**:
+
+.. tabs::
+
+    .. code-tab:: js
+
+        // index.js
+
+        const cdk = require('@aws-cdk/core');
+
+        class MyFirstApp extends cdk.App {
+            constructor(argv) {
+                super(argv);
+            }
         }
-    }
 
-    // Create a new App and associate the HelloStack stack with it.
-    const app = new App(process.argv);
-    new HelloStack(app, 'hello-cdk');
+        process.stdout.write(new MyFirstApp(process.argv).run());
 
-    // Boilerplate to produce the CloudFormation template
-    process.stdout.write(app.run());
+    .. code-tab:: ts
 
-.. _compile:
+        // index.ts
 
-Compiling the App
+        import * as cdk from '@aws-cdk/core';
+
+        class MyFirstApp extends cdk.App {
+            constructor(argv: string[]) {
+                super(argv);
+            }
+        }
+
+        process.stdout.write(new MyFirstApp(process.argv).run());
+
+    .. code-tab:: java
+
+        // src/main/java/com/acme/MyApp.java
+
+        package com.acme;
+
+        import com.amazonaws.cdk.App;
+
+        import java.util.Arrays;
+        import java.util.List;
+
+        public class MyApp extends App {
+            public MyApp(final List<String> argv) {
+                super(argv);
+            }
+
+            public static void main(final String[] argv) {
+                System.out.println(new MyApp(Arrays.asList(argv)).run());
+            }
+        }
+
+.. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
+    currently needed in order to allow the CDK Toolkit to interact with your app. In the future
+    the toolkit will include per-language shims that will remove this boilerplate.
+
+Compile your code
 -----------------
 
-Use the command for your programming language in the following table to compile your app.
-You must compile your app every time you change it.
+If needed, compile the code:
 
-.. list-table::
-  :widths: 1 2
-  :header-rows: 1
+.. tabs::
 
-  * - Language
-    - Compilation Command
+    .. group-tab:: JavaScript
 
-  * - TypeScript
-    - **npm run prepare**
-      (use **npm run watch** in a separate command window to watch for source changes and automatically recompile)
+        No need to compile
 
-.. _create_cloud_formation:
+    .. group-tab:: TypeScript
 
-Synthesizing a CloudFormation Template
+        To compile your program from **.ts** to **.js**:
+
+        .. code-block:: sh
+
+            npm run build
+
+        You can also use the **watch** command to continuously compile your code
+        as it changes, so you don't have to invoke the compiler explicitly:
+
+        .. code-block:: sh
+
+            # run in another terminal session
+            npm run watch
+
+    .. group-tab:: Java
+
+        Compile your code using your IDE or via the command line via **mvn**:
+
+        .. code-block:: sh
+
+            mvn compile
+
+This is it, you now created your first, alas empty, CDK app.
+
+Configure CDK toolkit via **cdk.json**
 --------------------------------------
 
-Use the **cdk synth** command to synthesize an |CFN| template for a stack in your app.
-You do not need to synthesize your |CFN| template to deploy it.
+We will now use the CDK toolkit to view the contents of this app.
 
-.. code-block:: console
+.. note::
 
-   cdk synth
+    You must specify your default credentials and region to use the toolkit,
 
-You should see output similar to the following:
+    Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
+    ``aws configure`` command to specify your default credentials and region.
+
+    Important: make sure that you explicitly specify a **region**.
+
+    You can also set environment variables for your default credentials and region.
+    Environment variables take precedence over settings in the credentials or config file.
+
+    * *AWS_ACCESS_KEY_ID* specifies your access key
+    * *AWS_SECRET_ACCESS_KEY* specifies your secret access key
+    * *AWS_DEFAULT_REGION* specifies your default region
+
+    See `Environment Variables <https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html>`_
+    in the CLI User Guide for details.
+
+The CDK toolkit needs to know how to execute your CDK app. It requires that the
+:code:`--app` command-line option will point to an executable program that adhere's
+to the toolkit's protocol (this is what the **ARGV/STDOUT** boilerplate
+implements). Alternatively to explicitly specifying :code:`--app` every time you use
+the toolkit, we recommend that you create a :code:`cdk.json` file at the root of
+your project directory:
+
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        Define the :code:`--app` option in **cdk.json** to execute **index.js**
+        using **node**:
+
+        .. code-block:: json
+
+            {
+              "app": "node index.js"
+            }
+
+    .. group-tab:: TypeScript
+
+        Define the :code:`--app` option in **cdk.json** to execute **index.js**
+        using **node**:
+
+        .. code-block:: json
+
+            {
+              "app": "node index.js"
+            }
+
+    .. group-tab:: Java
+
+        In order to execute our Java program, we will need to specify a
+        **CLASSPATH** which contains both our compiled code and dependencies.
+        We will use **maven-dependency-plugin** to produce a file **.classpath.txt**
+        whenever the project is compiled:
+
+        .. code-block:: xml
+
+            <!-- pom.xml -->
+
+            <build>
+                <plugins>
+                    <!-- ... -->
+
+                    <!-- Emit the classpath to ./.classpath.txt so cdk.json can use it -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.8</version>
+                        <executions>
+                        <execution>
+                            <id>build-classpath</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>build-classpath</goal>
+                            </goals>
+                            <configuration>
+                                <outputFile>.classpath.txt</outputFile>
+                            </configuration>
+                        </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+        Run **mvn compile** and verify the **.classpath.txt** exist:
+
+        .. code-block:: sh
+
+            mvn compile
+            ls .classpath.txt
+
+        Now, create a shim **app.sh** which will be used to execute our CDK Java app:
+
+        .. code-block:: sh
+
+            #!/bin/bash
+            exec java -cp target/classes:$(cat .classpath.txt) com.acme.MyApp app $@
+
+        And now we can define the :code:`-- app` option in **cdk.json**:
+
+        .. code-block:: json
+
+            {
+              "app": "/bin/bash ./app.sh"
+            }
+
+List all stacks in your app
+---------------------------
+
+To list the stacks in this app, you can use the CDK toolkit's **ls** command.
+
+.. code-block:: sh
+
+    cdk ls
+
+The result will be quite disappointing:
+
+.. code-block:: sh
+
+    []
+
+An empty array, which makes sense, since our app still doesn't have any stacks
+in it.
+
+Define a stack
+--------------
+
+Now, let's define our first stack and add it to our app.
+
+.. tabs::
+
+    .. code-tab:: js
+        :emphasize-lines: 4,5,6,7,8,14
+
+        // index.js
+        const cdk = require('@aws-cdk/core');
+
+        class MyFirstStack extends cdk.Stack {
+            constructor(parent, id, props) {
+                super(parent, id, props);
+            }
+        }
+
+        class MyFirstApp extends cdk.App {
+            constructor(argv) {
+                super(argv);
+
+                new MyFirstStack(this, 'hello-cdk');
+            }
+        }
+
+        process.stdout.write(new MyFirstApp(process.argv).run());
+
+    .. code-tab:: ts
+        :emphasize-lines: 4,5,6,7,8,14
+
+        // index.ts
+        import * as cdk from '@aws-cdk/core';
+
+        class MyFirstStack extends cdk.Stack {
+            constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+                super(parent, id, props);
+            }
+        }
+
+        class MyFirstApp extends cdk.App {
+            constructor(argv: string[]) {
+                super(argv);
+
+                new MyFirstStack(this, 'hello-cdk');
+            }
+        }
+
+        process.stdout.write(new MyFirstApp(process.argv).run());
+
+    .. code-tab:: java
+        :emphasize-lines: 1,2,3,4,5,6,7,8,9,10,11,25
+
+        // src/main/java/com/acme/MyStack.java
+
+        package com.acme;
+
+        import com.amazonaws.cdk.App;
+        import com.amazonaws.cdk.Stack;
+
+        public class MyStack extends Stack {
+            public MyStack(final App parent, final String id) {
+                super(parent, id);
+            }
+        }
+
+        // src/main/java/com/acme/MyApp.java
+        package com.acme;
+
+        import com.amazonaws.cdk.App;
+
+        import java.util.Arrays;
+        import java.util.List;
+
+        public class MyApp extends App {
+            public MyApp(final List<String> argv) {
+                super(argv);
+
+                new MyStack(this, "hello-cdk");
+            }
+
+            public static void main(final String[] argv) {
+                System.out.println(new MyApp(Arrays.asList(argv)).run());
+            }
+        }
+
+The initializer signature of **cdk.Stack** includes three arguments: **parent**,
+**id** and **props**. This is the signature for every class in the CDK
+framework. These classes are called **"constructs"** and they are composed
+together to a tree:
+
+* **parent** represents the parent construct. By specifying the parent construct
+  upon initialization, constructs can obtain contextual information when they
+  are initialized. For example, the region a stack is deployed to can be
+  obtained via a call to **Stack.find(this).requireRegion()**. See Context for
+  more information.
+* **id** is a local string identifier of the construct within the tree.
+  Constructs must have a unique ID amongst their siblings.
+* **props** is the set of initialization properties for this construct.
+
+Compile your program:
+
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+
+Now, when we run **cdk ls**, the result shows that your app includes a single
+stack:
+
+.. code-block:: sh
+
+    cdk ls  # don't forget to compile your project first!
+    -
+        name: hello-cdk
+        environment:
+            name: <your-account-id>/<your-default-region>
+            account: '<your-account-id>'
+            region: <your-default-region>
+
+Notice that your stack has been automatically associated with the default AWS
+account and region configured in the AWS CLI.
+
+Define an S3 bucket
+-------------------
+
+Now, what can we do with this app? Nothing yet. Our stack is still empty so,
+there's nothing to deploy.
+
+Let's define an S3 bucket.
+
+First, we need to install the **@aws-cdk/s3** package:
+
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        .. code-block:: sh
+
+            y-npm install @aws-cdk/s3
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            y-npm install @aws-cdk/s3
+
+    .. group-tab:: Java
+
+        During beta, we bundled all CDK modules into the aws-cdk Maven package, so
+        there is no need to explicitly install the S3 library.
+
+Now, let's define an S3 bucket in our stack. S3 buckets are represented by
+the :py:class:`_aws-cdk_s3.Bucket` class:
+
+.. tabs::
+
+    .. code-tab:: js
+        :emphasize-lines: 3,9,10,11
+
+        // index.js
+        const cdk = require('@aws-cdk/core');
+        const s3 = require('@aws-cdk/s3');
+
+        class MyFirstStack extends cdk.Stack {
+            constructor(parent, id, props) {
+                super(parent, id, props);
+
+                new s3.Bucket(this, 'MyFirstBucket', {
+                    versioned: true
+                });
+            }
+        }
+
+    .. code-tab:: ts
+        :emphasize-lines: 3,9,10,11
+
+        // index.ts
+        import * as cdk from '@aws-cdk/core';
+        import * as s3 from '@aws-cdk/s3';
+
+        class MyFirstStack extends cdk.Stack {
+            constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+                super(parent, id, props);
+
+                new s3.Bucket(this, 'MyFirstBucket', {
+                    versioned: true
+                });
+            }
+        }
+
+    .. code-tab:: java
+        :emphasize-lines: 6,7,13,14,15
+
+        // src/main/java/com/acme/MyStack.java
+        package com.acme;
+
+        import com.amazonaws.cdk.App;
+        import com.amazonaws.cdk.Stack;
+        import com.amazonaws.cdk.s3.Bucket;
+        import com.amazonaws.cdk.s3.BucketProps;
+
+        public class MyStack extends Stack {
+            public MyStack(final App parent, final String id) {
+                super(parent, id);
+
+                new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                        .withVersioned(true)
+                        .build());
+            }
+        }
+
+A few things to notice:
+
+* **s3.Bucket** is construct. This means it's initialization signature will have
+  **parent**, **id** and **props**. In this case, the bucket is an immediate
+  child of **MyStack**, it's id is 'MyFirstBucket'.
+* We configured out bucket to have versioning enabled by setting the
+  :code:`versioned` property to :code:`true`.
+
+Compile your program:
+
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+Synthesize a CloudFormation template
+------------------------------------
+
+Now, that our stack contains a bucket, we can ask the toolkit to synthesize a
+CloudFormation template for our stack (don't forget to compile your project):
+
+.. code-block:: sh
+
+    cdk synth hello-cdk
+
+.. note:: Since our CDK app only contains a single stack, you can omit :code:`hello-cdk`.
+
+This command will execute our CDK app and synthesize a CloudFormation template for the
+**hello-cdk** stack:
 
 .. code-block:: yaml
 
-   Resources:
-   MyTopic86869434:
-       Type: 'AWS::SNS::Topic'
-   MyTopicMyQueueSubscription3245B11E:
-       Type: 'AWS::SNS::Subscription'
-       Properties:
-           Endpoint:
-               'Fn::GetAtt':
-                   - MyQueueE6CA6235
-                   - Arn
-           Protocol: sqs
-           TopicArn:
-              Ref: MyTopic86869434
-   MyQueueE6CA6235:
-       Type: 'AWS::SQS::Queue'
-       Properties:
-           VisibilityTimeout: 300
-   MyQueuePolicy6BBEDDAC:
-       Type: 'AWS::SQS::QueuePolicy'
-       Properties:
-           PolicyDocument:
-               Statement:
-                   -
-                       Action: 'sqs:SendMessage'
-                       Condition:
-                           ArnEquals:
-                               'aws:SourceArn':
-                                   Ref: MyTopic86869434
-                       Effect: Allow
-                       Principal:
-                           Service: sns.amazonaws.com
-                       Resource:
-                           'Fn::GetAtt':
-                               - MyQueueE6CA6235
-                               - Arn
-               Version: '2012-10-17'
-           Queues:
-               -
-                   Ref: MyQueueE6CA6235
+    Resources:
+        MyFirstBucketB8884501:
+            Type: 'AWS::S3::Bucket'
+            Properties:
+                VersioningConfiguration:
+                    Status: Enabled
 
-As you can see, the call to :py:meth:`_aws-cdk_sns.TopicRef.subscribeQueue` on
-the :py:class:`_aws-cdk_sns.Topic` resulted in:
+You can see that the stack contains an **AWS::S3::Bucket** resource with the desired
+versioning configuration.
 
-1. Creating an **AWS::SNS::Subscription** associated with the queue and the topic.
-2. Adding a statement to the **AWS::SQS::QueuePolicy**, which allows the topic to send messages to the queue.
+Deploying our stack
+-------------------
 
-.. _deploy_your_stack:
-
-Deploying Your Stack
----------------------
-
-Use **cdk deploy** to deploy the stack. As **cdk deploy** executes you
-should see information messages, such as feedback from CloudFormation logs.
+To deploy our stack, use **cdk deploy**:
 
 .. code-block:: sh
 
-   cdk deploy
+    cdk deploy hello-cdk
 
-.. note:: You must specify your default credentials and region to use the **cdk deploy** command,
-   unless you explicitly set them when you create a stack.
-   The following examples creates a stack for account *ACCOUNT* in the region *REGION*.
+The **deploy** command will synthesize a CloudFormation template from your stack
+and then invoke the CloudFormation create/update API to deploy it into your AWS
+account. Progress will be emitted to your console.
 
-   :code:`new MyStack(app, { env: { region: 'REGION', account: 'ACCOUNT' } });`
+Modifying your code
+-------------------
 
-   Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
-   ``aws configure`` command to specify your default credentials and region.
-   
-   Important: make sure that you explicitly specify a **region**.
+Let's configure our bucket to use KMS managed encryption:
 
-.. You can also set environment variables for your default credentials and region.
-   Environment variables take precedence over settings in the credentials or config file.
+.. tabs::
 
-   * *AWS_ACCESS_KEY_ID* specifies your access key
-   * *AWS_SECRET_ACCESS_KEY* specifies your secret access key
-   * *AWS_DEFAULT_REGION* specifies your default region
+    .. code-tab:: js
+        :emphasize-lines: 3
 
-   See `Environment Variables <https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html>`_
-   in the CLI User Guide for details.
+        new s3.Bucket(this, 'MyFirstBucket', {
+            versioned: true,
+            encryption: s3.BucketEncryption.KmsManaged
+        });
 
-.. _making_changes:
 
-Making Changes
---------------
+    .. code-tab:: ts
+        :emphasize-lines: 3
 
-Let's change the visibility timeout of the queue from 300 to 500.
+        new s3.Bucket(this, 'MyFirstBucket', {
+            versioned: true,
+            encryption: s3.BucketEncryption.KmsManaged
+        });
 
-.. code-block:: javascript
+    .. code-tab:: java
+        :emphasize-lines: 3
 
-    const queue = new Queue(this, 'MyQueue', {
-        visibilityTimeoutSec: 500
-    });
+        new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                .withVersioned(true)
+                .withEncryption("MANAGED")
+                .build());
 
-Compile your app with **npm run prepare** if you aren't running **npm run watch** in a separate window.
+Compile your program:
 
-If you've deployed your stack previously,
-run the following command to see the difference between the *deployed* stack and your |cdk| project
-(if you haven't deployed the stack, you won't see any output):
+.. tabs::
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+Preparing for deployment using **cdk diff**
+-------------------------------------------
+
+Before we deploy our updated stack, we can use the **cdk diff* command to evaluate
+the difference between our CDK app and the deployed stack:
 
 .. code-block:: sh
 
-    # compile your code (depends on your language)
-    cdk diff
+    cdk diff hello-cdk
 
-You should see something like the following.
-
-.. code-block:: sh
-
-   [~] 🛠 Updating HelloCdkPbQueue8837C78B (type: AWS::SQS::Queue)
-    └─ [~] .VisibilityTimeout:
-        ├─ [-] Old value: 300
-        └─ [+] New value: 500
-
-If the changes are acceptable, run **cdk deploy** to update your
-infrastructure.
-
-Let's make a bigger change by adding an |S3| bucket to our stack.
-Run the following command to install the |S3| package.
+The toolkit will query your AWS account for the current CloudFormation template for the
+**hello-cdk** stack, and will compare the result with the template synthesized from your app.
+The output should look like this:
 
 .. code-block:: sh
 
-   npm install @aws-cdk/s3
+    [~] 🛠 Updating MyFirstBucketB8884501 (type: AWS::S3::Bucket)
+    └─ [+] .BucketEncryption:
+        └─ New value: {"ServerSideEncryptionConfiguration":[{"ServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}
 
-Add the following to the top of *hello-cdk.ts* (we recommend you keep your import statements sorted):
+As you can see, the diff indicates that the
+**ServerSideEncryptionConfiguration** property of the bucket is now set to
+enable server-side encryption.
 
-.. code-block:: js
+You can also that the bucket is not going to be replaced but rather updated
+("**Updating MyFirstBucketB8884501**").
 
-   import { Bucket } from '@aws-cdk/s3';
+Now, run **cdk deploy** to update your stack:
 
-Finally, create a bucket by adding the following to your constructor.
-Don't forget that |S3| has restrictions on bucket names.
-See `Rules for Bucket Naming <https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html#bucketnamingrules>`_.
+.. code-block:: sh
 
-.. code-block:: js
+    cdk deploy
 
-   new Bucket(this, "MyBucket", {
-       bucketName: "mygroovybucket"
-   })
+The toolkit will update your bucket configuration to enable server-side KMS
+encryption for your bucket:
+
+.. code-block:: sh
+
+    ⏳  Starting deployment of stack hello-cdk...
+    [0/2] UPDATE_IN_PROGRESS  [AWS::S3::Bucket] MyFirstBucketB8884501
+    [1/2] UPDATE_COMPLETE     [AWS::S3::Bucket] MyFirstBucketB8884501
+    [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
+    [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
+    ✅  Deployment of stack hello-cdk completed successfully

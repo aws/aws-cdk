@@ -15,15 +15,16 @@ User Guide
 ##########
 
 .. toctree::
+   :maxdepth: 2
+
    Welcome <welcome>
    Getting Started <getting-started>
-   Developing Libraries <guidelines>
-   Examples <examples>
    Concepts <concepts>
+   Examples <examples>
    Tools <tools>
    Advanced Topics <cloudformation>
    Glossary <glossary>
-   Reference <reference>
+   AWS Construct Library <reference>
 
 .. Removed on 6/20/2018: Developing Apps <writing-cdk-apps> (see https://github.com/awslabs/aws-cdk/pull/142)
 .. Incorporated into concepts: l1-vs-l2
