@@ -87,6 +87,20 @@
         }
       }
     },
+    "MyOtherBucket543F3540": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
     "MyUserDC45028B": {
       "Type": "AWS::IAM::User"
     },
@@ -144,6 +158,37 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyOtherBucket543F3540",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyOtherBucket543F3540",
+                          "Arn"
+                        ]
+                      },
+                      "/",
+                      "*"
+                    ]
+                  ]
+                }
+              ]
             }
           ],
           "Version": "2012-10-17"
