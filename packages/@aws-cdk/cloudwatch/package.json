@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/resources": "^0.7.3-beta"
+    "@aws-cdk/resources": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta"
   }
 }

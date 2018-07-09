@@ -1,6 +1,7 @@
 import { AwsRegion, Token } from "@aws-cdk/core";
 import { Alarm } from "./alarm";
-import { Metric, parseStatistic } from "./metric";
+import { Metric } from "./metric";
+import { parseStatistic } from './util.statistic';
 import { ConcreteWidget } from "./widget";
 
 /**
