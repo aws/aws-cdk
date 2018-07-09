@@ -95,7 +95,7 @@ in :doc:`getting-started`.
 
 The process of creating your AWS resources using the |cdk| is straightforward:
 
-1. Install the |cdk| on your development machine (see setup instructions in README).
+1. Follow the setup instructions to Install the |cdk| on your development machine.
 2. Run the **cdk init** command to create the skeleton of your program
    in one of the supported programming languages
 3. Use your favorite development environment to define your AWS application infrastructure
