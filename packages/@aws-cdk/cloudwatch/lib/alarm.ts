@@ -1,7 +1,8 @@
 import { Arn, Construct, Token } from '@aws-cdk/core';
 import { cloudwatch } from '@aws-cdk/resources';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, parseStatistic, Statistic, Unit } from './metric';
+import { Dimension, Metric, Statistic, Unit } from './metric';
+import { parseStatistic } from './util.statistic';
 
 /**
  * Properties for Alarms
