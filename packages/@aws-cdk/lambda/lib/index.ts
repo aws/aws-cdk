@@ -5,4 +5,7 @@ export * from './permission';
 export * from './runtime';
 export * from './code';
 export * from './inline';
-export * from './version';
+export * from './lambda-version';
+
+// AWS::Lambda CloudFormation Resources:
+export * from './lambda.generated';

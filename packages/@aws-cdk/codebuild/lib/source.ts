@@ -1,7 +1,7 @@
 import { Repository } from '@aws-cdk/codecommit';
 import { FnConcat, PolicyStatement } from '@aws-cdk/core';
-import { codebuild } from '@aws-cdk/resources';
 import { BucketRef } from '@aws-cdk/s3';
+import { cloudformation } from './codebuild.generated';
 import { BuildProject } from './project';
 
 /**
@@ -18,7 +18,7 @@ export abstract class BuildSource {
         return;
     }
 
-    public abstract toSourceJSON(): codebuild.ProjectResource.SourceProperty;
+    public abstract toSourceJSON(): cloudformation.ProjectResource.SourceProperty;
 }
 
 /**
@@ -36,7 +36,7 @@ export class CodeCommitSource extends BuildSource {
             .addResource(this.repo.repositoryArn));
     }
 
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.CodeCommit,
             location: this.repo.repositoryCloneUrlHttp
@@ -48,7 +48,7 @@ export class CodeCommitSource extends BuildSource {
  * CodePipeline Source definition for a CodeBuild project
  */
 export class CodePipelineSource extends BuildSource {
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.CodePipeline
         };
@@ -69,7 +69,7 @@ export class GitHubSource extends BuildSource {
         this.oauthToken = oauthToken;
     }
 
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.GitHub,
             auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
@@ -87,7 +87,7 @@ export class GitHubEnterpriseSource extends BuildSource {
         this.cloneUrl = cloneUrl;
     }
 
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.GitHubEnterPrise,
             location: this.cloneUrl,
@@ -103,7 +103,7 @@ export class BitBucketSource extends BuildSource {
         super();
         this.httpsCloneUrl = httpsCloneUrl;
     }
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.BitBucket,
             location: this.httpsCloneUrl
@@ -119,7 +119,7 @@ export class S3BucketSource extends BuildSource {
         super();
     }
 
-    public toSourceJSON(): codebuild.ProjectResource.SourceProperty {
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.S3,
             location: new FnConcat(this.bucket.bucketName, '/', this.path)

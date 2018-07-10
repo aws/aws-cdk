@@ -1,9 +1,10 @@
+import { cloudformation } from '@aws-cdk/cloudformation';
 import * as cdk from '@aws-cdk/core';
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
-import { WindowsImage, WindowsVersion } from '@aws-cdk/ec2';
-import { Role } from '@aws-cdk/iam';
-import { cloudformation, ec2, sns, sqs } from '@aws-cdk/resources';
-import { Bucket } from '@aws-cdk/s3';
+import * as ec2 from '@aws-cdk/ec2';
+import * as iam from '@aws-cdk/iam';
+import * as s3 from '@aws-cdk/s3';
+import * as sns from '@aws-cdk/sns';
+import * as sqs from '@aws-cdk/sqs';
 
 /**
  * This stack demonstrates the use of the IAM policy library shipped with the CDK.
@@ -14,16 +15,16 @@ class PolicyExample extends cdk.Stack {
 
         // here's how to create an IAM Role with an assume policy for the Lambda
         // service principal.
-        const role = new Role(this, 'Role', {
-            assumedBy: new ServicePrincipal('lambda.amazon.aws.com')
+        const role = new iam.Role(this, 'Role', {
+            assumedBy: new cdk.ServicePrincipal('lambda.amazon.aws.com')
         });
 
         // when you call `addToPolicy`, a default policy is defined and attached
         // to the bucket.
-        const bucket = new Bucket(this, 'MyBucket');
+        const bucket = new s3.Bucket(this, 'MyBucket');
 
         // the role also has a policy attached to it.
-        role.addToPolicy(new PolicyStatement()
+        role.addToPolicy(new cdk.PolicyStatement()
             .addResource(bucket.arnForObjects('*'))
             .addResource(bucket.bucketArn)
             .addActions('s3:*'));
@@ -44,7 +45,7 @@ class EnvContextExample extends cdk.Stack {
         const azs = new cdk.AvailabilityZoneProvider(this).availabilityZones;
 
         // get the AMI ID for a specific Windows version in this region
-        const ami = new WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase).getImage(this);
+        const ami = new ec2.WindowsImage(ec2.WindowsVersion.WindowsServer2016EnglishNanoBase).getImage(this);
 
         for (const az of azs) {
             if (typeof(az) !== 'string') {
@@ -54,7 +55,7 @@ class EnvContextExample extends cdk.Stack {
             // render construct name based on it's availablity zone
             const constructName = `InstanceFor${az.replace(/-/g, '').toUpperCase()}`;
 
-            new ec2.InstanceResource(this, constructName, {
+            new ec2.cloudformation.InstanceResource(this, constructName, {
                 imageId: ami.imageId,
                 availabilityZone: az,
             });
@@ -89,7 +90,7 @@ class IncludeExample extends cdk.Stack {
 
         // add constructs (and resources) programmatically
         new EnvContextExample(parent, 'Example');
-        new sqs.QueueResource(this, 'CDKQueue', {});
+        new sqs.cloudformation.QueueResource(this, 'CDKQueue', {});
     }
 }
 
@@ -124,10 +125,10 @@ class ResourceReferencesExample extends cdk.Stack {
     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const topic = new sns.TopicResource(this, 'Topic', {});
-        const queue = new sqs.QueueResource(this, 'Queue', {});
+        const topic = new sns.cloudformation.TopicResource(this, 'Topic', {});
+        const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
 
-        new sns.SubscriptionResource(this, 'Subscription', {
+        new sns.cloudformation.SubscriptionResource(this, 'Subscription', {
             topicArn: topic.ref, // resolves to { Ref: <topic-id> }
             protocol: 'sqs',
             endpoint: queue.queueArn // resolves to { "Fn::GetAtt": [ <queue-id>, "Arn" ] }

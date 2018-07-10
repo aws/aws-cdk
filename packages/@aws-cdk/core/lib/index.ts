@@ -24,3 +24,5 @@ export * from './cloudformation/token-aware-jsonify';
 export * from './app';
 export * from './context';
 export * from './environment';
+
+export * from './runtime';

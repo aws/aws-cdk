@@ -12,7 +12,7 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && /bin/bash ./build-docs.sh",
+    "build": "tslint -p . && tsc && /bin/bash ./build-docs.sh",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force"
   },

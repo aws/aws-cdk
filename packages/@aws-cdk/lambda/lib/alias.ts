@@ -1,9 +1,9 @@
-import { Construct } from "@aws-cdk/core";
-import { Role } from "@aws-cdk/iam";
-import { lambda } from "@aws-cdk/resources";
-import { FunctionName, LambdaRef } from "./lambda-ref";
+import { Construct } from '@aws-cdk/core';
+import { Role } from '@aws-cdk/iam';
+import { FunctionName, LambdaRef } from './lambda-ref';
+import { LambdaVersion } from './lambda-version';
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
-import { Version } from "./version";
 
 /**
  * Properties for a new Lambda alias
@@ -21,7 +21,7 @@ export interface AliasProps {
      *
      * Use lambda.addVersion() to obtain a new lambda version to refer to.
      */
-    version: Version;
+    version: LambdaVersion;
 
     /**
      * Name of this alias
@@ -66,7 +66,7 @@ export class Alias extends LambdaRef {
      * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
      * ARNs everywhere it accepts function names.
      */
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
 
     /**
      * Role associated with this alias
@@ -85,7 +85,7 @@ export class Alias extends LambdaRef {
 
         this.underlyingLambda = props.version.lambda;
 
-        const alias = new lambda.AliasResource(this, 'Resource', {
+        const alias = new cloudformation.AliasResource(this, 'Resource', {
             aliasName: props.aliasName,
             description: props.description,
             functionName: this.underlyingLambda.functionName,
@@ -146,7 +146,7 @@ export interface VersionWeight {
     /**
      * The version to route traffic to
      */
-    readonly version: Version;
+    readonly version: LambdaVersion;
 
     /**
      * How much weight to assign to this version (0..1)

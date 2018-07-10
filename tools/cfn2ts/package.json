@@ -13,7 +13,7 @@
     "cfn2ts": "bin/cfn2ts"
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cfn2ts && pkglint",
+    "build": "tslint -p . && tsc && chmod +x bin/cfn2ts && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nodeunit test/test.*.js",
@@ -25,6 +25,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "dependencies": {
+    "@aws-cdk/cdk-cfnspec": "^0.7.3-beta",
     "colors": "^1.2.1",
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^4.0.2",

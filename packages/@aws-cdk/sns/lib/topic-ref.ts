@@ -1,21 +1,17 @@
 import { IAlarmAction, Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { Arn, Construct, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { Arn, Construct, Output, PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { QueueRef } from '@aws-cdk/sqs';
 import { TopicPolicy } from './policy';
+import { TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 /**
  * ARN of a Topic
  */
 export class TopicArn extends Arn { }
-
-/**
- * Name of a Topic
- */
-export class TopicName extends Token { }
 
 /**
  * Either a new or imported Topic

@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import { lambda } from '@aws-cdk/resources';
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
 /**
@@ -14,7 +14,7 @@ export interface LambdaRefProps {
      * The ARN of the Lambda function.
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
      */
-    functionArn: lambda.FunctionArn;
+    functionArn: FunctionArn;
 
     /**
      * The IAM execution role associated with this function.
@@ -93,7 +93,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     /**
      * The ARN fo the function.
      */
-    public abstract readonly functionArn: lambda.FunctionArn;
+    public abstract readonly functionArn: FunctionArn;
 
     /**
      * The IAM role associated with this function.
@@ -126,7 +126,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
         const principal = this.parsePermissionPrincipal(permission.principal);
         const action = permission.action || 'lambda:InvokeFunction';
 
-        new lambda.PermissionResource(this, name, {
+        new cloudformation.PermissionResource(this, name, {
             action,
             principal,
             functionName: this.functionName,
@@ -234,7 +234,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
 
 class LambdaRefImport extends LambdaRef {
     public readonly functionName: FunctionName;
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
     public readonly role?: Role;
 
     protected readonly canCreatePermissions = false;

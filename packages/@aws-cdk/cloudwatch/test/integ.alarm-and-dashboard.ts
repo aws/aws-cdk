@@ -5,7 +5,7 @@
 // library support.
 
 import { App, Resource, Stack } from '@aws-cdk/core';
-import { AlarmWidget, Dashboard, GraphWidget, Metric, SingleValueWidget, TextWidget } from '../lib';
+import * as cloudwatch from '../lib';
 
 const app = new App(process.argv);
 
@@ -13,7 +13,7 @@ const stack = new Stack(app, `aws-cdk-cloudwatch`);
 
 const queue = new Resource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
-const metric = new Metric({
+const metric = new cloudwatch.Metric({
     namespace: 'AWS/SQS',
     metricName: 'ApproximateNumberOfMessagesVisible',
     dimensions: { QueueName: queue.getAtt('QueueName') }
@@ -24,21 +24,21 @@ const alarm = metric.newAlarm(stack, 'Alarm', {
     evaluationPeriods: 3
 });
 
-const dashboard = new Dashboard(stack, 'Dash');
+const dashboard = new cloudwatch.Dashboard(stack, 'Dash');
 dashboard.add(
-    new TextWidget({ markdown: '# This is my dashboard' }),
-    new TextWidget({ markdown: 'you like?' }),
+    new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),
+    new cloudwatch.TextWidget({ markdown: 'you like?' }),
 );
-dashboard.add(new AlarmWidget({
+dashboard.add(new cloudwatch.AlarmWidget({
     title: 'Messages in queue',
     alarm,
 }));
-dashboard.add(new GraphWidget({
+dashboard.add(new cloudwatch.GraphWidget({
     title: 'More messages in queue with alarm annotation',
     left: [metric],
     leftAnnotations: [alarm.toAnnotation()]
 }));
-dashboard.add(new SingleValueWidget({
+dashboard.add(new cloudwatch.SingleValueWidget({
     title: 'Current messages in queue',
     metrics: [metric]
 }));

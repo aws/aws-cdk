@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
+    "build": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
     "watch": "tsc -w",
     "lint": "tslint -p . --force",
     "test": "nodeunit test/test.*.js",
@@ -27,6 +27,7 @@
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/cx-api": "^0.7.3-beta",
+    "aws-cdk": "^0.7.3-beta",
     "source-map-support": "^0.5.6"
   },
   "repository": {

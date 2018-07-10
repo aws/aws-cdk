@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { DefaultConnections, IConnectable } from '@aws-cdk/ec2';
+import { KeyArn } from '@aws-cdk/kms';
 import { ClusterIdentifier, DatabaseCluster, DatabaseClusterEngine, Endpoint, InstanceIdentifier, InstanceProps, Login } from '@aws-cdk/rds';
-import { kms } from '@aws-cdk/resources';
 
 /**
  * Properties for a Neptune Graph Database Cluster
@@ -61,7 +61,7 @@ export interface NeptuneDatabaseProps {
     /**
      * ARN of KMS key if you want to enable storage encryption
      */
-    kmsKeyArn?: kms.KeyArn;
+    kmsKeyArn?: KeyArn;
 
     /**
      * A daily time range in 24-hours UTC format in which backups preferably execute.

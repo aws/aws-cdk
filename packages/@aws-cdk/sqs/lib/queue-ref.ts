@@ -1,6 +1,6 @@
 import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
-import { sqs } from '@aws-cdk/resources';
 import { QueuePolicy } from './policy';
+import { QueueArn } from './sqs.generated';
 
 /**
  * Reference to a new or existing Amazon SQS queue
@@ -16,7 +16,7 @@ export abstract class QueueRef extends Construct {
     /**
      * The ARN of this queue
      */
-    public abstract readonly queueArn: sqs.QueueArn;
+    public abstract readonly queueArn: QueueArn;
 
     /**
      * The URL of this queue
@@ -65,7 +65,7 @@ export abstract class QueueRef extends Construct {
  * Reference to a queue
  */
 export interface QueueRefProps {
-    queueArn: sqs.QueueArn;
+    queueArn: QueueArn;
     queueUrl: QueueUrl;
 }
 
@@ -73,7 +73,7 @@ export interface QueueRefProps {
  * A queue that has been imported
  */
 class ImportedQueue extends QueueRef {
-    public readonly queueArn: sqs.QueueArn;
+    public readonly queueArn: QueueArn;
     public readonly queueUrl: QueueUrl;
 
     protected readonly autoCreatePolicy = false;

@@ -1,7 +1,8 @@
 import { AwsRegion, Construct, Token } from '@aws-cdk/core';
 import { VpcNetworkRef } from '@aws-cdk/ec2';
-import { logs, route53 } from '@aws-cdk/resources';
+import { LogGroupArn } from '@aws-cdk/logs';
 import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';
+import { cloudformation, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
 /**
@@ -25,7 +26,7 @@ export interface PublicHostedZoneProps {
      *
      * @default no DNS query logging
      */
-    queryLogsLogGroupArn?: logs.LogGroupArn;
+    queryLogsLogGroupArn?: LogGroupArn;
 }
 
 /**
@@ -52,7 +53,7 @@ export class PublicHostedZone extends HostedZoneRef {
 
         validateZoneName(props.zoneName);
 
-        const hostedZone = new route53.HostedZoneResource(this, 'Resource', {
+        const hostedZone = new cloudformation.HostedZoneResource(this, 'Resource', {
             ...determineHostedZoneProps(props)
         });
 
@@ -92,14 +93,14 @@ export class PrivateHostedZone extends HostedZoneRef {
     /**
      * VPCs to which this hosted zone will be added
      */
-    private readonly vpcs: route53.HostedZoneResource.VPCProperty[] = [];
+    private readonly vpcs: cloudformation.HostedZoneResource.VPCProperty[] = [];
 
     constructor(parent: Construct, name: string, props: PrivateHostedZoneProps) {
         super(parent, name);
 
         validateZoneName(props.zoneName);
 
-        const hostedZone = new route53.HostedZoneResource(this, 'Resource', {
+        const hostedZone = new cloudformation.HostedZoneResource(this, 'Resource', {
             vpcs: new Token(() => this.vpcs ? this.vpcs : undefined),
             ...determineHostedZoneProps(props)
         });
@@ -120,11 +121,8 @@ export class PrivateHostedZone extends HostedZoneRef {
     }
 }
 
-function toVpcProperty(vpc: VpcNetworkRef): route53.HostedZoneResource.VPCProperty {
+function toVpcProperty(vpc: VpcNetworkRef): cloudformation.HostedZoneResource.VPCProperty {
     return { vpcId: vpc.vpcId, vpcRegion: new AwsRegion() };
-}
-
-export class HostedZoneNameServers extends Token {
 }
 
 function determineHostedZoneProps(props: PublicHostedZoneProps) {

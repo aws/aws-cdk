@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "echo ok",

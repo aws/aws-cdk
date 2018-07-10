@@ -4,7 +4,7 @@ set -euo pipefail
 PYTHON_DEPS="$PWD/python-deps"
 mkdir -p "${PYTHON_DEPS}"
 
-export PYTHONPATH=${PYTHON_DEPS}/lib/python3.6/site-packages
+export PYTHONPATH=${PYTHON_DEPS}/lib/python3.6/site-packages:${PYTHON_DEPS}/lib/python3.7/site-packages
 export PATH=${PYTHON_DEPS}/bin:$PATH
 
 #----------------------------------------------------------------------

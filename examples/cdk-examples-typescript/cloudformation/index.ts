@@ -1,17 +1,17 @@
-import { App, Stack } from '@aws-cdk/core';
-import { sqs } from '@aws-cdk/resources';
+import * as cdk from '@aws-cdk/core';
+import * as sqs from '@aws-cdk/sqs';
 
-class CloudFormationExample extends Stack {
-    constructor(parent: App) {
+class CloudFormationExample extends cdk.Stack {
+    constructor(parent: cdk.App) {
         super(parent);
 
-        new sqs.QueueResource(this, 'MyQueue', {
+        new sqs.cloudformation.QueueResource(this, 'MyQueue', {
             visibilityTimeout: 300
         });
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 new CloudFormationExample(app);
 

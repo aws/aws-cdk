@@ -8,7 +8,7 @@
     "cdk-applet-js": "bin/cdk-applet-js"
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
+    "build": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "test": "/bin/bash test/test-applet.sh",

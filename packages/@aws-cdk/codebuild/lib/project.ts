@@ -3,9 +3,9 @@ import { EventRule, EventRuleProps, EventRuleTarget } from '@aws-cdk/events';
 import { IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
-import { codebuild } from '@aws-cdk/resources';
 import { BucketRef } from '@aws-cdk/s3';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import { cloudformation, ProjectArn } from './codebuild.generated';
 import { BuildSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -55,7 +55,7 @@ export abstract class BuildProjectRef extends Construct implements IEventRuleTar
     }
 
     /** The ARN of this Project. */
-    public abstract readonly projectArn: codebuild.ProjectArn;
+    public abstract readonly projectArn: ProjectArn;
 
     /** The human-visible name of this Project. */
     public abstract readonly projectName: ProjectName;
@@ -195,7 +195,7 @@ export abstract class BuildProjectRef extends Construct implements IEventRuleTar
 }
 
 class ImportedBuildProjectRef extends BuildProjectRef {
-    public readonly projectArn: codebuild.ProjectArn;
+    public readonly projectArn: ProjectArn;
     public readonly projectName: ProjectName;
     public readonly role?: Role = undefined;
 
@@ -299,7 +299,7 @@ export class BuildProject extends BuildProjectRef {
     /**
      * The ARN of the project.
      */
-    public readonly projectArn: codebuild.ProjectArn;
+    public readonly projectArn: ProjectArn;
 
     /**
      * The name of the project.
@@ -315,7 +315,7 @@ export class BuildProject extends BuildProjectRef {
 
         const environment = this.renderEnvironment(props.environment, props.environmentVariables);
 
-        let cache: codebuild.ProjectResource.ProjectCacheProperty | undefined;
+        let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
         if (props.cacheBucket) {
             const cacheDir = props.cacheDir != null ? props.cacheDir : '';
             cache = {
@@ -341,7 +341,7 @@ export class BuildProject extends BuildProjectRef {
 
         this.validateCodePipelineSettings(source, artifacts);
 
-        const resource = new codebuild.ProjectResource(this, 'Resource', {
+        const resource = new cloudformation.ProjectResource(this, 'Resource', {
             description: props.description,
             source: sourceJson,
             artifacts: artifacts.toArtifactsJSON(),
@@ -387,8 +387,8 @@ export class BuildProject extends BuildProjectRef {
         return p;
     }
 
-    private renderEnvironment(env: BuildEnvironment = {}, projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-        codebuild.ProjectResource.EnvironmentProperty {
+    private renderEnvironment(env: BuildEnvironment = {},
+                              projectVars: { [name: string]: BuildEnvironmentVariable } = {}): cloudformation.ProjectResource.EnvironmentProperty {
 
         const vars: { [name: string]: BuildEnvironmentVariable } = {};
         const containerVars = env.environmentVariables || {};

@@ -11,12 +11,12 @@ rm -rf $BUILD_INDICATOR
 export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
-echo "boostrapping..."
-lerna bootstrap --reject-cycles
+echo "building..."
+lerna exec --stream "npm run build"
 
 echo "============================================================================================="
 echo "testing..."
-lerna run test --stream
+lerna run --stream test
 
 touch $BUILD_INDICATOR
 

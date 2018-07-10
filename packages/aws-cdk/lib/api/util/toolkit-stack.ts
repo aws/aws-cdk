@@ -1,34 +1,34 @@
-import { App, Output, Stack, StackProps } from '@aws-cdk/core';
-import { s3 } from '@aws-cdk/resources';
+import * as cdk from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/s3';
 
 /**
  * The CDK Toolkit stack provides resources necessary to deploy cloud executables into an AWS environment.
  */
-export class ToolkitStack extends Stack {
+export class ToolkitStack extends cdk.Stack {
     /** The name of the S3 bucket that can be used to stage CloudFormation templates for deployment. */
-    public readonly bucketNameOutput: Output;
+    public readonly bucketNameOutput: cdk.Output;
     /** The domain name of the S3 bucket that can be used to stage CloudFormation templates for deployment. */
-    public readonly bucketDomainNameOutput: Output;
+    public readonly bucketDomainNameOutput: cdk.Output;
 
-    constructor(parent: App, name: string, props: StackProps) {
+    constructor(parent: cdk.App, name: string, props: cdk.StackProps) {
         super(parent, name, props);
 
         // tslint:disable-next-line:max-line-length
         this.templateOptions.description = 'The CDK Toolkit Stack. It cas created by `cdk bootstrap` and manages resources necessary for managing your Cloud Applications with AWS CDK.';
 
-        const bucket = new s3.BucketResource(this, 'StagingBucket', {
+        const bucket = new s3.cloudformation.BucketResource(this, 'StagingBucket', {
             accessControl: 'Private',
             bucketEncryption: {
                 serverSideEncryptionConfiguration: [ { serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } } ]
             }
         });
 
-        this.bucketNameOutput = new Output(this, 'BucketName', {
+        this.bucketNameOutput = new cdk.Output(this, 'BucketName', {
             description: 'The name of the S3 bucket owned by the CDK toolkit stack',
             value: bucket.ref
         });
 
-        this.bucketDomainNameOutput = new Output(this, 'BucketDomainName', {
+        this.bucketDomainNameOutput = new cdk.Output(this, 'BucketDomainName', {
             description: 'The domain name of the S3 bucket owned by the CDK toolkit stack',
             value: bucket.bucketDomainName
         });

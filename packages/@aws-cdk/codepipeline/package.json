@@ -19,7 +19,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "cfn2ts --scope=AWS::CodePipeline && jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nodeunit test/test.*.js && cdk-integ-assert",
@@ -41,7 +41,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
     "@aws-cdk/sns": "^0.7.3-beta",
-    "aws-cdk": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
@@ -51,7 +51,6 @@
     "@aws-cdk/events": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
     "@aws-cdk/lambda": "^0.7.3-beta",
-    "@aws-cdk/resources": "^0.7.3-beta",
     "@aws-cdk/s3": "^0.7.3-beta",
     "@aws-cdk/util": "^0.7.3-beta"
   }
