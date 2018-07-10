@@ -12,7 +12,7 @@ you should use it for installing all dependencies for this project:
 
 # Useful commands
 
- * `npm run prepare` compile typescript to js
+ * `npm run build` compile typescript to js
  * `npm run watch`   watch for changes and compile
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state

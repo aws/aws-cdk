@@ -1,6 +1,6 @@
 import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import { iam } from '@aws-cdk/resources';
 import { Group } from './group';
+import { cloudformation } from './iam.generated';
 import { Role } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
@@ -96,7 +96,7 @@ export class Policy extends Construct implements IDependable {
     constructor(parent: Construct, name: string, props: PolicyProps = {}) {
         super(parent, name);
 
-        const resource = new iam.PolicyResource(this, 'Resource', {
+        const resource = new cloudformation.PolicyResource(this, 'Resource', {
             policyDocument: this.document,
             policyName: new Token(() => this.policyName),
             roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),

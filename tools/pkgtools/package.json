@@ -13,7 +13,7 @@
     "find-jsii-packages": "bin/find-jsii-packages"
   },
   "scripts": {
-    "prepare": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
+    "build": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
     "watch": "tsc -w",
     "lint": "tslint -p . --force",
     "pkglint": "pkglint -f"

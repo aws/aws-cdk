@@ -1,6 +1,6 @@
+import { cloudformation } from '@aws-cdk/cloudformation';
 import { App, Stack } from '@aws-cdk/core';
 import { StackInfo, SynthesizedStack } from '@aws-cdk/cx-api';
-import { cloudformation } from '@aws-cdk/resources';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors/safe';
 import * as crypto from 'crypto';

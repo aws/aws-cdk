@@ -12,7 +12,7 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "/bin/bash ./generate.sh && cd project && mvn package",
+    "build": "/bin/bash ./generate.sh && cd project && mvn package",
     "test": "echo ok"
   },
   "author": {

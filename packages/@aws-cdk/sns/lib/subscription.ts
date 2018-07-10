@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/core';
-import { sns } from '@aws-cdk/resources';
+import { cloudformation } from './sns.generated';
 import { TopicRef } from './topic-ref';
 
 /**
@@ -34,7 +34,7 @@ export class Subscription extends Construct {
     constructor(parent: Construct, name: string, props: SubscriptionProps) {
         super(parent, name);
 
-        new sns.SubscriptionResource(this, 'Resource', {
+        new cloudformation.SubscriptionResource(this, 'Resource', {
             endpoint: props.endpoint,
             protocol: props.protocol,
             topicArn: props.topic.topicArn

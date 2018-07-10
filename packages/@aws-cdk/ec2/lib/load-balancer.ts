@@ -1,5 +1,5 @@
 import { Arn, Construct, Token } from '@aws-cdk/core';
-import { elasticloadbalancing } from '@aws-cdk/resources';
+import * as elasticloadbalancing from '@aws-cdk/elasticloadbalancing';
 import { AnyIPv4, IConnectionPeer, IPortRange, TcpPort } from './connection';
 import { Connections, DefaultConnections, IConnectable, IDefaultConnectable } from './connections';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -200,9 +200,9 @@ export class ClassicLoadBalancer extends Construct implements IConnectable {
      */
     public readonly listenerPorts: ClassicListenerPort[] = [];
 
-    private readonly elb: elasticloadbalancing.LoadBalancerResource;
+    private readonly elb: elasticloadbalancing.cloudformation.LoadBalancerResource;
     private readonly securityGroup: SecurityGroup;
-    private readonly listeners: elasticloadbalancing.LoadBalancerResource.ListenersProperty[] = [];
+    private readonly listeners: elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty[] = [];
 
     private readonly instancePorts: number[] = [];
     private readonly targets: IClassicLoadBalancerTarget[] = [];
@@ -217,7 +217,7 @@ export class ClassicLoadBalancer extends Construct implements IConnectable {
         // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
         const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
-        this.elb = new elasticloadbalancing.LoadBalancerResource(this, 'Resource', {
+        this.elb = new elasticloadbalancing.cloudformation.LoadBalancerResource(this, 'Resource', {
             securityGroups: [ this.securityGroup.securityGroupId ],
             subnets: subnets.map(s => s.subnetId),
             listeners: new Token(() => this.listeners),
@@ -366,7 +366,7 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 /**
  * Turn health check parameters into a parameter blob for the Classic LB
  */
-function healthCheckToJSON(healthCheck: HealthCheck): elasticloadbalancing.LoadBalancerResource.HealthCheckProperty {
+function healthCheckToJSON(healthCheck: HealthCheck): elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty {
     const protocol = ifUndefined(healthCheck.protocol,
                      ifUndefined(tryWellKnownProtocol(healthCheck.port),
                      LoadBalancingProtocol.Tcp));

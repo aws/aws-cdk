@@ -203,23 +203,23 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
- * Prepare script must mention tslint
+ * Build script must mention tslint
  */
-export class PrepareScriptMustLint extends ValidationRule {
+export class BuildScriptMustLint extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        const prepare = pkg.npmScript('prepare');
+        const build = pkg.npmScript('build');
 
-        if (!prepare) {
+        if (!build) {
             pkg.report({
-                message: 'Must have a "prepare" script'
+                message: 'Must have a "build" script'
             });
             return;
         }
 
-        if (prepare.indexOf('tslint') === -1) {
+        if (build.indexOf('tslint') === -1) {
             pkg.report({
-                message: '"prepare" script must use tslint',
-                fix: () => { pkg.appendToNpmScript('prepare', 'tslint -p .'); }
+                message: '"build" script must use tslint',
+                fix: () => { pkg.appendToNpmScript('build', 'tslint -p .'); }
             });
         }
     }
@@ -301,18 +301,18 @@ export class MustHaveIntegCommand extends ValidationRule {
  *
  * (Except the validator itself)
  */
-export class PkgLintInPrepare extends ValidationRule {
+export class PkgLintInBuild extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (pkg.json.name === 'pkglint') {
             return;
         }
 
-        const prepare = pkg.npmScript('prepare');
+        const build = pkg.npmScript('build');
 
-        if (prepare.indexOf('pkglint') === -1) {
+        if (build.indexOf('pkglint') === -1) {
             pkg.report({
                 message: 'Package must use validator as part of build',
-                fix: () => { pkg.appendToNpmScript('prepare', 'pkglint'); }
+                fix: () => { pkg.appendToNpmScript('build', 'pkglint'); }
             });
         }
 
@@ -445,11 +445,11 @@ export class AllVersionsTheSame extends ValidationRule {
 /**
  * Determine whether this is a JSII package
  *
- * A package is a JSII package if the 'prepare' script mentions JSII.
+ * A package is a JSII package if the 'build' script mentions JSII.
  */
 function isJSII(pkg: PackageJson) {
-    const prepareScript = (pkg.json.scripts || {}).prepare || '';
-    return prepareScript.indexOf('jsii ') >= 0;
+    const buildScript = (pkg.json.scripts || {}).build || '';
+    return buildScript.indexOf('jsii ') >= 0;
 }
 
 /**

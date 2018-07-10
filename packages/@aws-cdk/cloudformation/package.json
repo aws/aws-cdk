@@ -1,0 +1,46 @@
+{
+  "name": "@aws-cdk/cloudformation",
+  "version": "0.7.3-beta",
+  "description": "CDK Constructs for AWS CloudFormation",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "bundledDependencies": [],
+    "names": {
+      "java": "com.amazonaws.cdk.cloudformation",
+      "dotnet": "Aws.Cdk.CloudFormation"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cfn2ts --scope=AWS::CloudFormation && jsii && tslint -p . && pkglint",
+    "watch": "jsii -w",
+    "lint": "tsc && tslint -p . --force",
+    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cloudformation"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "^0.7.3-beta"
+  }
+}
