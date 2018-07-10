@@ -1,6 +1,6 @@
+import { cloudformation } from '@aws-cdk/cloudformation';
 import { Construct } from '@aws-cdk/core';
 import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupRef, TcpPort, VpcNetworkRef } from '@aws-cdk/ec2';
-import { cloudformation } from '@aws-cdk/resources';
 
 export interface RemoteDesktopGatewayProps {
     rdgwCIDR: string;

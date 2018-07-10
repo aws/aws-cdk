@@ -15,7 +15,7 @@
         "y-npm": "bin/y-npm"
     },
     "scripts": {
-        "prepare": "tslint -p . && tsc && chmod +x bin/y-npm",
+        "build": "tslint -p . && tsc && chmod +x bin/y-npm",
         "watch": "tsc -w",
         "lint": "tslint -p .",
         "test": "/bin/bash test/test.sh"

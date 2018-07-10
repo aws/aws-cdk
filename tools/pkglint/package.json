@@ -16,7 +16,7 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "prepare": "tsc && tslint -p . && chmod +x bin/pkglint",
+    "build": "tsc && tslint -p . && chmod +x bin/pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force"
   },

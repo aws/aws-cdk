@@ -1,6 +1,6 @@
 import { Arn, Construct, Output } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
-import { codecommit } from '@aws-cdk/resources';
+import { cloudformation, RepositoryArn, RepositoryName } from './codecommit.generated';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.
@@ -10,7 +10,7 @@ export interface RepositoryRefProps {
      * The name of an existing CodeCommit Repository that we are referencing.
      * Must be in the same account and region as the root Stack.
      */
-    repositoryName: codecommit.RepositoryName;
+    repositoryName: RepositoryName;
 }
 
 /**
@@ -37,10 +37,10 @@ export abstract class RepositoryRef extends Construct {
     }
 
     /** The ARN of this Repository. */
-    public abstract readonly repositoryArn: codecommit.RepositoryArn;
+    public abstract readonly repositoryArn: RepositoryArn;
 
     /** The human-visible name of this Repository. */
-    public abstract readonly repositoryName: codecommit.RepositoryName;
+    public abstract readonly repositoryName: RepositoryName;
 
     /**
      * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
@@ -151,8 +151,8 @@ export abstract class RepositoryRef extends Construct {
 }
 
 class ImportedRepositoryRef extends RepositoryRef {
-    public readonly repositoryArn: codecommit.RepositoryArn;
-    public readonly repositoryName: codecommit.RepositoryName;
+    public readonly repositoryArn: RepositoryArn;
+    public readonly repositoryName: RepositoryName;
 
     constructor(parent: Construct, name: string, props: RepositoryRefProps) {
         super(parent, name);
@@ -182,13 +182,13 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryRef {
-    private readonly repository: codecommit.RepositoryResource;
-    private readonly triggers = new Array<codecommit.RepositoryResource.RepositoryTriggerProperty>();
+    private readonly repository: cloudformation.RepositoryResource;
+    private readonly triggers = new Array<cloudformation.RepositoryResource.RepositoryTriggerProperty>();
 
     constructor(parent: Construct, name: string, props: RepositoryProps) {
         super(parent, name);
 
-        this.repository = new codecommit.RepositoryResource(this, 'Resource', {
+        this.repository = new cloudformation.RepositoryResource(this, 'Resource', {
             repositoryName: props.repositoryName,
             repositoryDescription: props.description,
             triggers: this.triggers

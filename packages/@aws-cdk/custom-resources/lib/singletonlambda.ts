@@ -1,7 +1,6 @@
 import { Construct, Stack } from "@aws-cdk/core";
 import { Role } from "@aws-cdk/iam";
-import { FunctionName, Lambda, LambdaPermission, LambdaProps, LambdaRef } from "@aws-cdk/lambda";
-import { lambda } from "@aws-cdk/resources";
+import { FunctionArn, FunctionName, Lambda, LambdaPermission, LambdaProps, LambdaRef } from "@aws-cdk/lambda";
 
 /**
  * Properties for a newly created singleton Lambda
@@ -24,7 +23,7 @@ export interface SingletonLambdaProps extends LambdaProps {
  */
 export class SingletonLambda extends LambdaRef {
     public functionName: FunctionName;
-    public functionArn: lambda.FunctionArn;
+    public functionArn: FunctionArn;
     public role?: Role | undefined;
     protected canCreatePermissions: boolean;
     private lambdaFunction: LambdaRef;

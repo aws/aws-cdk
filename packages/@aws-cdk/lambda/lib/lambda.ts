@@ -1,10 +1,10 @@
 import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
-import { lambda } from '@aws-cdk/resources';
 import { LambdaCode } from './code';
 import { FunctionName, LambdaRef } from './lambda-ref';
+import { LambdaVersion } from './lambda-version';
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaRuntime } from './runtime';
-import { Version } from './version';
 
 export interface LambdaProps {
     /**
@@ -111,7 +111,7 @@ export class Lambda extends LambdaRef {
     /**
      * ARN of this function
      */
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
 
     /**
      * Execution role associated with this function
@@ -146,7 +146,7 @@ export class Lambda extends LambdaRef {
             this.role.addToPolicy(statement);
         }
 
-        const resource = new lambda.FunctionResource(this, 'Resource', {
+        const resource = new cloudformation.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
             description: props.description,
             code: props.code.toJSON(props.runtime),
@@ -194,8 +194,8 @@ export class Lambda extends LambdaRef {
      * @param description A description for this version.
      * @returns A new Version object.
      */
-    public addVersion(name: string, codeSha256?: string, description?: string): Version {
-        return new Version(this, 'Version' + name, {
+    public addVersion(name: string, codeSha256?: string, description?: string): LambdaVersion {
+        return new LambdaVersion(this, 'Version' + name, {
             lambda: this,
             codeSha256,
             description,

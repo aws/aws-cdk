@@ -1,5 +1,5 @@
 import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import { iam } from '@aws-cdk/resources';
+import { cloudformation, RoleArn } from './iam.generated';
 import { IIdentityResource, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -58,7 +58,7 @@ export class Role extends Construct implements IIdentityResource, IDependable {
     /**
      * Returns the ARN of this role.
      */
-    public readonly roleArn: iam.RoleArn;
+    public readonly roleArn: RoleArn;
 
     /**
      * Returns the name of the role.
@@ -85,7 +85,7 @@ export class Role extends Construct implements IIdentityResource, IDependable {
         this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
         this.managedPolicies = props.managedPolicyArns || [ ];
 
-        const role = new iam.RoleResource(this, 'Resource', {
+        const role = new cloudformation.RoleResource(this, 'Resource', {
             assumeRolePolicyDocument: this.assumeRolePolicy as any,
             managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
             path: props.path,

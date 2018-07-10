@@ -1,6 +1,6 @@
+import { cloudformation } from '@aws-cdk/cloudformation';
 import { Construct } from '@aws-cdk/core';
 import { LambdaRef } from '@aws-cdk/lambda';
-import { cloudformation } from '@aws-cdk/resources';
 import { TopicRef } from '@aws-cdk/sns';
 
 /**

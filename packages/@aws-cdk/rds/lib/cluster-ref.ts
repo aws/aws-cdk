@@ -1,6 +1,6 @@
 import { Construct, FnJoin, Output, StringListOutput, Token } from '@aws-cdk/core';
-import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupRef, TcpPortFromAttribute } from '@aws-cdk/ec2';
-import { ec2, rds } from '@aws-cdk/resources';
+import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupId, SecurityGroupRef, TcpPortFromAttribute } from '@aws-cdk/ec2';
+import { DBClusterEndpointAddress } from './rds.generated';
 
 /**
  * Create a clustered database with a given number of instances.
@@ -51,7 +51,7 @@ export abstract class DatabaseClusterRef extends Construct implements IDefaultCo
     /**
      * The security group for this database cluster
      */
-    protected abstract readonly securityGroupId: ec2.SecurityGroupId;
+    protected abstract readonly securityGroupId: SecurityGroupId;
 
     /**
      * Export a Database Cluster for importing in another stack
@@ -82,7 +82,7 @@ export interface DatabaseClusterRefProps {
     /**
      * The security group for this database cluster
      */
-    securityGroupId: ec2.SecurityGroupId;
+    securityGroupId: SecurityGroupId;
 
     /**
      * Identifier for the cluster
@@ -97,17 +97,17 @@ export interface DatabaseClusterRefProps {
     /**
      * Cluster endpoint address
      */
-    clusterEndpointAddress: rds.DBClusterEndpointAddress;
+    clusterEndpointAddress: DBClusterEndpointAddress;
 
     /**
      * Reader endpoint address
      */
-    readerEndpointAddress: rds.DBClusterEndpointAddress;
+    readerEndpointAddress: DBClusterEndpointAddress;
 
     /**
      * Endpoint addresses of individual instances
      */
-    instanceEndpointAddresses: rds.DBClusterEndpointAddress[];
+    instanceEndpointAddresses: DBClusterEndpointAddress[];
 }
 
 /**
@@ -152,7 +152,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Security group identifier of this database
      */
-    protected readonly securityGroupId: ec2.SecurityGroupId;
+    protected readonly securityGroupId: SecurityGroupId;
 
     constructor(parent: Construct, name: string, props: DatabaseClusterRefProps) {
         super(parent, name);
@@ -196,7 +196,7 @@ export class Endpoint {
     /**
      * The hostname of the endpoint
      */
-    public readonly hostname: rds.DBClusterEndpointAddress;
+    public readonly hostname: DBClusterEndpointAddress;
 
     /**
      * The port of the endpoint
@@ -208,7 +208,7 @@ export class Endpoint {
      */
     public readonly socketAddress: SocketAddress;
 
-    constructor(address: rds.DBClusterEndpointAddress, port: Port) {
+    constructor(address: DBClusterEndpointAddress, port: Port) {
         this.hostname = address;
         this.port = port;
         this.socketAddress = new FnJoin(":", address, port);

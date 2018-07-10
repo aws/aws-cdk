@@ -30,7 +30,7 @@ Simply replace invokations of `npm` with `y-npm`, using the exact same arguments
 ```shell
 y-npm install
 y-npm install --save-dev @types/node
-y-npm run prepare
+y-npm run build
 ```
 
 ## Overlay location
