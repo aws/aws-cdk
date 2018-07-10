@@ -25,32 +25,6 @@ export class InvalidSubnetCountError extends Error {
 }
 
 /**
- * InvalidSubnetCidrError is thrown when attempting to split a CIDR range into more
- * subnets than it has IP space for.
- */
-export class InvalidSubnetCidrError extends Error {
-    constructor(cidr: string, subnet: string) {
-        super('VPC range (' + cidr + ') does not contain ' + subnet);
-        // The following line is required for type checking of custom errors, and must be called right after super()
-        // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
-        Object.setPrototypeOf(this, InvalidSubnetCidrError.prototype);
-    }
-}
-
-/**
- * InvalidIpAddressError is thrown when attempting to split a CIDR range into more
- * subnets than it has IP space for.
- */
-export class InvalidIpAddressError extends Error {
-    constructor(ip: string) {
-        super(ip + ' is not a valid IP must be (0-255).(0-255).(0-255).(0-255).');
-        // The following line is required for type checking of custom errors, and must be called right after super()
-        // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
-        Object.setPrototypeOf(this, InvalidIpAddressError.prototype);
-    }
-}
-
-/**
  * NetworkUtils contains helpers to work with network constructs (subnets/ranges)
  */
 export class NetworkUtils {
@@ -131,7 +105,7 @@ export class NetworkUtils {
 
     public static ipToNum(ipAddress: string): number {
         if (!this.validIp(ipAddress)) {
-            throw new InvalidIpAddressError(ipAddress);
+            throw new Error(`${ipAddress} is not valid`);
         }
 
         return ipAddress
@@ -165,7 +139,7 @@ export class NetworkUtils {
         }
         const ipAddress: string = address.join('.');
         if ( !this.validIp(ipAddress) ) {
-            throw new InvalidIpAddressError(ipAddress);
+            throw new Error(`${ipAddress} is not a valid IP Address`);
         }
         return ipAddress;
     }
@@ -201,7 +175,7 @@ export class NetworkBuilder {
             this.maxIpConsumed = subnet.maxIp();
             this.subnetCidrs.push(subnet);
             if (!this.validate()) {
-                throw new InvalidSubnetCidrError(this.networkCidr.cidr, subnet.cidr);
+                throw new Error(`${this.networkCidr.cidr} does not fully contain ${subnet.cidr}`);
             }
             subnets.push(subnet);
         }
@@ -214,8 +188,8 @@ export class NetworkBuilder {
 
     public validate(): boolean {
         return this.subnetCidrs.map(
-            (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).reduce(
-                (containsAll: boolean, contains: boolean) => (containsAll && contains));
+            (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).
+            filter( (contains) => (contains === false)).length === 0;
     }
 
 }

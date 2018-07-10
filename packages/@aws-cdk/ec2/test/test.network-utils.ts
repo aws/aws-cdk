@@ -2,8 +2,6 @@ import { Test } from 'nodeunit';
 import {
   CidrBlock,
   InvalidCidrRangeError,
-  InvalidIpAddressError,
-  InvalidSubnetCidrError,
   InvalidSubnetCountError,
   NetworkBuilder,
   NetworkUtils
@@ -51,7 +49,7 @@ export = {
         "should throw on invalid IP Address"(test: Test) {
           test.throws(() => {
             NetworkUtils.ipToNum('174.266.173.168');
-          }, InvalidIpAddressError);
+          }, Error, 'is not valid');
           test.done();
         },
         "should convert a valid IP integer to a staring"(test: Test) {
@@ -61,10 +59,10 @@ export = {
         "should throw an error for invalid IP"(test: Test) {
           test.throws(() => {
             NetworkUtils.numToIp(2923605416 * 5);
-          }, InvalidIpAddressError);
+          }, /is not a valid/);
           test.throws(() => {
             NetworkUtils.numToIp(-1);
-          }, InvalidIpAddressError);
+          }, /is not a valid/);
           test.done();
         },
     },
@@ -162,14 +160,15 @@ export = {
         "throws if you add a subnet outside of the cidr"(test: Test) {
           const builder = new NetworkBuilder('192.168.0.0/18');
           const builder2 = new NetworkBuilder('10.0.0.0/21');
-          builder.addSubnets(19, 2);
+          builder.addSubnets(19, 1);
           builder2.addSubnets(24, 8);
           test.throws(() => {
             builder.addSubnet(19);
-          }, InvalidSubnetCidrError);
+            builder.addSubnet(28);
+          }, /does not fully contain/);
           test.throws(() => {
-            builder2.addSubnet(24);
-          }, InvalidSubnetCidrError);
+            builder2.addSubnet(28);
+          }, /does not fully contain/);
           test.done();
         }
     }
