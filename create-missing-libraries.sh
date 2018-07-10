@@ -3,6 +3,7 @@ set -euo pipefail
 
 export PATH=node_modules/.bin:$PATH
 
+# Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
 lerna exec --scope=cfn2ts                       \
            --scope=pkglint                      \
            --scope=@aws-cdk/cdk-cfnspec         \
@@ -33,7 +34,7 @@ node_modules
 dist
 EOM
 
-        cat <<EOM >> packages/${P}/.npmignore
+        cat <<EOM > packages/${P}/.npmignore
 # Don't include original .ts files when doing \`npm pack\`
 *.ts
 !*.d.ts
@@ -42,7 +43,7 @@ coverage
 *.tgz
 EOM
 
-        cat <<EOM >> packages/${P}/package.json
+        cat <<EOM > packages/${P}/package.json
 {
   "name": "${P}",
   "version": "${VERSION}",
@@ -91,12 +92,12 @@ EOM
 }
 EOM
 
-        cat <<EOM >> packages/${P}/lib/index.ts
+        cat <<EOM > packages/${P}/lib/index.ts
 // ${S} CloudFormation Resources:
 export * from './${PB}.generated';
 EOM
 
-        cat <<EOM >> packages/${P}/test/test.${PB}.ts
+        cat <<EOM > packages/${P}/test/test.${PB}.ts
 import { Test, testCase } from 'nodeunit';
 import {} from '../lib';
 
@@ -114,6 +115,6 @@ EOM
 
         git add packages/${P}
 
-        echo "✅ Have fun with your new package ${P}"
+        echo "✅ Have fun with your new package ${P} (⚠️ don't forget to add it to 'aws-cdk-all')"
     fi
 done
