@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
 import { EventRule } from '@aws-cdk/events';
+import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
 import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
 
@@ -192,6 +193,41 @@ export = {
 
             test.done();
         },
+
+        'BYORole'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+            const role = new Role(stack, 'SomeRole', {
+                assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+            });
+            role.addToPolicy(new PolicyStatement().addAction('confirm:itsthesame'));
+
+            // WHEN
+            const fn = new Lambda(stack, 'Function', {
+                code: new LambdaInlineCode('test'),
+                runtime: LambdaRuntime.Python36,
+                handler: 'index.test',
+                role,
+                initialPolicy: [
+                    new PolicyStatement().addAction('inline:inline')
+                ]
+            });
+
+            fn.addToRolePolicy(new PolicyStatement().addAction('explicit:explicit'));
+
+            // THEN
+            expect(stack).to(haveResource('AWS::IAM::Policy', {
+                "PolicyDocument": {
+                "Statement": [
+                    { "Action": "confirm:itsthesame", "Effect": "Allow" },
+                    { "Action": "inline:inline", "Effect": "Allow" },
+                    { "Action": "explicit:explicit", "Effect": "Allow" }
+                ],
+                },
+            }));
+
+            test.done();
+        }
     },
 
     'import/export': {
