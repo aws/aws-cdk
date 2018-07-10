@@ -3,6 +3,11 @@ import * as schema from '../lib/schema';
 import { Specification } from '../lib/schema';
 
 export function validateSpecification(test: Test, specification: Specification) {
+    validateResourceTypes(test, specification);
+    validatePropertyTypes(test, specification);
+}
+
+function validateResourceTypes(test: Test, specification: Specification) {
     for (const typeName of Object.keys(specification.ResourceTypes)) {
         test.ok(typeName, 'Resource type name is not empty');
         const type = specification.ResourceTypes[typeName];
@@ -10,6 +15,9 @@ export function validateSpecification(test: Test, specification: Specification) 
         if (type.Properties) { validateProperties(typeName, test, type.Properties, specification); }
         if (type.Attributes) { validateAttributes(typeName, test, type.Attributes, specification); }
     }
+}
+
+function validatePropertyTypes(test: Test, specification: Specification) {
     for (const typeName of Object.keys(specification.PropertyTypes)) {
         test.ok(typeName, 'Property type name is not empty');
         const type = specification.PropertyTypes[typeName];
