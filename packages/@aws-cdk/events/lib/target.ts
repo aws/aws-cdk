@@ -1,6 +1,6 @@
 import { Arn } from '@aws-cdk/core';
 import * as iam from '@aws-cdk/iam';
-import * as events from './events.generated';
+import { cloudformation } from './events.generated';
 
 export interface EventRuleTarget {
     /**
@@ -27,20 +27,20 @@ export interface EventRuleTarget {
      * The Amazon ECS task definition and task count to use, if the event target
      * is an Amazon ECS task.
      */
-    ecsParameters?: events.cloudformation.RuleResource.EcsParametersProperty;
+    ecsParameters?: cloudformation.RuleResource.EcsParametersProperty;
 
     /**
      * Settings that control shard assignment, when the target is a Kinesis
      * stream. If you don't include this parameter, eventId is used as the
      * partition key.
      */
-    kinesisParameters?: events.cloudformation.RuleResource.KinesisParametersProperty;
+    kinesisParameters?: cloudformation.RuleResource.KinesisParametersProperty;
 
     /**
      * Parameters used when the rule invokes Amazon EC2 Systems Manager Run
      * Command.
      */
-    runCommandParameters?: events.cloudformation.RuleResource.RunCommandParametersProperty;
+    runCommandParameters?: cloudformation.RuleResource.RunCommandParametersProperty;
 }
 
 /**

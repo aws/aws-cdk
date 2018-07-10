@@ -5,7 +5,7 @@ import { IIdentityResource } from '@aws-cdk/iam';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { QueueRef } from '@aws-cdk/sqs';
 import { TopicPolicy } from './policy';
-import * as sns from './sns.generated';
+import { TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 /**
@@ -26,7 +26,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
 
     public abstract readonly topicArn: TopicArn;
 
-    public abstract readonly topicName: sns.TopicName;
+    public abstract readonly topicName: TopicName;
 
     /**
      * Controls automatic creation of policy objects.
@@ -280,7 +280,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
  */
 class ImportedTopic extends TopicRef {
     public readonly topicArn: TopicArn;
-    public readonly topicName: sns.TopicName;
+    public readonly topicName: TopicName;
 
     protected autoCreatePolicy: boolean = false;
 
@@ -296,7 +296,7 @@ class ImportedTopic extends TopicRef {
  */
 export interface TopicRefProps {
     topicArn: TopicArn;
-    topicName: sns.TopicName;
+    topicName: TopicName;
 }
 
 /**

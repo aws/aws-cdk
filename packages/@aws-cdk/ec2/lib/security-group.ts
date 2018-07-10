@@ -1,6 +1,6 @@
 import { Construct, Token } from '@aws-cdk/core';
 import { IConnectionPeer, IPortRange } from './connection';
-import * as ec2 from './ec2.generated';
+import { cloudformation, SecurityGroupId, SecurityGroupVpcId } from './ec2.generated';
 import { slugify } from './util';
 import { VpcNetworkRef } from './vpc-ref';
 
@@ -8,14 +8,14 @@ export interface SecurityGroupRefProps {
     /**
      * ID of security group
      */
-    securityGroupId: ec2.SecurityGroupId;
+    securityGroupId: SecurityGroupId;
 }
 
 /**
  * Basic interface for security groups
  */
 export interface ISecurityGroup extends IConnectionPeer {
-    readonly securityGroupId: ec2.SecurityGroupId;
+    readonly securityGroupId: SecurityGroupId;
     readonly canInlineRule: boolean;
 
     addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string): void;
@@ -26,7 +26,7 @@ export interface ISecurityGroup extends IConnectionPeer {
  * A SecurityGroup that is not created in this template
  */
 export class SecurityGroupRef extends Construct implements ISecurityGroup {
-    public readonly securityGroupId: ec2.SecurityGroupId;
+    public readonly securityGroupId: SecurityGroupId;
     public readonly canInlineRule = false;
 
     constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
@@ -36,7 +36,7 @@ export class SecurityGroupRef extends Construct implements ISecurityGroup {
     }
 
     public addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
-        new ec2.cloudformation.SecurityGroupIngressResource(this, slugify(description), {
+        new cloudformation.SecurityGroupIngressResource(this, slugify(description), {
             groupId: this.securityGroupId,
             ...peer.toIngressRuleJSON(),
             ...connection.toRuleJSON(),
@@ -45,7 +45,7 @@ export class SecurityGroupRef extends Construct implements ISecurityGroup {
     }
 
     public addEgressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
-        new ec2.cloudformation.SecurityGroupEgressResource(this, slugify(description), {
+        new cloudformation.SecurityGroupEgressResource(this, slugify(description), {
             groupId: this.securityGroupId,
             ...peer.toEgressRuleJSON(),
             ...connection.toRuleJSON(),
@@ -104,18 +104,18 @@ export class SecurityGroup extends SecurityGroupRef {
     /**
      * An attribute that represents the physical VPC ID this security group is part of.
      */
-    public readonly vpcId: ec2.SecurityGroupVpcId;
+    public readonly vpcId: SecurityGroupVpcId;
 
-    private readonly securityGroup: ec2.cloudformation.SecurityGroupResource;
-    private readonly directIngressRules: ec2.cloudformation.SecurityGroupResource.IngressProperty[] = [];
-    private readonly directEgressRules: ec2.cloudformation.SecurityGroupResource.EgressProperty[] = [];
+    private readonly securityGroup: cloudformation.SecurityGroupResource;
+    private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
+    private readonly directEgressRules: cloudformation.SecurityGroupResource.EgressProperty[] = [];
 
     constructor(parent: Construct, name: string, props: SecurityGroupProps) {
         super(parent, name, { securityGroupId: new Token(() => this.securityGroup.securityGroupId) });
 
         const groupDescription = props.description || this.path;
 
-        this.securityGroup = new ec2.cloudformation.SecurityGroupResource(this, 'Resource', {
+        this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
             groupName: props.groupName,
             groupDescription,
             securityGroupIngress: new Token(() => this.directIngressRules),
@@ -156,7 +156,7 @@ export class SecurityGroup extends SecurityGroupRef {
     /**
      * Add a direct ingress rule
      */
-    private addDirectIngressRule(rule: ec2.cloudformation.SecurityGroupResource.IngressProperty) {
+    private addDirectIngressRule(rule: cloudformation.SecurityGroupResource.IngressProperty) {
         if (!this.hasIngressRule(rule)) {
             this.directIngressRules.push(rule);
         }
@@ -165,14 +165,14 @@ export class SecurityGroup extends SecurityGroupRef {
     /**
      * Return whether the given ingress rule exists on the group
      */
-    private hasIngressRule(rule: ec2.cloudformation.SecurityGroupResource.IngressProperty): boolean {
+    private hasIngressRule(rule: cloudformation.SecurityGroupResource.IngressProperty): boolean {
         return this.directIngressRules.findIndex(r => ingressRulesEqual(r, rule)) > -1;
     }
 
     /**
      * Add a direct egress rule
      */
-    private addDirectEgressRule(rule: ec2.cloudformation.SecurityGroupResource.EgressProperty) {
+    private addDirectEgressRule(rule: cloudformation.SecurityGroupResource.EgressProperty) {
         if (!this.hasEgressRule(rule)) {
             this.directEgressRules.push(rule);
         }
@@ -181,7 +181,7 @@ export class SecurityGroup extends SecurityGroupRef {
     /**
      * Return whether the given egress rule exists on the group
      */
-    private hasEgressRule(rule: ec2.cloudformation.SecurityGroupResource.EgressProperty): boolean {
+    private hasEgressRule(rule: cloudformation.SecurityGroupResource.EgressProperty): boolean {
         return this.directEgressRules.findIndex(r => egressRulesEqual(r, rule)) > -1;
     }
 }
@@ -232,7 +232,7 @@ export interface ConnectionRule {
 /**
  * Compare two ingress rules for equality the same way CloudFormation would (discarding description)
  */
-function ingressRulesEqual(a: ec2.cloudformation.SecurityGroupResource.IngressProperty, b: ec2.cloudformation.SecurityGroupResource.IngressProperty) {
+function ingressRulesEqual(a: cloudformation.SecurityGroupResource.IngressProperty, b: cloudformation.SecurityGroupResource.IngressProperty) {
     return a.cidrIp === b.cidrIp
         && a.cidrIpv6 === b.cidrIpv6
         && a.fromPort === b.fromPort
@@ -246,7 +246,7 @@ function ingressRulesEqual(a: ec2.cloudformation.SecurityGroupResource.IngressPr
 /**
  * Compare two egress rules for equality the same way CloudFormation would (discarding description)
  */
-function egressRulesEqual(a: ec2.cloudformation.SecurityGroupResource.EgressProperty, b: ec2.cloudformation.SecurityGroupResource.EgressProperty) {
+function egressRulesEqual(a: cloudformation.SecurityGroupResource.EgressProperty, b: cloudformation.SecurityGroupResource.EgressProperty) {
     return a.cidrIp === b.cidrIp
         && a.cidrIpv6 === b.cidrIpv6
         && a.fromPort === b.fromPort

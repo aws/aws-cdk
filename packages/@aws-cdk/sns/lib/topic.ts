@@ -1,5 +1,5 @@
 import { Construct,  } from '@aws-cdk/core';
-import * as sns from './sns.generated';
+import { cloudformation, TopicName } from './sns.generated';
 import { TopicArn, TopicRef } from './topic-ref';
 
 /**
@@ -30,14 +30,14 @@ export interface TopicProps {
  */
 export class Topic extends TopicRef {
     public readonly topicArn: TopicArn;
-    public readonly topicName: sns.TopicName;
+    public readonly topicName: TopicName;
 
     protected autoCreatePolicy: boolean = true;
 
     constructor(parent: Construct, name: string, props: TopicProps = {}) {
         super(parent, name);
 
-        const resource = new sns.cloudformation.TopicResource(this, 'Resource', {
+        const resource = new cloudformation.TopicResource(this, 'Resource', {
             displayName: props.displayName,
             topicName: props.topicName
         });

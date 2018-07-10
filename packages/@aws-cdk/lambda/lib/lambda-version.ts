@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { LambdaRef } from './lambda-ref';
-import * as lambda from './lambda.generated';
+import { cloudformation, Version } from './lambda.generated';
 
 /**
  * Properties for a new Lambda version
@@ -48,7 +48,7 @@ export class LambdaVersion extends Construct {
     /**
      * The most recently deployed version of this function.
      */
-    public readonly functionVersion: lambda.Version;
+    public readonly functionVersion: Version;
 
     /**
      * Lambda object this version is associated with
@@ -58,7 +58,7 @@ export class LambdaVersion extends Construct {
     constructor(parent: Construct, name: string, props: LambdaVersionProps) {
         super(parent, name);
 
-        const version = new lambda.cloudformation.VersionResource(this, 'Resource', {
+        const version = new cloudformation.VersionResource(this, 'Resource', {
             codeSha256: props.codeSha256,
             description: props.description,
             functionName: props.lambda.functionName

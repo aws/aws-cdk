@@ -1,5 +1,5 @@
 import { Construct, Stack, Token, tokenAwareJsonify } from "@aws-cdk/core";
-import * as cloudwatch from './cloudwatch.generated';
+import { cloudformation } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";
 
@@ -17,7 +17,7 @@ export interface DashboardProps {
  */
 export class Dashboard extends Construct {
     private readonly rows: IWidget[] = [];
-    private readonly dashboard: cloudwatch.cloudformation.DashboardResource;
+    private readonly dashboard: cloudformation.DashboardResource;
 
     constructor(parent: Construct, name: string, props?: DashboardProps) {
         super(parent, name);
@@ -28,7 +28,7 @@ export class Dashboard extends Construct {
         // See: https://github.com/awslabs/aws-cdk/issues/213
         const dashboardName = (props && props.dashboardName) || new Token(() => this.generateDashboardName());
 
-        this.dashboard = new cloudwatch.cloudformation.DashboardResource(this, 'Resource', {
+        this.dashboard = new cloudformation.DashboardResource(this, 'Resource', {
             dashboardName,
             dashboardBody: new Token(() => {
                 const column = new Column(...this.rows);

@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { EncryptionKey, EncryptionKeyRef, KeyArn } from '@aws-cdk/kms';
 import { QueueRef, QueueUrl } from './queue-ref';
-import * as sqs from './sqs.generated';
+import { cloudformation, QueueArn, QueueName } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -183,12 +183,12 @@ export class Queue extends QueueRef {
     /**
      * The ARN of this queue
      */
-    public readonly queueArn: sqs.QueueArn;
+    public readonly queueArn: QueueArn;
 
     /**
      * The name of this queue
      */
-    public readonly queueName: sqs.QueueName;
+    public readonly queueName: QueueName;
 
     /**
      * The URL of this queue
@@ -209,7 +209,7 @@ export class Queue extends QueueRef {
                               }
                             : undefined;
 
-        const queue = new sqs.cloudformation.QueueResource(this, 'Resource', {
+        const queue = new cloudformation.QueueResource(this, 'Resource', {
             queueName: props.queueName,
             ...this.determineFifoProps(props),
             ...this.determineEncryptionProps(props),

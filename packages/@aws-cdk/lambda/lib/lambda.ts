@@ -3,7 +3,7 @@ import { Role } from '@aws-cdk/iam';
 import { LambdaCode } from './code';
 import { FunctionName, LambdaRef } from './lambda-ref';
 import { LambdaVersion } from './lambda-version';
-import * as lambda from './lambda.generated';
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaRuntime } from './runtime';
 
 export interface LambdaProps {
@@ -99,7 +99,7 @@ export class Lambda extends LambdaRef {
     /**
      * ARN of this function
      */
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
 
     /**
      * Execution role associated with this function
@@ -134,7 +134,7 @@ export class Lambda extends LambdaRef {
             this.role.addToPolicy(statement);
         }
 
-        const resource = new lambda.cloudformation.FunctionResource(this, 'Resource', {
+        const resource = new cloudformation.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
             description: props.description,
             code: props.code.toJSON(props.runtime),

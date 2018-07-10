@@ -1,12 +1,12 @@
 import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement } from '@aws-cdk/core';
 import { EncryptionKeyAlias } from './alias';
-import * as kms from './kms.generated';
+import { cloudformation, KeyArn } from './kms.generated';
 
 export interface EncryptionKeyRefProps {
     /**
      * The ARN of the external KMS key.
      */
-    keyArn: kms.KeyArn;
+    keyArn: KeyArn;
 }
 
 export abstract class EncryptionKeyRef extends Construct {
@@ -35,7 +35,7 @@ export abstract class EncryptionKeyRef extends Construct {
     /**
      * The ARN of the key.
      */
-    public abstract readonly keyArn: kms.KeyArn;
+    public abstract readonly keyArn: KeyArn;
 
     /**
      * Optional policy document that represents the resource policy of this key.
@@ -109,7 +109,7 @@ export interface EncryptionKeyProps {
  * Definews a KMS key.
  */
 export class EncryptionKey extends EncryptionKeyRef {
-    public readonly keyArn: kms.KeyArn;
+    public readonly keyArn: KeyArn;
     protected readonly policy?: PolicyDocument;
 
     constructor(parent: Construct, name: string, props: EncryptionKeyProps = {}) {
@@ -122,7 +122,7 @@ export class EncryptionKey extends EncryptionKeyRef {
             this.allowAccountToAdmin();
         }
 
-        const resource = new kms.cloudformation.KeyResource(this, 'Resource', {
+        const resource = new cloudformation.KeyResource(this, 'Resource', {
             description: props.description,
             enableKeyRotation: props.enableKeyRotation,
             enabled: props.enabled,
@@ -161,7 +161,7 @@ export class EncryptionKey extends EncryptionKeyRef {
 }
 
 class EncryptionKeyRefImport extends EncryptionKeyRef {
-    public readonly keyArn: kms.KeyArn;
+    public readonly keyArn: KeyArn;
     protected readonly policy = undefined; // no policy associated with an imported key
 
     constructor(parent: Construct, name: string, props: EncryptionKeyRefProps) {

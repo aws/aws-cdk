@@ -1,6 +1,6 @@
 import { Construct, FnJoin, Output, StringListOutput, Token } from '@aws-cdk/core';
 import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupId, SecurityGroupRef, TcpPortFromAttribute } from '@aws-cdk/ec2';
-import * as rds from './rds.generated';
+import { DBClusterEndpointAddress } from './rds.generated';
 
 /**
  * Create a clustered database with a given number of instances.
@@ -97,17 +97,17 @@ export interface DatabaseClusterRefProps {
     /**
      * Cluster endpoint address
      */
-    clusterEndpointAddress: rds.DBClusterEndpointAddress;
+    clusterEndpointAddress: DBClusterEndpointAddress;
 
     /**
      * Reader endpoint address
      */
-    readerEndpointAddress: rds.DBClusterEndpointAddress;
+    readerEndpointAddress: DBClusterEndpointAddress;
 
     /**
      * Endpoint addresses of individual instances
      */
-    instanceEndpointAddresses: rds.DBClusterEndpointAddress[];
+    instanceEndpointAddresses: DBClusterEndpointAddress[];
 }
 
 /**
@@ -196,7 +196,7 @@ export class Endpoint {
     /**
      * The hostname of the endpoint
      */
-    public readonly hostname: rds.DBClusterEndpointAddress;
+    public readonly hostname: DBClusterEndpointAddress;
 
     /**
      * The port of the endpoint
@@ -208,7 +208,7 @@ export class Endpoint {
      */
     public readonly socketAddress: SocketAddress;
 
-    constructor(address: rds.DBClusterEndpointAddress, port: Port) {
+    constructor(address: DBClusterEndpointAddress, port: Port) {
         this.hostname = address;
         this.port = port;
         this.socketAddress = new FnJoin(":", address, port);

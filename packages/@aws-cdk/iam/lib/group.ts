@@ -1,5 +1,5 @@
 import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import * as iam from './iam.generated';
+import { cloudformation, GroupArn } from './iam.generated';
 import { IIdentityResource, Policy } from './policy';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -42,7 +42,7 @@ export class Group extends Construct implements IIdentityResource {
     /**
      * The ARN of this group.
      */
-    public readonly groupArn: iam.GroupArn;
+    public readonly groupArn: GroupArn;
 
     /**
      * An "AWS" policy principal that represents this group.
@@ -58,7 +58,7 @@ export class Group extends Construct implements IIdentityResource {
 
         this.managedPolicies = props.managedPolicyArns || [];
 
-        const group = new iam.cloudformation.GroupResource(this, 'Resource', {
+        const group = new cloudformation.GroupResource(this, 'Resource', {
             groupName: props.groupName,
             managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
             path: props.path,

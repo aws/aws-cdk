@@ -1,7 +1,7 @@
 import { CertificateArn } from '@aws-cdk/acm';
 import { Construct, FnConcat,  } from '@aws-cdk/core';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
-import * as cloudfront from './cloudfront.generated';
+import { cloudformation, DistributionDomainName } from './cloudfront.generated';
 
 export enum HttpVersion {
     HTTP1_1 = "http1.1",
@@ -195,7 +195,7 @@ export interface S3OriginConfig {
     /**
      * The optional origin identity cloudfront will use when calling your s3 bucket.
      */
-    readonly originAccessIdentity?: cloudfront.cloudformation.CloudFrontOriginAccessIdentityResource
+    readonly originAccessIdentity?: cloudformation.CloudFrontOriginAccessIdentityResource
 }
 
 /**
@@ -281,7 +281,7 @@ export interface Behavior {
      * @default none (no cookies - no headers)
      *
      */
-    forwardedValues?: cloudfront.cloudformation.DistributionResource.ForwardedValuesProperty;
+    forwardedValues?: cloudformation.DistributionResource.ForwardedValuesProperty;
 
     /**
      * The minimum amount of time that you want objects to stay in the cache
@@ -384,7 +384,7 @@ export interface CloudFrontWebDistributionProps {
     /**
      * How CloudFront should handle requests that are no successful (eg PageNotFound)
      */
-    errorConfigurations?: cloudfront.cloudformation.DistributionResource.CustomErrorResponseProperty[];
+    errorConfigurations?: cloudformation.DistributionResource.CustomErrorResponseProperty[];
 }
 
 /**
@@ -443,7 +443,7 @@ export class CloudFrontWebDistribution extends Construct {
      * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
      * (In Route53, you could create an ALIAS record to this value, for example. )
      */
-    public readonly domainName: cloudfront.DistributionDomainName;
+    public readonly domainName: DistributionDomainName;
 
     /**
      * Maps our methods to the string arrays they are
@@ -457,7 +457,7 @@ export class CloudFrontWebDistribution extends Construct {
     constructor(parent: Construct, name: string, props: CloudFrontWebDistributionProps) {
         super(parent, name);
 
-        const distributionConfig: cloudfront.cloudformation.DistributionResource.DistributionConfigProperty = {
+        const distributionConfig: cloudformation.DistributionResource.DistributionConfigProperty = {
             comment: props.comment,
             enabled: true,
             defaultRootObject: props.defaultRootObject || "index.html",
@@ -470,7 +470,7 @@ export class CloudFrontWebDistribution extends Construct {
 
         const behaviors: BehaviorWithOrigin[] = [];
 
-        const origins: cloudfront.cloudformation.DistributionResource.OriginProperty[] = [];
+        const origins: cloudformation.DistributionResource.OriginProperty[] = [];
 
         let originIndex = 1;
         for (const originConfig of props.originConfigs) {
@@ -482,10 +482,10 @@ export class CloudFrontWebDistribution extends Construct {
                 throw new Error("There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.");
             }
 
-            const originHeaders: cloudfront.cloudformation.DistributionResource.OriginCustomHeaderProperty[] = [];
+            const originHeaders: cloudformation.DistributionResource.OriginCustomHeaderProperty[] = [];
             if (originConfig.originHeaders) {
                 Object.keys(originConfig.originHeaders).forEach(key => {
-                    const oHeader: cloudfront.cloudformation.DistributionResource.OriginCustomHeaderProperty = {
+                    const oHeader: cloudformation.DistributionResource.OriginCustomHeaderProperty = {
                         headerName: key,
                         headerValue: originConfig.originHeaders![key]
                     };
@@ -493,7 +493,7 @@ export class CloudFrontWebDistribution extends Construct {
                 });
             }
 
-            const originProperty: cloudfront.cloudformation.DistributionResource.OriginProperty = {
+            const originProperty: cloudformation.DistributionResource.OriginProperty = {
                 id: originId,
                 domainName: originConfig.s3OriginSource ?
                     originConfig.s3OriginSource.s3BucketSource.domainName :
@@ -530,12 +530,12 @@ export class CloudFrontWebDistribution extends Construct {
             throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
         }
         distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0]);
-        const otherBehaviors: cloudfront.cloudformation.DistributionResource.CacheBehaviorProperty[] = [];
+        const otherBehaviors: cloudformation.DistributionResource.CacheBehaviorProperty[] = [];
         for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
             if (!behavior.pathPattern) {
                 throw new Error("pathPattern is required for all non-default behaviors");
             }
-            otherBehaviors.push(this.toBehavior(behavior) as cloudfront.cloudformation.DistributionResource.CacheBehaviorProperty);
+            otherBehaviors.push(this.toBehavior(behavior) as cloudformation.DistributionResource.CacheBehaviorProperty);
         }
         distributionConfig.cacheBehaviors = otherBehaviors;
 
@@ -551,7 +551,7 @@ export class CloudFrontWebDistribution extends Construct {
             };
         }
 
-        const distribution = new cloudfront.cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
+        const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
         this.domainName = distribution.distributionDomainName;
 
     }

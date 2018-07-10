@@ -2,7 +2,7 @@ import { Construct } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
 import { FunctionName, LambdaRef } from './lambda-ref';
 import { LambdaVersion } from './lambda-version';
-import * as lambda from './lambda.generated';
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
 /**
@@ -66,7 +66,7 @@ export class Alias extends LambdaRef {
      * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
      * ARNs everywhere it accepts function names.
      */
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
 
     /**
      * Role associated with this alias
@@ -85,7 +85,7 @@ export class Alias extends LambdaRef {
 
         this.underlyingLambda = props.version.lambda;
 
-        const alias = new lambda.cloudformation.AliasResource(this, 'Resource', {
+        const alias = new cloudformation.AliasResource(this, 'Resource', {
             aliasName: props.aliasName,
             description: props.description,
             functionName: this.underlyingLambda.functionName,

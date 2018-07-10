@@ -1,7 +1,7 @@
 import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import * as kinesis from './kinesis.generated';
+import { cloudformation, StreamArn } from './kinesis.generated';
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call
@@ -12,7 +12,7 @@ export interface StreamRefProps {
     /**
      * The ARN of the stream.
      */
-    streamArn: kinesis.StreamArn;
+    streamArn: StreamArn;
 
     /**
      * The KMS key securing the contents of the stream if encryption is enabled.
@@ -53,7 +53,7 @@ export abstract class StreamRef extends Construct {
     /**
      * The ARN of the stream.
      */
-    public abstract readonly streamArn: kinesis.StreamArn;
+    public abstract readonly streamArn: StreamArn;
 
     /**
      * Optional KMS encryption key associated with this stream.
@@ -217,11 +217,11 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamRef {
-    public readonly streamArn: kinesis.StreamArn;
+    public readonly streamArn: StreamArn;
     public readonly streamName: StreamName;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
 
-    private readonly stream: kinesis.cloudformation.StreamResource;
+    private readonly stream: cloudformation.StreamResource;
 
     constructor(parent: Construct, name: string, props: StreamProps = {}) {
         super(parent, name);
@@ -234,7 +234,7 @@ export class Stream extends StreamRef {
 
         const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-        this.stream = new kinesis.cloudformation.StreamResource(this, "Resource", {
+        this.stream = new cloudformation.StreamResource(this, "Resource", {
             streamName: props.streamName,
             retentionPeriodHours,
             shardCount,
@@ -252,7 +252,7 @@ export class Stream extends StreamRef {
      * user's configuration.
      */
     private parseEncryption(props: StreamProps): {
-        streamEncryption?: kinesis.cloudformation.StreamResource.StreamEncryptionProperty,
+        streamEncryption?: cloudformation.StreamResource.StreamEncryptionProperty,
         encryptionKey?: kms.EncryptionKeyRef
     } {
 
@@ -273,7 +273,7 @@ export class Stream extends StreamRef {
                 description: `Created by ${this.path}`
             });
 
-            const streamEncryption: kinesis.cloudformation.StreamResource.StreamEncryptionProperty = {
+            const streamEncryption: cloudformation.StreamResource.StreamEncryptionProperty = {
                 encryptionType: 'KMS',
                 keyId: encryptionKey.keyArn
             };
@@ -306,7 +306,7 @@ export enum StreamEncryption {
 export class StreamName extends Token {}
 
 class ImportedStreamRef extends StreamRef {
-    public readonly streamArn: kinesis.StreamArn;
+    public readonly streamArn: StreamArn;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
 
     constructor(parent: Construct, name: string, props: StreamRefProps) {

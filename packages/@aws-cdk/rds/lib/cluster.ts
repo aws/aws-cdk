@@ -4,7 +4,7 @@ import { DefaultConnections, InstanceType, IPortRange, SecurityGroup, TcpPortFro
 import { KeyArn } from '@aws-cdk/kms';
 import { ClusterIdentifier, DatabaseClusterRef, Endpoint, InstanceIdentifier } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
-import * as rds from './rds.generated';
+import { cloudformation } from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -143,7 +143,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
             throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
         }
 
-        const subnetGroup = new rds.cloudformation.DBSubnetGroupResource(this, 'Subnets', {
+        const subnetGroup = new cloudformation.DBSubnetGroupResource(this, 'Subnets', {
             dbSubnetGroupDescription: `Subnets for ${name} database`,
             subnetIds: subnets.map(s => s.subnetId)
         });
@@ -154,7 +154,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
         });
         this.securityGroupId = securityGroup.securityGroupId;
 
-        const cluster = new rds.cloudformation.DBClusterResource(this, 'Resource', {
+        const cluster = new cloudformation.DBClusterResource(this, 'Resource', {
             // Basic
             engine: props.engine,
             dbClusterIdentifier: props.clusterIdentifier,
@@ -191,7 +191,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
 
             const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.usePublicSubnets;
 
-            const instance = new rds.cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
+            const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
                 // Link to cluster
                 engine: props.engine,
                 dbClusterIdentifier: cluster.ref,

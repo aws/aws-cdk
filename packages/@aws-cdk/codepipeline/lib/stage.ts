@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { Action } from './actions';
-import * as codepipeline from './codepipeline.generated';
+import { cloudformation } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
 import * as validation from './validation';
 
@@ -44,7 +44,7 @@ export class Stage extends Construct {
         return this.validateHasActions();
     }
 
-    public render(): codepipeline.cloudformation.PipelineResource.StageDeclarationProperty {
+    public render(): cloudformation.PipelineResource.StageDeclarationProperty {
         return {
             name: this.name,
             actions: this._actions.map(action => action.render())

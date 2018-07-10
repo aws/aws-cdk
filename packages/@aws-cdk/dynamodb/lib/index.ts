@@ -1,5 +1,5 @@
 import { Construct, Token } from '@aws-cdk/core';
-import * as dynamodb from './dynamodb.generated';
+import { cloudformation } from './dynamodb.generated';
 
 // AWS::DynamoDB CloudFormation Resources:
 export * from './dynamodb.generated';
@@ -32,10 +32,10 @@ export interface TableProps {
  * Provides a DynamoDB table.
  */
 export class Table extends Construct {
-    private readonly table: dynamodb.cloudformation.TableResource;
+    private readonly table: cloudformation.TableResource;
 
-    private readonly keySchema = new Array<dynamodb.cloudformation.TableResource.KeySchemaProperty>();
-    private readonly attributeDefinitions = new Array<dynamodb.cloudformation.TableResource.AttributeDefinitionProperty>();
+    private readonly keySchema = new Array<cloudformation.TableResource.KeySchemaProperty>();
+    private readonly attributeDefinitions = new Array<cloudformation.TableResource.AttributeDefinitionProperty>();
 
     constructor(parent: Construct, name: string, props: TableProps = {}) {
         super(parent, name);
@@ -43,7 +43,7 @@ export class Table extends Construct {
         const readCapacityUnits = props.readCapacity || 5;
         const writeCapacityUnits = props.writeCapacity || 5;
 
-        this.table = new dynamodb.cloudformation.TableResource(this, 'Resource', {
+        this.table = new cloudformation.TableResource(this, 'Resource', {
             tableName: props.tableName,
             keySchema: this.keySchema,
             attributeDefinitions: this.attributeDefinitions,
