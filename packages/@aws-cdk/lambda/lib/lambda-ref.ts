@@ -1,8 +1,9 @@
 import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
-         PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
+import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, FnSub,
+         PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
+import { ISubscriptionDestination, SubscriptionDestinationProps } from '@aws-cdk/logs';
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
@@ -23,7 +24,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget {
+export abstract class LambdaRef extends Construct implements IEventRuleTarget, ISubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -112,6 +113,11 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      * notifications to this topic have been added.
      */
     private eventRuleTargetPolicyAdded = false;
+
+    /**
+     * Indicates if the policy that allows CloudWatch logs to publish to this topic has been added.
+     */
+    private logSubscriptionDestinationPolicyAdded = false;
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -210,6 +216,22 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      */
     public metricThrottles(props?: MetricCustomization): Metric {
         return this.metric('Throttles', { statistic: 'sum', ...props });
+    }
+
+    public get subscriptionDestinationProps(): SubscriptionDestinationProps {
+        if (!this.logSubscriptionDestinationPolicyAdded) {
+            // FIXME: this limits to the same region, which shouldn't really be an issue.
+            // Wildcards in principals are unfortunately not supported.
+            //
+            // Whitelisting the whole of CWL is not as secure as the example in
+            // https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#LambdaFunctionExample
+            // (which also limits on source ARN) but this is far simpler and we trust CloudWatch Logs.
+            this.addPermission('InvokedByCloudWatchLogs', {
+                principal: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com'))
+            });
+            this.logSubscriptionDestinationPolicyAdded = true;
+        }
+        return new SubscriptionDestinationProps(this.functionArn);
     }
 
     private parsePermissionPrincipal(principal?: PolicyPrincipal) {
