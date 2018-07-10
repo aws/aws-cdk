@@ -86,13 +86,17 @@ export interface UnionProperty extends PropertyBase {
     ItemTypes?: string[];
 }
 
-type UpdateType = 'Conditional' | 'Immutable' | 'Mutable';
+export enum UpdateType {
+    Conditional = 'Conditional',
+    Immutable = 'Immutable',
+    Mutable = 'Mutable'
+}
 
 export function isUpdateType(str: string): str is UpdateType {
     switch (str) {
-    case 'Conditional':
-    case 'Immutable':
-    case 'Mutable':
+    case UpdateType.Conditional:
+    case UpdateType.Immutable:
+    case UpdateType.Mutable:
         return true;
     default:
         return false;

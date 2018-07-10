@@ -1,3 +1,10 @@
+/*
+ * Invoked as part of the "build" script of this package,
+ * this script takes all specification fragments in the
+ * `spec-source` folder and generates a unified specification
+ * document at `spec/specification.json`.
+ */
+
 import { applyPatch } from 'fast-json-patch';
 import * as fs from 'fs-extra';
 import * as md5 from 'md5';
@@ -5,7 +12,7 @@ import * as path from 'path';
 import { schema } from '../lib';
 
 async function main() {
-    const inputDir = path.join(process.cwd(), 'spec-input');
+    const inputDir = path.join(process.cwd(), 'spec-source');
     const files = await fs.readdir(inputDir);
     const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
     for (const file of files.filter(n => n.endsWith('.json')).sort()) {
@@ -99,7 +106,6 @@ function normalize(spec: schema.Specification): schema.Specification {
 }
 
 main()
-    .then(() => process.exit(0))
     .catch(e => {
         // tslint:disable-next-line:no-console
         console.error(e.stack);

@@ -3,17 +3,25 @@ export interface Documented {
     Documentation: string;
 }
 
-export type PrimitiveType = 'String' | 'Long' | 'Integer' | 'Double' | 'Boolean' | 'Timestamp' | 'Json';
+export enum PrimitiveType {
+    String = 'String',
+    Long = 'Long',
+    Integer = 'Integer',
+    Double = 'Double',
+    Boolean = 'Boolean',
+    Timestamp = 'Timestamp',
+    Json = 'Json'
+}
 
 export function isPrimitiveType(str: string): str is PrimitiveType {
     switch (str) {
-    case 'String':
-    case 'Long':
-    case 'Integer':
-    case 'Double':
-    case 'Boolean':
-    case 'Timestamp':
-    case 'Json':
+    case PrimitiveType.String:
+    case PrimitiveType.Long:
+    case PrimitiveType.Integer:
+    case PrimitiveType.Double:
+    case PrimitiveType.Boolean:
+    case PrimitiveType.Timestamp:
+    case PrimitiveType.Json:
         return true;
     default:
         return false;
