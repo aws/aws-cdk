@@ -144,12 +144,8 @@ export class NetworkUtils {
 
     /**
      *
-     * takes a number (e.g 2923605416) and converts it to an IPv4 address string
+     * Takes a number (e.g 2923605416) and converts it to an IPv4 address string
      * currently only supports IPv4
-     *
-     * Uses the formula:
-     * (first octet * 256³) + (second octet * 256²) + (third octet * 256) +
-     * (fourth octet)
      *
      * @param  {number} the integer value of the IP address (e.g 2923605416)
      * @returns {string} the IPv4 address (e.g. 174.66.173.168)

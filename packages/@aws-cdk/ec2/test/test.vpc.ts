@@ -93,7 +93,7 @@ export = {
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
               outboundTraffic: OutboundTrafficMode.FromPublicAndPrivateSubnets,
-              subnets: [
+              subnetConfigurations: [
                 {
                   cidrMask: 24,
                   name: 'ingress',

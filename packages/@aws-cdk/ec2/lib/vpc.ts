@@ -61,8 +61,7 @@ export interface VpcNetworkProps {
     maxAZs?: number;
 
     /**
-     * Define subnets that will be built per AZ (maxAZs), if numAZs is
-     * specified then only that number of AZs will have subnets.
+     * Configure the subnets to build for each AZ
      *
      * The subnets are constructed in the context of the VPC so you only need
      * specify the configuration. The VPC details (VPC ID, specific CIDR,
@@ -86,7 +85,7 @@ export interface VpcNetworkProps {
      * @default the VPC CIDR will be evenly divided between 1 public and 1
      * private subnet per AZ
      */
-    subnets?: VpcSubnetBuilderProps[];
+    subnetConfigurations?: SubnetConfiguration[];
 }
 
 /**
@@ -176,8 +175,6 @@ export class VpcNetwork extends VpcNetworkRef {
      */
     public readonly internalSubnets: VpcSubnetRef[] = [];
 
-    public readonly natGatewayByAZ: Obj<Token> = {};
-
     /**
      * The VPC resource
      */
@@ -221,7 +218,7 @@ export class VpcNetwork extends VpcNetworkRef {
             outboundTraffic === OutboundTrafficMode.FromPublicAndPrivateSubnets;
 
         // Create public and private subnets in each AZ
-        this.createSubnets(cidrBlock, outboundTraffic, props.maxAZs, props.subnets);
+        this.createSubnets(cidrBlock, outboundTraffic, props.maxAZs, props.subnetConfigurations);
 
         // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
         if (allowOutbound) {
@@ -253,7 +250,7 @@ export class VpcNetwork extends VpcNetworkRef {
       cidr: string,
       outboundTraffic: OutboundTrafficMode,
       maxAZs?: number,
-      subnets?: VpcSubnetBuilderProps[]) {
+      subnets?: SubnetConfiguration[]) {
 
         // Calculate number of public/private subnets based on number of AZs
         const zones = new AvailabilityZoneProvider(this).availabilityZones;
@@ -308,7 +305,9 @@ export class VpcNetwork extends VpcNetworkRef {
         this.privateSubnets.push(privateSubnet);
         this.dependencyElements.push(publicSubnet, privateSubnet);
     }
-    private createCustomSubnets(builder: NetworkBuilder, subnets: VpcSubnetBuilderProps[], zones: string[]) {
+    private createCustomSubnets(builder: NetworkBuilder, subnets: SubnetConfiguration[], zones: string[]) {
+
+      const natGatewayByAZ: Obj<Token> = {};
 
       for (const subnet of subnets) {
         let azs = zones;
@@ -327,7 +326,7 @@ export class VpcNetwork extends VpcNetworkRef {
                   cidrBlock: cidr
               });
               if (subnet.natGateway) {
-                this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+                natGatewayByAZ[zone] = publicSubnet.addNatGateway();
               }
               this.publicSubnets.push(publicSubnet);
               break;
@@ -353,9 +352,9 @@ export class VpcNetwork extends VpcNetworkRef {
         }
       }
       (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
-        let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
+        let ngwId = natGatewayByAZ[privateSubnet.availabilityZone];
         if (ngwId === undefined) {
-          const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+          const ngwArray = Array.from(Object.values(natGatewayByAZ));
           ngwId = ngwArray[i % ngwArray.length];
         }
         privateSubnet.addDefaultNatRouteEntry(ngwId);
@@ -370,18 +369,24 @@ export class VpcNetwork extends VpcNetworkRef {
 export enum SubnetType {
 
     /**
-     * Outbound traffic is not routed. This can be good for subnets with RDS or
+     * Internal Subnets do not route Outbound traffic
+     *
+     * This can be good for subnets with RDS or
      * Elasticache endpoints
      */
     Internal = 1,
 
     /**
-     * Outbound traffic will be routed via an Internet Gateway. If this is set
-     * and OutboundTrafficMode.None is configure an error will be thrown.
+     * Public subnets route outbound traffic via an Internet Gateway
+     *
+     * If this is set and OutboundTrafficMode.None is configure an error
+     * will be thrown.
      */
     Public = 2,
 
     /**
+     * Private subnets route outbound traffic via a NAT Gateway
+     *
      * Outbound traffic will be routed via a NAT Gateways preference being in
      * the same AZ, but if not available will use another AZ. This is common for
      * experimental cost conscious accounts or accounts where HA outbound
@@ -393,7 +398,7 @@ export enum SubnetType {
 /**
  * Specify configuration parameters for a VPC to be built
  */
-export interface VpcSubnetBuilderProps {
+export interface SubnetConfiguration {
     // the cidr mask value from 16-28
     cidrMask: number;
     // Public (IGW), Private (Nat GW), Internal (no outbound)
@@ -402,7 +407,7 @@ export interface VpcSubnetBuilderProps {
     name: string;
     // if true will place a NAT Gateway in this subnet, subnetType must be Public
     natGateway?: boolean;
-    // defaults to false if true will map public IPs on launch
+    // defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal
     mapPublicIpOnLaunch?: boolean;
     // number of AZs to build this subnet in
     numAZs?: number;
