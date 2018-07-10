@@ -234,6 +234,6 @@ export class CidrBlock {
         return [
             NetworkUtils.ipToNum(this.minIp()) <= NetworkUtils.ipToNum(cidr.minIp()),
             NetworkUtils.ipToNum(this.maxIp()) >= NetworkUtils.ipToNum(cidr.maxIp()),
-        ].reduce((contained: boolean, value: boolean) => (contained && value), true);
+        ].filter((contains) => (contains === false)).length === 0;
     }
 }
