@@ -146,11 +146,33 @@ export class NetworkUtils {
 
 }
 
+/**
+ * Creates a network based on a CIDR Block to build contained subnets
+ */
 export class NetworkBuilder {
+
+    /**
+     * the CIDR range used when creating the network
+     */
     public readonly networkCidr: CidrBlock;
+
+    /**
+     * the list of CIDR blocks for subnets within this network
+     */
     protected subnetCidrs: CidrBlock[];
+
+    /**
+     * the current highest allocated IP address in any subnet
+     */
     protected maxIpConsumed: string;
 
+    /**
+     * Create a network using the provided CIDR block
+     *
+     * No subnets are allocated in the constructor, the maxIpConsumed is set one
+     * less than the first IP in the network
+     *
+     */
     constructor(cidr: string) {
         this.networkCidr = new CidrBlock(cidr);
         this.subnetCidrs = [];
@@ -158,10 +180,16 @@ export class NetworkBuilder {
             ipToNum(this.networkCidr.minIp()) - 1);
     }
 
+    /**
+     * Add a subnet to the network and update the maxIpConsumed
+     */
     public addSubnet(mask: number): string {
         return this.addSubnets(mask, 1)[0];
     }
 
+    /**
+     * Add {count} number of subnets to the network and update the maxIpConsumed
+     */
     public addSubnets(mask: number, count?: number): string[] {
         if (mask < 16 || mask > 28) {
             throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
@@ -182,11 +210,14 @@ export class NetworkBuilder {
         return subnets.map((subnet) => (subnet.cidr));
     }
 
+    /**
+     * return the CIDR notation strings for all subnets in the network
+     */
     public get subnets(): string[] {
         return this.subnetCidrs.map((subnet) => (subnet.cidr));
     }
 
-    public validate(): boolean {
+    protected validate(): boolean {
         return this.subnetCidrs.map(
             (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).
             filter( (contains) => (contains === false)).length === 0;
@@ -194,33 +225,68 @@ export class NetworkBuilder {
 
 }
 
+/**
+ * Creates a CIDR Block
+ */
 export class CidrBlock {
 
+    /**
+    * Calculates the netmask for a given CIDR mask
+    *
+    * For example:
+    * CidrBlock.calculateNetmask(24) returns '255.255.255.0'
+    */
     public static calculateNetmask(mask: number): string {
         return NetworkUtils.numToIp(2 ** 32 - 2 ** (32 - mask));
     }
 
+    /**
+    * Given an IP and CIDR mask number returns the next CIDR Block available
+    *
+    * For example:
+    * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns '10.0.1.0/24'
+    */
     public static fromOffsetIp(ipAddress: string, mask: number): CidrBlock {
         const initialCidr = new CidrBlock(`${ipAddress}/${mask}`);
         const baseIpNum = NetworkUtils.ipToNum(initialCidr.maxIp()) + 1;
         return new this(`${NetworkUtils.numToIp(baseIpNum)}/${mask}`);
     }
 
+    /*
+     * The CIDR Block represented as a string e.g. '10.0.0.0/21'
+     */
     public readonly cidr: string;
+
+    /*
+     * The netmask for the CIDR represented as a string e.g. '255.255.255.0'
+     */
     public readonly netmask: string;
+
+    /*
+     * The CIDR mask e.g. for CIDR '10.0.0.0/21' returns 21
+     */
     public readonly mask: number;
 
+    /*
+     * Creates a new CidrBlock
+     */
     constructor(cidr: string) {
         this.cidr = cidr;
         this.mask = parseInt(cidr.split('/')[1], 10);
         this.netmask = CidrBlock.calculateNetmask(this.mask);
     }
 
+    /*
+     * The maximum IP in the CIDR Blcok e.g. '10.0.8.255'
+     */
     public maxIp(): string {
         const minIpNum = NetworkUtils.ipToNum(this.minIp());
         return NetworkUtils.numToIp(minIpNum + 2 ** (32 - this.mask) - 1);
     }
 
+    /*
+     * The minimum IP in the CIDR Blcok e.g. '10.0.0.0'
+     */
     public minIp(): string {
         const netmaskOct = this.netmask.split('.');
         const ipOct = this.cidr.split('/')[0].split('.');
@@ -230,6 +296,9 @@ export class CidrBlock {
         // tslint:enable:no-bitwise
     }
 
+    /*
+     * Returns true if this CidrBlock fully contains the provided CidrBlock
+     */
     public containsCidr(cidr: CidrBlock): boolean {
         return [
             NetworkUtils.ipToNum(this.minIp()) <= NetworkUtils.ipToNum(cidr.minIp()),
