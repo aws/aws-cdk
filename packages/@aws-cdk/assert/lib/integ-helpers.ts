@@ -49,7 +49,8 @@ export class IntegrationTest {
         }
 
         try {
-            return exec(['cdk', '-a', `node ${this.name}`].concat(args), this.directory, json);
+            const cdk = require.resolve('aws-cdk/bin/cdk');
+            return exec([cdk, '-a', `node ${this.name}`].concat(args), this.directory, json);
         } finally {
             this.deleteCdkConfig();
         }
