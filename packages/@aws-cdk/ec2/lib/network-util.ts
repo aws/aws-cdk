@@ -113,9 +113,8 @@ export class NetworkUtils {
     }
 
     public static validIp(ipAddress: string): boolean {
-        return ipAddress.split('.').map(
-            (octet: string) => (parseInt(octet, 10) >= 0 && parseInt(octet, 10) <= 255)).
-            reduce((valid: boolean, value: boolean) => (valid && value));
+        return ipAddress.split('.').map((octet: string) => parseInt(octet, 10)).
+            filter((octet: number) => octet >= 0 && octet <= 255).length === 4;
     }
     /**
      *
