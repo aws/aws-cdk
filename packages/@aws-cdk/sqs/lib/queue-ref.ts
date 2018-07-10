@@ -1,6 +1,6 @@
 import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
-import * as sqs from '../cfn/sqs';
 import { QueuePolicy } from './policy';
+import * as sqs from './sqs.generated';
 
 /**
  * Reference to a new or existing Amazon SQS queue

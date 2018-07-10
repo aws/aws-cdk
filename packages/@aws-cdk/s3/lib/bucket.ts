@@ -1,10 +1,10 @@
 import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import * as s3 from '../cfn/s3';
 import { BucketPolicy } from './bucket-policy';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
+import * as s3 from './s3.generated';
 import { parseBucketArn, parseBucketName, validateBucketName } from './util';
 
 /**
@@ -265,7 +265,7 @@ export class Bucket extends BucketRef {
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
-        const resource = new s3.BucketResource(this, 'Resource', {
+        const resource = new s3.cloudformation.BucketResource(this, 'Resource', {
             bucketName: props && props.bucketName,
             bucketEncryption,
             versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
@@ -306,7 +306,7 @@ export class Bucket extends BucketRef {
      * user's configuration.
      */
     private parseEncryption(props: BucketProps): {
-        bucketEncryption?: s3.BucketResource.BucketEncryptionProperty,
+        bucketEncryption?: s3.cloudformation.BucketResource.BucketEncryptionProperty,
         encryptionKey?: kms.EncryptionKeyRef
     } {
 
@@ -366,14 +366,14 @@ export class Bucket extends BucketRef {
      * Parse the lifecycle configuration out of the uucket props
      * @param props Par
      */
-    private parseLifecycleConfiguration(): s3.BucketResource.LifecycleConfigurationProperty | undefined {
+    private parseLifecycleConfiguration(): s3.cloudformation.BucketResource.LifecycleConfigurationProperty | undefined {
         if (!this.lifecycleRules || this.lifecycleRules.length === 0) {
             return undefined;
         }
 
         return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
-        function parseLifecycleRule(rule: LifecycleRule): s3.BucketResource.RuleProperty {
+        function parseLifecycleRule(rule: LifecycleRule): s3.cloudformation.BucketResource.RuleProperty {
             const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
             const x = {

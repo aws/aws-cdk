@@ -1,6 +1,6 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import * as sqs from '../cfn/sqs';
 import { QueueRef } from './queue-ref';
+import * as sqs from './sqs.generated';
 
 export interface QueuePolicyProps {
     /**
@@ -21,7 +21,7 @@ export class QueuePolicy extends Construct {
     constructor(parent: Construct, name: string, props: QueuePolicyProps) {
         super(parent, name);
 
-        new sqs.QueuePolicyResource(this, 'Resource', {
+        new sqs.cloudformation.QueuePolicyResource(this, 'Resource', {
             policyDocument: this.document,
             queues: props.queues.map(q => q.queueUrl)
         });

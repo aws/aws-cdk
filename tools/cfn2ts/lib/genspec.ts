@@ -2,12 +2,14 @@
 //
 // Does not include the actual code generation itself.
 
-import { schema } from '@aws-cdk/cloudformation-resource-spec';
+import { schema } from '@aws-cdk/cdk-cfnspec';
 import { toCamelCase, toPascalCase } from 'codemaker';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import * as util from './util';
 
 const RESOURCE_CLASS_POSTFIX = 'Resource';
+
+export const CORE_NAMESPACE = 'core';
 
 /**
  * The name of corresponding objects in the generated code
@@ -45,7 +47,7 @@ export class CodeName {
         if (!resourceClassName.endsWith(RESOURCE_CLASS_POSTFIX)) {
             resourceClassName += RESOURCE_CLASS_POSTFIX;
         }
-        return new CodeName(packageName(specName), resourceClassName, `${specName.propAttrName}Property`, specName);
+        return new CodeName(packageName(specName), `${resourceClassName}`, `${specName.propAttrName}Property`, specName);
     }
 
     public static forPrimitive(primitiveName: string): CodeName {
@@ -135,7 +137,7 @@ export function packageName(module: SpecName | string): string {
 export function cfnMapperName(typeName: CodeName): CodeName {
     if (!typeName.packageName) {
         // Built-in or intrinsic type, built-in mappers
-        return new CodeName('', 'runtime', '', undefined, util.downcaseFirst(`${typeName.className}ToCloudFormation`));
+        return new CodeName('', CORE_NAMESPACE, '', undefined, util.downcaseFirst(`${typeName.className}ToCloudFormation`));
     }
 
     return new CodeName(typeName.packageName, '', util.downcaseFirst(`${typeName.namespace}${typeName.className}ToCloudFormation`));
@@ -147,7 +149,7 @@ export function cfnMapperName(typeName: CodeName): CodeName {
 export function validatorName(typeName: CodeName): CodeName {
     if (typeName.packageName === '') {
         // Built-in or intrinsic type, built-in validators
-        return new CodeName('', 'runtime', '', undefined, `validate${toPascalCase(typeName.className)}`);
+        return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${toPascalCase(typeName.className)}`);
     }
 
     return new CodeName(typeName.packageName, '', `${util.joinIf(typeName.namespace, '_', typeName.className)}Validator`);
@@ -171,9 +173,9 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
     // Not in a namespace, base the name on the descriptive name
     const typeName = new CodeName(resourceName.packageName, '', descriptiveName, specName); // "BucketArn"
 
-    let baseClass = 'core.Token';
+    let baseClass = `${CORE_NAMESPACE}.Token`;
     if (attributeName.endsWith('Arn')) {
-        baseClass = 'core.Arn';
+        baseClass = `${CORE_NAMESPACE}.Arn`;
     }
 
     return new Attribute(propertyName, typeName, baseClass, docLink);

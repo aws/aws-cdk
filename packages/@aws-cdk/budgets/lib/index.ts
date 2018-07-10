@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Budgets:
-export * from '../cfn/budgets';
+// AWS::Budgets CloudFormation Resources:
+export * from './budgets.generated';

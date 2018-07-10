@@ -1,5 +1,8 @@
 *.js
+*.js.map
 *.d.ts
+*.generated.ts
+tsconfig.json
+tslint.json
 node_modules
-cfn
 dist

@@ -1,2 +1,2 @@
-// The L1 library for AWS::AutoScaling:
-export * from '../cfn/autoscaling';
+// AWS::AutoScaling CloudFormation Resources:
+export * from './autoscaling.generated';

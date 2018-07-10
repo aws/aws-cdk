@@ -1,2 +1,2 @@
-// The L1 Library for AWS::DataPipeline:
-export * from '../cfn/datapipeline';
+// AWS::DataPipeline CloudFormation Resources:
+export * from './datapipeline.generated';

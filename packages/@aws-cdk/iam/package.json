@@ -38,7 +38,6 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
-    "@aws-cdk/runtime": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta"
   },

@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ServiceCatalog:
-export * from '../cfn/servicecatalog';
+// AWS::ServiceCatalog CloudFormation Resources:
+export * from './servicecatalog.generated';

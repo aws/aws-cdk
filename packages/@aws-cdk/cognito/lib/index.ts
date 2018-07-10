@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Cognito:
-export * from '../cfn/cognito';
+// AWS::Cognito CloudFormation Resources:
+export * from './cognito.generated';

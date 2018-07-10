@@ -1,2 +1,2 @@
-// The L1 Library for AWS::AppSync:
-export * from '../cfn/appsync';
+// AWS::AppSync CloudFormation Resources:
+export * from './appsync.generated';

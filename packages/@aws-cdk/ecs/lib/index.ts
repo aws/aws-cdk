@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ECS:
-export * from '../cfn/ecs';
+// AWS::ECS CloudFormation Resources:
+export * from './ecs.generated';

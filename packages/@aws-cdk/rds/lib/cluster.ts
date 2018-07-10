@@ -2,9 +2,9 @@ import { Construct } from '@aws-cdk/core';
 // tslint:disable-next-line:ordered-imports
 import { DefaultConnections, InstanceType, IPortRange, SecurityGroup, TcpPortFromAttribute, SecurityGroupId } from '@aws-cdk/ec2';
 import { KeyArn } from '@aws-cdk/kms';
-import * as rds from '../cfn/rds';
 import { ClusterIdentifier, DatabaseClusterRef, Endpoint, InstanceIdentifier } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
+import * as rds from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -143,7 +143,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
             throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
         }
 
-        const subnetGroup = new rds.DBSubnetGroupResource(this, 'Subnets', {
+        const subnetGroup = new rds.cloudformation.DBSubnetGroupResource(this, 'Subnets', {
             dbSubnetGroupDescription: `Subnets for ${name} database`,
             subnetIds: subnets.map(s => s.subnetId)
         });
@@ -154,7 +154,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
         });
         this.securityGroupId = securityGroup.securityGroupId;
 
-        const cluster = new rds.DBClusterResource(this, 'Resource', {
+        const cluster = new rds.cloudformation.DBClusterResource(this, 'Resource', {
             // Basic
             engine: props.engine,
             dbClusterIdentifier: props.clusterIdentifier,
@@ -191,7 +191,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
 
             const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.usePublicSubnets;
 
-            const instance = new rds.DBInstanceResource(this, `Instance${instanceIndex}`, {
+            const instance = new rds.cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
                 // Link to cluster
                 engine: props.engine,
                 dbClusterIdentifier: cluster.ref,

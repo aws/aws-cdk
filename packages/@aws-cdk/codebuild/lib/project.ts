@@ -4,8 +4,8 @@ import { IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
 import { BucketRef } from '@aws-cdk/s3';
-import * as codebuild from '../cfn/codebuild';
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
+import * as codebuild from './codebuild.generated';
 import { BuildSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -315,7 +315,7 @@ export class BuildProject extends BuildProjectRef {
 
         const environment = this.renderEnvironment(props.environment, props.environmentVariables);
 
-        let cache: codebuild.ProjectResource.ProjectCacheProperty | undefined;
+        let cache: codebuild.cloudformation.ProjectResource.ProjectCacheProperty | undefined;
         if (props.cacheBucket) {
             const cacheDir = props.cacheDir != null ? props.cacheDir : '';
             cache = {
@@ -341,7 +341,7 @@ export class BuildProject extends BuildProjectRef {
 
         this.validateCodePipelineSettings(source, artifacts);
 
-        const resource = new codebuild.ProjectResource(this, 'Resource', {
+        const resource = new codebuild.cloudformation.ProjectResource(this, 'Resource', {
             description: props.description,
             source: sourceJson,
             artifacts: artifacts.toArtifactsJSON(),
@@ -388,7 +388,7 @@ export class BuildProject extends BuildProjectRef {
     }
 
     private renderEnvironment(env: BuildEnvironment = {}, projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-        codebuild.ProjectResource.EnvironmentProperty {
+        codebuild.cloudformation.ProjectResource.EnvironmentProperty {
 
         const vars: { [name: string]: BuildEnvironmentVariable } = {};
         const containerVars = env.environmentVariables || {};

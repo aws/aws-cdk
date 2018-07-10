@@ -1,6 +1,6 @@
 import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement } from '@aws-cdk/core';
-import * as kms from '../cfn/kms';
 import { EncryptionKeyAlias } from './alias';
+import * as kms from './kms.generated';
 
 export interface EncryptionKeyRefProps {
     /**
@@ -122,7 +122,7 @@ export class EncryptionKey extends EncryptionKeyRef {
             this.allowAccountToAdmin();
         }
 
-        const resource = new kms.KeyResource(this, 'Resource', {
+        const resource = new kms.cloudformation.KeyResource(this, 'Resource', {
             description: props.description,
             enableKeyRotation: props.enableKeyRotation,
             enabled: props.enabled,

@@ -1,22 +1,22 @@
 import { BucketRef } from '@aws-cdk/s3';
-import * as codebuild from '../cfn/codebuild';
+import * as codebuild from './codebuild.generated';
 import { BuildProject } from './project';
 
 export abstract class BuildArtifacts {
-    public abstract toArtifactsJSON(): codebuild.ProjectResource.ArtifactsProperty;
+    public abstract toArtifactsJSON(): codebuild.cloudformation.ProjectResource.ArtifactsProperty;
     public bind(_project: BuildProject) {
         return;
     }
 }
 
 export class NoBuildArtifacts  extends BuildArtifacts {
-    public toArtifactsJSON(): codebuild.ProjectResource.ArtifactsProperty {
+    public toArtifactsJSON(): codebuild.cloudformation.ProjectResource.ArtifactsProperty {
         return { type: 'NO_ARTIFACTS' };
     }
 }
 
 export class CodePipelineBuildArtifacts extends BuildArtifacts {
-    public toArtifactsJSON(): codebuild.ProjectResource.ArtifactsProperty {
+    public toArtifactsJSON(): codebuild.cloudformation.ProjectResource.ArtifactsProperty {
         return { type: 'CODEPIPELINE' };
     }
 }
@@ -68,7 +68,7 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
         this.props.bucket.grantReadWrite(project.role);
     }
 
-    public toArtifactsJSON(): codebuild.ProjectResource.ArtifactsProperty {
+    public toArtifactsJSON(): codebuild.cloudformation.ProjectResource.ArtifactsProperty {
         return {
             type: 'S3',
             location: this.props.bucket.bucketName,

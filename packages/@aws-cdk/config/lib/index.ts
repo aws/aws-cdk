@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Config:
-export * from '../cfn/config';
+// AWS::Config CloudFormation Resources:
+export * from './config.generated';

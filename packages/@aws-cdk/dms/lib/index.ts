@@ -1,2 +1,2 @@
-// The L1 Library for AWS::DMS:
-export * from '../cfn/dms';
+// AWS::DMS CloudFormation Resources:
+export * from './dms.generated';

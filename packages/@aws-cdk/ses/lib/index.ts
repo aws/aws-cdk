@@ -1,2 +1,2 @@
-// The L1 Library for AWS::SES:
-export * from '../cfn/ses';
+// AWS::SES CloudFormation Resources:
+export * from './ses.generated';

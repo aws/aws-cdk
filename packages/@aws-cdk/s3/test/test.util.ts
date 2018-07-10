@@ -1,7 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import * as s3 from '../cfn/s3';
-import { BucketName } from '../lib';
+import * as s3 from '../lib';
 import { parseBucketArn, parseBucketName } from '../lib/util';
 
 export = {
@@ -13,7 +12,7 @@ export = {
         },
 
         'produce arn from bucket name'(test: Test) {
-            const bucketName = new BucketName('hello');
+            const bucketName = new s3.BucketName('hello');
             test.deepEqual(resolve(parseBucketArn({ bucketName })), { 'Fn::Join':
             [ '',
               [ 'arn',
@@ -39,7 +38,7 @@ export = {
     parseBucketName: {
 
         'explicit name'(test: Test) {
-            const bucketName = new BucketName('foo');
+            const bucketName = new s3.BucketName('foo');
             test.deepEqual(resolve(parseBucketName({ bucketName })), 'foo');
             test.done();
         },

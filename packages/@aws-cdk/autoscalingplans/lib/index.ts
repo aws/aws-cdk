@@ -1,2 +1,2 @@
-// The L1 Library for AWS::AutoScalingPlans:
-export * from '../cfn/autoscalingplans';
+// AWS::AutoScalingPlans CloudFormation Resources:
+export * from './autoscalingplans.generated';

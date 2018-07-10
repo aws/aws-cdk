@@ -8,5 +8,5 @@ export * from './security-group';
 export * from './vpc';
 export * from './vpc-ref';
 
-// The L1 library for AWS::EC2:
-export * from '../cfn/ec2';
+// AWS::EC2 CloudFormation Resources:
+export * from './ec2.generated';

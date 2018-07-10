@@ -1,2 +1,2 @@
-// The L1 Library for AWS::EKS:
-export * from '../cfn/eks';
+// AWS::EKS CloudFormation Resources:
+export * from './eks.generated';

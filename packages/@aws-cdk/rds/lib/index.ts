@@ -3,5 +3,5 @@ export * from './cluster-ref';
 export * from './instance';
 export * from './props';
 
-// The L1 library for AWS::RDS:
-export * from '../cfn/rds';
+// AWS::RDS CloudFormation Resources:
+export * from './rds.generated';

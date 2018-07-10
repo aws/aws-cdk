@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
          PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import * as lambda from '../cfn/lambda';
+import * as lambda from './lambda.generated';
 import { LambdaPermission } from './permission';
 
 /**
@@ -126,7 +126,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
         const principal = this.parsePermissionPrincipal(permission.principal);
         const action = permission.action || 'lambda:InvokeFunction';
 
-        new lambda.PermissionResource(this, name, {
+        new lambda.cloudformation.PermissionResource(this, name, {
             action,
             principal,
             functionName: this.functionName,

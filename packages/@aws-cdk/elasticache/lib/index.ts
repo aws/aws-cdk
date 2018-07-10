@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ElastiCache:
-export * from '../cfn/elasticache';
+// AWS::ElastiCache CloudFormation Resources:
+export * from './elasticache.generated';

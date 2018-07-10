@@ -1,2 +1,2 @@
-// The L1 library for AWS::CloudFormation:
-export * from '../cfn/cloudformation';
+// AWS::CloudFormation CloudFormation Resources:
+export * from './cloudformation.generated';

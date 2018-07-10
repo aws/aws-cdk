@@ -1,5 +1,5 @@
 {
-    "name": "@aws-cdk/cloudformation-resource-spec",
+    "name": "@aws-cdk/cdk-cfnspec",
     "description": "The CloudFormation resource specification used by @aws-cdk packages",
     "version": "0.7.3-beta",
     "scripts": {

@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
-import * as route53 from '../../cfn/route53';
 import { HostedZoneRef } from '../hosted-zone-ref';
+import * as route53 from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 export interface TXTRecordProps {
@@ -21,7 +21,7 @@ export class TXTRecord extends Construct {
         const recordValue = JSON.stringify(props.recordValue);
         const ttl = props.ttl === undefined ? 1800 : props.ttl;
 
-        new route53.RecordSetResource(this, 'Resource', {
+        new route53.cloudformation.RecordSetResource(this, 'Resource', {
             hostedZoneId: parent.hostedZoneId,
             recordSetName: determineFullyQualifiedDomainName(props.recordName, parent),
             type: 'TXT',

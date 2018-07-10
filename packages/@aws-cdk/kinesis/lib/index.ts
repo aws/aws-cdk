@@ -1,4 +1,4 @@
 export * from './stream';
 
-// The L1 library for AWS::Kinesis:
-export * from '../cfn/kinesis';
+// AWS::Kinesis CloudFormation Resources:
+export * from './kinesis.generated';

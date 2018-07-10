@@ -1,2 +1,2 @@
-// The L1 Library for AWS::GameLift:
-export * from '../cfn/gamelift';
+// AWS::GameLift CloudFormation Resources:
+export * from './gamelift.generated';

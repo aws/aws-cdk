@@ -1,3 +1,5 @@
+import { Construct } from './core/construct';
+
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS
 //
@@ -317,6 +319,26 @@ export function requiredValidator(x: any) {
         return new ValidationResult(`required but missing`);
     }
     return VALIDATION_SUCCESS;
+}
+
+/**
+ * Require a property from a property bag.
+ *
+ * @param props    the property bag from which a property is required.
+ * @param name     the name of the required property.
+ * @param typeName the name of the construct type that requires the property
+ *
+ * @returns the value of ``props[name]``
+ *
+ * @throws if the property ``name`` is not present in ``props``.
+ */
+export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
+    if (!(name in props)) {
+        throw new Error(`${context.toString()} is missing required property: ${name}`);
+    }
+    const value = props[name];
+    // Possibly add type-checking here...
+    return value;
 }
 
 /**

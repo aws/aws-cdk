@@ -1,2 +1,2 @@
-// The L1 Library for AWS::DirectoryService:
-export * from '../cfn/directoryservice';
+// AWS::DirectoryService CloudFormation Resources:
+export * from './directoryservice.generated';

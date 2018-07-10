@@ -1,2 +1,2 @@
-// The L1 Library for AWS::WAFRegional:
-export * from '../cfn/wafregional';
+// AWS::WAFRegional CloudFormation Resources:
+export * from './wafregional.generated';

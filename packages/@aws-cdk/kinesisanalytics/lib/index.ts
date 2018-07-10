@@ -1,2 +1,2 @@
-// The L1 Library for AWS::KinesisAnalytics:
-export * from '../cfn/kinesisanalytics';
+// AWS::KinesisAnalytics CloudFormation Resources:
+export * from './kinesisanalytics.generated';

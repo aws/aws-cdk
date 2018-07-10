@@ -1,7 +1,7 @@
 import { Construct, ServicePrincipal, Stack } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
-import { FunctionResource } from '@aws-cdk/lambda';
-import { QueueResource } from '@aws-cdk/sqs';
+import * as lambda from '@aws-cdk/lambda';
+import * as sqs from '@aws-cdk/sqs';
 import { Test } from 'nodeunit';
 import { RuntimeValue } from '../lib';
 
@@ -23,13 +23,13 @@ class RuntimeValueTest extends Construct {
     constructor(parent: Construct, name: string) {
         super(parent, name);
 
-        const queue = new QueueResource(this, 'Queue', {});
+        const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
 
         const role = new Role(this, 'Role', {
             assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
         });
 
-        new FunctionResource(this, 'Function', {
+        new lambda.cloudformation.FunctionResource(this, 'Function', {
             runtime: 'nodejs6.10',
             handler: 'index.handler',
             code: {

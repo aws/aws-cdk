@@ -4,8 +4,8 @@ import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { IIdentityResource } from '@aws-cdk/iam';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { QueueRef } from '@aws-cdk/sqs';
-import * as sns from '../cfn/sns';
 import { TopicPolicy } from './policy';
+import * as sns from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 /**

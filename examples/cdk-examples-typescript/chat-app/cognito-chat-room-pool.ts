@@ -1,12 +1,12 @@
-import { UserPoolClientResource, UserPoolResource } from '@aws-cdk/cognito';
-import { Construct } from '@aws-cdk/core';
+import * as cognito from '@aws-cdk/cognito';
+import * as cdk from '@aws-cdk/core';
 
-export class CognitoChatRoomPool extends Construct {
-    constructor(parent: Construct, name: string) {
+export class CognitoChatRoomPool extends cdk.Construct {
+    constructor(parent: cdk.Construct, name: string) {
         super(parent, name);
 
         // Create chat room user pool
-        const chatPool = new UserPoolResource(this, 'UserPool', {
+        const chatPool = new cognito.cloudformation.UserPoolResource(this, 'UserPool', {
             adminCreateUserConfig: {
                 allowAdminCreateUserOnly: false
             },
@@ -26,7 +26,7 @@ export class CognitoChatRoomPool extends Construct {
         });
 
         // Now for the client
-        new UserPoolClientResource(this, 'UserPoolClient', {
+        new cognito.cloudformation.UserPoolClientResource(this, 'UserPoolClient', {
             clientName: 'Chat-Room',
             explicitAuthFlows: [ 'ADMIN_NO_SRP_AUTH' ],
             refreshTokenValidity: 30,

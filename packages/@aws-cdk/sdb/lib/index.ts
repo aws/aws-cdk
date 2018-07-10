@@ -1,2 +1,2 @@
-// The L1 Library for AWS::SDB:
-export * from '../cfn/sdb';
+// AWS::SDB CloudFormation Resources:
+export * from './sdb.generated';

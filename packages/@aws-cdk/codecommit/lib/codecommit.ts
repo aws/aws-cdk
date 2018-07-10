@@ -1,6 +1,6 @@
 import { Arn, Construct, Output } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
-import * as codecommit from '../cfn/codecommit';
+import * as codecommit from './codecommit.generated';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.
@@ -182,13 +182,13 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryRef {
-    private readonly repository: codecommit.RepositoryResource;
-    private readonly triggers = new Array<codecommit.RepositoryResource.RepositoryTriggerProperty>();
+    private readonly repository: codecommit.cloudformation.RepositoryResource;
+    private readonly triggers = new Array<codecommit.cloudformation.RepositoryResource.RepositoryTriggerProperty>();
 
     constructor(parent: Construct, name: string, props: RepositoryProps) {
         super(parent, name);
 
-        this.repository = new codecommit.RepositoryResource(this, 'Resource', {
+        this.repository = new codecommit.cloudformation.RepositoryResource(this, 'Resource', {
             repositoryName: props.repositoryName,
             repositoryDescription: props.description,
             triggers: this.triggers

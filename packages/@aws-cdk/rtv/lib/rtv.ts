@@ -1,6 +1,6 @@
 import { Arn, AwsStackName, Construct, FnConcat, PolicyStatement, Token } from '@aws-cdk/core';
-import { IIdentityResource } from '@aws-cdk/iam';
-import { ParameterResource } from '@aws-cdk/ssm';
+import * as iam from '@aws-cdk/iam';
+import * as ssm from '@aws-cdk/ssm';
 
 export interface RuntimeValueProps {
     /**
@@ -56,7 +56,7 @@ export class RuntimeValue extends Construct {
 
         this.parameterName = new FnConcat('/rtv/', new AwsStackName(), '/', props.package, '/', name);
 
-        new ParameterResource(this, 'Parameter', {
+        new ssm.cloudformation.ParameterResource(this, 'Parameter', {
             parameterName: this.parameterName,
             type: 'String',
             value: props.value,
@@ -73,7 +73,7 @@ export class RuntimeValue extends Construct {
      * Grants a principal read permissions on this runtime value.
      * @param principal The principal (e.g. Role, User, Group)
      */
-    public grantRead(principal?: IIdentityResource) {
+    public grantRead(principal?: iam.IIdentityResource) {
 
         // sometimes "role" is optional, so we want `rtv.grantRead(role)` to be a no-op
         if (!principal) {

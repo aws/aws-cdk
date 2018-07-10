@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Glue:
-export * from '../cfn/glue';
+// AWS::Glue CloudFormation Resources:
+export * from './glue.generated';

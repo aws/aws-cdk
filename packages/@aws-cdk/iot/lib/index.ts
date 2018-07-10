@@ -1,2 +1,2 @@
-// The L1 Library for AWS::IoT:
-export * from '../cfn/iot';
+// AWS::IoT CloudFormation Resources:
+export * from './iot.generated';

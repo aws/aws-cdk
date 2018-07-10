@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
-import * as route53 from '../../cfn/route53';
 import { HostedZoneRef } from '../hosted-zone-ref';
+import * as route53 from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 export interface ZoneDelegationRecordProps {
@@ -38,7 +38,7 @@ export class ZoneDelegationRecord extends Construct {
 
         const ttl = props.ttl === undefined ? 172_800 : props.ttl;
 
-        new route53.RecordSetResource(this, 'Resource', {
+        new route53.cloudformation.RecordSetResource(this, 'Resource', {
             hostedZoneId: parent.hostedZoneId,
             recordSetName: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
             type: 'NS',

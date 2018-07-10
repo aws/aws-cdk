@@ -1,6 +1,6 @@
 import { Construct, FnConcat, Token } from '@aws-cdk/core';
-import * as events from '../cfn/events';
 import { EventPattern } from './event-pattern';
+import * as events from './events.generated';
 import { TargetInputTemplate } from './input-options';
 import { EventRuleRef } from './rule-ref';
 import { IEventRuleTarget } from './target';
@@ -66,14 +66,14 @@ export interface EventRuleProps {
 export class EventRule extends EventRuleRef {
     public ruleArn: events.RuleArn;
 
-    private readonly targets = new Array<events.RuleResource.TargetProperty>();
+    private readonly targets = new Array<events.cloudformation.RuleResource.TargetProperty>();
     private readonly eventPattern: EventPattern = { };
     private scheduleExpression?: string;
 
     constructor(parent: Construct, name: string, props: EventRuleProps = { }) {
         super(parent, name);
 
-        const resource = new events.RuleResource(this, 'Resource', {
+        const resource = new events.cloudformation.RuleResource(this, 'Resource', {
             description: props.description,
             state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
             scheduleExpression: new Token(() => this.scheduleExpression),
@@ -110,7 +110,7 @@ export class EventRule extends EventRuleRef {
             inputTransformer: renderTransformer(),
         });
 
-        function renderTransformer(): events.RuleResource.InputTransformerProperty | undefined {
+        function renderTransformer(): events.cloudformation.RuleResource.InputTransformerProperty | undefined {
             if (!inputOptions) {
                 return undefined;
             }

@@ -1,12 +1,12 @@
 import { AwsAccountId, Construct, FnConcat, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
-import { LogGroupResource } from '@aws-cdk/logs';
+import * as logs from '@aws-cdk/logs';
 import { Bucket, BucketEncryption } from '@aws-cdk/s3';
-import * as cloudtrail from '../cfn/cloudtrail';
+import * as cloudtrail from './cloudtrail.generated';
 
-// The L1 library for AWS::CloudTrail:
-export * from '../cfn/cloudtrail';
+// AWS::CloudTrail CloudFormation Resources:
+export * from './cloudtrail.generated';
 
 export interface CloudTrailProps {
     /**
@@ -144,7 +144,7 @@ export class CloudTrail extends Construct {
             .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
 
         if (props.sendToCloudWatchLogs) {
-            const logGroup = new LogGroupResource(this, "LogGroup", {
+            const logGroup = new logs.cloudformation.LogGroupResource(this, "LogGroup", {
                 retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
             });
             this.cloudWatchLogsGroupArn = logGroup.ref;
@@ -167,7 +167,7 @@ export class CloudTrail extends Construct {
         }
 
         // TODO: not all regions support validation. Use service configuration data to fail gracefully
-        const trail = new cloudtrail.TrailResource(this, 'Resource', {
+        const trail = new cloudtrail.cloudformation.TrailResource(this, 'Resource', {
             isLogging: true,
             enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
             isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,

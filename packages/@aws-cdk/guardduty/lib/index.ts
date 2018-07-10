@@ -1,2 +1,2 @@
-// The L1 Library for AWS::GuardDuty:
-export * from '../cfn/guardduty';
+// AWS::GuardDuty CloudFormation Resources:
+export * from './guardduty.generated';

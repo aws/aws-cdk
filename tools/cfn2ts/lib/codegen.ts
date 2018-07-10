@@ -1,12 +1,11 @@
-import { schema } from '@aws-cdk/cloudformation-resource-spec';
+import { schema } from '@aws-cdk/cdk-cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 
-const CORE = 'core';
-const RUNTIME = 'runtime';
+const CORE = genspec.CORE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.Resource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
 
@@ -26,12 +25,12 @@ export default class CodeGenerator {
      * @param spec       CloudFormation resource specification
      */
     constructor(moduleName: string, private readonly spec: schema.Specification) {
-        this.outputFile = `${moduleName}.ts`;
+        this.outputFile = `${moduleName}.generated.ts`;
         this.code.openFile(this.outputFile);
 
         const meta = {
-            generatedOn: new Date(),
-            specificationFingerprint: spec.Fingerprint
+            generated: new Date(),
+            fingerprint: spec.Fingerprint
         };
 
         this.code.line('// Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.');
@@ -42,7 +41,6 @@ export default class CodeGenerator {
         this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
         this.code.line();
         this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
-        this.code.line(`import * as ${RUNTIME} from '@aws-cdk/runtime';`);
     }
 
     public async upToDate(outPath: string): Promise<boolean> {
@@ -55,7 +53,7 @@ export default class CodeGenerator {
         if (comment) {
             try {
                 const meta = JSON.parse(comment[1]);
-                if (meta.specificationFingerprint === this.spec.Fingerprint) {
+                if (meta.fingerprint === this.spec.Fingerprint) {
                     return true;
                 }
             } catch {
@@ -65,27 +63,23 @@ export default class CodeGenerator {
         return false;
     }
 
-    /**
-     * Emits classes for all resource types
-     */
-    public emitResourceTypes() {
-        Object.keys(this.spec.ResourceTypes).sort().forEach(name => {
+    public emitCode() {
+        for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
             const cfnName = SpecName.parse(name);
             const resourceName = genspec.CodeName.forResource(cfnName);
             this.code.line();
-            this.emitResourceType(resourceName, this.spec.ResourceTypes[name]);
-        });
-    }
+            this.code.openBlock('export namespace cloudformation');
+            const attributeTypes = this.emitResourceType(resourceName, this.spec.ResourceTypes[name]);
 
-    /**
-     * Emits classes for all property types
-     */
-    public emitPropertyTypes() {
-        if (!this.spec.PropertyTypes) { return; }
-        for (const name of Object.keys(this.spec.PropertyTypes).sort()) {
-            const cfnName = PropertyAttributeName.parse(name);
-            const propTypeName = genspec.CodeName.forPropertyType(cfnName);
-            this.emitPropertyType(propTypeName, this.spec.PropertyTypes[name]);
+            this.emitPropertyTypes(name);
+
+            this.code.closeBlock();
+
+            if (attributeTypes.length === 0) { continue; }
+            for (const attributeType of attributeTypes) {
+                this.code.line();
+                this.emitAttributeType(attributeType);
+            }
         }
     }
 
@@ -95,6 +89,19 @@ export default class CodeGenerator {
     public async save(dir: string) {
         this.code.closeFile(this.outputFile);
         return await this.code.save(dir);
+    }
+
+    /**
+     * Emits classes for all property types
+     */
+    private emitPropertyTypes(resourceName: string) {
+        const prefix = `${resourceName}.`;
+        for (const name of Object.keys(this.spec.PropertyTypes).sort()) {
+            if (!name.startsWith(prefix)) { continue; }
+            const cfnName = PropertyAttributeName.parse(name);
+            const propTypeName = genspec.CodeName.forPropertyType(cfnName);
+            this.emitPropertyType(propTypeName, this.spec.PropertyTypes[name]);
+        }
     }
 
     private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string) {
@@ -246,7 +253,7 @@ export default class CodeGenerator {
                 const prop = spec.Properties[pname];
                 if (prop.Required) {
                     const propName = pname.toLocaleLowerCase() === 'name' ? resourceNameProperty(resourceName.specName!) : pname;
-                    this.code.line(`this.required(properties, '${genspec.cloudFormationToScriptName(propName)}');`);
+                    this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(propName)}', this);`);
                 }
             }
         }
@@ -279,13 +286,9 @@ export default class CodeGenerator {
 
         this.closeClass(resourceName);
 
-        // if we have attribute types, emit them.
-        for (const attrType of attributeTypes) {
-            this.code.line();
-            this.emitAttributeType(attrType);
-        }
-
         this.endNamespace(resourceName);
+
+        return attributeTypes;
     }
 
     /**
@@ -305,12 +308,12 @@ export default class CodeGenerator {
      * The generated code looks like this:
      *
      *    function bucketPropsToCloudFormation(properties: any): any {
-     *        if (!runtime.canInspect(properties)) return properties;
+     *        if (!core.canInspect(properties)) return properties;
      *        BucketPropsValidator(properties).assertSuccess();
      *        return {
      *            AccelerateConfiguration: bucketAccelerateConfigurationPropertyToCloudFormation(properties.accelerateConfiguration),
-     *            AccessControl: runtime.stringToCloudFormation(properties.accessControl),
-     *            AnalyticsConfigurations: runtime.listMapper(bucketAnalyticsConfigurationPropertyToCloudFormation)
+     *            AccessControl: core.stringToCloudFormation(properties.accessControl),
+     *            AnalyticsConfigurations: core.listMapper(bucketAnalyticsConfigurationPropertyToCloudFormation)
      *                                                                                  (properties.analyticsConfigurations),
      *            // ...
      *        };
@@ -335,7 +338,7 @@ export default class CodeGenerator {
 
         // It might be that this value is 'null' or 'undefined', and that that's OK. Simply return
         // the falsey value, the upstream struct is in a better position to know whether this is required or not.
-        this.code.line('if (!runtime.canInspect(properties)) { return properties; }');
+        this.code.line(`if (!${CORE}.canInspect(properties)) { return properties; }`);
 
         // Do a 'type' check first
         const validatorName = genspec.validatorName(typeName);
@@ -354,27 +357,27 @@ export default class CodeGenerator {
                     return mapperNames([type]);
                 },
                 visitUnionScalar(types: genspec.CodeName[]) {
-                    return `runtime.unionMapper([${validatorNames(types)}], [${mapperNames(types)}])`;
+                    return `${CORE}.unionMapper([${validatorNames(types)}], [${mapperNames(types)}])`;
                 },
                 visitList(itemType: genspec.CodeName) {
-                    return `runtime.listMapper(${mapperNames([itemType])})`;
+                    return `${CORE}.listMapper(${mapperNames([itemType])})`;
                 },
                 visitUnionList(itemTypes: genspec.CodeName[]) {
-                    return `runtime.listMapper(runtime.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
+                    return `${CORE}.listMapper(${CORE}.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
                 },
                 visitMap(itemType: genspec.CodeName) {
-                    return `runtime.hashMapper(${mapperNames([itemType])})`;
+                    return `${CORE}.hashMapper(${mapperNames([itemType])})`;
                 },
                 visitUnionMap(itemTypes: genspec.CodeName[]) {
-                    return `runtime.hashMapper(runtime.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
+                    return `${CORE}.hashMapper(${CORE}.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
                 },
                 visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[]) {
-                    const scalarValidator = `runtime.unionValidator(${validatorNames(types)})`;
-                    const listValidator = `runtime.listValidator(runtime.unionValidator(${validatorNames(itemTypes)}))`;
-                    const scalarMapper = `runtime.unionMapper([${validatorNames(types)}], [${mapperNames(types)}])`;
-                    const listMapper = `runtime.listMapper(runtime.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
+                    const scalarValidator = `${CORE}.unionValidator(${validatorNames(types)})`;
+                    const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${validatorNames(itemTypes)}))`;
+                    const scalarMapper = `${CORE}.unionMapper([${validatorNames(types)}], [${mapperNames(types)}])`;
+                    const listMapper = `${CORE}.listMapper(${CORE}.unionMapper([${validatorNames(itemTypes)}], [${mapperNames(itemTypes)}]))`;
 
-                    return `runtime.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
+                    return `${CORE}.unionMapper([${scalarValidator}, ${listValidator}], [${scalarMapper}, ${listMapper}])`;
                 },
             });
 
@@ -401,17 +404,17 @@ export default class CodeGenerator {
         this.code.line(' *');
         this.code.line(' * @returns the result of the validation.');
         this.code.line(' */');
-        this.code.openBlock(`function ${validatorName.functionName}(properties: any): runtime.ValidationResult`);
-        this.code.line('if (!runtime.canInspect(properties)) { return runtime.VALIDATION_SUCCESS; }');
+        this.code.openBlock(`function ${validatorName.functionName}(properties: any): ${CORE}.ValidationResult`);
+        this.code.line(`if (!${CORE}.canInspect(properties)) { return ${CORE}.VALIDATION_SUCCESS; }`);
 
-        this.code.line('const errors = new runtime.ValidationResults();');
+        this.code.line(`const errors = new ${CORE}.ValidationResults();`);
 
         Object.keys(propSpecs).forEach(cfnPropName => {
             const propSpec = propSpecs[cfnPropName];
             const propName = nameConversionTable[cfnPropName];
 
             if (propSpec.Required) {
-                this.code.line(`errors.collect(runtime.propertyValidator('${propName}', runtime.requiredValidator)(properties.${propName}));`);
+                this.code.line(`errors.collect(${CORE}.propertyValidator('${propName}', ${CORE}.requiredValidator)(properties.${propName}));`);
             }
 
             const self = this;
@@ -420,28 +423,28 @@ export default class CodeGenerator {
                     return  validatorNames([type]);
                 },
                 visitUnionScalar(types: genspec.CodeName[]) {
-                    return `runtime.unionValidator(${validatorNames(types)})`;
+                    return `${CORE}.unionValidator(${validatorNames(types)})`;
                 },
                 visitList(itemType: genspec.CodeName) {
-                    return `runtime.listValidator(${validatorNames([itemType])})`;
+                    return `${CORE}.listValidator(${validatorNames([itemType])})`;
                 },
                 visitUnionList(itemTypes: genspec.CodeName[]) {
-                    return `runtime.listValidator(runtime.unionValidator(${validatorNames(itemTypes)}))`;
+                    return `${CORE}.listValidator(${CORE}.unionValidator(${validatorNames(itemTypes)}))`;
                 },
                 visitMap(itemType: genspec.CodeName) {
-                    return `runtime.hashValidator(${validatorNames([itemType])})`;
+                    return `${CORE}.hashValidator(${validatorNames([itemType])})`;
                 },
                 visitUnionMap(itemTypes: genspec.CodeName[]) {
-                    return `runtime.hashValidator(runtime.unionValidator(${validatorNames(itemTypes)}))`;
+                    return `${CORE}.hashValidator(${CORE}.unionValidator(${validatorNames(itemTypes)}))`;
                 },
                 visitListOrScalar(types: genspec.CodeName[], itemTypes: genspec.CodeName[]) {
-                    const scalarValidator = `runtime.unionValidator(${validatorNames(types)})`;
-                    const listValidator = `runtime.listValidator(runtime.unionValidator(${validatorNames(itemTypes)}))`;
+                    const scalarValidator = `${CORE}.unionValidator(${validatorNames(types)})`;
+                    const listValidator = `${CORE}.listValidator(${CORE}.unionValidator(${validatorNames(itemTypes)}))`;
 
-                    return `runtime.unionValidator(${scalarValidator}, ${listValidator})`;
+                    return `${CORE}.unionValidator(${scalarValidator}, ${listValidator})`;
                 },
             });
-            self.code.line(`errors.collect(runtime.propertyValidator('${propName}', ${validatorExpression})(properties.${propName}));`);
+            self.code.line(`errors.collect(${CORE}.propertyValidator('${propName}', ${validatorExpression})(properties.${propName}));`);
         });
 
         this.code.line(`return errors.wrap('supplied properties not correct for "${typeName.className}"');`);
@@ -468,17 +471,24 @@ export default class CodeGenerator {
     }
     private beginNamespace(type: genspec.CodeName) {
         if (type.namespace) {
-            this.code.openBlock(`export namespace ${type.namespace}`);
+            const parts = type.namespace.split('.');
+            for (const part of parts) {
+                this.code.openBlock(`export namespace ${part}`);
+            }
         }
     }
 
     private endNamespace(type: genspec.CodeName) {
         if (type.namespace) {
-            this.code.closeBlock();
+            const parts = type.namespace.split('.');
+            for (const _ of parts) {
+                this.code.closeBlock();
+            }
         }
     }
 
     private emitPropertyType(typeName: genspec.CodeName, propTypeSpec: schema.PropertyType) {
+        this.code.line();
         this.beginNamespace(typeName);
 
         this.docLink(propTypeSpec.Documentation);

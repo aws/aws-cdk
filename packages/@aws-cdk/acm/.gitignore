@@ -4,5 +4,5 @@ tslint.json
 *.js.map
 *.d.ts
 node_modules
-cfn
+*.generated.ts
 dist

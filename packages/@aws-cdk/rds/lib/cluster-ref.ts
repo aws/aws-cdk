@@ -1,6 +1,6 @@
 import { Construct, FnJoin, Output, StringListOutput, Token } from '@aws-cdk/core';
 import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupId, SecurityGroupRef, TcpPortFromAttribute } from '@aws-cdk/ec2';
-import * as rds from '../cfn/rds';
+import * as rds from './rds.generated';
 
 /**
  * Create a clustered database with a given number of instances.

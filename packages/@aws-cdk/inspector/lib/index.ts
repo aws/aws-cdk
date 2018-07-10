@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Inspector:
-export * from '../cfn/inspector';
+// AWS::Inspector CloudFormation Resources:
+export * from './inspector.generated';

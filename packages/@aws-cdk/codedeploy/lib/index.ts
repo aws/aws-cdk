@@ -1,2 +1,2 @@
-// The L1 Library for AWS::CodeDeploy:
-export * from '../cfn/codedeploy';
+// AWS::CodeDeploy CloudFormation Resources:
+export * from './codedeploy.generated';

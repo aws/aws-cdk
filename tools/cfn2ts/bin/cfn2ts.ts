@@ -8,7 +8,7 @@ import generate from '../lib';
 const argv =
     yargs.usage('Usage: cfn2ts')
         .option('scope', { type: 'string', desc: 'Scope to generate TypeScript for (e.g: AWS::IAM)', required: true })
-        .option('out', { type: 'string', desc: 'Path to the directory where the TypeScript files should be written', default: 'cfn' })
+        .option('out', { type: 'string', desc: 'Path to the directory where the TypeScript files should be written', default: 'lib' })
         .option('force', { type: 'boolean', desc: 'Generate the spec even if it appears up-to-date', default: false })
         .argv;
 

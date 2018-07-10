@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/core';
 import { DefaultConnections, IConnectable, IPortRange, SecurityGroup, TcpPort, VpcNetworkRef } from '@aws-cdk/ec2';
-import { DBInstanceResource, DBSubnetGroupResource } from '@aws-cdk/rds';
+import * as rds from '@aws-cdk/rds';
 import { applyDefaults } from '@aws-cdk/util';
 
 export interface SqlServerProps {
@@ -31,7 +31,7 @@ export class SqlServer extends Construct implements IConnectable {
             description: 'Database security group',
         });
 
-        const subnetGroup = new DBSubnetGroupResource(this, 'Subnet', {
+        const subnetGroup = new rds.cloudformation.DBSubnetGroupResource(this, 'Subnet', {
             subnetIds: props.vpc.privateSubnets.map(privateSubnet => privateSubnet.subnetId),
             dbSubnetGroupDescription: 'Database subnet group',
         });
@@ -44,7 +44,7 @@ export class SqlServer extends Construct implements IConnectable {
             allocatedStorage: 200
         });
 
-        new DBInstanceResource(this, 'Resource', {
+        new rds.cloudformation.DBInstanceResource(this, 'Resource', {
             allocatedStorage: p.allocatedStorage.toString(),
             dbInstanceClass: p.instanceClass,
             engine: p.engine,

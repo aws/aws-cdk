@@ -1,9 +1,9 @@
 import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
-import * as lambda from '../cfn/lambda';
 import { LambdaCode } from './code';
 import { FunctionName, LambdaRef } from './lambda-ref';
 import { LambdaVersion } from './lambda-version';
+import * as lambda from './lambda.generated';
 import { LambdaRuntime } from './runtime';
 
 export interface LambdaProps {
@@ -134,7 +134,7 @@ export class Lambda extends LambdaRef {
             this.role.addToPolicy(statement);
         }
 
-        const resource = new lambda.FunctionResource(this, 'Resource', {
+        const resource = new lambda.cloudformation.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
             description: props.description,
             code: props.code.toJSON(props.runtime),

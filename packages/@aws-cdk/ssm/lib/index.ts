@@ -1,2 +1,2 @@
-// The L1 Library for AWS::SSM:
-export * from '../cfn/ssm';
+// AWS::SSM CloudFormation Resources:
+export * from './ssm.generated';

@@ -1,2 +1,2 @@
-// The L1 Library for AWS::StepFunctions:
-export * from '../cfn/stepfunctions';
+// AWS::StepFunctions CloudFormation Resources:
+export * from './stepfunctions.generated';

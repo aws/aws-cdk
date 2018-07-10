@@ -3,6 +3,6 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
-cfn
+*.generated.ts
 dist
 test/cdk.json

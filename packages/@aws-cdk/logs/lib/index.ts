@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Logs:
-export * from '../cfn/logs';
+// AWS::Logs CloudFormation Resources:
+export * from './logs.generated';

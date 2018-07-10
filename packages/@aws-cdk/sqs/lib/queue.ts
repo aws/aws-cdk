@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
 import { EncryptionKey, EncryptionKeyRef, KeyArn } from '@aws-cdk/kms';
-import * as sqs from '../cfn/sqs';
 import { QueueRef, QueueUrl } from './queue-ref';
+import * as sqs from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -209,7 +209,7 @@ export class Queue extends QueueRef {
                               }
                             : undefined;
 
-        const queue = new sqs.QueueResource(this, 'Resource', {
+        const queue = new sqs.cloudformation.QueueResource(this, 'Resource', {
             queueName: props.queueName,
             ...this.determineFifoProps(props),
             ...this.determineEncryptionProps(props),

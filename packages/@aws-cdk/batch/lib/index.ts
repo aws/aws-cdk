@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Batch:
-export * from '../cfn/batch';
+// AWS::Batch CloudFormation Resources:
+export * from './batch.generated';

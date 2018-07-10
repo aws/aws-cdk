@@ -1,6 +1,6 @@
 import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
-import * as iam from '../cfn/iam';
 import { Group } from './group';
+import * as iam from './iam.generated';
 import { IIdentityResource, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -86,7 +86,7 @@ export class User extends Construct implements IIdentityResource {
     constructor(parent: Construct, name: string, props: UserProps = {}) {
         super(parent, name);
 
-        const user = new iam.UserResource(this, 'Resource', {
+        const user = new iam.cloudformation.UserResource(this, 'Resource', {
             userName: props.userName,
             groups: undefinedIfEmpty(() => this.groups),
             managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
@@ -138,7 +138,7 @@ export class User extends Construct implements IIdentityResource {
         this.defaultPolicy.addStatement(statement);
     }
 
-    private parseLoginProfile(props: UserProps): iam.UserResource.LoginProfileProperty | undefined {
+    private parseLoginProfile(props: UserProps): iam.cloudformation.UserResource.LoginProfileProperty | undefined {
         if (props.password) {
             return {
                 password: props.password,

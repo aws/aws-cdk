@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ElasticLoadBalancingV2:
-export * from '../cfn/elasticloadbalancingv2';
+// AWS::ElasticLoadBalancingV2 CloudFormation Resources:
+export * from './elasticloadbalancingv2.generated';

@@ -3,5 +3,5 @@ export * from './topic';
 export * from './topic-ref';
 export * from './subscription';
 
-// The L1 library for AWS::SNS:
-export * from '../cfn/sns';
+// AWS::SNS CloudFormation Resources:
+export * from './sns.generated';

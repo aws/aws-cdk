@@ -20,7 +20,7 @@
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-resource-spec": "^0.7.3-beta",
+    "@aws-cdk/cdk-cfnspec": "^0.7.3-beta",
     "colors": "^1.2.1",
     "source-map-support": "^0.5.6"
   },

@@ -1,4 +1,4 @@
-import { filteredSpecification, schema } from '@aws-cdk/cloudformation-resource-spec';
+import { filteredSpecification, schema } from '@aws-cdk/cdk-cfnspec';
 import * as types from './types';
 import { diffKeyedEntities } from './util';
 

@@ -1,2 +1,2 @@
-// The L1 Library for AWS::OpsWorks:
-export * from '../cfn/opsworks';
+// AWS::OpsWorks CloudFormation Resources:
+export * from './opsworks.generated';

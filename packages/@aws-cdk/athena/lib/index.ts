@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Athena:
-export * from '../cfn/athena';
+// AWS::Athena CloudFormation Resources:
+export * from './athena.generated';

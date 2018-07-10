@@ -1,5 +1,5 @@
 export * from './key';
 export * from './alias';
 
-// The L1 library for AWS::KMS:
-export * from '../cfn/kms';
+// AWS::KMS CloudFormation Resources:
+export * from './kms.generated';

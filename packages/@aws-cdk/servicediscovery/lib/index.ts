@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ServiceDiscovery:
-export * from '../cfn/servicediscovery';
+// AWS::ServiceDiscovery CloudFormation Resources:
+export * from './servicediscovery.generated';

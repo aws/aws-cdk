@@ -1,2 +1,2 @@
-// The L1 Library for AWS::WAF:
-export * from '../cfn/waf';
+// AWS::WAF CloudFormation Resources:
+export * from './waf.generated';

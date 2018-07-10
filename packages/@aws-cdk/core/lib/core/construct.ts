@@ -279,6 +279,8 @@ export class Construct {
      * In the future we can add some type-checking here, maybe even auto-generate during compilation.
      * @param props The props bag.
      * @param name The name of the required property.
+     *
+     * @deprecated use ``requireProperty`` from ``@aws-cdk/runtime`` instead.
      */
     protected required(props: any, name: string): any {
         if (!(name in props)) {

@@ -3,8 +3,7 @@ import { PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/core';
 import { Group, User } from '@aws-cdk/iam';
 import { EncryptionKey } from '@aws-cdk/kms';
 import { Test } from 'nodeunit';
-import * as s3 from '../cfn/s3';
-import { Bucket, BucketEncryption } from '../lib';
+import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -13,7 +12,7 @@ export = {
     'default bucket'(test: Test) {
         const stack = new Stack();
 
-        new Bucket(stack, 'MyBucket');
+        new s3.Bucket(stack, 'MyBucket');
 
         expect(stack).toMatch({
             "Resources": {
@@ -28,8 +27,8 @@ export = {
 
     'bucket without encryption'(test: Test) {
         const stack = new Stack();
-        new Bucket(stack, 'MyBucket', {
-            encryption: BucketEncryption.Unencrypted
+        new s3.Bucket(stack, 'MyBucket', {
+            encryption: s3.BucketEncryption.Unencrypted
         });
 
         expect(stack).toMatch({
@@ -45,8 +44,8 @@ export = {
 
     'bucket with managed encryption'(test: Test) {
         const stack = new Stack();
-        new Bucket(stack, 'MyBucket', {
-            encryption: BucketEncryption.KmsManaged
+        new s3.Bucket(stack, 'MyBucket', {
+            encryption: s3.BucketEncryption.KmsManaged
         });
 
         expect(stack).toMatch({
@@ -74,8 +73,8 @@ export = {
         const stack = new Stack();
         const myKey = new EncryptionKey(stack, 'MyKey');
 
-        test.throws(() => new Bucket(stack, 'MyBucket', {
-            encryption: BucketEncryption.KmsManaged,
+        test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+            encryption: s3.BucketEncryption.KmsManaged,
             encryptionKey: myKey
         }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
@@ -86,8 +85,8 @@ export = {
         const stack = new Stack();
         const myKey = new EncryptionKey(stack, 'MyKey');
 
-        test.throws(() => new Bucket(stack, 'MyBucket', {
-            encryption: BucketEncryption.Unencrypted,
+        test.throws(() => new s3.Bucket(stack, 'MyBucket', {
+            encryption: s3.BucketEncryption.Unencrypted,
             encryptionKey: myKey
         }), /encryptionKey is specified, so 'encryption' must be set to KMS/);
 
@@ -99,7 +98,7 @@ export = {
 
         const encryptionKey = new EncryptionKey(stack, 'MyKey', { description: 'hello, world' });
 
-        new Bucket(stack, 'MyBucket', { encryptionKey, encryption: BucketEncryption.Kms });
+        new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.Kms });
 
         expect(stack).toMatch({
             "Resources": {
@@ -178,7 +177,7 @@ export = {
 
     'bucket with versioning turned on'(test: Test) {
         const stack = new Stack();
-        new Bucket(stack, 'MyBucket', {
+        new s3.Bucket(stack, 'MyBucket', {
             versioned: true
         });
 
@@ -201,7 +200,7 @@ export = {
 
         'addPermission creates a bucket policy'(test: Test) {
             const stack = new Stack();
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Unencrypted });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
             bucket.addToResourcePolicy(new PolicyStatement().addResource('foo').addAction('bar'));
 
@@ -237,7 +236,7 @@ export = {
         'forBucket returns a permission statement associated with the bucket\'s ARN'(test: Test) {
             const stack = new Stack();
 
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Unencrypted });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
             const x = new PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
@@ -253,7 +252,7 @@ export = {
         'arnForObjects returns a permission statement associated with objects in the bucket'(test: Test) {
             const stack = new Stack();
 
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Unencrypted });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
             const p = new PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
 
@@ -275,7 +274,7 @@ export = {
 
             const stack = new Stack();
 
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Unencrypted });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
             const user = new User(stack, 'MyUser');
             const team = new Group(stack, 'MyTeam');
@@ -308,7 +307,7 @@ export = {
 
     'removal policy can be used to specify behavior upon delete'(test: Test) {
         const stack = new Stack();
-        new Bucket(stack, 'MyBucket', { removalPolicy: RemovalPolicy.Orphan, encryption: BucketEncryption.Unencrypted });
+        new s3.Bucket(stack, 'MyBucket', { removalPolicy: RemovalPolicy.Orphan, encryption: s3.BucketEncryption.Unencrypted });
 
         expect(stack).toMatch({
             Resources: {
@@ -325,7 +324,7 @@ export = {
     'import/export': {
         'export creates outputs for the bucket attributes and returns a ref object'(test: Test) {
             const stack = new Stack(undefined, 'MyStack');
-            const bucket = new Bucket(stack, 'MyBucket');
+            const bucket = new s3.Bucket(stack, 'MyBucket');
             const bucketRef = bucket.export();
             test.deepEqual(resolve(bucketRef), {
                 bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
@@ -336,7 +335,7 @@ export = {
 
         'refs will include the bucket\'s encryption key if defined'(test: Test) {
             const stack = new Stack(undefined, 'MyStack');
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Kms });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
             const bucketRef = bucket.export();
             test.deepEqual(resolve(bucketRef), {
                 bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
@@ -349,7 +348,7 @@ export = {
             const stack = new Stack();
 
             const bucketArn = new s3.BucketArn('arn:aws:s3:::my-bucket');
-            const bucket = Bucket.import(stack, 'ImportedBucket', { bucketArn });
+            const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn });
 
             // this is a no-op since the bucket is external
             bucket.addToResourcePolicy(new PolicyStatement().addResource('foo').addAction('bar'));
@@ -372,7 +371,7 @@ export = {
 
         'import can also be used to import arbitrary ARNs'(test: Test) {
             const stack = new Stack();
-            const bucket = Bucket.import(stack, 'ImportedBucket', { bucketArn: new s3.BucketArn('arn:aws:s3:::my-bucket') });
+            const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: new s3.BucketArn('arn:aws:s3:::my-bucket') });
             bucket.addToResourcePolicy(new PolicyStatement().addResource('*').addAction('*'));
 
             // at this point we technically didn't create any resources in the consuming stack.
@@ -429,7 +428,7 @@ export = {
 
         'this is how export/import work together'(test: Test) {
             const stack1 = new Stack(undefined, 'S1');
-            const bucket = new Bucket(stack1, 'MyBucket');
+            const bucket = new s3.Bucket(stack1, 'MyBucket');
             const bucketRef = bucket.export();
 
             expect(stack1).toMatch({
@@ -462,7 +461,7 @@ export = {
             });
 
             const stack2 = new Stack(undefined, 'S2');
-            const importedBucket = Bucket.import(stack2, 'ImportedBucket', bucketRef);
+            const importedBucket = s3.Bucket.import(stack2, 'ImportedBucket', bucketRef);
             const user = new User(stack2, 'MyUser');
             importedBucket.grantRead(user);
 
@@ -522,7 +521,7 @@ export = {
     'grantRead'(test: Test) {
         const stack = new Stack();
         const reader = new User(stack, 'Reader');
-        const bucket = new Bucket(stack, 'MyBucket');
+        const bucket = new s3.Bucket(stack, 'MyBucket');
         bucket.grantRead(reader);
         expect(stack).toMatch({
           "Resources": {
@@ -587,7 +586,7 @@ export = {
     'grantReadWrite': {
         'can be used to grant reciprocal permissions to an identity'(test: Test) {
             const stack = new Stack();
-            const bucket = new Bucket(stack, 'MyBucket');
+            const bucket = new s3.Bucket(stack, 'MyBucket');
             const user = new User(stack, 'MyUser');
             bucket.grantReadWrite(user);
 
@@ -657,7 +656,7 @@ export = {
 
         'if an encryption key is included, encrypt/decrypt permissions are also added both ways'(test: Test) {
             const stack = new Stack();
-            const bucket = new Bucket(stack, 'MyBucket', { encryption: BucketEncryption.Kms });
+            const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
             const user = new User(stack, 'MyUser');
             bucket.grantReadWrite(user);
 
@@ -828,12 +827,12 @@ export = {
 
     'cross-stack permissions'(test: Test) {
         const stackA = new Stack();
-        const bucketFromStackA = new Bucket(stackA, 'MyBucket');
+        const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket');
         const refToBucketFromStackA = bucketFromStackA.export();
 
         const stackB = new Stack();
         const user = new User(stackB, 'UserWhoNeedsAccess');
-        const theBucketFromStackAAsARefInStackB = Bucket.import(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
+        const theBucketFromStackAAsARefInStackB = s3.Bucket.import(stackB, 'RefToBucketFromStackA', refToBucketFromStackA);
         theBucketFromStackAAsARefInStackB.grantRead(user);
 
         expect(stackA).toMatch({

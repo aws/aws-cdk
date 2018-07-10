@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Redshift:
-export * from '../cfn/redshift';
+// AWS::Redshift CloudFormation Resources:
+export * from './redshift.generated';

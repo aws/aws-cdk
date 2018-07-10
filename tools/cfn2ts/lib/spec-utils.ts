@@ -1,4 +1,4 @@
-import { schema } from '@aws-cdk/cloudformation-resource-spec';
+import { schema } from '@aws-cdk/cdk-cfnspec';
 import { joinIf } from './util';
 
 /**

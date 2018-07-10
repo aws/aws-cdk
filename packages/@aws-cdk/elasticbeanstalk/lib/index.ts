@@ -1,2 +1,2 @@
-// The L1 Library for AWS::ElasticBeanstalk:
-export * from '../cfn/elasticbeanstalk';
+// AWS::ElasticBeanstalk CloudFormation Resources:
+export * from './elasticbeanstalk.generated';

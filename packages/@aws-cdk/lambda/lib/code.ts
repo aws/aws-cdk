@@ -1,9 +1,9 @@
 import { BucketName, BucketRef } from '@aws-cdk/s3';
-import * as lambda from '../cfn/lambda';
+import * as lambda from './lambda.generated';
 import { LambdaRuntime } from './runtime';
 
 export abstract class LambdaCode {
-    public abstract toJSON(runtime: LambdaRuntime): lambda.FunctionResource.CodeProperty;
+    public abstract toJSON(runtime: LambdaRuntime): lambda.cloudformation.FunctionResource.CodeProperty;
 }
 
 export class LambdaS3Code extends LambdaCode {
@@ -19,7 +19,7 @@ export class LambdaS3Code extends LambdaCode {
         this.bucketName = bucket.bucketName;
     }
 
-    public toJSON(_runtime: LambdaRuntime): lambda.FunctionResource.CodeProperty {
+    public toJSON(_runtime: LambdaRuntime): lambda.cloudformation.FunctionResource.CodeProperty {
         return {
             s3Bucket: this.bucketName,
             s3Key: this.key,
@@ -37,7 +37,7 @@ export class LambdaInlineCode extends LambdaCode {
         }
     }
 
-    public toJSON(runtime: LambdaRuntime): lambda.FunctionResource.CodeProperty {
+    public toJSON(runtime: LambdaRuntime): lambda.cloudformation.FunctionResource.CodeProperty {
         if (!runtime.supportsInlineCode) {
             throw new Error(`Inline source not supported for: ${runtime.name}`);
         }

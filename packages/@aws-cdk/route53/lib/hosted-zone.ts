@@ -1,8 +1,8 @@
 import { AwsRegion, Construct, Token } from '@aws-cdk/core';
 import { VpcNetworkRef } from '@aws-cdk/ec2';
 import { LogGroupArn } from '@aws-cdk/logs';
-import * as route53 from '../cfn/route53';
 import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';
+import * as route53 from './route53.generated';
 import { validateZoneName } from './util';
 
 /**
@@ -53,7 +53,7 @@ export class PublicHostedZone extends HostedZoneRef {
 
         validateZoneName(props.zoneName);
 
-        const hostedZone = new route53.HostedZoneResource(this, 'Resource', {
+        const hostedZone = new route53.cloudformation.HostedZoneResource(this, 'Resource', {
             ...determineHostedZoneProps(props)
         });
 
@@ -93,14 +93,14 @@ export class PrivateHostedZone extends HostedZoneRef {
     /**
      * VPCs to which this hosted zone will be added
      */
-    private readonly vpcs: route53.HostedZoneResource.VPCProperty[] = [];
+    private readonly vpcs: route53.cloudformation.HostedZoneResource.VPCProperty[] = [];
 
     constructor(parent: Construct, name: string, props: PrivateHostedZoneProps) {
         super(parent, name);
 
         validateZoneName(props.zoneName);
 
-        const hostedZone = new route53.HostedZoneResource(this, 'Resource', {
+        const hostedZone = new route53.cloudformation.HostedZoneResource(this, 'Resource', {
             vpcs: new Token(() => this.vpcs ? this.vpcs : undefined),
             ...determineHostedZoneProps(props)
         });
@@ -121,7 +121,7 @@ export class PrivateHostedZone extends HostedZoneRef {
     }
 }
 
-function toVpcProperty(vpc: VpcNetworkRef): route53.HostedZoneResource.VPCProperty {
+function toVpcProperty(vpc: VpcNetworkRef): route53.cloudformation.HostedZoneResource.VPCProperty {
     return { vpcId: vpc.vpcId, vpcRegion: new AwsRegion() };
 }
 

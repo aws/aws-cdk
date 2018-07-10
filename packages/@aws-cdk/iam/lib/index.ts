@@ -3,5 +3,5 @@ export * from './policy';
 export * from './user';
 export * from './group';
 
-// The L1 library for AWS::IAM:
-export * from '../cfn/iam';
+// AWS::IAM CloudFormation Resources:
+export * from './iam.generated';

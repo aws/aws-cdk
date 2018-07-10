@@ -3,5 +3,5 @@ export * from './artifact';
 export * from './pipeline';
 export * from './stage';
 
-// The L1 library for AWS::CodePipeline:
-export * from '../cfn/codepipeline';
+// AWS::CodePipeline CloudFormation Resources:
+export * from './codepipeline.generated';

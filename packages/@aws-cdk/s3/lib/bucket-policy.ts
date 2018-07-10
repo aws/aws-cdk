@@ -1,6 +1,6 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import * as s3 from '../cfn/s3';
 import { BucketRef } from './bucket';
+import * as s3 from './s3.generated';
 
 export interface BucketPolicyProps {
     /**
@@ -28,7 +28,7 @@ export class BucketPolicy extends Construct {
             throw new Error('Bucket doesn\'t have a bucketName defined');
         }
 
-        new s3.BucketPolicyResource(this, 'Resource', {
+        new s3.cloudformation.BucketPolicyResource(this, 'Resource', {
             bucket: props.bucket.bucketName,
             policyDocument: this.document,
         });

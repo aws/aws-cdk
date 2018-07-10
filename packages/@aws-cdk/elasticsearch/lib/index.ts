@@ -1,2 +1,2 @@
-// The L1 Library for AWS::Elasticsearch:
-export * from '../cfn/elasticsearch';
+// AWS::Elasticsearch CloudFormation Resources:
+export * from './elasticsearch.generated';

@@ -1,5 +1,5 @@
 import { Construct, PolicyDocument } from '@aws-cdk/core';
-import * as sns from '../cfn/sns';
+import * as sns from './sns.generated';
 import { TopicRef } from './topic-ref';
 
 export interface TopicPolicyProps {
@@ -21,7 +21,7 @@ export class TopicPolicy extends Construct {
     constructor(parent: Construct, name: string, props: TopicPolicyProps) {
         super(parent, name);
 
-        new sns.TopicPolicyResource(this, 'Resource', {
+        new sns.cloudformation.TopicPolicyResource(this, 'Resource', {
             policyDocument: this.document,
             topics: props.topics.map(t => t.topicArn)
         });

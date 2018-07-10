@@ -4,8 +4,8 @@ import { Construct, PolicyStatement, Secret } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { BucketRef } from '@aws-cdk/s3';
-import * as codepipeline from '../cfn/codepipeline';
 import { Artifact } from './artifact';
+import * as codepipeline from './codepipeline.generated';
 import { Stage } from './stage';
 import * as validation from './validation';
 import { validateArtifactBounds } from './validation';
@@ -154,7 +154,7 @@ export abstract class Action extends Construct {
     /**
      * Render the Action to a CloudFormation struct
      */
-    public render(): codepipeline.PipelineResource.ActionDeclarationProperty {
+    public render(): codepipeline.cloudformation.PipelineResource.ActionDeclarationProperty {
         return {
             name: this.name,
             inputArtifacts: this.inputArtifacts.map(a => ({ name: a.name })),

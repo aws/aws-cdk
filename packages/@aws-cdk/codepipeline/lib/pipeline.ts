@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/iam';
 import { Role } from '@aws-cdk/iam';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
 import { flatMap, flatten } from '@aws-cdk/util';
-import * as codepipeline from '../cfn/codepipeline';
+import * as codepipeline from './codepipeline.generated';
 import { Stage } from './stage';
 import * as validation from './validation';
 
@@ -90,7 +90,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
             assumedBy: new ServicePrincipal('codepipeline.amazonaws.com')
         });
 
-        const codePipeline = new codepipeline.PipelineResource(this, 'Resource', {
+        const codePipeline = new codepipeline.cloudformation.PipelineResource(this, 'Resource', {
             artifactStore: new Token(() => this.renderArtifactStore()) as any,
             stages: new Token(() => this.renderStages()) as any,
             roleArn: this.role.roleArn,
@@ -226,8 +226,8 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         return [];
     }
 
-    private renderArtifactStore(): codepipeline.PipelineResource.ArtifactStoreProperty {
-        let encryptionKey: codepipeline.PipelineResource.EncryptionKeyProperty | undefined;
+    private renderArtifactStore(): codepipeline.cloudformation.PipelineResource.ArtifactStoreProperty {
+        let encryptionKey: codepipeline.cloudformation.PipelineResource.EncryptionKeyProperty | undefined;
         const bucketKey = this.artifactBucket.encryptionKey;
         if (bucketKey) {
             encryptionKey = {
@@ -248,7 +248,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         };
     }
 
-    private renderStages(): codepipeline.PipelineResource.StageDeclarationProperty[] {
+    private renderStages(): codepipeline.cloudformation.PipelineResource.StageDeclarationProperty[] {
         return this.stages.map(stage => stage.render());
     }
 }
