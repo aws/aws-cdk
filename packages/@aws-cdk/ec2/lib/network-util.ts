@@ -143,6 +143,19 @@ export class NetworkUtils {
             );
     }
 
+    /**
+     *
+     * takes a number (e.g 2923605416) and converts it to an IPv4 address string
+     * currently only supports IPv4
+     *
+     * Uses the formula:
+     * (first octet * 256³) + (second octet * 256²) + (third octet * 256) +
+     * (fourth octet)
+     *
+     * @param  {number} the integer value of the IP address (e.g 2923605416)
+     * @returns {string} the IPv4 address (e.g. 174.66.173.168)
+     */
+
     public static numToIp(ipNum: number): string {
         // this all because bitwise math is signed
         let remaining = ipNum;
@@ -166,12 +179,12 @@ export class NetworkUtils {
 
 export class NetworkBuilder {
     public readonly networkCidr: CidrBlock;
-    protected subnets: CidrBlock[];
+    protected subnetCidrs: CidrBlock[];
     protected maxIpConsumed: string;
 
     constructor(cidr: string) {
         this.networkCidr = new CidrBlock(cidr);
-        this.subnets = [];
+        this.subnetCidrs = [];
         this.maxIpConsumed = NetworkUtils.numToIp(NetworkUtils.
             ipToNum(this.networkCidr.minIp()) - 1);
     }
@@ -191,7 +204,7 @@ export class NetworkBuilder {
         for (let i = 0; i < count; i ++) {
             const subnet: CidrBlock = CidrBlock.fromOffsetIp(this.maxIpConsumed, mask);
             this.maxIpConsumed = subnet.maxIp();
-            this.subnets.push(subnet);
+            this.subnetCidrs.push(subnet);
             if (!this.validate()) {
                 throw new InvalidSubnetCidrError(this.networkCidr.cidr, subnet.cidr);
             }
@@ -200,12 +213,12 @@ export class NetworkBuilder {
         return subnets.map((subnet) => (subnet.cidr));
     }
 
-    public getSubnets(): string[] {
-        return this.subnets.map((subnet) => (subnet.cidr));
+    public get subnets(): string[] {
+        return this.subnetCidrs.map((subnet) => (subnet.cidr));
     }
 
     public validate(): boolean {
-        return this.subnets.map(
+        return this.subnetCidrs.map(
             (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).reduce(
                 (containsAll: boolean, contains: boolean) => (containsAll && contains));
     }

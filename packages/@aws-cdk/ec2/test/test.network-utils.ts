@@ -141,8 +141,8 @@ export = {
           efficient.addSubnets(25, 3);
           efficient.addSubnets(28, 3);
           const expected = [
-            wasteful.getSubnets().sort(),
-            efficient.getSubnets().sort()
+            wasteful.subnets.sort(),
+            efficient.subnets.sort()
           ];
           for (let i = 0; i < answers.length; i++) {
             test.deepEqual(answers[i].sort(), expected[i]);

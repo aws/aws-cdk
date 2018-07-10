@@ -61,27 +61,30 @@ export interface VpcNetworkProps {
     maxAZs?: number;
 
     /**
-     * Define subnets that will be built by default per AZ (maxAZs). If left
-     * empty the default VPC configuration will be used
+     * Define subnets that will be built per AZ (maxAZs), if numAZs is
+     * specified then only that number of AZs will have subnets.
      *
-     * The subnets are contructed in the context of the VPC so you only need
-     * specify the type and configuration, the VPC will allocate the details.
+     * The subnets are constructed in the context of the VPC so you only need
+     * specify the configuration. The VPC details (VPC ID, specific CIDR,
+     * specific AZ will be calculated during creation)
      *
      * For example if you want three private subnets and three public subnets
      * across 3 AZs then maxAZs = 3 and provide the following:
      * subnets: [
      * {
-     *   cidrMask: 24;
-     *   name: ingress;
-     *   subnetType: SubnetType.Public;
-     *   natGateway: true;
+     *   cidrMask: 24,
+     *   name: ingress,
+     *   subnetType: SubnetType.Public,
+     *   natGateway: true,
      * },
      * {
-     *   cidrMask: 24;
-     *   name: application;
-     *   subnetType: SubnetType.Private;
+     *   cidrMask: 24,
+     *   name: application,
+     *   subnetType: SubnetType.Private,
      * }
      * ]
+     * @default the VPC CIDR will be evenly divided between 1 public and 1
+     * private subnet per AZ
      */
     subnets?: VpcSubnetBuilderProps[];
 }
