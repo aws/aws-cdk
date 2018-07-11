@@ -178,25 +178,9 @@ export = {
             const builder2 = new NetworkBuilder('192.168.176.0/20');
             builder2.addSubnets(22, 2);
             test.strictEqual(22, builder2.maskForRemainingSubnets(2));
+            const builder3 = new NetworkBuilder('192.168.0.0/16');
+            test.strictEqual(17, builder3.maskForRemainingSubnets(2));
             test.done();
         }
-        // "allocateRemaining splits remaining evenly"(test: Test) {
-        //     const builder = new NetworkBuilder('10.0.0.0/24');
-        //     builder.addSubnet(25);
-        //     const answers = ['10.0.0.128/27', '10.0.0.160/27', '10.0.0.192/27'].sort();
-        //     test.deepEqual(answers, builder.allocateRemaining(3).sort());
-        //     const builder2 = new NetworkBuilder('192.168.176.0/20');
-        //     builder2.addSubnets(22, 2);
-        //     const answers2 = ['192.168.184.0/22', '192.168.188.0/22'].sort();
-        //     test.deepEqual(answers2, builder2.allocateRemaining(2).sort());
-        //     test.done();
-        // },
-        // "allocateRemaining throws an error if no valid split is possible"(test: Test) {
-        //     const builder = new NetworkBuilder('172.0.0.0/27');
-        //     test.throws(() => {
-        //         builder.allocateRemaining(3);
-        //     }, InvalidCidrRangeError);
-        //     test.done();
-        // }
     }
 };

@@ -328,22 +328,27 @@ export class VpcNetwork extends VpcNetworkRef {
             availabilityZones.splice(maxAZs);
         }
 
-        // TODO validate numAZs < maxAZz
-
-
         for (const subnet of this.subnetConfigurations) {
-            let subnetFinal: any = {};
-            subnetFinal.availabilityZones = availabilityZones;
+            let azs = availabilityZones;
 
             if (subnet.numAZs != null) {
-                subnetFinal.availabilityZones = availabilityZones.slice(subnet.numAZs);
+                    if (subnet.numAZs > azs.length) {
+                        throw new Error(`${subnet.name} requires ${subnet.numAZs} AZs but max is ${azs.length}`)
+                    }
+                azs = availabilityZones.slice(subnet.numAZs);
             }
 
-            subnetFinal.cidrMask = subnet.cidrMask || 0;
-            subnetFinal.name = subnet.name;
-            subnetFinal.natGateway = subnet.natGateway || false;
-            subnetFinal.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
+            subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
                 (subnet.subnetType === SubnetType.Public);
+
+            const subnetFinal: SubnetConfigurationFinalized = {
+                cidrMask: subnet.cidrMask || 0,
+                availabilityZones: azs,
+                subnetType: subnet.subnetType,
+                name:  subnet.name,
+                natGateway: subnet.natGateway || false,
+                mapPublicIpOnLaunch: subnet.mapPublicIpOnLaunch
+            };
 
             if (subnetFinal.cidrMask === 0) {
                 remainingSpaceSubnets.push(subnetFinal);
@@ -352,15 +357,14 @@ export class VpcNetwork extends VpcNetworkRef {
             this.createSubnetResources(subnetFinal);
         }
 
-        console.log(`Remaining subnets ${remainingSpaceSubnets.length}`);
-        const cidrMaskForRemaing = this.networkBuilder.
-            maskForRemainingSubnets(remainingSpaceSubnets.length);
+        const totalRemaining = remainingSpaceSubnets.reduce( (total: number, subnet) => {
+            return total += subnet.availabilityZones.length;
+        }, 0);
 
-        remainingSpaceSubnets = remainingSpaceSubnets.map(
-            (subnet) => { subnet.cidrMask = cidrMaskForRemaing; return subnet;});
+        const cidrMaskForRemaing = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
 
         for (const subnetFinal of remainingSpaceSubnets) {
-            console.log('creating subnet for remaining')
+            subnetFinal.cidrMask = cidrMaskForRemaing;
             this.createSubnetResources(subnetFinal);
         }
 
