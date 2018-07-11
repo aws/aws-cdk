@@ -80,7 +80,9 @@ export function runCommand(command: string, args: string[], additionalEnv?: Node
                     env[key] = value;
                 }
             }
-            const child = spawn(command, args, { detached: false, env, stdio: ['inherit', 'pipe', 'pipe'] });
+            // `shell: true` is required because on Windows, batch files must be run from a shell, and y-npm
+            // is invoked using the batch file y-npm.cmd (to work around symlink issues on Windows).
+            const child = spawn(command, args, { detached: false, env, shell: true, stdio: ['inherit', 'pipe', 'pipe'] });
             debug(`Command PID: ${child.pid}`);
             const stdout = new Array<Buffer>();
             const stderr = new Array<Buffer>();
