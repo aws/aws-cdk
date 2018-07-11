@@ -6,3 +6,4 @@ tsconfig.json
 tslint.json
 node_modules
 dist
+.jsii

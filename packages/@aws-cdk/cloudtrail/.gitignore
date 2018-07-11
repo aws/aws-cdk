@@ -5,3 +5,4 @@ tslint.json
 *.d.ts
 *.generated.ts
 dist
+.jsii

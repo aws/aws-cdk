@@ -7,3 +7,4 @@ tslint.json
 dist
 lib/generated/resources.ts
 *.tgz
+.jsii

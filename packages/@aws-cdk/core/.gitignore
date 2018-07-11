@@ -6,3 +6,4 @@ tslint.json
 dist
 coverage
 .nyc_output
+.jsii
