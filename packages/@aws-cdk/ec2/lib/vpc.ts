@@ -250,6 +250,13 @@ export class VpcNetwork extends VpcNetworkRef {
     private subnetConfigurations: SubnetConfiguration[] = [];
 
     /**
+     * Maximum AZs to Uses for this VPC
+     *
+     * @default All
+     */
+    private availabilityZones: string[];
+
+    /**
      * VpcNetwork creates a VPC that spans a whole region.
      * It will automatically divide the provided VPC CIDR range, and create public and private subnets per Availability Zone.
      * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
@@ -280,15 +287,28 @@ export class VpcNetwork extends VpcNetworkRef {
             tags
         });
 
+        this.availabilityZones = new AvailabilityZoneProvider(this).availabilityZones;
+        if (props.maxAZs != null) {
+            this.availabilityZones.slice(props.maxAZs);
+        }
+        this.availabilityZones.sort();
+
+
+
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
-        this.subnetConfigurations = props.subnetConfigurations || VpcNetwork.DEFAULT_SUBNETS;
+
+        if (props.subnetConfigurations != null) {
+            this.subnetConfigurations = props.subnetConfigurations;
+            this.createSubnets();
+        } else {
+            this.subnetConfigurations = VpcNetwork.DEFAULT_SUBNETS;
+            this.createDefaultSubnetResources();
+        }
+
 
         const allowOutbound = this.subnetConfigurations.filter(
             (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
-
-        // Create public and private subnets in each AZ
-        this.createSubnets(props.maxAZs);
 
         // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
         if (allowOutbound) {
@@ -316,26 +336,19 @@ export class VpcNetwork extends VpcNetworkRef {
      * createSubnets takes a VPC, and creates a public and private subnet
      * in each Availability Zone.
      */
-    private createSubnets(maxAZs?: number) {
+    private createSubnets() {
         const remainingSpaceSubnets: SubnetConfigurationFinalized[] = [];
 
         // Calculate number of public/private subnets based on number of AZs
-        const availabilityZones = new AvailabilityZoneProvider(this).availabilityZones;
-        availabilityZones.sort();
-
-        // Restrict to maxAZs if given
-        if (maxAZs != null) {
-            availabilityZones.splice(maxAZs);
-        }
 
         for (const subnet of this.subnetConfigurations) {
-            let azs = availabilityZones;
+            let azs = this.availabilityZones;
 
             if (subnet.numAZs != null) {
                 if (subnet.numAZs > azs.length) {
                     throw new Error(`${subnet.name} requires ${subnet.numAZs} AZs but max is ${azs.length}`);
                 }
-                azs = availabilityZones.slice(subnet.numAZs);
+                azs = this.availabilityZones.slice(subnet.numAZs);
             }
 
             subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
@@ -377,6 +390,29 @@ export class VpcNetwork extends VpcNetworkRef {
             }
             privateSubnet.addDefaultNatRouteEntry(ngwId);
         });
+    }
+
+    private createDefaultSubnetResources() {
+        const cidr = this.networkBuilder.maskForRemainingSubnets(this.availabilityZones.length * 2);
+        this.availabilityZones.forEach((zone, index) => {
+            const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index +1}`, {
+                mapPublicIpOnLaunch: true,
+                vpcId: this.vpcId,
+                availabilityZone: zone,
+                cidrBlock: this.networkBuilder.addSubnet(cidr),
+            });
+            this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+            this.publicSubnets.push(publicSubnet);
+            const privateSubnet = new VpcPrivateSubnet(this, `PrivateSubnet${index +1}`, {
+                mapPublicIpOnLaunch: false,
+                vpcId: this.vpcId,
+                availabilityZone: zone,
+                cidrBlock: this.networkBuilder.addSubnet(cidr),
+            });
+            this.privateSubnets.push(privateSubnet);
+            this.dependencyElements.push(publicSubnet, privateSubnet);
+        });
+
     }
 
     private createSubnetResources(subnetConfig: SubnetConfigurationFinalized) {
