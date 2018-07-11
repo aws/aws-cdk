@@ -6,3 +6,4 @@ tslint.json
 node_modules
 *.generated.ts
 dist
+.jsii

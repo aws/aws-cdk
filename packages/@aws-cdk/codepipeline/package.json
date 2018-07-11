@@ -6,9 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [
-      "@aws-cdk/util"
-    ],
     "names": {
       "java": "com.amazonaws.cdk.codepipeline",
       "dotnet": "Aws.Cdk.CodePipeline"
@@ -53,5 +50,8 @@
     "@aws-cdk/lambda": "^0.7.3-beta",
     "@aws-cdk/s3": "^0.7.3-beta",
     "@aws-cdk/util": "^0.7.3-beta"
-  }
+  },
+  "bundledDependencies": [
+    "@aws-cdk/util"
+  ]
 }

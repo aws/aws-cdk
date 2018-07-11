@@ -4,3 +4,4 @@ tslint.json
 *.js.map
 *.d.ts
 dist
+.jsii

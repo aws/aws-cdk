@@ -6,7 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [],
     "names": {
       "java": "com.amazonaws.cdk.elasticsearch",
       "dotnet": "Aws.Cdk.Elasticsearch"

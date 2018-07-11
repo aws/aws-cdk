@@ -6,3 +6,4 @@ tslint.json
 *.generated.ts
 dist
 lib/generated/resources.ts
+.jsii

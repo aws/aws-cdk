@@ -6,9 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [
-      "@aws-cdk/util"
-    ],
     "names": {
       "java": "com.amazonaws.cdk.events",
       "dotnet": "Aws.Cdk.Events"
@@ -47,5 +44,8 @@
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
     "@aws-cdk/util": "^0.7.3-beta"
-  }
+  },
+  "bundledDependencies": [
+    "@aws-cdk/util"
+  ]
 }
