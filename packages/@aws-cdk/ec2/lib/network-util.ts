@@ -195,9 +195,7 @@ export class NetworkBuilder {
             throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
         }
         const subnets: CidrBlock[] = [];
-        if (!count) {
-            count = 1;
-        }
+        count = count || 1;
         for (let i = 0; i < count; i ++) {
             const subnet: CidrBlock = CidrBlock.fromOffsetIp(this.maxIpConsumed, mask);
             this.maxIpConsumed = subnet.maxIp();
@@ -217,6 +215,19 @@ export class NetworkBuilder {
         return this.subnetCidrs.map((subnet) => (subnet.cidr));
     }
 
+    /**
+     * Calculates the largest subnet to create of the given count from the
+     * remaining IP space
+     */
+    public maskForRemainingSubnets(subnetCount: number): number {
+        const remaining: number =
+            NetworkUtils.ipToNum(this.networkCidr.maxIp()) -
+            NetworkUtils.ipToNum(this.maxIpConsumed);
+        const ipsPerSubnet: number = Math.floor(remaining / subnetCount);
+        return 32 - Math.floor(Math.log2(ipsPerSubnet));
+        // return this.addSubnets(mask, subnetCount);
+    }
+
     protected validate(): boolean {
         return this.subnetCidrs.map(
             (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).
@@ -231,21 +242,21 @@ export class NetworkBuilder {
 export class CidrBlock {
 
     /**
-    * Calculates the netmask for a given CIDR mask
-    *
-    * For example:
-    * CidrBlock.calculateNetmask(24) returns '255.255.255.0'
-    */
+     * Calculates the netmask for a given CIDR mask
+     *
+     * For example:
+     * CidrBlock.calculateNetmask(24) returns '255.255.255.0'
+     */
     public static calculateNetmask(mask: number): string {
         return NetworkUtils.numToIp(2 ** 32 - 2 ** (32 - mask));
     }
 
     /**
-    * Given an IP and CIDR mask number returns the next CIDR Block available
-    *
-    * For example:
-    * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns '10.0.1.0/24'
-    */
+     * Given an IP and CIDR mask number returns the next CIDR Block available
+     *
+     * For example:
+     * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns '10.0.1.0/24'
+     */
     public static fromOffsetIp(ipAddress: string, mask: number): CidrBlock {
         const initialCidr = new CidrBlock(`${ipAddress}/${mask}`);
         const baseIpNum = NetworkUtils.ipToNum(initialCidr.maxIp()) + 1;

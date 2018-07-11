@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import {  AvailabilityZoneProvider, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { DefaultInstanceTenancy, OutboundTrafficMode, SubnetType, VpcNetwork } from '../lib';
+import { DefaultInstanceTenancy, SubnetType, VpcNetwork } from '../lib';
 
 export = {
 
@@ -38,7 +38,6 @@ export = {
                 enableDnsHostnames: false,
                 enableDnsSupport: false,
                 defaultInstanceTenancy: DefaultInstanceTenancy.Dedicated,
-                outboundTraffic: OutboundTrafficMode.None,
                 tags: [tag]
             });
 
@@ -64,7 +63,7 @@ export = {
 
         "with outbound traffic mode None, the VPC should not contain an IGW or NAT Gateways"(test: Test) {
             const stack = getTestStack();
-            new VpcNetwork(stack, 'TheVPC', { outboundTraffic: OutboundTrafficMode.None });
+            new VpcNetwork(stack, 'TheVPC', { });
             expect(stack).notTo(haveResource("AWS::EC2::InternetGateway"));
             expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
             test.done();
@@ -72,7 +71,7 @@ export = {
 
         "with outbound traffic mode FromPublicSubnetsOnly, the VPC should have an IGW but no NAT Gateways"(test: Test) {
             const stack = getTestStack();
-            new VpcNetwork(stack, 'TheVPC', { outboundTraffic: OutboundTrafficMode.FromPublicSubnetsOnly });
+            new VpcNetwork(stack, 'TheVPC', { });
             expect(stack).to(countResources('AWS::EC2::InternetGateway', 1));
             expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
             test.done();
@@ -81,7 +80,7 @@ export = {
         "with outbound traffic mode FromPublicAndPrivateSubnets, the VPC should have an IGW, and a NAT Gateway per AZ"(test: Test) {
             const stack = getTestStack();
             const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
-            new VpcNetwork(stack, 'TheVPC', { outboundTraffic: OutboundTrafficMode.FromPublicAndPrivateSubnets });
+            new VpcNetwork(stack, 'TheVPC', { });
             expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
             expect(stack).to(countResources("AWS::EC2::NatGateway", zones));
             test.done();
@@ -92,7 +91,6 @@ export = {
             const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
-              outboundTraffic: OutboundTrafficMode.FromPublicAndPrivateSubnets,
               subnetConfigurations: [
                 {
                   cidrMask: 24,
