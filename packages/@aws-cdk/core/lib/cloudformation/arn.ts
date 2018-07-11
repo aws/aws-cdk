@@ -47,7 +47,7 @@ export class Arn extends Token {
      * components and `resourceName` will be set to the rest of the string.
      *
      * @returns an ArnComponents object which allows access to the various
-     * components of the ARN.
+     *          components of the ARN.
      */
     public static parse(arn: string): ArnComponents {
         const components = arn.split(':') as Array<string | undefined>;
