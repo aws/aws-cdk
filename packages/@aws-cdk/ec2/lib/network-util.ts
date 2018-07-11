@@ -292,6 +292,7 @@ export class CidrBlock {
      */
     public maxIp(): string {
         const minIpNum = NetworkUtils.ipToNum(this.minIp());
+        // min + (2^(32-mask)) - 1 [zero needs to count]
         return NetworkUtils.numToIp(minIpNum + 2 ** (32 - this.mask) - 1);
     }
 
@@ -303,6 +304,8 @@ export class CidrBlock {
         const ipOct = this.cidr.split('/')[0].split('.');
         // tslint:disable:no-bitwise
         return netmaskOct.map(
+            // bitwise mask each octet to ensure correct min
+            // (e.g. 10.0.0.2/24 -> (10 & 255).(0 & 255).(0 & 255).(2 & 0) = 10.0.0.0
             (maskOct, index) => parseInt(maskOct, 10) & parseInt(ipOct[index], 10)).join('.');
         // tslint:enable:no-bitwise
     }

@@ -372,6 +372,7 @@ export class VpcNetwork extends VpcNetworkRef {
             let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
             if (ngwId === undefined) {
                 const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+                // round robin the available NatGW since one is not in your AZ
                 ngwId = ngwArray[i % ngwArray.length];
             }
             privateSubnet.addDefaultNatRouteEntry(ngwId);
