@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, FnSub,
          PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import { ISubscriptionDestination, SubscriptionDestinationProps } from '@aws-cdk/logs';
+import { ISubscriptionDestination, LogGroup, LogGroupArn, SubscriptionDestination } from '@aws-cdk/logs';
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
@@ -117,7 +117,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, I
     /**
      * Indicates if the policy that allows CloudWatch logs to publish to this topic has been added.
      */
-    private logSubscriptionDestinationPolicyAdded = false;
+    private logSubscriptionDestinationPolicyAddedFor: LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -218,20 +218,21 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, I
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public get subscriptionDestinationProps(): SubscriptionDestinationProps {
-        if (!this.logSubscriptionDestinationPolicyAdded) {
-            // FIXME: this limits to the same region, which shouldn't really be an issue.
-            // Wildcards in principals are unfortunately not supported.
+    public subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination {
+        const arn = sourceLogGroup.logGroupArn;
+
+        if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
+            // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
+            // since the Lambda must be in the same region as the SubscriptionFilter anyway.
             //
-            // Whitelisting the whole of CWL is not as secure as the example in
-            // https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#LambdaFunctionExample
-            // (which also limits on source ARN) but this is far simpler and we trust CloudWatch Logs.
+            // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com'))
+                principal: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com')),
+                sourceArn: arn
             });
-            this.logSubscriptionDestinationPolicyAdded = true;
+            this.logSubscriptionDestinationPolicyAddedFor.push(arn);
         }
-        return new SubscriptionDestinationProps(this.functionArn);
+        return { arn: this.functionArn };
     }
 
     private parsePermissionPrincipal(principal?: PolicyPrincipal) {

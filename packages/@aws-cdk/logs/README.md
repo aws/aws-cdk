@@ -1,6 +1,6 @@
 ## AWS CloudWatch Logs Construct Library
 
-This library supplies Constructs for working with CloudWatch Logs.
+This library supplies constructs for working with CloudWatch Logs.
 
 ### Log Groups/Streams
 
@@ -43,7 +43,7 @@ const logGroup = new LogGroup(this, 'LogGroup', { ... });
 new SubscriptionFilter(this, 'Subscription', {
     logGroup,
     destination: lambda,
-    logPattern: LogPattern.allTerms("ERROR", "MainThread")
+    filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
 });
 ```
 
@@ -73,13 +73,13 @@ are three types of patterns:
 * JSON patterns
 * Space-delimited table patterns
 
-All patterns are constructed by using static functions on the `LogPattern`
+All patterns are constructed by using static functions on the `FilterPattern`
 class.
 
 In addition to the patterns above, the following special patterns exist:
 
-* `LogPattern.allEvents()`: matches all log events.
-* `LogPattern.literal(string)`: if you already know what pattern expression to
+* `FilterPattern.allEvents()`: matches all log events.
+* `FilterPattern.literal(string)`: if you already know what pattern expression to
   use, this function takes a string and will use that as the log pattern. For
   more information, see the [Filter and Pattern
   Syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html).
@@ -89,9 +89,11 @@ In addition to the patterns above, the following special patterns exist:
 Text patterns match if the literal strings appear in the text form of the log
 line.
 
-* `LogPattern.allTerms(term, term, ...)`: matches if all of the given terms
+* `FilterPattern.allTerms(term, term, ...)`: matches if all of the given terms
   (substrings) appear in the log event.
-* `LogPattern.anyGroup([term, term, ...], [term, term, ...], ...)`: matches if
+* `FilterPattern.anyTerm(term, term, ...)`: matches if all of the given terms
+  (substrings) appear in the log event.
+* `FilterPattern.anyGroup([term, term, ...], [term, term, ...], ...)`: matches if
   all of the terms in any of the groups (specified as arrays) matches. This is
   an OR match.
 
@@ -99,9 +101,12 @@ line.
 Examples:
 
 ```ts
-const pattern1 = LogPattern.allTerms('ERROR', 'MainThread');
+// Search for lines that contain both "ERROR" and "MainThread"
+const pattern1 = FilterPattern.allTerms('ERROR', 'MainThread');
 
-const pattern2 = LogPattern.anyGroup(
+// Search for lines that either contain both "ERROR" and "MainThread", or
+// both "WARN" and "Deadlock".
+const pattern2 = FilterPattern.anyGroup(
     ['ERROR', 'MainThread'],
     ['WARN', 'Deadlock'],
     );
@@ -122,22 +127,22 @@ fields.
 Fields in the JSON structure are identified by identifier the complete object as `$`
 and then descending into it, such as `$.field` or `$.list[0].field`.
 
-* `LogPattern.stringValue(field, comparison, string)`: matches if the given
+* `FilterPattern.stringValue(field, comparison, string)`: matches if the given
   field compares as indicated with the given string value.
-* `LogPattern.numberValue(field, comparison, number)`: matches if the given
+* `FilterPattern.numberValue(field, comparison, number)`: matches if the given
   field compares as indicated with the given numerical value.
-* `LogPattern.isNull(field)`: matches if the given field exists and has the
+* `FilterPattern.isNull(field)`: matches if the given field exists and has the
   value `null`.
-* `LogPattern.notExists(field)`: matches if the given field is not in the JSON
+* `FilterPattern.notExists(field)`: matches if the given field is not in the JSON
   structure.
-* `LogPattern.exists(field)`: matches if the given field is in the JSON
+* `FilterPattern.exists(field)`: matches if the given field is in the JSON
   structure.
-* `LogPattern.booleanValue(field, boolean)`: matches if the given field
+* `FilterPattern.booleanValue(field, boolean)`: matches if the given field
   is exactly the given boolean value.
-* `LogPattern.all(jsonPattern, jsonPattern, ...)`: matches if all of the
+* `FilterPattern.all(jsonPattern, jsonPattern, ...)`: matches if all of the
   given JSON patterns match. This makes an AND combination of the given
   patterns.
-* `LogPattern.any(jsonPattern, jsonPattern, ...)`: matches if any of the
+* `FilterPattern.any(jsonPattern, jsonPattern, ...)`: matches if any of the
   given JSON patterns match. This makes an OR combination of the given
   patterns.
 
@@ -145,11 +150,14 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 Example:
 
 ```ts
-const pattern = LogPattern.all(
-    LogPattern.stringValue('$.component', '=', 'HttpServer'),
-    LogPattern.any(
-        LogPattern.booleanValue('$.error', true),
-        LogPattern.numberValue('$.latency', '>', 1000)
+// Search for all events where the component field is equal to
+// "HttpServer" and either error is true or the latency is higher
+// than 1000.
+const pattern = FilterPattern.all(
+    FilterPattern.stringValue('$.component', '=', 'HttpServer'),
+    FilterPattern.any(
+        FilterPattern.booleanValue('$.error', true),
+        FilterPattern.numberValue('$.latency', '>', 1000)
     ));
 ```
 
@@ -163,7 +171,7 @@ logs.
 Text that is surrounded by `"..."` quotes or `[...]` square brackets will
 be treated as one column.
 
-* `LogPattern.spaceDelimited(column, column, ...)`: construct a
+* `FilterPattern.spaceDelimited(column, column, ...)`: construct a
   `SpaceDelimitedTextPattern` object with the indicated columns. The columns
   map one-by-one the columns found in the log event. The string `"..."` may
   be used to specify an arbitrary number of unnamed columns anywhere in the
@@ -182,7 +190,9 @@ Multiple restrictions can be added on the same column; they must all apply.
 Example:
 
 ```ts
-const pattern = LogPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
+// Search for all events where the component is "HttpServer" and the
+// result code is not equal to 200.
+const pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
     .whereString('component', '=', 'HttpServer')
     .whereNumber('result_code', '!=', 200);
 ```

@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/core';
-import { LogGroup } from './loggroup';
+import { LogGroup } from './log-group';
 import { cloudformation } from './logs.generated';
-import { ILogPattern } from './pattern';
+import { IFilterPattern } from './pattern';
 
 /**
  * Properties for a MetricFilter
@@ -15,7 +15,7 @@ export interface MetricFilterProps {
     /**
      * Pattern to search for log events.
      */
-    logPattern: ILogPattern;
+    filterPattern: IFilterPattern;
 
     /**
      * The namespace of the metric to emit.
@@ -56,12 +56,12 @@ export interface MetricFilterProps {
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
 export class MetricFilter extends Construct {
-    constructor(parent: Construct, name: string, props: MetricFilterProps) {
-        super(parent, name);
+    constructor(parent: Construct, id: string, props: MetricFilterProps) {
+        super(parent, id);
 
         new cloudformation.MetricFilterResource(this, 'Resource', {
             logGroupName: props.logGroup.logGroupName,
-            filterPattern: props.logPattern.logPatternString,
+            filterPattern: props.filterPattern.logPatternString,
             metricTransformations: [{
                 metricNamespace: props.metricNamespace,
                 metricName: props.metricName,

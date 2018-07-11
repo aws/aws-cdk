@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
-import { LogGroup, LogPattern, SubscriptionFilter } from '@aws-cdk/logs';
+import { FilterPattern, LogGroup, SubscriptionFilter } from '@aws-cdk/logs';
 import { Test } from 'nodeunit';
 import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
 
@@ -19,7 +19,7 @@ export = {
         new SubscriptionFilter(stack, 'Subscription', {
             logGroup,
             destination: lambda,
-            logPattern: LogPattern.allEvents()
+            filterPattern: FilterPattern.allEvents()
         });
 
         // THEN: subscription target is Lambda

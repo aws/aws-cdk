@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
-import { LogGroup, LogPattern, MetricFilter } from '../lib';
+import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 class MetricFilterIntegStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
@@ -12,7 +12,7 @@ class MetricFilterIntegStack extends Stack {
             logGroup,
             metricNamespace: 'MyApp',
             metricName: 'Latency',
-            logPattern: LogPattern.exists('$.latency'),
+            filterPattern: FilterPattern.exists('$.latency'),
             metricValue: '$.latency'
         });
         /// !hide

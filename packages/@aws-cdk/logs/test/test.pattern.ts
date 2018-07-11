@@ -1,10 +1,10 @@
 import { Test } from 'nodeunit';
-import { LogPattern } from '../lib';
+import { FilterPattern } from '../lib';
 
 export = {
     'text patterns': {
         'simple text pattern'(test: Test) {
-            const pattern = LogPattern.allTerms('foo', 'bar', 'baz');
+            const pattern = FilterPattern.allTerms('foo', 'bar', 'baz');
 
             test.equal('"foo" "bar" "baz"', pattern.logPatternString);
 
@@ -12,7 +12,7 @@ export = {
         },
 
         'quoted terms'(test: Test) {
-            const pattern = LogPattern.allTerms('"foo" he said');
+            const pattern = FilterPattern.allTerms('"foo" he said');
 
             test.equal('"\\"foo\\" he said"', pattern.logPatternString);
 
@@ -20,7 +20,7 @@ export = {
         },
 
         'disjunction of conjunctions'(test: Test) {
-            const pattern = LogPattern.anyGroup(
+            const pattern = FilterPattern.anyTermGroup(
                 ["foo", "bar"],
                 ["baz"]
             );
@@ -31,7 +31,7 @@ export = {
         },
 
         'dont prefix with ? if only one disjunction'(test: Test) {
-            const pattern = LogPattern.anyGroup(
+            const pattern = FilterPattern.anyTermGroup(
                 ["foo", "bar"]
             );
 
@@ -41,7 +41,7 @@ export = {
         },
 
         'empty log pattern is empty string'(test: Test) {
-            const pattern = LogPattern.anyGroup();
+            const pattern = FilterPattern.anyTermGroup();
 
             test.equal('', pattern.logPatternString);
 
@@ -51,7 +51,7 @@ export = {
 
     'json patterns': {
         'string value'(test: Test) {
-            const pattern = LogPattern.stringValue('$.field', '=', 'value');
+            const pattern = FilterPattern.stringValue('$.field', '=', 'value');
 
             test.equal('{ $.field = "value" }', pattern.logPatternString);
 
@@ -59,7 +59,7 @@ export = {
         },
 
         'also recognize =='(test: Test) {
-            const pattern = LogPattern.stringValue('$.field', '==', 'value');
+            const pattern = FilterPattern.stringValue('$.field', '==', 'value');
 
             test.equal('{ $.field = "value" }', pattern.logPatternString);
 
@@ -67,7 +67,7 @@ export = {
         },
 
         'number patterns'(test: Test) {
-            const pattern = LogPattern.numberValue('$.field', '<=', 300);
+            const pattern = FilterPattern.numberValue('$.field', '<=', 300);
 
             test.equal('{ $.field <= 300 }', pattern.logPatternString);
 
@@ -75,22 +75,22 @@ export = {
         },
 
         'combining with AND or OR'(test: Test) {
-            const p1 = LogPattern.numberValue('$.field', '<=', 300);
-            const p2 = LogPattern.stringValue('$.field', '=', 'value');
+            const p1 = FilterPattern.numberValue('$.field', '<=', 300);
+            const p2 = FilterPattern.stringValue('$.field', '=', 'value');
 
-            const andPattern = LogPattern.all(p1, p2);
+            const andPattern = FilterPattern.all(p1, p2);
             test.equal('{ ($.field <= 300) && ($.field = "value") }', andPattern.logPatternString);
 
-            const orPattern = LogPattern.any(p1, p2);
+            const orPattern = FilterPattern.any(p1, p2);
             test.equal('{ ($.field <= 300) || ($.field = "value") }', orPattern.logPatternString);
 
             test.done();
         },
 
         'single AND is not wrapped with parens'(test: Test) {
-            const p1 = LogPattern.stringValue('$.field', '=', 'value');
+            const p1 = FilterPattern.stringValue('$.field', '=', 'value');
 
-            const pattern = LogPattern.all(p1);
+            const pattern = FilterPattern.all(p1);
 
             test.equal('{ $.field = "value" }', pattern.logPatternString);
 
@@ -99,7 +99,7 @@ export = {
 
         'empty AND is rejected'(test: Test) {
             test.throws(() => {
-                LogPattern.all();
+                FilterPattern.all();
             });
 
             test.done();
@@ -107,14 +107,14 @@ export = {
 
         'invalid string operators are rejected'(test: Test) {
             test.throws(() => {
-                LogPattern.stringValue('$.field', '<=', 'hello');
+                FilterPattern.stringValue('$.field', '<=', 'hello');
             });
 
             test.done();
         },
 
         'can test boolean value'(test: Test) {
-            const pattern = LogPattern.booleanValue('$.field', false);
+            const pattern = FilterPattern.booleanValue('$.field', false);
 
             test.equal('{ $.field IS FALSE }', pattern.logPatternString);
 
@@ -124,7 +124,7 @@ export = {
 
     'table patterns': {
         'simple model'(test: Test) {
-            const pattern = LogPattern.spaceDelimited('...', 'status_code', 'bytes');
+            const pattern = FilterPattern.spaceDelimited('...', 'status_code', 'bytes');
 
             test.equal('[..., status_code, bytes]', pattern.logPatternString);
 
@@ -132,7 +132,7 @@ export = {
         },
 
         'add restrictions'(test: Test) {
-            const pattern = LogPattern.spaceDelimited('...', 'status_code', 'bytes')
+            const pattern = FilterPattern.spaceDelimited('...', 'status_code', 'bytes')
                 .whereString('status_code', '=', '4*')
                 .whereNumber('status_code', '!=', 403);
 
@@ -143,7 +143,7 @@ export = {
 
         'cant use more than one ellipsis'(test: Test) {
             test.throws(() => {
-                LogPattern.spaceDelimited('...', 'status_code', '...');
+                FilterPattern.spaceDelimited('...', 'status_code', '...');
             });
 
             test.done();

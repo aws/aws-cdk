@@ -1,8 +1,8 @@
 import { Arn, Construct } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
-import { LogGroup } from './loggroup';
+import { LogGroup } from './log-group';
 import { cloudformation } from './logs.generated';
-import { ILogPattern } from './pattern';
+import { IFilterPattern } from './pattern';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -14,16 +14,28 @@ export interface ISubscriptionDestination {
      * If necessary, the destination can use the properties of the SubscriptionFilter
      * object itself to configure its permissions to allow the subscription to write
      * to it.
+     *
+     * The destination may reconfigure its own permissions in response to this
+     * function call.
      */
-    readonly subscriptionDestinationProps: SubscriptionDestinationProps;
+    subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export class SubscriptionDestinationProps {
-    public constructor(public readonly arn: Arn, public readonly role?: Role) {
-    }
+export interface SubscriptionDestination {
+    /**
+     * The ARN of the subscription's destination
+     */
+    readonly arn: Arn;
+
+    /**
+     * The role to assume to write log events to the destination
+     *
+     * @default No role assumed
+     */
+    readonly role?: Role;
 }
 
 /**
@@ -45,23 +57,23 @@ export interface SubscriptionFilterProps {
     /**
      * Log events matching this pattern will be sent to the destination.
      */
-    logPattern: ILogPattern;
+    filterPattern: IFilterPattern;
 }
 
 /**
  * A new Subscription on a CloudWatch log group.
  */
 export class SubscriptionFilter extends Construct {
-    constructor(parent: Construct, name: string, props: SubscriptionFilterProps) {
-        super(parent, name);
+    constructor(parent: Construct, id: string, props: SubscriptionFilterProps) {
+        super(parent, id);
 
-        const destProps = props.destination.subscriptionDestinationProps;
+        const destProps = props.destination.subscriptionDestination(props.logGroup);
 
         new cloudformation.SubscriptionFilterResource(this, 'Resource', {
             logGroupName: props.logGroup.logGroupName,
             destinationArn: destProps.arn,
             roleArn: destProps.role && destProps.role.roleArn,
-            filterPattern: props.logPattern.logPatternString
+            filterPattern: props.filterPattern.logPatternString
         });
     }
 }

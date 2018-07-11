@@ -3,14 +3,14 @@
 /**
  * Interface for objects that can render themselves to log patterns.
  */
-export interface ILogPattern {
+export interface IFilterPattern {
     readonly logPatternString: string;
 }
 
 /**
  * Base class for patterns that only match JSON log events.
  */
-export abstract class JSONPattern implements ILogPattern {
+export abstract class JSONPattern implements IFilterPattern {
     // This is a separate class so we have some type safety where users can't
     // combine text patterns and JSON patterns with an 'and' operation.
     constructor(public readonly jsonPatternString: string) {
@@ -24,7 +24,7 @@ export abstract class JSONPattern implements ILogPattern {
 /**
  * A collection of static methods to generate appropriate ILogPatterns
  */
-export class LogPattern {
+export class FilterPattern {
 
     /**
      * Use the given string as log pattern.
@@ -34,14 +34,14 @@ export class LogPattern {
      *
      * @param logPatternString The pattern string to use.
      */
-    public static literal(logPatternString: string): ILogPattern {
+    public static literal(logPatternString: string): IFilterPattern {
         return new LiteralLogPattern(logPatternString);
     }
 
     /**
      * A log pattern that matches all events.
      */
-    public static allEvents(): ILogPattern {
+    public static allEvents(): IFilterPattern {
         return new LiteralLogPattern("");
     }
 
@@ -50,8 +50,17 @@ export class LogPattern {
      *
      * @param terms The words to search for. All terms must match.
      */
-    public static allTerms(...terms: string[]): ILogPattern {
+    public static allTerms(...terms: string[]): IFilterPattern {
         return new TextLogPattern([terms]);
+    }
+
+    /**
+     * A log pattern that matches if any of the strings given appear in the event.
+     *
+     * @param terms The words to search for. Any terms must match.
+     */
+    public static anyTerm(...terms: string[]): IFilterPattern {
+        return new TextLogPattern(terms.map(t => [t]));
     }
 
     /**
@@ -61,7 +70,7 @@ export class LogPattern {
      *
      * @param termGroups A list of term groups to search for. Any one of the clauses must match.
      */
-    public static anyGroup(...termGroups: string[][]): ILogPattern {
+    public static anyTermGroup(...termGroups: string[][]): IFilterPattern {
         return new TextLogPattern(termGroups);
     }
 
@@ -187,7 +196,7 @@ export class LogPattern {
 /**
  * Use a string literal as a log pattern
  */
-class LiteralLogPattern implements ILogPattern {
+class LiteralLogPattern implements IFilterPattern {
     constructor(public readonly logPatternString: string) {
     }
 }
@@ -195,7 +204,7 @@ class LiteralLogPattern implements ILogPattern {
 /**
  * Search for a set of set of terms
  */
-class TextLogPattern implements ILogPattern {
+class TextLogPattern implements IFilterPattern {
     public readonly logPatternString: string;
 
     constructor(clauses: string[][]) {
@@ -260,7 +269,7 @@ const COL_ELLIPSIS = '...';
 /**
  * Space delimited text pattern
  */
-export class SpaceDelimitedTextPattern implements ILogPattern {
+export class SpaceDelimitedTextPattern implements IFilterPattern {
     /**
      * Construct a new instance of a space delimited text pattern
      *

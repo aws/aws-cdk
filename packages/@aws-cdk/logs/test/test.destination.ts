@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import { Arn, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
-import { Destination, ILogDestinationTarget } from '../lib';
+import { CrossAccountDestination } from '../lib';
 
 export = {
     'simple destination'(test: Test) {
@@ -13,10 +13,10 @@ export = {
         });
 
         // WHEN
-        new Destination(stack, 'Dest', {
+        new CrossAccountDestination(stack, 'Dest', {
             destinationName: 'MyDestination',
             role,
-            target: new BogusTarget()
+            targetArn: new Arn('arn:bogus')
         });
 
         // THEN
@@ -36,10 +36,10 @@ export = {
             assumedBy: new ServicePrincipal('logs.us-east-2.amazonaws.com')
         });
 
-        const dest = new Destination(stack, 'Dest', {
+        const dest = new CrossAccountDestination(stack, 'Dest', {
             destinationName: 'MyDestination',
             role,
-            target: new BogusTarget()
+            targetArn: new Arn('arn:bogus')
         });
 
         // WHEN
@@ -57,7 +57,3 @@ export = {
         test.done();
     }
 };
-
-class BogusTarget implements ILogDestinationTarget {
-    public readonly destinationTargetArn = new Arn('arn:bogus');
-}

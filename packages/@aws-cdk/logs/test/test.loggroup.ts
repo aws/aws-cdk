@@ -10,7 +10,7 @@ export = {
 
         // WHEN
         new LogGroup(stack, 'LogGroup', {
-            retentionInDays: 7
+            retentionDays: 7
         });
 
         // THEN
@@ -30,7 +30,7 @@ export = {
 
         // THEN
         expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-            RetentionInDays: 365
+            RetentionInDays: 730
         }));
 
         test.done();
@@ -42,7 +42,7 @@ export = {
 
         // WHEN
         new LogGroup(stack, 'LogGroup', {
-            retentionInDays: Infinity
+            retentionDays: Infinity
         });
 
         // THEN

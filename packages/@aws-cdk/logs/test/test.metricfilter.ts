@@ -1,8 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { LogGroup, LogPattern, } from '../lib';
-import { MetricFilter } from '../lib/metricfilter';
+import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 export = {
     'trivial instantiation'(test: Test) {
@@ -16,7 +15,7 @@ export = {
             metricNamespace: 'AWS/Test',
             metricName: 'Latency',
             metricValue: '$.latency',
-            logPattern: LogPattern.exists('$.latency')
+            filterPattern: FilterPattern.exists('$.latency')
         });
 
         // THEN

@@ -1,17 +1,8 @@
 import { Arn, Construct, PolicyDocument, PolicyStatement, Token } from '@aws-cdk/core';
 import { Role } from '@aws-cdk/iam';
+import { LogGroup } from './log-group';
 import { cloudformation, DestinationArn } from './logs.generated';
-import { ISubscriptionDestination, SubscriptionDestinationProps } from './subscriptionfilter';
-
-/**
- * Interface for classes that can be the target of a Log Destination
- */
-export interface ILogDestinationTarget {
-    /**
-     * Return the ARN of the log destination target
-     */
-    readonly destinationTargetArn: Arn;
-}
+import { ISubscriptionDestination, SubscriptionDestination } from './subscription-filter';
 
 export interface DestinationProps {
     /**
@@ -27,26 +18,28 @@ export interface DestinationProps {
     role: Role;
 
     /**
-     * The log destination target
+     * The log destination target's ARN
      */
-    target: ILogDestinationTarget;
+    targetArn: Arn;
 }
 
 /**
  * Create a new CloudWatch Logs Destination.
  *
- * Log destinations can be used to subscribe a Kinesis stream
- * in a different account to a CloudWatch Subscription.
+ * Log destinations can be used to subscribe a Kinesis stream in a different
+ * account to a CloudWatch Subscription. A Kinesis stream in the same account
+ * can be subscribed directly.
  *
- * A Kinesis stream in the same account can be subscribed directly.
+ * The @aws-cdk/kinesis library takes care of this automatically; you shouldn't
+ * need to bother with this class.
  */
-export class Destination extends Construct implements ISubscriptionDestination {
+export class CrossAccountDestination extends Construct implements ISubscriptionDestination {
     public readonly policyDocument: PolicyDocument = new PolicyDocument();
     public readonly destinationName: DestinationName;
     public readonly destinationArn: DestinationArn;
 
-    constructor(parent: Construct, name: string, props: DestinationProps) {
-        super(parent, name);
+    constructor(parent: Construct, id: string, props: DestinationProps) {
+        super(parent, id);
 
         this.policyDocument = new PolicyDocument();
 
@@ -54,7 +47,7 @@ export class Destination extends Construct implements ISubscriptionDestination {
             destinationName: props.destinationName,
             destinationPolicy: new Token(() => !this.policyDocument.isEmpty ? JSON.stringify(this.policyDocument.resolve()) : ""),
             roleArn: props.role.roleArn,
-            targetArn: props.target.destinationTargetArn
+            targetArn: props.targetArn
         });
 
         this.destinationArn = resource.destinationArn;
@@ -65,8 +58,8 @@ export class Destination extends Construct implements ISubscriptionDestination {
         this.policyDocument.addStatement(statement);
     }
 
-    public get subscriptionDestinationProps(): SubscriptionDestinationProps {
-        return new SubscriptionDestinationProps(this.destinationArn);
+    public subscriptionDestination(_sourceLogGroup: LogGroup): SubscriptionDestination {
+        return { arn: this.destinationArn };
     }
 }
 

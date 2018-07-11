@@ -1,6 +1,7 @@
-import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
-import { IIdentityResource } from '@aws-cdk/iam';
+import { Construct, FnConcat, FnSelect, FnSplit, FnSub, Output, PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/core';
+import { IIdentityResource, Role } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
+import { CrossAccountDestination, ISubscriptionDestination, LogGroup, SubscriptionDestination } from '@aws-cdk/logs';
 import { cloudformation, StreamArn } from './kinesis.generated';
 
 /**
@@ -37,7 +38,7 @@ export interface StreamRefProps {
  *     StreamRef.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamRef extends Construct {
+export abstract class StreamRef extends Construct implements ISubscriptionDestination {
     /**
      * Creates a Stream construct that represents an external stream.
      *
@@ -56,9 +57,19 @@ export abstract class StreamRef extends Construct {
     public abstract readonly streamArn: StreamArn;
 
     /**
+     * The name of the stream
+     */
+    public abstract readonly streamName: StreamName;
+
+    /**
      * Optional KMS encryption key associated with this stream.
      */
     public abstract readonly encryptionKey?: kms.EncryptionKeyRef;
+
+    /**
+     * The role that can be used by CloudWatch logs to write to this stream
+     */
+    private cloudWatchLogsRole?: Role;
 
     /**
      * Exports this stream from the stack.
@@ -157,6 +168,45 @@ export abstract class StreamRef extends Construct {
                 ]
             }
         );
+    }
+
+    public subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination {
+        // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
+        if (!this.cloudWatchLogsRole) {
+            // Create a role to be assumed by CWL that can write to this stream and pass itself.
+            this.cloudWatchLogsRole = new Role(this, 'CloudWatchLogsCanPutRecords', {
+                assumedBy: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com')),
+            });
+            this.cloudWatchLogsRole.addToPolicy(new PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
+            this.cloudWatchLogsRole.addToPolicy(new PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
+        }
+
+        // We've now made it possible for CloudWatch events to write to us. In case the LogGroup is in a
+        // different account, we must add a Destination in between as well.
+        const sourceStack = Stack.find(sourceLogGroup);
+        const thisStack = Stack.find(this);
+
+        // Case considered: if both accounts are undefined, we can't make any assumptions. Better
+        // to assume we don't need to do anything special.
+        const sameAccount = sourceStack.env.account === thisStack.env.account;
+
+        if (sameAccount) {
+            return { arn: this.streamArn, role: this.cloudWatchLogsRole };
+        }
+
+        // The destination lives in the target account
+        const dest = new CrossAccountDestination(this, 'CloudWatchCrossAccountDestination', {
+            // Unfortunately destinationName is required so we have to invent one that won't conflict.
+            destinationName: new FnConcat(sourceLogGroup.logGroupName, 'To', this.streamName) as any,
+            targetArn: this.streamArn,
+            role: this.cloudWatchLogsRole
+        });
+        dest.addToPolicy(new PolicyStatement()
+            .addAction('logs:PutSubscriptionFilter')
+            .addAwsAccountPrincipal(sourceStack.env.account)
+            .addAllResources());
+
+        return dest.subscriptionDestination(sourceLogGroup);
     }
 
     private grant(identity: IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
@@ -307,12 +357,17 @@ export class StreamName extends Token {}
 
 class ImportedStreamRef extends StreamRef {
     public readonly streamArn: StreamArn;
+    public readonly streamName: StreamName;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
 
     constructor(parent: Construct, name: string, props: StreamRefProps) {
         super(parent, name);
 
         this.streamArn = props.streamArn;
+        // ARN always looks like: arn:aws:kinesis:us-east-2:123456789012:stream/mystream
+        // so we can get the name from the ARN.
+        this.streamName = new FnSelect(1, new FnSplit('/', this.streamArn));
+
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);
         } else {

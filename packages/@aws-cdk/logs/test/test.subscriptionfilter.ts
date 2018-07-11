@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Arn, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { ISubscriptionDestination, LogGroup, LogPattern, SubscriptionDestinationProps, SubscriptionFilter } from '../lib';
+import { FilterPattern, ISubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
 
 export = {
     'trivial instantiation'(test: Test) {
@@ -13,7 +13,7 @@ export = {
         new SubscriptionFilter(stack, 'Subscription', {
             logGroup,
             destination: new FakeDestination(),
-            logPattern: LogPattern.literal("some pattern")
+            filterPattern: FilterPattern.literal("some pattern")
         });
 
         // THEN
@@ -28,7 +28,9 @@ export = {
 };
 
 class FakeDestination implements ISubscriptionDestination {
-    public readonly subscriptionDestinationProps: SubscriptionDestinationProps = {
-        arn: new Arn('arn:bogus'),
-    };
+    public subscriptionDestination(_sourceLogGroup: LogGroup) {
+        return {
+            arn: new Arn('arn:bogus'),
+        };
+    }
 }
