@@ -1,7 +1,7 @@
 import { expect } from '@aws-cdk/assert';
 import { PolicyStatement, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { AmazonLinuxImage, Fleet, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
+import { AmazonLinuxImage, AutoScalingGroup, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -10,7 +10,7 @@ export = {
         const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
         const vpc = mockVpc(stack);
 
-        new Fleet(stack, 'MyFleet', {
+        new AutoScalingGroup(stack, 'MyFleet', {
             instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
             machineImage: new AmazonLinuxImage(),
             vpc
@@ -111,7 +111,7 @@ export = {
         const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
         const vpc = mockVpc(stack);
 
-        const fleet = new Fleet(stack, 'MyFleet', {
+        const fleet = new AutoScalingGroup(stack, 'MyFleet', {
             instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
             machineImage: new AmazonLinuxImage(),
             vpc

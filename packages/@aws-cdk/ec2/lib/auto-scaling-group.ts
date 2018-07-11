@@ -13,7 +13,7 @@ import { VpcNetworkRef, VpcPlacementStrategy } from './vpc-ref';
 /**
  * Properties of a Fleet
  */
-export interface FleetProps {
+export interface AutoScalingGroupProps {
     /**
      * Type of instance to launch
      */
@@ -83,7 +83,7 @@ export interface FleetProps {
  *
  * The ASG spans all availability zones.
  */
-export class Fleet extends Construct implements IClassicLoadBalancerTarget {
+export class AutoScalingGroup extends Construct implements IClassicLoadBalancerTarget {
     public readonly connectionPeer: IConnectionPeer;
 
     /**
@@ -106,7 +106,7 @@ export class Fleet extends Construct implements IClassicLoadBalancerTarget {
     private readonly securityGroup: SecurityGroup;
     private readonly loadBalancerNames: Token[] = [];
 
-    constructor(parent: Construct, name: string, props: FleetProps) {
+    constructor(parent: Construct, name: string, props: AutoScalingGroupProps) {
         super(parent, name);
 
         this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });

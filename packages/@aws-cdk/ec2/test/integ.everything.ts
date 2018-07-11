@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { App, Stack } from '@aws-cdk/core';
-import { AmazonLinuxImage, AnyIPv4, ClassicLoadBalancer, Fleet, InstanceClass,
+import { AmazonLinuxImage, AnyIPv4, AutoScalingGroup, ClassicLoadBalancer, InstanceClass,
     InstanceSize, InstanceTypePair, VpcNetwork } from '../lib';
 
 const app = new App(process.argv);
@@ -10,7 +10,7 @@ const vpc = new VpcNetwork(stack, 'VPC', {
     maxAZs: 3
 });
 
-const fleet = new Fleet(stack, 'Fleet', {
+const asg = new AutoScalingGroup(stack, 'Fleet', {
     vpc,
     instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
     machineImage: new AmazonLinuxImage(),
@@ -26,7 +26,7 @@ new ClassicLoadBalancer(stack, 'LB', {
     healthCheck: {
         port: 80
     },
-    targets: [fleet]
+    targets: [asg]
 });
 
 process.stdout.write(app.run());

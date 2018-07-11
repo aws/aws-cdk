@@ -3,38 +3,37 @@
 // support multi-stack deployments since we have no good way of
 // ordering stack deployments. So run this test by hand for now
 // until we have that.
-import { App, Stack } from '@aws-cdk/core';
-import { AmazonLinuxImage, AnyIPv4, ClassicLoadBalancer, Fleet, InstanceClass, InstanceSize,
-         InstanceTypePair, VpcNetwork, VpcNetworkRef } from '../lib';
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '../lib';
 
-const app = new App(process.argv);
-const vpcStack = new Stack(app, 'VPCStack');
+const app = new cdk.App(process.argv);
+const vpcStack = new cdk.Stack(app, 'VPCStack');
 
-const exportedVpc = new VpcNetwork(vpcStack, 'VPC', {
+const exportedVpc = new ec2.VpcNetwork(vpcStack, 'VPC', {
     maxAZs: 3
 });
 
-const appStack = new Stack(app, 'AppStack');
+const appStack = new cdk.Stack(app, 'AppStack');
 
-const importedVpc = VpcNetworkRef.import(appStack, 'VPC', exportedVpc.export());
+const importedVpc = ec2.VpcNetworkRef.import(appStack, 'VPC', exportedVpc.export());
 
-const fleet = new Fleet(appStack, 'Fleet', {
+const asg = new ec2.AutoScalingGroup(appStack, 'ASG', {
     vpc: importedVpc,
-    instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
-    machineImage: new AmazonLinuxImage()
+    instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Micro),
+    machineImage: new ec2.AmazonLinuxImage()
 });
 
-new ClassicLoadBalancer(appStack, 'LB', {
+new ec2.ClassicLoadBalancer(appStack, 'LB', {
     vpc: importedVpc,
     internetFacing: true,
     listeners: [{
         externalPort: 80,
-        allowConnectionsFrom: [new AnyIPv4()]
+        allowConnectionsFrom: [new ec2.AnyIPv4()]
     }],
     healthCheck: {
         port: 80
     },
-    targets: [fleet]
+    targets: [asg]
 });
 
 process.stdout.write(app.run());

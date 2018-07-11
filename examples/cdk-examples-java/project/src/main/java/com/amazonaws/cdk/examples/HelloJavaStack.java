@@ -4,8 +4,8 @@ import com.amazonaws.cdk.App;
 import com.amazonaws.cdk.Stack;
 import com.amazonaws.cdk.StackProps;
 import com.amazonaws.cdk.Construct;
-import com.amazonaws.cdk.ec2.Fleet;
-import com.amazonaws.cdk.ec2.FleetProps;
+import com.amazonaws.cdk.ec2.AutoScalingGroup;
+import com.amazonaws.cdk.ec2.AutoScalingGroupProps;
 import com.amazonaws.cdk.ec2.InstanceType;
 import com.amazonaws.cdk.ec2.VpcNetwork;
 import com.amazonaws.cdk.ec2.WindowsImage;
@@ -28,8 +28,8 @@ class HelloJavaStack extends Stack {
 
         VpcNetwork vpc = new VpcNetwork(this, "VPC");
 
-        MyFleetProps fleetProps = new MyFleetProps();
-        fleetProps.vpc = vpc;
+        MyAutoScalingGroupProps autoScalingGroupProps = new MyAutoScalingGroupProps();
+        autoScalingGroupProps.vpc = vpc;
 
         int topicCount = 5;
 
@@ -39,18 +39,18 @@ class HelloJavaStack extends Stack {
             sinkQueue.subscribe(new Topic(this, "Topic" + (i+1)));
         }
 
-        new MyFleet(this, "MyFleet", fleetProps);
+        new MyAutoScalingGroup(this, "MyAutoScalingGroup", autoScalingGroupProps);
     }
 
-    static class MyFleetProps {
+    static class MyAutoScalingGroupProps {
         public VpcNetwork vpc;
     }
 
-    static class MyFleet extends Construct {
-        MyFleet(final Construct parent, final String name, final MyFleetProps props) {
+    static class MyAutoScalingGroup extends Construct {
+        MyAutoScalingGroup(final Construct parent, final String name, final MyAutoScalingGroupProps props) {
             super(parent, name);
 
-            new Fleet(this, "Compute", FleetProps.builder()
+            new AutoScalingGroup(this, "Compute", AutoScalingGroupProps.builder()
                 .withInstanceType(new InstanceType("t2.micro"))
                 .withMachineImage(new WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase))
                 .withVpc(props.vpc)
@@ -59,7 +59,7 @@ class HelloJavaStack extends Stack {
 
         @Override
         public List<String> validate() {
-            System.err.println("Validating MyFleet...");
+            System.err.println("Validating MyAutoScalingGroup...");
             return Collections.emptyList();
         }
     }
