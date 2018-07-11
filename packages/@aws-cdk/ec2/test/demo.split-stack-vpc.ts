@@ -4,7 +4,7 @@
 // ordering stack deployments. So run this test by hand for now
 // until we have that.
 import { App, Stack } from '@aws-cdk/core';
-import { AmazonLinuxImage, AnyIPv4, ClassicLoadBalancer, Fleet, InstanceClass, InstanceSize,
+import { AmazonLinuxImage, AnyIPv4, AutoScalingGroup, ClassicLoadBalancer, InstanceClass, InstanceSize,
          InstanceTypePair, VpcNetwork, VpcNetworkRef } from '../lib';
 
 const app = new App(process.argv);
@@ -18,7 +18,7 @@ const appStack = new Stack(app, 'AppStack');
 
 const importedVpc = VpcNetworkRef.import(appStack, 'VPC', exportedVpc.export());
 
-const fleet = new Fleet(appStack, 'Fleet', {
+const asg = new AutoScalingGroup(appStack, 'ASG', {
     vpc: importedVpc,
     instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
     machineImage: new AmazonLinuxImage()
@@ -34,7 +34,7 @@ new ClassicLoadBalancer(appStack, 'LB', {
     healthCheck: {
         port: 80
     },
-    targets: [fleet]
+    targets: [asg]
 });
 
 process.stdout.write(app.run());

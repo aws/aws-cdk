@@ -1,6 +1,6 @@
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import {
-    AmazonLinuxImage, ClassicLoadBalancer, Fleet, InstanceClass, InstanceSize,
+    AmazonLinuxImage, AutoScalingGroup, ClassicLoadBalancer, InstanceClass, InstanceSize,
     InstanceTypePair, VpcNetwork, VpcNetworkRefProps } from '@aws-cdk/ec2';
 
 class AppWithVpc extends Stack {
@@ -9,7 +9,7 @@ class AppWithVpc extends Stack {
 
         const vpc = new VpcNetwork(this, 'MyVpc');
 
-        const fleet = new Fleet(this, 'MyFleet', {
+        const asg = new AutoScalingGroup(this, 'MyASG', {
             vpc,
             instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.XLarge),
             machineImage: new AmazonLinuxImage()
@@ -21,7 +21,7 @@ class AppWithVpc extends Stack {
         });
 
         clb.addListener({ externalPort: 80 });
-        clb.addTarget(fleet);
+        clb.addTarget(asg);
     }
 }
 
@@ -35,7 +35,7 @@ class MyApp extends Stack {
 
         const vpc = VpcNetwork.import(this, 'VPC', props.infra.vpc);
 
-        const fleet = new Fleet(this, 'MyFleet', {
+        const fleet = new AutoScalingGroup(this, 'MyASG', {
             vpc,
             instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.XLarge),
             machineImage: new AmazonLinuxImage()
