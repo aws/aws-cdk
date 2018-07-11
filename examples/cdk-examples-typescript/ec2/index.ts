@@ -1,47 +1,45 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
-import {
-    AmazonLinuxImage, ClassicLoadBalancer, Fleet, InstanceClass, InstanceSize,
-    InstanceTypePair, VpcNetwork, VpcNetworkRefProps } from '@aws-cdk/ec2';
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/ec2';
 
-class AppWithVpc extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class AppWithVpc extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const vpc = new VpcNetwork(this, 'MyVpc');
+        const vpc = new ec2.VpcNetwork(this, 'MyVpc');
 
-        const fleet = new Fleet(this, 'MyFleet', {
+        const asg = new ec2.AutoScalingGroup(this, 'MyASG', {
             vpc,
-            instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.XLarge),
-            machineImage: new AmazonLinuxImage()
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            machineImage: new ec2.AmazonLinuxImage()
         });
 
-        const clb = new ClassicLoadBalancer(this, 'LB', {
+        const clb = new ec2.ClassicLoadBalancer(this, 'LB', {
             vpc,
             internetFacing: true
         });
 
         clb.addListener({ externalPort: 80 });
-        clb.addTarget(fleet);
+        clb.addTarget(asg);
     }
 }
 
-interface MyAppProps extends StackProps {
+interface MyAppProps extends cdk.StackProps {
     infra: CommonInfrastructure
 }
 
-class MyApp extends Stack {
-    constructor(parent: App, name: string, props: MyAppProps) {
+class MyApp extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props: MyAppProps) {
         super(parent, name, props);
 
-        const vpc = VpcNetwork.import(this, 'VPC', props.infra.vpc);
+        const vpc = ec2.VpcNetwork.import(this, 'VPC', props.infra.vpc);
 
-        const fleet = new Fleet(this, 'MyFleet', {
+        const fleet = new ec2.AutoScalingGroup(this, 'MyASG', {
             vpc,
-            instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.XLarge),
-            machineImage: new AmazonLinuxImage()
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            machineImage: new ec2.AmazonLinuxImage()
         });
 
-        const clb = new ClassicLoadBalancer(this, 'LB', {
+        const clb = new ec2.ClassicLoadBalancer(this, 'LB', {
             vpc,
             internetFacing: true
         });
@@ -51,18 +49,18 @@ class MyApp extends Stack {
     }
 }
 
-class CommonInfrastructure extends Stack {
-    public vpc: VpcNetworkRefProps;
+class CommonInfrastructure extends cdk.Stack {
+    public vpc: ec2.VpcNetworkRefProps;
 
-    constructor(parent: App, name: string, props?: StackProps) {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const vpc = new VpcNetwork(this, 'VPC');
+        const vpc = new ec2.VpcNetwork(this, 'VPC');
         this.vpc = vpc.export();
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 const infra = new CommonInfrastructure(app, 'infra');
 
