@@ -293,8 +293,6 @@ export class VpcNetwork extends VpcNetworkRef {
         }
         this.availabilityZones.sort();
 
-
-
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
 
@@ -305,7 +303,6 @@ export class VpcNetwork extends VpcNetworkRef {
             this.subnetConfigurations = VpcNetwork.DEFAULT_SUBNETS;
             this.createDefaultSubnetResources();
         }
-
 
         const allowOutbound = this.subnetConfigurations.filter(
             (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
@@ -392,29 +389,6 @@ export class VpcNetwork extends VpcNetworkRef {
         });
     }
 
-    private createDefaultSubnetResources() {
-        const cidr = this.networkBuilder.maskForRemainingSubnets(this.availabilityZones.length * 2);
-        this.availabilityZones.forEach((zone, index) => {
-            const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index +1}`, {
-                mapPublicIpOnLaunch: true,
-                vpcId: this.vpcId,
-                availabilityZone: zone,
-                cidrBlock: this.networkBuilder.addSubnet(cidr),
-            });
-            this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
-            this.publicSubnets.push(publicSubnet);
-            const privateSubnet = new VpcPrivateSubnet(this, `PrivateSubnet${index +1}`, {
-                mapPublicIpOnLaunch: false,
-                vpcId: this.vpcId,
-                availabilityZone: zone,
-                cidrBlock: this.networkBuilder.addSubnet(cidr),
-            });
-            this.privateSubnets.push(privateSubnet);
-            this.dependencyElements.push(publicSubnet, privateSubnet);
-        });
-
-    }
-
     private createSubnetResources(subnetConfig: SubnetConfigurationFinalized) {
         subnetConfig.availabilityZones.forEach((zone, index) => {
             const cidr: string = this.networkBuilder.addSubnet(subnetConfig.cidrMask);
@@ -453,6 +427,30 @@ export class VpcNetwork extends VpcNetworkRef {
             }
         });
     }
+
+    private createDefaultSubnetResources() {
+        const cidr = this.networkBuilder.maskForRemainingSubnets(this.availabilityZones.length * 2);
+        this.availabilityZones.forEach((zone, index) => {
+            const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index + 1}`, {
+                mapPublicIpOnLaunch: true,
+                vpcId: this.vpcId,
+                availabilityZone: zone,
+                cidrBlock: this.networkBuilder.addSubnet(cidr),
+            });
+            this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+            this.publicSubnets.push(publicSubnet);
+            const privateSubnet = new VpcPrivateSubnet(this, `PrivateSubnet${index + 1}`, {
+                mapPublicIpOnLaunch: false,
+                vpcId: this.vpcId,
+                availabilityZone: zone,
+                cidrBlock: this.networkBuilder.addSubnet(cidr),
+            });
+            this.privateSubnets.push(privateSubnet);
+            this.dependencyElements.push(publicSubnet, privateSubnet);
+        });
+
+    }
+
 }
 
 /**
