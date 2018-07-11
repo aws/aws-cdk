@@ -285,7 +285,7 @@ export class VpcNetwork extends VpcNetworkRef {
         this.subnetConfigurations = props.subnetConfigurations || VpcNetwork.DEFAULT_SUBNETS;
 
         const allowOutbound = this.subnetConfigurations.filter(
-            (subnet) => (subnet.subnetType != SubnetType.Internal)).length > 0;
+            (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
 
         // Create public and private subnets in each AZ
         this.createSubnets(props.maxAZs);
@@ -317,7 +317,7 @@ export class VpcNetwork extends VpcNetworkRef {
      * in each Availability Zone.
      */
     private createSubnets(maxAZs?: number) {
-        let remainingSpaceSubnets: SubnetConfigurationFinalized[] = [];
+        const remainingSpaceSubnets: SubnetConfigurationFinalized[] = [];
 
         // Calculate number of public/private subnets based on number of AZs
         const availabilityZones = new AvailabilityZoneProvider(this).availabilityZones;
@@ -332,9 +332,9 @@ export class VpcNetwork extends VpcNetworkRef {
             let azs = availabilityZones;
 
             if (subnet.numAZs != null) {
-                    if (subnet.numAZs > azs.length) {
-                        throw new Error(`${subnet.name} requires ${subnet.numAZs} AZs but max is ${azs.length}`)
-                    }
+                if (subnet.numAZs > azs.length) {
+                    throw new Error(`${subnet.name} requires ${subnet.numAZs} AZs but max is ${azs.length}`);
+                }
                 azs = availabilityZones.slice(subnet.numAZs);
             }
 
@@ -380,9 +380,9 @@ export class VpcNetwork extends VpcNetworkRef {
     }
 
     private createSubnetResources(subnetConfig: SubnetConfigurationFinalized) {
-        for (const zone of subnetConfig.availabilityZones) {
+        subnetConfig.availabilityZones.forEach((zone, index) => {
             const cidr: string = this.networkBuilder.addSubnet(subnetConfig.cidrMask);
-            const name: string = `${subnetConfig.name}AZ${zone.substr(-1)}`;
+            const name: string = `${subnetConfig.name}Subnet${index + 1}`;
             switch (subnetConfig.subnetType) {
                 case SubnetType.Public:
                     const publicSubnet = new VpcPublicSubnet(this, name, {
@@ -415,7 +415,7 @@ export class VpcNetwork extends VpcNetworkRef {
                     this.internalSubnets.push(internalSubnet);
                     break;
             }
-        }
+        });
     }
 }
 
