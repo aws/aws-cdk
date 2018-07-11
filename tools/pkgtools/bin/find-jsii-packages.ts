@@ -34,7 +34,7 @@ function main() {
 
     // Output the JSII directories
     for (const pkg of packages) {
-        process.stdout.write(path.join(pkg.directory, pkg.packageJson.jsii.outdir) + '\n');
+        process.stdout.write(pkg.directory + '\n');
     }
 }
 

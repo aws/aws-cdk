@@ -6,10 +6,6 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [
-      "json-diff",
-      "js-base64"
-    ],
     "names": {
       "java": "com.amazonaws.cdk",
       "dotnet": "Aws.Cdk"
@@ -46,5 +42,9 @@
     "@aws-cdk/cx-api": "^0.7.3-beta",
     "js-base64": "^2.4.5",
     "json-diff": "^0.3.1"
-  }
+  },
+  "bundledDependencies": [
+    "json-diff",
+    "js-base64"
+  ]
 }

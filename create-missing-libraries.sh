@@ -32,6 +32,7 @@ tsconfig.json
 tslint.json
 node_modules
 dist
+.jsii
 EOM
 
         cat <<EOM > packages/${P}/.npmignore
@@ -52,7 +53,6 @@ EOM
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [],
     "names": {
       "java": "com.amazonaws.cdk.${PB}",
       "dotnet": "${S/AWS::/Aws.Cdk.}"
