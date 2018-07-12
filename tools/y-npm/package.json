@@ -1,6 +1,6 @@
 {
     "name": "y-npm",
-    "version": "0.7.2-beta",
+    "version": "0.7.3-beta",
     "description": "Run npm commands using a local registry overlay",
     "author": {
         "name": "Amazon Web Services",
@@ -15,7 +15,7 @@
         "y-npm": "bin/y-npm"
     },
     "scripts": {
-        "prepare": "tslint -p . && tsc && chmod +x bin/y-npm",
+        "build": "tslint -p . && tsc && chmod +x bin/y-npm",
         "watch": "tsc -w",
         "lint": "tslint -p .",
         "test": "/bin/bash test/test.sh"

@@ -1,12 +1,11 @@
 {
   "name": "@aws-cdk/sqs",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "CDK Constructs for AWS SQS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [],
     "names": {
       "java": "com.amazonaws.cdk.sqs",
       "dotnet": "Aws.Cdk.Sqs"
@@ -17,7 +16,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "cfn2ts --scope=AWS::SQS && jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "jsii && tslint -p . --force",
     "test": "nodeunit test/test.*.js && cdk-integ-assert",
@@ -36,14 +35,13 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.2-beta",
-    "aws-cdk": "^0.7.2-beta",
+    "@aws-cdk/assert": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
-    "pkglint": "^0.7.1"
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/kms": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta"
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/kms": "^0.7.3-beta"
   }
 }

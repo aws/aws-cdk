@@ -1,14 +1,14 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
     "cdk": "bin/cdk"
   },
   "scripts": {
-    "prepare": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
+    "build": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "pkglint": "pkglint -f",
@@ -28,14 +28,15 @@
     "@types/yamljs": "^0.2.0",
     "@types/yargs": "^8.0.3",
     "mockery": "^2.1.0",
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.7.2-beta",
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/cx-api": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta",
-    "@aws-cdk/util": "^0.7.2-beta",
+    "@aws-cdk/cloudformation": "^0.7.3-beta",
+    "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cx-api": "^0.7.3-beta",
+    "@aws-cdk/s3": "^0.7.3-beta",
+    "@aws-cdk/util": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
     "colors": "^1.2.1",

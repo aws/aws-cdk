@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/applet-js",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "Javascript CDK applet host program",
   "main": "bin/cdk-applet-js.js",
   "types": "bin/cdk-applet-js.d.ts",
@@ -8,7 +8,7 @@
     "cdk-applet-js": "bin/cdk-applet-js"
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
+    "build": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force",
     "test": "/bin/bash test/test-applet.sh",
@@ -21,10 +21,10 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@types/yamljs": "^0.2.0",
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2-beta",
+    "@aws-cdk/core": "^0.7.3-beta",
     "source-map-support": "^0.5.6",
     "yamljs": "^0.2.0"
   },

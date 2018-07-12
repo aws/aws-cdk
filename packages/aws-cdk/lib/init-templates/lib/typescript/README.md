@@ -12,7 +12,7 @@ you should use it for installing all dependencies for this project:
 
 # Useful commands
 
- * `npm run prepare` compile typescript to js
+ * `npm run build` compile typescript to js
  * `npm run watch`   watch for changes and compile
  * `cdk docs`        open CDK documentation
 

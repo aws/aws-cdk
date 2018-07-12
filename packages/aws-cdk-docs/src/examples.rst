@@ -229,7 +229,7 @@ These examples apply to a `hello-cdk` app.
 Compile the TypeScript app *hello-cdk.ts* into the JavaScript code *hello-cdk.js* using
 the following command.
 
-:code:`npm run prepare`
+:code:`npm run build`
 
 Use **npm run watch** to automatically re-compile those changes.
 Run the command in another command window and do not run it in the background.

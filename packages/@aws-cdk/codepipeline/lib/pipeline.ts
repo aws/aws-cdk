@@ -2,9 +2,9 @@ import { Arn, Construct, PolicyStatement, RemovalPolicy, ServicePrincipal, Token
 import { EventRule, EventRuleProps, EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import * as iam from '@aws-cdk/iam';
 import { Role } from '@aws-cdk/iam';
-import { codepipeline } from '@aws-cdk/resources';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
 import { flatMap, flatten } from '@aws-cdk/util';
+import { cloudformation } from './codepipeline.generated';
 import { Stage } from './stage';
 import * as validation from './validation';
 
@@ -90,7 +90,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
             assumedBy: new ServicePrincipal('codepipeline.amazonaws.com')
         });
 
-        const codePipeline = new codepipeline.PipelineResource(this, 'Resource', {
+        const codePipeline = new cloudformation.PipelineResource(this, 'Resource', {
             artifactStore: new Token(() => this.renderArtifactStore()) as any,
             stages: new Token(() => this.renderStages()) as any,
             roleArn: this.role.roleArn,
@@ -226,8 +226,8 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         return [];
     }
 
-    private renderArtifactStore(): codepipeline.PipelineResource.ArtifactStoreProperty {
-        let encryptionKey: codepipeline.PipelineResource.EncryptionKeyProperty | undefined;
+    private renderArtifactStore(): cloudformation.PipelineResource.ArtifactStoreProperty {
+        let encryptionKey: cloudformation.PipelineResource.EncryptionKeyProperty | undefined;
         const bucketKey = this.artifactBucket.encryptionKey;
         if (bucketKey) {
             encryptionKey = {
@@ -248,7 +248,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         };
     }
 
-    private renderStages(): codepipeline.PipelineResource.StageDeclarationProperty[] {
+    private renderStages(): cloudformation.PipelineResource.StageDeclarationProperty[] {
         return this.stages.map(stage => stage.render());
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-docs",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "AWS CDK Documentation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,7 +12,7 @@
     "ignore": true
   },
   "scripts": {
-    "prepare": "tslint -p . && tsc && /bin/bash ./build-docs.sh",
+    "build": "tslint -p . && tsc && /bin/bash ./build-docs.sh",
     "watch": "tsc -w",
     "lint": "tsc && tslint -p . --force"
   },
@@ -22,8 +22,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk-all": "^0.7.2-beta",
-    "pkgtools": "^0.7.2-beta"
+    "aws-cdk-all": "^0.7.3-beta",
+    "pkgtools": "^0.7.3-beta"
   },
   "keywords": [
     "aws",

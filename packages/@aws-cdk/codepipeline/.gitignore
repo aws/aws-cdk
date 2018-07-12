@@ -3,6 +3,8 @@ tsconfig.json
 tslint.json
 *.js.map
 *.d.ts
+*.generated.ts
 dist
 lib/generated/resources.ts
 *.tgz
+.jsii

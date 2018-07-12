@@ -20,7 +20,7 @@ export interface Arguments extends yargs.Arguments {
     browser: string
 }
 
-export async function handler(argv: Arguments) {
+export async function handler(argv: Arguments): Promise<number> {
     let documentationIndexPath: string;
     try {
         // tslint:disable-next-line:no-var-require Taking an un-declared dep on aws-cdk-docs, to avoid a dependency circle
@@ -28,18 +28,17 @@ export async function handler(argv: Arguments) {
         documentationIndexPath = docs.documentationIndexPath;
     } catch (err) {
         error('Unable to open CDK documentation - the aws-cdk-docs package appears to be missing. Please run `npm install -g aws-cdk-docs`');
-        process.exit(-1);
-        return;
+        return -1;
     }
 
     const browserCommand = argv.browser.replace(/%u/g, documentationIndexPath);
     debug(`Opening documentation ${green(browserCommand)}`);
-    process.exit(await new Promise<number>((resolve, reject) => {
+    return await new Promise<number>((resolve, reject) => {
         exec(browserCommand, (err, stdout, stderr) => {
             if (err) { return reject(err); }
             if (stdout) { debug(stdout); }
             if (stderr) { warning(stderr); }
             resolve(0);
         });
-    }));
+    });
 }

@@ -1,7 +1,8 @@
 import { Arn, Construct, Token } from '@aws-cdk/core';
-import { cloudwatch } from '@aws-cdk/resources';
+import { AlarmArn, cloudformation } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, parseStatistic, Statistic, Unit } from './metric';
+import { Dimension, Metric, Statistic, Unit } from './metric';
+import { parseStatistic } from './util.statistic';
 
 /**
  * Properties for Alarms
@@ -139,7 +140,7 @@ export class Alarm extends Construct {
 
         const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
 
-        const alarm = new cloudwatch.AlarmResource(this, 'Resource', {
+        const alarm = new cloudformation.AlarmResource(this, 'Resource', {
             // Meta
             alarmDescription: props.alarmDescription,
             alarmName: props.alarmName,
@@ -240,12 +241,6 @@ function describePeriod(seconds: number) {
     if (seconds === 1) { return '1 second'; }
     if (seconds > 60) { return (seconds / 60) + ' minutes'; }
     return seconds + ' seconds';
-}
-
-/**
- * The ARN of an Alarm
- */
-export class AlarmArn extends Arn {
 }
 
 /**

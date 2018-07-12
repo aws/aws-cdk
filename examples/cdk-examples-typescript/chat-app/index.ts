@@ -1,8 +1,8 @@
 import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
 import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
 import { BucketName, BucketRef } from '@aws-cdk/s3';
-import { CognitoChatRoomPool } from './CognitoChatRoomPool';
-import { DynamoPostsTable } from './DynamodbPostsTable';
+import { CognitoChatRoomPool } from './cognito-chat-room-pool';
+import { DynamoPostsTable } from './dynamodb-posts-table';
 
 class MyStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {

@@ -1,7 +1,6 @@
 import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/core';
-import { ec2 } from '@aws-cdk/resources';
-import { Obj } from '@aws-cdk/util';
-import { NetworkBuilder } from './network-util';
+import { cloudformation } from './ec2.generated';
+import { NetworkUtils } from './network-util';
 import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
@@ -232,7 +231,7 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * The VPC resource
      */
-    private resource: ec2.VPCResource;
+    private resource: cloudformation.VPCResource;
 
     /**
      * The NetworkBuilder
@@ -279,7 +278,7 @@ export class VpcNetwork extends VpcNetworkRef {
         const tags = props.tags || [];
 
         // Define a VPC using the provided CIDR range
-        this.resource = new ec2.VPCResource(this, 'Resource', {
+        this.resource = new cloudformation.VPCResource(this, 'Resource', {
             cidrBlock,
             enableDnsHostnames,
             enableDnsSupport,
@@ -309,8 +308,8 @@ export class VpcNetwork extends VpcNetworkRef {
 
         // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
         if (allowOutbound) {
-            const igw = new ec2.InternetGatewayResource(this, 'IGW');
-            const att = new ec2.VPCGatewayAttachmentResource(this, 'VPCGW', {
+            const igw = new cloudformation.InternetGatewayResource(this, 'IGW');
+            const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
                 internetGatewayId: igw.ref,
                 vpcId: this.resource.ref
             });
@@ -489,20 +488,20 @@ export class VpcSubnet extends VpcSubnetRef {
     constructor(parent: Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
         this.availabilityZone = props.availabilityZone;
-        const subnet = new ec2.SubnetResource(this, 'Subnet', {
+        const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
             vpcId: props.vpcId,
             cidrBlock: props.cidrBlock,
             availabilityZone: props.availabilityZone,
             mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
         });
         this.subnetId = subnet.ref;
-        const table = new ec2.RouteTableResource(this, 'RouteTable', {
+        const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
             vpcId: props.vpcId,
         });
         this.routeTableId = table.ref;
 
         // Associate the public route table for this subnet, to this subnet
-        const routeAssoc = new ec2.SubnetRouteTableAssociationResource(this, 'RouteTableAssociatioin', {
+        const routeAssoc = new cloudformation.SubnetRouteTableAssociationResource(this, 'RouteTableAssociatioin', {
             subnetId: this.subnetId,
             routeTableId: table.ref
         });
@@ -511,7 +510,7 @@ export class VpcSubnet extends VpcSubnetRef {
     }
 
     protected addDefaultRouteToNAT(natGatewayId: Token) {
-        new ec2.RouteResource(this, `DefaultRoute`, {
+        new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
             natGatewayId
@@ -519,7 +518,7 @@ export class VpcSubnet extends VpcSubnetRef {
     }
 
     protected addDefaultRouteToIGW(gatewayId: Token) {
-        new ec2.RouteResource(this, `DefaultRoute`, {
+        new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
             gatewayId
@@ -549,9 +548,9 @@ export class VpcPublicSubnet extends VpcSubnet {
      */
     public addNatGateway() {
         // Create a NAT Gateway in this public subnet
-        const ngw = new ec2.NatGatewayResource(this, `NATGateway`, {
+        const ngw = new cloudformation.NatGatewayResource(this, `NATGateway`, {
             subnetId: this.subnetId,
-            allocationId: new ec2.EIPResource(this, `EIP`, {
+            allocationId: new cloudformation.EIPResource(this, `EIP`, {
                 domain: 'vpc'
             }).eipAllocationId
         });

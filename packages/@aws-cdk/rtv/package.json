@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/rtv",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "Runtime values support for the AWS CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nyc nodeunit test/test.*.js && cdk-integ-assert",
@@ -34,16 +34,15 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.1",
-    "aws-cdk": "^0.7.2-beta",
-    "@aws-cdk/assert": "^0.7.2-beta",
-    "@aws-cdk/ec2": "^0.7.2-beta",
-    "@aws-cdk/sqs": "^0.7.2-beta",
-    "@aws-cdk/lambda": "^0.7.2-beta"
+    "pkglint": "^0.7.3-beta",
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "@aws-cdk/ec2": "^0.7.3-beta",
+    "@aws-cdk/sqs": "^0.7.3-beta",
+    "@aws-cdk/lambda": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/iam": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta"
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta",
+    "@aws-cdk/ssm": "^0.7.3-beta"
   }
 }

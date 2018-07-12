@@ -1,0 +1,10 @@
+*.d.ts
+*.generated.ts
+*.js
+*.js.map
+.jsii
+dist
+lib/generated/resources.ts
+node_modules
+tsconfig.json
+tslint.json

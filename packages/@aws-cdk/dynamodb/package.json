@@ -1,12 +1,11 @@
 {
   "name": "@aws-cdk/dynamodb",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "CDK Constructs for AWS DynamoDB",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [],
     "names": {
       "java": "com.amazonaws.cdk.dynamodb",
       "dotnet": "Aws.Cdk.DynamoDb"
@@ -17,7 +16,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "cfn2ts --scope=AWS::DynamoDB && jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "jsii && tslint -p . --force",
     "test": "nodeunit test/test.*.js && cdk-integ-assert",
@@ -36,13 +35,12 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.2-beta",
-    "aws-cdk": "^0.7.2-beta",
-    "pkglint": "^0.7.1"
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.2-beta",
-    "@aws-cdk/iam": "^0.7.2-beta",
-    "@aws-cdk/resources": "^0.7.2-beta"
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta"
   }
 }

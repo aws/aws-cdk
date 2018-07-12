@@ -1,9 +1,10 @@
 import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
-         PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
+import { AccountPrincipal, Arn, AwsRegion, Construct, FnConcat, FnSelect, FnSplit,
+         PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import { lambda } from '@aws-cdk/resources';
+import logs = require('@aws-cdk/logs');
+import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
 /**
@@ -14,7 +15,7 @@ export interface LambdaRefProps {
      * The ARN of the Lambda function.
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
      */
-    functionArn: lambda.FunctionArn;
+    functionArn: FunctionArn;
 
     /**
      * The IAM execution role associated with this function.
@@ -23,7 +24,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget {
+export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -93,7 +94,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
     /**
      * The ARN fo the function.
      */
-    public abstract readonly functionArn: lambda.FunctionArn;
+    public abstract readonly functionArn: FunctionArn;
 
     /**
      * The IAM role associated with this function.
@@ -109,9 +110,14 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
 
     /**
      * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this topic have been added.
+     * notifications to this lambda have been added.
      */
     private eventRuleTargetPolicyAdded = false;
+
+    /**
+     * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
+     */
+    private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -126,7 +132,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
         const principal = this.parsePermissionPrincipal(permission.principal);
         const action = permission.action || 'lambda:InvokeFunction';
 
-        new lambda.PermissionResource(this, name, {
+        new cloudformation.PermissionResource(this, name, {
             action,
             principal,
             functionName: this.functionName,
@@ -212,6 +218,23 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+        const arn = sourceLogGroup.logGroupArn;
+
+        if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
+            // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
+            // since the Lambda must be in the same region as the SubscriptionFilter anyway.
+            //
+            // (Wildcards in principals are unfortunately not supported.
+            this.addPermission('InvokedByCloudWatchLogs', {
+                principal: new ServicePrincipal(new FnConcat('logs.', new AwsRegion(), '.amazonaws.com')),
+                sourceArn: arn
+            });
+            this.logSubscriptionDestinationPolicyAddedFor.push(arn);
+        }
+        return { arn: this.functionArn };
+    }
+
     private parsePermissionPrincipal(principal?: PolicyPrincipal) {
         if (!principal) {
             return undefined;
@@ -234,7 +257,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
 
 class LambdaRefImport extends LambdaRef {
     public readonly functionName: FunctionName;
-    public readonly functionArn: lambda.FunctionArn;
+    public readonly functionArn: FunctionArn;
     public readonly role?: Role;
 
     protected readonly canCreatePermissions = false;

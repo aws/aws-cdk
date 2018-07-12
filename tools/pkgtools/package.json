@@ -1,7 +1,7 @@
 {
   "name": "pkgtools",
   "private": true,
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "Tools for generating cross-package artifacts",
   "main": "index.js",
   "repository": {
@@ -13,7 +13,7 @@
     "find-jsii-packages": "bin/find-jsii-packages"
   },
   "scripts": {
-    "prepare": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
+    "build": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
     "watch": "tsc -w",
     "lint": "tslint -p . --force",
     "pkglint": "pkglint -f"
@@ -24,7 +24,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.1"
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
     "@types/fs-extra": "^4.0.8",

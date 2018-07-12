@@ -1,15 +1,11 @@
 {
   "name": "@aws-cdk/core",
-  "version": "0.7.2-beta",
+  "version": "0.7.3-beta",
   "description": "AWS Cloud Development Kit for Javascript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "bundledDependencies": [
-      "json-diff",
-      "js-base64"
-    ],
     "names": {
       "java": "com.amazonaws.cdk",
       "dotnet": "Aws.Cdk"
@@ -20,7 +16,7 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "prepare": "jsii && tslint -p . && pkglint",
+    "build": "jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "tsc && tslint -p . --force",
     "test": "nyc --reporter html --reporter text nodeunit --output junit test/**/test.*.js test/test.*.js",
@@ -39,12 +35,16 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
-    "cfn2ts": "^0.7.2-beta",
-    "pkglint": "^0.7.1"
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.7.2-beta",
+    "@aws-cdk/cx-api": "^0.7.3-beta",
     "js-base64": "^2.4.5",
     "json-diff": "^0.3.1"
-  }
+  },
+  "bundledDependencies": [
+    "json-diff",
+    "js-base64"
+  ]
 }

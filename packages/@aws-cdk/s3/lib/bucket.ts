@@ -1,10 +1,10 @@
 import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
 import { IIdentityResource } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import { s3 } from '@aws-cdk/resources';
 import { BucketPolicy } from './bucket-policy';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
+import { BucketArn, BucketDomainName, BucketDualStackDomainName, cloudformation } from './s3.generated';
 import { parseBucketArn, parseBucketName, validateBucketName } from './util';
 
 /**
@@ -17,7 +17,7 @@ export interface BucketRefProps {
      * The ARN fo the bucket. At least one of bucketArn or bucketName must be
      * defined in order to initialize a bucket ref.
      */
-    bucketArn?: s3.BucketArn;
+    bucketArn?: BucketArn;
 
     /**
      * The name of the bucket. If the underlying value of ARN is a string, the
@@ -61,7 +61,7 @@ export abstract class BucketRef extends Construct {
     /**
      * The ARN of the bucket.
      */
-    public abstract readonly bucketArn: s3.BucketArn;
+    public abstract readonly bucketArn: BucketArn;
 
     /**
      * The name of the bucket.
@@ -248,10 +248,10 @@ export interface BucketProps {
  * BucketResource.
  */
 export class Bucket extends BucketRef {
-    public readonly bucketArn: s3.BucketArn;
+    public readonly bucketArn: BucketArn;
     public readonly bucketName: BucketName;
-    public readonly domainName: s3.BucketDomainName;
-    public readonly dualstackDomainName: s3.BucketDualStackDomainName;
+    public readonly domainName: BucketDomainName;
+    public readonly dualstackDomainName: BucketDualStackDomainName;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
     protected policy?: BucketPolicy;
     protected autoCreatePolicy = true;
@@ -265,7 +265,7 @@ export class Bucket extends BucketRef {
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
-        const resource = new s3.BucketResource(this, 'Resource', {
+        const resource = new cloudformation.BucketResource(this, 'Resource', {
             bucketName: props && props.bucketName,
             bucketEncryption,
             versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
@@ -306,7 +306,7 @@ export class Bucket extends BucketRef {
      * user's configuration.
      */
     private parseEncryption(props: BucketProps): {
-        bucketEncryption?: s3.BucketResource.BucketEncryptionProperty,
+        bucketEncryption?: cloudformation.BucketResource.BucketEncryptionProperty,
         encryptionKey?: kms.EncryptionKeyRef
     } {
 
@@ -340,6 +340,16 @@ export class Bucket extends BucketRef {
             return { encryptionKey, bucketEncryption };
         }
 
+        if (encryptionType === BucketEncryption.S3Managed) {
+            const bucketEncryption = {
+                serverSideEncryptionConfiguration: [
+                    { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }
+                ]
+            };
+
+            return { bucketEncryption };
+        }
+
         if (encryptionType === BucketEncryption.KmsManaged) {
             const bucketEncryption = {
                 serverSideEncryptionConfiguration: [
@@ -356,14 +366,14 @@ export class Bucket extends BucketRef {
      * Parse the lifecycle configuration out of the uucket props
      * @param props Par
      */
-    private parseLifecycleConfiguration(): s3.BucketResource.LifecycleConfigurationProperty | undefined {
+    private parseLifecycleConfiguration(): cloudformation.BucketResource.LifecycleConfigurationProperty | undefined {
         if (!this.lifecycleRules || this.lifecycleRules.length === 0) {
             return undefined;
         }
 
         return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
-        function parseLifecycleRule(rule: LifecycleRule): s3.BucketResource.RuleProperty {
+        function parseLifecycleRule(rule: LifecycleRule): cloudformation.BucketResource.RuleProperty {
             const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
             const x = {
@@ -406,9 +416,14 @@ export enum BucketEncryption {
     Unencrypted = 'NONE',
 
     /**
-     * Server-side KMS encryption with a master key managed by S3.
+     * Server-side KMS encryption with a master key managed by KMS.
      */
     KmsManaged = 'MANAGED',
+
+    /**
+     * Server-side encryption with a master key managed by S3.
+     */
+    S3Managed = 'S3MANAGED',
 
     /**
      * Server-side encryption with a KMS key managed by the user.
@@ -425,7 +440,7 @@ export class BucketName extends Token {
 }
 
 class ImportedBucketRef extends BucketRef {
-    public readonly bucketArn: s3.BucketArn;
+    public readonly bucketArn: BucketArn;
     public readonly bucketName: BucketName;
     public readonly encryptionKey?: kms.EncryptionKey;
 
