@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, FnSub,
          PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
-import { ISubscriptionDestination, LogGroup, LogGroupArn, SubscriptionDestination } from '@aws-cdk/logs';
+import logs = require('@aws-cdk/logs');
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
@@ -24,7 +24,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget, ISubscriptionDestination {
+export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ISubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -117,7 +117,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, I
     /**
      * Indicates if the policy that allows CloudWatch logs to publish to this topic has been added.
      */
-    private logSubscriptionDestinationPolicyAddedFor: LogGroupArn[] = [];
+    private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -218,7 +218,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, I
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination {
+    public subscriptionDestination(sourceLogGroup: logs.LogGroup): logs.SubscriptionDestination {
         const arn = sourceLogGroup.logGroupArn;
 
         if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {

@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import cdk = require('@aws-cdk/core');
 import { LogGroup } from './log-group';
 import { cloudformation } from './logs.generated';
 import { IFilterPattern } from './pattern';
@@ -55,8 +55,8 @@ export interface MetricFilterProps {
 /**
  * A filter that extracts information from CloudWatch Logs and emits to CloudWatch Metrics
  */
-export class MetricFilter extends Construct {
-    constructor(parent: Construct, id: string, props: MetricFilterProps) {
+export class MetricFilter extends cdk.Construct {
+    constructor(parent: cdk.Construct, id: string, props: MetricFilterProps) {
         super(parent, id);
 
         new cloudformation.MetricFilterResource(this, 'Resource', {

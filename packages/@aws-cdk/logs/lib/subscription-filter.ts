@@ -1,5 +1,5 @@
-import { Arn, Construct } from '@aws-cdk/core';
-import { Role } from '@aws-cdk/iam';
+import cdk = require('@aws-cdk/core');
+import iam = require('@aws-cdk/iam');
 import { LogGroup } from './log-group';
 import { cloudformation } from './logs.generated';
 import { IFilterPattern } from './pattern';
@@ -28,14 +28,14 @@ export interface SubscriptionDestination {
     /**
      * The ARN of the subscription's destination
      */
-    readonly arn: Arn;
+    readonly arn: cdk.Arn;
 
     /**
      * The role to assume to write log events to the destination
      *
      * @default No role assumed
      */
-    readonly role?: Role;
+    readonly role?: iam.Role;
 }
 
 /**
@@ -63,8 +63,8 @@ export interface SubscriptionFilterProps {
 /**
  * A new Subscription on a CloudWatch log group.
  */
-export class SubscriptionFilter extends Construct {
-    constructor(parent: Construct, id: string, props: SubscriptionFilterProps) {
+export class SubscriptionFilter extends cdk.Construct {
+    constructor(parent: cdk.Construct, id: string, props: SubscriptionFilterProps) {
         super(parent, id);
 
         const destProps = props.destination.subscriptionDestination(props.logGroup);

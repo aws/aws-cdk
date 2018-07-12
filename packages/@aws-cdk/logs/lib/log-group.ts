@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/core';
+import cdk = require('@aws-cdk/core');
 import { LogStream } from './log-stream';
 import { cloudformation, LogGroupArn } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -29,7 +29,7 @@ export interface LogGroupProps {
 /**
  * Create a new CloudWatch Log Group
  */
-export class LogGroup extends Construct {
+export class LogGroup extends cdk.Construct {
     /**
      * The ARN of this log group
      */
@@ -40,7 +40,7 @@ export class LogGroup extends Construct {
      */
     public readonly logGroupName: LogGroupName;
 
-    constructor(parent: Construct, id: string, props: LogGroupProps = {}) {
+    constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
         super(parent, id);
 
         let retentionInDays = props.retentionDays;
@@ -67,7 +67,7 @@ export class LogGroup extends Construct {
      * @param id Unique identifier for the construct in its parent
      * @param props Properties for creating the LogStream
      */
-    public newStream(parent: Construct, id: string, props: NewLogStreamProps = {}): LogStream {
+    public newStream(parent: cdk.Construct, id: string, props: NewLogStreamProps = {}): LogStream {
         return new LogStream(parent, id, {
             logGroup: this,
             ...props
@@ -81,7 +81,7 @@ export class LogGroup extends Construct {
      * @param id Unique identifier for the construct in its parent
      * @param props Properties for creating the SubscriptionFilter
      */
-    public newSubscriptionFilter(parent: Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
+    public newSubscriptionFilter(parent: cdk.Construct, id: string, props: NewSubscriptionFilterProps): SubscriptionFilter {
         return new SubscriptionFilter(parent, id, {
             logGroup: this,
             ...props
@@ -95,7 +95,7 @@ export class LogGroup extends Construct {
      * @param id Unique identifier for the construct in its parent
      * @param props Properties for creating the MetricFilter
      */
-    public newMetricFilter(parent: Construct, id: string, props: NewMetricFilterProps): MetricFilter {
+    public newMetricFilter(parent: cdk.Construct, id: string, props: NewMetricFilterProps): MetricFilter {
         return new MetricFilter(parent, id, {
             logGroup: this,
             ...props
@@ -106,7 +106,7 @@ export class LogGroup extends Construct {
 /**
  * Name of a log group
  */
-export class LogGroupName extends Token {
+export class LogGroupName extends cdk.Token {
 }
 
 /**

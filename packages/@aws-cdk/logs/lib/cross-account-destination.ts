@@ -1,5 +1,5 @@
-import { Arn, Construct, PolicyDocument, PolicyStatement, Token } from '@aws-cdk/core';
-import { Role } from '@aws-cdk/iam';
+import cdk = require('@aws-cdk/core');
+import iam = require('@aws-cdk/iam');
 import { LogGroup } from './log-group';
 import { cloudformation, DestinationArn } from './logs.generated';
 import { ISubscriptionDestination, SubscriptionDestination } from './subscription-filter';
@@ -15,12 +15,12 @@ export interface DestinationProps {
      *
      * The role must be assumable by 'logs.{REGION}.amazonaws.com'.
      */
-    role: Role;
+    role: iam.Role;
 
     /**
      * The log destination target's ARN
      */
-    targetArn: Arn;
+    targetArn: cdk.Arn;
 }
 
 /**
@@ -33,19 +33,19 @@ export interface DestinationProps {
  * The @aws-cdk/kinesis library takes care of this automatically; you shouldn't
  * need to bother with this class.
  */
-export class CrossAccountDestination extends Construct implements ISubscriptionDestination {
-    public readonly policyDocument: PolicyDocument = new PolicyDocument();
+export class CrossAccountDestination extends cdk.Construct implements ISubscriptionDestination {
+    public readonly policyDocument: cdk.PolicyDocument = new cdk.PolicyDocument();
     public readonly destinationName: DestinationName;
     public readonly destinationArn: DestinationArn;
 
-    constructor(parent: Construct, id: string, props: DestinationProps) {
+    constructor(parent: cdk.Construct, id: string, props: DestinationProps) {
         super(parent, id);
 
-        this.policyDocument = new PolicyDocument();
+        this.policyDocument = new cdk.PolicyDocument();
 
         const resource = new cloudformation.DestinationResource(this, 'Resource', {
             destinationName: props.destinationName,
-            destinationPolicy: new Token(() => !this.policyDocument.isEmpty ? JSON.stringify(this.policyDocument.resolve()) : ""),
+            destinationPolicy: new cdk.Token(() => !this.policyDocument.isEmpty ? JSON.stringify(this.policyDocument.resolve()) : ""),
             roleArn: props.role.roleArn,
             targetArn: props.targetArn
         });
@@ -54,7 +54,7 @@ export class CrossAccountDestination extends Construct implements ISubscriptionD
         this.destinationName = resource.ref;
     }
 
-    public addToPolicy(statement: PolicyStatement) {
+    public addToPolicy(statement: cdk.PolicyStatement) {
         this.policyDocument.addStatement(statement);
     }
 
@@ -66,5 +66,5 @@ export class CrossAccountDestination extends Construct implements ISubscriptionD
 /**
  * Name of a CloudWatch Destination
  */
-export class DestinationName extends Token {
+export class DestinationName extends cdk.Token {
 }

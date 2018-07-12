@@ -1,7 +1,7 @@
 import { Construct, FnConcat, FnSelect, FnSplit, FnSub, Output, PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/core';
 import { IIdentityResource, Role } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
-import { CrossAccountDestination, ISubscriptionDestination, LogGroup, SubscriptionDestination } from '@aws-cdk/logs';
+import logs = require('@aws-cdk/logs');
 import { cloudformation, StreamArn } from './kinesis.generated';
 
 /**
@@ -38,7 +38,7 @@ export interface StreamRefProps {
  *     StreamRef.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamRef extends Construct implements ISubscriptionDestination {
+export abstract class StreamRef extends Construct implements logs.ISubscriptionDestination {
     /**
      * Creates a Stream construct that represents an external stream.
      *
@@ -170,7 +170,7 @@ export abstract class StreamRef extends Construct implements ISubscriptionDestin
         );
     }
 
-    public subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination {
+    public subscriptionDestination(sourceLogGroup: logs.LogGroup): logs.SubscriptionDestination {
         // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
         if (!this.cloudWatchLogsRole) {
             // Create a role to be assumed by CWL that can write to this stream and pass itself.
@@ -195,7 +195,7 @@ export abstract class StreamRef extends Construct implements ISubscriptionDestin
         }
 
         // The destination lives in the target account
-        const dest = new CrossAccountDestination(this, 'CloudWatchCrossAccountDestination', {
+        const dest = new logs.CrossAccountDestination(this, 'CloudWatchCrossAccountDestination', {
             // Unfortunately destinationName is required so we have to invent one that won't conflict.
             destinationName: new FnConcat(sourceLogGroup.logGroupName, 'To', this.streamName) as any,
             targetArn: this.streamArn,

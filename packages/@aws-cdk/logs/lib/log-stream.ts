@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/core';
+import cdk = require('@aws-cdk/core');
 import { LogGroup } from './log-group';
 import { cloudformation } from './logs.generated';
 
@@ -21,13 +21,13 @@ export interface LogStreamProps {
     logStreamName?: string;
 }
 
-export class LogStream extends Construct {
+export class LogStream extends cdk.Construct {
     /**
      * The name of this log stream
      */
     public readonly logStreamName: LogStreamName;
 
-    constructor(parent: Construct, id: string, props: LogStreamProps) {
+    constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
         super(parent, id);
 
         const resource = new cloudformation.LogStreamResource(this, 'Resource', {
@@ -42,5 +42,5 @@ export class LogStream extends Construct {
 /**
  * The name of a log stream
  */
-export class LogStreamName extends Token {
+export class LogStreamName extends cdk.Token {
 }
