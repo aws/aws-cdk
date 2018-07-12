@@ -153,6 +153,17 @@ export = {
                 enableDnsSupport: false
             }));
             test.done();
+        },
+        "with maxAZs set to 2"(test: Test) {
+            const stack = getTestStack();
+            new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
+            expect(stack).to(countResources("AWS::EC2::Subnet", 4));
+            for (let i = 0; i < 4; i++) {
+              expect(stack).to(haveResource("AWS::EC2::Subnet", {
+                CidrBlock: `10.0.${i * 64}.0/18`
+              }));
+            }
+            test.done();
         }
 
     },

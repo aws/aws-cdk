@@ -288,10 +288,10 @@ export class VpcNetwork extends VpcNetworkRef {
         });
 
         this.availabilityZones = new AvailabilityZoneProvider(this).availabilityZones;
-        if (props.maxAZs != null) {
-            this.availabilityZones.slice(props.maxAZs);
-        }
         this.availabilityZones.sort();
+        if (props.maxAZs != null) {
+           this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);
+        }
 
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
@@ -429,13 +429,17 @@ export class VpcNetwork extends VpcNetworkRef {
     }
 
     private createDefaultSubnetResources() {
-        const cidr = this.networkBuilder.maskForRemainingSubnets(this.availabilityZones.length * 2);
+        const azNetwork: number = this.networkBuilder.maskForRemainingSubnets(
+            this.availabilityZones.length
+        );
         this.availabilityZones.forEach((zone, index) => {
+            const builder = new NetworkBuilder(this.networkBuilder.addSubnet(azNetwork));
+            const cidr = builder.maskForRemainingSubnets(this.subnetConfigurations.length);
             const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index + 1}`, {
                 mapPublicIpOnLaunch: true,
                 vpcId: this.vpcId,
                 availabilityZone: zone,
-                cidrBlock: this.networkBuilder.addSubnet(cidr),
+                cidrBlock: builder.addSubnet(cidr),
             });
             this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
             this.publicSubnets.push(publicSubnet);
@@ -443,7 +447,7 @@ export class VpcNetwork extends VpcNetworkRef {
                 mapPublicIpOnLaunch: false,
                 vpcId: this.vpcId,
                 availabilityZone: zone,
-                cidrBlock: this.networkBuilder.addSubnet(cidr),
+                cidrBlock: builder.addSubnet(cidr),
             });
             this.privateSubnets.push(privateSubnet);
             this.dependencyElements.push(publicSubnet, privateSubnet);
