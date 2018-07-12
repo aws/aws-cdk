@@ -1,6 +1,6 @@
 import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
 import { AccountPrincipal, Arn, AwsRegion, Construct, FnConcat, FnSelect, FnSplit,
-         PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
+         Output, PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import logs = require('@aws-cdk/logs');
@@ -233,6 +233,15 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);
         }
         return { arn: this.functionArn };
+    }
+
+    /**
+     * Export this Topic (without the role)
+     */
+    public export(): LambdaRefProps {
+        return {
+            functionArn: new Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+        };
     }
 
     private parsePermissionPrincipal(principal?: PolicyPrincipal) {

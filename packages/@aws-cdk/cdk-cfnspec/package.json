@@ -5,9 +5,12 @@
     "scripts": {
         "update": "/bin/bash build-tools/update.sh",
         "build": "tsc && tslint -p . && node build-tools/build",
-        "test": "nodeunit test/test.*.js",
+        "test": "nyc nodeunit test/test.*.js",
         "watch": "tsc -w",
         "lint": "tslint -p ."
+    },
+    "nyc": {
+        "lines": 50
     },
     "main": "lib/index.js",
     "types": "lib/index.d.ts",

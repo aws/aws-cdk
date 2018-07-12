@@ -16,12 +16,15 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=AWS::Route53 && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "jsii && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::Route53"
   },
   "keywords": [
     "aws",
@@ -38,7 +41,8 @@
     "@aws-cdk/assert": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
     "cfn2ts": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

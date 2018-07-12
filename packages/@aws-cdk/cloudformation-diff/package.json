@@ -5,11 +5,15 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tslint -p . && tsc && pkglint",
-    "watch": "tsc -w",
-    "lint": "tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
+  },
+  "nyc": {
+    "lines": 45,
+    "branches": 44
   },
   "author": {
     "name": "Amazon Web Services",
@@ -17,7 +21,8 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/cdk-cfnspec": "^0.7.3-beta",

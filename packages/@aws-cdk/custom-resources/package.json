@@ -16,10 +16,10 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
   },
@@ -36,7 +36,8 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/cloudformation": "^0.7.3-beta",

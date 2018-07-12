@@ -16,12 +16,15 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=AWS::Logs && jsii && tslint -p . && pkglint",
-    "lint": "jsii && tslint -p . --force",
-    "watch": "jsii -w",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "lint": "cdk-lint",
+    "watch": "cdk-watch",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::Logs"
   },
   "keywords": [
     "aws",
@@ -37,7 +40,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

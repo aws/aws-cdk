@@ -8,11 +8,15 @@
     "cdk": "bin/cdk"
   },
   "scripts": {
-    "build": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "nodeunit test/test.*.js"
+    "test": "cdk-test"
+  },
+  "nyc": {
+    "lines": 8,
+    "branches": 3
   },
   "author": {
     "name": "Amazon Web Services",
@@ -28,7 +32,8 @@
     "@types/yamljs": "^0.2.0",
     "@types/yargs": "^8.0.3",
     "mockery": "^2.1.0",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/cloudformation": "^0.7.3-beta",
