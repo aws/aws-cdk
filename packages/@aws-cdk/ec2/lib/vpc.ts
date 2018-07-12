@@ -1,7 +1,7 @@
 import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/core';
+import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { Obj } from '@aws-cdk/util';
 import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
@@ -53,6 +53,17 @@ export interface VpcNetworkProps {
      * @default All AZs in the region
      */
     maxAZs?: number;
+
+    /**
+     * Define the maximum number of NAT Gateways for this VPC
+     *
+     * Setting this number enables a VPC to be trade availability for cost of
+     * running a NAT Gateway. For example, if set to 1 and your subnet
+     * configuration is for 3 Public subnets with natGateway = `true` then only
+     * one of the Public subnets will have a gateway and all Private subnets
+     * will route to this NAT Gateway.
+     */
+    maxNatGateways?: number;
 
     /**
      * Configure the subnets to build for each AZ
@@ -143,8 +154,6 @@ export interface SubnetConfiguration {
     natGateway?: boolean;
     // defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal
     mapPublicIpOnLaunch?: boolean;
-    // number of AZs to build this subnet in
-    numAZs?: number;
 }
 
 interface SubnetConfigurationFinalized {
@@ -339,21 +348,12 @@ export class VpcNetwork extends VpcNetworkRef {
         // Calculate number of public/private subnets based on number of AZs
 
         for (const subnet of this.subnetConfigurations) {
-            let azs = this.availabilityZones;
-
-            if (subnet.numAZs != null) {
-                if (subnet.numAZs > azs.length) {
-                    throw new Error(`${subnet.name} requires ${subnet.numAZs} AZs but max is ${azs.length}`);
-                }
-                azs = this.availabilityZones.slice(subnet.numAZs);
-            }
-
             subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
                 (subnet.subnetType === SubnetType.Public);
 
             const subnetFinal: SubnetConfigurationFinalized = {
                 cidrMask: subnet.cidrMask || 0,
-                availabilityZones: azs,
+                availabilityZones: this.availabilityZones,
                 subnetType: subnet.subnetType,
                 name:  subnet.name,
                 natGateway: subnet.natGateway || false,

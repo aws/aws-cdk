@@ -179,28 +179,6 @@ export = {
         }
 
     },
-
-    "when you specify more AZs in a subnet than are possible an error is raised"(test: Test) {
-        const stack = getTestStack();
-        test.throws(() => {
-            new VpcNetwork(stack, 'TheVPC', {
-                subnetConfigurations: [
-                    {
-                        subnetType: SubnetType.Public,
-                        name: 'Public',
-                    },
-                    {
-                        subnetType: SubnetType.Internal,
-                        name: 'Internal',
-                        numAZs: 5,
-                    }
-                ]
-            });
-        });
-        test.done();
-
-    }
-
 };
 
 function getTestStack(): Stack {
