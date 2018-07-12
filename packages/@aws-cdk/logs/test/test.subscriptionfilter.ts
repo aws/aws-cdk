@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Arn, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { FilterPattern, ISubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
+import { FilterPattern, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
 
 export = {
     'trivial instantiation'(test: Test) {
@@ -27,8 +27,8 @@ export = {
     },
 };
 
-class FakeDestination implements ISubscriptionDestination {
-    public subscriptionDestination(_sourceLogGroup: LogGroup) {
+class FakeDestination implements ILogSubscriptionDestination {
+    public logSubscriptionDestination(_sourceLogGroup: LogGroup) {
         return {
             arn: new Arn('arn:bogus'),
         };

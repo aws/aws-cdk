@@ -1,4 +1,5 @@
-import { Construct, FnConcat, FnSelect, FnSplit, FnSub, Output, PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/core';
+import { Arn, AwsRegion, Construct, FnConcat, HashedAddressingScheme, Output,
+    PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/core';
 import { IIdentityResource, Role } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
 import logs = require('@aws-cdk/logs');
@@ -38,7 +39,7 @@ export interface StreamRefProps {
  *     StreamRef.import(this, 'MyImportedStream', ref);
  *
  */
-export abstract class StreamRef extends Construct implements logs.ISubscriptionDestination {
+export abstract class StreamRef extends Construct implements logs.ILogSubscriptionDestination {
     /**
      * Creates a Stream construct that represents an external stream.
      *
@@ -170,12 +171,12 @@ export abstract class StreamRef extends Construct implements logs.ISubscriptionD
         );
     }
 
-    public subscriptionDestination(sourceLogGroup: logs.LogGroup): logs.SubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
         // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
         if (!this.cloudWatchLogsRole) {
             // Create a role to be assumed by CWL that can write to this stream and pass itself.
             this.cloudWatchLogsRole = new Role(this, 'CloudWatchLogsCanPutRecords', {
-                assumedBy: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com')),
+                assumedBy: new ServicePrincipal(new FnConcat('logs.', new AwsRegion(), '.amazonaws.com')),
             });
             this.cloudWatchLogsRole.addToPolicy(new PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
             this.cloudWatchLogsRole.addToPolicy(new PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -194,19 +195,35 @@ export abstract class StreamRef extends Construct implements logs.ISubscriptionD
             return { arn: this.streamArn, role: this.cloudWatchLogsRole };
         }
 
+        if (!sourceStack.env.account || !thisStack.env.account) {
+            throw new Error('SubscriptionFilter stack and Destination stack must either both have accounts defined, or both not have accounts');
+        }
+
+        return this.crossAccountLogSubscriptionDestination(sourceLogGroup);
+    }
+
+    /**
+     * Generate a CloudWatch Logs Destination and return the properties in the form o a subscription destination
+     */
+    private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+        const sourceStack = Stack.find(sourceLogGroup);
+
+        // Take some effort to construct a unique ID for the destination that is unique to the
+        // combination of (stream, loggroup).
+        const uniqueId =  new HashedAddressingScheme().allocateAddress([sourceLogGroup.path.replace('/', ''), sourceStack.env.account!]);
+
         // The destination lives in the target account
-        const dest = new logs.CrossAccountDestination(this, 'CloudWatchCrossAccountDestination', {
-            // Unfortunately destinationName is required so we have to invent one that won't conflict.
-            destinationName: new FnConcat(sourceLogGroup.logGroupName, 'To', this.streamName) as any,
+        const dest = new logs.CrossAccountDestination(this, `CWLDestination${uniqueId}`, {
             targetArn: this.streamArn,
-            role: this.cloudWatchLogsRole
+            role: this.cloudWatchLogsRole!
         });
+
         dest.addToPolicy(new PolicyStatement()
             .addAction('logs:PutSubscriptionFilter')
             .addAwsAccountPrincipal(sourceStack.env.account)
             .addAllResources());
 
-        return dest.subscriptionDestination(sourceLogGroup);
+        return dest.logSubscriptionDestination(sourceLogGroup);
     }
 
     private grant(identity: IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
@@ -364,9 +381,8 @@ class ImportedStreamRef extends StreamRef {
         super(parent, name);
 
         this.streamArn = props.streamArn;
-        // ARN always looks like: arn:aws:kinesis:us-east-2:123456789012:stream/mystream
-        // so we can get the name from the ARN.
-        this.streamName = new FnSelect(1, new FnSplit('/', this.streamArn));
+        // Get the name from the ARN
+        this.streamName = Arn.parseToken(props.streamArn).resourceName;
 
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);

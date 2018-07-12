@@ -21,6 +21,9 @@ export interface LogStreamProps {
     logStreamName?: string;
 }
 
+/**
+ * A new Log Stream in a Log Group
+ */
 export class LogStream extends cdk.Construct {
     /**
      * The name of this log stream

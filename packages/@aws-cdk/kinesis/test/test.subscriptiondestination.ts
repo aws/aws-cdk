@@ -29,7 +29,7 @@ export = {
             AssumeRolePolicyDocument: {
                 Statement: [{
                     Action: "sts:AssumeRole",
-                    Principal: { Service: { "Fn::Sub": "logs.${AWS::Region}.amazonaws.com" }}
+                    Principal: { Service: { "Fn::Join": ["", ["logs.", {Ref: "AWS::Region"}, ".amazonaws.com"]] }}
                 }],
             }
         }));

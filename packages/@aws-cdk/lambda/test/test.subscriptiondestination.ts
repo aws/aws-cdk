@@ -31,7 +31,7 @@ export = {
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
             Action: "lambda:InvokeFunction",
             FunctionName: { Ref: "MyLambdaCCE802FB" },
-            Principal: { "Fn::Sub": "logs.${AWS::Region}.amazonaws.com" }
+            Principal: { "Fn::Join": ["", ["logs.", {Ref: "AWS::Region"}, ".amazonaws.com"]] }
         }));
 
         test.done();

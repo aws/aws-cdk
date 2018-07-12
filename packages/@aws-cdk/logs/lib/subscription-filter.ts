@@ -7,7 +7,7 @@ import { IFilterPattern } from './pattern';
 /**
  * Interface for classes that can be the destination of a log Subscription
  */
-export interface ISubscriptionDestination {
+export interface ILogSubscriptionDestination {
     /**
      * Return the properties required to send subscription events to this destination.
      *
@@ -18,13 +18,13 @@ export interface ISubscriptionDestination {
      * The destination may reconfigure its own permissions in response to this
      * function call.
      */
-    subscriptionDestination(sourceLogGroup: LogGroup): SubscriptionDestination;
+    logSubscriptionDestination(sourceLogGroup: LogGroup): LogSubscriptionDestination;
 }
 
 /**
  * Properties returned by a Subscription destination
  */
-export interface SubscriptionDestination {
+export interface LogSubscriptionDestination {
     /**
      * The ARN of the subscription's destination
      */
@@ -52,7 +52,7 @@ export interface SubscriptionFilterProps {
      *
      * For example, a Kinesis stream or a Lambda function.
      */
-    destination: ISubscriptionDestination;
+    destination: ILogSubscriptionDestination;
 
     /**
      * Log events matching this pattern will be sent to the destination.
@@ -67,7 +67,7 @@ export class SubscriptionFilter extends cdk.Construct {
     constructor(parent: cdk.Construct, id: string, props: SubscriptionFilterProps) {
         super(parent, id);
 
-        const destProps = props.destination.subscriptionDestination(props.logGroup);
+        const destProps = props.destination.logSubscriptionDestination(props.logGroup);
 
         new cloudformation.SubscriptionFilterResource(this, 'Resource', {
             logGroupName: props.logGroup.logGroupName,

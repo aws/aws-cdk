@@ -1,5 +1,5 @@
 import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, FnSub,
+import { AccountPrincipal, Arn, AwsRegion, Construct, FnConcat, FnSelect, FnSplit,
          PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
@@ -24,7 +24,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ISubscriptionDestination {
+export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -110,12 +110,12 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
 
     /**
      * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this topic have been added.
+     * notifications to this lambda have been added.
      */
     private eventRuleTargetPolicyAdded = false;
 
     /**
-     * Indicates if the policy that allows CloudWatch logs to publish to this topic has been added.
+     * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
     private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
@@ -218,7 +218,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public subscriptionDestination(sourceLogGroup: logs.LogGroup): logs.SubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
         const arn = sourceLogGroup.logGroupArn;
 
         if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
@@ -227,7 +227,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
             //
             // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new ServicePrincipal(new FnSub('logs.${AWS::Region}.amazonaws.com')),
+                principal: new ServicePrincipal(new FnConcat('logs.', new AwsRegion(), '.amazonaws.com')),
                 sourceArn: arn
             });
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);

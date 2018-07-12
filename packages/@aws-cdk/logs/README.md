@@ -27,11 +27,10 @@ any amount of days, or `Infinity` to keep the data in the log group forever.
 Log events matching a particular filter can be sent to either a Lambda function
 or a Kinesis stream.
 
-* If the Kinesis stream lives in a different account, you have to also create a
-  `Destination` object in the current account which will act as a proxy for the
-  remote Kinesis stream.
-* If the filter destination is either a Lambda or a Kinesis stream in the
-  current account, they can be subscribed directly.
+If the Kinesis stream lives in a different account, a `CrossAccountDestination`
+object needs to be added in the destination account which will act as a proxy
+for the remote Kinesis stream. This object is automatically created for you
+if you use the CDK Kinesis library.
 
 Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:

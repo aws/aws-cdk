@@ -3,7 +3,7 @@ import { LogStream } from './log-stream';
 import { cloudformation, LogGroupArn } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { IFilterPattern } from './pattern';
-import { ISubscriptionDestination, SubscriptionFilter } from './subscription-filter';
+import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
 /**
  * Properties for a new LogGroup
@@ -27,7 +27,7 @@ export interface LogGroupProps {
 }
 
 /**
- * Create a new CloudWatch Log Group
+ * A new CloudWatch Log Group
  */
 export class LogGroup extends cdk.Construct {
     /**
@@ -132,7 +132,7 @@ export interface NewSubscriptionFilterProps {
      *
      * For example, a Kinesis stream or a Lambda function.
      */
-    destination: ISubscriptionDestination;
+    destination: ILogSubscriptionDestination;
 
     /**
      * Log events matching this pattern will be sent to the destination.
