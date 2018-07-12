@@ -1,0 +1,732 @@
+// import { stepfunctions } from '@aws-cdk/resources';
+// import { Construct, Token, tokenAwareJsonify, Arn, Stack } from '@aws-cdk/core';
+// import { isUndefined } from 'util';
+
+
+// export interface BranchProps extends Commentable {
+// }
+
+// export interface StateMachineProps extends Commentable {
+//     roleArn: Arn,
+//     version?: string,
+//     timeoutSeconds?: number,
+//     stateMachineName?: string
+// }
+
+// export interface IStateMachine {
+//     startAt(state: IState): IStateMachine
+//     next(state: IState): IStateMachine
+// }
+
+// export class Branch implements Jsonable, IStateMachine {
+//     private startState?: IState;
+//     private head?: IState;
+//     private states: IState[] = [];
+//     private readonly props: BranchProps;
+
+//     constructor(props: BranchProps = {}) {
+//         this.props = props;
+//     }
+
+//     startAt(state: IState) {
+//         this.startState = this.head = state;
+//         return this;
+//     }
+
+//     next(state: IState) {
+//         if (isUndefined(this.head)) {
+//             throw new Error("The first state must be added with startAt()");
+//         }
+//         this.head.next = state;
+//         this.head = state;
+//         this.states.push(state);
+//         return this;
+//     }
+
+//     toJson() {
+//         return {
+//             Comment: this.props && this.props.comment,
+//             States: Array.from(this.states).reduce(
+//                 (map: { [index: string] : IState }, state) => {
+//                     map[state.name] = state;
+//                     return map;
+//                 }, {}
+//             ),
+//             StartAt: (this.startState || this.states[0]).name
+//         }
+//     }
+// }
+
+// export class StateMachine extends Construct implements IStateMachine {
+//     private readonly branch: Branch;
+//     constructor(parent: Construct, name: string, props: StateMachineProps) {
+//         super(parent, name);
+//         this.branch = new Branch({comment: props.comment})
+
+//         new stepfunctions.StateMachineResource(this, 'Resource', {
+//             definitionString: new Token(() => {
+//                 return tokenAwareJsonify({
+//                     ...{
+//                         Version: props && props.version,
+//                         TimeoutSeconds: props && props.timeoutSeconds,
+//                     },
+//                     ...this.branch.toJson()
+//                 })
+//             }),
+//             roleArn: props.roleArn,
+//             stateMachineName: props.stateMachineName
+//         })
+//     }
+
+//     validate(): string[] {
+//         return []
+//     }
+
+//     startAt(state: IState) {
+//         this.branch.startAt(state);
+//         return this;
+//     }
+
+//     next(state: IState) {
+//         this.branch.next(state);
+//         return this;
+//     }
+// }
+
+// export enum StateType {
+//     Pass,
+//     Task,
+//     Choice,
+//     Wait,
+//     Succeed,
+//     Fail,
+//     Parallel
+// }
+
+// export interface IState {
+//     readonly type: StateType;
+//     readonly name: string
+//     readonly comment?: string;
+
+//     next?: IState;
+
+//     toJson(): any
+// }
+
+// export abstract class State implements IState {
+//     public readonly type: StateType
+//     public readonly name: string
+
+//     constructor(type: StateType, name: string) {
+//         this.type = type
+//         this.name = name
+//     }
+
+//     public abstract toJson(): any
+// }
+
+// export interface Commentable {
+//     comment?: string
+// }
+
+// export interface StateProps extends Commentable {
+//     name: string;
+// }
+
+// export interface NextStateProps {
+//     next?: State;
+// }
+
+// export interface InputOutputPathStateProps {
+//     inputPath?: string;
+//     outputPath?: string;
+// }
+
+// export interface ResultPathStateProps {
+//     resultPath?: string;
+// }
+
+// export enum ErrorCode {
+//     ALL = "States.ALL",
+//     Timeout = "States.Timeout",
+//     TaskFailed = "States.TaskFailed",
+//     Permissions = "States.Permissions",
+//     ResultPathMatchFailure = "States.ResultPathMatchFailure",
+//     BranchFailed = "States.BranchFailed",
+//     NoChoiceMatched = "States.NoChoiceMatched"
+// }
+
+// export interface WithErrors {
+//     errorEquals: (string | ErrorCode)[];
+// }
+
+// export interface Retrier extends WithErrors {
+//     intervalSeconds?: number;
+//     maxAttempts?: number;
+//     backoffRate?: number;
+// }
+
+// export interface Catcher extends WithErrors {
+//     next: IState;
+//     resultPath?: string;
+// }
+
+// export interface RetryCatchStateProps {
+//     retry?: Retrier[];
+//     catch?: Catcher[];
+// }
+
+// export interface PassStateProps extends StateProps, NextStateProps, InputOutputPathStateProps, ResultPathStateProps {
+//     result?: any;
+// }
+
+// export class PassState extends State {
+//     private readonly props: PassStateProps;
+
+//     constructor(props: PassStateProps) {
+//         super(StateType.Pass, props.name)
+//         this.props = props;
+//     }
+
+//     public toJson(): any {
+//         return {
+//             ...stateJson(this.props, this.type),
+//             ...nextJson(this.props),
+//             ...inputOutputJson(this.props),
+//             ...resultPathJson(this.props),
+//             ...{ "Result": this.props.result }
+//         }
+//     }
+// }
+
+// function stateJson(props: StateProps, type: StateType): any {
+//     return {
+//         "Type": type,
+//         "Name": props.name,
+//         "Comment": props.comment
+//     }
+// }
+
+// function nextJson(props: NextStateProps): any {
+//     return (!isUndefined(props.next)) ? { "Next": props.next.name } : { "End": true }
+// }
+
+// function inputOutputJson(props: InputOutputPathStateProps): any {
+//     return {
+//         "InputPath": props.inputPath,
+//         "OutputPath": props.outputPath
+//     }
+// }
+
+// function resultPathJson(props: ResultPathStateProps): any {
+//     return {
+//         "ResultPath": props.resultPath
+//     }
+// }
+
+// function retryJson(props: RetryCatchStateProps): any {
+//     var out : { [index: string] : any} = {}
+//     if (props.retry) {
+//         out["Retry"] = props.retry.map(retrierJson)
+//     }
+//     if (props.catch) {
+//         out["Catch"] = props.catch.map(catcherJson)
+//     }
+//     return out;
+// }
+
+// function retrierJson(retrier: Retrier): any {
+//     return {
+//         "ErrorEquals": retrier.errorEquals,
+//         "IntervalSeconds": retrier.intervalSeconds,
+//         "MaxAttempts": retrier.maxAttempts,
+//         "BackoffRate": retrier.backoffRate
+//     }
+// }
+
+// function catcherJson(catcher: Catcher): any {
+//     return {
+//         "ErrorEquals": catcher.errorEquals,
+//         "Next": catcher.next.name,
+//         "ResultPath": catcher.resultPath
+//     }
+// }
+
+// export interface TaskStateProps extends StateProps, InputOutputPathStateProps, ResultPathStateProps, NextStateProps, RetryCatchStateProps {
+//     resource: string;
+//     timeoutSeconds?: number;
+//     heartbeatSeconds?: number;
+// }
+
+// export class TaskState extends State {
+//     private readonly props: TaskStateProps;
+
+//     constructor(props: TaskStateProps) {
+//         super(StateType.Task, props.name)
+//         this.props = props;
+//     }
+
+//     public toJson(): any {
+//         return {
+//             ...stateJson(this.props, this.type),
+//             ...nextJson(this.props),
+//             ...inputOutputJson(this.props),
+//             ...resultPathJson(this.props),
+//             ...retryJson(this.props),
+//             ...{
+//                 "Resource": this.props.resource,
+//                 "TimeoutSeconds": this.props.timeoutSeconds,
+//                 "HeartbeatSeconds": this.props.heartbeatSeconds
+//             }
+//         }
+//     }
+// }
+
+// export class ChoiceRules implements Jsonable {
+//     public readonly choiceRules: ChoiceRule[];
+
+//     constructor(...choiceRules: ChoiceRule[]) {
+//         this.choiceRules = choiceRules;
+//     }
+
+//     toJson() {
+//         return this.choiceRules.map(choiceRule => choiceRule.toJson())
+//     }
+// }
+
+// export interface ChoiceRuleProps {
+//     comparisonOperation: IComparisonOperation;
+//     next: IState;
+// }
+
+// export class ChoiceRule {
+//     public readonly comparisonOperation: IComparisonOperation;
+//     public readonly next: IState;
+
+//     constructor(props: ChoiceRuleProps) {
+//         this.comparisonOperation = props.comparisonOperation;
+//         this.next = props.next;
+//     }
+
+//     toJson() {
+//         return {
+//             ...this.comparisonOperation.toJson(),
+//             ...{"Next": this.next.name}
+//         }
+//     }
+// }
+
+// export interface Jsonable {
+//     toJson(): any
+// }
+
+// export interface IComparisonOperation extends Jsonable {
+//     operation: string;
+//     value: any;
+// }
+
+// export class ComparisonOperations implements Jsonable {
+//     public readonly comparisons: IComparisonOperation[];
+
+//     constructor(...comparisons: IComparisonOperation[]) {
+//         this.comparisons = comparisons
+//     }
+
+//     toJson() {
+//         return this.comparisons.map(comparison => comparison.toJson())
+//     }
+// }
+
+// export abstract class ComparisonOperation implements IComparisonOperation {
+//     public readonly operation: string;
+//     public readonly value: any;
+//     public readonly variable?: string
+
+//     constructor(operation: string, value: any, variable?: string) {
+//         this.operation = operation;
+//         this.value = value
+//         this.variable = variable
+//     }
+
+//     public toJson() {
+//         return {
+//             [this.operation]: (typeof this.value['toJson'] === 'function') ? this.value.toJson() : this.value,
+//             "Variable": this.variable
+//         }
+//     }
+// }
+
+// export class StringEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("StringEquals", value, variable);
+//     }
+// }
+
+// export class StringLessThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("StringLessThan", value, variable);
+//     }
+// }
+
+// export class StringGreaterThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("StringGreaterThan", value, variable);
+//     }
+// }
+
+// export class StringLessThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("StringLessThanEquals", value, variable);
+//     }
+// }
+
+// export class StringGreaterThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("StringGreaterThanEquals", value, variable);
+//     }
+// }
+
+// export class NumericEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: number) {
+//         super("NumericEquals", value, variable);
+//     }
+// }
+
+// export class NumericLessThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: number) {
+//         super("NumericLessThan", value, variable);
+//     }
+// }
+
+// export class NumericGreaterThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: number) {
+//         super("NumericGreaterThan", value, variable);
+//     }
+// }
+
+// export class NumericLessThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: number) {
+//         super("NumericLessThanEquals", value, variable);
+//     }
+// }
+
+// export class NumericGreaterThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: number) {
+//         super("NumericGreaterThanEquals", value, variable);
+//     }
+// }
+
+// export class BooleanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: boolean) {
+//         super("BooleanEquals", value, variable);
+//     }
+// }
+
+// export class TimestampEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("TimestampEquals", value, variable);
+//     }
+// }
+
+// export class TimestampLessThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("TimestampLessThan", value, variable);
+//     }
+// }
+
+// export class TimestampGreaterThanOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("TimestampGreaterThan", value, variable);
+//     }
+// }
+
+// export class TimestampLessThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("TimestampLessThanEquals", value, variable);
+//     }
+// }
+
+// export class TimestampGreaterThanEqualsOperation extends ComparisonOperation {
+//     constructor(variable: string, value: string) {
+//         super("TimestampGreaterThanEquals", value, variable);
+//     }
+// }
+
+// export class AndOperation extends ComparisonOperation {
+//     constructor(...comparisons: IComparisonOperation[]) {
+//         super("And", new ComparisonOperations(...comparisons));
+//     }
+// }
+
+// export class OrOperation extends ComparisonOperation {
+//     constructor(...comparisons: IComparisonOperation[]) {
+//         super("Or", new ComparisonOperations(...comparisons));
+//     }
+// }
+
+// export class NotOperation extends ComparisonOperation {
+//     constructor(comparison: IComparisonOperation) {
+//         super("Not", comparison);
+//     }
+// }
+
+// export interface ChoiceStateProps extends StateProps, InputOutputPathStateProps {
+//     choices: ChoiceRules;
+//     default?: State;
+// }
+
+// export class ChoiceState extends State {
+//     private readonly props: ChoiceStateProps;
+
+//     constructor(props: ChoiceStateProps) {
+//         super(StateType.Choice, props.name)
+//         this.props = props;
+//     }
+
+//     public toJson(): any {
+//         return {
+//             ...stateJson(this.props, this.type),
+//             ...inputOutputJson(this.props),
+//             ...{ "Choices": this.props.choices.toJson() }
+//         }
+//     }
+// }
+
+// export interface WaitStateProps extends StateProps, InputOutputPathStateProps, NextStateProps {
+//     seconds?: number;
+//     secondsPath?: string;
+//     timestamp?: string;
+//     timestampPath?: string;
+// }
+
+// export class WaitState extends State {
+//     private readonly props: WaitStateProps;
+
+//     constructor(sm: StateMachine, props: WaitStateProps) {
+//         super(sm, StateType.Wait, props.name);
+//         this.props = props;
+//     }
+
+//     toJson() {
+//         return {
+//             ...stateJson(this.props, this.type),
+//             ...inputOutputJson(this.props),
+//             ...nextJson(this.props),
+//             ...{
+//                 "Seconds": this.props.seconds,
+//                 "SecondsPath": this.props.secondsPath,
+//                 "Timestamp": this.props.timestamp,
+//                 "TimestampPath": this.props.timestampPath
+//             }
+//         }
+//     }
+// }
+
+// export interface SucceedStateProps extends StateProps, InputOutputPathStateProps {
+// }
+
+// export class SucceedState extends State {
+//     constructor(sm: StateMachine, props: SucceedStateProps) {
+//         super(sm, StateType.Succeed, props.name);
+//     }
+// }
+
+// export interface FailStateProps extends StateProps {
+//     error: string;
+//     cause: string;
+// }
+
+// export class FailState extends State {
+//     constructor(props: FailStateProps) {
+//         super(StateType.Fail, props.name);
+//     }
+// }
+
+// export interface ParallelStateProps extends StateProps, InputOutputPathStateProps, ResultPathStateProps, NextStateProps, RetryCatchStateProps {
+//     branches: Branch[]
+// }
+
+// export class ParallelState extends State {
+//     private readonly props: ParallelStateProps;
+
+//     constructor(props: ParallelStateProps) {
+//         super(StateType.Parallel, props.name);
+//         this.props = props;
+//     }
+
+//     toJson() {
+//         return "";
+//     }
+// }
+
+// // var n = new PassState();
+// // new ChoiceState(
+// //     [
+// //         {
+// //             comparisonOperation: new NotOperation(
+// //                 {
+// //                     comparisonOperation: new StringEqualsOperation("$.type", "Private")
+// //                 }
+// //             ),
+// //             next: new TaskState("arn:aws:lambda:us-east-1:123456789012:function:Foo", {next: n})
+// //         },
+// //         {
+// //             comparisonOperation: new AndOperation(
+// //                 [
+// //                     {
+// //                         comparisonOperation: new NumericGreaterThanEqualsOperation("$.value", 20)
+// //                     },
+// //                     {
+// //                         comparisonOperation: new NumericLessThanOperation("$.value", 30)
+// //                     }
+// //                 ]
+// //             ),
+// //             next: new TaskState("arn:aws:lambda:us-east-1:123456789012:function:Foo", {next: n})
+// //         }
+// //     ],
+// //     {
+// //         default: new FailState({
+// //             error: "ErrorA",
+// //             cause: "Kaiju Attack"
+// //         })
+// //     }
+// // )
+
+
+// var stack = new Stack()
+
+// var sm = new StateMachine(stack, "StateMachine", {roleArn: Arn.fromComponents(Arn.parse("arn::foo"))})
+
+// new TaskState(sm, {
+//     name: "Hello World",
+//     resource: "arn:aws:lambda:us-east-1:123456789012:function:HelloWorld",
+// })
+// new TaskState(sm, { name: "X",
+//     resource: "arn:aws:swf:us-east-1:123456789012:task:X",
+//     next: new PassState(sm, {name: "Y"}),
+//     retry: [
+//         {
+//             errorEquals: [ "ErrorA", "ErrorB" ],
+//             intervalSeconds: 1,
+//             backoffRate: 2,
+//             maxAttempts: 2
+//         },
+//         {
+//             errorEquals: [ "ErrorC" ],
+//             intervalSeconds: 5
+//         }
+//     ],
+//     catch: [
+//         {
+//             errorEquals: ErrorCode.ALL,
+//             next: new PassState(sm, { name: "Z" })
+//         }
+//     ]
+// })
+
+// var sm = new StateMachine(stack, "StateMachine", {roleArn: Arn.fromComponents(Arn.parse("arn::foo"))})
+// let nextstate = new PassState(sm, { name: "NextState" })
+// sm.startAt(
+//     new ChoiceState(sm, {
+//         name: "ChoiceStateX",
+//         choices: new ChoiceRules(
+//             new ChoiceRule({
+//                 comparisonOperation: new NotOperation(
+//                   new StringEqualsOperation("$.type", "Private")
+//                 ),
+//                 next: new TaskState({
+//                     name: "Public",
+//                     resource: "arn:aws:lambda:us-east-1:123456789012:function:Foo",
+//                     next: nextstate
+//                 })
+//             }),
+//             new ChoiceRule({
+//                 comparisonOperation: new AndOperation(
+//                     new NumericGreaterThanEqualsOperation("$.value", 20),
+//                     new NumericLessThanOperation("$.value", 30)
+//                 ),
+//                 next: new TaskState({
+//                     name: "ValueInTwenties",
+//                     resource: "arn:aws:lambda:us-east-1:123456789012:function:Bar",
+//                     next: nextstate
+//                 })
+//             })
+//         ),
+//         default: new FailState({
+//             name: "DefaultState",
+//             error: "Error",
+//             cause: "No Matches!"
+//         })
+//     })
+// )
+// // new TaskState({
+// //     resource: "some-lambda-arn",
+// //     next: new PassState({
+// //         result: "foo",
+// //         resultPath: "$.var"
+// //     })
+// // })
+
+// // let lookupAddress = new TaskState("arn:aws:lambda:us-east-1:123456789012:function:AddressFinder")
+// // let lookupPhone = new TaskState("arn:aws:lambda:us-east-1:123456789012:function:PhoneFinder")
+// // new ParallelState(sm, {
+// //     name: "LookupCustomerInfo",
+// //     branches: [
+// //         new Branch().startAt(lookupPhone),
+// //         new Branch().startAt(lookupAddress).addState(lookupPhone)
+// //     ]
+// // })
+
+// new StateMachine(stack, "", {roleArn: Arn.fromComponents({resource: "", service: ""})})
+//     .startAt(
+//         new ParallelState({
+//             name: "FunWithMath",
+//             branches: [
+//                 new Branch().startAt(
+//                     new TaskState({
+//                         name: "Add",
+//                         resource: "foo"
+//                     })
+//                 ),
+//                 new Branch().startAt(
+//                     new TaskState({
+//                         name: "Subtract",
+//                         resource: "bar"
+//                     })
+//                 )
+//             ]
+//         })
+//     );
+
+// let iteratorTask = new TaskState({
+//     name: "Iterator",
+//     resource: "foo",
+//     resultPath: "$.iterator"
+// })
+
+// new StateMachine(stack, "", {roleArn: Arn.fromComponents({resource: "foo", service:" bar"})})
+//     .startAt(
+//         new PassState({
+//             name: "ConfigureCount",
+//             result: { "count": 10, "index": 0, "step": 1 },
+//             resultPath: "$.iterator"
+//         })
+//     )
+//     .next(iteratorTask)
+//     .next(
+//         new ChoiceState({
+//             name: "IsCountReached",
+//             choices: new ChoiceRules(
+//                 new ChoiceRule({
+//                     comparisonOperation: new BooleanEqualsOperation("$.iterator.continue", true),
+//                     next: new PassState({
+//                         name: "ExampleWork",
+//                         comment: "Your application logic, to run a specific number of times",
+//                         result: { "success": true },
+//                         resultPath: "$.result",
+//                         next: iteratorTask
+//                     })
+//                 })
+//             )
+//         })
+//     )
