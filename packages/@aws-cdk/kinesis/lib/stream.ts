@@ -191,15 +191,11 @@ export abstract class StreamRef extends Construct implements logs.ILogSubscripti
         // to assume we don't need to do anything special.
         const sameAccount = sourceStack.env.account === thisStack.env.account;
 
-        if (sameAccount) {
-            return { arn: this.streamArn, role: this.cloudWatchLogsRole };
+        if (!sameAccount) {
+            return this.crossAccountLogSubscriptionDestination(sourceLogGroup);
         }
 
-        if (!sourceStack.env.account || !thisStack.env.account) {
-            throw new Error('SubscriptionFilter stack and Destination stack must either both have accounts defined, or both not have accounts');
-        }
-
-        return this.crossAccountLogSubscriptionDestination(sourceLogGroup);
+        return { arn: this.streamArn, role: this.cloudWatchLogsRole };
     }
 
     /**
@@ -207,6 +203,11 @@ export abstract class StreamRef extends Construct implements logs.ILogSubscripti
      */
     private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
         const sourceStack = Stack.find(sourceLogGroup);
+        const thisStack = Stack.find(this);
+
+        if (!sourceStack.env.account || !thisStack.env.account) {
+            throw new Error('SubscriptionFilter stack and Destination stack must either both have accounts defined, or both not have accounts');
+        }
 
         // Take some effort to construct a unique ID for the destination that is unique to the
         // combination of (stream, loggroup).

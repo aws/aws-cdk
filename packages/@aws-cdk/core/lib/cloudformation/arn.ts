@@ -148,6 +148,8 @@ export class Arn extends Token {
      * @param arn The input token that contains an ARN
      * @param sep The separator used to separate resource from resourceName
      * @param hasName Whether there is a name component in the ARN at all.
+     * For example, SNS Topics ARNs have the 'resource' component contain the
+     * topic name, and no 'resourceName' component.
      * @returns an ArnComponents object which allows access to the various
      * components of the ARN.
      */
