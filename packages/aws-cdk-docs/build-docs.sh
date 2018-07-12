@@ -2,14 +2,16 @@
 set -euo pipefail
 
 PYTHON_DEPS="$PWD/python-deps"
-mkdir -p "${PYTHON_DEPS}"
-
-export PYTHONPATH=${PYTHON_DEPS}/lib/python3.6/site-packages:${PYTHON_DEPS}/lib/python3.7/site-packages
-export PATH=${PYTHON_DEPS}/bin:$PATH
 
 #----------------------------------------------------------------------
 # Install python depednencies to a local tree
-pip install --ignore-installed --install-option="--prefix=${PYTHON_DEPS}" -r requirements.txt
+if [ ! -d ${PYTHON_DEPS} ]; then
+    mkdir -p "${PYTHON_DEPS}"
+    pip install --ignore-installed --install-option="--prefix=${PYTHON_DEPS}" -r requirements.txt
+fi
+
+export PYTHONPATH=${PYTHON_DEPS}/lib/python3.6/site-packages:${PYTHON_DEPS}/lib/python3.7/site-packages
+export PATH=${PYTHON_DEPS}/bin:$PATH
 
 #----------------------------------------------------------------------
 # CONFIG
@@ -31,7 +33,6 @@ fi
 # DO THE WORK
 
 echo "Staging Sphinx doc site under ${staging}"
-rm -fr ${staging}
 mkdir -p ${staging}
 rsync -av src/ ${staging}
 
