@@ -1,6 +1,5 @@
 import { AwsAccountId, AwsPartition, AwsRegion, FnConcat, Token } from '..';
-import { FnSplit } from '../../../iam/node_modules/@aws-cdk/core/lib/cloudformation/fn';
-import { FnSelect } from '../../../iam/node_modules/@aws-cdk/core/lib/cloudformation/fn';
+import { FnSelect, FnSplit } from '../cloudformation/fn';
 
 /**
  * An Amazon Resource Name (ARN).
