@@ -1,6 +1,7 @@
 import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/core';
 import { cloudformation } from './ec2.generated';
-import { NetworkUtils } from './network-util';
+import { NetworkBuilder } from './network-util';
+import { Obj } from '@aws-cdk/util';
 import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
