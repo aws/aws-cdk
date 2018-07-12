@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Arn, ArnComponents, resolve } from '../../lib';
+import { Arn, ArnComponents, resolve, Token } from '../../lib';
 
 export = {
     'create from components with defaults'(test: Test) {
@@ -187,7 +187,36 @@ export = {
             });
 
             test.done();
-        }
+        },
 
+        'a Token with : separator'(test: Test) {
+            const theToken = { Ref: 'SomeParameter' };
+            const parsed = Arn.parseToken(new Token(() => theToken), ':');
+
+            test.deepEqual(resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.deepEqual(resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.deepEqual(resolve(parsed.region), { 'Fn::Select': [ 3, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.deepEqual(resolve(parsed.account), { 'Fn::Select': [ 4, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.deepEqual(resolve(parsed.resource), { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.deepEqual(resolve(parsed.resourceName), { 'Fn::Select': [ 6, { 'Fn::Split': [ ':', theToken ]} ]});
+            test.equal(parsed.sep, ':');
+
+            test.done();
+        },
+
+        'a Token with / separator'(test: Test) {
+            const theToken = { Ref: 'SomeParameter' };
+            const parsed = Arn.parseToken(new Token(() => theToken));
+
+            test.equal(parsed.sep, '/');
+
+            // tslint:disable-next-line:max-line-length
+            test.deepEqual(resolve(parsed.resource), { 'Fn::Select': [ 0, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+            // tslint:disable-next-line:max-line-length
+            test.deepEqual(resolve(parsed.resourceName), { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, { 'Fn::Split': [ ':', theToken ]} ]} ]} ]});
+
+            test.done();
+        }
     },
+
 };

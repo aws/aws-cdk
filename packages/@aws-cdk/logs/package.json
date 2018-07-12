@@ -17,8 +17,8 @@
   },
   "scripts": {
     "build": "cfn2ts --scope=AWS::Logs && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
     "lint": "jsii && tslint -p . --force",
+    "watch": "jsii -w",
     "test": "nodeunit test/test.*.js && cdk-integ-assert",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
@@ -40,6 +40,7 @@
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta"
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta"
   }
 }
