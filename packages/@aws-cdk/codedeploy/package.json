@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.codedeploy",
-      "dotnet": "Aws.Cdk.CodeDeploy"
+      "dotnet": "Amazon.Cdk.CodeDeploy"
     }
   },
   "repository": {

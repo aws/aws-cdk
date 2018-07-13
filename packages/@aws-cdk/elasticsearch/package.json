@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.elasticsearch",
-      "dotnet": "Aws.Cdk.Elasticsearch"
+      "dotnet": "Amazon.Cdk.Elasticsearch"
     }
   },
   "repository": {

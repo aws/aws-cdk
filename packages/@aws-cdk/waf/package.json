@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.waf",
-      "dotnet": "Aws.Cdk.WAF"
+      "dotnet": "Amazon.Cdk.WAF"
     }
   },
   "repository": {
