@@ -58,7 +58,7 @@ EOM
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.${PB}",
-      "dotnet": "${S/AWS::/Aws.Cdk.}"
+      "dotnet": "${S/AWS::/Amazon.Cdk.}"
     }
   },
   "repository": {

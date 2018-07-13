@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.directoryservice",
-      "dotnet": "Aws.Cdk.DirectoryService"
+      "dotnet": "Amazon.Cdk.DirectoryService"
     }
   },
   "repository": {

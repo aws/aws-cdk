@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.autoscaling",
-      "dotnet": "Aws.Cdk.AutoScaling"
+      "dotnet": "Amazon.Cdk.AutoScaling"
     }
   },
   "repository": {

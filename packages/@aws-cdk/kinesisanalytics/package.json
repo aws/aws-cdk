@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.kinesisanalytics",
-      "dotnet": "Aws.Cdk.KinesisAnalytics"
+      "dotnet": "Amazon.Cdk.KinesisAnalytics"
     }
   },
   "repository": {

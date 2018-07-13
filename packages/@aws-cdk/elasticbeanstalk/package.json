@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.elasticbeanstalk",
-      "dotnet": "Aws.Cdk.ElasticBeanstalk"
+      "dotnet": "Amazon.Cdk.ElasticBeanstalk"
     }
   },
   "repository": {

@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.kinesisfirehose",
-      "dotnet": "Aws.Cdk.KinesisFirehose"
+      "dotnet": "Amazon.Cdk.KinesisFirehose"
     }
   },
   "repository": {
