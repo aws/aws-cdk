@@ -158,11 +158,16 @@ export = {
             const stack = getTestStack();
             new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
             expect(stack).to(countResources("AWS::EC2::Subnet", 4));
+            expect(stack).to(countResources("AWS::EC2::Route", 4));
             for (let i = 0; i < 4; i++) {
               expect(stack).to(haveResource("AWS::EC2::Subnet", {
                 CidrBlock: `10.0.${i * 64}.0/18`
               }));
             }
+            expect(stack).to(haveResource("AWS::EC2::Route", {
+                DestinationCidrBlock: '0.0.0.0/0',
+                NatGatewayId: { },
+            }));
             test.done();
         }
 

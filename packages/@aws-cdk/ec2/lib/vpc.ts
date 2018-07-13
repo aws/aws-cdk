@@ -328,6 +328,16 @@ export class VpcNetwork extends VpcNetworkRef {
             });
 
             this.dependencyElements.push(igw, att);
+
+            (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
+                let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
+                if (ngwId === undefined) {
+                    const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+                    // round robin the available NatGW since one is not in your AZ
+                    ngwId = ngwArray[i % ngwArray.length];
+                }
+                privateSubnet.addDefaultNatRouteEntry(ngwId);
+            });
         }
     }
 
@@ -377,16 +387,6 @@ export class VpcNetwork extends VpcNetworkRef {
             subnetFinal.cidrMask = cidrMaskForRemaing;
             this.createSubnetResources(subnetFinal);
         }
-
-        (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
-            let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
-            if (ngwId === undefined) {
-                const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-                // round robin the available NatGW since one is not in your AZ
-                ngwId = ngwArray[i % ngwArray.length];
-            }
-            privateSubnet.addDefaultNatRouteEntry(ngwId);
-        });
     }
 
     private createSubnetResources(subnetConfig: SubnetConfigurationFinalized) {
@@ -452,7 +452,6 @@ export class VpcNetwork extends VpcNetworkRef {
             this.privateSubnets.push(privateSubnet);
             this.dependencyElements.push(publicSubnet, privateSubnet);
         });
-
     }
 
 }
