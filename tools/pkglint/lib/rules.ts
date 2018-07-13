@@ -295,11 +295,20 @@ export class MustUseCDKTest extends ValidationRule {
 
 /**
  * Scripts that run integ tests must also have the individual 'integ' script to update them
+ *
+ * This commands comes from the dev-dependency cdk-integ-tools.
  */
 export class MustHaveIntegCommand extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (hasInteg(pkg)) {
-            expectJSON(pkg, 'scripts.integ', 'cdk-integ');
+        if (!hasInteg(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.integ', 'cdk-integ');
+
+        if (!pkg.hasDevDependency('cdk-integ-tools')) {
+            pkg.report({
+                message: 'Package must use cdk-integ-tools',
+                fix: () => pkg.addDevDependency('cdk-integ-tools', '^' + monoRepoVersion())
+            });
         }
     }
 }

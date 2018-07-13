@@ -1,23 +1,22 @@
 {
-  "name": "cdk-build-tools",
+  "name": "cdk-integ-tools",
   "private": true,
   "version": "0.7.3-beta",
-  "description": "Tools package with shared build scripts for CDK packages",
+  "description": "Package with integration test scripts for CDK packages",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "bin": {
-    "cdk-build": "bin/cdk-build",
-    "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test",
-    "cdk-lint": "bin/cdk-lint"
+    "cdk-integ": "bin/cdk-integ",
+    "cdk-integ-assert": "bin/cdk-integ-assert"
   },
   "scripts": {
-    "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-lint && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
-    "watch": "tsc -w",
-    "lint": "tslint -p . --force",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
   "author": {
@@ -26,10 +25,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@types/yargs": "^8.0.3",
+    "@aws-cdk/cx-api": "^0.7.3-beta",
+    "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
+    "aws-cdk": "^0.7.3-beta",
     "yargs": "^9.0.1"
   },
   "keywords": [

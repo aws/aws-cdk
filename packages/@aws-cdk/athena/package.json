@@ -11,6 +11,9 @@
       "dotnet": "Aws.Cdk.Athena"
     }
   },
+  "cdk-build": {
+      "cloudformation": "AWS::Athena"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"

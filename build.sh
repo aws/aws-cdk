@@ -12,7 +12,7 @@ export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
 echo "building..."
-lerna exec --stream "npm run build"
+lerna --reject-cycles exec --stream "npm run build"
 
 echo "============================================================================================="
 echo "testing..."
