@@ -57,11 +57,12 @@ export interface VpcNetworkProps {
     /**
      * Define the maximum number of NAT Gateways for this VPC
      *
-     * Setting this number enables a VPC to be trade availability for cost of
-     * running a NAT Gateway. For example, if set to 1 and your subnet
+     * Setting this number enables a VPC to trade availability for the cost of
+     * running a NAT Gateway. For example, if set this to 1 and your subnet
      * configuration is for 3 Public subnets with natGateway = `true` then only
      * one of the Public subnets will have a gateway and all Private subnets
      * will route to this NAT Gateway.
+     * @default maxAZs
      */
     maxNatGateways?: number;
 
@@ -72,19 +73,24 @@ export interface VpcNetworkProps {
      * specify the configuration. The VPC details (VPC ID, specific CIDR,
      * specific AZ will be calculated during creation)
      *
-     * For example if you want three private subnets and three public subnets
-     * across 3 AZs then maxAZs = 3 and provide the following:
+     * For example if you want 1 public subnet, 1 private subnet, and 1 internal
+     * subnet in each AZ provide the following:
      * subnets: [
      * {
      *   cidrMask: 24,
+     *   name: application,
+     *   subnetType: SubnetType.Private,
+     * },
+     * {
+     *   cidrMask: 26,
      *   name: ingress,
      *   subnetType: SubnetType.Public,
      *   natGateway: true,
      * },
      * {
-     *   cidrMask: 24,
-     *   name: application,
-     *   subnetType: SubnetType.Private,
+     *   cidrMask: 28,
+     *   name: rds,
+     *   subnetType: SubnetType.Internal,
      * }
      * ]
      * @default the VPC CIDR will be evenly divided between 1 public and 1
@@ -154,21 +160,6 @@ export interface SubnetConfiguration {
     natGateway?: boolean;
     // defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal
     mapPublicIpOnLaunch?: boolean;
-}
-
-interface SubnetConfigurationFinalized {
-    // the cidr mask value from 16-28
-    cidrMask: number;
-    // Public (IGW), Private (Nat GW), Internal (no outbound)
-    subnetType: SubnetType;
-    // name that will be used to generate an AZ specific name e.g. name-2a
-    name: string;
-    // if true will place a NAT Gateway in this subnet, subnetType must be Public
-    natGateway: boolean;
-    // defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal
-    mapPublicIpOnLaunch: boolean;
-    // availabity zones to buid this subnet in
-    availabilityZones: string[];
 }
 
 /**
@@ -353,7 +344,7 @@ export class VpcNetwork extends VpcNetworkRef {
      * in each Availability Zone.
      */
     private createSubnets() {
-        const remainingSpaceSubnets: SubnetConfigurationFinalized[] = [];
+        const remainingSpaceSubnets: SubnetConfiguration[] = [];
 
         // Calculate number of public/private subnets based on number of AZs
 
@@ -361,67 +352,50 @@ export class VpcNetwork extends VpcNetworkRef {
             subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
                 (subnet.subnetType === SubnetType.Public);
 
-            const subnetFinal: SubnetConfigurationFinalized = {
-                cidrMask: subnet.cidrMask || 0,
-                availabilityZones: this.availabilityZones,
-                subnetType: subnet.subnetType,
-                name:  subnet.name,
-                natGateway: subnet.natGateway || false,
-                mapPublicIpOnLaunch: subnet.mapPublicIpOnLaunch
-            };
-
-            if (subnetFinal.cidrMask === 0) {
-                remainingSpaceSubnets.push(subnetFinal);
+            if (subnet.cidrMask === undefined) {
+                remainingSpaceSubnets.push(subnet);
                 continue;
             }
-            this.createSubnetResources(subnetFinal);
+            this.createSubnetResources(subnet);
         }
-
-        const totalRemaining = remainingSpaceSubnets.reduce( (total: number, subnet) => {
-            return total += subnet.availabilityZones.length;
-        }, 0);
+        const totalRemaining = remainingSpaceSubnets.length * this.availabilityZones.length;
 
         const cidrMaskForRemaing = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
 
-        for (const subnetFinal of remainingSpaceSubnets) {
-            subnetFinal.cidrMask = cidrMaskForRemaing;
-            this.createSubnetResources(subnetFinal);
+        for (const subnet of remainingSpaceSubnets) {
+            subnet.cidrMask = cidrMaskForRemaing;
+            this.createSubnetResources(subnet);
         }
     }
 
-    private createSubnetResources(subnetConfig: SubnetConfigurationFinalized) {
-        subnetConfig.availabilityZones.forEach((zone, index) => {
-            const cidr: string = this.networkBuilder.addSubnet(subnetConfig.cidrMask);
+    private createSubnetResources(subnetConfig: SubnetConfiguration) {
+        this.availabilityZones.forEach((zone, index) => {
+            // this can never happen but satifies the compiler
+            if (subnetConfig.cidrMask === undefined) {
+                throw new Error('Subnet CIDR Mask must be set');
+            }
+            const cidrBlock: string = this.networkBuilder.addSubnet(subnetConfig.cidrMask);
             const name: string = `${subnetConfig.name}Subnet${index + 1}`;
+            const subnetProps = {
+                availabilityZone: zone,
+                vpcId: this.vpcId,
+                cidrBlock: cidrBlock,
+                mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch
+            }
             switch (subnetConfig.subnetType) {
                 case SubnetType.Public:
-                    const publicSubnet = new VpcPublicSubnet(this, name, {
-                        mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch || true,
-                        vpcId: this.vpcId,
-                        availabilityZone: zone,
-                        cidrBlock: cidr
-                    });
+                    const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
                     if (subnetConfig.natGateway) {
                         this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
                     }
                     this.publicSubnets.push(publicSubnet);
                     break;
                 case SubnetType.Private:
-                    const privateSubnet = new VpcPrivateSubnet(this, name, {
-                        mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch || false,
-                        vpcId: this.vpcId,
-                        availabilityZone: zone,
-                        cidrBlock: cidr
-                    });
+                    const privateSubnet = new VpcPrivateSubnet(this, name, subnetProps);
                     this.privateSubnets.push(privateSubnet);
                     break;
                 case SubnetType.Internal:
-                    const internalSubnet = new VpcPrivateSubnet(this, name, {
-                        mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch || false,
-                        vpcId: this.vpcId,
-                        availabilityZone: zone,
-                        cidrBlock: cidr
-                    });
+                    const internalSubnet = new VpcPrivateSubnet(this, name, subnetProps);
                     this.internalSubnets.push(internalSubnet);
                     break;
             }
@@ -429,11 +403,11 @@ export class VpcNetwork extends VpcNetworkRef {
     }
 
     private createDefaultSubnetResources() {
-        const azNetwork: number = this.networkBuilder.maskForRemainingSubnets(
+        const azCidrMask: number = this.networkBuilder.maskForRemainingSubnets(
             this.availabilityZones.length
         );
         this.availabilityZones.forEach((zone, index) => {
-            const builder = new NetworkBuilder(this.networkBuilder.addSubnet(azNetwork));
+            const builder = new NetworkBuilder(this.networkBuilder.addSubnet(azCidrMask));
             const cidr = builder.maskForRemainingSubnets(this.subnetConfigurations.length);
             const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index + 1}`, {
                 mapPublicIpOnLaunch: true,
