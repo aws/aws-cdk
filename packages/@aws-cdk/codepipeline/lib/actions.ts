@@ -1,5 +1,3 @@
-import { BuildProjectRef } from '@aws-cdk/codebuild';
-import { RepositoryRef } from '@aws-cdk/codecommit';
 import { Construct, PolicyStatement, Secret } from '@aws-cdk/core';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { LambdaRef } from '@aws-cdk/lambda';
@@ -91,8 +89,8 @@ export interface ActionProps {
 
 /**
  * Low level class for generically creating pipeline actions.
- * It is recommended that concrete types are used instead, such as {@link CodeCommitSource} or
- * {@link CodeBuildAction}.
+ * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSource} or
+ * {@link codebuild.PipelineBuildAction}.
  */
 export abstract class Action extends Construct {
     /**
@@ -247,7 +245,7 @@ export interface SourceProps {
 /**
  * Low level class for source actions.
  * It is recommended that concrete types are used instead, such as {@link AmazonS3Source} or
- * {@link CodeCommitSource}.
+ * {@link codecommit.PipelineSource}.
  */
 export abstract class Source extends Action {
     public readonly artifact: Artifact;
@@ -312,65 +310,6 @@ export class AmazonS3Source extends Source {
 
         // pipeline needs permissions to read from the S3 bucket
         props.bucket.grantRead(parent.pipeline.role);
-    }
-}
-
-/**
- * Construction properties of the {@link CodeCommitSource CodeCommit source action}
- */
-export interface CodeCommitSourceProps {
-    /**
-     * The name of the source's output artifact. Output artifacts are used by CodePipeline as
-     * inputs into other actions.
-     */
-    artifactName: string;
-
-    /**
-     * The CodeCommit repository.
-     */
-    repository: RepositoryRef;
-
-    /**
-     * @default 'master'
-     */
-    branch?: string;
-
-    // TODO: use CloudWatch events instead
-    /**
-     * Whether or not AWS CodePipeline should poll for source changes
-     *
-     * @default true
-     */
-    pollForSourceChanges?: boolean;
-}
-
-/**
- * Source that is provided by an AWS CodeCommit repository
- */
-export class CodeCommitSource extends Source {
-    constructor(parent: Stage, name: string, props: CodeCommitSourceProps) {
-        super(parent, name, {
-            provider: 'CodeCommit',
-            configuration: {
-                RepositoryName: props.repository.repositoryName,
-                BranchName: props.branch || 'master',
-                PollForSourceChanges: props.pollForSourceChanges || true
-            },
-            artifactName: props.artifactName
-        });
-
-        // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-        const actions = [
-            'codecommit:GetBranch',
-            'codecommit:GetCommit',
-            'codecommit:UploadArchive',
-            'codecommit:GetUploadArchiveStatus',
-            'codecommit:CancelUploadArchive',
-        ];
-
-        parent.pipeline.addToRolePolicy(new PolicyStatement()
-            .addResource(props.repository.repositoryArn)
-            .addActions(...actions));
     }
 }
 
@@ -471,7 +410,7 @@ export interface BuildActionProps {
 
 /**
  * Low level class for build actions.
- * It is recommended that concrete types are used instead, such as {@link CodeBuildAction}.
+ * It is recommended that concrete types are used instead, such as {@link codebuild.PipelineBuildAction}.
  */
 export abstract class BuildAction extends Action {
     public readonly artifact?: Artifact;
@@ -488,62 +427,6 @@ export abstract class BuildAction extends Action {
         if (props.artifactName) {
             this.artifact = this.addOutputArtifact(props.artifactName);
         }
-    }
-}
-
-/**
- * Construction properties of the {@link CodeBuildAction CodeBuild action}
- */
-export interface CodeBuildActionProps {
-    /**
-     * The source to use as input for this build
-     */
-    inputArtifact: Artifact;
-
-    /**
-     * The name of the build's output artifact
-     */
-    artifactName?: string;
-
-    /**
-     * The build project
-     */
-    project: BuildProjectRef;
-}
-
-/**
- * Build action that uses AWS CodeBuild
- */
-export class CodeBuildAction extends BuildAction {
-    constructor(parent: Stage, name: string, props: CodeBuildActionProps) {
-        // This happened when ProjectName was accidentally set to the project's ARN:
-        // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
-
-        super(parent, name, {
-            provider: 'CodeBuild',
-            inputArtifact: props.inputArtifact,
-            artifactName: props.artifactName,
-            configuration: {
-                ProjectName: props.project.projectName
-            }
-        });
-
-        const actions = [
-            'codebuild:BatchGetBuilds',
-            'codebuild:StartBuild',
-            'codebuild:StopBuild',
-        ];
-
-        parent.pipeline.addToRolePolicy(new PolicyStatement()
-            .addResource(props.project.projectArn)
-            .addActions(...actions));
-
-        // allow codebuild to read and write artifacts to the pipline's artifact bucket.
-        parent.pipeline.artifactBucket.grantReadWrite(props.project.role);
-
-        // policy must be added as a dependency to the pipeline!!
-        // TODO: grants - build.addResourcePermission() and also make sure permission
-        // includes the pipeline role AWS principal.
     }
 }
 

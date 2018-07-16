@@ -42,6 +42,7 @@
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
+    "@aws-cdk/codepipeline": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/events": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta"
