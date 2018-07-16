@@ -69,7 +69,7 @@ export class LogGroup extends cdk.Construct {
         });
 
         if (props.retainLogGroup !== false) {
-            resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+            cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
         }
 
         this.logGroupArn = resource.logGroupArn;
