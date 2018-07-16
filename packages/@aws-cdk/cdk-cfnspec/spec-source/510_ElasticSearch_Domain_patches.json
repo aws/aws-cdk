@@ -4,7 +4,10 @@
       "patch": {
         "description": "remove the deprecated attribute DomainArn, as the new preferred attribute Arn maps to the same name in the generated code",
         "operations": [
-          { "op": "remove", "path": "/Attributes/DomainArn" }
+          {
+            "op": "remove",
+            "path": "/Attributes/DomainArn"
+          }
         ]
       }
     }

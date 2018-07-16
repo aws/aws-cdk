@@ -4,7 +4,11 @@
             "patch": {
                 "description": "rename +Name+ to +DocumentName+ to clearly indicate what the attribute is for",
                 "operations": [
-                    { "op": "move", "from": "/Properties/Name", "path": "/Properties/DocumentName" }
+                    {
+                        "from": "/Properties/Name",
+                        "op": "move",
+                        "path": "/Properties/DocumentName"
+                    }
                 ]
             }
         }
