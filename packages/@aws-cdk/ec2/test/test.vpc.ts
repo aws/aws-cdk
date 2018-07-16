@@ -146,6 +146,46 @@ export = {
             }
             test.done();
         },
+        "with custom subents and maxNatGateway = 2 there should be only to NATGW"(test: Test) {
+            const stack = getTestStack();
+            new VpcNetwork(stack, 'TheVPC', {
+              cidr: '10.0.0.0/21',
+              maxNatGateways: 2,
+              subnetConfigurations: [
+                {
+                  cidrMask: 24,
+                  name: 'ingress',
+                  subnetType: SubnetType.Public,
+                  natGateway: true,
+                },
+                {
+                  cidrMask: 24,
+                  name: 'application',
+                  subnetType: SubnetType.Private,
+                },
+                {
+                  cidrMask: 28,
+                  name: 'rds',
+                  subnetType: SubnetType.Internal,
+                }
+              ],
+              maxAZs: 3
+            });
+            expect(stack).to(countResources("AWS::EC2::InternetGateway", 1));
+            expect(stack).to(countResources("AWS::EC2::NatGateway", 2));
+            expect(stack).to(countResources("AWS::EC2::Subnet", 9));
+            for (let i = 0; i < 6; i++) {
+              expect(stack).to(haveResource("AWS::EC2::Subnet", {
+                CidrBlock: `10.0.${i}.0/24`
+              }));
+            }
+            for (let i = 0; i < 3; i++) {
+              expect(stack).to(haveResource("AWS::EC2::Subnet", {
+                CidrBlock: `10.0.6.${i * 16}/28`
+              }));
+            }
+            test.done();
+        },
         "with enableDnsHostnames enabled but enableDnsSupport disabled, should throw an Error"(test: Test) {
             const stack = getTestStack();
             test.throws(() => new VpcNetwork(stack, 'TheVPC', {
@@ -164,6 +204,19 @@ export = {
                 CidrBlock: `10.0.${i * 64}.0/18`
               }));
             }
+            expect(stack).to(haveResource("AWS::EC2::Route", {
+                DestinationCidrBlock: '0.0.0.0/0',
+                NatGatewayId: { },
+            }));
+            test.done();
+        },
+        "with maxNatGateway set to 1"(test: Test) {
+            const stack = getTestStack();
+            new VpcNetwork(stack, 'VPC', { maxNatGateways: 1 });
+            expect(stack).to(countResources("AWS::EC2::Subnet", 6));
+            expect(stack).to(countResources("AWS::EC2::Route", 6));
+            expect(stack).to(countResources("AWS::EC2::Subnet", 6));
+            expect(stack).to(countResources("AWS::EC2::NatGateway", 1));
             expect(stack).to(haveResource("AWS::EC2::Route", {
                 DestinationCidrBlock: '0.0.0.0/0',
                 NatGatewayId: { },

@@ -230,6 +230,11 @@ export class VpcNetwork extends VpcNetworkRef {
     public readonly internalSubnets: VpcSubnetRef[] = [];
 
     /**
+     * Maximum Number of NAT Gateways used to control cost
+     */
+    private readonly maxNatGateways: number;
+
+    /**
      * The VPC resource
      */
     private resource: cloudformation.VPCResource;
@@ -277,6 +282,11 @@ export class VpcNetwork extends VpcNetworkRef {
         const enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport;
         const instanceTenancy = props.defaultInstanceTenancy || 'default';
         const tags = props.tags || [];
+
+        // 256 is an arbitrary max that should never be reached
+        // https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html
+        // should be triggered first
+        this.maxNatGateways = props.maxNatGateways || 256;
 
         // Define a VPC using the provided CIDR range
         this.resource = new cloudformation.VPCResource(this, 'Resource', {
@@ -374,19 +384,22 @@ export class VpcNetwork extends VpcNetworkRef {
             if (subnetConfig.cidrMask === undefined) {
                 throw new Error('Subnet CIDR Mask must be set');
             }
-            const cidrBlock: string = this.networkBuilder.addSubnet(subnetConfig.cidrMask);
             const name: string = `${subnetConfig.name}Subnet${index + 1}`;
             const subnetProps = {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
-                cidrBlock: cidrBlock,
+                cidrBlock: this.networkBuilder.addSubnet(subnetConfig.cidrMask),
                 mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch
-            }
+            };
+
             switch (subnetConfig.subnetType) {
                 case SubnetType.Public:
                     const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
                     if (subnetConfig.natGateway) {
-                        this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+                        const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+                        if (ngwArray.length < this.maxNatGateways) {
+                            this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+                        }
                     }
                     this.publicSubnets.push(publicSubnet);
                     break;
@@ -415,7 +428,10 @@ export class VpcNetwork extends VpcNetworkRef {
                 availabilityZone: zone,
                 cidrBlock: builder.addSubnet(cidr),
             });
-            this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
+            if (ngwArray.length < this.maxNatGateways) {
+                this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
+            }
             this.publicSubnets.push(publicSubnet);
             const privateSubnet = new VpcPrivateSubnet(this, `PrivateSubnet${index + 1}`, {
                 mapPublicIpOnLaunch: false,
