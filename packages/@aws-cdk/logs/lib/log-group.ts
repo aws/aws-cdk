@@ -24,6 +24,18 @@ export interface LogGroupProps {
      * @default 730 days (2 years)
      */
     retentionDays?: number;
+
+    /**
+     * Retain the log group if the stack or containing construct ceases to exist
+     *
+     * Normally you want to retain the log group so you can diagnose issues
+     * from logs even after a deployment that no longer includes the log group.
+     * In that case, use the normal date-based retention policy to age out your
+     * logs.
+     *
+     * @default true
+     */
+    retainLogGroup?: boolean;
 }
 
 /**
@@ -55,6 +67,10 @@ export class LogGroup extends cdk.Construct {
             logGroupName: props.logGroupName,
             retentionInDays,
         });
+
+        if (props.retainLogGroup !== false) {
+            cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
+        }
 
         this.logGroupArn = resource.logGroupArn;
         this.logGroupName = resource.ref;
