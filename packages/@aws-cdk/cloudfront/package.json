@@ -40,7 +40,7 @@
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/acm": "^0.7.3-beta",
+    "@aws-cdk/certificatemanager": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
     "@aws-cdk/kms": "^0.7.3-beta",
