@@ -17,9 +17,11 @@ const sourceStage = new Stage(pipeline, 'Source');
 Add an action to a stage:
 
 ```ts
-new CodeCommitSource(sourceStage, 'source', {
+new codecommit.PipelineSource(sourceStage, 'source', {
     artifactName: 'MyPackageSourceArtifact',
-    repository: 'MyPackage'
+    repository: codecommit.RepositoryRef.import(this, 'MyExistingRepository', {
+        repositoryName: new codecommit.RepositoryName('MyExistingRepository'),
+    }),
 })
 ```
 
