@@ -19,6 +19,19 @@ export interface LogStreamProps {
      * @default Automatically generated
      */
     logStreamName?: string;
+
+    /**
+     * Retain the log stream if the stack or containing construct ceases to exist
+     *
+     * Normally you want to retain the log stream so you can diagnose issues
+     * from logs even after a deployment that no longer includes the log stream.
+     *
+     * The date-based retention policy of your log group will age out the logs
+     * after a certain time.
+     *
+     * @default true
+     */
+    retainLogStream?: boolean;
 }
 
 /**
@@ -37,6 +50,10 @@ export class LogStream extends cdk.Construct {
             logGroupName: props.logGroup.logGroupName,
             logStreamName: props.logStreamName
         });
+
+        if (props.retainLogStream !== false) {
+            resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
+        }
 
         this.logStreamName = resource.ref;
     }

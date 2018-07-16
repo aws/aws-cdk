@@ -36,13 +36,36 @@ export = {
         test.done();
     },
 
-    'infinite retention'(test: Test) {
+    'infinite retention/dont delete log group by default'(test: Test) {
         // GIVEN
         const stack = new Stack();
 
         // WHEN
         new LogGroup(stack, 'LogGroup', {
             retentionDays: Infinity
+        });
+
+        // THEN
+        expect(stack).to(matchTemplate({
+            Resources: {
+                LogGroupF5B46931: {
+                    Type: "AWS::Logs::LogGroup",
+                    DeletionPolicy: "Retain"
+                }
+            }
+        }));
+
+        test.done();
+    },
+
+    'will delete log group if asked to'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+
+        // WHEN
+        new LogGroup(stack, 'LogGroup', {
+            retentionDays: Infinity,
+            retainLogGroup: false
         });
 
         // THEN
