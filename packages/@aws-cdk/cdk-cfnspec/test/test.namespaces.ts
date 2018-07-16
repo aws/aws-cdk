@@ -75,5 +75,7 @@ const expectedNamespaces = [
     'AWS::ECR',
     'AWS::DynamoDB',
     'AWS::Athena',
-    'AWS::Serverless'
+    'AWS::Serverless',
+    'AWS::AmazonMQ',
+    'AWS::SageMaker',
 ];
