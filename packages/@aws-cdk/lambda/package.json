@@ -41,7 +41,8 @@
     "@aws-cdk/assert": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta"
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/cloudwatch": "^0.7.3-beta",

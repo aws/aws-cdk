@@ -11,13 +11,11 @@
   "bin": {
     "cdk-build": "bin/cdk-build",
     "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test",
-    "cdk-lint": "bin/cdk-lint"
+    "cdk-test": "bin/cdk-test"
   },
   "scripts": {
-    "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-lint && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
+    "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
     "watch": "tsc -w",
-    "lint": "tslint -p . --force",
     "pkglint": "pkglint -f"
   },
   "author": {
@@ -30,7 +28,8 @@
   },
   "dependencies": {
     "@types/yargs": "^8.0.3",
-    "yargs": "^9.0.1"
+    "yargs": "^9.0.1",
+    "merkle-build": "^0.7.3-beta"
   },
   "keywords": [
     "aws",

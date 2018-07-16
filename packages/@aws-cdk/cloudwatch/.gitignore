@@ -8,3 +8,7 @@ dist
 lib/generated/resources.ts
 *.tgz
 .jsii
+
+.LAST_BUILD
+.nyc_output
+coverage

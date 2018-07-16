@@ -12,7 +12,7 @@
     }
   },
   "cdk-build": {
-      "cloudformation": "AWS::Athena"
+    "cloudformation": "AWS::Athena"
   },
   "repository": {
     "type": "git",

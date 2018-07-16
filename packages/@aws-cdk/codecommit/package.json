@@ -46,7 +46,8 @@
     "aws-sdk": "^2.259.1",
     "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta"
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

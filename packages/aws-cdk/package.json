@@ -14,6 +14,9 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test"
   },
+  "cdk-build": {
+    "pre": ["./generate.sh"]
+  },
   "nyc": {
     "lines": 8,
     "branches": 3

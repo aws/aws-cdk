@@ -20,7 +20,8 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "integ": "cdk-integ"
   },
   "cdk-build": {
     "cloudformation": "AWS::KMS"
@@ -40,7 +41,8 @@
     "@aws-cdk/assert": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta"
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

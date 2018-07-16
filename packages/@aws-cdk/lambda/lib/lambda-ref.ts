@@ -236,7 +236,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
     }
 
     /**
-     * Export this Topic (without the role)
+     * Export this Function (without the role)
      */
     public export(): LambdaRefProps {
         return {

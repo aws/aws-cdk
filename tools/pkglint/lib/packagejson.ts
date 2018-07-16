@@ -131,9 +131,9 @@ export class PackageJson {
     }
 
     /**
-     * @returns True if the package has a devDependency on `module`.
+     * Return the version of the devDependency on `module`.
      */
-    public hasDevDependency(moduleOrPredicate: ((s: string) => boolean) | string): string | undefined {
+    public getDevDependency(moduleOrPredicate: ((s: string) => boolean) | string): string | undefined {
         if (!('devDependencies' in this.json)) {
             return undefined;
         }
@@ -143,7 +143,8 @@ export class PackageJson {
             : moduleOrPredicate;
 
         const deps = this.json.devDependencies;
-        return Object.keys(deps).find(predicate);
+        const key = Object.keys(deps).find(predicate);
+        return key !== undefined ? deps[key] : undefined;
     }
 
     /**
@@ -171,6 +172,37 @@ export class PackageJson {
                 delete this.json.devDependencies[m];
             }
         }
+    }
+
+    /**
+     * Whether the package-level file contains the given line
+     */
+    public fileContainsSync(fileName: string, line: string): boolean {
+        const lines = this.readFileLinesSync(fileName);
+        return lines.indexOf(line) !== -1;
+    }
+
+    /**
+     * Add the given line to the package-level file
+     */
+    public addToFileSync(fileName: string, line: string) {
+        const lines = this.readFileLinesSync(fileName);
+        if (lines.indexOf(line) === -1) {
+            lines.push(line);
+            this.writeFileLinesSync(fileName, lines);
+        }
+    }
+
+    private readFileLinesSync(fileName: string): string[] {
+        const fullPath = path.join(this.packageRoot, fileName);
+        if (!fs.existsSync(fileName)) { return []; }
+        return fs.readFileSync(fullPath, { encoding: 'utf-8' }).split('\n');
+    }
+
+    private writeFileLinesSync(fileName: string, lines: string[]) {
+        const fullPath = path.join(this.packageRoot, fileName);
+        const body = lines.join('\n');
+        fs.writeFileSync(fullPath, body, { encoding: 'utf-8' });
     }
 }
 

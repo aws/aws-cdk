@@ -25,11 +25,11 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
+    "@types/yargs": "^8.0.3",
     "pkglint": "^0.7.3-beta",
     "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@types/yargs": "^8.0.3",
     "@aws-cdk/cx-api": "^0.7.3-beta",
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
     "aws-cdk": "^0.7.3-beta",

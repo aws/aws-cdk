@@ -1,7 +1,7 @@
 import fs = require('fs');
 import path = require('path');
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectJSON } from './util';
+import { deepGet, expectDevDependency, expectJSON, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -145,7 +145,7 @@ export class NoJsiiDep extends ValidationRule {
     public validate(pkg: PackageJson): void {
         const predicate = (s: string) => s.startsWith('jsii');
 
-        if (pkg.hasDevDependency(predicate)) {
+        if (pkg.getDevDependency(predicate)) {
             pkg.report({
                 message: 'packages should not have a devDep on jsii since it is defined at the repo level',
                 fix: () => pkg.removeDevDependency(predicate)
@@ -210,15 +210,7 @@ export class MustDependOnBuildTools extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-        const desiredVersion = '^' + monoRepoVersion();
-
-        const version = pkg.hasDevDependency('cdk-build-tools');
-        if (version !== desiredVersion) {
-            pkg.report({
-                message: `Package must use cdk-build-tools at ${desiredVersion}`,
-                fix: () => pkg.addDevDependency('cdk-build-tools', desiredVersion)
-            });
-        }
+        expectDevDependency(pkg, 'cdk-build-tools', '^' + monoRepoVersion());
     }
 }
 
@@ -230,17 +222,9 @@ export class MustUseCDKBuild extends ValidationRule {
         if (!shouldUseCDKBuildTools(pkg)) { return; }
 
         expectJSON(pkg, 'scripts.build', 'cdk-build');
-    }
-}
 
-/**
- * Build script must be 'cdk-lint'
- */
-export class MustUseCDKLint extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        if (!shouldUseCDKBuildTools(pkg)) { return; }
-
-        expectJSON(pkg, 'scripts.lint', 'cdk-lint');
+        // cdk-build will write a hash file that we have to ignore.
+        fileShouldContain(pkg, '.gitignore', '.LAST_BUILD');
     }
 }
 
@@ -261,7 +245,7 @@ export class GlobalDevDependencies extends ValidationRule {
         ];
 
         for (const dep of deps) {
-            if (pkg.hasDevDependency(dep)) {
+            if (pkg.getDevDependency(dep)) {
                 pkg.report({
                     message: `devDependency ${dep} is defined at the repo level`,
                     fix: () => pkg.removeDevDependency(dep)
@@ -288,8 +272,14 @@ export class MustUseCDKWatch extends ValidationRule {
 export class MustUseCDKTest extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!shouldUseCDKBuildTools(pkg)) { return; }
+        if (!hasTestDirectory(pkg)) { return; }
 
         expectJSON(pkg, 'scripts.test', 'cdk-test');
+
+        // 'cdk-test' will calculate coverage, so have the appropriate
+        // files in .gitignore.
+        fileShouldContain(pkg, '.gitignore', '.nyc_output');
+        fileShouldContain(pkg, '.gitignore', 'coverage');
     }
 }
 
@@ -300,16 +290,10 @@ export class MustUseCDKTest extends ValidationRule {
  */
 export class MustHaveIntegCommand extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (!hasInteg(pkg)) { return; }
+        if (!hasIntegTests(pkg)) { return; }
 
         expectJSON(pkg, 'scripts.integ', 'cdk-integ');
-
-        if (!pkg.hasDevDependency('cdk-integ-tools')) {
-            pkg.report({
-                message: 'Package must use cdk-integ-tools',
-                fix: () => pkg.addDevDependency('cdk-integ-tools', '^' + monoRepoVersion())
-            });
-        }
+        expectDevDependency(pkg, 'cdk-integ-tools', '^' + monoRepoVersion());
     }
 }
 
@@ -440,45 +424,31 @@ function isJSII(pkg: PackageJson): boolean {
 }
 
 /**
+ * Determine whether the package has tests
+ *
+ * A package has tests if the root/test directory exists
+ */
+function hasTestDirectory(pkg: PackageJson) {
+    return fs.existsSync(path.join(pkg.packageRoot, 'test'));
+}
+
+/**
  * Whether this package has integ tests
  *
  * A package has integ tests if it mentions 'cdk-integ' in the "test" script.
  */
-function hasInteg(pkg: PackageJson) {
-    const testScript = (pkg.json.scripts || {}).test || '';
-    return testScript.indexOf('cdk-integ') >= 0;
-}
+function hasIntegTests(pkg: PackageJson) {
+    if (!hasTestDirectory(pkg)) { return false; }
 
-/**
- * Find 'lerna.json' and read the global package version from there
- */
-function monoRepoVersion() {
-    const found = findLernaJSON();
-    const lernaJson = require(found);
-    return lernaJson.version;
-}
-
-function findLernaJSON() {
-    let dir = process.cwd();
-    while (true) {
-        const fullPath = path.join(dir, 'lerna.json');
-        if (fs.existsSync(fullPath)) {
-            return fullPath;
-        }
-
-        const parent = path.dirname(dir);
-        if (parent === dir) {
-            throw new Error('Could not find lerna.json');
-        }
-
-        dir = parent;
-    }
+    const files = fs.readdirSync(path.join(pkg.packageRoot, 'test'));
+    return files.some(p => p.startsWith('integ.'));
 }
 
 /**
  * Return whether this package should use CDK build tools
  */
 function shouldUseCDKBuildTools(pkg: PackageJson) {
-    // Obviously don't recurse into self
-    return pkg.packageName !== 'cdk-build-tools';
+    // The packages that DON'T use CDKBuildTools are the package itself
+    // and the packages used by it.
+    return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
 }
