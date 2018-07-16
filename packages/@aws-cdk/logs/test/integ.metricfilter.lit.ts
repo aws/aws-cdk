@@ -5,7 +5,9 @@ class MetricFilterIntegStack extends Stack {
     constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
 
-        const logGroup = new LogGroup(this, 'LogGroup');
+        const logGroup = new LogGroup(this, 'LogGroup', {
+            retainLogGroup: false
+        });
 
         /// !show
         new MetricFilter(this, 'MetricFilter', {
