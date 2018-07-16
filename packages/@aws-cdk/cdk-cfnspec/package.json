@@ -16,6 +16,7 @@
         "@types/md5": "^2.1.32",
         "fast-json-patch": "^2.0.6",
         "fs-extra": "^4.0.3",
+        "json-diff": "^0.5.2",
         "sort-json": "^2.0.0"
     },
     "dependencies": {
