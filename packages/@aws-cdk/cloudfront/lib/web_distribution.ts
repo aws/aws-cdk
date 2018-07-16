@@ -1,4 +1,4 @@
-import { CertificateArn } from '@aws-cdk/acm';
+import { CertificateArn } from '@aws-cdk/certificatemanager';
 import { Construct, FnConcat,  } from '@aws-cdk/core';
 import { Bucket, BucketRef } from '@aws-cdk/s3';
 import { cloudformation, DistributionDomainName } from './cloudfront.generated';
