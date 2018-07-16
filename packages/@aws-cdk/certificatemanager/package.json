@@ -19,8 +19,7 @@
     "build": "cfn2ts --scope=AWS::CertificateManager && jsii && tslint -p . && pkglint",
     "watch": "jsii -w",
     "lint": "jsii && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
-    "integ": "cdk-integ",
+    "test": "nodeunit test/test.*.js",
     "pkglint": "pkglint -f"
   },
   "keywords": [
@@ -40,6 +39,7 @@
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta"
+    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta"
   }
 }
