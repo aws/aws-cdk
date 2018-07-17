@@ -8,10 +8,10 @@
     "cdk-applet-js": "bin/cdk-applet-js"
   },
   "scripts": {
-    "build": "tslint -p . && tsc && chmod +x bin/cdk-applet-js && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "/bin/bash test/test-applet.sh",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
   "author": {
@@ -21,7 +21,8 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@types/yamljs": "^0.2.0",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

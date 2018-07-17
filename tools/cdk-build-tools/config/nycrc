@@ -1,0 +1,16 @@
+{
+    "check-coverage": true,
+    "all": true,
+    "lines": 80,
+    "branches": 50,
+    "reporter": [
+        "html",
+        "text-summary"
+    ],
+    "cache": true,
+    "exclude": [
+        "coverage/**",
+        "test/**",
+        "lib/*.generated.js"
+    ]
+}

@@ -16,11 +16,14 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=AWS::CloudTrail && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "jsii && tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::CloudTrail"
   },
   "keywords": [
     "aws",
@@ -38,7 +41,8 @@
     "aws-sdk": "^2.259.1",
     "cfn2ts": "^0.7.3-beta",
     "colors": "^1.2.1",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

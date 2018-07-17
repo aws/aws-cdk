@@ -12,10 +12,10 @@
     }
   },
   "scripts": {
-    "build": "jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "echo ok",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
   "author": {
@@ -24,7 +24,8 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",
