@@ -39,11 +39,8 @@
     "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation": "^0.7.3-beta",
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
-    "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/cx-api": "^0.7.3-beta",
-    "@aws-cdk/s3": "^0.7.3-beta",
     "@aws-cdk/util": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",

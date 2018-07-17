@@ -1,12 +1,11 @@
-import { App, Output } from '@aws-cdk/core';
 import { Environment } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
+import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-environment';
 import { waitForStack } from './util/cloudformation';
 import { SDK } from './util/sdk';
-import { ToolkitStack } from './util/toolkit-stack';
 
 export interface ToolkitInfo {
     bucketName: string
@@ -21,22 +20,20 @@ export async function loadToolkitInfo(environment: Environment, sdk: SDK, stackN
                 environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
         return undefined;
     }
-    const stackModel = new ToolkitStack(new App(), 'ToolkitStack', { env: environment });
     return {
-        bucketName: getOutputValue(stack, stackModel.bucketNameOutput),
-        bucketEndpoint: getOutputValue(stack, stackModel.bucketDomainNameOutput)
+        bucketName: getOutputValue(stack, BUCKET_NAME_OUTPUT),
+        bucketEndpoint: getOutputValue(stack, BUCKET_DOMAIN_NAME_OUTPUT)
     };
 }
 
-function getOutputValue(stack: CloudFormation.Stack, output: Output): string {
-    const name = output.name;
+function getOutputValue(stack: CloudFormation.Stack, output: string): string {
     let result: string | undefined;
     if (stack.Outputs) {
-        const found = stack.Outputs.find(o => o.OutputKey === name);
+        const found = stack.Outputs.find(o => o.OutputKey === output);
         result = found && found.OutputValue;
     }
     if (result === undefined) {
-        throw new Error(`The CDK toolkit stack (${stack.StackName}) does not have an output named ${name}. Use 'cdk bootstrap' to correct this.`);
+        throw new Error(`The CDK toolkit stack (${stack.StackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
     }
     return result;
 }
