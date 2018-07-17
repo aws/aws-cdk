@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { Action } from './actions';
 import { cloudformation } from './codepipeline.generated';

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Bucket } from '@aws-cdk/s3';
 import { BuildProject, ComputeType, S3BucketSource } from '../lib';
 

@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/core';
+import { PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import { Group, User } from '@aws-cdk/iam';
 import { EncryptionKey } from '@aws-cdk/kms';
 import { Test } from 'nodeunit';

@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Connections, IConnectable, IConnections, SecurityGroup, TcpPort, VpcNetwork } from '../lib';
 

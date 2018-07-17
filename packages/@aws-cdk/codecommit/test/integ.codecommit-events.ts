@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Topic } from '@aws-cdk/sns';
 import { Repository } from '../lib';
 

@@ -1,4 +1,4 @@
-import { Arn, Construct, Token } from '@aws-cdk/core';
+import { Arn, Construct, Token } from '@aws-cdk/cdk';
 import { AlarmArn, cloudformation } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, Statistic, Unit } from './metric';

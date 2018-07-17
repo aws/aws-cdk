@@ -1,14 +1,14 @@
 // Use pipeline as CloudWAtch event target
 
+import * as cdk from '@aws-cdk/cdk';
 import * as codecommit from '@aws-cdk/codecommit';
 import * as codepipeline from '@aws-cdk/codepipeline';
-import { App, Stack } from '@aws-cdk/core';
 import * as sns from '@aws-cdk/sns';
 import * as codebuild from '../lib';
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
-const stack = new Stack(app, 'aws-cdk-pipeline-event-target');
+const stack = new cdk.Stack(app, 'aws-cdk-pipeline-event-target');
 
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
 const sourceStage = new codepipeline.Stage(pipeline, 'Source');

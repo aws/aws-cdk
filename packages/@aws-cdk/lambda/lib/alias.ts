@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { Role } from '@aws-cdk/iam';
 import { FunctionName, LambdaRef } from './lambda-ref';
 import { LambdaVersion } from './lambda-version';

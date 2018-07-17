@@ -1,4 +1,4 @@
-import { deepClone, deepGet, deepMerge, deepSet } from '@aws-cdk/util';
+import { deepClone, deepGet, deepMerge, deepSet } from '@aws-cdk/cdk-util';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as fs_path from 'path';

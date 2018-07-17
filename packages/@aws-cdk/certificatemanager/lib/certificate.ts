@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { CertificateArn, CertificateRef } from './certificate-ref';
 import { cloudformation } from './certificatemanager.generated';
 import { apexDomain } from './util';

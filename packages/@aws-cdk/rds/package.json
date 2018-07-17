@@ -38,14 +38,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.3-beta",
+    "@aws-cdk/cdk-assert": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta",
     "cdk-build-tools": "^0.7.3-beta",
     "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
     "@aws-cdk/ec2": "^0.7.3-beta",
     "@aws-cdk/kms": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta"

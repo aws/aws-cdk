@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { PolicyStatement, Stack } from '@aws-cdk/core';
+import { PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { AmazonLinuxImage, AutoScalingGroup, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
 

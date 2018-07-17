@@ -212,12 +212,12 @@ You can use `find-cycles` to print a list of internal dependency cycles:
 
 ```shell
 $ tools/find-cycles/find-cycles.sh
-Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/iam
-Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/assert
-Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/iam
-Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/assert
-Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/cloudformation => @aws-cdk/assert
-Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/util => @aws-cdk/iam
+Cycle: @aws-cdk/iam => @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/iam
+Cycle: @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/cdk-assert
+Cycle: @aws-cdk/iam => @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/iam
+Cycle: @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/cdk-assert
+Cycle: @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/cloudformation => @aws-cdk/cdk-assert
+Cycle: @aws-cdk/iam => @aws-cdk/cdk-assert => aws-cdk => @aws-cdk/cdk-util => @aws-cdk/iam
 Cycle: @aws-cdk/sns => @aws-cdk/lambda => @aws-cdk/codecommit => @aws-cdk/sns
 Cycle: @aws-cdk/sns => @aws-cdk/lambda => @aws-cdk/codecommit => @aws-cdk/codepipeline => @aws-cdk/sns
 ```

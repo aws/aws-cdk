@@ -1,4 +1,4 @@
-import { Construct, Output } from '@aws-cdk/core';
+import { Construct, Output } from '@aws-cdk/cdk';
 import { RuleArn } from './events.generated';
 
 export interface EventRuleRefProps {

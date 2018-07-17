@@ -4,8 +4,8 @@ import 'source-map-support/register';
 // Ensure the AWS SDK is properly initialized before anything else.
 import '../lib/api/util/sdk-load-aws-config';
 
-import * as cxapi from '@aws-cdk/cx-api';
-import { deepMerge, isEmpty, partition } from '@aws-cdk/util';
+import * as cxapi from '@aws-cdk/cdk-cx-api';
+import { deepMerge, isEmpty, partition } from '@aws-cdk/cdk-util';
 import { spawn } from 'child_process';
 import { blue, green } from 'colors/safe';
 import * as fs from 'fs-extra';
@@ -14,7 +14,7 @@ import { promisify } from 'util';
 import * as YAML from 'yamljs';
 import * as yargs from 'yargs';
 
-import { BASE64_REQ_PREFIX } from '@aws-cdk/cx-api';
+import { BASE64_REQ_PREFIX } from '@aws-cdk/cdk-cx-api';
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import * as contextplugins from '../lib/contextplugins';
 import { printStackDiff } from '../lib/diff';

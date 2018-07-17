@@ -1,4 +1,4 @@
-import { Construct, Stack } from "@aws-cdk/core";
+import { Construct, Stack } from "@aws-cdk/cdk";
 import { Role } from "@aws-cdk/iam";
 import { FunctionArn, FunctionName, Lambda, LambdaPermission, LambdaProps, LambdaRef } from "@aws-cdk/lambda";
 

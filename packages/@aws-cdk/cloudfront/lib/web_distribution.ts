@@ -1,6 +1,6 @@
-import { CertificateArn } from '@aws-cdk/certificatemanager';
-import { Construct, FnConcat,  } from '@aws-cdk/core';
-import { Bucket, BucketRef } from '@aws-cdk/s3';
+import * as cdk from '@aws-cdk/cdk';
+import * as certificatemanager from '@aws-cdk/certificatemanager';
+import * as s3 from '@aws-cdk/s3';
 import { cloudformation, DistributionDomainName } from './cloudfront.generated';
 
 export enum HttpVersion {
@@ -40,7 +40,7 @@ export enum ViewerProtocolPolicy {
  */
 export interface AliasConfiguration {
     readonly names: string[],
-    readonly acmCertRef: CertificateArn,
+    readonly acmCertRef: certificatemanager.CertificateArn,
     readonly sslMethod?: SSLMethod,
 }
 
@@ -75,7 +75,7 @@ export enum SSLMethod {
  * @default prefix: no prefix is set by default.
  */
 export interface LoggingConfiguration {
-    readonly bucket?: BucketRef,
+    readonly bucket?: s3.BucketRef,
     readonly includeCookies?: boolean,
     readonly prefix?: string
 }
@@ -190,7 +190,7 @@ export interface S3OriginConfig {
     /**
      * The source bucket to serve content from
      */
-    readonly s3BucketSource: Bucket,
+    readonly s3BucketSource: s3.Bucket,
 
     /**
      * The optional origin identity cloudfront will use when calling your s3 bucket.
@@ -424,7 +424,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends Construct {
+export class CloudFrontWebDistribution extends cdk.Construct {
 
     /**
      * The hosted zone Id if using an alias record in Route53.
@@ -436,7 +436,7 @@ export class CloudFrontWebDistribution extends Construct {
      * The logging bucket for this CloudFront distribution.
      * If logging is not enabled for this distribution - this property will be undefined.
      */
-    public readonly loggingBucket?: BucketRef;
+    public readonly loggingBucket?: s3.BucketRef;
 
     /**
      * The domain name created by CloudFront for this distribution.
@@ -454,7 +454,7 @@ export class CloudFrontWebDistribution extends Construct {
         ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
     };
 
-    constructor(parent: Construct, name: string, props: CloudFrontWebDistributionProps) {
+    constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
         super(parent, name);
 
         const distributionConfig: cloudformation.DistributionResource.DistributionConfigProperty = {
@@ -504,7 +504,9 @@ export class CloudFrontWebDistribution extends Construct {
 
             if (originConfig.s3OriginSource && originConfig.s3OriginSource.originAccessIdentity) {
                 originProperty.s3OriginConfig = {
-                    originAccessIdentity: new FnConcat("origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref),
+                    originAccessIdentity: new cdk.FnConcat(
+                        "origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref
+                    ),
                 };
             }
             if (originConfig.customOriginSource) {

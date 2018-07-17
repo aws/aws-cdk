@@ -1,4 +1,4 @@
-import { App, Construct, Output, Stack, StackProps, Token } from '@aws-cdk/core';
+import { App, Construct, Output, Stack, StackProps, Token } from '@aws-cdk/cdk';
 import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
 import fs = require('fs');
 import { CustomResource, SingletonLambda } from '../lib';

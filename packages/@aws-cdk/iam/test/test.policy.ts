@@ -1,4 +1,4 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
+import { App, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Role } from '../lib';
 import { Group } from '../lib/group';

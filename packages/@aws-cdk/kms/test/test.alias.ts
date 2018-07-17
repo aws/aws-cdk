@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { EncryptionKey } from '../lib';
 import { EncryptionKeyAlias } from '../lib/alias';

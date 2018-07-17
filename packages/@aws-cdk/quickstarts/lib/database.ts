@@ -1,7 +1,7 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
+import { applyDefaults } from '@aws-cdk/cdk-util';
 import { DefaultConnections, IConnectable, IPortRange, SecurityGroup, TcpPort, VpcNetworkRef } from '@aws-cdk/ec2';
 import * as rds from '@aws-cdk/rds';
-import { applyDefaults } from '@aws-cdk/util';
 
 export interface SqlServerProps {
     instanceClass?: string;

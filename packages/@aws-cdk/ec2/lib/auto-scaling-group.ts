@@ -1,5 +1,5 @@
 import * as autoscaling from '@aws-cdk/autoscaling';
-import { Construct, FnBase64, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { Construct, FnBase64, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/cdk';
 import * as iam from '@aws-cdk/iam';
 import * as sns from '@aws-cdk/sns';
 import { AllConnections, AnyIPv4, IConnectionPeer } from './connection';

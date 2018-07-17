@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { HostedZoneRef } from '../hosted-zone-ref';
 import { cloudformation } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';

@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { Lambda, LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
 import { Test } from 'nodeunit';
 import { Action, ActionArtifactBounds, ActionCategory, Artifact, InvokeLambdaAction, Pipeline, Stage } from '../lib';

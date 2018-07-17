@@ -4,7 +4,7 @@
 // to the very lowest level to create CloudFormation resources by hand, without even generated
 // library support.
 
-import { App, Resource, Stack } from '@aws-cdk/core';
+import { App, Resource, Stack } from '@aws-cdk/cdk';
 import * as cloudwatch from '../lib';
 
 const app = new App(process.argv);

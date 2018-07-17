@@ -1,4 +1,4 @@
-import { Token } from "@aws-cdk/core";
+import { Token } from "@aws-cdk/cdk";
 import { IConnectable, IConnections, SecurityGrouplessConnections } from "./connections";
 
 /**

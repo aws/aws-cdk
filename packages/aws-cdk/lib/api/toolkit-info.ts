@@ -1,4 +1,4 @@
-import { Environment } from '@aws-cdk/cx-api';
+import { Environment } from '@aws-cdk/cdk-cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { debug } from '../logging';

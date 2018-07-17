@@ -9,7 +9,7 @@ import * as util from './util';
 
 const RESOURCE_CLASS_POSTFIX = 'Resource';
 
-export const CORE_NAMESPACE = 'core';
+export const CORE_NAMESPACE = 'cdk';
 
 /**
  * The name of corresponding objects in the generated code
@@ -99,8 +99,8 @@ export class CodeName {
     }
 }
 
-export const TAG_NAME = new CodeName('', 'core', 'Tag');
-export const TOKEN_NAME = new CodeName('', 'core', 'Token');
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
 export class Attribute {
     constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {

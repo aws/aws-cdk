@@ -1,11 +1,11 @@
+import * as cdk from '@aws-cdk/cdk';
 import * as codecommit from '@aws-cdk/codecommit';
 import * as codepipeline from '@aws-cdk/codepipeline';
-import { App, Stack } from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
-const stack = new Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
+const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-repo' });
 

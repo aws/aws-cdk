@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { SecretParameter, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { PipelineSource, Repository } from '@aws-cdk/codecommit';
 import { AmazonS3Source, ApprovalAction, GitHubSource, Pipeline, Stage } from '@aws-cdk/codepipeline';
-import { SecretParameter, Stack } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/s3';
 import { Topic } from '@aws-cdk/sns';
 import { Test } from 'nodeunit';

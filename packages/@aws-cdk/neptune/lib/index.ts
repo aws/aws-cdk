@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { DefaultConnections, IConnectable } from '@aws-cdk/ec2';
 import { KeyArn } from '@aws-cdk/kms';
 import { ClusterIdentifier, DatabaseCluster, DatabaseClusterEngine, Endpoint, InstanceIdentifier, InstanceProps, Login } from '@aws-cdk/rds';

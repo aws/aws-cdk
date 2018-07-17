@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/core';
+import { Token } from '@aws-cdk/cdk';
 import { Policy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;

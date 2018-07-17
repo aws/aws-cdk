@@ -1,6 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { FnConcat, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { Repository } from '@aws-cdk/codecommit';
-import { FnConcat, Stack } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/s3';
 import { Test } from 'nodeunit';
 import {

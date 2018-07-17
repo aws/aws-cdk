@@ -1,4 +1,4 @@
-import { Construct, FnConcat, Token } from '@aws-cdk/core';
+import { Construct, FnConcat, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
 import { cloudformation, RuleArn } from './events.generated';
 import { TargetInputTemplate } from './input-options';

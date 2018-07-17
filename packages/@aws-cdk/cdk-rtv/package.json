@@ -1,0 +1,50 @@
+{
+  "name": "@aws-cdk/cdk-rtv",
+  "version": "0.7.3-beta",
+  "description": "Runtime values support for the AWS CDK",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "names": {
+      "java": "com.amazonaws.cdk.rtv",
+      "dotnet": "Aws.Cdk.Rtv"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "integ": "cdk-integ"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "rtv"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "pkglint": "^0.7.3-beta",
+    "@aws-cdk/cdk-assert": "^0.7.3-beta",
+    "@aws-cdk/ec2": "^0.7.3-beta",
+    "@aws-cdk/sqs": "^0.7.3-beta",
+    "@aws-cdk/lambda": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/iam": "^0.7.3-beta",
+    "@aws-cdk/ssm": "^0.7.3-beta"
+  }
+}

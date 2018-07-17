@@ -1,4 +1,4 @@
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
+import { App, Construct, Stack, StackProps } from '@aws-cdk/cdk';
 import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
 import { BucketName, BucketRef } from '@aws-cdk/s3';
 import { CognitoChatRoomPool } from './cognito-chat-room-pool';

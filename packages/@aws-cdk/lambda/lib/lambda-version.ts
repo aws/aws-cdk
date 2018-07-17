@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { LambdaRef } from './lambda-ref';
 import { cloudformation, Version } from './lambda.generated';
 

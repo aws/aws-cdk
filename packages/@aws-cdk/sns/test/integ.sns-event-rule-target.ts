@@ -1,4 +1,4 @@
-import { App, Stack } from "@aws-cdk/core";
+import { App, Stack } from "@aws-cdk/cdk";
 import { EventRule } from "@aws-cdk/events";
 import { Queue } from "@aws-cdk/sqs";
 import { Topic } from "../lib";

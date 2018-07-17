@@ -175,9 +175,9 @@ First import the required packages.
 
 .. code-block:: js
 
-   import { App, Stack } from '@aws-cdk/core';
+   import { App, Stack } from '@aws-cdk/cdk';
    import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
-   import { RuntimeValue } from '@aws-cdk/rtv';
+   import { RuntimeValue } from '@aws-cdk/cdk-rtv';
    import { Bucket } from '@aws-cdk/s3';
    import { Topic } from '@aws-cdk/sns';
 

@@ -1,9 +1,8 @@
-import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { AccountPrincipal, Arn, AwsRegion, Construct, FnConcat, FnSelect, FnSplit,
-         Output, PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
-import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
-import { Role } from '@aws-cdk/iam';
-import logs = require('@aws-cdk/logs');
+import * as cdk from '@aws-cdk/cdk';
+import * as cloudwatch from '@aws-cdk/cloudwatch';
+import * as events from '@aws-cdk/events';
+import * as iam from '@aws-cdk/iam';
+import * as logs from '@aws-cdk/logs';
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
@@ -21,10 +20,10 @@ export interface LambdaRefProps {
      * The IAM execution role associated with this function.
      * If the role is not specified, any role-related operations will no-op.
      */
-    role?: Role;
+    role?: iam.Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ILogSubscriptionDestination {
+export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTarget, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -36,15 +35,15 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      * @param ref A reference to a Lambda function. Can be created manually (see
      * example above) or obtained through a call to `lambda.export()`.
      */
-    public static import(parent: Construct, name: string, ref: LambdaRefProps): LambdaRef {
+    public static import(parent: cdk.Construct, name: string, ref: LambdaRefProps): LambdaRef {
         return new LambdaRefImport(parent, name, ref);
     }
 
     /**
      * Return the given named metric for this Lambda
      */
-    public static metricAll(metricName: string, props?: MetricCustomization): Metric {
-        return new Metric({
+    public static metricAll(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return new cloudwatch.Metric({
             namespace: 'AWS/Lambda',
             metricName,
             ...props
@@ -55,7 +54,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public static metricAllErrors(props?: MetricCustomization): Metric {
+    public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return LambdaRef.metricAll('Errors', { statistic: 'sum', ...props });
     }
 
@@ -64,7 +63,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default average over 5 minutes
      */
-    public static metricAllDuration(props?: MetricCustomization): Metric {
+    public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return LambdaRef.metricAll('Duration', props);
     }
 
@@ -73,7 +72,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public static metricAllInvocations(props?: MetricCustomization): Metric {
+    public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return LambdaRef.metricAll('Invocations', { statistic: 'sum', ...props });
     }
 
@@ -82,7 +81,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public static metricAllThrottles(props?: MetricCustomization): Metric {
+    public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return LambdaRef.metricAll('Throttles', { statistic: 'sum', ...props });
     }
 
@@ -99,7 +98,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
     /**
      * The IAM role associated with this function.
      */
-    public abstract readonly role?: Role;
+    public abstract readonly role?: iam.Role;
 
     /**
      * Whether the addPermission() call adds any permissions
@@ -142,7 +141,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
         });
     }
 
-    public addToRolePolicy(statement: PolicyStatement) {
+    public addToRolePolicy(statement: cdk.PolicyStatement) {
         if (!this.role) {
             return;
         }
@@ -154,11 +153,11 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTarget {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addPermission('InvokedByCloudWatch', {
                 action: 'lambda:InvokeFunction',
-                principal: new ServicePrincipal('events.amazonaws.com')
+                principal: new cdk.ServicePrincipal('events.amazonaws.com')
             });
 
             this.eventRuleTargetPolicyAdded = true;
@@ -173,8 +172,8 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
     /**
      * Return the given named metric for this Lambda
      */
-    public metric(metricName: string, props?: MetricCustomization): Metric {
-        return new Metric({
+    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return new cloudwatch.Metric({
             namespace: 'AWS/Lambda',
             metricName,
             dimensions: { FunctionName: this.functionName },
@@ -187,7 +186,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public metricErrors(props?: MetricCustomization): Metric {
+    public metricErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('Errors', { statistic: 'sum', ...props });
     }
 
@@ -196,7 +195,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default average over 5 minutes
      */
-    public metricDuration(props?: MetricCustomization): Metric {
+    public metricDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('Duration', props);
     }
 
@@ -205,7 +204,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public metricInvocations(props?: MetricCustomization): Metric {
+    public metricInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('Invocations', { statistic: 'sum', ...props });
     }
 
@@ -214,7 +213,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      *
      * @default sum over 5 minutes
      */
-    public metricThrottles(props?: MetricCustomization): Metric {
+    public metricThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
@@ -227,7 +226,7 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
             //
             // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new ServicePrincipal(new FnConcat('logs.', new AwsRegion(), '.amazonaws.com')),
+                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
                 sourceArn: arn
             });
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -240,11 +239,11 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
      */
     public export(): LambdaRefProps {
         return {
-            functionArn: new Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+            functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
         };
     }
 
-    private parsePermissionPrincipal(principal?: PolicyPrincipal) {
+    private parsePermissionPrincipal(principal?: cdk.PolicyPrincipal) {
         if (!principal) {
             return undefined;
         }
@@ -252,14 +251,14 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
         // use duck-typing, not instance of
 
         if ('accountId' in principal) {
-            return (principal as AccountPrincipal).accountId;
+            return (principal as cdk.AccountPrincipal).accountId;
         }
 
         if (`service` in principal) {
-            return (principal as ServicePrincipal).service;
+            return (principal as cdk.ServicePrincipal).service;
         }
 
-        throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(resolve(principal))}. ` +
+        throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +
             'Supported: AccountPrincipal, ServicePrincipal');
     }
 }
@@ -267,11 +266,11 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
 class LambdaRefImport extends LambdaRef {
     public readonly functionName: FunctionName;
     public readonly functionArn: FunctionArn;
-    public readonly role?: Role;
+    public readonly role?: iam.Role;
 
     protected readonly canCreatePermissions = false;
 
-    constructor(parent: Construct, name: string, props: LambdaRefProps) {
+    constructor(parent: cdk.Construct, name: string, props: LambdaRefProps) {
         super(parent, name);
 
         this.functionArn = props.functionArn;
@@ -292,9 +291,9 @@ class LambdaRefImport extends LambdaRef {
      *
      * @returns `FnSelect(6, FnSplit(':', arn))`
      */
-    private extractNameFromArn(arn: Arn) {
-        return new FnSelect(6, new FnSplit(':', arn));
+    private extractNameFromArn(arn: cdk.Arn) {
+        return new cdk.FnSelect(6, new cdk.FnSplit(':', arn));
 
     }
 }
-export class FunctionName extends Token { }
+export class FunctionName extends cdk.Token { }

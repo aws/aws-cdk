@@ -1,4 +1,4 @@
-import { AwsRegion, Token } from "@aws-cdk/core";
+import { AwsRegion, Token } from "@aws-cdk/cdk";
 import { Alarm } from "./alarm";
 import { Metric } from "./metric";
 import { parseStatistic } from './util.statistic';

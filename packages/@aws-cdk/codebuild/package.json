@@ -41,7 +41,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.3-beta",
+    "@aws-cdk/cdk-assert": "^0.7.3-beta",
     "@aws-cdk/sns": "^0.7.3-beta",
     "aws-sdk": "^2.259.1",
     "cfn2ts": "^0.7.3-beta",
@@ -52,7 +52,7 @@
   "dependencies": {
     "@aws-cdk/codecommit": "^0.7.3-beta",
     "@aws-cdk/codepipeline": "^0.7.3-beta",
-    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
     "@aws-cdk/events": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
     "@aws-cdk/kms": "^0.7.3-beta",

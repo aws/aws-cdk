@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { LambdaInlineCode } from './code';
 import { Lambda } from './lambda';
 import { InlinableJavascriptLambdaRuntime, LambdaRuntime } from './runtime';

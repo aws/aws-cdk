@@ -1,5 +1,5 @@
-import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal, resolve, Stack } from '@aws-cdk/core';
+import { AccountPrincipal, resolve, Stack } from '@aws-cdk/cdk';
+import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { Alias, Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
 

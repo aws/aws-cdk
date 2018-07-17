@@ -1,4 +1,4 @@
-import { Construct, IDependable, Output, StringListOutput, Token } from "@aws-cdk/core";
+import { Construct, IDependable, Output, StringListOutput, Token } from "@aws-cdk/cdk";
 
 /**
  * Customize how instances are placed inside a VPC

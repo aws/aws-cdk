@@ -1,4 +1,4 @@
-import { Environment} from '@aws-cdk/cx-api';
+import { Environment} from '@aws-cdk/cdk-cx-api';
 import { CloudFormation, config, CredentialProviderChain, EC2, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';

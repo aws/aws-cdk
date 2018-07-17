@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { KeyAttributeType, Table } from '@aws-cdk/dynamodb';
 
 export class DynamoPostsTable extends Construct {

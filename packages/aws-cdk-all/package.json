@@ -19,10 +19,10 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/cdk-cx-api": "^0.7.3-beta",
+    "@aws-cdk/cdk-rtv": "^0.7.3-beta",
     "@aws-cdk/custom-resources": "^0.7.3-beta",
-    "@aws-cdk/cx-api": "^0.7.3-beta",
-    "@aws-cdk/rtv": "^0.7.3-beta",
     "@aws-cdk/apigateway": "^0.7.3-beta",
     "@aws-cdk/appsync": "^0.7.3-beta",
     "@aws-cdk/applicationautoscaling": "^0.7.3-beta",

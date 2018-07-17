@@ -3,7 +3,7 @@
 // support multi-stack deployments since we have no good way of
 // ordering stack deployments. So run this test by hand for now
 // until we have that.
-import * as cdk from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/cdk';
 import * as ec2 from '../lib';
 
 const app = new cdk.App(process.argv);

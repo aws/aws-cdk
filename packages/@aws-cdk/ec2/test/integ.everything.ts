@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
 import { AmazonLinuxImage, AnyIPv4, AutoScalingGroup, ClassicLoadBalancer, InstanceClass,
     InstanceSize, InstanceTypePair, VpcNetwork } from '../lib';
 

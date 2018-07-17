@@ -1,4 +1,4 @@
-import { Arn, Construct, Output } from "@aws-cdk/core";
+import { Arn, Construct, Output } from "@aws-cdk/cdk";
 
 /**
  * Represents the ARN of a certificate

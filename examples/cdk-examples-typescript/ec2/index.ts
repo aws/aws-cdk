@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/cdk';
 import * as ec2 from '@aws-cdk/ec2';
 
 class AppWithVpc extends cdk.Stack {

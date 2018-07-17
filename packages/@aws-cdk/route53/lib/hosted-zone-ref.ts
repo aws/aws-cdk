@@ -1,4 +1,4 @@
-import { Construct, Output, Token } from "@aws-cdk/core";
+import { Construct, Output, Token } from "@aws-cdk/cdk";
 
 /**
  * Imported or created hosted zone

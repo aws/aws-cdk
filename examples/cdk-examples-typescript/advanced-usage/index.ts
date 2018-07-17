@@ -1,5 +1,5 @@
+import * as cdk from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/cloudformation';
-import * as cdk from '@aws-cdk/core';
 import * as ec2 from '@aws-cdk/ec2';
 import * as iam from '@aws-cdk/iam';
 import * as s3 from '@aws-cdk/s3';

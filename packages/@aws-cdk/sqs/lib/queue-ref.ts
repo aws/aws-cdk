@@ -1,4 +1,4 @@
-import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/core';
+import { Construct, Output, PolicyStatement, Token } from '@aws-cdk/cdk';
 import { QueuePolicy } from './policy';
 import { QueueArn } from './sqs.generated';
 

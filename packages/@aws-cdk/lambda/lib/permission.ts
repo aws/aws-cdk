@@ -1,4 +1,4 @@
-import { Arn, PolicyPrincipal } from '@aws-cdk/core';
+import { Arn, PolicyPrincipal } from '@aws-cdk/cdk';
 
 /**
  * Represents a permission statement that can be added to a Lambda's resource policy

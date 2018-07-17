@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { KeyAttributeType, Table } from '@aws-cdk/dynamodb';
 
 class HelloCDK extends Stack {

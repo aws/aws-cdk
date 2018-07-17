@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
 import { Topic } from '../lib';
 

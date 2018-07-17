@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { FilterPattern, LogGroup, SubscriptionFilter } from '@aws-cdk/logs';
 import { Test } from 'nodeunit';
 import { Stream } from '../lib';

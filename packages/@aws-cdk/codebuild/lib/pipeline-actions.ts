@@ -1,5 +1,5 @@
-import { Artifact, BuildAction, Stage } from '@aws-cdk/codepipeline';
-import { PolicyStatement } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/cdk';
+import * as codepipeline from '@aws-cdk/codepipeline';
 import { BuildProjectRef } from './project';
 
 /**
@@ -9,7 +9,7 @@ export interface PipelineBuildActionProps {
     /**
      * The source to use as input for this build
      */
-    inputArtifact: Artifact;
+    inputArtifact: codepipeline.Artifact;
 
     /**
      * The name of the build's output artifact
@@ -25,8 +25,8 @@ export interface PipelineBuildActionProps {
 /**
  * CodePipeline build Action that uses AWS CodeBuild.
  */
-export class PipelineBuildAction extends BuildAction {
-    constructor(parent: Stage, name: string, props: PipelineBuildActionProps) {
+export class PipelineBuildAction extends codepipeline.BuildAction {
+    constructor(parent: codepipeline.Stage, name: string, props: PipelineBuildActionProps) {
         // This happened when ProjectName was accidentally set to the project's ARN:
         // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
 
@@ -45,7 +45,7 @@ export class PipelineBuildAction extends BuildAction {
             'codebuild:StopBuild',
         ];
 
-        parent.pipeline.addToRolePolicy(new PolicyStatement()
+        parent.pipeline.addToRolePolicy(new cdk.PolicyStatement()
             .addResource(props.project.projectArn)
             .addActions(...actions));
 

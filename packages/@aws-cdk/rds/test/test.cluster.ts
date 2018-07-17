@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { InstanceClass, InstanceSize, InstanceTypePair } from '@aws-cdk/ec2';
 import { VpcNetwork } from '@aws-cdk/ec2';
 import { Test } from 'nodeunit';

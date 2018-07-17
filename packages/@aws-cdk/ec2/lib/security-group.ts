@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/core';
+import { Construct, Token } from '@aws-cdk/cdk';
 import { IConnectionPeer, IPortRange } from './connection';
 import { cloudformation, SecurityGroupId, SecurityGroupVpcId } from './ec2.generated';
 import { slugify } from './util';

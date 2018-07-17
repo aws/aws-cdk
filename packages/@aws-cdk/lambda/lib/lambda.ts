@@ -1,4 +1,4 @@
-import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { Arn, Construct, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/cdk';
 import { Role } from '@aws-cdk/iam';
 import { LambdaCode } from './code';
 import { FunctionName, LambdaRef } from './lambda-ref';

@@ -1,6 +1,6 @@
 // Creates a default group, with no users and no policy attached.
 
-import { App, Stack } from "@aws-cdk/core";
+import { App, Stack } from "@aws-cdk/cdk";
 import { Group } from "../lib";
 
 const app = new App(process.argv);

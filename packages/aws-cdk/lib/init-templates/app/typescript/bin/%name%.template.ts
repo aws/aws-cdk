@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { Topic } from '@aws-cdk/sns';
 import { Queue } from '@aws-cdk/sqs';
 

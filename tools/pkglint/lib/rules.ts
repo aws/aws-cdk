@@ -160,6 +160,7 @@ export class NoJsiiDep extends ValidationRule {
 function cdkModuleName(name: string) {
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
+    name = name.replace(/^cdk-/, '');
     return name;
 }
 

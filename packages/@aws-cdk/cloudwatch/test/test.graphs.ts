@@ -1,4 +1,4 @@
-import { resolve, Stack } from '@aws-cdk/core';
+import { resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { AlarmWidget, GraphWidget, Metric, Shading, SingleValueWidget } from '../lib';
 

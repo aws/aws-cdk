@@ -1,5 +1,5 @@
 import { Arn, AwsRegion, Construct, FnConcat, HashedAddressingScheme, Output,
-    PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/core';
+    PolicyStatement, ServicePrincipal, Stack, Token } from '@aws-cdk/cdk';
 import { IIdentityResource, Role } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
 import logs = require('@aws-cdk/logs');

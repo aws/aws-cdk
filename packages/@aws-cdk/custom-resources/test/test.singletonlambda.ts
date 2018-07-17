@@ -1,5 +1,5 @@
-import { expect, matchTemplate } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect, matchTemplate } from '@aws-cdk/cdk-assert';
 import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
 import { Test } from 'nodeunit';
 import { SingletonLambda } from '../lib';

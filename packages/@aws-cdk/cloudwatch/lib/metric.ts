@@ -1,4 +1,4 @@
-import { Construct, PolicyStatement } from "@aws-cdk/core";
+import { Construct, PolicyStatement } from "@aws-cdk/cdk";
 import { IIdentityResource } from "@aws-cdk/iam";
 import { Alarm, ComparisonOperator, TreatMissingData } from "./alarm";
 import { parseStatistic } from './util.statistic';

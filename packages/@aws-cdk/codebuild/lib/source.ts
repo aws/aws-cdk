@@ -1,6 +1,6 @@
-import { Repository } from '@aws-cdk/codecommit';
-import { FnConcat, PolicyStatement } from '@aws-cdk/core';
-import { BucketRef } from '@aws-cdk/s3';
+import * as cdk from '@aws-cdk/cdk';
+import * as codecommit from '@aws-cdk/codecommit';
+import * as s3 from '@aws-cdk/s3';
 import { cloudformation } from './codebuild.generated';
 import { BuildProject } from './project';
 
@@ -25,13 +25,13 @@ export abstract class BuildSource {
  * CodeCommit Source definition for a CodeBuild project
  */
 export class CodeCommitSource extends BuildSource {
-    constructor(private readonly repo: Repository) {
+    constructor(private readonly repo: codecommit.Repository) {
         super();
     }
 
     public bind(project: BuildProject) {
         // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-        project.addToRolePolicy(new PolicyStatement()
+        project.addToRolePolicy(new cdk.PolicyStatement()
             .addAction('codecommit:GitPull')
             .addResource(this.repo.repositoryArn));
     }
@@ -115,14 +115,14 @@ export class BitBucketSource extends BuildSource {
  * S3 bucket definition for a CodeBuild project.
  */
 export class S3BucketSource extends BuildSource {
-    constructor(private readonly bucket: BucketRef, private readonly path: string) {
+    constructor(private readonly bucket: s3.BucketRef, private readonly path: string) {
         super();
     }
 
     public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
         return {
             type: SourceType.S3,
-            location: new FnConcat(this.bucket.bucketName, '/', this.path)
+            location: new cdk.FnConcat(this.bucket.bucketName, '/', this.path)
         };
     }
 

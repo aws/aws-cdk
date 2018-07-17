@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { App, Arn, FnConcat, FnJoin, Stack } from '@aws-cdk/core';
+import { App, Arn, FnConcat, FnJoin, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import * as iam from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
 import { IEventRuleTarget } from '../lib';

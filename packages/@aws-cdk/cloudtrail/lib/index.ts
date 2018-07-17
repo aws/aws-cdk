@@ -1,4 +1,4 @@
-import { AwsAccountId, Construct, FnConcat, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { AwsAccountId, Construct, FnConcat, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/cdk';
 import { Role } from '@aws-cdk/iam';
 import { EncryptionKeyRef } from '@aws-cdk/kms';
 import * as logs from '@aws-cdk/logs';

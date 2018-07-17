@@ -1,4 +1,4 @@
-import { Construct,  } from '@aws-cdk/core';
+import { Construct,  } from '@aws-cdk/cdk';
 import { cloudformation, TopicName } from './sns.generated';
 import { TopicArn, TopicRef } from './topic-ref';
 

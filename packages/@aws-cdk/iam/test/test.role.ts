@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/core';
+import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { Role } from '../lib';
 

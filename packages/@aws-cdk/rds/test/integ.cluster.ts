@@ -1,4 +1,4 @@
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
 import { InstanceClass, InstanceSize, InstanceTypePair } from '@aws-cdk/ec2';
 import { VpcNetwork } from '@aws-cdk/ec2';
 import { DatabaseCluster, DatabaseClusterEngine, Password, Username } from '../lib';

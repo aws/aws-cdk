@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cdk-cx-api';
 import * as aws from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { format } from 'util';

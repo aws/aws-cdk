@@ -1,5 +1,5 @@
-import { Source, Stage } from '@aws-cdk/codepipeline';
-import { PolicyStatement } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/cdk';
+import * as codepipeline from '@aws-cdk/codepipeline';
 import { RepositoryRef } from './repository';
 
 /**
@@ -33,8 +33,8 @@ export interface PipelineSourceProps {
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
-export class PipelineSource extends Source {
-    constructor(parent: Stage, name: string, props: PipelineSourceProps) {
+export class PipelineSource extends codepipeline.Source {
+    constructor(parent: codepipeline.Stage, name: string, props: PipelineSourceProps) {
         super(parent, name, {
             provider: 'CodeCommit',
             configuration: {
@@ -54,7 +54,7 @@ export class PipelineSource extends Source {
             'codecommit:CancelUploadArchive',
         ];
 
-        parent.pipeline.addToRolePolicy(new PolicyStatement()
+        parent.pipeline.addToRolePolicy(new cdk.PolicyStatement()
             .addResource(props.repository.repositoryArn)
             .addActions(...actions));
     }

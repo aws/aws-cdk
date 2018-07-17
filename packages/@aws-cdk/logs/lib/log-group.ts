@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
 import { cloudformation, LogGroupArn } from './logs.generated';
 import { MetricFilter } from './metric-filter';

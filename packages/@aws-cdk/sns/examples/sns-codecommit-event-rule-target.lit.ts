@@ -1,13 +1,13 @@
-import { Repository } from '@aws-cdk/codecommit';
-import { App, Stack, StackProps } from "@aws-cdk/core";
-import { EventRule } from "@aws-cdk/events";
-import { Topic } from "../lib";
+import * as cdk from '@aws-cdk/cdk';
+import * as codecommit from '@aws-cdk/codecommit';
+import * as events from '@aws-cdk/events';
+import { Topic } from '../lib';
 
-class IntegStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class IntegStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const codeCommitRepo = new Repository(this, 'Repo', {
+        const codeCommitRepo = new codecommit.Repository(this, 'Repo', {
             repositoryName: 'TestRepo'
         });
 
@@ -15,7 +15,7 @@ class IntegStack extends Stack {
         const myTopic = new Topic(this, 'MyTopic');
 
         // Use an EventRule and add the topic as a target
-        const rule = new EventRule(this, 'Rule', {
+        const rule = new events.EventRule(this, 'Rule', {
             scheduleExpression: 'rate(1 minute)'
         });
         rule.addTarget(myTopic);
@@ -27,6 +27,6 @@ class IntegStack extends Stack {
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 new IntegStack(app, 'aws-cdk-sns-event-target');
 process.stdout.write(app.run());

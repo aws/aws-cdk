@@ -4,14 +4,14 @@ set -euo pipefail
 export PATH=node_modules/.bin:$PATH
 
 # Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
-lerna exec --scope=cfn2ts                       \
-           --scope=pkglint                      \
-           --scope=@aws-cdk/cdk-cfnspec         \
-           --scope=@aws-cdk/assert              \
-           --scope=@aws-cdk/cloudformation-diff \
-           --scope=@aws-cdk/core                \
-           --scope=@aws-cdk/cx-api              \
-           --stream                             \
+lerna exec --scope=cfn2ts                           \
+           --scope=pkglint                          \
+           --scope=@aws-cdk/cdk                     \
+           --scope=@aws-cdk/cdk-assert              \
+           --scope=@aws-cdk/cdk-cfnspec             \
+           --scope=@aws-cdk/cdk-cloudformation-diff \
+           --scope=@aws-cdk/cdk-cx-api              \
+           --stream                                 \
   npm run build
 
 VERSION=$(node -e 'console.log(require("./lerna.json").version);')
@@ -88,13 +88,13 @@ EOM
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^${VERSION}",
+    "@aws-cdk/cdk-assert": "^${VERSION}",
     "cdk-build-tools": "^${VERSION}",
     "cfn2ts": "^${VERSION}",
     "pkglint": "^${VERSION}"
   },
   "dependencies": {
-    "@aws-cdk/core": "^${VERSION}"
+    "@aws-cdk/cdk": "^${VERSION}"
   }
 }
 EOM

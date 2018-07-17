@@ -1,4 +1,4 @@
-import { App, PolicyStatement, Stack } from "@aws-cdk/core";
+import { App, PolicyStatement, Stack } from "@aws-cdk/cdk";
 import { Policy } from "../lib";
 import { User } from "../lib/user";
 

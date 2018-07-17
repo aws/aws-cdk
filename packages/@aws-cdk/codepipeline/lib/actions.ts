@@ -1,4 +1,4 @@
-import { Construct, PolicyStatement, Secret } from '@aws-cdk/core';
+import { Construct, PolicyStatement, Secret } from '@aws-cdk/cdk';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { LambdaRef } from '@aws-cdk/lambda';
 import { BucketRef } from '@aws-cdk/s3';

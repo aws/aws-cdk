@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 // tslint:disable-next-line:ordered-imports
 import { DefaultConnections, InstanceType, IPortRange, SecurityGroup, TcpPortFromAttribute, SecurityGroupId } from '@aws-cdk/ec2';
 import { KeyArn } from '@aws-cdk/kms';

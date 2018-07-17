@@ -1,4 +1,4 @@
-import { Token } from "@aws-cdk/core";
+import { Token } from "@aws-cdk/cdk";
 import { InstanceType, VpcNetworkRef, VpcPlacementStrategy } from "@aws-cdk/ec2";
 
 /**

@@ -1,5 +1,5 @@
-import { expect, haveResource, not } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect, haveResource, not } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { CloudTrail, LogRetention, ReadWriteType } from '../lib';
 

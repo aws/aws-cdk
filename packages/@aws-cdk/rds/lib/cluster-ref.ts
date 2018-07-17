@@ -1,4 +1,4 @@
-import { Construct, FnJoin, Output, StringListOutput, Token } from '@aws-cdk/core';
+import { Construct, FnJoin, Output, StringListOutput, Token } from '@aws-cdk/cdk';
 import { DefaultConnections, IDefaultConnectable, IPortRange, SecurityGroupId, SecurityGroupRef, TcpPortFromAttribute } from '@aws-cdk/ec2';
 import { DBClusterEndpointAddress } from './rds.generated';
 

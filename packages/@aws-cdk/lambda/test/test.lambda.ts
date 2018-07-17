@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
+import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { EventRule } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';

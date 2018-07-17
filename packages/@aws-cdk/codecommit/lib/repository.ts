@@ -1,4 +1,4 @@
-import { Arn, Construct, Output } from '@aws-cdk/core';
+import { Arn, Construct, Output } from '@aws-cdk/cdk';
 import { EventRule, EventRuleProps, IEventRuleTarget } from '@aws-cdk/events';
 import { cloudformation, RepositoryArn, RepositoryName } from './codecommit.generated';
 

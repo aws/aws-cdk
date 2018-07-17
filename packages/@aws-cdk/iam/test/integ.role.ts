@@ -1,4 +1,4 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/core";
+import { App, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/cdk";
 import { Policy, Role } from "../lib";
 
 const app = new App(process.argv);

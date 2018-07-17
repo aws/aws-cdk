@@ -1,4 +1,4 @@
-import { Arn, Construct, FnConcat, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/core';
+import { Arn, Construct, FnConcat, Output, PolicyStatement, ServicePrincipal, Token } from '@aws-cdk/cdk';
 import { EventRule, EventRuleProps, EventRuleTarget } from '@aws-cdk/events';
 import { IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';

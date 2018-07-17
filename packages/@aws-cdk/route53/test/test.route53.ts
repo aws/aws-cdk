@@ -1,5 +1,5 @@
-import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/cdk';
+import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/cdk-assert';
 import { VpcNetwork } from '@aws-cdk/ec2';
 import { Test } from 'nodeunit';
 import { HostedZoneRef, PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';

@@ -1,4 +1,4 @@
-import { Arn } from '@aws-cdk/core';
+import { Arn } from '@aws-cdk/cdk';
 import { BucketRefProps } from './bucket';
 
 export function validateBucketName(bucketName?: string) {

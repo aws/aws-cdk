@@ -40,7 +40,7 @@ export default class CodeGenerator {
         this.code.line();
         this.code.line('// tslint:disable:max-line-length | This is generated code - line lengths are difficult to control');
         this.code.line();
-        this.code.line(`import * as ${CORE} from '@aws-cdk/core';`);
+        this.code.line(`import * as ${CORE} from '@aws-cdk/cdk';`);
     }
 
     public async upToDate(outPath: string): Promise<boolean> {
@@ -308,12 +308,12 @@ export default class CodeGenerator {
      * The generated code looks like this:
      *
      *    function bucketPropsToCloudFormation(properties: any): any {
-     *        if (!core.canInspect(properties)) return properties;
+     *        if (!cdk.canInspect(properties)) return properties;
      *        BucketPropsValidator(properties).assertSuccess();
      *        return {
      *            AccelerateConfiguration: bucketAccelerateConfigurationPropertyToCloudFormation(properties.accelerateConfiguration),
-     *            AccessControl: core.stringToCloudFormation(properties.accessControl),
-     *            AnalyticsConfigurations: core.listMapper(bucketAnalyticsConfigurationPropertyToCloudFormation)
+     *            AccessControl: cdk.stringToCloudFormation(properties.accessControl),
+     *            AnalyticsConfigurations: cdk.listMapper(bucketAnalyticsConfigurationPropertyToCloudFormation)
      *                                                                                  (properties.analyticsConfigurations),
      *            // ...
      *        };

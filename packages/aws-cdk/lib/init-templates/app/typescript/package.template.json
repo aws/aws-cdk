@@ -17,7 +17,7 @@
         "aws-cdk": "^%cdk-version%"
     },
     "dependencies": {
-        "@aws-cdk/core": "^%cdk-version%",
+        "@aws-cdk/cdk": "^%cdk-version%",
         "@aws-cdk/sns": "^%cdk-version%",
         "@aws-cdk/sqs": "^%cdk-version%"
     }

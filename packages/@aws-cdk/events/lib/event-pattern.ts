@@ -1,4 +1,4 @@
-import { Arn } from "@aws-cdk/core";
+import { Arn } from "@aws-cdk/cdk";
 
 /**
  * Events in Amazon CloudWatch Events are represented as JSON objects. For more

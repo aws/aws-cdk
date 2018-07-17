@@ -1,4 +1,4 @@
-import { MissingContext } from '@aws-cdk/cx-api';
+import { MissingContext } from '@aws-cdk/cdk-cx-api';
 import { Mode, SDK } from './api';
 import { debug } from './logging';
 import { Settings } from './settings';

@@ -1,4 +1,4 @@
-import { App, Construct, PolicyStatement, Stack } from "@aws-cdk/core";
+import { App, Construct, PolicyStatement, Stack } from "@aws-cdk/cdk";
 import { User } from "@aws-cdk/iam";
 import { Bucket, BucketRef, BucketRefProps } from "@aws-cdk/s3";
 

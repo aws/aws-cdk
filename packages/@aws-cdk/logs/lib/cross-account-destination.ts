@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import cdk = require('@aws-cdk/cdk');
 import iam = require('@aws-cdk/iam');
 import { LogGroup } from './log-group';
 import { cloudformation, DestinationArn } from './logs.generated';

@@ -1,5 +1,5 @@
-import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
-import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/core';
+import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { exactlyMatchTemplate, expect } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { EncryptionKey } from '../lib';
 

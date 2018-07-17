@@ -1,4 +1,4 @@
-import { AwsRegion, Construct, Token } from '@aws-cdk/core';
+import { AwsRegion, Construct, Token } from '@aws-cdk/cdk';
 import { VpcNetworkRef } from '@aws-cdk/ec2';
 import { LogGroupArn } from '@aws-cdk/logs';
 import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';

@@ -1,4 +1,4 @@
-import { Construct, SSMParameterProvider, Stack } from '@aws-cdk/core';
+import { Construct, SSMParameterProvider, Stack } from '@aws-cdk/cdk';
 
 /**
  * Interface for classes that can select an appropriate machine image to use

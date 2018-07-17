@@ -1,4 +1,4 @@
-import { App, Output, Stack } from '@aws-cdk/core';
+import { App, Output, Stack } from '@aws-cdk/cdk';
 import { VpcNetwork } from '@aws-cdk/ec2';
 import { PrivateHostedZone, PublicHostedZone, TXTRecord } from '../lib';
 

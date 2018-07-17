@@ -1,6 +1,6 @@
-import { App, Construct, IDependable, Output, Stack, StackProps, Token } from '@aws-cdk/core';
-import { LambdaInlineCode, LambdaRuntime } from '@aws-cdk/lambda';
-import { s3 } from '@aws-cdk/resources';
+import * as cdk from '@aws-cdk/cdk';
+import * as lambda from '@aws-cdk/lambda';
+import { cloudformation as s3 } from '@aws-cdk/s3';
 import fs = require('fs');
 import { CustomResource, SingletonLambda } from '../lib';
 
@@ -16,21 +16,21 @@ interface DemoResourceProps {
     failCreate?: boolean;
 }
 
-class DemoResource extends Construct implements IDependable {
-    public readonly dependencyElements: IDependable[];
-    public readonly response: Token;
+class DemoResource extends cdk.Construct implements cdk.IDependable {
+    public readonly dependencyElements: cdk.IDependable[];
+    public readonly response: cdk.Token;
 
-    constructor(parent: Construct, name: string, props: DemoResourceProps) {
+    constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
         super(parent, name);
 
         const resource = new CustomResource(this, 'Resource', {
             lambdaProvider: new SingletonLambda(this, 'Singleton', {
                 uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 // This makes the demo only work as top-level TypeScript program, but that's fine for now
-                code: new LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
+                code: new lambda.LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
                 handler: 'index.main',
                 timeout: 300,
-                runtime: LambdaRuntime.Python27,
+                runtime: lambda.LambdaRuntime.Python27,
             }),
             properties: props
         });
@@ -43,8 +43,8 @@ class DemoResource extends Construct implements IDependable {
 /**
  * A stack that only sets up the CustomResource and shows how to get an attribute from it
  */
-class SucceedingStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class SucceedingStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
         const resource = new DemoResource(this, 'DemoResource', {
@@ -52,7 +52,7 @@ class SucceedingStack extends Stack {
         });
 
         // Publish the custom resource output
-        new Output(this, 'ResponseMessage', {
+        new cdk.Output(this, 'ResponseMessage', {
             description: 'The message that came back from the Custom Resource',
             value: resource.response
         });
@@ -62,8 +62,8 @@ class SucceedingStack extends Stack {
 /**
  * A stack that sets up a failing CustomResource creation
  */
-class FailCreationStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class FailCreationStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
         new DemoResource(this, 'DemoResource', {
@@ -77,8 +77,8 @@ class FailCreationStack extends Stack {
  * A stack that sets up the CustomResource and fails afterwards, to check that cleanup gets
  * done properly.
  */
-class FailAfterCreatingStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class FailAfterCreatingStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
         const resource = new DemoResource(this, 'DemoResource', {
@@ -95,7 +95,7 @@ class FailAfterCreatingStack extends Stack {
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 new SucceedingStack(app, 'SucceedingStack');
 new FailCreationStack(app, 'FailCreationStack');

@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/cdk';
 import { Topic } from '../lib';
 
 class SNSInteg extends Stack {

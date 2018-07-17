@@ -32,7 +32,7 @@ in :doc:`getting-started`.
 
    .. code-tab:: js
 
-      const cdk = require('@aws-cdk/core');
+      const cdk = require('@aws-cdk/cdk');
       const sqs = require('@aws-cdk/sqs');
       const sns = require('@aws-cdk/sns');
 
@@ -51,7 +51,7 @@ in :doc:`getting-started`.
 
    .. code-tab:: ts
 
-      import * as cdk from '@aws-cdk/core';
+      import * as cdk from '@aws-cdk/cdk';
       import { Topic } from '@aws-cdk/sns';
       import { Queue } from '@aws-cdk/sqs';
 

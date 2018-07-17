@@ -104,7 +104,7 @@ export class InitTemplate {
 
     private expand(template: string, project: ProjectInfo) {
         const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
-        const cdkVersion = require('@aws-cdk/core/package.json').version.replace(MATCH_VER_BUILD, '');
+        const cdkVersion = require('@aws-cdk/cdk/package.json').version.replace(MATCH_VER_BUILD, '');
         return template.replace(/%name%/g, project.name)
                        .replace(/%name\.camelCased%/g, camelCase(project.name))
                        .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))

@@ -1,4 +1,4 @@
-import { Construct, Token } from "@aws-cdk/core";
+import { Construct, Token } from "@aws-cdk/cdk";
 import { Action } from "./actions";
 
 /**

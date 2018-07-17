@@ -1,4 +1,4 @@
-import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
+import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation, UserArn } from './iam.generated';
 import { IIdentityResource, Policy } from './policy';

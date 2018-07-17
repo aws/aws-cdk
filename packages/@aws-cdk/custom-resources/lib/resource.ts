@@ -1,7 +1,7 @@
+import * as cdk from '@aws-cdk/cdk';
 import { cloudformation } from '@aws-cdk/cloudformation';
-import { Construct } from '@aws-cdk/core';
-import { LambdaRef } from '@aws-cdk/lambda';
-import { TopicRef } from '@aws-cdk/sns';
+import * as lambda from '@aws-cdk/lambda';
+import * as sns from '@aws-cdk/sns';
 
 /**
  * Collection of arbitrary properties
@@ -19,14 +19,14 @@ export interface CustomResourceProps {
      *
      * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    lambdaProvider?: LambdaRef;
+    lambdaProvider?: lambda.LambdaRef;
 
     /**
      * The SNS Topic for the provider that implements this custom resource.
      *
      * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    topicProvider?: TopicRef;
+    topicProvider?: sns.TopicRef;
 
     /**
      * Properties to pass to the Lambda
@@ -47,7 +47,7 @@ export class CustomResource extends cloudformation.CustomResource {
 
     private readonly userProperties?: Properties;
 
-    constructor(parent: Construct, name: string, props: CustomResourceProps) {
+    constructor(parent: cdk.Construct, name: string, props: CustomResourceProps) {
         if (!!props.lambdaProvider === !!props.topicProvider) {
             throw new Error('Exactly one of "lambdaProvider" or "topicProvider" must be set.');
         }

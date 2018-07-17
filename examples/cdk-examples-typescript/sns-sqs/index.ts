@@ -1,4 +1,4 @@
-import * as cdk from "@aws-cdk/core";
+import * as cdk from "@aws-cdk/cdk";
 import * as sns from '@aws-cdk/sns';
 import * as sqs from '@aws-cdk/sqs';
 

@@ -1,9 +1,8 @@
-import { Arn, Construct, PolicyStatement, RemovalPolicy, ServicePrincipal, Token } from '@aws-cdk/core';
-import { EventRule, EventRuleProps, EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
+import * as cdk from '@aws-cdk/cdk';
+import * as util from '@aws-cdk/cdk-util';
+import * as events from '@aws-cdk/events';
 import * as iam from '@aws-cdk/iam';
-import { Role } from '@aws-cdk/iam';
-import { Bucket, BucketRef } from '@aws-cdk/s3';
-import { flatMap, flatten } from '@aws-cdk/util';
+import * as s3 from '@aws-cdk/s3';
 import { cloudformation } from './codepipeline.generated';
 import { Stage } from './stage';
 import * as validation from './validation';
@@ -11,7 +10,7 @@ import * as validation from './validation';
 /**
  * The ARN of a pipeline
  */
-export class PipelineArn extends Arn {
+export class PipelineArn extends cdk.Arn {
 }
 
 export interface PipelineProps {
@@ -19,7 +18,7 @@ export interface PipelineProps {
      * The S3 bucket used by this Pipeline to store artifacts.
      * If not specified, a new S3 bucket will be created.
      */
-    artifactBucket?: BucketRef;
+    artifactBucket?: s3.BucketRef;
 
     /**
      * Indicates whether to rerun the AWS CodePipeline pipeline after you update it.
@@ -51,7 +50,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends Construct implements IEventRuleTarget {
+export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     /**
      * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
      * a more specific IAM role.
@@ -66,12 +65,12 @@ export class Pipeline extends Construct implements IEventRuleTarget {
     /**
      * Bucket used to store output artifacts
      */
-    public readonly artifactBucket: BucketRef;
+    public readonly artifactBucket: s3.BucketRef;
 
     private readonly stages = new Array<Stage>();
-    private eventsRole?: Role;
+    private eventsRole?: iam.Role;
 
-    constructor(parent: Construct, name: string, props?: PipelineProps) {
+    constructor(parent: cdk.Construct, name: string, props?: PipelineProps) {
         super(parent, name);
         props = props || {};
 
@@ -80,19 +79,19 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         // If a bucket has been provided, use it - otherwise, create a bucket.
         let propsBucket = props.artifactBucket;
         if (!propsBucket) {
-            propsBucket = new Bucket(this, 'ArtifactsBucket', {
-                removalPolicy: RemovalPolicy.Orphan
+            propsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
+                removalPolicy: cdk.RemovalPolicy.Orphan
             });
         }
         this.artifactBucket = propsBucket;
 
         this.role = new iam.Role(this, 'Role', {
-            assumedBy: new ServicePrincipal('codepipeline.amazonaws.com')
+            assumedBy: new cdk.ServicePrincipal('codepipeline.amazonaws.com')
         });
 
         const codePipeline = new cloudformation.PipelineResource(this, 'Resource', {
-            artifactStore: new Token(() => this.renderArtifactStore()) as any,
-            stages: new Token(() => this.renderStages()) as any,
+            artifactStore: new cdk.Token(() => this.renderArtifactStore()) as any,
+            stages: new cdk.Token(() => this.renderStages()) as any,
             roleArn: this.role.roleArn,
             restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
             pipelineName: props && props.pipelineName,
@@ -104,7 +103,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
         this.artifactBucket.grantReadWrite(this.role);
 
         // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-        this.pipelineArn = new PipelineArn(Arn.fromComponents({
+        this.pipelineArn = new PipelineArn(cdk.Arn.fromComponents({
             service: 'codepipeline',
             resource: codePipeline.ref
         }));
@@ -113,7 +112,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
     /**
      * Adds a statement to the pipeline role.
      */
-    public addToRolePolicy(statement: PolicyStatement) {
+    public addToRolePolicy(statement: cdk.PolicyStatement) {
         this.role.addToPolicy(statement);
     }
 
@@ -127,17 +126,17 @@ export class Pipeline extends Construct implements IEventRuleTarget {
      *      rule.addTarget(pipeline);
      *
      */
-    public get eventRuleTarget(): EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTarget {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one
         // role per pipeline.
         if (!this.eventsRole) {
-            this.eventsRole = new Role(this, 'EventsRole', {
-                assumedBy: new ServicePrincipal('events.amazonaws.com')
+            this.eventsRole = new iam.Role(this, 'EventsRole', {
+                assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
             });
 
-            this.eventsRole.addToPolicy(new PolicyStatement()
+            this.eventsRole.addToPolicy(new cdk.PolicyStatement()
                 .addResource(this.pipelineArn)
                 .addAction('codepipeline:StartPipelineExecution'));
         }
@@ -163,8 +162,8 @@ export class Pipeline extends Construct implements IEventRuleTarget {
      * more than a single onStateChange event, you will need to explicitly
      * specify a name.
      */
-    public onStateChange(name: string, target?: IEventRuleTarget, options?: EventRuleProps): EventRule {
-        const rule = new EventRule(this, name, options);
+    public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
+        const rule = new events.EventRule(this, name, options);
         rule.addTarget(target);
         rule.addEventPattern({
             detailType: [ 'CodePipeline Pipeline Execution State Change' ],
@@ -183,7 +182,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
      * @override
      */
     public validate(): string[] {
-        return flatten([
+        return util.flatten([
             this.validateHasStages(),
             this.validateSourceActionLocations()
         ]);
@@ -195,7 +194,7 @@ export class Pipeline extends Construct implements IEventRuleTarget {
      *       onChildAdded type hook.
      * @override
      */
-    protected addChild(child: Construct, name: string) {
+    protected addChild(child: cdk.Construct, name: string) {
         super.addChild(child, name);
         if (child instanceof Stage) {
             this.appendStage(child);
@@ -211,9 +210,9 @@ export class Pipeline extends Construct implements IEventRuleTarget {
     }
 
     private validateSourceActionLocations(): string[] {
-        return flatMap(this.stages, (stage, i) => {
+        return util.flatMap(this.stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
-            return flatMap(stage.actions, (action, _) =>
+            return util.flatMap(stage.actions, (action, _) =>
                 validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.name, stage.name)
             );
         });

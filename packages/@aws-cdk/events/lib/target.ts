@@ -1,4 +1,4 @@
-import { Arn } from '@aws-cdk/core';
+import { Arn } from '@aws-cdk/cdk';
 import * as iam from '@aws-cdk/iam';
 import { cloudformation } from './events.generated';
 

@@ -1,9 +1,9 @@
-import { IAlarmAction, Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { Arn, Construct, Output, PolicyStatement, ServicePrincipal } from '@aws-cdk/core';
-import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
-import { IIdentityResource } from '@aws-cdk/iam';
-import { LambdaRef } from '@aws-cdk/lambda';
-import { QueueRef } from '@aws-cdk/sqs';
+import * as cdk from '@aws-cdk/cdk';
+import * as cloudwatch from '@aws-cdk/cloudwatch';
+import * as events from '@aws-cdk/events';
+import * as iam from '@aws-cdk/iam';
+import * as lambda from '@aws-cdk/lambda';
+import * as sqs from '@aws-cdk/sqs';
 import { TopicPolicy } from './policy';
 import { TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
@@ -11,16 +11,16 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 /**
  * ARN of a Topic
  */
-export class TopicArn extends Arn { }
+export class TopicArn extends cdk.Arn { }
 
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends Construct implements IEventRuleTarget, IAlarmAction {
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction {
     /**
      * Import a Topic defined elsewhere
      */
-    public static import(parent: Construct, name: string, props: TopicRefProps): TopicRef {
+    public static import(parent: cdk.Construct, name: string, props: TopicRefProps): TopicRef {
         return new ImportedTopic(parent, name, props);
     }
 
@@ -48,8 +48,8 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      */
     public export(): TopicRefProps {
         return {
-            topicArn: new Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue(),
-            topicName: new Output(this, 'TopicName', { value: this.topicName }).makeImportValue(),
+            topicArn: new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue(),
+            topicName: new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue(),
         };
     }
 
@@ -75,7 +75,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      * @param name The subscription name
      * @param queue The target queue
      */
-    public subscribeQueue(queue: QueueRef) {
+    public subscribeQueue(queue: sqs.QueueRef) {
         const subscriptionName = queue.name + 'Subscription';
         if (this.tryFindChild(subscriptionName)) {
             throw new Error(`A subscription between the topic ${this.name} and the queue ${queue.name} already exists`);
@@ -91,7 +91,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
 
         // add a statement to the queue resource policy which allows this topic
         // to send messages to the queue.
-        queue.addToResourcePolicy(new PolicyStatement()
+        queue.addToResourcePolicy(new cdk.PolicyStatement()
             .addResource(queue.queueArn)
             .addAction('sqs:SendMessage')
             .addServicePrincipal('sns.amazonaws.com')
@@ -109,7 +109,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      * @param name A name for the subscription
      * @param lambdaFunction The Lambda function to invoke
      */
-    public subscribeLambda(lambdaFunction: LambdaRef) {
+    public subscribeLambda(lambdaFunction: lambda.LambdaRef) {
         const subscriptionName = lambdaFunction.name + 'Subscription';
 
         if (this.tryFindChild(subscriptionName)) {
@@ -124,7 +124,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
 
         lambdaFunction.addPermission(this.name, {
             sourceArn: this.topicArn,
-            principal: new ServicePrincipal('sns.amazonaws.com'),
+            principal: new cdk.ServicePrincipal('sns.amazonaws.com'),
         });
 
         return sub;
@@ -174,7 +174,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      * will be automatically created upon the first call to `addToPolicy`. If
      * the topic is improted (`Topic.import`), then this is a no-op.
      */
-    public addToResourcePolicy(statement: PolicyStatement) {
+    public addToResourcePolicy(statement: cdk.PolicyStatement) {
         if (!this.policy && this.autoCreatePolicy) {
             this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
         }
@@ -192,12 +192,12 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
     /**
      * Grant topic publishing permissions to the given identity
      */
-    public grantPublish(identity?: IIdentityResource) {
+    public grantPublish(identity?: iam.IIdentityResource) {
         if (!identity) {
             return;
         }
 
-        identity.addToPolicy(new PolicyStatement()
+        identity.addToPolicy(new cdk.PolicyStatement()
             .addResource(this.topicArn)
             .addActions('sns:Publish'));
     }
@@ -206,11 +206,11 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      * Returns a RuleTarget that can be used to trigger this SNS topic as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTarget {
         if (!this.eventRuleTargetPolicyAdded) {
-            this.addToResourcePolicy(new PolicyStatement()
+            this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addAction('sns:Publish')
-                .addPrincipal(new ServicePrincipal('events.amazonaws.com'))
+                .addPrincipal(new cdk.ServicePrincipal('events.amazonaws.com'))
                 .addResource(this.topicArn));
 
             this.eventRuleTargetPolicyAdded = true;
@@ -222,15 +222,15 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
         };
     }
 
-    public get alarmActionArn(): Arn {
+    public get alarmActionArn(): cdk.Arn {
         return this.topicArn;
     }
 
     /**
      * Construct a Metric object for the current topic for the given metric
      */
-    public metric(metricName: string, props?: MetricCustomization): Metric {
-        return new Metric({
+    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return new cloudwatch.Metric({
             namespace: 'AWS/SNS',
             dimensions: { TopicName: this.topicName },
             metricName,
@@ -243,7 +243,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default average over 5 minutes
      */
-    public metricPublishSize(props?: MetricCustomization): Metric {
+    public metricPublishSize(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('PublishSize', props);
     }
 
@@ -252,7 +252,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesPublished(props?: MetricCustomization): Metric {
+    public metricNumberOfMessagesPublished(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('NumberOfMessagesPublished', { statistic: 'sum', ...props });
     }
 
@@ -261,7 +261,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesFailed(props?: MetricCustomization): Metric {
+    public metricNumberOfMessagesFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('NumberOfMessagesFailed', { statistic: 'sum', ...props });
     }
 
@@ -270,7 +270,7 @@ export abstract class TopicRef extends Construct implements IEventRuleTarget, IA
      *
      * @default sum over 5 minutes
      */
-    public metricNumberOfMessagesDelivered(props?: MetricCustomization): Metric {
+    public metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
     }
 }
@@ -284,7 +284,7 @@ class ImportedTopic extends TopicRef {
 
     protected autoCreatePolicy: boolean = false;
 
-    constructor(parent: Construct, name: string, props: TopicRefProps) {
+    constructor(parent: cdk.Construct, name: string, props: TopicRefProps) {
         super(parent, name);
         this.topicArn = props.topicArn;
         this.topicName = props.topicName;

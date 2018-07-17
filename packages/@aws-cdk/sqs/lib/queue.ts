@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { EncryptionKey, EncryptionKeyRef, KeyArn } from '@aws-cdk/kms';
 import { QueueRef, QueueUrl } from './queue-ref';
 import { cloudformation, QueueArn, QueueName } from './sqs.generated';

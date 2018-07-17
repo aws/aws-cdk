@@ -1,4 +1,4 @@
-import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
+import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation } from './iam.generated';
 import { Role } from './role';

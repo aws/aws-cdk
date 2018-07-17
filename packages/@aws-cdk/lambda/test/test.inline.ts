@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import { Bucket } from '@aws-cdk/s3';
 import * as fs from 'fs';
 import { Test } from 'nodeunit';

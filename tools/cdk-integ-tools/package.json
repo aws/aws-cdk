@@ -30,8 +30,8 @@
     "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.7.3-beta",
-    "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
+    "@aws-cdk/cdk-cx-api": "^0.7.3-beta",
+    "@aws-cdk/cdk-cloudformation-diff": "^0.7.3-beta",
     "aws-cdk": "^0.7.3-beta",
     "yargs": "^9.0.1"
   },

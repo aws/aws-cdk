@@ -1,4 +1,4 @@
-import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/core';
+import { AvailabilityZoneProvider, Construct, Tag, Token } from '@aws-cdk/cdk';
 import { cloudformation } from './ec2.generated';
 import { NetworkUtils } from './network-util';
 import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';

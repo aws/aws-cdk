@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
 import { InstanceClass, InstanceSize, InstanceTypePair } from '@aws-cdk/ec2';
 import { VpcNetwork } from '@aws-cdk/ec2';
 import { Password, Username } from '@aws-cdk/rds';

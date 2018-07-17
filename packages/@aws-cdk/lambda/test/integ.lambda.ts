@@ -1,4 +1,4 @@
-import { App, PolicyStatement, Stack } from '@aws-cdk/core';
+import { App, PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { Alias, Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
 
 const app = new App(process.argv);

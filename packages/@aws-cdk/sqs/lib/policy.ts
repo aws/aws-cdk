@@ -1,4 +1,4 @@
-import { Construct, PolicyDocument } from '@aws-cdk/core';
+import { Construct, PolicyDocument } from '@aws-cdk/cdk';
 import { QueueRef } from './queue-ref';
 import { cloudformation } from './sqs.generated';
 

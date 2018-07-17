@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Verify that all integration tests still match their expected output
-import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
+import { diffTemplate, formatDifferences } from '@aws-cdk/cdk-cloudformation-diff';
 import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
 
 // tslint:disable:no-console

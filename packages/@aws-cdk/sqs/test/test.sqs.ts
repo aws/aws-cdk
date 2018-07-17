@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { ArnPrincipal, PolicyStatement, Stack } from '@aws-cdk/core';
+import { ArnPrincipal, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import { Test } from 'nodeunit';
 import { Queue, QueueRef } from '../lib';
 

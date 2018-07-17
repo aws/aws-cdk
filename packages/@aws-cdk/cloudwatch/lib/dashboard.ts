@@ -1,4 +1,4 @@
-import { Construct, Stack, Token, tokenAwareJsonify } from "@aws-cdk/core";
+import { Construct, Stack, Token, tokenAwareJsonify } from "@aws-cdk/cdk";
 import { cloudformation } from './cloudwatch.generated';
 import { Column, Row } from "./layout";
 import { IWidget } from "./widget";

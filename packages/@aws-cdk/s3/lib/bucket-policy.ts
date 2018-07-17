@@ -1,4 +1,4 @@
-import { Construct, PolicyDocument } from '@aws-cdk/core';
+import { Construct, PolicyDocument } from '@aws-cdk/cdk';
 import { BucketRef } from './bucket';
 import { cloudformation } from './s3.generated';
 

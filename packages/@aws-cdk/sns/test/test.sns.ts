@@ -1,5 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
-import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/core';
+import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/cdk';
+import { expect, haveResource } from '@aws-cdk/cdk-assert';
 import { EventRule } from '@aws-cdk/events';
 import { User } from '@aws-cdk/iam';
 import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
