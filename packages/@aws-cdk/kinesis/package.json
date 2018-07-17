@@ -16,11 +16,14 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=AWS::Kinesis && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::Kinesis"
   },
   "keywords": [
     "aws",
@@ -36,7 +39,8 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",

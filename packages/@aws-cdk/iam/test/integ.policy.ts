@@ -14,5 +14,6 @@ policy.attachToUser(user);
 
 const policy2 = new Policy(stack, 'GoodbyePolicy');
 policy2.addStatement(new PolicyStatement().addResource('*').addAction('lambda:InvokeFunction'));
+policy2.attachToUser(user);
 
 process.stdout.write(app.run());

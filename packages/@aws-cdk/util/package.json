@@ -9,10 +9,10 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "tslint -p . && tsc && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
   "keywords": [
@@ -27,10 +27,9 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/iam": "^0.7.3-beta"
   }
 }

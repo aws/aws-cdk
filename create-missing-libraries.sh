@@ -33,6 +33,9 @@ tslint.json
 node_modules
 dist
 .jsii
+.nyc_output
+coverage
+.LAST_BUILD
 EOM
 
         cat <<EOM > packages/${P}/.npmignore
@@ -63,12 +66,15 @@ EOM
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=${S} && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "jsii && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "${S}"
   },
   "keywords": [
     "aws",
@@ -83,6 +89,7 @@ EOM
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^${VERSION}",
+    "cdk-build-tools": "^${VERSION}",
     "cfn2ts": "^${VERSION}",
     "pkglint": "^${VERSION}"
   },
