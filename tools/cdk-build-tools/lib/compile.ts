@@ -29,6 +29,8 @@ export async function compileCurrentPackage(timers: Timers, force?: boolean): Pr
             // the build output of the package, because it's never a source dependency.
             //
             // We break the cycle by excluding that package.
+            //
+            // https://github.com/awslabs/aws-cdk/pull/32
             'aws-cdk'
         ]
     });

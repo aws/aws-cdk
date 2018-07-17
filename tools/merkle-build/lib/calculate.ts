@@ -1,8 +1,7 @@
 import crypto = require('crypto');
 import fs = require('fs-extra');
 import path = require('path');
-import { atomicRead } from '../../cdk-build-tools/node_modules/merkle-build/lib/file-ops';
-import { atomicWrite } from '../../cdk-build-tools/node_modules/merkle-build/lib/file-ops';
+import { atomicRead, atomicWrite  } from './file-ops';
 
 /**
  * Calculate a hash of the given file or directory
@@ -77,10 +76,24 @@ export interface MerkleOptions {
     includeHidden?: boolean;
 }
 
+/**
+ * This value is put into the cache if we are currently calculating a directory hash
+ *
+ * This is used to detect symlink cycles.
+ */
 const CALCULATING_MARKER = '*calculating*';
 
 /**
- * Hash cache, either in memory or on disk
+ * Hash cache
+ *
+ * Because of monorepo symlinks, it's expected that we'll encounter the
+ * same directory more than once. We store the hash of already-visited
+ * directories in the cache to save time.
+ *
+ * At the same time, we use the cache for cycle detection.
+ *
+ * In principle this cache is in memory, but it can be persisted to
+ * disk if an environment variable point to a directory is set.
  */
 class HashCache {
     private readonly cache: {[fileName: string]: string} = {};

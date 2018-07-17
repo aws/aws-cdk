@@ -2,7 +2,7 @@
   "name": "merkle-build",
   "private": true,
   "version": "0.7.3-beta",
-  "description": "CDK package build tool helper for calculating hashes of a Merkle tree",
+  "description": "Build tool helper for calculating hashes of a Merkle tree",
   "main": "lib/index.js",
   "types": "lib/index.ts",
   "repository": {

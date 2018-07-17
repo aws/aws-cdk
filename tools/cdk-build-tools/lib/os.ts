@@ -23,7 +23,7 @@ export async function shell(command: string[], timers?: Timers): Promise<void> {
         child.stderr.on('data', process.stderr.write.bind(process.stderr));
         child.on('error', reject);
 
-        child.on('close', code => {
+        child.on('exit', code => {
             timer.end();
             if (code === 0) {
                 resolve();
