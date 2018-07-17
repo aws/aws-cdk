@@ -27,7 +27,7 @@ into your |cdk| app.
 For example, suppose you have a template,
 *my-template.json*,
 with the following resource,
-where **S3Bucket** is the name of the bucket in your template:
+where **S3Bucket** is the logical ID of the bucket in your template:
 
 .. code-block:: json
 
