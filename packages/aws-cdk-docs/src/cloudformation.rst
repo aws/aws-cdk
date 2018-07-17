@@ -27,17 +27,16 @@ into your |cdk| app.
 For example, suppose you have a template,
 *my-template.json*,
 with the following resource,
-where **ABCDWXYZ** is the 8-character hash that the |cdk| creates to ensure
-your resource ID is unique:
+where **S3Bucket** is the name of the bucket in your template:
 
 .. code-block:: json
 
-   "TheBucketABCDWXYZ": {
+   "S3Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
-         "BucketName": "mybucket"
+          ...
       }
-   }
+   }   
    
 You can include this bucket in your |cdk| app,
 as shown in the following example
@@ -52,11 +51,11 @@ as shown in the following example
       template: JSON.parse(readFileSync('my-template.json').toString())
    })
 
-Then to access an attibute of the resource, such as the bucket's ARN:
+Then to access an attribute of the resource, such as the bucket's ARN:
 
 .. code-block:: js
 
-   const bucketArn = new FnGetAtt('mybucket', 'Arn');
+   const bucketArn = new FnGetAtt('S3Bucket', 'Arn');
 
 .. _creating_l1_constructs:
 
