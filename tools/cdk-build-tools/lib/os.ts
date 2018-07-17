@@ -28,7 +28,7 @@ export async function shell(command: string[], timers?: Timers): Promise<void> {
             if (code === 0) {
                 resolve();
             } else {
-                reject(new Error(`${renderCommandLine(command)} exited with ${code}`));
+                reject(new Error(`${renderCommandLine(command)} exited with error code ${code}`));
             }
         });
     });
@@ -108,19 +108,31 @@ export async function makeExecutable(javascriptFile: string): Promise<void> {
  */
 async function makeShellScriptExecutable(script: string) {
     try {
-        if (await util.promisify(fs.access)(script, fs.constants.X_OK)) { return; }
+        if (await canExecute(script)) { return; }
         if (!await isShellScript(script)) { return; }
         await util.promisify(fs.chmod)(script, 0o755);
     } catch (e) {
+        // If it happens that this file doesn't exist, that's fine. It's
+        // probably a file that can be found on the $PATH.
         if (e.code === 'ENOENT') { return; }
+        throw e;
+    }
+}
+
+async function canExecute(fileName: string): Promise<boolean> {
+    try {
+        await util.promisify(fs.access)(fileName, fs.constants.X_OK);
+        return true;
+    } catch (e) {
+        if (e.code === 'EACCES') { return false; }
         throw e;
     }
 }
 
 async function isShellScript(script: string): Promise<boolean> {
     const f = await util.promisify(fs.open)(script, 'r');
-    const buffer = Buffer.alloc(10);
+    const buffer = Buffer.alloc(2);
     await util.promisify(fs.read)(f, buffer, 0, 2, null);
 
-    return buffer.toString('utf-8') === '#!';
+    return buffer.equals(Buffer.from('#!'));
 }
