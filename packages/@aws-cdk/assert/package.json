@@ -5,15 +5,15 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tslint -p . && tsc && chmod +x bin/cdk-integ bin/cdk-integ-assert && pkglint",
-    "watch": "tsc -w",
-    "lint": "tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
-  "bin": {
-    "cdk-integ": "bin/cdk-integ",
-    "cdk-integ-assert": "bin/cdk-integ-assert"
+  "nyc": {
+    "lines": 40,
+    "branches": 30
   },
   "author": {
     "name": "Amazon Web Services",
@@ -21,13 +21,13 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
+    "@aws-cdk/cx-api": "^0.7.3-beta",
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/cx-api": "^0.7.3-beta",
-    "aws-cdk": "^0.7.3-beta",
     "source-map-support": "^0.5.6"
   },
   "repository": {

@@ -4,10 +4,10 @@
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
-    "build": "tsc && tslint -p . && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "echo ok",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "cdk": "cdk",
     "pkglint": "pkglint -f"
   },
@@ -18,7 +18,8 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "aws-cdk": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/cloudformation": "^0.7.3-beta",

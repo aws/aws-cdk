@@ -8,10 +8,11 @@
     "simple-resource-bundler": "bin/simple-resource-bundler"
   },
   "scripts": {
-    "build": "tsc && chmod +x bin/simple-resource-bundler && tslint -p . && pkglint",
-    "lint": "tsc && tslint *.ts --force",
-    "watch": "tsc -w",
-    "pkglint": "pkglint -f"
+    "build": "cdk-build",
+    "lint": "cdk-lint",
+    "watch": "cdk-watch",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -21,7 +22,8 @@
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "fs-extra": "^4.0.2",

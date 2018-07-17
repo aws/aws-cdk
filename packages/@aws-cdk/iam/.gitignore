@@ -6,3 +6,7 @@ tslint.json
 *.generated.ts
 dist
 .jsii
+
+.LAST_BUILD
+.nyc_output
+coverage

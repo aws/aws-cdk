@@ -3,7 +3,7 @@ import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicySta
 import { EventRule } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
-import { Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
+import { Lambda, LambdaInlineCode, LambdaRef, LambdaRuntime } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -232,6 +232,20 @@ export = {
 
     'import/export': {
         'lambda.export() can be used to add Outputs to the stack and returns a LambdaRef object'(test: Test) {
+            // GIVEN
+            const stack1 = new Stack();
+            const stack2 = new Stack();
+            const lambda = newTestLambda(stack1);
+
+            // WHEN
+            const props = lambda.export();
+            const imported = LambdaRef.import(stack2, 'Imported', props);
+
+            // Can call addPermission() but it won't do anything
+            imported.addPermission('Hello', {
+                principal: new ServicePrincipal('harry')
+            });
+
             test.done();
         },
     },

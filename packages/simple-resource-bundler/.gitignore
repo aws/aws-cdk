@@ -1,3 +1,5 @@
 *.js
 *.js.map
 dist
+
+.LAST_BUILD

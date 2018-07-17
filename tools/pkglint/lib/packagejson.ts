@@ -47,11 +47,13 @@ export interface Report {
 export class PackageJson {
     public readonly json: any;
     public readonly packageRoot: string;
+    public readonly packageName: string;
     private reports: Report[] = [];
 
     constructor(public readonly fullPath: string) {
         this.json = JSON.parse(fs.readFileSync(fullPath, { encoding: 'utf-8' }));
         this.packageRoot = path.dirname(path.resolve(fullPath));
+        this.packageName = this.json.name;
     }
 
     public save() {
@@ -97,12 +99,19 @@ export class PackageJson {
         return (this.json.scripts || {})[name] || '';
     }
 
-    public replaceNpmScript(name: string, command: string) {
+    /**
+     * Apply a function the script
+     *
+     * If you want to change a script, use this to prevent multiple
+     * fixes going { read, read, write, write } on the same script.
+     */
+    public changeNpmScript(name: string, fn: (script: string) => string) {
+        const script = this.npmScript(name);
+
         if (!('scripts' in this.json)) {
             this.json.scripts = {};
         }
-
-        this.json.scripts[name] = command;
+        this.json.scripts[name] = fn(script);
     }
 
     /**
@@ -122,11 +131,11 @@ export class PackageJson {
     }
 
     /**
-     * @returns True if the package has a devDependency on `module`.
+     * Return the version of the devDependency on `module`.
      */
-    public hasDevDependency(moduleOrPredicate: ((s: string) => boolean) | string) {
+    public getDevDependency(moduleOrPredicate: ((s: string) => boolean) | string): string | undefined {
         if (!('devDependencies' in this.json)) {
-            return false;
+            return undefined;
         }
 
         const predicate: (s: string) => boolean = typeof(moduleOrPredicate) === 'string'
@@ -134,7 +143,8 @@ export class PackageJson {
             : moduleOrPredicate;
 
         const deps = this.json.devDependencies;
-        return Object.keys(deps).find(predicate);
+        const key = Object.keys(deps).find(predicate);
+        return key !== undefined ? deps[key] : undefined;
     }
 
     /**
@@ -162,6 +172,37 @@ export class PackageJson {
                 delete this.json.devDependencies[m];
             }
         }
+    }
+
+    /**
+     * Whether the package-level file contains the given line
+     */
+    public fileContainsSync(fileName: string, line: string): boolean {
+        const lines = this.readFileLinesSync(fileName);
+        return lines.indexOf(line) !== -1;
+    }
+
+    /**
+     * Add the given line to the package-level file
+     */
+    public addToFileSync(fileName: string, line: string) {
+        const lines = this.readFileLinesSync(fileName);
+        if (lines.indexOf(line) === -1) {
+            lines.push(line);
+            this.writeFileLinesSync(fileName, lines);
+        }
+    }
+
+    private readFileLinesSync(fileName: string): string[] {
+        const fullPath = path.join(this.packageRoot, fileName);
+        if (!fs.existsSync(fileName)) { return []; }
+        return fs.readFileSync(fullPath, { encoding: 'utf-8' }).split('\n');
+    }
+
+    private writeFileLinesSync(fileName: string, lines: string[]) {
+        const fullPath = path.join(this.packageRoot, fileName);
+        const body = lines.join('\n');
+        fs.writeFileSync(fullPath, body, { encoding: 'utf-8' });
     }
 }
 

@@ -8,3 +8,5 @@ dist
 coverage
 .nyc_output
 .jsii
+
+.LAST_BUILD

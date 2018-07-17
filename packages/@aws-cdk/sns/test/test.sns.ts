@@ -5,7 +5,7 @@ import { User } from '@aws-cdk/iam';
 import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
 import { Queue } from '@aws-cdk/sqs';
 import { Test } from 'nodeunit';
-import { Topic } from '../lib';
+import { Topic, TopicRef } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -650,5 +650,42 @@ export = {
         });
 
         test.done();
+    },
+
+    'export/import'(test: Test) {
+      // GIVEN
+      const stack1 = new Stack();
+      const topic = new Topic(stack1, 'Topic');
+
+      const stack2 = new Stack();
+      const queue = new Queue(stack2, 'Queue');
+
+      // WHEN
+      const ref = topic.export();
+      const imported = TopicRef.import(stack2, 'Imported', ref);
+      imported.subscribeQueue(queue);
+
+      // THEN
+      expect(stack2).to(haveResource('AWS::SNS::Subscription', {
+        "TopicArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" },
+      }));
+      expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" }
+                }
+              },
+              "Principal": { "Service": "sns.amazonaws.com" },
+              "Effect": "Allow",
+            }
+          ],
+        },
+      }));
+
+      test.done();
     }
 };

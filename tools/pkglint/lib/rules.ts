@@ -1,6 +1,7 @@
+import fs = require('fs');
 import path = require('path');
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectJSON } from './util';
+import { deepGet, expectDevDependency, expectJSON, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -144,7 +145,7 @@ export class NoJsiiDep extends ValidationRule {
     public validate(pkg: PackageJson): void {
         const predicate = (s: string) => s.startsWith('jsii');
 
-        if (pkg.hasDevDependency(predicate)) {
+        if (pkg.getDevDependency(predicate)) {
             pkg.report({
                 message: 'packages should not have a devDep on jsii since it is defined at the repo level',
                 fix: () => pkg.removeDevDependency(predicate)
@@ -203,45 +204,27 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
- * Build script must mention tslint
+ * The package must depend on cdk-build-tools
  */
-export class BuildScriptMustLint extends ValidationRule {
+export class MustDependOnBuildTools extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        const build = pkg.npmScript('build');
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-        if (!build) {
-            pkg.report({
-                message: 'Must have a "build" script'
-            });
-            return;
-        }
-
-        if (build.indexOf('tslint') === -1) {
-            pkg.report({
-                message: '"build" script must use tslint',
-                fix: () => { pkg.appendToNpmScript('build', 'tslint -p .'); }
-            });
-        }
+        expectDevDependency(pkg, 'cdk-build-tools', '^' + monoRepoVersion());
     }
 }
 
 /**
- * Must have lint command
+ * Build script must be 'cdk-build'
  */
-export class MustHaveLintScript extends ValidationRule {
+export class MustUseCDKBuild extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        const lint = pkg.npmScript('lint');
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-        if (!pkg.json.scripts) {
-            pkg.json.scripts = {};
-        }
+        expectJSON(pkg, 'scripts.build', 'cdk-build');
 
-        if (!lint) {
-            pkg.report({
-                message: 'Package must have a "lint" script',
-                fix: () => { pkg.json.scripts.lint = 'tsc && tslint -p . --force'; }
-            });
-        }
+        // cdk-build will write a hash file that we have to ignore.
+        fileShouldContain(pkg, '.gitignore', '.LAST_BUILD');
     }
 }
 
@@ -262,7 +245,7 @@ export class GlobalDevDependencies extends ValidationRule {
         ];
 
         for (const dep of deps) {
-            if (pkg.hasDevDependency(dep)) {
+            if (pkg.getDevDependency(dep)) {
                 pkg.report({
                     message: `devDependency ${dep} is defined at the repo level`,
                     fix: () => pkg.removeDevDependency(dep)
@@ -273,55 +256,44 @@ export class GlobalDevDependencies extends ValidationRule {
 }
 
 /**
- * Must have watch command
+ * Must use 'cdk-watch' command
  */
-export class MustHaveWatchCommand extends ValidationRule {
+export class MustUseCDKWatch extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (isJSII(pkg)) {
-            expectJSON(pkg, 'scripts.watch', 'jsii -w');
-        } else {
-            expectJSON(pkg, 'scripts.watch', 'tsc -w');
-        }
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.watch', 'cdk-watch');
+    }
+}
+
+/**
+ * Must use 'cdk-test' command
+ */
+export class MustUseCDKTest extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
+        if (!hasTestDirectory(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.test', 'cdk-test');
+
+        // 'cdk-test' will calculate coverage, so have the appropriate
+        // files in .gitignore.
+        fileShouldContain(pkg, '.gitignore', '.nyc_output');
+        fileShouldContain(pkg, '.gitignore', 'coverage');
     }
 }
 
 /**
  * Scripts that run integ tests must also have the individual 'integ' script to update them
+ *
+ * This commands comes from the dev-dependency cdk-integ-tools.
  */
 export class MustHaveIntegCommand extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (hasInteg(pkg)) {
-            expectJSON(pkg, 'scripts.integ', 'cdk-integ');
-        }
-    }
-}
+        if (!hasIntegTests(pkg)) { return; }
 
-/**
- * All packages must use the validator as part of their build step
- *
- * (Except the validator itself)
- */
-export class PkgLintInBuild extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        if (pkg.json.name === 'pkglint') {
-            return;
-        }
-
-        const build = pkg.npmScript('build');
-
-        if (build.indexOf('pkglint') === -1) {
-            pkg.report({
-                message: 'Package must use validator as part of build',
-                fix: () => { pkg.appendToNpmScript('build', 'pkglint'); }
-            });
-        }
-
-        if (!pkg.hasDevDependency('pkglint')) {
-            pkg.report({
-                message: 'pkglint must be defined as a devDep',
-                fix: () => { pkg.addDevDependency('pkglint', '^' + require('../package.json').version); }
-            });
-        }
+        expectJSON(pkg, 'scripts.integ', 'cdk-integ');
+        expectDevDependency(pkg, 'cdk-integ-tools', '^' + monoRepoVersion());
     }
 }
 
@@ -332,14 +304,14 @@ export class PkgLintAsScript extends ValidationRule {
         if (!pkg.npmScript('pkglint')) {
             pkg.report({
                 message: 'a script called "pkglint" must be included to allow fixing package linting issues',
-                fix: () => pkg.replaceNpmScript('pkglint', script)
+                fix: () => pkg.changeNpmScript('pkglint', () => script)
             });
         }
 
         if (pkg.npmScript('pkglint') !== script) {
             pkg.report({
                 message: 'the pkglint script should be: ' + script,
-                fix: () => pkg.replaceNpmScript('pkglint', script)
+                fix: () => pkg.changeNpmScript('pkglint', () => script)
             });
         }
     }
@@ -445,11 +417,19 @@ export class AllVersionsTheSame extends ValidationRule {
 /**
  * Determine whether this is a JSII package
  *
- * A package is a JSII package if the 'build' script mentions JSII.
+ * A package is a JSII package if there is 'jsii' section in the package.json
  */
-function isJSII(pkg: PackageJson) {
-    const buildScript = (pkg.json.scripts || {}).build || '';
-    return buildScript.indexOf('jsii ') >= 0;
+function isJSII(pkg: PackageJson): boolean {
+    return pkg.json.jsii;
+}
+
+/**
+ * Determine whether the package has tests
+ *
+ * A package has tests if the root/test directory exists
+ */
+function hasTestDirectory(pkg: PackageJson) {
+    return fs.existsSync(path.join(pkg.packageRoot, 'test'));
 }
 
 /**
@@ -457,7 +437,18 @@ function isJSII(pkg: PackageJson) {
  *
  * A package has integ tests if it mentions 'cdk-integ' in the "test" script.
  */
-function hasInteg(pkg: PackageJson) {
-    const testScript = (pkg.json.scripts || {}).test || '';
-    return testScript.indexOf('cdk-integ') >= 0;
+function hasIntegTests(pkg: PackageJson) {
+    if (!hasTestDirectory(pkg)) { return false; }
+
+    const files = fs.readdirSync(path.join(pkg.packageRoot, 'test'));
+    return files.some(p => p.startsWith('integ.'));
+}
+
+/**
+ * Return whether this package should use CDK build tools
+ */
+function shouldUseCDKBuildTools(pkg: PackageJson) {
+    // The packages that DON'T use CDKBuildTools are the package itself
+    // and the packages used by it.
+    return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
 }

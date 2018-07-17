@@ -1,0 +1,49 @@
+{
+  "Resources": {
+    "MyUserDC45028B": {
+      "Type": "AWS::IAM::User"
+    },
+    "HelloPolicyD59007DF": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Default",
+        "Users": [
+          {
+            "Ref": "MyUserDC45028B"
+          }
+        ]
+      }
+    },
+    "GoodbyePolicy739B8974": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GoodbyePolicy739B8974",
+        "Users": [
+          {
+            "Ref": "MyUserDC45028B"
+          }
+        ]
+      }
+    }
+  }
+}

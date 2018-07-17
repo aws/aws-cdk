@@ -12,7 +12,6 @@ key.addToResourcePolicy(new PolicyStatement()
     .addAction('kms:encrypt')
     .addAwsPrincipal(new AwsAccountId()));
 
-key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 
 process.stdout.write(app.run());

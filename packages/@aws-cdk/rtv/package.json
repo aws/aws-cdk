@@ -16,10 +16,10 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nyc nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f",
     "integ": "cdk-integ"
   },
@@ -38,7 +38,9 @@
     "@aws-cdk/assert": "^0.7.3-beta",
     "@aws-cdk/ec2": "^0.7.3-beta",
     "@aws-cdk/sqs": "^0.7.3-beta",
-    "@aws-cdk/lambda": "^0.7.3-beta"
+    "@aws-cdk/lambda": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
     "@aws-cdk/core": "^0.7.3-beta",
