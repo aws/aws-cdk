@@ -206,6 +206,22 @@ Guidelines:
    `^1.2.3`). This enables non-breaking updates to automatically be picked up.
  * Make sure `package-lock.json` files are included in your commit.
 
+### Finding Dependency Cycles
+
+You can use `find-cycles` to print a list of internal dependency cycles:
+
+```shell
+$ tools/find-cycles/find-cycles.sh
+Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/iam
+Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/kms => @aws-cdk/assert
+Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/iam
+Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/s3 => @aws-cdk/assert
+Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/cloudformation => @aws-cdk/assert
+Cycle: @aws-cdk/iam => @aws-cdk/assert => aws-cdk => @aws-cdk/util => @aws-cdk/iam
+Cycle: @aws-cdk/sns => @aws-cdk/lambda => @aws-cdk/codecommit => @aws-cdk/sns
+Cycle: @aws-cdk/sns => @aws-cdk/lambda => @aws-cdk/codecommit => @aws-cdk/codepipeline => @aws-cdk/sns
+```
+
 ### Updating all Dependencies
 
 We use `npm update` to
