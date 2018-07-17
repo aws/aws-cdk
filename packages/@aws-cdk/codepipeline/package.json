@@ -16,12 +16,15 @@
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=AWS::CodePipeline && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::CodePipeline"
   },
   "keywords": [
     "aws",
@@ -39,11 +42,11 @@
     "@aws-cdk/assert": "^0.7.3-beta",
     "@aws-cdk/sns": "^0.7.3-beta",
     "cfn2ts": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/codebuild": "^0.7.3-beta",
-    "@aws-cdk/codecommit": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/events": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",

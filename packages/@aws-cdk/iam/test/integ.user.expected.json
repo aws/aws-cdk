@@ -1,0 +1,14 @@
+{
+  "Resources": {
+    "MyUserDC45028B": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "LoginProfile": {
+          "Password": "1234",
+          "PasswordResetRequired": true
+        },
+        "UserName": "benisrae"
+      }
+    }
+  }
+}

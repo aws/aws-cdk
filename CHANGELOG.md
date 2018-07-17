@@ -460,13 +460,13 @@ const sourceStage = new Stage(pipeline, 'source');
 const buildStage  = new Stage(pipeline, 'build');
 
 // associate the source stage with the code commit repository
-const source = new CodeCommitSource(sourceStage, 'source', {
+const source = new codecommit.PipelineSource(sourceStage, 'source', {
     artifactName: 'SourceArtifact',
     repository: repo,
 });
 
 // associate the build stage with code build project
-new CodeBuildAction(buildStage, 'build', {
+new codebuild.PipelineBuildAction(buildStage, 'build', {
     project: new BuildProject(stack, 'MyBuildProject', { source: new CodePipelineSource() },
     source
 });

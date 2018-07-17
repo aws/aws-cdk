@@ -1,8 +1,9 @@
 import { Metric, MetricCustomization } from '@aws-cdk/cloudwatch';
-import { AccountPrincipal, Arn, Construct, FnSelect, FnSplit, PolicyPrincipal,
-         PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
+import { AccountPrincipal, Arn, AwsRegion, Construct, FnConcat, FnSelect, FnSplit,
+         Output, PolicyPrincipal, PolicyStatement, resolve, ServicePrincipal, Token } from '@aws-cdk/core';
 import { EventRuleTarget, IEventRuleTarget } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
+import logs = require('@aws-cdk/logs');
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { LambdaPermission } from './permission';
 
@@ -23,7 +24,7 @@ export interface LambdaRefProps {
     role?: Role;
 }
 
-export abstract class LambdaRef extends Construct implements IEventRuleTarget {
+export abstract class LambdaRef extends Construct implements IEventRuleTarget, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -109,9 +110,14 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
 
     /**
      * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this topic have been added.
+     * notifications to this lambda have been added.
      */
     private eventRuleTargetPolicyAdded = false;
+
+    /**
+     * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
+     */
+    private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -210,6 +216,32 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget {
      */
     public metricThrottles(props?: MetricCustomization): Metric {
         return this.metric('Throttles', { statistic: 'sum', ...props });
+    }
+
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+        const arn = sourceLogGroup.logGroupArn;
+
+        if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
+            // NOTE: the use of {AWS::Region} limits this to the same region, which shouldn't really be an issue,
+            // since the Lambda must be in the same region as the SubscriptionFilter anyway.
+            //
+            // (Wildcards in principals are unfortunately not supported.
+            this.addPermission('InvokedByCloudWatchLogs', {
+                principal: new ServicePrincipal(new FnConcat('logs.', new AwsRegion(), '.amazonaws.com')),
+                sourceArn: arn
+            });
+            this.logSubscriptionDestinationPolicyAddedFor.push(arn);
+        }
+        return { arn: this.functionArn };
+    }
+
+    /**
+     * Export this Function (without the role)
+     */
+    public export(): LambdaRefProps {
+        return {
+            functionArn: new Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+        };
     }
 
     private parsePermissionPrincipal(principal?: PolicyPrincipal) {

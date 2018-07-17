@@ -12,9 +12,14 @@ rm -rf $BUILD_INDICATOR
 
 export PATH=node_modules/.bin:$PATH
 
+# Speed up build by reusing calculated tree hashes
+# On dev machine, this speeds up the TypeScript part of the build by ~30%.
+export MERKLE_BUILD_CACHE=$(mktemp -d)
+trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
+
 echo "============================================================================================="
 echo "building..."
-lerna exec --stream "npm run build"
+time lerna exec --stream "npm run build"
 
 echo "============================================================================================="
 echo "testing..."

@@ -1,11 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { BuildProject, CodePipelineSource } from '@aws-cdk/codebuild';
-import { Repository } from '@aws-cdk/codecommit';
+import { PipelineSource, Repository } from '@aws-cdk/codecommit';
+import { AmazonS3Source, ApprovalAction, GitHubSource, Pipeline, Stage } from '@aws-cdk/codepipeline';
 import { SecretParameter, Stack } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/s3';
 import { Topic } from '@aws-cdk/sns';
 import { Test } from 'nodeunit';
-import { AmazonS3Source, ApprovalAction, CodeBuildAction, CodeCommitSource, GitHubSource, Pipeline, Stage } from '../lib';
+import { BuildProject, CodePipelineSource, PipelineBuildAction } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -18,7 +18,7 @@ export = {
 
         const pipeline = new Pipeline(stack, 'Pipeline');
         const sourceStage = new Stage(pipeline, 'source');
-        const source = new CodeCommitSource(sourceStage, 'source', {
+        const source = new PipelineSource(sourceStage, 'source', {
             artifactName: 'SourceArtifact',
             repository: repo,
         });
@@ -26,12 +26,13 @@ export = {
         const buildStage = new Stage(pipeline, 'build');
         const project = new BuildProject(stack, 'MyBuildProject', { source: new CodePipelineSource() });
 
-        new CodeBuildAction(buildStage, 'build', {
+        new PipelineBuildAction(buildStage, 'build', {
             project,
             inputArtifact: source.artifact
         });
 
         test.notDeepEqual(stack.toCloudFormation(), {});
+        test.deepEqual([], pipeline.validate());
         test.done();
     },
 
@@ -116,6 +117,7 @@ export = {
           ]
         }));
 
+        test.deepEqual([], p.validate());
         test.done();
     },
 
@@ -193,6 +195,8 @@ export = {
               }
             ]
         }));
+
+        test.deepEqual([], pipeline.validate());
         test.done();
     }
 };
