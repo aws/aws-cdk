@@ -6,3 +6,4 @@ dist
 pack
 .BUILD_COMPLETED
 .local-npm
+.tools
