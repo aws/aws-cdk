@@ -1,15 +1,58 @@
-import { BucketName, BucketRef } from '@aws-cdk/s3';
+import assets = require('@aws-cdk/cdk-assets');
+import s3 = require('@aws-cdk/s3');
+import { Lambda } from './lambda';
 import { cloudformation } from './lambda.generated';
-import { LambdaRuntime } from './runtime';
 
 export abstract class LambdaCode {
-    public abstract toJSON(runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty;
+    /**
+     * @returns `LambdaCodeS3` associated with the specified S3 object.
+     * @param bucket The S3 bucket
+     * @param key The object key
+     * @param objectVersion Optional S3 object version
+     */
+    public static bucket(bucket: s3.BucketRef, key: string, objectVersion?: string) {
+        return new LambdaS3Code(bucket, key, objectVersion);
+    }
+
+    /**
+     * @returns `LambdaCodeInline` with inline code.
+     * @param code The actual handler code (limited to 4KiB)
+     */
+    public static inline(code: string) {
+        return new LambdaInlineCode(code);
+    }
+
+    /**
+     * @returns `LambdaCodeAsset`
+     * @param directoryToZip
+     */
+    public static asset(directoryToZip: string) {
+        return new LambdaAssetCode(directoryToZip);
+    }
+
+    /**
+     * Called during stack synthesis to render the CodePropery for the
+     * Lambda function.
+     */
+
+    public abstract toJSON(): cloudformation.FunctionResource.CodeProperty;
+
+    /**
+     * Called when the lambda is initialized to allow this object to
+     * bind to the stack, add resources and have fun.
+     */
+    public bind(_parent: Lambda) {
+        return;
+    }
 }
 
+/**
+ * Lambda code from an S3 archive.
+ */
 export class LambdaS3Code extends LambdaCode {
-    private bucketName: BucketName;
+    private bucketName: s3.BucketName;
 
-    constructor(bucket: BucketRef, private key: string, private objectVersion?: string) {
+    constructor(bucket: s3.BucketRef, private key: string, private objectVersion?: string) {
         super();
 
         if (!bucket.bucketName) {
@@ -19,7 +62,7 @@ export class LambdaS3Code extends LambdaCode {
         this.bucketName = bucket.bucketName;
     }
 
-    public toJSON(_runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty {
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
         return {
             s3Bucket: this.bucketName,
             s3Key: this.key,
@@ -28,6 +71,9 @@ export class LambdaS3Code extends LambdaCode {
     }
 }
 
+/**
+ * Lambda code from an inline string (limited to 4KiB).
+ */
 export class LambdaInlineCode extends LambdaCode {
     constructor(private code: string) {
         super();
@@ -37,13 +83,39 @@ export class LambdaInlineCode extends LambdaCode {
         }
     }
 
-    public toJSON(runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty {
-        if (!runtime.supportsInlineCode) {
-            throw new Error(`Inline source not supported for: ${runtime.name}`);
+    public bind(parent: Lambda) {
+        if (!parent.runtime.supportsInlineCode) {
+            throw new Error(`Inline source not allowed for ${parent.runtime.name}`);
         }
+    }
+
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
 
         return {
             zipFile: this.code
+        };
+    }
+}
+
+/**
+ * Lambda code from a local directory.
+ */
+export class LambdaAssetCode extends LambdaCode {
+    private asset?: assets.Asset;
+
+    constructor(private readonly directory: string) {
+        super();
+    }
+
+    public bind(parent: Lambda) {
+        this.asset = new assets.ZipDirectoryAsset(parent, 'Code', { path: this.directory });
+        this.asset.grantRead(parent.role);
+    }
+
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
+        return  {
+            s3Bucket: this.asset!.s3BucketName,
+            s3Key: this.asset!.s3ObjectKey
         };
     }
 }

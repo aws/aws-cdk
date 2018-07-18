@@ -1,55 +1,33 @@
 ## AWS Lambda Construct Library
 
+This construct library allows you to define AWS Lambda functions.
+
 ```ts
 const fn = new Lambda(this, 'MyFunction', {
-    runtime: LambdaRuntime.DOTNETCORE_2,
-    code: new LambdaS3Code(bucket, 'myKey'),
+    runtime: LambdaRuntime.NodeJS810,
     handler: 'index.handler'
+    code: LambdaCode.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
 });
-
-fn.role.addToPolicy(new PolicyStatement()....);
 ```
 
-### Inline node.js Lambda Functions
+### Handler Code
 
-The subclass called `LambdaInlineNodeJS` allows embedding the function's handler
-as a JavaScript function within the construct code.
+The `LambdaCode` class includes static convenience methods for various types of
+runtime code.
 
-The following example defines a node.js Lambda and an S3 bucket. When invoked,
-a file named "myfile.txt" will be uploaded to the bucket with the string "hello, world".
+ * `LambdaCode.bucket(bucket, key[, objectVersion])` - specify an S3 object that
+   contains the archive of your runtime code.
+ * `LambdaCode.inline(code)` - inline the handle code as a string. This is
+   limited to 4KB. The class `InlineJavaScriptLambda` can be used to simplify
+   inlining JavaScript functions.
+ * `LambdaCode.asset(directory)` - specify a directory in the local filesystem
+   which will be zipped and uploaded to S3 before deployment.
 
-A few things to note:
+The following example shows how to define a Python function and deploy the code from the
+local directory `my-lambda-handler` to it:
 
- - The function's execution role is granted read/write permissions on the
-   bucket.
- - The require statement for `aws-sdk` is invoked within the function's body. Due to
-   node.js' module caching, this is equivalent in performance to requiring
-   outside.
- - The bucket name is passed to the function via the environment variable
-   `BUCKET_NAME`.
+[Example of Lambda Code from Local Assets](test/integ.assets.lit.ts)
 
-```ts
-const bucket = new Bucket(this, 'MyBucket');
-
-const lambda = new InlineJavaScriptLambda(this, 'MyLambda', {
-    environment: {
-        BUCKET_NAME: bucket.bucketName
-    },
-    handler: {
-        fn: (_event: any, _context: any, callback: any) => {
-            const S3 = require('aws-sdk').S3;
-            const s3 = new S3();
-            const bucketName = process.env.BUCKET_NAME;
-            s3.upload({ Bucket: bucketName, Key: 'myfile.txt', Body: 'Hello, world' }, (err, data) => {
-                if (err) {
-                    return callback(err);
-                }
-                console.log(data);
-                return callback();
-            });
-        }
-    }
-});
-
-bucket.grantReadWrite(lambda.role);
-```
+When deploying a stack that contains this code, the directory will be zip
+archived and then uploaded to an S3 bucket, then the exact location of the S3
+objects will be passed when the stack is deployed.

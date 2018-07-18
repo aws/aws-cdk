@@ -118,6 +118,16 @@ export class Lambda extends LambdaRef {
      */
     public readonly role?: Role;
 
+    /**
+     * The runtime configured for this lambda.
+     */
+    public readonly runtime: LambdaRuntime;
+
+    /**
+     * The name of the handler configured for this lambda.
+     */
+    public readonly handler: string;
+
     protected readonly canCreatePermissions = true;
 
     /**
@@ -149,7 +159,7 @@ export class Lambda extends LambdaRef {
         const resource = new cloudformation.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
             description: props.description,
-            code: props.code.toJSON(props.runtime),
+            code: new Token(() => props.code.toJSON()),
             handler: props.handler,
             timeout: props.timeout,
             runtime: props.runtime.name,
@@ -162,6 +172,11 @@ export class Lambda extends LambdaRef {
 
         this.functionName = resource.ref;
         this.functionArn = resource.functionArn;
+        this.handler = props.handler;
+        this.runtime = props.runtime;
+
+        // allow code to bind to stack.
+        props.code.bind(this);
     }
 
     /**
