@@ -9,9 +9,9 @@ export class IntegrationTests {
     constructor(private readonly directory: string) {
     }
 
-    public fromCliArgs(argv: string[]): Promise<IntegrationTest[]> {
-        if (argv.length > 2) {
-            return this.request(argv.slice(2));
+    public fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
+        if (tests && tests.length > 0) {
+            return this.request(tests);
         } else {
             return this.discover();
         }
@@ -39,18 +39,22 @@ export class IntegrationTest {
         this.cdkConfigPath = path.join(this.directory, 'cdk.json');
     }
 
-    public async invoke(args: string[], json?: boolean, context?: any): Promise<any> {
+    public async invoke(args: string[], options: { json?: boolean, context?: any, verbose?: boolean } = { }): Promise<any> {
         // Write context to cdk.json, afterwards delete. We need to do this because there is no way
         // to pass structured context data from the command-line, currently.
-        if (context) {
-            await this.writeCdkConfig({ context });
+        if (options.context) {
+            await this.writeCdkConfig({ context: options.context });
         } else {
             this.deleteCdkConfig();
         }
 
         try {
             const cdk = require.resolve('aws-cdk/bin/cdk');
-            return exec([cdk, '-a', `node ${this.name}`].concat(args), this.directory, json);
+            return exec([cdk, '-a', `node ${this.name}`].concat(args), {
+                cwd: this.directory,
+                json: options.json,
+                verbose: options.verbose
+            });
         } finally {
             this.deleteCdkConfig();
         }
@@ -91,22 +95,24 @@ export const STATIC_TEST_CONTEXT = {
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-function exec(commandLine: string[], cwd?: string, json?: boolean): any {
+function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean} = { }): any {
     const proc = spawnSync(commandLine[0], commandLine.slice(1), {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        cwd
+        stdio: [ 'ignore', 'pipe', options.verbose ? 'inherit' : 'pipe' ], // inherit STDERR in verbose mode
+        cwd: options.cwd
     });
 
     if (proc.error) { throw proc.error; }
     if (proc.status !== 0) {
-        process.stderr.write(proc.stderr);
+        if (process.stderr) { // will be 'null' in verbose mode
+            process.stderr.write(proc.stderr);
+        }
         throw new Error(`Command exited with ${proc.status ? `status ${proc.status}` : `signal ${proc.signal}`}`);
     }
 
     const output = proc.stdout.toString('utf-8').trim();
 
     try {
-        if (json) {
+        if (options.json) {
             if (output.length === 0) { return {}; }
 
             return JSON.parse(output);
