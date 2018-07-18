@@ -41,53 +41,33 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo)
 
 async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
     debug('Preparing zip asset from directory:', asset.path);
-
     const staging = await fs.mkdtemp('/tmp/cdk-assets');
-
     try {
         const archiveFile = path.join(staging, 'archive.zip');
         await zipDirectory(asset.path, archiveFile);
-
         debug('zip archive:', archiveFile);
-        const data = await fs.readFile(archiveFile);
-
-        const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
-            s3KeyPrefix: 'assets/',
-            s3KeySuffix: '.zip',
-            contentType: 'application/zip',
-        });
-
-        const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
-        if (changed) {
-            success(` 👜  Asset ${asset.path} (directory zip) uploaded to ${s3url}`);
-        } else {
-            success(` 👜  Asset ${asset.path} (directory zip) already exists in ${s3url}`);
-        }
-
-        return [
-            { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-            { ParameterKey: asset.s3KeyParameter, ParameterValue: key }
-        ];
+        return await prepareFileAsset(asset, toolkitInfo, 'application/zip');
     } finally {
         await fs.remove(staging);
     }
 }
 
-async function prepareFileAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+async function prepareFileAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, contentType?: string): Promise<CloudFormation.Parameter[]> {
     debug('Preparing file asset:', asset.path);
 
     const data = await fs.readFile(asset.path);
 
     const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
         s3KeyPrefix: 'assets/',
-        s3KeySuffix: path.extname(asset.path)
+        s3KeySuffix: path.extname(asset.path),
+        contentType
     });
 
     const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
     if (changed) {
         success(` 👜  Asset ${asset.path} uploaded to ${s3url}`);
     } else {
-        success(` 👜  Asset ${asset.path} already exists in ${s3url}`);
+        success(` 👜  Asset ${asset.path} is already up-to-date in ${s3url}`);
     }
 
     return [

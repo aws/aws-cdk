@@ -17,7 +17,7 @@ export class ToolkitInfo {
     }) { }
 
     public get bucketUrl() {
-        return `https://${this.props.bucketName}.s3.amazonaws.com`;
+        return `https://${this.props.bucketEndpoint}`;
     }
 
     public get bucketName() {
