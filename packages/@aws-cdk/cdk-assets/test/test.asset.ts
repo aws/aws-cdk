@@ -266,5 +266,12 @@ export = {
         });
 
         test.done();
+    },
+    'fails if directory not found'(test: Test) {
+        const stack = new Stack();
+        test.throws(() => new ZipDirectoryAsset(stack, 'MyDirectory', {
+            path: '/path/not/found/' + Math.random() * 999999
+        }));
+        test.done();
     }
 };
