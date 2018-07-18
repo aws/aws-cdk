@@ -6,7 +6,7 @@ import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
 // tslint:disable:no-console
 
 async function main() {
-    const tests = await new IntegrationTests('test').fromCliArgs(process.argv);
+    const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
     const failures: string[] = [];
 
     for (const test of tests) {
@@ -17,7 +17,7 @@ async function main() {
         }
 
         const expected = await test.readExpected();
-        const actual = await test.invoke(['--json', 'synth'], true, STATIC_TEST_CONTEXT);
+        const actual = await test.invoke(['--json', 'synth'], { json: true, context: STATIC_TEST_CONTEXT });
 
         const diff = diffTemplate(expected, actual);
 
