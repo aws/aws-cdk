@@ -12,9 +12,9 @@ export class AwsAccountId extends PseudoParameter {
     }
 }
 
-export class AwsDomainSuffix extends PseudoParameter {
+export class AwsURLSuffix extends PseudoParameter {
     constructor() {
-        super('AWS::DomainSuffix');
+        super('AWS::URLSuffix');
     }
 }
 
