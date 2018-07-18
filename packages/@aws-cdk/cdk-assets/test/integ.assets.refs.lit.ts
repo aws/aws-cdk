@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/core');
+import iam = require('@aws-cdk/iam');
 import path = require('path');
 import assets = require('../lib');
 
@@ -15,6 +16,9 @@ class TestStack extends cdk.Stack {
         new cdk.Output(this, 'S3ObjectKey', { value: asset.s3ObjectKey });
         new cdk.Output(this, 'S3URL', { value: asset.s3Url });
         /// !hide
+
+        // we need at least one resource
+        asset.grantRead(new iam.User(this, 'MyUser'));
     }
 }
 

@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/core');
+import iam = require('@aws-cdk/iam');
 import path = require('path');
 import assets = require('../lib');
 
@@ -7,10 +8,13 @@ class TestStack extends cdk.Stack {
         super(parent, name, props);
 
         /// !show
-        new assets.FileAsset(this, 'SampleAsset', {
+        const asset = new assets.FileAsset(this, 'SampleAsset', {
             path: path.join(__dirname, 'file-asset.txt')
         });
         /// !hide
+
+        const user = new iam.User(this, 'MyUser');
+        asset.grantRead(user);
     }
 }
 
