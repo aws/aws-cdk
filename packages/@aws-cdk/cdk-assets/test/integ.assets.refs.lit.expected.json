@@ -57,10 +57,10 @@
     }
   },
   "Resources": {
-    "TestUser6A619381": {
+    "MyUserDC45028B": {
       "Type": "AWS::IAM::User"
     },
-    "TestUserDefaultPolicyFC1191A6": {
+    "MyUserDefaultPolicy7B897426": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -133,10 +133,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "TestUserDefaultPolicyFC1191A6",
+        "PolicyName": "MyUserDefaultPolicy7B897426",
         "Users": [
           {
-            "Ref": "TestUser6A619381"
+            "Ref": "MyUserDC45028B"
           }
         ]
       }
