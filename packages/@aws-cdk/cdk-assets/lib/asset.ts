@@ -73,21 +73,7 @@ export class Asset extends cdk.Construct {
         // resolve full path
         this.assetPath = path.resolve(props.path);
 
-        if (!fs.existsSync(this.assetPath)) {
-            throw new Error(`Cannot find asset at ${props.path}`);
-        }
-
-        if (props.packaging === AssetPackaging.ZipDirectory) {
-            if (!fs.statSync(this.assetPath).isDirectory()) {
-                throw new Error(`${this.assetPath} is expected to be a directory when asset packaging is 'zip'`);
-            }
-        } else if (props.packaging === AssetPackaging.File) {
-            if (!fs.statSync(this.assetPath).isFile()) {
-                throw new Error(`${this.assetPath} is expected to be a regular file when asset packaging is 'file'`);
-            }
-        } else {
-            throw new Error(`Unsupported asset packaging format: ${props.packaging}`);
-        }
+        validateAssetOnDisk(this.assetPath, props.packaging);
 
         // add parameters for s3 bucket and s3 key. those will be set by
         // the toolkit or by CI/CD when the stack is deployed and will include
@@ -183,5 +169,28 @@ export interface ZipDirectoryAssetProps {
 export class ZipDirectoryAsset extends Asset {
     constructor(parent: cdk.Construct, id: string, props: ZipDirectoryAssetProps) {
         super(parent, id, { packaging: AssetPackaging.ZipDirectory, ...props });
+    }
+}
+
+function validateAssetOnDisk(assetPath: string, packaging: AssetPackaging) {
+    if (!fs.existsSync(assetPath)) {
+        throw new Error(`Cannot find asset at ${assetPath}`);
+    }
+
+    switch (packaging) {
+        case AssetPackaging.ZipDirectory:
+            if (!fs.statSync(assetPath).isDirectory()) {
+                throw new Error(`${assetPath} is expected to be a directory when asset packaging is 'zip'`);
+            }
+            break;
+
+        case AssetPackaging.File:
+            if (!fs.statSync(assetPath).isFile()) {
+                throw new Error(`${assetPath} is expected to be a regular file when asset packaging is 'file'`);
+            }
+            break;
+
+        default:
+            throw new Error(`Unsupported asset packaging format: ${packaging}`);
     }
 }
