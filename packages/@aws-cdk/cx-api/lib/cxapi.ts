@@ -95,3 +95,11 @@ export const DEFAULT_ACCOUNT_CONTEXT_KEY = 'aws:cdk:toolkit:default-account';
  * Context parameter for the default AWS region to use if a stack's environment is not set.
  */
 export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
+
+export const ASSET_METADATA = 'aws:cdk:asset';
+export interface AssetMetadataEntry {
+    path: string;
+    packaging: 'zip' | 'file';
+    s3BucketParameter: string;
+    s3KeyParameter: string;
+}
