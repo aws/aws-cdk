@@ -1,9 +1,10 @@
 import { expect } from '@aws-cdk/assert';
-import { PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/core';
+import { Output, PolicyStatement, RemovalPolicy, resolve, Stack } from '@aws-cdk/core';
 import { Group, User } from '@aws-cdk/iam';
 import { EncryptionKey } from '@aws-cdk/kms';
 import { Test } from 'nodeunit';
 import * as s3 from '../lib';
+import { Bucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -915,4 +916,104 @@ export = {
 
         test.done();
     },
+
+    'urlForObject returns a token with the S3 URL of the token'(test: Test) {
+        const stack = new Stack();
+        const bucket = new Bucket(stack, 'MyBucket');
+
+        new Output(stack, 'BucketURL', { value: bucket.bucketUrl });
+        new Output(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
+        new Output(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+
+        expect(stack).toMatch({
+          "Resources": {
+            "MyBucketF68F3FF0": {
+              "Type": "AWS::S3::Bucket"
+            }
+          },
+          "Outputs": {
+            "BucketURL": {
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    "s3.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Ref": "MyBucketF68F3FF0"
+                    }
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "BucketURL"
+              }
+            },
+            "MyFileURL": {
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    "s3.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Ref": "MyBucketF68F3FF0"
+                    },
+                    "/",
+                    "my/file.txt"
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "MyFileURL"
+              }
+            },
+            "YourFileURL": {
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    "s3.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Ref": "MyBucketF68F3FF0"
+                    },
+                    "/",
+                    "your/file.txt"
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "YourFileURL"
+              }
+            }
+          }
+        });
+
+        test.done();
+    }
 };
