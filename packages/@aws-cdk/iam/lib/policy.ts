@@ -5,7 +5,10 @@ import { Role } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
 
-export interface IIdentityResource {
+/**
+ * A construct that represents an IAM principal, such as a user, group or role.
+ */
+export interface IPrincipal {
     /**
      * The IAM principal of this identity (i.e. AWS principal, service principal, etc).
      */
@@ -30,6 +33,12 @@ export interface IIdentityResource {
      */
     attachManagedPolicy(arn: any): void;
 }
+
+/**
+ * @deprecated Use IPrincipal
+ */
+// tslint:disable-next-line:no-empty-interface
+export interface IIdentityResource extends IPrincipal { }
 
 export interface PolicyProps {
     /**

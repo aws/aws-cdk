@@ -1,5 +1,5 @@
-import { applyRemovalPolicy, Arn, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
-import { IIdentityResource } from '@aws-cdk/iam';
+import { applyRemovalPolicy, Arn, AwsRegion, AwsURLSuffix, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
+import { IPrincipal } from '@aws-cdk/iam';
 import * as kms from '@aws-cdk/kms';
 import { BucketPolicy } from './bucket-policy';
 import * as perms from './perms';
@@ -114,6 +114,38 @@ export abstract class BucketRef extends Construct {
     }
 
     /**
+     * The https:// URL of this bucket.
+     * @example https://s3.us-west-1.amazonaws.com/onlybucket
+     * Similar to calling `urlForObject` with no object key.
+     */
+    public get bucketUrl() {
+        return this.urlForObject();
+    }
+
+    /**
+     * The https URL of an S3 object. For example:
+     * @example https://s3.us-west-1.amazonaws.com/onlybucket
+     * @example https://s3.us-west-1.amazonaws.com/bucket/key
+     * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+     * @param key The S3 key of the object. If not specified, the URL of the
+     *            bucket is returned.
+     * @returns an ObjectS3Url token
+     */
+    public urlForObject(key?: any): S3Url {
+        const components = [ 'https://', 's3.', new AwsRegion(), '.', new AwsURLSuffix(), '/', this.bucketName ];
+        if (key) {
+            // trim prepending '/'
+            if (typeof key === 'string' && key.startsWith('/')) {
+                key = key.substr(1);
+            }
+            components.push('/');
+            components.push(key);
+        }
+
+        return new FnConcat(...components);
+    }
+
+    /**
      * Returns an ARN that represents all objects within the bucket that match
      * the key pattern specified. To represent all keys, specify ``"*"``.
      *
@@ -133,7 +165,7 @@ export abstract class BucketRef extends Construct {
      * If an encryption key is used, permission to ues the key to decrypt the
      * contents of the bucket will also be granted.
      */
-    public grantRead(identity?: IIdentityResource, objectsKeyPattern = '*') {
+    public grantRead(identity?: IPrincipal, objectsKeyPattern: any = '*') {
         if (!identity) {
             return;
         }
@@ -147,7 +179,7 @@ export abstract class BucketRef extends Construct {
      * If an encryption key is used, permission to use the key for
      * encrypt/decrypt will also be granted.
      */
-    public grantReadWrite(identity?: IIdentityResource, objectsKeyPattern = '*') {
+    public grantReadWrite(identity?: IPrincipal, objectsKeyPattern: any = '*') {
         if (!identity) {
             return;
         }
@@ -156,7 +188,7 @@ export abstract class BucketRef extends Construct {
         this.grant(identity, objectsKeyPattern, bucketActions, keyActions);
     }
 
-    private grant(identity: IIdentityResource, objectsKeyPattern: string, bucketActions: string[], keyActions: string[]) {
+    private grant(identity: IPrincipal, objectsKeyPattern: any, bucketActions: string[], keyActions: string[]) {
         const resources = [
             this.bucketArn,
             this.arnForObjects(objectsKeyPattern)
@@ -436,6 +468,20 @@ export enum BucketEncryption {
  * The name of the bucket.
  */
 export class BucketName extends Token {
+
+}
+
+/**
+ * A key to an S3 object.
+ */
+export class ObjectKey extends Token {
+
+}
+
+/**
+ * The web URL (https://s3.us-west-1.amazonaws.com/bucket/key) of an S3 object.
+ */
+export class S3Url extends Token {
 
 }
 
