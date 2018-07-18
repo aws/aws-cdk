@@ -1,6 +1,6 @@
 import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/core';
 import { cloudformation, RoleArn } from './iam.generated';
-import { IIdentityResource, Policy } from './policy';
+import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
@@ -49,7 +49,7 @@ export interface RoleProps {
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
-export class Role extends Construct implements IIdentityResource, IDependable {
+export class Role extends Construct implements IIdentityResource, IPrincipal, IDependable {
     /**
      * The assume role policy document associated with this role.
      */

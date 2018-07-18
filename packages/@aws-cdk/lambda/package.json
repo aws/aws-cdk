@@ -47,9 +47,11 @@
   "dependencies": {
     "@aws-cdk/cloudwatch": "^0.7.3-beta",
     "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cdk-assets": "^0.7.3-beta",
     "@aws-cdk/events": "^0.7.3-beta",
     "@aws-cdk/iam": "^0.7.3-beta",
     "@aws-cdk/s3": "^0.7.3-beta",
-    "@aws-cdk/logs": "^0.7.3-beta"
+    "@aws-cdk/logs": "^0.7.3-beta",
+    "@aws-cdk/cx-api": "^0.7.3-beta"
   }
 }

@@ -3,7 +3,8 @@ import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicySta
 import { EventRule } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
-import { Lambda, LambdaInlineCode, LambdaRef, LambdaRuntime } from '../lib';
+import path = require('path');
+import { Lambda, LambdaCode, LambdaInlineCode, LambdaRef, LambdaRuntime } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -275,6 +276,38 @@ export = {
                 "Id": "MyLambda"
               }
             ]
+        }));
+
+        test.done();
+    },
+
+    'Lambda code can be read from a local directory via an asset'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        new Lambda(stack, 'MyLambda', {
+            code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),
+            handler: 'index.handler',
+            runtime: LambdaRuntime.Python36
+        });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::Lambda::Function', {
+            "Code": {
+              "S3Bucket": {
+                "Ref": "MyLambdaCodeS3BucketC82A5870"
+              },
+              "S3Key": {
+                "Ref": "MyLambdaCodeS3ObjectKeyA7272AC7"
+              }
+            },
+            "Handler": "index.handler",
+            "Role": {
+              "Fn::GetAtt": [
+                "MyLambdaServiceRole4539ECB6",
+                "Arn"
+              ]
+            },
+            "Runtime": "python3.6"
         }));
 
         test.done();
