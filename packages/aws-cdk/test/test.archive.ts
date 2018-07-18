@@ -3,7 +3,7 @@ import fs = require('fs-extra');
 import { Test } from 'nodeunit';
 import path = require('path');
 import { promisify } from 'util';
-import { md5hash, zipDirectory } from '../lib/api/archive';
+import { md5hash, zipDirectory } from '../lib/archive';
 const exec = promisify(_exec);
 
 export = {
