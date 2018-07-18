@@ -8,7 +8,7 @@ class TestStack extends cdk.Stack {
 
         /// !show
         new Lambda(this, 'MyLambda', {
-            code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),
+            code: LambdaCode.file(path.join(__dirname, 'handler.zip')),
             handler: 'index.main',
             runtime: LambdaRuntime.Python36
         });
@@ -18,6 +18,6 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App(process.argv);
 
-new TestStack(app, 'lambda-test-assets');
+new TestStack(app, 'lambda-test-assets-file');
 
 process.stdout.write(app.run());

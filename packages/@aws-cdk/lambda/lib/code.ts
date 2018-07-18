@@ -5,7 +5,7 @@ import { cloudformation } from './lambda.generated';
 
 export abstract class LambdaCode {
     /**
-     * @returns `LambdaCodeS3` associated with the specified S3 object.
+     * @returns `LambdaS3Code` associated with the specified S3 object.
      * @param bucket The S3 bucket
      * @param key The object key
      * @param objectVersion Optional S3 object version
@@ -15,7 +15,7 @@ export abstract class LambdaCode {
     }
 
     /**
-     * @returns `LambdaCodeInline` with inline code.
+     * @returns `LambdaInlineCode` with inline code.
      * @param code The actual handler code (limited to 4KiB)
      */
     public static inline(code: string) {
@@ -23,25 +23,33 @@ export abstract class LambdaCode {
     }
 
     /**
-     * @returns `LambdaCodeAsset`
-     * @param directoryToZip
+     * @returns Zip archives the contents of a directory on disk and uses this
+     * as the lambda handler's code.
+     * @param directoryToZip The directory to zip
      */
-    public static asset(directoryToZip: string) {
-        return new LambdaAssetCode(directoryToZip);
+    public static directory(directoryToZip: string) {
+        return new LambdaAssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
+    }
+
+    /**
+     * @returns Uses a file on disk as a lambda handler's code.
+     * @param filePath The file path
+     */
+    public static file(filePath: string) {
+        return new LambdaAssetCode(filePath, assets.AssetPackaging.File);
     }
 
     /**
      * Called during stack synthesis to render the CodePropery for the
      * Lambda function.
      */
-
     public abstract toJSON(): cloudformation.FunctionResource.CodeProperty;
 
     /**
      * Called when the lambda is initialized to allow this object to
      * bind to the stack, add resources and have fun.
      */
-    public bind(_parent: Lambda) {
+    public bind(_lambda: Lambda) {
         return;
     }
 }
@@ -83,14 +91,13 @@ export class LambdaInlineCode extends LambdaCode {
         }
     }
 
-    public bind(parent: Lambda) {
-        if (!parent.runtime.supportsInlineCode) {
-            throw new Error(`Inline source not allowed for ${parent.runtime.name}`);
+    public bind(lambda: Lambda) {
+        if (!lambda.runtime.supportsInlineCode) {
+            throw new Error(`Inline source not allowed for ${lambda.runtime.name}`);
         }
     }
 
     public toJSON(): cloudformation.FunctionResource.CodeProperty {
-
         return {
             zipFile: this.code
         };
@@ -103,13 +110,23 @@ export class LambdaInlineCode extends LambdaCode {
 export class LambdaAssetCode extends LambdaCode {
     private asset?: assets.Asset;
 
-    constructor(private readonly directory: string) {
+    /**
+     * @param path The path to the asset file or directory.
+     * @param packaging The asset packaging format
+     */
+    constructor(
+        private readonly path: string,
+        private readonly packaging: assets.AssetPackaging) {
         super();
     }
 
-    public bind(parent: Lambda) {
-        this.asset = new assets.ZipDirectoryAsset(parent, 'Code', { path: this.directory });
-        this.asset.grantRead(parent.role);
+    public bind(lambda: Lambda) {
+        this.asset = new assets.Asset(lambda, 'Code', {
+            path: this.path,
+            packaging: this.packaging
+        });
+
+        this.asset.grantRead(lambda.role);
     }
 
     public toJSON(): cloudformation.FunctionResource.CodeProperty {

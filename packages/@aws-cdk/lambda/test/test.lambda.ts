@@ -1,10 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack, PATH_SEP } from '@aws-cdk/core';
+import { AccountPrincipal, Arn, ArnPrincipal, AwsAccountId, Construct, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/core';
 import { EventRule } from '@aws-cdk/events';
 import { Role } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
-import { Lambda, LambdaInlineCode, LambdaRef, LambdaRuntime, LambdaCode } from '../lib';
 import path = require('path');
+import { Lambda, LambdaCode, LambdaInlineCode, LambdaRef, LambdaRuntime } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -285,7 +285,7 @@ export = {
         // GIVEN
         const stack = new Stack();
         new Lambda(stack, 'MyLambda', {
-            code: LambdaCode.asset(path.join(__dirname, 'my-lambda-handler')),
+            code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),
             handler: 'index.handler',
             runtime: LambdaRuntime.Python36
         });

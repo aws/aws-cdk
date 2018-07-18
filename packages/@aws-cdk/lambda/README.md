@@ -20,8 +20,10 @@ runtime code.
  * `LambdaCode.inline(code)` - inline the handle code as a string. This is
    limited to 4KB. The class `InlineJavaScriptLambda` can be used to simplify
    inlining JavaScript functions.
- * `LambdaCode.asset(directory)` - specify a directory in the local filesystem
+ * `LambdaCode.directory(directory)` - specify a directory in the local filesystem
    which will be zipped and uploaded to S3 before deployment.
+ * `LambdaCode.file(path)` - specify a file to be used for Lambda code. This can
+   be, for example a JAR or a ZIP file, based on the runtime used.
 
 The following example shows how to define a Python function and deploy the code from the
 local directory `my-lambda-handler` to it:
