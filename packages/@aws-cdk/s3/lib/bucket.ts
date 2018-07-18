@@ -1,6 +1,6 @@
-import { applyRemovalPolicy, Arn, AwsRegion, AwsURLSuffix, Construct, FnConcat, Output, PolicyStatement, RemovalPolicy, Token } from '@aws-cdk/core';
-import { IPrincipal } from '@aws-cdk/iam';
-import * as kms from '@aws-cdk/kms';
+import cdk = require('@aws-cdk/core');
+import iam = require('@aws-cdk/iam');
+import kms = require('@aws-cdk/kms');
 import { BucketPolicy } from './bucket-policy';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
@@ -45,7 +45,7 @@ export interface BucketRefProps {
  *     BucketRef.import(this, 'MyImportedBucket', ref);
  *
  */
-export abstract class BucketRef extends Construct {
+export abstract class BucketRef extends cdk.Construct {
     /**
      * Creates a Bucket construct that represents an external bucket.
      *
@@ -54,7 +54,7 @@ export abstract class BucketRef extends Construct {
      * @param ref A BucketRefProps object. Can be obtained from a call to
      * `bucket.export()`.
      */
-    public static import(parent: Construct, name: string, props: BucketRefProps): BucketRef {
+    public static import(parent: cdk.Construct, name: string, props: BucketRefProps): BucketRef {
         return new ImportedBucketRef(parent, name, props);
     }
 
@@ -92,8 +92,8 @@ export abstract class BucketRef extends Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
-            bucketName: new Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
+            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
         };
     }
 
@@ -103,7 +103,7 @@ export abstract class BucketRef extends Construct {
      * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
      * this bucket or objects.
      */
-    public addToResourcePolicy(permission: PolicyStatement) {
+    public addToResourcePolicy(permission: cdk.PolicyStatement) {
         if (!this.policy && this.autoCreatePolicy) {
             this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
         }
@@ -132,7 +132,7 @@ export abstract class BucketRef extends Construct {
      * @returns an ObjectS3Url token
      */
     public urlForObject(key?: any): S3Url {
-        const components = [ 'https://', 's3.', new AwsRegion(), '.', new AwsURLSuffix(), '/', this.bucketName ];
+        const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
         if (key) {
             // trim prepending '/'
             if (typeof key === 'string' && key.startsWith('/')) {
@@ -142,7 +142,7 @@ export abstract class BucketRef extends Construct {
             components.push(key);
         }
 
-        return new FnConcat(...components);
+        return new cdk.FnConcat(...components);
     }
 
     /**
@@ -154,8 +154,8 @@ export abstract class BucketRef extends Construct {
      *     arnForObjects('home/', team, '/', user, '/*')
      *
      */
-    public arnForObjects(...keyPattern: any[]): Arn {
-        return new FnConcat(this.bucketArn, '/', ...keyPattern);
+    public arnForObjects(...keyPattern: any[]): cdk.Arn {
+        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern);
     }
 
     /**
@@ -165,7 +165,7 @@ export abstract class BucketRef extends Construct {
      * If an encryption key is used, permission to ues the key to decrypt the
      * contents of the bucket will also be granted.
      */
-    public grantRead(identity?: IPrincipal, objectsKeyPattern: any = '*') {
+    public grantRead(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
         if (!identity) {
             return;
         }
@@ -179,7 +179,7 @@ export abstract class BucketRef extends Construct {
      * If an encryption key is used, permission to use the key for
      * encrypt/decrypt will also be granted.
      */
-    public grantReadWrite(identity?: IPrincipal, objectsKeyPattern: any = '*') {
+    public grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
         if (!identity) {
             return;
         }
@@ -188,24 +188,24 @@ export abstract class BucketRef extends Construct {
         this.grant(identity, objectsKeyPattern, bucketActions, keyActions);
     }
 
-    private grant(identity: IPrincipal, objectsKeyPattern: any, bucketActions: string[], keyActions: string[]) {
+    private grant(identity: iam.IPrincipal, objectsKeyPattern: any, bucketActions: string[], keyActions: string[]) {
         const resources = [
             this.bucketArn,
             this.arnForObjects(objectsKeyPattern)
         ];
 
-        identity.addToPolicy(new PolicyStatement()
+        identity.addToPolicy(new cdk.PolicyStatement()
             .addResources(...resources)
             .addActions(...bucketActions));
 
         // grant key permissions if there's an associated key.
         if (this.encryptionKey) {
             // KMS permissions need to be granted both directions
-            identity.addToPolicy(new PolicyStatement()
+            identity.addToPolicy(new cdk.PolicyStatement()
                 .addResource(this.encryptionKey.keyArn)
                 .addActions(...keyActions));
 
-            this.encryptionKey.addToResourcePolicy(new PolicyStatement()
+            this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
                 .addResource('*')
                 .addPrincipal(identity.principal)
                 .addActions(...keyActions));
@@ -248,7 +248,7 @@ export interface BucketProps {
      *
      * @default By default, the bucket will be destroyed if it is removed from the stack.
      */
-    removalPolicy?: RemovalPolicy;
+    removalPolicy?: cdk.RemovalPolicy;
 
     /**
      * The bucket policy associated with this bucket.
@@ -290,7 +290,7 @@ export class Bucket extends BucketRef {
     private readonly lifecycleRules: LifecycleRule[] = [];
     private readonly versioned?: boolean;
 
-    constructor(parent: Construct, name: string, props: BucketProps = {}) {
+    constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
 
         validateBucketName(props && props.bucketName);
@@ -301,10 +301,10 @@ export class Bucket extends BucketRef {
             bucketName: props && props.bucketName,
             bucketEncryption,
             versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-            lifecycleConfiguration: new Token(() => this.parseLifecycleConfiguration()),
+            lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
         });
 
-        applyRemovalPolicy(resource, props.removalPolicy);
+        cdk.applyRemovalPolicy(resource, props.removalPolicy);
 
         this.versioned = props.versioned;
         this.policy = props.policy;
@@ -467,21 +467,21 @@ export enum BucketEncryption {
 /**
  * The name of the bucket.
  */
-export class BucketName extends Token {
+export class BucketName extends cdk.Token {
 
 }
 
 /**
  * A key to an S3 object.
  */
-export class ObjectKey extends Token {
+export class ObjectKey extends cdk.Token {
 
 }
 
 /**
  * The web URL (https://s3.us-west-1.amazonaws.com/bucket/key) of an S3 object.
  */
-export class S3Url extends Token {
+export class S3Url extends cdk.Token {
 
 }
 
@@ -493,7 +493,7 @@ class ImportedBucketRef extends BucketRef {
     protected policy?: BucketPolicy;
     protected autoCreatePolicy: boolean;
 
-    constructor(parent: Construct, name: string, props: BucketRefProps) {
+    constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
         super(parent, name);
 
         this.bucketArn = parseBucketArn(props);
