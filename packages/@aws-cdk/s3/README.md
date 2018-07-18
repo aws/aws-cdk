@@ -6,6 +6,19 @@ Define an unencrypted S3 bucket.
 new Bucket(this, 'MyFirstBucket');
 ```
 
+`Bucket` constructs expose the following deploy-time attributes:
+
+ * `bucketArn` - the ARN of the bucket (i.e. `arn:aws:s3:::bucket_name`)
+ * `bucketName` - the name of the bucket (i.e. `bucket_name`)
+ * `bucketUrl` - the URL of the bucket (i.e.
+   `https://s3.us-west-1.amazonaws.com/onlybucket`)
+ * `arnForObjects(...pattern)` - the ARN of an object or objects within the
+   bucket (i.e.
+   `arn:aws:s3:::my_corporate_bucket/exampleobject.png` or
+   `arn:aws:s3:::my_corporate_bucket/Development/*`)
+ * `urlForObject(key)` - the URL of an object within the bucket (i.e.
+   `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+
 ### Encryption
 
 Define a KMS-encrypted bucket:

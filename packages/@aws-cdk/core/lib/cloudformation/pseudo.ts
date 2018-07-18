@@ -18,6 +18,12 @@ export class AwsDomainSuffix extends PseudoParameter {
     }
 }
 
+export class AwsURLSuffix extends PseudoParameter {
+    constructor() {
+        super('AWS::URLSuffix');
+    }
+}
+
 export class AwsNotificationARNs extends PseudoParameter {
     constructor() {
         super('AWS::NotificationARNs');
