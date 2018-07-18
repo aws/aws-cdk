@@ -72,52 +72,10 @@
         }
       }
     },
-    "MyVpcPrivateSubnet1Subnet5057CF7E": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.32.0/19",
-        "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
-        },
-        "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
-      }
-    },
-    "MyVpcPrivateSubnet1RouteTable8819E6E2": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
-        }
-      }
-    },
-    "MyVpcPrivateSubnet1RouteTableAssociatioin90CF6BAB": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
-        }
-      }
-    },
-    "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
-        }
-      }
-    },
     "MyVpcPublicSubnet2Subnet492B6BFB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.64.0/19",
+        "CidrBlock": "10.0.32.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
@@ -176,52 +134,10 @@
         }
       }
     },
-    "MyVpcPrivateSubnet2Subnet0040C983": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.96.0/19",
-        "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
-        },
-        "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
-      }
-    },
-    "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "MyVpcF9F0CA6F"
-        }
-      }
-    },
-    "MyVpcPrivateSubnet2RouteTableAssociatioin803693C0": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-        },
-        "SubnetId": {
-          "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
-        }
-      }
-    },
-    "MyVpcPrivateSubnet2DefaultRoute9CE96294": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
-        }
-      }
-    },
     "MyVpcPublicSubnet3Subnet57EEE236": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
+        "CidrBlock": "10.0.64.0/19",
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
         },
@@ -277,6 +193,90 @@
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "Ref": "MyVpcIGW5C4A4F63"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet1Subnet5057CF7E": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.96.0/19",
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false
+      }
+    },
+    "MyVpcPrivateSubnet1RouteTable8819E6E2": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet1RouteTableAssociatioin90CF6BAB": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+        },
+        "SubnetId": {
+          "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet1DefaultRouteA8CDE2FA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet2Subnet0040C983": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/19",
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false
+      }
+    },
+    "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet2RouteTableAssociatioin803693C0": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+        },
+        "SubnetId": {
+          "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+        }
+      }
+    },
+    "MyVpcPrivateSubnet2DefaultRoute9CE96294": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "MyVpcPublicSubnet2NATGateway91BFBEC9"
         }
       }
     },

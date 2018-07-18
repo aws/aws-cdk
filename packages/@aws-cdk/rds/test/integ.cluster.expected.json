@@ -13,12 +13,12 @@
     "VPCPublicSubnet1SubnetB4246D30": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "test-region-1a",
         "CidrBlock": "10.0.0.0/18",
-        "MapPublicIpOnLaunch": true,
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true
       }
     },
     "VPCPublicSubnet1RouteTableFEE4B781": {
@@ -63,66 +63,24 @@
     "VPCPublicSubnet1DefaultRoute91CEF279": {
       "Type": "AWS::EC2::Route",
       "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
-        },
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        }
-      }
-    },
-    "VPCPrivateSubnet1Subnet8BCA10E0": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "AvailabilityZone": "test-region-1a",
-        "CidrBlock": "10.0.64.0/18",
-        "MapPublicIpOnLaunch": false,
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        }
-      }
-    },
-    "VPCPrivateSubnet1RouteTableBE8A6027": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "VPCB9E5F0B4"
-        }
-      }
-    },
-    "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-        },
-        "SubnetId": {
-          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-        }
-      }
-    },
-    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
-        },
-        "RouteTableId": {
-          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
         }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "test-region-1b",
-        "CidrBlock": "10.0.128.0/18",
-        "MapPublicIpOnLaunch": true,
+        "CidrBlock": "10.0.64.0/18",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true
       }
     },
     "VPCPublicSubnet2RouteTable6F1A15F1": {
@@ -167,24 +125,66 @@
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
       "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
+    "VPCPrivateSubnet1Subnet8BCA10E0": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
         },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": false
+      }
+    },
+    "VPCPrivateSubnet1RouteTableBE8A6027": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
+      }
+    },
+    "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
         "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+        }
+      }
+    },
+    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
         }
       }
     },
     "VPCPrivateSubnet2SubnetCFCDAA7A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "AvailabilityZone": "test-region-1b",
         "CidrBlock": "10.0.192.0/18",
-        "MapPublicIpOnLaunch": false,
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": false
       }
     },
     "VPCPrivateSubnet2RouteTable0A19E10E": {
@@ -209,12 +209,12 @@
     "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
       "Type": "AWS::EC2::Route",
       "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+        },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
           "Ref": "VPCPublicSubnet2NATGateway3C070193"
-        },
-        "RouteTableId": {
-          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
         }
       }
     },
@@ -224,11 +224,11 @@
     "VPCVPCGW99B986DC": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
-        "InternetGatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        },
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
+        },
+        "InternetGatewayId": {
+          "Ref": "VPCIGWB7E252D3"
         }
       }
     },
@@ -260,6 +260,7 @@
     "DatabaseSecurityGroupOpentotheworld94E9606E": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
+        "IpProtocol": "tcp",
         "CidrIp": "0.0.0.0/0",
         "Description": "Open to the world",
         "FromPort": {
@@ -274,7 +275,6 @@
             "GroupId"
           ]
         },
-        "IpProtocol": "tcp",
         "ToPort": {
           "Fn::GetAtt": [
             "DatabaseB269D8BB",
@@ -286,12 +286,12 @@
     "DatabaseB269D8BB": {
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
+        "Engine": "aurora",
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },
-        "Engine": "aurora",
-        "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
         "MasterUsername": "admin",
+        "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
         "StorageEncrypted": false,
         "VpcSecurityGroupIds": [
           {
@@ -306,10 +306,10 @@
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
+        "DBInstanceClass": "db.t2.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
-        "DBInstanceClass": "db.t2.small",
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },
@@ -319,28 +319,16 @@
       "DependsOn": [
         "VPCB9E5F0B4",
         "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC",
-        "VPCPublicSubnet1SubnetB4246D30",
-        "VPCPublicSubnet1RouteTableFEE4B781",
-        "VPCPublicSubnet1RouteTableAssociatioin249B4093",
-        "VPCPrivateSubnet1Subnet8BCA10E0",
-        "VPCPrivateSubnet1RouteTableBE8A6027",
-        "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18",
-        "VPCPublicSubnet2Subnet74179F39",
-        "VPCPublicSubnet2RouteTable6F1A15F1",
-        "VPCPublicSubnet2RouteTableAssociatioin766225D7",
-        "VPCPrivateSubnet2SubnetCFCDAA7A",
-        "VPCPrivateSubnet2RouteTable0A19E10E",
-        "VPCPrivateSubnet2RouteTableAssociatioinC31995B4"
+        "VPCVPCGW99B986DC"
       ]
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
+        "DBInstanceClass": "db.t2.small",
         "DBClusterIdentifier": {
           "Ref": "DatabaseB269D8BB"
         },
-        "DBInstanceClass": "db.t2.small",
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },
@@ -350,19 +338,7 @@
       "DependsOn": [
         "VPCB9E5F0B4",
         "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC",
-        "VPCPublicSubnet1SubnetB4246D30",
-        "VPCPublicSubnet1RouteTableFEE4B781",
-        "VPCPublicSubnet1RouteTableAssociatioin249B4093",
-        "VPCPrivateSubnet1Subnet8BCA10E0",
-        "VPCPrivateSubnet1RouteTableBE8A6027",
-        "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18",
-        "VPCPublicSubnet2Subnet74179F39",
-        "VPCPublicSubnet2RouteTable6F1A15F1",
-        "VPCPublicSubnet2RouteTableAssociatioin766225D7",
-        "VPCPrivateSubnet2SubnetCFCDAA7A",
-        "VPCPrivateSubnet2RouteTable0A19E10E",
-        "VPCPrivateSubnet2RouteTableAssociatioinC31995B4"
+        "VPCVPCGW99B986DC"
       ]
     }
   }

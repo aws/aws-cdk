@@ -189,7 +189,15 @@ export class VpcNetwork extends VpcNetworkRef {
      * This can be overridden using VpcNetworkProps when creating a VPCNetwork resource.
      * e.g. new VpcResource(this, { cidr: '192.168.0.0./16' })
      */
-    public static readonly DEFAULT_CIDR_RANGE = '10.0.0.0/16';
+    public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
+
+    /**
+     * Maximum Number of NAT Gateways used to control cost
+     *
+     * @link https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html
+     * defaulting 256 is an arbitrary max that should be impracticel to reach
+     */
+    public static readonly MAX_NAT_GATEWAYS: number = 256;
 
     /**
      * The deafult subnet configuration
@@ -231,6 +239,8 @@ export class VpcNetwork extends VpcNetworkRef {
 
     /**
      * Maximum Number of NAT Gateways used to control cost
+     *
+     * @default {VpcNetwork.MAX_NAT_GATEWAYS}
      */
     private readonly maxNatGateways: number;
 
@@ -283,11 +293,6 @@ export class VpcNetwork extends VpcNetworkRef {
         const instanceTenancy = props.defaultInstanceTenancy || 'default';
         const tags = props.tags || [];
 
-        // 256 is an arbitrary max that should never be reached
-        // https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html
-        // should be triggered first
-        this.maxNatGateways = props.maxNatGateways || 256;
-
         // Define a VPC using the provided CIDR range
         this.resource = new cloudformation.VPCResource(this, 'Resource', {
             cidrBlock,
@@ -306,13 +311,10 @@ export class VpcNetwork extends VpcNetworkRef {
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
 
-        if (props.subnetConfigurations != null) {
-            this.subnetConfigurations = props.subnetConfigurations;
-            this.createSubnets();
-        } else {
-            this.subnetConfigurations = VpcNetwork.DEFAULT_SUBNETS;
-            this.createDefaultSubnetResources();
-        }
+        this.maxNatGateways = props.maxNatGateways || VpcNetwork.MAX_NAT_GATEWAYS;
+
+        this.subnetConfigurations = props.subnetConfigurations || VpcNetwork.DEFAULT_SUBNETS;
+        this.createSubnets();
 
         const allowOutbound = this.subnetConfigurations.filter(
             (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
@@ -366,29 +368,23 @@ export class VpcNetwork extends VpcNetworkRef {
                 remainingSpaceSubnets.push(subnet);
                 continue;
             }
-            this.createSubnetResources(subnet);
+            this.createSubnetResources(subnet, subnet.cidrMask);
         }
+
         const totalRemaining = remainingSpaceSubnets.length * this.availabilityZones.length;
-
         const cidrMaskForRemaing = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
-
         for (const subnet of remainingSpaceSubnets) {
-            subnet.cidrMask = cidrMaskForRemaing;
-            this.createSubnetResources(subnet);
+            this.createSubnetResources(subnet, cidrMaskForRemaing);
         }
     }
 
-    private createSubnetResources(subnetConfig: SubnetConfiguration) {
+    private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
         this.availabilityZones.forEach((zone, index) => {
-            // this can never happen but satifies the compiler
-            if (subnetConfig.cidrMask === undefined) {
-                throw new Error('Subnet CIDR Mask must be set');
-            }
             const name: string = `${subnetConfig.name}Subnet${index + 1}`;
             const subnetProps = {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
-                cidrBlock: this.networkBuilder.addSubnet(subnetConfig.cidrMask),
+                cidrBlock: this.networkBuilder.addSubnet(cidrMask),
                 mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch
             };
 
@@ -414,36 +410,6 @@ export class VpcNetwork extends VpcNetworkRef {
             }
         });
     }
-
-    private createDefaultSubnetResources() {
-        const azCidrMask: number = this.networkBuilder.maskForRemainingSubnets(
-            this.availabilityZones.length
-        );
-        this.availabilityZones.forEach((zone, index) => {
-            const builder = new NetworkBuilder(this.networkBuilder.addSubnet(azCidrMask));
-            const cidr = builder.maskForRemainingSubnets(this.subnetConfigurations.length);
-            const publicSubnet = new VpcPublicSubnet(this, `PublicSubnet${index + 1}`, {
-                mapPublicIpOnLaunch: true,
-                vpcId: this.vpcId,
-                availabilityZone: zone,
-                cidrBlock: builder.addSubnet(cidr),
-            });
-            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-            if (ngwArray.length < this.maxNatGateways) {
-                this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
-            }
-            this.publicSubnets.push(publicSubnet);
-            const privateSubnet = new VpcPrivateSubnet(this, `PrivateSubnet${index + 1}`, {
-                mapPublicIpOnLaunch: false,
-                vpcId: this.vpcId,
-                availabilityZone: zone,
-                cidrBlock: builder.addSubnet(cidr),
-            });
-            this.privateSubnets.push(privateSubnet);
-            this.dependencyElements.push(publicSubnet, privateSubnet);
-        });
-    }
-
 }
 
 /**
