@@ -182,6 +182,10 @@ export = {
             test.strictEqual(17, builder3.maskForRemainingSubnets(2));
             const builder4 = new NetworkBuilder('10.0.0.0/16');
             test.strictEqual(18, builder4.maskForRemainingSubnets(4));
+            const builder5 = new NetworkBuilder('10.0.0.0/16');
+            builder5.addSubnets(26, 3);
+            builder5.addSubnets(27, 3);
+            test.strictEqual(18, builder5.maskForRemainingSubnets(3));
             test.done();
         }
     }

@@ -25,6 +25,139 @@ into all private subnets, and provide a parameter called `vpcPlacement` to
 allow you to override the placement. [Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
 
+If you require the ability to configure subnets the `VpcNetwork` can be
+customized with `SubnetConfiguration` array. This is best explained by an
+example:
+
+```ts
+import { VpcNetwork } from '@aws-cdk/ec2';
+
+new VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/21',
+  subnetConfigurations: [
+    {
+      cidrMask: 24,
+      name: 'Ingress',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      cidrMask: 24,
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 28,
+      name: 'Database',
+      subnetType: SubnetType.Internal,
+    }
+  ],
+});
+```
+
+The `VpcNetwork` from the above configuration in a Region with three
+availability zones will be the following:
+ * IngressSubnet1: 10.0.0.0/24
+ * IngressSubnet2: 10.0.1.0/24
+ * IngressSubnet3: 10.0.2.0/24
+ * ApplicaitonSubnet1: 10.0.3.0/24
+ * ApplicaitonSubnet2: 10.0.4.0/24
+ * ApplicaitonSubnet3: 10.0.5.0/24
+ * DatabaseSubnet1: 10.0.6.0/28
+ * DatabaseSubnet2: 10.0.6.16/28
+ * DatabaseSubnet3: 10.0.6.32/28
+
+There will be a NAT Gateway in each of the Ingress Subnets and each Application
+Subnet will have a route to the NAT Gateway in it's respective availability
+zone. The subnet numbers [1-3] will consistently map to the three availability
+zones for the region. The Database Subnets will not have an outbound traffic
+route and would be a good fit for managed data services like RDS, Elasticache,
+and Redshift. 
+
+Many times when you plan to build an application you don't know how many
+instances of the application you will need and therefore you don't know how much
+IP space to allocate. For example, you know the application will only have
+Elasitc Loadbalancers in the public subnets and you know you will have 1-3 RDS
+databases for your data tier, and the rest of the IP space should just be evenly
+distributed for the application. This time you also want to only use two
+availability zones. 
+
+```ts
+import { VpcNetwork } from '@aws-cdk/ec2';
+
+new VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/16',
+  subnetConfigurations: [
+    {
+      cidrMask: 26,
+      name: 'Public',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 27,
+      name: 'Database',
+      subnetType: SubnetType.Internal,
+    }
+  ],
+});
+```
+
+The `VpcNetwork` from the above configuration in a Region with three
+availability zones will be the following:
+ * PublicSubnet1: 10.0.0.0/26
+ * PublicSubnet2: 10.0.0.64/26
+ * PublicSubnet3: 10.0.2.128/26
+ * DatabaseSubnet1: 10.0.0.192/27
+ * DatabaseSubnet2: 10.0.0.224/27
+ * DatabaseSubnet3: 10.0.1.0/24
+ * ApplicaitonSubnet1: 10.0.64.0/18
+ * ApplicaitonSubnet2: 10.0.128.0/18
+ * ApplicaitonSubnet3: 10.0.192.0/18
+
+Any subnet configuration without a `cidrMask` will be counted up and allocated
+evenly across the remaining IP space.
+
+Teams may also become cost conscious and be willing to trade availability for
+cost. For example, in your test environments perhaps you would like the same VPC
+as production, but instead of 3 NAT Gateways you would like only 1. This will
+save on the cost, but trade the 3 availability zone to a 1 for all egress
+traffic. This can be accomplished with a single parameter configuration:
+
+```ts
+import { VpcNetwork } from '@aws-cdk/ec2';
+
+new VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/16',
+  maxNatGateways: 1,
+  subnetConfigurations: [
+    {
+      cidrMask: 26,
+      name: 'Public',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 27,
+      name: 'Database',
+      subnetType: SubnetType.Internal,
+    }
+  ],
+});
+```
+
+The `VpcNetwork` above will have the exact same subnet definitions as listed
+above. However, this time the VPC will have only 1 NAT Gateway and all
+Application subnets will route to the NAT Gateway.
+
 ### Fleet
 
 A `Fleet` represents a number of instances on which you run your code. You

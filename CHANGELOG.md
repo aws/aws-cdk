@@ -1,12 +1,14 @@
 ## [UNRELEASED]
 
- * CloudWatch: add `Metric.grantPutMetricData()` to give `PutMetricData` permissions to IAM
+* CloudWatch: add `Metric.grantPutMetricData()` to give `PutMetricData` permissions to IAM
    identities. ([#258])
 * [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
 * Lambda (feature): add `role` parameter, making it possible to specify an
   externally defined execution role.
+* VpcNetwork (BREAKING): add the ability customize subnet configurations ([#250])
 
 [#258]: https://github.com/awslabs/aws-cdk/pull/258
+[#250]: https://github.com/awslabs/aws-cdk/pull/250
 
 ## 0.7.3 - 2018-07-09
 

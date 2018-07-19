@@ -128,14 +128,6 @@ export enum SubnetType {
     Internal = 1,
 
     /**
-     * Public subnets route outbound traffic via an Internet Gateway
-     *
-     * If this is set and OutboundTrafficMode.None is configure an error
-     * will be thrown.
-     */
-    Public = 2,
-
-    /**
      * Private subnets route outbound traffic via a NAT Gateway
      *
      * Outbound traffic will be routed via a NAT Gateways preference being in
@@ -143,7 +135,16 @@ export enum SubnetType {
      * experimental cost conscious accounts or accounts where HA outbound
      * traffic is not needed.
      */
-    Private = 3
+    Private = 2,
+
+    /**
+     * Public subnets route outbound traffic via an Internet Gateway
+     *
+     * If this is set and OutboundTrafficMode.None is configure an error
+     * will be thrown.
+     */
+    Public = 3
+
 }
 
 /**
@@ -192,10 +193,12 @@ export class VpcNetwork extends VpcNetworkRef {
     public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
 
     /**
-     * Maximum Number of NAT Gateways used to control cost
+     * The default maximum number of NAT Gateways
      *
      * @link https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html
-     * defaulting 256 is an arbitrary max that should be impracticel to reach
+     * defaulting 256 is an arbitrary max that should be impracticel to reach.
+     * This can be overriden using VpcNetworkProps when creating a VPCNetwork resource.
+     * e.g. new VpcResource(this, { maxNatGateways: 1 })
      */
     public static readonly MAX_NAT_GATEWAYS: number = 256;
 
@@ -352,8 +355,8 @@ export class VpcNetwork extends VpcNetworkRef {
     }
 
     /**
-     * createSubnets takes a VPC, and creates a public and private subnet
-     * in each Availability Zone.
+     * createSubnets creates the subnets specified by the subnet configuration
+     * array or creates the `DEFAULT_SUBNETS` ocnfiguration
      */
     private createSubnets() {
         const remainingSpaceSubnets: SubnetConfiguration[] = [];
