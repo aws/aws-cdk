@@ -46,6 +46,10 @@ async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitIn
         const archiveFile = path.join(staging, 'archive.zip');
         await zipDirectory(asset.path, archiveFile);
         debug('zip archive:', archiveFile);
+
+        // now it's a file asset...
+        asset.path = archiveFile;
+        asset.packaging = 'file';
         return await prepareFileAsset(asset, toolkitInfo, 'application/zip');
     } finally {
         await fs.remove(staging);
