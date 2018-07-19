@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.opsworks",
-      "dotnet": "Aws.Cdk.OpsWorks"
+      "dotnet": "Amazon.Cdk.OpsWorks"
     }
   },
   "repository": {

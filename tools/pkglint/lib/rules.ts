@@ -176,7 +176,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
             return;
         }
 
-        const prefix = 'Aws.Cdk';
+        const prefix = 'Amazon.Cdk';
 
         if (!java.startsWith(prefix)) {
             pkg.report({ message: `.NET namespace must start with '${prefix}'` });
@@ -280,6 +280,7 @@ export class MustUseCDKTest extends ValidationRule {
         // files in .gitignore.
         fileShouldContain(pkg, '.gitignore', '.nyc_output');
         fileShouldContain(pkg, '.gitignore', 'coverage');
+        fileShouldContain(pkg, '.gitignore', '.nycrc');
     }
 }
 

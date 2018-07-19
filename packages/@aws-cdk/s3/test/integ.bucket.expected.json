@@ -3,7 +3,6 @@
     "MyBucketKeyC17130CF": {
       "Type": "AWS::KMS::Key",
       "Properties": {
-        "Description": "Created by aws-cdk-s3/MyBucket",
         "KeyPolicy": {
           "Statement": [
             {
@@ -63,7 +62,8 @@
             }
           ],
           "Version": "2012-10-17"
-        }
+        },
+        "Description": "Created by aws-cdk-s3/MyBucket"
       },
       "DeletionPolicy": "Retain"
     },

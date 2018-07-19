@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.codepipeline",
-      "dotnet": "Aws.Cdk.CodePipeline"
+      "dotnet": "Amazon.Cdk.CodePipeline"
     }
   },
   "repository": {
@@ -25,6 +25,9 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline"
+  },
+  "nyc": {
+      "lines": 66
   },
   "keywords": [
     "aws",

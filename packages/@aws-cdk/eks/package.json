@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.eks",
-      "dotnet": "Aws.Cdk.EKS"
+      "dotnet": "Amazon.Cdk.EKS"
     }
   },
   "repository": {
