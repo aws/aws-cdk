@@ -39,6 +39,9 @@ done
 
 echo "Installing y-npm" # using y-npm, we're so META!
 ${Y_NPM} install --global-style --no-save y-npm
+# Because y-npm is installed on the build server, we need to bootstrap
+# it on windows by manually creating the shim batch file.
+cp ${root}/tools/y-npm/bin/y-npm.template.cmd node_modules/.bin/y-npm.cmd
 ln -s node_modules/.bin bin
 
 # Create a local maven repository
