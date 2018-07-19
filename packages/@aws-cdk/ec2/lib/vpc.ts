@@ -288,7 +288,7 @@ export class VpcNetwork extends VpcNetworkRef {
             throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
         }
 
-        const cidrBlock = props.cidr || VpcNetwork.DEFAULT_CIDR_RANGE;
+        const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
         this.networkBuilder = new NetworkBuilder(cidrBlock);
 
         const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
@@ -314,13 +314,13 @@ export class VpcNetwork extends VpcNetworkRef {
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
 
-        this.maxNatGateways = props.maxNatGateways || VpcNetwork.MAX_NAT_GATEWAYS;
+        this.maxNatGateways = ifUndefined(props.maxNatGateways, VpcNetwork.MAX_NAT_GATEWAYS);
 
-        this.subnetConfiguration = props.subnetConfiguration || VpcNetwork.DEFAULT_SUBNETS;
+        this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
         this.createSubnets();
 
         const allowOutbound = this.subnetConfiguration.filter(
-            (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
+            subnet => (subnet.subnetType !== SubnetType.Internal)).length > 0;
 
         // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
         if (allowOutbound) {
@@ -364,8 +364,8 @@ export class VpcNetwork extends VpcNetworkRef {
         // Calculate number of public/private subnets based on number of AZs
 
         for (const subnet of this.subnetConfiguration) {
-            subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
-                (subnet.subnetType === SubnetType.Public);
+            subnet.mapPublicIpOnLaunch = ifUndefined(subnet.mapPublicIpOnLaunch,
+                (subnet.subnetType === SubnetType.Public));
 
             if (subnet.cidrMask === undefined) {
                 remainingSpaceSubnets.push(subnet);
@@ -531,4 +531,8 @@ export class VpcPrivateSubnet extends VpcSubnet {
     public addDefaultNatRouteEntry(natGatewayId: Token) {
         this.addDefaultRouteToNAT(natGatewayId);
     }
+}
+
+function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
+       return value !== undefined ? value : defaultValue;
 }

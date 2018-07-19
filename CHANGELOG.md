@@ -5,7 +5,7 @@
 * [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
 * Lambda (feature): add `role` parameter, making it possible to specify an
   externally defined execution role.
-* VpcNetwork (BREAKING): add the ability customize subnet configurations ([#250])
+* VpcNetwork (BREAKING): add the ability customize subnet configurations ([#250]). Subnet allocation was changed to improve IP space efficiency but this forces `VpcNetwork` instances to be replaced
 
 [#258]: https://github.com/awslabs/aws-cdk/pull/258
 [#250]: https://github.com/awslabs/aws-cdk/pull/250

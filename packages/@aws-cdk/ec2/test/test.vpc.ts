@@ -194,6 +194,26 @@ export = {
             }));
             test.done();
         },
+        "with mapPublicIpOnLaunch false for public subnets"(test: Test) {
+            const stack = getTestStack();
+            new VpcNetwork(stack, 'VPC', {
+                maxAZs: 1,
+                subnetConfiguration: [
+                    {
+                        cidrMask: 24,
+                        name: 'ingress',
+                        subnetType: SubnetType.Public,
+                        mapPublicIpOnLaunch: false,
+                        natGateway: true,
+                    }
+                ],
+            });
+            expect(stack).to(countResources("AWS::EC2::Subnet", 1));
+            expect(stack).to(haveResource("AWS::EC2::Subnet", {
+                MapPublicIpOnLaunch: false
+            }));
+            test.done();
+        },
         "with maxAZs set to 2"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
