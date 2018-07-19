@@ -11,3 +11,5 @@ tslint.json
 coverage
 
 .jsii
+
+.nycrc

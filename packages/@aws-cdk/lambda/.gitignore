@@ -12,3 +12,4 @@ tslint.json
 .LAST_BUILD
 .nyc_output
 coverage
+.nycrc
