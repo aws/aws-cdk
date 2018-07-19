@@ -79,8 +79,7 @@ instances of the application you will need and therefore you don't know how much
 IP space to allocate. For example, you know the application will only have
 Elasitc Loadbalancers in the public subnets and you know you will have 1-3 RDS
 databases for your data tier, and the rest of the IP space should just be evenly
-distributed for the application. This time you also want to only use two
-availability zones. 
+distributed for the application. 
 
 ```ts
 import { VpcNetwork } from '@aws-cdk/ec2';
@@ -114,7 +113,7 @@ availability zones will be the following:
  * PublicSubnet3: 10.0.2.128/26
  * DatabaseSubnet1: 10.0.0.192/27
  * DatabaseSubnet2: 10.0.0.224/27
- * DatabaseSubnet3: 10.0.1.0/24
+ * DatabaseSubnet3: 10.0.1.0/27
  * ApplicaitonSubnet1: 10.0.64.0/18
  * ApplicaitonSubnet2: 10.0.128.0/18
  * ApplicaitonSubnet3: 10.0.192.0/18
