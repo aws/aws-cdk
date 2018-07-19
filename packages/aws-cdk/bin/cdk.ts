@@ -47,6 +47,7 @@ async function parseCommandLineArguments() {
         .option('rename', { type: 'string', desc: 'Rename stack name if different then the one defined in the cloud executable', requiresArg: '[ORIGINAL:]RENAMED' })
         .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
         .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
+        .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
@@ -208,26 +209,40 @@ async function initCommandLine() {
     }
 
     /**
-     * Extracts 'warning' metadata entries from the stack synthesis
+     * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
      */
-    function printWarnings(stacks: cxapi.SynthesizeResponse) {
-        let found = false;
+    function processMessages(stacks: cxapi.SynthesizeResponse): { errors: boolean, warnings: boolean } {
+        let warnings = false;
+        let errors = false;
         for (const stack of stacks.stacks) {
             for (const id of Object.keys(stack.metadata)) {
                 const metadata = stack.metadata[id];
                 for (const entry of metadata) {
-                    if (entry.type === 'warning') {
-                        found = true;
-                        warning(`Warning: ${entry.data} (at ${stack.name}:${id})`);
-
-                        if (argv.trace) {
-                            warning(`  ${entry.trace.join('\n  ')}`);
-                        }
+                    switch (entry.type) {
+                        case cxapi.WARNING_METADATA_KEY:
+                            warnings = true;
+                            printMessage(warning, 'Warning', id, entry);
+                            break;
+                        case cxapi.ERROR_METADATA_KEY:
+                            errors = true;
+                            printMessage(error, 'Error', id, entry);
+                            break;
+                        case cxapi.INFO_METADATA_KEY:
+                            printMessage(print, 'Info', id, entry);
+                            break;
                     }
                 }
             }
         }
-        return found;
+        return { warnings, errors };
+    }
+
+    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
+        logFn(`[${prefix} at ${id}] ${entry.data}`);
+
+        if (argv.trace || argv.verbose) {
+            logFn(`  ${entry.trace.join('\n  ')}`);
+        }
     }
 
     /**
@@ -339,7 +354,13 @@ async function initCommandLine() {
                 continue;
             }
 
-            if (printWarnings(response) && argv.strict) {
+            const { errors, warnings } = processMessages(response);
+
+            if (errors && !argv.ignoreErrors) {
+                throw new Error('Found errors');
+            }
+
+            if (argv.strict && warnings) {
                 throw new Error('Found warnings (--strict mode)');
             }
 
