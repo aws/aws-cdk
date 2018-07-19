@@ -46,28 +46,40 @@ async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitIn
         const archiveFile = path.join(staging, 'archive.zip');
         await zipDirectory(asset.path, archiveFile);
         debug('zip archive:', archiveFile);
-        return await prepareFileAsset(asset, toolkitInfo, 'application/zip');
+        return await prepareFileAsset(asset, toolkitInfo, archiveFile, 'application/zip');
     } finally {
         await fs.remove(staging);
     }
 }
 
-async function prepareFileAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo, contentType?: string): Promise<CloudFormation.Parameter[]> {
-    debug('Preparing file asset:', asset.path);
+/**
+ * @param asset The asset descriptor
+ * @param toolkitInfo The toolkit stack
+ * @param filePath Alternative file path to use (instead of asset.path)
+ * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
+ */
+async function prepareFileAsset(
+        asset: AssetMetadataEntry,
+        toolkitInfo: ToolkitInfo,
+        filePath?: string,
+        contentType?: string): Promise<CloudFormation.Parameter[]> {
 
-    const data = await fs.readFile(asset.path);
+    filePath = filePath || asset.path;
+    debug('Preparing file asset:', filePath);
+
+    const data = await fs.readFile(filePath);
 
     const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
         s3KeyPrefix: 'assets/',
-        s3KeySuffix: path.extname(asset.path),
+        s3KeySuffix: path.extname(filePath),
         contentType
     });
 
     const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
     if (changed) {
-        success(` 👜  Asset ${asset.path} uploaded to ${s3url}`);
+        success(` 👑  Asset ${asset.path} (${asset.packaging}) uploaded: ${s3url}`);
     } else {
-        success(` 👜  Asset ${asset.path} is already up-to-date in ${s3url}`);
+        success(` 👑  Asset ${asset.path} (${asset.packaging}) is up-to-date: ${s3url}`);
     }
 
     return [
