@@ -34,7 +34,7 @@ import { VpcNetwork } from '@aws-cdk/ec2';
 
 new VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/21',
-  subnetConfigurations: [
+  subnetConfiguration: [
     {
       cidrMask: 24,
       name: 'Ingress',
@@ -55,6 +55,9 @@ new VpcNetwork(stack, 'TheVPC', {
 });
 ```
 
+The example above is one possible configuration, but the user can use the
+constructs above to implement many other network configurations.
+
 The `VpcNetwork` from the above configuration in a Region with three
 availability zones will be the following:
  * IngressSubnet1: 10.0.0.0/24
@@ -67,26 +70,36 @@ availability zones will be the following:
  * DatabaseSubnet2: 10.0.6.16/28
  * DatabaseSubnet3: 10.0.6.32/28
 
-There will be a NAT Gateway in each of the Ingress Subnets and each Application
-Subnet will have a route to the NAT Gateway in it's respective availability
-zone. The subnet numbers [1-3] will consistently map to the three availability
-zones for the region. The Database Subnets will not have an outbound traffic
-route and would be a good fit for managed data services like RDS, Elasticache,
-and Redshift. 
+Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
+route to the NAT Gateway in the same availability zone. Each `Internal` subnet
+will not have a route to the internet, but is routeable inside the VPC. The
+numbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1
+and ApplicaitonSubnet1 will be in the same avialbility zone).
+
+`Internal` Subnets provide simplified secure networking principles, but come at
+an operational complexity. The lack of an internet route means that if you deploy
+instances in this subnet you will not be able to patch from the internet, this is
+commonly reffered to as 
+[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/). 
+Features such as
+[cfn-signal](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
+are also unavailable. Using these subnets for managed services (RDS,
+Elasticache, Redshift) is a very practical use because the managed services do
+not incur additional operational overhead.
 
 Many times when you plan to build an application you don't know how many
 instances of the application you will need and therefore you don't know how much
 IP space to allocate. For example, you know the application will only have
-Elasitc Loadbalancers in the public subnets and you know you will have 1-3 RDS
+Elastic Loadbalancers in the public subnets and you know you will have 1-3 RDS
 databases for your data tier, and the rest of the IP space should just be evenly
-distributed for the application. 
+distributed for the application.
 
 ```ts
 import { VpcNetwork } from '@aws-cdk/ec2';
 
 new VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
-  subnetConfigurations: [
+  subnetConfiguration: [
     {
       cidrMask: 26,
       name: 'Public',
@@ -133,7 +146,7 @@ import { VpcNetwork } from '@aws-cdk/ec2';
 new VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
   maxNatGateways: 1,
-  subnetConfigurations: [
+  subnetConfiguration: [
     {
       cidrMask: 26,
       name: 'Public',

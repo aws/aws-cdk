@@ -66,7 +66,7 @@ export = {
         "with only internal subnets, the VPC should not contain an IGW or NAT Gateways"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'TheVPC', {
-                subnetConfigurations: [
+                subnetConfiguration: [
                     {
                         subnetType: SubnetType.Internal,
                         name: 'Internal',
@@ -81,7 +81,7 @@ export = {
         "with no private subnets, the VPC should have an IGW but no NAT Gateways"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'TheVPC', {
-                subnetConfigurations: [
+                subnetConfiguration: [
                     {
                         subnetType: SubnetType.Public,
                         name: 'Public',
@@ -111,7 +111,7 @@ export = {
             const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
-              subnetConfigurations: [
+              subnetConfiguration: [
                 {
                   cidrMask: 24,
                   name: 'ingress',
@@ -151,7 +151,7 @@ export = {
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
               maxNatGateways: 2,
-              subnetConfigurations: [
+              subnetConfiguration: [
                 {
                   cidrMask: 24,
                   name: 'ingress',

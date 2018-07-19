@@ -185,8 +185,7 @@ export = {
             const builder5 = new NetworkBuilder('10.0.0.0/16');
             builder5.addSubnets(26, 3);
             builder5.addSubnets(27, 3);
-            test.strictEqual(18, builder5.maskForRemainingSubnets(3));
-            test.done();
+            test.strictEqual(18, builder5.maskForRemainingSubnets(3)); test.done();
         }
     }
 };

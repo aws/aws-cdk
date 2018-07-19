@@ -96,7 +96,7 @@ export interface VpcNetworkProps {
      * @default the VPC CIDR will be evenly divided between 1 public and 1
      * private subnet per AZ
      */
-    subnetConfigurations?: SubnetConfiguration[];
+    subnetConfiguration?: SubnetConfiguration[];
 }
 
 /**
@@ -265,7 +265,7 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * Subnet configurations for this VPC
      */
-    private subnetConfigurations: SubnetConfiguration[] = [];
+    private subnetConfiguration: SubnetConfiguration[] = [];
 
     /**
      * Maximum AZs to Uses for this VPC
@@ -316,10 +316,10 @@ export class VpcNetwork extends VpcNetworkRef {
 
         this.maxNatGateways = props.maxNatGateways || VpcNetwork.MAX_NAT_GATEWAYS;
 
-        this.subnetConfigurations = props.subnetConfigurations || VpcNetwork.DEFAULT_SUBNETS;
+        this.subnetConfiguration = props.subnetConfiguration || VpcNetwork.DEFAULT_SUBNETS;
         this.createSubnets();
 
-        const allowOutbound = this.subnetConfigurations.filter(
+        const allowOutbound = this.subnetConfiguration.filter(
             (subnet) => (subnet.subnetType !== SubnetType.Internal)).length > 0;
 
         // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
@@ -363,7 +363,7 @@ export class VpcNetwork extends VpcNetworkRef {
 
         // Calculate number of public/private subnets based on number of AZs
 
-        for (const subnet of this.subnetConfigurations) {
+        for (const subnet of this.subnetConfiguration) {
             subnet.mapPublicIpOnLaunch = subnet.mapPublicIpOnLaunch ||
                 (subnet.subnetType === SubnetType.Public);
 
