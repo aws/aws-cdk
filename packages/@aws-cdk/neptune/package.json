@@ -22,6 +22,9 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f"
   },
+  "nyc": {
+      "lines": 25
+  },
   "keywords": [
     "aws",
     "cdk",

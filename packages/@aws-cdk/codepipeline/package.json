@@ -26,6 +26,9 @@
   "cdk-build": {
     "cloudformation": "AWS::CodePipeline"
   },
+  "nyc": {
+      "lines": 66
+  },
   "keywords": [
     "aws",
     "cdk",
