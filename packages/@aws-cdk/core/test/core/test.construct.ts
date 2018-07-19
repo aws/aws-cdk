@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Construct, Root } from '../../lib';
 
@@ -206,12 +207,32 @@ export = {
         test.done();
     },
 
-    'addWarning(message) can be used to add a "warning" metadata entry to the construct'(test: Test) {
+    'addWarning(message) can be used to add a "WARNING" message entry to the construct'(test: Test) {
         const root = new Root();
         const con = new Construct(root, 'MyConstruct');
         con.addWarning('This construct is deprecated, use the other one instead');
-        test.deepEqual(con.metadata[0].type, 'warning');
+        test.deepEqual(con.metadata[0].type, cxapi.WARNING_METADATA_KEY);
         test.deepEqual(con.metadata[0].data, 'This construct is deprecated, use the other one instead');
+        test.ok(con.metadata[0].trace.length > 0);
+        test.done();
+    },
+
+    'addError(message) can be used to add a "ERROR" message entry to the construct'(test: Test) {
+        const root = new Root();
+        const con = new Construct(root, 'MyConstruct');
+        con.addError('Stop!');
+        test.deepEqual(con.metadata[0].type, cxapi.ERROR_METADATA_KEY);
+        test.deepEqual(con.metadata[0].data, 'Stop!');
+        test.ok(con.metadata[0].trace.length > 0);
+        test.done();
+    },
+
+    'addInfo(message) can be used to add an "INFO" message entry to the construct'(test: Test) {
+        const root = new Root();
+        const con = new Construct(root, 'MyConstruct');
+        con.addInfo('Hey there, how do you do?');
+        test.deepEqual(con.metadata[0].type, cxapi.INFO_METADATA_KEY);
+        test.deepEqual(con.metadata[0].data, 'Hey there, how do you do?');
         test.ok(con.metadata[0].trace.length > 0);
         test.done();
     },
