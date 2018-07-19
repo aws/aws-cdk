@@ -27,7 +27,8 @@
     "cloudformation": "AWS::CodeCommit"
   },
   "nyc": {
-    "lines": 40
+    "lines": 40,
+    "branches": 48
   },
   "keywords": [
     "aws",

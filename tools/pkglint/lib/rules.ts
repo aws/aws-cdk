@@ -280,6 +280,7 @@ export class MustUseCDKTest extends ValidationRule {
         // files in .gitignore.
         fileShouldContain(pkg, '.gitignore', '.nyc_output');
         fileShouldContain(pkg, '.gitignore', 'coverage');
+        fileShouldContain(pkg, '.gitignore', '.nycrc');
     }
 }
 
