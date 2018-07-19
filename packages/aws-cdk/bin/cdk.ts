@@ -221,14 +221,14 @@ async function initCommandLine() {
                     switch (entry.type) {
                         case cxapi.WARNING_METADATA_KEY:
                             warnings = true;
-                            printMessage(warning, 'Warning', stack.name, id, entry);
+                            printMessage(warning, 'Warning', id, entry);
                             break;
                         case cxapi.ERROR_METADATA_KEY:
                             errors = true;
-                            printMessage(error, 'Error', stack.name, id, entry);
+                            printMessage(error, 'Error', id, entry);
                             break;
                         case cxapi.INFO_METADATA_KEY:
-                            printMessage(print, 'Info', stack.name, id, entry);
+                            printMessage(print, 'Info', id, entry);
                             break;
                     }
                 }
@@ -237,8 +237,8 @@ async function initCommandLine() {
         return { warnings, errors };
     }
 
-    function printMessage(logFn: (s: string) => void, prefix: string, stackName: string, id: string, entry: cxapi.MetadataEntry) {
-        logFn(`${prefix}: ${entry.data} (at ${stackName}:${id})`);
+    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
+        logFn(`[${prefix} at ${id}] ${entry.data}`);
 
         if (argv.trace || argv.verbose) {
             logFn(`  ${entry.trace.join('\n  ')}`);
