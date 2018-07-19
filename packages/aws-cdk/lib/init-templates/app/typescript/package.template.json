@@ -7,7 +7,7 @@
         "%name%": "bin/%name%.js"
     },
     "scripts": {
-        "prepare": "tsc && chmod a+x bin/%name%.js",
+        "build": "tsc",
         "watch": "tsc -w",
         "cdk": "cdk"
     },

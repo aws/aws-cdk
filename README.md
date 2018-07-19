@@ -37,20 +37,35 @@ aws s3 cp <s3-url> ~/aws-cdk.zip
 
 ### Install to ~/.cdk
 
-Once you've downloaded the bits, install them into `~/.cdk`:
+Once you've downloaded the bits, install them into `~/.cdk` and make sure that `~/.cdk/bin` is in your `PATH`:
+
+#### Linux/MacOS (bash/zsh)
 
 ```shell
+# Install to ~/.cdk
 rm -fr ~/.cdk
 mkdir ~/.cdk
 unzip <path-to-zip-file> -d ~/.cdk
+
+# Add ~/.cdk/bin to your PATH
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc
 ```
 
-Make sure the `~/.cdk/bin` is in your `PATH`
+#### Windows (PowerShell)
 
-```shell
-# at the end of your ~/.bashrc or ~/.zshrc file
-export PATH=$PATH:$HOME/.cdk/bin
+```powershell
+# Install to ~/.cdk
+Remove-Item -Force -Recurse ~/.cdk
+New-Item -Type Directory ~/.cdk
+Expand-Archive -Path <path-to-zip-file> -DestinationPath ~/.cdk
+
+# Add ~/.cdk/bin to your PATH
+$profilePath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)) "Profile.ps1"
+Add-Content -Path $profilePath -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\bin"'
 ```
+
+### Install the command-line toolkit and docs
 
 Install (or update) `aws-cdk` and `aws-cdk-docs` globally
 

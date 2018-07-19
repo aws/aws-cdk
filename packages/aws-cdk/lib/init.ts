@@ -201,7 +201,9 @@ async function postInstall(language: string) {
 }
 
 async function postInstallTypescript() {
-    const yNpm = path.join(CDK_HOME, 'bin', 'y-npm');
+    const yNpm = os.platform() === 'win32' ?
+        path.join(CDK_HOME, 'node_modules', '.bin', 'y-npm.cmd') :
+        path.join(CDK_HOME, 'bin', 'y-npm');
     const command = await fs.pathExists(yNpm) ? yNpm : 'npm';
     print(`Executing ${colors.green(`${command} install`)}...`);
     try {
@@ -245,7 +247,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, ...args: string[]) {
-    const child = spawn(cmd, args, { stdio: [ 'ignore', 'pipe', 'inherit' ] });
+    const child = spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
     let stdout = '';
     child.stdout.on('data', chunk => stdout += chunk.toString());
     return new Promise<string>((ok, fail) => {
