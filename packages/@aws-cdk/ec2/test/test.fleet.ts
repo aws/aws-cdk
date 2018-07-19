@@ -68,7 +68,7 @@ export = {
                   "IamInstanceProfile": {
                     "Ref": "MyFleetInstanceProfile70A58496"
                   },
-                  "ImageId": "",
+                  "ImageId": "dummy",
                   "InstanceType": "m4.micro",
                   "SecurityGroups": [
                     {
@@ -194,7 +194,7 @@ export = {
                   "IamInstanceProfile": {
                     "Ref": "MyFleetInstanceProfile70A58496"
                   },
-                  "ImageId": "",
+                  "ImageId": "dummy",
                   "InstanceType": "m4.micro",
                   "SecurityGroups": [
                     {

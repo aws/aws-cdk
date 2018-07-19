@@ -23,8 +23,22 @@ export class ContextProvider {
 
     /**
      * Read a provider value, verifying it's a string
+     * @param provider The name of the context provider
+     * @param scope The scope (e.g. account/region) for the value
+     * @param args Any arguments
+     * @param defaultValue The value to return if there is no value defined for this context key
      */
-    public getStringValue(provider: string, scope: string[], args: string[]): string {
+    public getStringValue(
+        provider: string,
+        scope: undefined | string[],
+        args: string[],
+        defaultValue: string): string {
+        // if scope is undefined, this is probably a test mode, so we just
+        // return the default value
+        if (!scope) {
+            this.context.addError(formatMissingScopeError(provider, args));
+            return defaultValue;
+        }
         const key = colonQuote([provider].concat(scope).concat(args)).join(':');
         const value = this.context.getContext(key);
         if (value != null) {
@@ -35,13 +49,30 @@ export class ContextProvider {
         }
 
         this.stack.reportMissingContext(key, { provider, scope, args });
-        return '';
+        return defaultValue;
     }
 
     /**
      * Read a provider value, verifying it's a list
+     * @param provider The name of the context provider
+     * @param scope The scope (e.g. account/region) for the value
+     * @param args Any arguments
+     * @param defaultValue The value to return if there is no value defined for this context key
      */
-    public getStringListValue(provider: string, scope: string[], args: string[], defaultValue = ['']): string[] {
+    public getStringListValue(
+        provider: string,
+        scope: undefined | string[],
+        args: string[],
+        defaultValue: string[]): string[] {
+        // if scope is undefined, this is probably a test mode, so we just
+        // return the default value and report an error so this in not accidentally used
+        // in the toolkit
+        if (!scope) {
+            // tslint:disable-next-line:max-line-length
+            this.context.addError(formatMissingScopeError(provider, args));
+            return defaultValue;
+        }
+
         const key = colonQuote([provider].concat(scope).concat(args)).join(':');
         const value = this.context.getContext(key);
 
@@ -59,7 +90,7 @@ export class ContextProvider {
     /**
      * Helper function to wrap up account and region into a scope tuple
      */
-    public accountRegionScope(providerDescription: string): string[] {
+    public accountRegionScope(providerDescription: string): undefined | string[] {
         const stack = Stack.find(this.context);
         if (!stack) {
             throw new Error(`${providerDescription}: construct must be in a stack`);
@@ -69,8 +100,7 @@ export class ContextProvider {
         const region = stack.env.region;
 
         if (account == null || region == null) {
-            // tslint:disable-next-line:max-line-length
-            throw new Error(`${providerDescription}: requires account and region information, but ${stack.name} doesn't have an "env" defined`);
+            return undefined;
         }
 
         return [account, region];
@@ -123,6 +153,17 @@ export class SSMParameterProvider {
      */
     public getString(parameterName: string): any {
         const scope = this.provider.accountRegionScope('SSMParameterProvider');
-        return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName]);
+        return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName], 'dummy');
     }
+}
+
+function formatMissingScopeError(provider: string, args: string[]) {
+    let s = `Cannot determine scope for context provider ${provider}`;
+    if (args.length > 0) {
+        s += JSON.stringify(args);
+    }
+    s += '.';
+    s += '\n';
+    s += 'This usually happens when AWS credentials are not available and the default account/region cannot be determined.';
+    return s;
 }

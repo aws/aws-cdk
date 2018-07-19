@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 export const PATH_SEP = '/';
 
 /**
@@ -209,11 +210,31 @@ export class Construct {
     }
 
     /**
+     * Adds a { "aws:cdk:info": <message> } metadata entry to this construct.
+     * The toolkit will display the info message when apps are synthesized.
+     * @param message The info message.
+     */
+    public addInfo(message: string): Construct {
+        return this.addMetadata(cxapi.INFO_METADATA_KEY, message);
+    }
+
+    /**
      * Adds a { warning: <message> } metadata entry to this construct.
+     * The toolkit will display the warning when an app is synthesized, or fail
+     * if run in --strict mode.
      * @param message The warning message.
      */
     public addWarning(message: string): Construct {
-        return this.addMetadata('warning', message);
+        return this.addMetadata(cxapi.WARNING_METADATA_KEY, message);
+    }
+
+    /**
+     * Adds an { error: <message> } metadata entry to this construct.
+     * The toolkit will fail synthesis when errors are reported.
+     * @param message The error message.
+     */
+    public addError(message: string): Construct {
+        return this.addMetadata(cxapi.ERROR_METADATA_KEY, message);
     }
 
     /**

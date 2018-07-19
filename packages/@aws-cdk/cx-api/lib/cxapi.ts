@@ -103,3 +103,18 @@ export interface AssetMetadataEntry {
     s3BucketParameter: string;
     s3KeyParameter: string;
 }
+
+/**
+ * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
+ */
+export const INFO_METADATA_KEY = 'aws:cdk:info';
+
+/**
+ * Metadata key used to print WARNING-level messages by the toolkit when an app is syntheized.
+ */
+export const WARNING_METADATA_KEY = 'aws:cdk:warning';
+
+/**
+ * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
+ */
+export const ERROR_METADATA_KEY = 'aws:cdk:error';

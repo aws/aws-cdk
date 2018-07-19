@@ -1,5 +1,6 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { AvailabilityZoneProvider, resolve, SSMParameterProvider, Stack } from '../lib';
+import { App, AvailabilityZoneProvider, Construct, MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
 
 export = {
     'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -50,7 +51,27 @@ export = {
         test.deepEqual(azs, 'abc');
 
         test.done();
-    }
+    },
+
+    'Return default values if "env" is undefined to facilitate unit tests, but also expect metadata to include "error" messages'(test: Test) {
+        const app = new App();
+        const stack = new Stack(app, 'test-stack');
+
+        const child = new Construct(stack, 'ChildConstruct');
+
+        test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
+        test.deepEqual(new SSMParameterProvider(child).getString('foo'), 'dummy');
+
+        const output = app.synthesizeStack(stack.name);
+
+        const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
+        const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
+
+        test.ok(azError && (azError.data as string).includes('Cannot determine scope for context provider availability-zones.'));
+        test.ok(ssmError && (ssmError.data as string).includes('Cannot determine scope for context provider ssm["foo"].'));
+
+        test.done();
+    },
 };
 
 function firstKey(obj: any): string {
