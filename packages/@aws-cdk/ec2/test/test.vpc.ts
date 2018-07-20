@@ -203,12 +203,12 @@ export = {
                         cidrMask: 24,
                         name: 'ingress',
                         subnetType: SubnetType.Public,
-                        mapPublicIpOnLaunch: false,
-                        natGateway: true,
+                        mapPublicIpOnLaunch: false
                     }
                 ],
             });
             expect(stack).to(countResources("AWS::EC2::Subnet", 1));
+            expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
             expect(stack).to(haveResource("AWS::EC2::Subnet", {
                 MapPublicIpOnLaunch: false
             }));

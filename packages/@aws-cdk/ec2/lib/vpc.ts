@@ -75,24 +75,28 @@ export interface VpcNetworkProps {
      *
      * For example if you want 1 public subnet, 1 private subnet, and 1 internal
      * subnet in each AZ provide the following:
-     * subnets: [
-     * {
-     *   cidrMask: 24,
-     *   name: application,
-     *   subnetType: SubnetType.Private,
-     * },
-     * {
-     *   cidrMask: 26,
-     *   name: ingress,
-     *   subnetType: SubnetType.Public,
-     *   natGateway: true,
-     * },
-     * {
-     *   cidrMask: 28,
-     *   name: rds,
-     *   subnetType: SubnetType.Internal,
-     * }
+     * subnetConfiguration: [
+     *      {
+     *          cidrMask: 24,
+     *          name: 'ingress',
+     *          subnetType: SubnetType.Public,
+     *          natGateway: true,
+     *      },
+     *      {
+     *          cidrMask: 24,
+     *          name: 'application',
+     *          subnetType: SubnetType.Private,
+     *      },
+     *      {
+     *          cidrMask: 28,
+     *          name: 'rds',
+     *          subnetType: SubnetType.Internal,
+     *      }
      * ]
+     *
+     * `cidrMask` is optional and if not provided the IP space in the VPC will be
+     * evenly divided between the requested subnets.
+     *
      * @default the VPC CIDR will be evenly divided between 1 public and 1
      * private subnet per AZ
      */
@@ -128,9 +132,12 @@ export enum SubnetType {
     Internal = 1,
 
     /**
-     * Private subnets route outbound traffic via a NAT Gateway
+     * Subnet that routes to the internet, but not vice versa.
      *
-     * Outbound traffic will be routed via a NAT Gateways preference being in
+     * Instances in a private subnet can connect to the Internet, but will not
+     * allow connections to be initiated from the Internet.
+     *
+     * Outbound traffic will be routed via a NAT Gateway. Preference being in
      * the same AZ, but if not available will use another AZ. This is common for
      * experimental cost conscious accounts or accounts where HA outbound
      * traffic is not needed.
@@ -138,10 +145,12 @@ export enum SubnetType {
     Private = 2,
 
     /**
-     * Public subnets route outbound traffic via an Internet Gateway
+     * Subnet connected to the Internet
      *
-     * If this is set and OutboundTrafficMode.None is configure an error
-     * will be thrown.
+     * Instances in a Public subnet can connect to the Internet and can be
+     * connected to from the Internet as long as they are launched with public IPs.
+     *
+     * Public subnets route outbound traffic via an Internet Gateway.
      */
     Public = 3
 
@@ -151,15 +160,44 @@ export enum SubnetType {
  * Specify configuration parameters for a VPC to be built
  */
 export interface SubnetConfiguration {
-    // the cidr mask value from 16-28
+    /**
+     * The CIDR Mask or the number of leading 1 bits in the routing mask
+     *
+     * Valid values are 16 - 28
+     */
     cidrMask?: number;
-    // Public (IGW), Private (Nat GW), Internal (no outbound)
+
+    /**
+     * The type of Subnet to configure.
+     *
+     * The Subnet type will control the ability to route and connect to the
+     * Internet.
+     */
     subnetType: SubnetType;
-    // name that will be used to generate an AZ specific name e.g. name-2a
+
+    /**
+     * The common Logical Name for the `VpcSubnet`
+     *
+     * Thi name will be suffixed with an integer correlating to a specific
+     * availability zone.
+     */
     name: string;
-    // if true will place a NAT Gateway in this subnet, subnetType must be Public
+
+    /**
+     * Controls the creation a NAT Gateway in this subnet
+     *
+     * If true will place a NAT Gateway in this subnet, subnetType must be Public.
+     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
+     * NAT Gateways in non-public subnets will functionally not work and are
+     * therefore not possible to create.
+     */
     natGateway?: boolean;
-    // defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal
+
+    /**
+     * Controls if a public IP is associated to an instance at launch
+     *
+     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
+     */
     mapPublicIpOnLaunch?: boolean;
 }
 
@@ -193,17 +231,7 @@ export class VpcNetwork extends VpcNetworkRef {
     public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
 
     /**
-     * The default maximum number of NAT Gateways
-     *
-     * @link https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html
-     * defaulting 256 is an arbitrary max that should be impracticel to reach.
-     * This can be overriden using VpcNetworkProps when creating a VPCNetwork resource.
-     * e.g. new VpcResource(this, { maxNatGateways: 1 })
-     */
-    public static readonly MAX_NAT_GATEWAYS: number = 256;
-
-    /**
-     * The deafult subnet configuration
+     * The default subnet configuration
      *
      * 1 Public and 1 Private subnet per AZ evenly split
      */
@@ -243,7 +271,7 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * Maximum Number of NAT Gateways used to control cost
      *
-     * @default {VpcNetwork.MAX_NAT_GATEWAYS}
+     * @default {VpcNetworkProps.maxAZs}
      */
     private readonly maxNatGateways: number;
 
@@ -314,7 +342,7 @@ export class VpcNetwork extends VpcNetworkRef {
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
 
-        this.maxNatGateways = ifUndefined(props.maxNatGateways, VpcNetwork.MAX_NAT_GATEWAYS);
+        this.maxNatGateways = ifUndefined(props.maxNatGateways, this.availabilityZones.length);
 
         this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
         this.createSubnets();
@@ -322,7 +350,7 @@ export class VpcNetwork extends VpcNetworkRef {
         const allowOutbound = this.subnetConfiguration.filter(
             subnet => (subnet.subnetType !== SubnetType.Internal)).length > 0;
 
-        // Create an Internet Gateway and attach it (if the outbound traffic mode != None)
+        // Create an Internet Gateway and attach it if necessary
         if (allowOutbound) {
             const igw = new cloudformation.InternetGatewayResource(this, 'IGW');
             const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
@@ -364,9 +392,6 @@ export class VpcNetwork extends VpcNetworkRef {
         // Calculate number of public/private subnets based on number of AZs
 
         for (const subnet of this.subnetConfiguration) {
-            subnet.mapPublicIpOnLaunch = ifUndefined(subnet.mapPublicIpOnLaunch,
-                (subnet.subnetType === SubnetType.Public));
-
             if (subnet.cidrMask === undefined) {
                 remainingSpaceSubnets.push(subnet);
                 continue;
@@ -388,7 +413,8 @@ export class VpcNetwork extends VpcNetworkRef {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
                 cidrBlock: this.networkBuilder.addSubnet(cidrMask),
-                mapPublicIpOnLaunch: subnetConfig.mapPublicIpOnLaunch
+                mapPublicIpOnLaunch: ifUndefined(subnetConfig.mapPublicIpOnLaunch,
+                    (subnetConfig.subnetType === SubnetType.Public)),
             };
 
             switch (subnetConfig.subnetType) {
@@ -419,9 +445,27 @@ export class VpcNetwork extends VpcNetworkRef {
  * Specify configuration parameters for a VPC subnet
  */
 export interface VpcSubnetProps {
+
+    /**
+     * The availability zone for the subnet
+     */
     availabilityZone: string;
+
+    /**
+     * The VPC which this subnet is part of
+     */
     vpcId: Token;
+
+    /**
+     * The CIDR notation for this subnet
+     */
     cidrBlock: string;
+
+    /**
+     * Controls if a public IP is associated to an instance at launch
+     *
+     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
+     */
     mapPublicIpOnLaunch?: boolean;
 }
 
