@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.kinesisfirehose",
-      "dotnet": "Amazon.Cdk.KinesisFirehose"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.kinesisfirehose",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-kinesisfirehose"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.KinesisFirehose"
+      }
     }
   },
   "repository": {

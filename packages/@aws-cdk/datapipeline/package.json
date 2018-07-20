@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.datapipeline",
-      "dotnet": "Amazon.Cdk.DataPipeline"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.datapipeline",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-datapipeline"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.DataPipeline"
+      }
     }
   },
   "repository": {

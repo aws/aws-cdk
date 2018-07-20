@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.route53",
-      "dotnet": "Amazon.Cdk.Route53"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.route53",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-route53"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Route53"
+      }
     }
   },
   "repository": {

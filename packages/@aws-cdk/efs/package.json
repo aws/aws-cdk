@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.efs",
-      "dotnet": "Amazon.Cdk.EFS"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.efs",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-efs"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.EFS"
+      }
     }
   },
   "repository": {

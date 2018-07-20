@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.codecommit",
-      "dotnet": "Amazon.Cdk.CodeCommit"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.codecommit",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-codecommit"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CodeCommit"
+      }
     }
   },
   "repository": {

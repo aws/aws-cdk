@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cloudtrail",
-      "dotnet": "Amazon.Cdk.CloudTrail"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cloudtrail",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-cloudtrail"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CloudTrail"
+      }
     }
   },
   "repository": {

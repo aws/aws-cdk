@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.inspector",
-      "dotnet": "Amazon.Cdk.Inspector"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.inspector",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-inspector"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Inspector"
+      }
     }
   },
   "repository": {

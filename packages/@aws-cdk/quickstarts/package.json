@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.quickstarts",
-      "dotnet": "Amazon.Cdk.QuickStarts"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.quickstarts",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-quickstarts"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.QuickStarts"
+      }
     }
   },
   "repository": {

@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.codebuild",
-      "dotnet": "Amazon.Cdk.CodeBuild"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.codebuild",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-codebuild"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CodeBuild"
+      }
     }
   },
   "repository": {

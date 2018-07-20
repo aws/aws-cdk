@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.elasticloadbalancingv2",
-      "dotnet": "Amazon.Cdk.ElasticLoadBalancingV2"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.elasticloadbalancingv2",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-elasticloadbalancingv2"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ElasticLoadBalancingV2"
+      }
     }
   },
   "repository": {

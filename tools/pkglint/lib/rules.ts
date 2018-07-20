@@ -113,11 +113,16 @@ export class JSIIJavaNamespaceIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'java']) as string | undefined;
+        let java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
         if (!java) {
             pkg.report({ message: 'JSII package must have "java" namespace' });
             return;
         }
+
+        // Without this line, calling `java.startsWith` fails with 'java.startsWith is not a function'.
+        // But it *is* a function, and inspecting `java` at runtime confirms this. So I have no idea
+        // why this line is necessary.
+        java = "" + java;
 
         const prefix = 'com.amazonaws.cdk';
 
@@ -132,7 +137,7 @@ export class JSIIJavaNamespaceIsRequired extends ValidationRule {
 
         if (parts.length === 1) {
             const expectedName = cdkModuleName(pkg.json.name).replace(/-/g, '');
-            expectJSON(pkg, 'jsii.names.java', prefix + '.' + expectedName);
+            expectJSON(pkg, 'jsii.targets.java.package', prefix + '.' + expectedName);
         }
     }
 }
@@ -170,19 +175,19 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'dotnet']) as string | undefined;
-        if (!java) {
+        const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+        if (!dotnet) {
             pkg.report({ message: 'JSII package must have "dotnet" namespace' });
             return;
         }
 
         const prefix = 'Amazon.Cdk';
 
-        if (!java.startsWith(prefix)) {
+        if (!dotnet.startsWith(prefix)) {
             pkg.report({ message: `.NET namespace must start with '${prefix}'` });
         }
 
-        const parts = java.split('.').slice(prefix.split('.').length);
+        const parts = dotnet.split('.').slice(prefix.split('.').length);
         if (parts.length > 1) {
             pkg.report({ message: '.NET namespace must have at most one extra component' });
         }

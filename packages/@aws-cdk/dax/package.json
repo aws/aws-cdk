@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.dax",
-      "dotnet": "Amazon.Cdk.DAX"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.dax",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-dax"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.DAX"
+      }
     }
   },
   "repository": {

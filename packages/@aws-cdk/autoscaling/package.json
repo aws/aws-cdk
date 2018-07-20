@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.autoscaling",
-      "dotnet": "Amazon.Cdk.AutoScaling"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.autoscaling",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-autoscaling"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.AutoScaling"
+      }
     }
   },
   "repository": {

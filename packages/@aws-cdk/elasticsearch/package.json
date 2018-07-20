@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.elasticsearch",
-      "dotnet": "Amazon.Cdk.Elasticsearch"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.elasticsearch",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-elasticsearch"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Elasticsearch"
+      }
     }
   },
   "repository": {

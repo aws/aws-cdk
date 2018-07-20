@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.neptune",
-      "dotnet": "Amazon.Cdk.Neptune"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.neptune",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-neptune"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Neptune"
+      }
     }
   },
   "repository": {
