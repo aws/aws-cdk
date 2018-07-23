@@ -83,8 +83,19 @@ export = {
   CidrBlock: {
         "should return the next valid subnet from offset IP"(test: Test) {
           const num = NetworkUtils.ipToNum('10.0.1.10');
-          const newBlock = CidrBlock.fromOffsetIp(num, 24);
+          const newBlock = new CidrBlock(num, 24);
           test.strictEqual(newBlock.cidr, '10.0.2.0/24');
+          test.done();
+        },
+        "nextBlock() returns the next higher CIDR space"(test: Test) {
+          const testValues = [
+              ['192.168.0.0/24', '192.168.1.0/24'],
+              ['10.85.7.0/28', '10.85.7.16/28'],
+          ];
+          for (const value of testValues) {
+              const block = new CidrBlock(value[0]);
+              test.strictEqual(block.nextBlock().cidr, value[1]);
+          }
           test.done();
         },
         "maxIp() should return the last usable IP from the CidrBlock"(test: Test) {

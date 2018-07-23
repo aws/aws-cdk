@@ -174,7 +174,7 @@ export class NetworkBuilder {
     /**
      * The next available IP address as a number
      */
-    private nextIp: number;
+    private nextAvailableIp: number;
 
     /**
      * Create a network using the provided CIDR block
@@ -186,7 +186,7 @@ export class NetworkBuilder {
     constructor(cidr: string) {
         this.networkCidr = new CidrBlock(cidr);
         this.subnetCidrs = [];
-        this.nextIp = this.networkCidr.minAddress();
+        this.nextAvailableIp = this.networkCidr.minAddress();
     }
 
     /**
@@ -203,14 +203,14 @@ export class NetworkBuilder {
         if (mask < 16 || mask > 28  ) {
             throw new InvalidCidrRangeError(`x.x.x.x/${mask}`);
         }
-        const maxIp = this.nextIp + (CidrBlock.calculateNetsize(mask) * count);
+        const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);
         if (this.networkCidr.maxAddress() < maxIp - 1) {
             throw new Error(`${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
         }
         const subnets: CidrBlock[] = [];
         for (let i = 0; i < count; i ++) {
-            const subnet: CidrBlock = CidrBlock.fromOffsetIp(this.nextIp, mask);
-            this.nextIp = subnet.maxAddress() + 1;
+            const subnet: CidrBlock = new CidrBlock(this.nextAvailableIp, mask);
+            this.nextAvailableIp = subnet.nextBlock().minAddress();
             this.subnetCidrs.push(subnet);
             subnets.push(subnet);
         }
@@ -229,14 +229,14 @@ export class NetworkBuilder {
      * remaining IP space
      */
     public maskForRemainingSubnets(subnetCount: number): number {
-        const remaining: number = this.networkCidr.maxAddress() - this.nextIp + 1;
+        const remaining: number = this.networkCidr.maxAddress() - this.nextAvailableIp + 1;
         const ipsPerSubnet: number = Math.floor(remaining / subnetCount);
         return 32 - Math.floor(Math.log2(ipsPerSubnet));
     }
 }
 
 /**
- * Creates a CIDR Block
+ * A block of IP address space with a given bit prefix
  */
 export class CidrBlock {
 
@@ -254,21 +254,10 @@ export class CidrBlock {
      * Calculates the number IP addresses in a CIDR Mask
      *
      * For example:
-     * CidrBlock.calculateNetmask(24) returns 256
+     * CidrBlock.calculateNetsize(24) returns 256
      */
     public static calculateNetsize(mask: number): number {
         return 2 ** (32 - mask);
-    }
-
-    /**
-     * Given an IP and CIDR mask number returns the next CIDR Block available
-     *
-     * For example:
-     * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns new CidrBlock('10.0.1.0/24')
-     */
-    public static fromOffsetIp(ipAddress: number, mask: number): CidrBlock {
-        const ipNum = ipAddress + CidrBlock.calculateNetsize(mask) - 1;
-        return new this(`${NetworkUtils.numToIp(ipNum)}/${mask}`);
     }
 
     /*
@@ -277,33 +266,43 @@ export class CidrBlock {
     public readonly cidr: string;
 
     /*
-     * The netmask for the CIDR represented as a string e.g. '255.255.255.0'
-     */
-    public readonly netmask: string;
-
-    /*
      * The CIDR mask e.g. for CIDR '10.0.0.0/21' returns 21
      */
     public readonly mask: number;
 
-    /**
+    /*
      * The total number of IP addresses in the CIDR
      */
     public readonly networkSize: number;
 
-    /**
-     * The first network address in the CIDR as number
+    /*
+     * The network address provided in CIDR creation
+     *
+     * This is not the first or last IP in the CIDR just the IP that initialized
+     * this CIDR class.
      */
     private readonly networkAddress: number;
 
     /*
      * Creates a new CidrBlock
      */
-    constructor(cidr: string) {
-        this.mask = parseInt(cidr.split('/')[1], 10);
-        this.netmask = CidrBlock.calculateNetmask(this.mask);
+    constructor(cidr: string)
+    constructor(ipAddress: number, mask: number)
+    constructor(ipAddressOrCidr: string | number, mask?: number) {
+        if (typeof ipAddressOrCidr === 'string') {
+            this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
+            this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]);
+        } else {
+            if (typeof mask === 'number') {
+                this.mask = mask;
+            } else {
+                // this should be impossible
+                this.mask = 16;
+            }
+            this.networkAddress = ipAddressOrCidr + CidrBlock.calculateNetsize(this.mask) - 1;
+            this.networkSize = 2 ** (32 - this.mask);
+        }
         this.networkSize = 2 ** (32 - this.mask);
-        this.networkAddress = NetworkUtils.ipToNum(cidr.split('/')[0]);
         this.cidr = `${this.minIp()}/${this.mask}`;
     }
 
@@ -323,14 +322,6 @@ export class CidrBlock {
     }
 
     /*
-     * Returns true if this CidrBlock fully contains the provided CidrBlock
-     */
-    public containsCidr(other: CidrBlock): boolean {
-        return (this.maxAddress() >= other.maxAddress()) &&
-            (this.minAddress() <= other.minAddress());
-    }
-
-    /*
      * Returns the number representation for the minimum IPv4 address
      */
     public minAddress(): number {
@@ -344,5 +335,20 @@ export class CidrBlock {
     public maxAddress(): number {
         // min + (2^(32-mask)) - 1 [zero needs to count]
         return this.minAddress() + this.networkSize - 1;
+    }
+
+    /*
+     * Returns the next CIDR Block of the same mask size
+     */
+    public nextBlock(): CidrBlock {
+        return new CidrBlock(this.maxAddress() + 1, this.mask);
+    }
+
+    /*
+     * Returns true if this CidrBlock fully contains the provided CidrBlock
+     */
+    public containsCidr(other: CidrBlock): boolean {
+        return (this.maxAddress() >= other.maxAddress()) &&
+            (this.minAddress() <= other.minAddress());
     }
 }
