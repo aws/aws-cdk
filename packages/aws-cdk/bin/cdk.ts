@@ -52,6 +52,7 @@ async function parseCommandLineArguments() {
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
         .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
+            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' })
         // tslint:disable-next-line:max-line-length
         .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
@@ -167,7 +168,7 @@ async function initCommandLine() {
         switch (command) {
             case 'ls':
             case 'list':
-                return await listStacks();
+                return await cliList({ long: args.long });
 
             case 'diff':
                 return await diffStack(await findStack(args.STACK), args.template);
@@ -400,6 +401,22 @@ async function initCommandLine() {
         }
 
         return ret;
+    }
+
+    async function cliList(options: { long?: boolean } = { }) {
+        const stacks = await listStacks();
+
+        // if we are in "long" mode, emit the array as-is (JSON/YAML)
+        if (options.long) {
+            return stacks; // will be YAML formatted output
+        }
+
+        // just print stack names
+        for (const stack of stacks) {
+            data(stack.name);
+        }
+
+        return 0; // exit-code
     }
 
     async function listStacks(): Promise<cxapi.StackInfo[]> {
