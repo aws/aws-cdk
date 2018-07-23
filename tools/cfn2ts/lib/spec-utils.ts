@@ -1,4 +1,4 @@
-import { schema } from '@aws-cdk/cdk-cfnspec';
+import { schema } from '@aws-cdk/cfnspec';
 import { joinIf } from './util';
 
 /**

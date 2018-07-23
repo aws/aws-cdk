@@ -7,17 +7,17 @@ export PATH=node_modules/.bin:$PATH
 lerna exec --scope=cfn2ts                           \
            --scope=pkglint                          \
            --scope=@aws-cdk/cdk                     \
-           --scope=@aws-cdk/cdk-assert              \
-           --scope=@aws-cdk/cdk-cfnspec             \
-           --scope=@aws-cdk/cdk-cloudformation-diff \
-           --scope=@aws-cdk/cdk-cx-api              \
+           --scope=@aws-cdk/assert              \
+           --scope=@aws-cdk/cfnspec             \
+           --scope=@aws-cdk/cloudformation-diff \
+           --scope=@aws-cdk/cx-api              \
            --stream                                 \
   npm run build
 
 VERSION=$(node -e 'console.log(require("./lerna.json").version);')
 
-for S in $(node -e 'console.log(require("./packages/@aws-cdk/cdk-cfnspec").namespaces.join("\n"));'); do
-    P=$(tr 'A-Z' 'a-z' <<< "${S/AWS::/@aws-cdk/}")
+for S in $(node -e 'console.log(require("./packages/@aws-cdk/cfnspec").namespaces.join("\n"));'); do
+    P=$(tr 'A-Z' 'a-z' <<< "${S/AWS::/@aws-cdk/aws-}")
     PB=$(basename ${P})
     if [ ! -d packages/${P} ]; then
         echo "⏳ Creating package ${P} for scope ${S}..."
@@ -58,14 +58,14 @@ EOM
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.${PB}",
+        "package": "com.amazonaws.cdk.aws.${PB}",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "${PB}"
+          "artifactId": "aws-${PB}"
         }
       },
       "dotnet": {
-        "namespace": "${S/AWS::/Amazon.CDK.}"
+        "namespace": "${S/AWS::/Amazon.CDK.AWS.}"
       }
     }
   },
@@ -96,7 +96,7 @@ EOM
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/cdk-assert": "^${VERSION}",
+    "@aws-cdk/assert": "^${VERSION}",
     "cdk-build-tools": "^${VERSION}",
     "cfn2ts": "^${VERSION}",
     "pkglint": "^${VERSION}"

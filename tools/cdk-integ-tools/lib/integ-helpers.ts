@@ -1,5 +1,5 @@
 // Helper functions for integration tests
-import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cdk-cx-api';
+import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { spawnSync } from 'child_process';
 import fs = require('fs');
 import path = require('path');

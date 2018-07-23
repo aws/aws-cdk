@@ -1,8 +1,8 @@
-import { spawn } from 'child_process';
-import * as colors from 'colors/safe';
-import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
+import childProcess = require('child_process');
+import colors = require('colors/safe');
+import fs = require('fs-extra');
+import os = require('os');
+import path = require('path');
 import { error, print, warning } from './logging';
 
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
@@ -247,7 +247,7 @@ function isRoot(dir: string) {
  * @returns STDOUT (if successful).
  */
 async function execute(cmd: string, ...args: string[]) {
-    const child = spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
+    const child = childProcess.spawn(cmd, args, { shell: true, stdio: [ 'ignore', 'pipe', 'inherit' ] });
     let stdout = '';
     child.stdout.on('data', chunk => stdout += chunk.toString());
     return new Promise<string>((ok, fail) => {

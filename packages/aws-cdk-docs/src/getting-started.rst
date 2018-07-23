@@ -190,7 +190,7 @@ class. Let's create our first, empty **App**:
 
         // index.ts
 
-        import * as cdk from '@aws-cdk/cdk';
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstApp extends cdk.App {
             constructor(argv: string[]) {
@@ -426,7 +426,7 @@ Now, let's define our first stack and add it to our app.
         :emphasize-lines: 4,5,6,7,8,14
 
         // index.ts
-        import * as cdk from '@aws-cdk/cdk';
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
@@ -539,7 +539,7 @@ there's nothing to deploy.
 
 Let's define an S3 bucket.
 
-First, we need to install the **@aws-cdk/s3** package:
+First, we need to install the **@aws-cdk/aws-s3** package:
 
 .. tabs::
 
@@ -547,13 +547,13 @@ First, we need to install the **@aws-cdk/s3** package:
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/s3
+            y-npm install @aws-cdk/aws-s3
 
     .. group-tab:: TypeScript
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/s3
+            y-npm install @aws-cdk/aws-s3
 
     .. group-tab:: Java
 
@@ -569,8 +569,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
         :emphasize-lines: 3,9,10,11
 
         // index.js
+        const s3 = require('@aws-cdk/aws-s3');
         const cdk = require('@aws-cdk/cdk');
-        const s3 = require('@aws-cdk/s3');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent, id, props) {
@@ -586,8 +586,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
         :emphasize-lines: 3,9,10,11
 
         // index.ts
-        import * as cdk from '@aws-cdk/cdk';
-        import * as s3 from '@aws-cdk/s3';
+        import s3 = require('@aws-cdk/aws-s3');
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
@@ -607,8 +607,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
 
         import com.amazonaws.cdk.App;
         import com.amazonaws.cdk.Stack;
-        import com.amazonaws.cdk.s3.Bucket;
-        import com.amazonaws.cdk.s3.BucketProps;
+        import com.amazonaws.cdk.aws.s3.Bucket;
+        import com.amazonaws.cdk.aws.s3.BucketProps;
 
         public class MyStack extends Stack {
             public MyStack(final App parent, final String id) {

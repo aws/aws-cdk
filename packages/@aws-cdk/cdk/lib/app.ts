@@ -1,9 +1,7 @@
-import * as cxapi from '@aws-cdk/cdk-cx-api';
-import { BASE64_REQ_PREFIX, CXRequest } from '@aws-cdk/cdk-cx-api';
-import { Base64 } from 'js-base64';
-import { PATH_SEP } from '.';
+import cxapi = require('@aws-cdk/cx-api');
+import jsBase64 = require('js-base64');
 import { Stack } from './cloudformation/stack';
-import { Construct, MetadataEntry, Root } from './core/construct';
+import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
 
 /**
@@ -209,12 +207,12 @@ REQUEST is a JSON-encoded request object.
         }
     }
 
-    private parseRequest(req: string): CXRequest {
+    private parseRequest(req: string): cxapi.CXRequest {
         // allow toolkit to send request in base64 if they begin with "base64:"
         // this is in order to avoid shell escaping issues when defining "--app"
         // in the toolkit.
-        if (req.startsWith(BASE64_REQ_PREFIX)) {
-            req = Base64.fromBase64(req.slice(BASE64_REQ_PREFIX.length));
+        if (req.startsWith(cxapi.BASE64_REQ_PREFIX)) {
+            req = jsBase64.Base64.fromBase64(req.slice(cxapi.BASE64_REQ_PREFIX.length));
         }
 
         // parse as JSON

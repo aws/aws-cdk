@@ -1,4 +1,4 @@
-import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cdk-cx-api';
+import { DEFAULT_ACCOUNT_CONTEXT_KEY, DEFAULT_REGION_CONTEXT_KEY } from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { App, Stack } from '../lib';
 

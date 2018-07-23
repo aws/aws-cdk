@@ -1,4 +1,4 @@
-import { Environment, SynthesizedStack } from '@aws-cdk/cdk-cx-api';
+import { Environment, SynthesizedStack } from '@aws-cdk/cx-api';
 import { deployStack, DeployStackResult } from './deploy-stack';
 import { SDK } from './util/sdk';
 

@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cdk-cx-api';
-import { App } from '..';
+import cxapi = require('@aws-cdk/cx-api');
+import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, Token } from '../core/tokens';
 import { Environment } from '../environment';

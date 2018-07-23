@@ -1,4 +1,4 @@
-import * as cxapi from '@aws-cdk/cdk-cx-api';
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';

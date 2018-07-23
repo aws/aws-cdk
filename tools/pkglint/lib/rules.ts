@@ -148,11 +148,11 @@ export class NoJsiiDep extends ValidationRule {
  */
 function cdkModuleName(name: string) {
     const isCdkPkg = name === '@aws-cdk/cdk';
-    const isCorePkg = name.startsWith('@aws-cdk/cdk-');
+    const isCorePkg = !name.startsWith('@aws-cdk/aws-');
 
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
-    name = name.replace(/^cdk-/, '');
+    name = name.replace(/^(?:aws|cdk)-/, '');
 
     const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
     const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
