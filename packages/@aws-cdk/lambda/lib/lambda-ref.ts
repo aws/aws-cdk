@@ -87,6 +87,30 @@ export abstract class LambdaRef extends Construct implements IEventRuleTarget, l
     }
 
     /**
+     * Metric for the number of concurrent executions across all Lambdas
+     *
+     * @default max over 5 minutes
+     */
+    public static metricAllConcurrentExecutions(props?: MetricCustomization): Metric {
+        // Mini-FAQ: why max? This metric is a gauge that is emitted every
+        // minute, so either max or avg or a percentile make sense (but sum
+        // doesn't). Max is more sensitive to spiky load changes which is
+        // probably what you're interested in if you're looking at this metric
+        // (Load spikes may lead to concurrent execution errors that would
+        // otherwise not be visible in the avg)
+        return LambdaRef.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
+    }
+
+    /**
+     * Metric for the number of unreserved concurrent executions across all Lambdas
+     *
+     * @default max over 5 minutes
+     */
+    public static metricAllUnreservedConcurrentExecutions(props?: MetricCustomization): Metric {
+        return LambdaRef.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
+    }
+
+    /**
      * The name of the function.
      */
     public abstract readonly functionName: FunctionName;
