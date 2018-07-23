@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.datapipeline",
+        "package": "com.amazonaws.cdk.aws.datapipeline",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "datapipeline"
+          "artifactId": "aws-datapipeline"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.DataPipeline"
+        "namespace": "Amazon.CDK.AWS.DataPipeline"
       }
     }
   },

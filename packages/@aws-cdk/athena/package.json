@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.athena",
+        "package": "com.amazonaws.cdk.aws.athena",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "athena"
+          "artifactId": "aws-athena"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Athena"
+        "namespace": "Amazon.CDK.AWS.Athena"
       }
     }
   },

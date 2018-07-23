@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.events",
+        "package": "com.amazonaws.cdk.aws.events",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "events"
+          "artifactId": "aws-events"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Events"
+        "namespace": "Amazon.CDK.AWS.Events"
       }
     }
   },

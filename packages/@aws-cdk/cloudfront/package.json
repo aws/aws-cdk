@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.cloudfront",
+        "package": "com.amazonaws.cdk.aws.cloudfront",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cloudfront"
+          "artifactId": "aws-cloudfront"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.CloudFront"
+        "namespace": "Amazon.CDK.AWS.CloudFront"
       }
     }
   },

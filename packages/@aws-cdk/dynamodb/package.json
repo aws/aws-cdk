@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.dynamodb",
+        "package": "com.amazonaws.cdk.aws.dynamodb",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "dynamodb"
+          "artifactId": "aws-dynamodb"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.DynamoDB"
+        "namespace": "Amazon.CDK.AWS.DynamoDB"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.redshift",
+        "package": "com.amazonaws.cdk.aws.redshift",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "redshift"
+          "artifactId": "aws-redshift"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Redshift"
+        "namespace": "Amazon.CDK.AWS.Redshift"
       }
     }
   },

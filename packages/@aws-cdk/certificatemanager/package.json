@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.certificatemanager",
+        "package": "com.amazonaws.cdk.aws.certificatemanager",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "certificatemanager"
+          "artifactId": "aws-certificatemanager"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.CertificateManager"
+        "namespace": "Amazon.CDK.AWS.CertificateManager"
       }
     }
   },

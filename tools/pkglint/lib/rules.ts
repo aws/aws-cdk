@@ -154,12 +154,12 @@ function cdkModuleName(name: string) {
     name = name.replace(/^@aws-cdk\//, '');
     name = name.replace(/^cdk-/, '');
 
-    const packageSuffix = `${isCorePkg ? '.core' : ''}.${name.replace(/-/g, '')}`;
-    const dotnetSuffix = `${isCorePkg ? '.Core' : ''}.${name.replace(/-/g, '')}`;
+    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
+    const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
 
     return {
         javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? 'cdk-' : ''}${name.replace(/-/g, '')}`,
+        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
         dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
     };
 }

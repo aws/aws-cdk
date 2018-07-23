@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.kinesisfirehose",
+        "package": "com.amazonaws.cdk.aws.kinesisfirehose",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "kinesisfirehose"
+          "artifactId": "aws-kinesisfirehose"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.KinesisFirehose"
+        "namespace": "Amazon.CDK.AWS.KinesisFirehose"
       }
     }
   },

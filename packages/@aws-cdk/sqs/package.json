@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.sqs",
+        "package": "com.amazonaws.cdk.aws.sqs",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "sqs"
+          "artifactId": "aws-sqs"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.SQS"
+        "namespace": "Amazon.CDK.AWS.SQS"
       }
     }
   },

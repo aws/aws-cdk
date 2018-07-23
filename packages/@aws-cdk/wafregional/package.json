@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.wafregional",
+        "package": "com.amazonaws.cdk.aws.wafregional",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "wafregional"
+          "artifactId": "aws-wafregional"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.WAFRegional"
+        "namespace": "Amazon.CDK.AWS.WAFRegional"
       }
     }
   },

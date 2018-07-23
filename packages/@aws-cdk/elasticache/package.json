@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.elasticache",
+        "package": "com.amazonaws.cdk.aws.elasticache",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "elasticache"
+          "artifactId": "aws-elasticache"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.ElastiCache"
+        "namespace": "Amazon.CDK.AWS.ElastiCache"
       }
     }
   },

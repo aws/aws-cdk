@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.batch",
+        "package": "com.amazonaws.cdk.aws.batch",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "batch"
+          "artifactId": "aws-batch"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Batch"
+        "namespace": "Amazon.CDK.AWS.Batch"
       }
     }
   },

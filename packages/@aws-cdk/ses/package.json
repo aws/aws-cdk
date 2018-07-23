@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.ses",
+        "package": "com.amazonaws.cdk.aws.ses",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "ses"
+          "artifactId": "aws-ses"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.SES"
+        "namespace": "Amazon.CDK.AWS.SES"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.elasticsearch",
+        "package": "com.amazonaws.cdk.aws.elasticsearch",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "elasticsearch"
+          "artifactId": "aws-elasticsearch"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Elasticsearch"
+        "namespace": "Amazon.CDK.AWS.Elasticsearch"
       }
     }
   },

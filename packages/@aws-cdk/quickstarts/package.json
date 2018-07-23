@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.quickstarts",
+        "package": "com.amazonaws.cdk.aws.quickstarts",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "quickstarts"
+          "artifactId": "aws-quickstarts"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.QuickStarts"
+        "namespace": "Amazon.CDK.AWS.QuickStarts"
       }
     }
   },

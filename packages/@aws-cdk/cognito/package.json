@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.cognito",
+        "package": "com.amazonaws.cdk.aws.cognito",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cognito"
+          "artifactId": "aws-cognito"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Cognito"
+        "namespace": "Amazon.CDK.AWS.Cognito"
       }
     }
   },

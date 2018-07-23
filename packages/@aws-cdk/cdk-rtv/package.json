@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.core.rtv",
+        "package": "com.amazonaws.cdk.rtv",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cdk-rtv"
+          "artifactId": "rtv"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Core.RTV"
+        "namespace": "Amazon.CDK.RTV"
       }
     }
   },

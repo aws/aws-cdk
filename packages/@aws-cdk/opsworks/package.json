@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.opsworks",
+        "package": "com.amazonaws.cdk.aws.opsworks",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "opsworks"
+          "artifactId": "aws-opsworks"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.OpsWorks"
+        "namespace": "Amazon.CDK.AWS.OpsWorks"
       }
     }
   },

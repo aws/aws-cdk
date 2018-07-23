@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.autoscalingplans",
+        "package": "com.amazonaws.cdk.aws.autoscalingplans",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "autoscalingplans"
+          "artifactId": "aws-autoscalingplans"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AutoScalingPlans"
+        "namespace": "Amazon.CDK.AWS.AutoScalingPlans"
       }
     }
   },

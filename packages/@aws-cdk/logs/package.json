@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.logs",
+        "package": "com.amazonaws.cdk.aws.logs",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "logs"
+          "artifactId": "aws-logs"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Logs"
+        "namespace": "Amazon.CDK.AWS.Logs"
       }
     }
   },

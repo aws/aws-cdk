@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.iot",
+        "package": "com.amazonaws.cdk.aws.iot",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "iot"
+          "artifactId": "aws-iot"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.IoT"
+        "namespace": "Amazon.CDK.AWS.IoT"
       }
     }
   },

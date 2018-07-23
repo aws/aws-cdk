@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.guardduty",
+        "package": "com.amazonaws.cdk.aws.guardduty",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "guardduty"
+          "artifactId": "aws-guardduty"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.GuardDuty"
+        "namespace": "Amazon.CDK.AWS.GuardDuty"
       }
     }
   },

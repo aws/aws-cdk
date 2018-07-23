@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.sdb",
+        "package": "com.amazonaws.cdk.aws.sdb",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "sdb"
+          "artifactId": "aws-sdb"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.SDB"
+        "namespace": "Amazon.CDK.AWS.SDB"
       }
     }
   },

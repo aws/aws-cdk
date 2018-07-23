@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.cloud9",
+        "package": "com.amazonaws.cdk.aws.cloud9",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cloud9"
+          "artifactId": "aws-cloud9"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Cloud9"
+        "namespace": "Amazon.CDK.AWS.Cloud9"
       }
     }
   },

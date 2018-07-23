@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.serverless",
+        "package": "com.amazonaws.cdk.aws.serverless",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "serverless"
+          "artifactId": "aws-serverless"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Serverless"
+        "namespace": "Amazon.CDK.AWS.Serverless"
       }
     }
   },

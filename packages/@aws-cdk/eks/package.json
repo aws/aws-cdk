@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.eks",
+        "package": "com.amazonaws.cdk.aws.eks",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "eks"
+          "artifactId": "aws-eks"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.EKS"
+        "namespace": "Amazon.CDK.AWS.EKS"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.appsync",
+        "package": "com.amazonaws.cdk.aws.appsync",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "appsync"
+          "artifactId": "aws-appsync"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AppSync"
+        "namespace": "Amazon.CDK.AWS.AppSync"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.elasticbeanstalk",
+        "package": "com.amazonaws.cdk.aws.elasticbeanstalk",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "elasticbeanstalk"
+          "artifactId": "aws-elasticbeanstalk"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.ElasticBeanstalk"
+        "namespace": "Amazon.CDK.AWS.ElasticBeanstalk"
       }
     }
   },

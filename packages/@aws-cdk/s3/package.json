@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.s3",
+        "package": "com.amazonaws.cdk.aws.s3",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "s3"
+          "artifactId": "aws-s3"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.S3"
+        "namespace": "Amazon.CDK.AWS.S3"
       }
     }
   },

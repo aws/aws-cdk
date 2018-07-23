@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.gamelift",
+        "package": "com.amazonaws.cdk.aws.gamelift",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "gamelift"
+          "artifactId": "aws-gamelift"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.GameLift"
+        "namespace": "Amazon.CDK.AWS.GameLift"
       }
     }
   },

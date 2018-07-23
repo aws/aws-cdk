@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.workspaces",
+        "package": "com.amazonaws.cdk.aws.workspaces",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "workspaces"
+          "artifactId": "aws-workspaces"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.WorkSpaces"
+        "namespace": "Amazon.CDK.AWS.WorkSpaces"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.core.assets",
+        "package": "com.amazonaws.cdk.assets",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cdk-assets"
+          "artifactId": "assets"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Core.Assets"
+        "namespace": "Amazon.CDK.Assets"
       }
     }
   },
