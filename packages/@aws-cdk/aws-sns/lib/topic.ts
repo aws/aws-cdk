@@ -32,7 +32,7 @@ export class Topic extends TopicRef {
     public readonly topicArn: TopicArn;
     public readonly topicName: TopicName;
 
-    protected autoCreatePolicy: boolean = true;
+    protected readonly autoCreatePolicy: boolean = true;
 
     constructor(parent: Construct, name: string, props: TopicProps = {}) {
         super(parent, name);

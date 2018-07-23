@@ -73,7 +73,7 @@ export class Alias extends LambdaRef {
      */
     public readonly role?: iam.Role | undefined;
 
-    protected canCreatePermissions: boolean = true; // Not used anyway
+    protected readonly canCreatePermissions: boolean = true; // Not used anyway
 
     /**
      * The actual Lambda function object that this Alias is pointing to
