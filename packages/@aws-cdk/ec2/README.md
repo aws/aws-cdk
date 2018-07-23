@@ -25,6 +25,8 @@ into all private subnets, and provide a parameter called `vpcPlacement` to
 allow you to override the placement. [Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
 
+
+#### Advanced Subnet Configuration
 If you require the ability to configure subnets the `VpcNetwork` can be
 customized with `SubnetConfiguration` array. This is best explained by an
 example:
