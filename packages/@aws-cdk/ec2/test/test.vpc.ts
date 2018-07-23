@@ -63,18 +63,21 @@ export = {
             test.done();
         },
 
-        "with only internal subnets, the VPC should not contain an IGW or NAT Gateways"(test: Test) {
+        "with only isolated subnets, the VPC should not contain an IGW or NAT Gateways"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'TheVPC', {
                 subnetConfiguration: [
                     {
-                        subnetType: SubnetType.Internal,
-                        name: 'Internal',
+                        subnetType: SubnetType.Isolated,
+                        name: 'Isolated',
                     }
                 ]
             });
             expect(stack).notTo(haveResource("AWS::EC2::InternetGateway"));
             expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
+            expect(stack).to(haveResource("AWS::EC2::Subnet", {
+                MapPublicIpOnLaunch: false
+            }));
             test.done();
         },
 
@@ -87,8 +90,8 @@ export = {
                         name: 'Public',
                     },
                     {
-                        subnetType: SubnetType.Internal,
-                        name: 'Internal',
+                        subnetType: SubnetType.Isolated,
+                        name: 'Isolated',
                     }
                 ]
             });
@@ -116,7 +119,6 @@ export = {
                   cidrMask: 24,
                   name: 'ingress',
                   subnetType: SubnetType.Public,
-                  natGateway: true,
                 },
                 {
                   cidrMask: 24,
@@ -126,7 +128,7 @@ export = {
                 {
                   cidrMask: 28,
                   name: 'rds',
-                  subnetType: SubnetType.Internal,
+                  subnetType: SubnetType.Isolated,
                 }
               ],
               maxAZs: 3
@@ -146,17 +148,16 @@ export = {
             }
             test.done();
         },
-        "with custom subents and maxNatGateway = 2 there should be only to NATGW"(test: Test) {
+        "with custom subents and natGateways = 2 there should be only to NATGW"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
-              maxNatGateways: 2,
+              natGateways: 2,
               subnetConfiguration: [
                 {
                   cidrMask: 24,
                   name: 'ingress',
                   subnetType: SubnetType.Public,
-                  natGateway: true,
                 },
                 {
                   cidrMask: 24,
@@ -166,7 +167,7 @@ export = {
                 {
                   cidrMask: 28,
                   name: 'rds',
-                  subnetType: SubnetType.Internal,
+                  subnetType: SubnetType.Isolated,
                 }
               ],
               maxAZs: 3
@@ -194,7 +195,7 @@ export = {
             }));
             test.done();
         },
-        "with mapPublicIpOnLaunch false for public subnets"(test: Test) {
+        "with public subnets MapPublicIpOnLaunch is true"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'VPC', {
                 maxAZs: 1,
@@ -203,14 +204,13 @@ export = {
                         cidrMask: 24,
                         name: 'ingress',
                         subnetType: SubnetType.Public,
-                        mapPublicIpOnLaunch: false
                     }
                 ],
             });
             expect(stack).to(countResources("AWS::EC2::Subnet", 1));
             expect(stack).notTo(haveResource("AWS::EC2::NatGateway"));
             expect(stack).to(haveResource("AWS::EC2::Subnet", {
-                MapPublicIpOnLaunch: false
+                MapPublicIpOnLaunch: true
             }));
             test.done();
         },
@@ -230,9 +230,9 @@ export = {
             }));
             test.done();
         },
-        "with maxNatGateway set to 1"(test: Test) {
+        "with natGateway set to 1"(test: Test) {
             const stack = getTestStack();
-            new VpcNetwork(stack, 'VPC', { maxNatGateways: 1 });
+            new VpcNetwork(stack, 'VPC', { natGateways: 1 });
             expect(stack).to(countResources("AWS::EC2::Subnet", 6));
             expect(stack).to(countResources("AWS::EC2::Route", 6));
             expect(stack).to(countResources("AWS::EC2::Subnet", 6));

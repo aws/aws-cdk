@@ -65,6 +65,20 @@ export = {
           }, /is not a valid/);
           test.done();
         },
+        "validIp returns true if octect is in 0-255"(test: Test) {
+            const invalidIps = ['255.255.0.0', '0.0.0.0', '1.2.3.4', '10.0.0.0', '255.01.01.255'];
+            for (const ip of invalidIps) {
+                test.strictEqual(true, NetworkUtils.validIp(ip));
+            }
+            test.done();
+        },
+        "validIp returns false if octect is not in 0-255"(test: Test) {
+            const invalidIps = ['1.2.3.4.689', '-1.55.22.22', '', ' ', '255.264.1.01'];
+            for (const ip of invalidIps) {
+                test.strictEqual(false, NetworkUtils.validIp(ip));
+            }
+            test.done();
+        },
     },
   CidrBlock: {
         "should return the next valid subnet from offset IP"(test: Test) {

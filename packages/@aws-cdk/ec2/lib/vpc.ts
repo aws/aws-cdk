@@ -64,7 +64,7 @@ export interface VpcNetworkProps {
      * will route to this NAT Gateway.
      * @default maxAZs
      */
-    maxNatGateways?: number;
+    natGateways?: number;
 
     /**
      * Configure the subnets to build for each AZ
@@ -73,7 +73,7 @@ export interface VpcNetworkProps {
      * specify the configuration. The VPC details (VPC ID, specific CIDR,
      * specific AZ will be calculated during creation)
      *
-     * For example if you want 1 public subnet, 1 private subnet, and 1 internal
+     * For example if you want 1 public subnet, 1 private subnet, and 1 isolated
      * subnet in each AZ provide the following:
      * subnetConfiguration: [
      *      {
@@ -90,7 +90,7 @@ export interface VpcNetworkProps {
      *      {
      *          cidrMask: 28,
      *          name: 'rds',
-     *          subnetType: SubnetType.Internal,
+     *          subnetType: SubnetType.Isolated,
      *      }
      * ]
      *
@@ -124,12 +124,12 @@ export enum DefaultInstanceTenancy {
 export enum SubnetType {
 
     /**
-     * Internal Subnets do not route Outbound traffic
+     * Isolated Subnets do not route Outbound traffic
      *
      * This can be good for subnets with RDS or
      * Elasticache endpoints
      */
-    Internal = 1,
+    Isolated = 1,
 
     /**
      * Subnet that routes to the internet, but not vice versa.
@@ -182,23 +182,6 @@ export interface SubnetConfiguration {
      * availability zone.
      */
     name: string;
-
-    /**
-     * Controls the creation a NAT Gateway in this subnet
-     *
-     * If true will place a NAT Gateway in this subnet, subnetType must be Public.
-     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
-     * NAT Gateways in non-public subnets will functionally not work and are
-     * therefore not possible to create.
-     */
-    natGateway?: boolean;
-
-    /**
-     * Controls if a public IP is associated to an instance at launch
-     *
-     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
-     */
-    mapPublicIpOnLaunch?: boolean;
 }
 
 /**
@@ -239,12 +222,10 @@ export class VpcNetwork extends VpcNetworkRef {
         {
             subnetType: SubnetType.Public,
             name: 'Public',
-            natGateway: true
         },
         {
             subnetType: SubnetType.Private,
             name: 'Private',
-            natGateway: false
         }
     ];
 
@@ -264,16 +245,16 @@ export class VpcNetwork extends VpcNetworkRef {
     public readonly privateSubnets: VpcSubnetRef[] = [];
 
     /**
-     * List of internal subnets in this VPC
+     * List of isolated subnets in this VPC
      */
-    public readonly internalSubnets: VpcSubnetRef[] = [];
+    public readonly isolatedSubnets: VpcSubnetRef[] = [];
 
     /**
      * Maximum Number of NAT Gateways used to control cost
      *
      * @default {VpcNetworkProps.maxAZs}
      */
-    private readonly maxNatGateways: number;
+    private readonly natGateways: number;
 
     /**
      * The VPC resource
@@ -342,13 +323,17 @@ export class VpcNetwork extends VpcNetworkRef {
         this.vpcId = this.resource.ref;
         this.dependencyElements.push(this.resource);
 
-        this.maxNatGateways = ifUndefined(props.maxNatGateways, this.availabilityZones.length);
-
         this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
+        const useNatGateway = this.subnetConfiguration.filter(
+            subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
+        this.natGateways = ifUndefined(props.natGateways,
+            useNatGateway ? this.availabilityZones.length : 0);
+
+        // subnetConfiguration and natGateways must be set before calling createSubnets
         this.createSubnets();
 
         const allowOutbound = this.subnetConfiguration.filter(
-            subnet => (subnet.subnetType !== SubnetType.Internal)).length > 0;
+            subnet => (subnet.subnetType !== SubnetType.Isolated)).length > 0;
 
         // Create an Internet Gateway and attach it if necessary
         if (allowOutbound) {
@@ -413,16 +398,15 @@ export class VpcNetwork extends VpcNetworkRef {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
                 cidrBlock: this.networkBuilder.addSubnet(cidrMask),
-                mapPublicIpOnLaunch: ifUndefined(subnetConfig.mapPublicIpOnLaunch,
-                    (subnetConfig.subnetType === SubnetType.Public)),
+                mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.Public),
             };
 
             switch (subnetConfig.subnetType) {
                 case SubnetType.Public:
                     const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
-                    if (subnetConfig.natGateway) {
+                    if (this.natGateways > 0) {
                         const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-                        if (ngwArray.length < this.maxNatGateways) {
+                        if (ngwArray.length < this.natGateways) {
                             this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
                         }
                     }
@@ -432,9 +416,9 @@ export class VpcNetwork extends VpcNetworkRef {
                     const privateSubnet = new VpcPrivateSubnet(this, name, subnetProps);
                     this.privateSubnets.push(privateSubnet);
                     break;
-                case SubnetType.Internal:
-                    const internalSubnet = new VpcPrivateSubnet(this, name, subnetProps);
-                    this.internalSubnets.push(internalSubnet);
+                case SubnetType.Isolated:
+                    const isolatedSubnet = new VpcPrivateSubnet(this, name, subnetProps);
+                    this.isolatedSubnets.push(isolatedSubnet);
                     break;
             }
         });
@@ -464,7 +448,7 @@ export interface VpcSubnetProps {
     /**
      * Controls if a public IP is associated to an instance at launch
      *
-     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Internal.
+     * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
      */
     mapPublicIpOnLaunch?: boolean;
 }

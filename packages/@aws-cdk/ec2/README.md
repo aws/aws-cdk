@@ -49,7 +49,7 @@ new VpcNetwork(stack, 'TheVPC', {
     {
       cidrMask: 28,
       name: 'Database',
-      subnetType: SubnetType.Internal,
+      subnetType: SubnetType.Isolated,
     }
   ],
 });
@@ -71,12 +71,12 @@ availability zones will be the following:
  * DatabaseSubnet3: 10.0.6.32/28
 
 Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
-route to the NAT Gateway in the same availability zone. Each `Internal` subnet
+route to the NAT Gateway in the same availability zone. Each `Isolated` subnet
 will not have a route to the internet, but is routeable inside the VPC. The
 numbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1
 and ApplicaitonSubnet1 will be in the same avialbility zone).
 
-`Internal` Subnets provide simplified secure networking principles, but come at
+`Isolated` Subnets provide simplified secure networking principles, but come at
 an operational complexity. The lack of an internet route means that if you deploy
 instances in this subnet you will not be able to patch from the internet, this is
 commonly reffered to as 
@@ -113,7 +113,7 @@ new VpcNetwork(stack, 'TheVPC', {
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: SubnetType.Internal,
+      subnetType: SubnetType.Isolated,
     }
   ],
 });
@@ -145,7 +145,7 @@ import { VpcNetwork } from '@aws-cdk/ec2';
 
 new VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
-  maxNatGateways: 1,
+  natGateways: 1,
   subnetConfiguration: [
     {
       cidrMask: 26,
@@ -160,7 +160,7 @@ new VpcNetwork(stack, 'TheVPC', {
     {
       cidrMask: 27,
       name: 'Database',
-      subnetType: SubnetType.Internal,
+      subnetType: SubnetType.Isolated,
     }
   ],
 });

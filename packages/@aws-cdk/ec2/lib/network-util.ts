@@ -86,11 +86,23 @@ export class NetworkUtils {
 
     }
 
+    /**
+     * Validates an IPv4 string
+     *
+     * returns true of the string contains 4 numbers between 0-255 delimited by
+     * a `.` character
+     */
     public static validIp(ipAddress: string): boolean {
-        return ipAddress.split('.').map((octet: string) => parseInt(octet, 10)).
+        const octets = ipAddress.split('.');
+        if (octets.length !== 4) {
+            return false;
+        }
+        return octets.map((octet: string) => parseInt(octet, 10)).
             filter((octet: number) => octet >= 0 && octet <= 255).length === 4;
     }
+
     /**
+     * Converts a string IPv4 to a number
      *
      * takes an IP Address (e.g. 174.66.173.168) and converts to a number
      * (e.g 2923605416); currently only supports IPv4
@@ -102,7 +114,6 @@ export class NetworkUtils {
      * @param  {string} the IP address (e.g. 174.66.173.168)
      * @returns {number} the integer value of the IP address (e.g 2923605416)
      */
-
     public static ipToNum(ipAddress: string): number {
         if (!this.validIp(ipAddress)) {
             throw new Error(`${ipAddress} is not valid`);
@@ -117,6 +128,7 @@ export class NetworkUtils {
     }
 
     /**
+     * Takes number and converts it to IPv4 address string
      *
      * Takes a number (e.g 2923605416) and converts it to an IPv4 address string
      * currently only supports IPv4
@@ -124,7 +136,6 @@ export class NetworkUtils {
      * @param  {number} the integer value of the IP address (e.g 2923605416)
      * @returns {string} the IPv4 address (e.g. 174.66.173.168)
      */
-
     public static numToIp(ipNum: number): string {
         // this all because bitwise math is signed
         let remaining = ipNum;
@@ -143,7 +154,6 @@ export class NetworkUtils {
         }
         return ipAddress;
     }
-
 }
 
 /**
@@ -152,19 +162,19 @@ export class NetworkUtils {
 export class NetworkBuilder {
 
     /**
-     * the CIDR range used when creating the network
+     * The CIDR range used when creating the network
      */
     public readonly networkCidr: CidrBlock;
 
     /**
-     * the list of CIDR blocks for subnets within this network
+     * The list of CIDR blocks for subnets within this network
      */
-    protected subnetCidrs: CidrBlock[];
+    private readonly subnetCidrs: CidrBlock[] = [];
 
     /**
-     * the current highest allocated IP address in any subnet
+     * The current highest allocated IP address in any subnet
      */
-    protected maxIpConsumed: string;
+    private maxIpConsumed: string;
 
     /**
      * Create a network using the provided CIDR block
@@ -225,7 +235,6 @@ export class NetworkBuilder {
             NetworkUtils.ipToNum(this.maxIpConsumed);
         const ipsPerSubnet: number = Math.floor(remaining / subnetCount);
         return 32 - Math.floor(Math.log2(ipsPerSubnet));
-        // return this.addSubnets(mask, subnetCount);
     }
 
     protected validate(): boolean {
@@ -233,7 +242,6 @@ export class NetworkBuilder {
             (cidrBlock) => this.networkCidr.containsCidr(cidrBlock)).
             filter( (contains) => (contains === false)).length === 0;
     }
-
 }
 
 /**
@@ -255,7 +263,7 @@ export class CidrBlock {
      * Given an IP and CIDR mask number returns the next CIDR Block available
      *
      * For example:
-     * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns '10.0.1.0/24'
+     * CidrBlock.fromOffsetIp('10.0.0.15', 24) returns new CidrBlock('10.0.1.0/24')
      */
     public static fromOffsetIp(ipAddress: string, mask: number): CidrBlock {
         const initialCidr = new CidrBlock(`${ipAddress}/${mask}`);
