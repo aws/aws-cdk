@@ -56,9 +56,17 @@ EOM
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.${PB}",
-      "dotnet": "${S/AWS::/Amazon.Cdk.}"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.${PB}",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "${PB}"
+        }
+      },
+      "dotnet": {
+        "namespace": "${S/AWS::/Amazon.Cdk.}"
+      }
     }
   },
   "repository": {

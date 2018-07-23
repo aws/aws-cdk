@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.elasticbeanstalk",
-      "dotnet": "Amazon.Cdk.ElasticBeanstalk"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.elasticbeanstalk",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "elasticbeanstalk"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ElasticBeanstalk"
+      }
     }
   },
   "repository": {

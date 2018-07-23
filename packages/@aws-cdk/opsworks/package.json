@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.opsworks",
-      "dotnet": "Amazon.Cdk.OpsWorks"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.opsworks",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "opsworks"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.OpsWorks"
+      }
     }
   },
   "repository": {

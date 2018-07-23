@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.workspaces",
-      "dotnet": "Amazon.Cdk.WorkSpaces"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.workspaces",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "workspaces"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.WorkSpaces"
+      }
     }
   },
   "repository": {

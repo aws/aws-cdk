@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.ses",
-      "dotnet": "Amazon.Cdk.SES"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.ses",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "ses"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.SES"
+      }
     }
   },
   "repository": {

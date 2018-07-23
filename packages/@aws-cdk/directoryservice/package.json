@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.directoryservice",
-      "dotnet": "Amazon.Cdk.DirectoryService"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.directoryservice",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "directoryservice"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.DirectoryService"
+      }
     }
   },
   "repository": {

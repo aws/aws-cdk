@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.codedeploy",
-      "dotnet": "Amazon.Cdk.CodeDeploy"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.codedeploy",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "codedeploy"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CodeDeploy"
+      }
     }
   },
   "repository": {

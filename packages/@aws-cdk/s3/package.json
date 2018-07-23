@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.s3",
-      "dotnet": "Amazon.Cdk.S3"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.s3",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "s3"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.S3"
+      }
     }
   },
   "repository": {

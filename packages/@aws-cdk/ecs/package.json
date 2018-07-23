@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.ecs",
-      "dotnet": "Amazon.Cdk.ECS"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.ecs",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "ecs"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ECS"
+      }
     }
   },
   "repository": {

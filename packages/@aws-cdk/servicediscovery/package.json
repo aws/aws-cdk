@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.servicediscovery",
-      "dotnet": "Amazon.Cdk.ServiceDiscovery"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.servicediscovery",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "servicediscovery"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ServiceDiscovery"
+      }
     }
   },
   "repository": {

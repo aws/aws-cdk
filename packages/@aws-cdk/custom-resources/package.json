@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.customresources",
-      "dotnet": "Amazon.Cdk.CustomResources"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.customresources",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "customresources"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CustomResources"
+      }
     }
   },
   "repository": {

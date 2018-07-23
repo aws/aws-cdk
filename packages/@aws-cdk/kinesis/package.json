@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.kinesis",
-      "dotnet": "Amazon.Cdk.Kinesis"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.kinesis",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "kinesis"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Kinesis"
+      }
     }
   },
   "repository": {

@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.codepipeline",
-      "dotnet": "Amazon.Cdk.CodePipeline"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.codepipeline",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "codepipeline"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CodePipeline"
+      }
     }
   },
   "repository": {

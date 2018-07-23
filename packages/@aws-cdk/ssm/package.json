@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.ssm",
-      "dotnet": "Amazon.Cdk.SSM"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.ssm",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "ssm"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.SSM"
+      }
     }
   },
   "repository": {

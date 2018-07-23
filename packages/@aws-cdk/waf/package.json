@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.waf",
-      "dotnet": "Amazon.Cdk.WAF"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.waf",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "waf"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.WAF"
+      }
     }
   },
   "repository": {

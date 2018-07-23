@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.redshift",
-      "dotnet": "Amazon.Cdk.Redshift"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.redshift",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "redshift"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Redshift"
+      }
     }
   },
   "repository": {

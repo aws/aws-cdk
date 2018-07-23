@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.rtv",
-      "dotnet": "Amazon.Cdk.Rtv"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.rtv",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "rtv"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Rtv"
+      }
     }
   },
   "repository": {

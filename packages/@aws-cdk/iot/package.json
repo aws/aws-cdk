@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.iot",
-      "dotnet": "Amazon.Cdk.IoT"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.iot",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "iot"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.IoT"
+      }
     }
   },
   "repository": {

@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.glue",
-      "dotnet": "Amazon.Cdk.Glue"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.glue",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "glue"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Glue"
+      }
     }
   },
   "repository": {

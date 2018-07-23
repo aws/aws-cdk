@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.dynamodb",
-      "dotnet": "Amazon.Cdk.DynamoDb"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.dynamodb",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "dynamodb"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.DynamoDb"
+      }
     }
   },
   "repository": {

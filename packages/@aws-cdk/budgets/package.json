@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.budgets",
-      "dotnet": "Amazon.Cdk.Budgets"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.budgets",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "budgets"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Budgets"
+      }
     }
   },
   "repository": {

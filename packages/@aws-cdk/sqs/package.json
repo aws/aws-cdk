@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.sqs",
-      "dotnet": "Amazon.Cdk.Sqs"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.sqs",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "sqs"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Sqs"
+      }
     }
   },
   "repository": {

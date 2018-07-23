@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.dms",
-      "dotnet": "Amazon.Cdk.DMS"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.dms",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "dms"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.DMS"
+      }
     }
   },
   "repository": {

@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cloudfront",
-      "dotnet": "Amazon.Cdk.CloudFront"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cloudfront",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cloudfront"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CloudFront"
+      }
     }
   },
   "repository": {

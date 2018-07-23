@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.logs",
-      "dotnet": "Amazon.Cdk.Logs"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.logs",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "logs"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Logs"
+      }
     }
   },
   "repository": {

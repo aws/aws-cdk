@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.apigateway",
-      "dotnet": "Amazon.Cdk.ApiGateway"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.apigateway",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "apigateway"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ApiGateway"
+      }
     }
   },
   "repository": {

@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.elasticache",
-      "dotnet": "Amazon.Cdk.ElastiCache"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.elasticache",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "elasticache"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ElastiCache"
+      }
     }
   },
   "repository": {

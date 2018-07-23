@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cognito",
-      "dotnet": "Amazon.Cdk.Cognito"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cognito",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cognito"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Cognito"
+      }
     }
   },
   "repository": {
