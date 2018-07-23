@@ -276,22 +276,30 @@ export class CidrBlock {
     public readonly networkSize: number;
 
     /*
-     * The network address provided in CIDR creation
-     *
-     * This is not the first or last IP in the CIDR just the IP that initialized
-     * this CIDR class.
+     * The network address provided in CIDR creation offset by the Netsize -1
      */
     private readonly networkAddress: number;
 
     /*
-     * Creates a new CidrBlock
+     * Parses either CIDR notation String or two numbers representing the IP
+     * space
+     *
+     * cidr expects a string '10.0.0.0/16'
+     * ipAddress expects a number
+     * mask expects a number
+     *
+     * If the given `cidr` or `ipAddress` is not the beginning of the block,
+     * then the next avaiable block will be returned. For example, if
+     * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
+     *
      */
     constructor(cidr: string)
     constructor(ipAddress: number, mask: number)
     constructor(ipAddressOrCidr: string | number, mask?: number) {
         if (typeof ipAddressOrCidr === 'string') {
             this.mask = parseInt(ipAddressOrCidr.split('/')[1], 10);
-            this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]);
+            this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
+                CidrBlock.calculateNetsize(this.mask) - 1;
         } else {
             if (typeof mask === 'number') {
                 this.mask = mask;

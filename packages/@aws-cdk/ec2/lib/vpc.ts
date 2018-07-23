@@ -80,7 +80,6 @@ export interface VpcNetworkProps {
      *          cidrMask: 24,
      *          name: 'ingress',
      *          subnetType: SubnetType.Public,
-     *          natGateway: true,
      *      },
      *      {
      *          cidrMask: 24,
