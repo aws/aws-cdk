@@ -8,7 +8,7 @@
     "outdir": "dist",
     "names": {
       "java": "com.amazonaws.cdk.cognito",
-      "dotnet": "Aws.Cdk.Cognito"
+      "dotnet": "Amazon.Cdk.Cognito"
     }
   },
   "repository": {

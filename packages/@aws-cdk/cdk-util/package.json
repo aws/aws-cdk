@@ -30,6 +30,5 @@
     "pkglint": "^0.7.3-beta",
     "cdk-build-tools": "^0.7.3-beta"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

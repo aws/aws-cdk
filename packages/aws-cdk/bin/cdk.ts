@@ -47,10 +47,12 @@ async function parseCommandLineArguments() {
         .option('rename', { type: 'string', desc: 'Rename stack name if different then the one defined in the cloud executable', requiresArg: '[ORIGINAL:]RENAMED' })
         .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
         .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
+        .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
         .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
+            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' })
         // tslint:disable-next-line:max-line-length
         .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
@@ -166,7 +168,7 @@ async function initCommandLine() {
         switch (command) {
             case 'ls':
             case 'list':
-                return await listStacks();
+                return await cliList({ long: args.long });
 
             case 'diff':
                 return await diffStack(await findStack(args.STACK), args.template);
@@ -208,26 +210,40 @@ async function initCommandLine() {
     }
 
     /**
-     * Extracts 'warning' metadata entries from the stack synthesis
+     * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
      */
-    function printWarnings(stacks: cxapi.SynthesizeResponse) {
-        let found = false;
+    function processMessages(stacks: cxapi.SynthesizeResponse): { errors: boolean, warnings: boolean } {
+        let warnings = false;
+        let errors = false;
         for (const stack of stacks.stacks) {
             for (const id of Object.keys(stack.metadata)) {
                 const metadata = stack.metadata[id];
                 for (const entry of metadata) {
-                    if (entry.type === 'warning') {
-                        found = true;
-                        warning(`Warning: ${entry.data} (at ${stack.name}:${id})`);
-
-                        if (argv.trace) {
-                            warning(`  ${entry.trace.join('\n  ')}`);
-                        }
+                    switch (entry.type) {
+                        case cxapi.WARNING_METADATA_KEY:
+                            warnings = true;
+                            printMessage(warning, 'Warning', id, entry);
+                            break;
+                        case cxapi.ERROR_METADATA_KEY:
+                            errors = true;
+                            printMessage(error, 'Error', id, entry);
+                            break;
+                        case cxapi.INFO_METADATA_KEY:
+                            printMessage(print, 'Info', id, entry);
+                            break;
                     }
                 }
             }
         }
-        return found;
+        return { warnings, errors };
+    }
+
+    function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
+        logFn(`[${prefix} at ${id}] ${entry.data}`);
+
+        if (argv.trace || argv.verbose) {
+            logFn(`  ${entry.trace.join('\n  ')}`);
+        }
     }
 
     /**
@@ -339,7 +355,13 @@ async function initCommandLine() {
                 continue;
             }
 
-            if (printWarnings(response) && argv.strict) {
+            const { errors, warnings } = processMessages(response);
+
+            if (errors && !argv.ignoreErrors) {
+                throw new Error('Found errors');
+            }
+
+            if (argv.strict && warnings) {
                 throw new Error('Found warnings (--strict mode)');
             }
 
@@ -379,6 +401,22 @@ async function initCommandLine() {
         }
 
         return ret;
+    }
+
+    async function cliList(options: { long?: boolean } = { }) {
+        const stacks = await listStacks();
+
+        // if we are in "long" mode, emit the array as-is (JSON/YAML)
+        if (options.long) {
+            return stacks; // will be YAML formatted output
+        }
+
+        // just print stack names
+        for (const stack of stacks) {
+            data(stack.name);
+        }
+
+        return 0; // exit-code
     }
 
     async function listStacks(): Promise<cxapi.StackInfo[]> {
