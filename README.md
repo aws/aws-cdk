@@ -12,7 +12,7 @@ for defining cloud infrastructure in code.
 Make sure you have the following prerequisites installed:
 
 * [Node.js LTS (8.11.x)](https://nodejs.org/en/download) - required for the command-line toolkit and language bindings
-* [AWS CLI](https://aws.amazon.com/cli/) - recommanded in geneal, but only needed if you intend to download the release from S3
+* [AWS CLI](https://aws.amazon.com/cli/) - recommended in general, but only needed if you intend to download the release from S3
 * The development toolchain of the language you intend to use (TypeScript,
   Python, Java, .NET, Ruby...)
 
