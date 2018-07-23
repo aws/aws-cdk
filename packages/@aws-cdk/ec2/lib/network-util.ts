@@ -291,7 +291,6 @@ export class CidrBlock {
      * If the given `cidr` or `ipAddress` is not the beginning of the block,
      * then the next avaiable block will be returned. For example, if
      * `10.0.3.1/28` is given the returned block will represent `10.0.3.16/28`.
-     *
      */
     constructor(cidr: string)
     constructor(ipAddress: number, mask: number)

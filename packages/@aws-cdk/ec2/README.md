@@ -63,9 +63,9 @@ availability zones will be the following:
  * IngressSubnet1: 10.0.0.0/24
  * IngressSubnet2: 10.0.1.0/24
  * IngressSubnet3: 10.0.2.0/24
- * ApplicaitonSubnet1: 10.0.3.0/24
- * ApplicaitonSubnet2: 10.0.4.0/24
- * ApplicaitonSubnet3: 10.0.5.0/24
+ * ApplicationSubnet1: 10.0.3.0/24
+ * ApplicationSubnet2: 10.0.4.0/24
+ * ApplicationSubnet3: 10.0.5.0/24
  * DatabaseSubnet1: 10.0.6.0/28
  * DatabaseSubnet2: 10.0.6.16/28
  * DatabaseSubnet3: 10.0.6.32/28
@@ -74,7 +74,7 @@ Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
 route to the NAT Gateway in the same availability zone. Each `Isolated` subnet
 will not have a route to the internet, but is routeable inside the VPC. The
 numbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1
-and ApplicaitonSubnet1 will be in the same avialbility zone).
+and ApplicationSubnet1 will be in the same avialbility zone).
 
 `Isolated` Subnets provide simplified secure networking principles, but come at
 an operational complexity. The lack of an internet route means that if you deploy
@@ -127,9 +127,9 @@ availability zones will be the following:
  * DatabaseSubnet1: 10.0.0.192/27
  * DatabaseSubnet2: 10.0.0.224/27
  * DatabaseSubnet3: 10.0.1.0/27
- * ApplicaitonSubnet1: 10.0.64.0/18
- * ApplicaitonSubnet2: 10.0.128.0/18
- * ApplicaitonSubnet3: 10.0.192.0/18
+ * ApplicationSubnet1: 10.0.64.0/18
+ * ApplicationSubnet2: 10.0.128.0/18
+ * ApplicationSubnet3: 10.0.192.0/18
 
 Any subnet configuration without a `cidrMask` will be counted up and allocated
 evenly across the remaining IP space.
