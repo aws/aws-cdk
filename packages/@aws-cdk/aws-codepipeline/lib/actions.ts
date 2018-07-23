@@ -514,7 +514,7 @@ export class InvokeLambdaAction extends Action {
      * Add an input artifact
      * @param artifact
      */
-    public addInputArtifact(artifact: Artifact): InvokeLambdaAction {
+    protected addInputArtifact(artifact: Artifact): Action {
         super.addInputArtifact(artifact);
         return this;
     }

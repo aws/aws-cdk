@@ -64,7 +64,7 @@ export interface EventRuleProps {
  * Defines a CloudWatch Event Rule in this stack.
  */
 export class EventRule extends EventRuleRef {
-    public ruleArn: RuleArn;
+    public readonly ruleArn: RuleArn;
 
     private readonly targets = new Array<cloudformation.RuleResource.TargetProperty>();
     private readonly eventPattern: EventPattern = { };
