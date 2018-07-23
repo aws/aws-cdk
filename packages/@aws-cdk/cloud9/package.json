@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Cloud9"
+        "namespace": "Amazon.CDK.Cloud9"
       }
     }
   },

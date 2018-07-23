@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.AutoScalingPlans"
+        "namespace": "Amazon.CDK.AutoScalingPlans"
       }
     }
   },

@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Route53"
+        "namespace": "Amazon.CDK.Route53"
       }
     }
   },

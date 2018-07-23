@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.EMR"
+        "namespace": "Amazon.CDK.EMR"
       }
     }
   },

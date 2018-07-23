@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Elasticsearch"
+        "namespace": "Amazon.CDK.Elasticsearch"
       }
     }
   },

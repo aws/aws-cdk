@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.DirectoryService"
+        "namespace": "Amazon.CDK.DirectoryService"
       }
     }
   },

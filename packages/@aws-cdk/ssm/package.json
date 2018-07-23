@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.SSM"
+        "namespace": "Amazon.CDK.SSM"
       }
     }
   },

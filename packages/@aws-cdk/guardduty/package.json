@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.GuardDuty"
+        "namespace": "Amazon.CDK.GuardDuty"
       }
     }
   },

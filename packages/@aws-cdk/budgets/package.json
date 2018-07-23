@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Budgets"
+        "namespace": "Amazon.CDK.Budgets"
       }
     }
   },

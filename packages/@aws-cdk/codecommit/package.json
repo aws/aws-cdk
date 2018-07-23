@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CodeCommit"
+        "namespace": "Amazon.CDK.CodeCommit"
       }
     }
   },

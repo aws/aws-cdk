@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CertificateManager"
+        "namespace": "Amazon.CDK.CertificateManager"
       }
     }
   },

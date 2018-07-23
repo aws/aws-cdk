@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.ServiceCatalog"
+        "namespace": "Amazon.CDK.ServiceCatalog"
       }
     }
   },

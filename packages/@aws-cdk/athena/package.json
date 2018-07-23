@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Athena"
+        "namespace": "Amazon.CDK.Athena"
       }
     }
   },

@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.KinesisAnalytics"
+        "namespace": "Amazon.CDK.KinesisAnalytics"
       }
     }
   },

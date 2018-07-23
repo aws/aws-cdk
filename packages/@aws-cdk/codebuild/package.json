@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CodeBuild"
+        "namespace": "Amazon.CDK.CodeBuild"
       }
     }
   },

@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.cxapi",
+        "package": "com.amazonaws.cdk.core.cxapi",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "cxapi"
+          "artifactId": "cdk-cxapi"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CxApi"
+        "namespace": "Amazon.CDK.Core.CXAPI"
       }
     }
   },

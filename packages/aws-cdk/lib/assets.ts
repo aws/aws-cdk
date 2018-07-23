@@ -1,4 +1,4 @@
-import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from "@aws-cdk/cx-api";
+import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from "@aws-cdk/cdk-cx-api";
 import { CloudFormation } from "aws-sdk";
 import fs = require('fs-extra');
 import path = require('path');

@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.ECS"
+        "namespace": "Amazon.CDK.ECS"
       }
     }
   },

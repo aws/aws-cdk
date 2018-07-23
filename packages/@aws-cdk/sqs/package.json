@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Sqs"
+        "namespace": "Amazon.CDK.SQS"
       }
     }
   },

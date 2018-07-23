@@ -65,7 +65,7 @@ EOM
         }
       },
       "dotnet": {
-        "namespace": "${S/AWS::/Amazon.Cdk.}"
+        "namespace": "${S/AWS::/Amazon.CDK.}"
       }
     }
   },

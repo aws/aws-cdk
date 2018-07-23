@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.ElasticLoadBalancing"
+        "namespace": "Amazon.CDK.ElasticLoadBalancing"
       }
     }
   },

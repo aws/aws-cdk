@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Config"
+        "namespace": "Amazon.CDK.Config"
       }
     }
   },

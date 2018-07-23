@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CustomResources"
+        "namespace": "Amazon.CDK.CustomResources"
       }
     }
   },

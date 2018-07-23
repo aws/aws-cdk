@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.ApiGateway"
+        "namespace": "Amazon.CDK.APIGateway"
       }
     }
   },

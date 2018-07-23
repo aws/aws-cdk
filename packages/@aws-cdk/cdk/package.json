@@ -11,11 +11,11 @@
         "package": "com.amazonaws.cdk",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "com-amazonaws-cdk"
+          "artifactId": "cdk"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk"
+        "namespace": "Amazon.CDK"
       }
     }
   },

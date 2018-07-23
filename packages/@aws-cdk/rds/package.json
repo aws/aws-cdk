@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Rds"
+        "namespace": "Amazon.CDK.RDS"
       }
     }
   },

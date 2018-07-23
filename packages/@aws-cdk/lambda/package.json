@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Lambda"
+        "namespace": "Amazon.CDK.Lambda"
       }
     }
   },

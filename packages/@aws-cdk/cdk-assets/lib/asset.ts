@@ -1,5 +1,5 @@
-import cdk = require('@aws-cdk/core');
-import cxapi = require('@aws-cdk/cx-api');
+import cdk = require('@aws-cdk/cdk');
+import cxapi = require('@aws-cdk/cdk-cx-api');
 import iam = require('@aws-cdk/iam');
 import s3 = require('@aws-cdk/s3');
 import * as fs from 'fs';

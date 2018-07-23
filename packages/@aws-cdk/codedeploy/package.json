@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CodeDeploy"
+        "namespace": "Amazon.CDK.CodeDeploy"
       }
     }
   },

@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.CloudTrail"
+        "namespace": "Amazon.CDK.CloudTrail"
       }
     }
   },

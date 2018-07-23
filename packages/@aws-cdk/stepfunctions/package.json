@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.StepFunctions"
+        "namespace": "Amazon.CDK.StepFunctions"
       }
     }
   },

@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.ElasticBeanstalk"
+        "namespace": "Amazon.CDK.ElasticBeanstalk"
       }
     }
   },

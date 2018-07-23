@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Batch"
+        "namespace": "Amazon.CDK.Batch"
       }
     }
   },

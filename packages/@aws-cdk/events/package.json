@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Events"
+        "namespace": "Amazon.CDK.Events"
       }
     }
   },

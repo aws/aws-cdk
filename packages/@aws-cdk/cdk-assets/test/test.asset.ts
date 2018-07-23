@@ -1,5 +1,5 @@
-import { expect } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
+import { expect } from '@aws-cdk/cdk-assert';
 import { Group, User } from '@aws-cdk/iam';
 import { Test } from 'nodeunit';
 import * as path from 'path';

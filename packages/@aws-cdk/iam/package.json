@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Iam"
+        "namespace": "Amazon.CDK.IAM"
       }
     }
   },

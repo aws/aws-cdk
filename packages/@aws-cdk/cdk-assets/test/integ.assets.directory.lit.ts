@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import cdk = require('@aws-cdk/cdk');
 import iam = require('@aws-cdk/iam');
 import path = require('path');
 import assets = require('../lib');

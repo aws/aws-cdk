@@ -15,7 +15,7 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.Cdk.Redshift"
+        "namespace": "Amazon.CDK.Redshift"
       }
     }
   },

@@ -1,4 +1,4 @@
-import cxapi = require('@aws-cdk/cx-api');
+import cxapi = require('@aws-cdk/cdk-cx-api');
 export const PATH_SEP = '/';
 
 /**
