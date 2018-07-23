@@ -82,13 +82,20 @@ export = {
     },
   CidrBlock: {
         "should return the next valid subnet from offset IP"(test: Test) {
-          const newBlock = CidrBlock.fromOffsetIp('10.0.1.10', 24);
+          const num = NetworkUtils.ipToNum('10.0.1.10');
+          const newBlock = CidrBlock.fromOffsetIp(num, 24);
           test.strictEqual(newBlock.cidr, '10.0.2.0/24');
           test.done();
         },
         "maxIp() should return the last usable IP from the CidrBlock"(test: Test) {
-          const block = new CidrBlock('10.0.3.0/24');
-          test.strictEqual(block.maxIp(), '10.0.3.255');
+          const testValues = [
+              ['10.0.3.0/28', '10.0.3.15'],
+              ['10.0.3.3/28', '10.0.3.15'],
+          ];
+          for (const value of testValues) {
+            const block = new CidrBlock(value[0]);
+            test.strictEqual(block.maxIp(), value[1]);
+          }
           test.done();
         },
         "minIp() should return the first usable IP from the CidrBlock"(test: Test) {
@@ -153,8 +160,8 @@ export = {
           efficient.addSubnets(25, 3);
           efficient.addSubnets(28, 3);
           const expected = [
-            wasteful.subnets.sort(),
-            efficient.subnets.sort()
+            wasteful.cidrStrings.sort(),
+            efficient.cidrStrings.sort()
           ];
           for (let i = 0; i < answers.length; i++) {
             test.deepEqual(answers[i].sort(), expected[i]);
@@ -179,10 +186,10 @@ export = {
           test.throws(() => {
             builder.addSubnet(19);
             builder.addSubnet(28);
-          }, /does not fully contain/);
+          }, /exceeds remaining space/);
           test.throws(() => {
             builder2.addSubnet(28);
-          }, /does not fully contain/);
+          }, /exceeds remaining space/);
           test.done();
         },
         "maskForRemainingSubnets calcs mask for even split of remaining"(test: Test) {
