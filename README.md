@@ -11,8 +11,8 @@ for defining cloud infrastructure in code.
 
 Make sure you have the following prerequisites installed:
 
-* [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
-* [AWS CLI](https://aws.amazon.com/cli/) (only needed if you intend to download the release from S3).
+* [Node.js LTS (8.11.x)](https://nodejs.org/en/download) - required for the command-line toolkit and language bindings
+* [AWS CLI](https://aws.amazon.com/cli/) - recommended in general, but only needed if you intend to download the release from S3
 * The development toolchain of the language you intend to use (TypeScript,
   Python, Java, .NET, Ruby...)
 
@@ -35,34 +35,38 @@ To download from S3:
 aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
-### Install to ~/.cdk
+### Extract the installation archive to ~/.cdk
 
-Once you've downloaded the bits, install them into `~/.cdk` and make sure that `~/.cdk/bin` is in your `PATH`:
+Once you've downloaded the bits, install them into `~/.cdk` and add to your `PATH`:
 
 #### Linux/MacOS (bash/zsh)
 
 ```shell
-# Install to ~/.cdk
+# Unpack to ~/.cdk
 rm -fr ~/.cdk
 mkdir ~/.cdk
 unzip <path-to-zip-file> -d ~/.cdk
 
-# Add ~/.cdk/bin to your PATH
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc
+# Add to PATH and reload profile
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc && source ~/.bashrc  # for bash
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc && source ~/.zshrc    # for zsh
 ```
 
 #### Windows (PowerShell)
 
+Open an elevated PowerShell terminal ("Run as Administrator"):
+
 ```powershell
-# Install to ~/.cdk
+# Unpack to ~/.cdk
 Remove-Item -Force -Recurse ~/.cdk
 New-Item -Type Directory ~/.cdk
 Expand-Archive -Path <path-to-zip-file> -DestinationPath ~/.cdk
 
-# Add ~/.cdk/bin to your PATH
-$profilePath = Join-Path ([Environment]::GetFolderPath([Environment+SpecialFolder]::MyDocuments)) "Profile.ps1"
-Add-Content -Path $profilePath -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\bin"'
+# Add to PATH and reload profile
+New-Item -Force -ItemType Directory -Path (Split-Path $PROFILE)
+Add-Content -Path $PROFILE -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\node_modules\.bin"'
+Set-ExecutionPolicy Unrestricted
+& $PROFILE
 ```
 
 ### Install the command-line toolkit and docs
