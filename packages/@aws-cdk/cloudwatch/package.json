@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cloudwatch",
-      "dotnet": "Amazon.Cdk.CloudWatch"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cloudwatch",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-cloudwatch"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CloudWatch"
+      }
     }
   },
   "repository": {

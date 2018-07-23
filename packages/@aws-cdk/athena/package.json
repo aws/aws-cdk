@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.athena",
-      "dotnet": "Amazon.Cdk.Athena"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.athena",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-athena"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Athena"
+      }
     }
   },
   "cdk-build": {

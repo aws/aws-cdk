@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.serverless",
-      "dotnet": "Amazon.Cdk.Serverless"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.serverless",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-serverless"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Serverless"
+      }
     }
   },
   "repository": {

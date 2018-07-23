@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.events",
-      "dotnet": "Amazon.Cdk.Events"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.events",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-events"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Events"
+      }
     }
   },
   "repository": {

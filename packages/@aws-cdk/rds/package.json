@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.rds",
-      "dotnet": "Amazon.Cdk.Rds"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.rds",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-rds"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Rds"
+      }
     }
   },
   "repository": {

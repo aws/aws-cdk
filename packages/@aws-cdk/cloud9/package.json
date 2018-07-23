@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cloud9",
-      "dotnet": "Amazon.Cdk.Cloud9"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cloud9",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-cloud9"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Cloud9"
+      }
     }
   },
   "repository": {

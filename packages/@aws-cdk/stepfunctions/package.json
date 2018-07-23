@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.stepfunctions",
-      "dotnet": "Amazon.Cdk.StepFunctions"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.stepfunctions",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-stepfunctions"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.StepFunctions"
+      }
     }
   },
   "repository": {

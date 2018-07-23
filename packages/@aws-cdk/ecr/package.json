@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.ecr",
-      "dotnet": "Amazon.Cdk.ECR"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.ecr",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-ecr"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.ECR"
+      }
     }
   },
   "repository": {

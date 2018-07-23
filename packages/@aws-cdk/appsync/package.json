@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.appsync",
-      "dotnet": "Amazon.Cdk.AppSync"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.appsync",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-appsync"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.AppSync"
+      }
     }
   },
   "repository": {

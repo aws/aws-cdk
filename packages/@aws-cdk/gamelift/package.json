@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.gamelift",
-      "dotnet": "Amazon.Cdk.GameLift"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.gamelift",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-gamelift"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.GameLift"
+      }
     }
   },
   "repository": {

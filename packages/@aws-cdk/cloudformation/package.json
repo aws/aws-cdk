@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cloudformation",
-      "dotnet": "Amazon.Cdk.CloudFormation"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cloudformation",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-cloudformation"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.CloudFormation"
+      }
     }
   },
   "repository": {

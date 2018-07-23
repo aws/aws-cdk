@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.batch",
-      "dotnet": "Amazon.Cdk.Batch"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.batch",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cdk-batch"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.Cdk.Batch"
+      }
     }
   },
   "repository": {
