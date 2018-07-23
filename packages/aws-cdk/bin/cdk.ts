@@ -38,8 +38,8 @@ const PER_USER_DEFAULTS = '~/.cdk.json';
 async function parseCommandLineArguments() {
     const initTemplateLanuages = await availableInitLanguages;
     return yargs
-        .usage('Usage: cdk -a <cloud-executable> COMMAND')
-        .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line of cloud executable (e.g. "node bin/my-app.js")' })
+        .usage('Usage: cdk -a <cdk-app> COMMAND')
+        .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")' })
         .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter.', nargs: 1, requiresArg: 'KEY=VALUE' })
         // tslint:disable-next-line:max-line-length
         .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
@@ -51,10 +51,10 @@ async function parseCommandLineArguments() {
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
-        .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
-            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' })
+        .command([ 'ls', 'list' ], 'Lists all stacks in the app (alias: ls)', yargs => yargs
+            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
         // tslint:disable-next-line:max-line-length
-        .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
+        .command(['synth [STACKS..]', 'synthesize [STACKS...]', 'construct [STACKS...]', 'cons [STACKS...]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
             .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
         .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
@@ -105,6 +105,8 @@ async function initCommandLine() {
     if (argv.verbose) {
         setVerbose();
     }
+
+    debug('Command line arguments:', argv);
 
     const aws = new SDK();
 
