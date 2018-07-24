@@ -2,7 +2,7 @@ import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { IEventRuleTarget } from '../lib';
+import { IEventRuleTargetProps } from '../lib';
 import { EventRule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -136,7 +136,7 @@ export = {
 
     'targets can be added via props or addTarget with input transformer'(test: Test) {
         const stack = new cdk.Stack();
-        const t1: IEventRuleTarget = {
+        const t1: IEventRuleTargetProps = {
             eventRuleTarget: {
                 id: 'T1',
                 arn: new cdk.Arn('ARN1'),
@@ -144,7 +144,7 @@ export = {
             }
         };
 
-        const t2: IEventRuleTarget = {
+        const t2: IEventRuleTargetProps = {
             eventRuleTarget: {
                 id: 'T2',
                 arn: new cdk.Arn('ARN2'),
@@ -200,13 +200,13 @@ export = {
 
     'input template can contain tokens'(test: Test) {
         const stack = new cdk.Stack();
-        const t1: IEventRuleTarget = {
+        const t1: IEventRuleTargetProps = {
             eventRuleTarget: { id: 'T1', arn: new cdk.Arn('ARN1'), kinesisParameters: { partitionKeyPath: 'partitionKeyPath' } }
         };
 
-        const t2: IEventRuleTarget = { eventRuleTarget: { id: 'T2', arn: new cdk.Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') } };
-        const t3: IEventRuleTarget = { eventRuleTarget: { id: 'T3', arn: new cdk.Arn('ARN3') } };
-        const t4: IEventRuleTarget = { eventRuleTarget: { id: 'T4', arn: new cdk.Arn('ARN4') } };
+        const t2: IEventRuleTargetProps = { eventRuleTarget: { id: 'T2', arn: new cdk.Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') } };
+        const t3: IEventRuleTargetProps = { eventRuleTarget: { id: 'T3', arn: new cdk.Arn('ARN3') } };
+        const t4: IEventRuleTargetProps = { eventRuleTarget: { id: 'T4', arn: new cdk.Arn('ARN4') } };
 
         const rule = new EventRule(stack, 'EventRule');
 

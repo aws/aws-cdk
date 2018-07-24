@@ -1,0 +1,188 @@
+using Amazon.CDK;
+using Amazon.CDK.AWS.OpsWorks.cloudformation.LayerResource;
+using AWS.Jsii.Runtime.Deputy;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+
+namespace Amazon.CDK.AWS.OpsWorks.cloudformation
+{
+    /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html </remarks>
+    [JsiiInterfaceProxy(typeof(ILayerResourceProps), "@aws-cdk/aws-opsworks.cloudformation.LayerResourceProps")]
+    internal class LayerResourcePropsProxy : DeputyBase, ILayerResourceProps
+    {
+        private LayerResourcePropsProxy(ByRefValue reference): base(reference)
+        {
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.AutoAssignElasticIps``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-autoassignelasticips </remarks>
+        [JsiiProperty("autoAssignElasticIps", "{\"union\":{\"types\":[{\"primitive\":\"boolean\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object AutoAssignElasticIps
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.AutoAssignPublicIps``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-autoassignpublicips </remarks>
+        [JsiiProperty("autoAssignPublicIps", "{\"union\":{\"types\":[{\"primitive\":\"boolean\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object AutoAssignPublicIps
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.EnableAutoHealing``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-enableautohealing </remarks>
+        [JsiiProperty("enableAutoHealing", "{\"union\":{\"types\":[{\"primitive\":\"boolean\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object EnableAutoHealing
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Name``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-name </remarks>
+        [JsiiProperty("layerName", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object LayerName
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Shortname``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-shortname </remarks>
+        [JsiiProperty("shortname", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object Shortname
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.StackId``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-stackid </remarks>
+        [JsiiProperty("stackId", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object StackId
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Type``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-type </remarks>
+        [JsiiProperty("type", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        public virtual object Type
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Attributes``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-attributes </remarks>
+        [JsiiProperty("attributes", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"map\",\"elementtype\":{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}}}]},\"optional\":true}")]
+        public virtual object Attributes
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.CustomInstanceProfileArn``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-custominstanceprofilearn </remarks>
+        [JsiiProperty("customInstanceProfileArn", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]},\"optional\":true}")]
+        public virtual object CustomInstanceProfileArn
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.CustomJson``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-customjson </remarks>
+        [JsiiProperty("customJson", "{\"union\":{\"types\":[{\"primitive\":\"json\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]},\"optional\":true}")]
+        public virtual object CustomJson
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.CustomRecipes``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-customrecipes </remarks>
+        [JsiiProperty("customRecipes", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"fqn\":\"@aws-cdk/aws-opsworks.cloudformation.LayerResource.RecipesProperty\"}]},\"optional\":true}")]
+        public virtual object CustomRecipes
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.CustomSecurityGroupIds``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-customsecuritygroupids </remarks>
+        [JsiiProperty("customSecurityGroupIds", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}}}]},\"optional\":true}")]
+        public virtual object CustomSecurityGroupIds
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.InstallUpdatesOnBoot``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-installupdatesonboot </remarks>
+        [JsiiProperty("installUpdatesOnBoot", "{\"union\":{\"types\":[{\"primitive\":\"boolean\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]},\"optional\":true}")]
+        public virtual object InstallUpdatesOnBoot
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.LifecycleEventConfiguration``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-lifecycleeventconfiguration </remarks>
+        [JsiiProperty("lifecycleEventConfiguration", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"fqn\":\"@aws-cdk/aws-opsworks.cloudformation.LayerResource.LifecycleEventConfigurationProperty\"}]},\"optional\":true}")]
+        public virtual object LifecycleEventConfiguration
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.LoadBasedAutoScaling``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-loadbasedautoscaling </remarks>
+        [JsiiProperty("loadBasedAutoScaling", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"fqn\":\"@aws-cdk/aws-opsworks.cloudformation.LayerResource.LoadBasedAutoScalingProperty\"}]},\"optional\":true}")]
+        public virtual object LoadBasedAutoScaling
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Packages``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-packages </remarks>
+        [JsiiProperty("packages", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}}}]},\"optional\":true}")]
+        public virtual object Packages
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.Tags``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-tags </remarks>
+        [JsiiProperty("tags", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"fqn\":\"@aws-cdk/cdk.Tag\"}]}}}}]},\"optional\":true}")]
+        public virtual object Tags
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.UseEbsOptimizedInstances``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-useebsoptimizedinstances </remarks>
+        [JsiiProperty("useEbsOptimizedInstances", "{\"union\":{\"types\":[{\"primitive\":\"boolean\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]},\"optional\":true}")]
+        public virtual object UseEbsOptimizedInstances
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>``AWS::OpsWorks::Layer.VolumeConfigurations``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworks-layer.html#cfn-opsworks-layer-volumeconfigurations </remarks>
+        [JsiiProperty("volumeConfigurations", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"fqn\":\"@aws-cdk/aws-opsworks.cloudformation.LayerResource.VolumeConfigurationProperty\"}]}}}}]},\"optional\":true}")]
+        public virtual object VolumeConfigurations
+        {
+            get => GetInstanceProperty<object>();
+            set => SetInstanceProperty(value);
+        }
+    }
+}
