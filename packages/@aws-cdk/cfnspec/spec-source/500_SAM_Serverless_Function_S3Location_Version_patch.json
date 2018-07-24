@@ -1,0 +1,16 @@
+{
+    "PropertyTypes": {
+        "AWS::Serverless::Function.S3Location": {
+            "patch": {
+                "description": "Sets AWS::Serverless::Function.S3Location#Version.Required to false, per ttps://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
+                "operations": [
+                    {
+                        "op": "replace",
+                        "path": "/Properties/Version/Required",
+                        "value": false
+                    }
+                ]
+            }
+        }
+    }
+}

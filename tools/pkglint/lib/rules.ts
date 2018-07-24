@@ -1,6 +1,7 @@
+import fs = require('fs');
 import path = require('path');
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectJSON } from './util';
+import { deepGet, expectDevDependency, expectJSON, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -106,33 +107,22 @@ export class JSIISectionPresent extends ValidationRule {
 }
 
 /**
- * JSII Java namespace is required and must look sane
+ * JSII Java package is required and must look sane
  */
-export class JSIIJavaNamespaceIsRequired extends ValidationRule {
+export class JSIIJavaPackageIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'java']) as string | undefined;
+        const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
         if (!java) {
-            pkg.report({ message: 'JSII package must have "java" namespace' });
+            pkg.report({ message: 'JSII package must have a "java" target with "package"' });
             return;
         }
 
-        const prefix = 'com.amazonaws.cdk';
-
-        if (!java.startsWith(prefix)) {
-            pkg.report({ message: `Java namespace must start with '${prefix}'` });
-        }
-
-        const parts = java.split('.').slice(prefix.split('.').length);
-        if (parts.length > 1) {
-            pkg.report({ message: 'Java namespace must have at most one extra component' });
-        }
-
-        if (parts.length === 1) {
-            const expectedName = cdkModuleName(pkg.json.name).replace(/-/g, '');
-            expectJSON(pkg, 'jsii.names.java', prefix + '.' + expectedName);
-        }
+        const moduleName = cdkModuleName(pkg.json.name);
+        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage);
+        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'com.amazonaws.cdk');
+        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId);
     }
 }
 
@@ -144,7 +134,7 @@ export class NoJsiiDep extends ValidationRule {
     public validate(pkg: PackageJson): void {
         const predicate = (s: string) => s.startsWith('jsii');
 
-        if (pkg.hasDevDependency(predicate)) {
+        if (pkg.getDevDependency(predicate)) {
             pkg.report({
                 message: 'packages should not have a devDep on jsii since it is defined at the repo level',
                 fix: () => pkg.removeDevDependency(predicate)
@@ -154,12 +144,24 @@ export class NoJsiiDep extends ValidationRule {
 }
 
 /**
- * Strips off 'aws-cdk-' if the module name starts with it.
+ * Computes the module name for various other purposes (java package, ...)
  */
 function cdkModuleName(name: string) {
+    const isCdkPkg = name === '@aws-cdk/cdk';
+    const isCorePkg = !name.startsWith('@aws-cdk/aws-');
+
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
-    return name;
+    name = name.replace(/^(?:aws|cdk)-/, '');
+
+    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
+    const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
+
+    return {
+        javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
+        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
+        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
+    };
 }
 
 /**
@@ -169,79 +171,43 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'dotnet']) as string | undefined;
-        if (!java) {
-            pkg.report({ message: 'JSII package must have "dotnet" namespace' });
+        const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+        if (!dotnet) {
+            pkg.report({ message: 'JSII package must have a "dotnet" target with "namespace"' });
             return;
         }
 
-        const prefix = 'Aws.Cdk';
-
-        if (!java.startsWith(prefix)) {
-            pkg.report({ message: `.NET namespace must start with '${prefix}'` });
-        }
-
-        const parts = java.split('.').slice(prefix.split('.').length);
-        if (parts.length > 1) {
-            pkg.report({ message: '.NET namespace must have at most one extra component' });
-        }
-
-        if (parts.length === 1) {
-            // Check that the .NET namespace agrees with the package name
-            //
-            // Since the .NET namespace might introduce arbitrary casing, we need to compare the
-            // other way around, check that the lowercased version of it matches our package name.
-
-            const expected = cdkModuleName(pkg.json.name).replace(/-/g, '');
-            if (expected !== parts[0].toLowerCase()) {
-                pkg.report({
-                    message: `.NET namespace must match JS package name, '${parts[0]}' vs '${expected}'`
-                });
-            }
-        }
-    }
-}
-
-/**
- * Build script must mention tslint
- */
-export class BuildScriptMustLint extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        const build = pkg.npmScript('build');
-
-        if (!build) {
+        const moduleName = cdkModuleName(pkg.json.name);
+        if (dotnet.toLocaleLowerCase() !== moduleName.dotnetNamespace.toLocaleLowerCase()) {
             pkg.report({
-                message: 'Must have a "build" script'
-            });
-            return;
-        }
-
-        if (build.indexOf('tslint') === -1) {
-            pkg.report({
-                message: '"build" script must use tslint',
-                fix: () => { pkg.appendToNpmScript('build', 'tslint -p .'); }
+                message: `.NET namespace must (case-insensitively) match JS package name, '${moduleName.dotnetNamespace}' vs '${dotnet}'`
             });
         }
     }
 }
 
 /**
- * Must have lint command
+ * The package must depend on cdk-build-tools
  */
-export class MustHaveLintScript extends ValidationRule {
+export class MustDependOnBuildTools extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        const lint = pkg.npmScript('lint');
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
 
-        if (!pkg.json.scripts) {
-            pkg.json.scripts = {};
-        }
+        expectDevDependency(pkg, 'cdk-build-tools', '^' + monoRepoVersion());
+    }
+}
 
-        if (!lint) {
-            pkg.report({
-                message: 'Package must have a "lint" script',
-                fix: () => { pkg.json.scripts.lint = 'tsc && tslint -p . --force'; }
-            });
-        }
+/**
+ * Build script must be 'cdk-build'
+ */
+export class MustUseCDKBuild extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.build', 'cdk-build');
+
+        // cdk-build will write a hash file that we have to ignore.
+        fileShouldContain(pkg, '.gitignore', '.LAST_BUILD');
     }
 }
 
@@ -262,7 +228,7 @@ export class GlobalDevDependencies extends ValidationRule {
         ];
 
         for (const dep of deps) {
-            if (pkg.hasDevDependency(dep)) {
+            if (pkg.getDevDependency(dep)) {
                 pkg.report({
                     message: `devDependency ${dep} is defined at the repo level`,
                     fix: () => pkg.removeDevDependency(dep)
@@ -273,55 +239,45 @@ export class GlobalDevDependencies extends ValidationRule {
 }
 
 /**
- * Must have watch command
+ * Must use 'cdk-watch' command
  */
-export class MustHaveWatchCommand extends ValidationRule {
+export class MustUseCDKWatch extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (isJSII(pkg)) {
-            expectJSON(pkg, 'scripts.watch', 'jsii -w');
-        } else {
-            expectJSON(pkg, 'scripts.watch', 'tsc -w');
-        }
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.watch', 'cdk-watch');
+    }
+}
+
+/**
+ * Must use 'cdk-test' command
+ */
+export class MustUseCDKTest extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!shouldUseCDKBuildTools(pkg)) { return; }
+        if (!hasTestDirectory(pkg)) { return; }
+
+        expectJSON(pkg, 'scripts.test', 'cdk-test');
+
+        // 'cdk-test' will calculate coverage, so have the appropriate
+        // files in .gitignore.
+        fileShouldContain(pkg, '.gitignore', '.nyc_output');
+        fileShouldContain(pkg, '.gitignore', 'coverage');
+        fileShouldContain(pkg, '.gitignore', '.nycrc');
     }
 }
 
 /**
  * Scripts that run integ tests must also have the individual 'integ' script to update them
+ *
+ * This commands comes from the dev-dependency cdk-integ-tools.
  */
 export class MustHaveIntegCommand extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        if (hasInteg(pkg)) {
-            expectJSON(pkg, 'scripts.integ', 'cdk-integ');
-        }
-    }
-}
+        if (!hasIntegTests(pkg)) { return; }
 
-/**
- * All packages must use the validator as part of their build step
- *
- * (Except the validator itself)
- */
-export class PkgLintInBuild extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        if (pkg.json.name === 'pkglint') {
-            return;
-        }
-
-        const build = pkg.npmScript('build');
-
-        if (build.indexOf('pkglint') === -1) {
-            pkg.report({
-                message: 'Package must use validator as part of build',
-                fix: () => { pkg.appendToNpmScript('build', 'pkglint'); }
-            });
-        }
-
-        if (!pkg.hasDevDependency('pkglint')) {
-            pkg.report({
-                message: 'pkglint must be defined as a devDep',
-                fix: () => { pkg.addDevDependency('pkglint', '^' + require('../package.json').version); }
-            });
-        }
+        expectJSON(pkg, 'scripts.integ', 'cdk-integ');
+        expectDevDependency(pkg, 'cdk-integ-tools', '^' + monoRepoVersion());
     }
 }
 
@@ -332,14 +288,14 @@ export class PkgLintAsScript extends ValidationRule {
         if (!pkg.npmScript('pkglint')) {
             pkg.report({
                 message: 'a script called "pkglint" must be included to allow fixing package linting issues',
-                fix: () => pkg.replaceNpmScript('pkglint', script)
+                fix: () => pkg.changeNpmScript('pkglint', () => script)
             });
         }
 
         if (pkg.npmScript('pkglint') !== script) {
             pkg.report({
                 message: 'the pkglint script should be: ' + script,
-                fix: () => pkg.replaceNpmScript('pkglint', script)
+                fix: () => pkg.changeNpmScript('pkglint', () => script)
             });
         }
     }
@@ -445,11 +401,19 @@ export class AllVersionsTheSame extends ValidationRule {
 /**
  * Determine whether this is a JSII package
  *
- * A package is a JSII package if the 'build' script mentions JSII.
+ * A package is a JSII package if there is 'jsii' section in the package.json
  */
-function isJSII(pkg: PackageJson) {
-    const buildScript = (pkg.json.scripts || {}).build || '';
-    return buildScript.indexOf('jsii ') >= 0;
+function isJSII(pkg: PackageJson): boolean {
+    return pkg.json.jsii;
+}
+
+/**
+ * Determine whether the package has tests
+ *
+ * A package has tests if the root/test directory exists
+ */
+function hasTestDirectory(pkg: PackageJson) {
+    return fs.existsSync(path.join(pkg.packageRoot, 'test'));
 }
 
 /**
@@ -457,7 +421,18 @@ function isJSII(pkg: PackageJson) {
  *
  * A package has integ tests if it mentions 'cdk-integ' in the "test" script.
  */
-function hasInteg(pkg: PackageJson) {
-    const testScript = (pkg.json.scripts || {}).test || '';
-    return testScript.indexOf('cdk-integ') >= 0;
+function hasIntegTests(pkg: PackageJson) {
+    if (!hasTestDirectory(pkg)) { return false; }
+
+    const files = fs.readdirSync(path.join(pkg.packageRoot, 'test'));
+    return files.some(p => p.startsWith('integ.'));
+}
+
+/**
+ * Return whether this package should use CDK build tools
+ */
+function shouldUseCDKBuildTools(pkg: PackageJson) {
+    // The packages that DON'T use CDKBuildTools are the package itself
+    // and the packages used by it.
+    return pkg.packageName !== 'cdk-build-tools' && pkg.packageName !== 'merkle-build';
 }

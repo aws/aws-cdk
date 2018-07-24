@@ -1,0 +1,9 @@
+*.js
+tsconfig.json
+tslint.json
+*.js.map
+*.d.ts
+dist
+.jsii
+
+.LAST_BUILD

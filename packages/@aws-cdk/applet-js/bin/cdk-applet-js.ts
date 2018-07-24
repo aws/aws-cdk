@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import { App } from '@aws-cdk/core';
-import * as path from 'path';
+import cdk = require('@aws-cdk/cdk');
+import path = require('path');
 
 // tslint:disable-next-line:no-var-requires
 const YAML = require('yamljs');
@@ -57,7 +57,7 @@ async function main() {
     }
 
     // create the CDK app
-    const app = new App([ progname, request ]);
+    const app = new cdk.App([ progname, request ]);
 
     const constructName = props.name || className;
 

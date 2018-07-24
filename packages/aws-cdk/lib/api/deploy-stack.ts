@@ -1,11 +1,9 @@
-import { cloudformation } from '@aws-cdk/cloudformation';
-import { App, Stack } from '@aws-cdk/core';
-import { StackInfo, SynthesizedStack } from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
-import * as colors from 'colors/safe';
-import * as crypto from 'crypto';
-import * as uuid from 'uuid';
-import * as YAML from 'yamljs';
+import cxapi = require('@aws-cdk/cx-api');
+import aws = require('aws-sdk');
+import colors = require('colors/safe');
+import uuid = require('uuid');
+import YAML = require('yamljs');
+import { prepareAssets } from '../assets';
 import { debug, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
@@ -24,7 +22,7 @@ export interface DeployStackResult {
     readonly stackArn: string;
 }
 
-export async function deployStack(stack: SynthesizedStack,
+export async function deployStack(stack: cxapi.SynthesizedStack,
                                   sdk: SDK = new SDK(),
                                   toolkitInfo?: ToolkitInfo,
                                   deployName?: string,
@@ -33,12 +31,14 @@ export async function deployStack(stack: SynthesizedStack,
         throw new Error(`The stack ${stack.name} does not have an environment`);
     }
 
+    const params = await prepareAssets(stack, toolkitInfo);
+
     deployName = deployName || stack.name;
 
     const executionId = uuid.v4();
 
     const cfn = await sdk.cloudFormation(stack.environment, Mode.ForWriting);
-    const bodyParameter = await makeBodyParameter(stack, sdk, toolkitInfo);
+    const bodyParameter = await makeBodyParameter(stack, toolkitInfo);
 
     if (!await stackExists(cfn, deployName)) {
         await createEmptyStack(cfn, deployName, quiet);
@@ -54,6 +54,7 @@ export async function deployStack(stack: SynthesizedStack,
         Description: `CDK Changeset for execution ${executionId}`,
         TemplateBody: bodyParameter.TemplateBody,
         TemplateURL: bodyParameter.TemplateURL,
+        Parameters: params,
         Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM' ]
     }).promise();
     debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
@@ -74,7 +75,7 @@ export async function deployStack(stack: SynthesizedStack,
     return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
-async function getStackOutputs(cfn: CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
+async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
     const description = await describeStack(cfn, stackName);
     const result: { [name: string]: string } = {};
     if (description && description.Outputs) {
@@ -85,13 +86,16 @@ async function getStackOutputs(cfn: CloudFormation, stackName: string): Promise<
     return result;
 }
 
-async function createEmptyStack(cfn: CloudFormation, stackName: string, quiet: boolean): Promise<void> {
+async function createEmptyStack(cfn: aws.CloudFormation, stackName: string, quiet: boolean): Promise<void> {
     debug('Creating new empty stack named %s', stackName);
-    const app = new App();
-    const stack = new Stack(app, stackName);
-    stack.templateOptions.description = 'This is an empty stack created by AWS CDK during a deployment attempt';
-    new cloudformation.WaitConditionHandleResource(stack, 'WaitCondition');
-    const template = (await app.synthesizeStack(stackName)).template;
+
+    const template = {
+        Resources: {
+            WaitCondition: {
+                Type: 'AWS::CloudFormation::WaitConditionHandle'
+            }
+        }
+    };
 
     const response = await cfn.createStack({ StackName: stackName, TemplateBody: JSON.stringify(template, null, 2) }).promise();
     debug('CreateStack response: %j', response);
@@ -109,20 +113,17 @@ async function createEmptyStack(cfn: CloudFormation, stackName: string, quiet: b
  * @param sdk         an AWS SDK to use when interacting with S3
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(stack: SynthesizedStack, sdk: SDK, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
     const templateJson = YAML.stringify(stack.template, 16, 4);
     if (toolkitInfo) {
-        const hash = crypto.createHash('sha256').update(templateJson).digest('hex');
-        const key = `cdk/${stack.name}/${hash}.yml`;
-        const s3 = await sdk.s3(stack.environment!, Mode.ForWriting);
-        await s3.putObject({
-            Bucket: toolkitInfo.bucketName,
-            Key: key,
-            Body: templateJson,
-            ContentType: 'application/x-yaml'
-        }).promise();
-        debug('Stored template in S3 at s3://%s/%s', toolkitInfo.bucketName, key);
-        return { TemplateURL: `https://${toolkitInfo.bucketName}.s3.amazonaws.com/${key}` };
+        const s3KeyPrefix = `cdk/${stack.name}/`;
+        const s3KeySuffix = '.yml';
+        const { key } = await toolkitInfo.uploadIfChanged(templateJson, {
+            s3KeyPrefix, s3KeySuffix, contentType: 'application/x-yaml'
+        });
+        const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
+        debug('Stored template in S3 at:', templateURL);
+        return { TemplateURL: templateURL };
     } else if (templateJson.length > 51_200) {
         error('The template for stack %s is %d bytes long, a CDK Toolkit stack is required for deployment of templates larger than 51,200 bytes. ' +
               'A CDK Toolkit stack can be created using %s',
@@ -133,7 +134,7 @@ async function makeBodyParameter(stack: SynthesizedStack, sdk: SDK, toolkitInfo?
     }
 }
 
-export async function destroyStack(stack: StackInfo, sdk: SDK = new SDK(), deployName?: string, quiet: boolean = false) {
+export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK = new SDK(), deployName?: string, quiet: boolean = false) {
     if (!stack.environment) {
         throw new Error(`The stack ${stack.name} does not have an environment`);
     }

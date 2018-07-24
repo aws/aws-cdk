@@ -1,6 +1,6 @@
-import { Arn, AwsStackName, Construct, FnConcat, PolicyStatement, Token } from '@aws-cdk/core';
-import * as iam from '@aws-cdk/iam';
-import * as ssm from '@aws-cdk/ssm';
+import iam = require('@aws-cdk/aws-iam');
+import ssm = require('@aws-cdk/aws-ssm');
+import cdk = require('@aws-cdk/cdk');
 
 export interface RuntimeValueProps {
     /**
@@ -19,7 +19,7 @@ export interface RuntimeValueProps {
  * Defines a value published from construction code which needs to be accessible
  * by runtime code.
  */
-export class RuntimeValue extends Construct {
+export class RuntimeValue extends cdk.Construct {
 
     /**
      * The recommended name of the environment variable to use to set the stack name
@@ -30,7 +30,7 @@ export class RuntimeValue extends Construct {
     /**
      * The value to assign to the `RTV_STACK_NAME` environment variable.
      */
-    public static readonly ENV_VALUE = new AwsStackName();
+    public static readonly ENV_VALUE = new cdk.AwsStackName();
 
     /**
      * IAM actions needed to read a value from an SSM parameter.
@@ -49,12 +49,12 @@ export class RuntimeValue extends Construct {
     /**
      * The ARN fo the SSM parameter used for this runtime value.
      */
-    public readonly parameterArn: Arn;
+    public readonly parameterArn: cdk.Arn;
 
-    constructor(parent: Construct, name: string, props: RuntimeValueProps) {
+    constructor(parent: cdk.Construct, name: string, props: RuntimeValueProps) {
         super(parent, name);
 
-        this.parameterName = new FnConcat('/rtv/', new AwsStackName(), '/', props.package, '/', name);
+        this.parameterName = new cdk.FnConcat('/rtv/', new cdk.AwsStackName(), '/', props.package, '/', name);
 
         new ssm.cloudformation.ParameterResource(this, 'Parameter', {
             parameterName: this.parameterName,
@@ -62,7 +62,7 @@ export class RuntimeValue extends Construct {
             value: props.value,
         });
 
-        this.parameterArn = Arn.fromComponents({
+        this.parameterArn = cdk.Arn.fromComponents({
             service: 'ssm',
             resource: 'parameter',
             resourceName: this.parameterName
@@ -80,7 +80,7 @@ export class RuntimeValue extends Construct {
             return;
         }
 
-        principal.addToPolicy(new PolicyStatement()
+        principal.addToPolicy(new cdk.PolicyStatement()
             .addResource(this.parameterArn)
             .addActions(...RuntimeValue.SSM_READ_ACTIONS));
     }
@@ -89,6 +89,6 @@ export class RuntimeValue extends Construct {
 /**
  * The full name of the runtime value's SSM parameter.
  */
-export class ParameterName extends Token {
+export class ParameterName extends cdk.Token {
 
 }

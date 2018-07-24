@@ -13,10 +13,11 @@
     "find-jsii-packages": "bin/find-jsii-packages"
   },
   "scripts": {
-    "build": "tsc && tslint -p . && chmod +x bin/find-jsii-packages && chmod +x bin/cdk-version && pkglint",
-    "watch": "tsc -w",
-    "lint": "tslint -p . --force",
-    "pkglint": "pkglint -f"
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -24,11 +25,12 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
-  },
-  "dependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
+  },
+  "dependencies": {
     "fs-extra": "^4.0.2",
     "yargs": "^9.0.1"
   },

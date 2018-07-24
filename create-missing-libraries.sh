@@ -4,20 +4,20 @@ set -euo pipefail
 export PATH=node_modules/.bin:$PATH
 
 # Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
-lerna exec --scope=cfn2ts                       \
-           --scope=pkglint                      \
-           --scope=@aws-cdk/cdk-cfnspec         \
+lerna exec --scope=cfn2ts                           \
+           --scope=pkglint                          \
+           --scope=@aws-cdk/cdk                     \
            --scope=@aws-cdk/assert              \
+           --scope=@aws-cdk/cfnspec             \
            --scope=@aws-cdk/cloudformation-diff \
-           --scope=@aws-cdk/core                \
            --scope=@aws-cdk/cx-api              \
-           --stream                             \
+           --stream                                 \
   npm run build
 
 VERSION=$(node -e 'console.log(require("./lerna.json").version);')
 
-for S in $(node -e 'console.log(require("./packages/@aws-cdk/cdk-cfnspec").namespaces.join("\n"));'); do
-    P=$(tr 'A-Z' 'a-z' <<< "${S/AWS::/@aws-cdk/}")
+for S in $(node -e 'console.log(require("./packages/@aws-cdk/cfnspec").namespaces.join("\n"));'); do
+    P=$(tr 'A-Z' 'a-z' <<< "${S/AWS::/@aws-cdk/aws-}")
     PB=$(basename ${P})
     if [ ! -d packages/${P} ]; then
         echo "⏳ Creating package ${P} for scope ${S}..."
@@ -33,6 +33,9 @@ tslint.json
 node_modules
 dist
 .jsii
+.nyc_output
+coverage
+.LAST_BUILD
 EOM
 
         cat <<EOM > packages/${P}/.npmignore
@@ -53,9 +56,17 @@ EOM
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.${PB}",
-      "dotnet": "${S/AWS::/Aws.Cdk.}"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.${PB}",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-${PB}"
+        }
+      },
+      "dotnet": {
+        "namespace": "${S/AWS::/Amazon.CDK.AWS.}"
+      }
     }
   },
   "repository": {
@@ -63,12 +74,15 @@ EOM
     "url": "git://github.com/awslabs/aws-cdk"
   },
   "scripts": {
-    "build": "cfn2ts --scope=${S} && jsii && tslint -p . && pkglint",
-    "watch": "jsii -w",
-    "lint": "jsii && tslint -p . --force",
-    "test": "nodeunit test/test.*.js && cdk-integ-assert",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "${S}"
   },
   "keywords": [
     "aws",
@@ -83,11 +97,12 @@ EOM
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "@aws-cdk/assert": "^${VERSION}",
+    "cdk-build-tools": "^${VERSION}",
     "cfn2ts": "^${VERSION}",
     "pkglint": "^${VERSION}"
   },
   "dependencies": {
-    "@aws-cdk/core": "^${VERSION}"
+    "@aws-cdk/cdk": "^${VERSION}"
   }
 }
 EOM

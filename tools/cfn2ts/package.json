@@ -13,11 +13,15 @@
     "cfn2ts": "bin/cfn2ts"
   },
   "scripts": {
-    "build": "tslint -p . && tsc && chmod +x bin/cfn2ts && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "nodeunit test/test.*.js",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "pkglint": "pkglint -f"
+  },
+  "nyc": {
+    "lines": 0,
+    "branches": 0
   },
   "author": {
     "name": "Amazon Web Services",
@@ -25,7 +29,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "dependencies": {
-    "@aws-cdk/cdk-cfnspec": "^0.7.3-beta",
+    "@aws-cdk/cfnspec": "^0.7.3-beta",
     "colors": "^1.2.1",
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^4.0.2",
@@ -35,7 +39,8 @@
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "keywords": [
     "aws",

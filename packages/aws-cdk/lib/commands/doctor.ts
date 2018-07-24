@@ -1,5 +1,5 @@
-import { blue, green } from 'colors/safe';
-import * as process from 'process';
+import colors = require('colors/safe');
+import process = require('process');
 import { print } from '../../lib/logging';
 import { VERSION } from '../../lib/version';
 
@@ -26,7 +26,7 @@ const verifications: Array<() => boolean | Promise<boolean>> = [
 // ### Verifications ###
 
 function displayVersionInformation() {
-    print(`ℹ️ CDK Version: ${green(VERSION)}`);
+    print(`ℹ️ CDK Version: ${colors.green(VERSION)}`);
     return true;
 }
 
@@ -38,7 +38,7 @@ function displayAwsEnvironmentVariables() {
     }
     print('ℹ️ AWS environment variables:');
     for (const key of keys) {
-        print(`  - ${blue(key)} = ${green(process.env[key]!)}`);
+        print(`  - ${colors.blue(key)} = ${colors.green(process.env[key]!)}`);
     }
     return true;
 }
@@ -49,7 +49,7 @@ function checkDocumentationIsAvailable() {
         print(`✅ AWS CDK Documentation: ${version}`);
         return true;
     } catch (e) {
-        print(`❌ AWS CDK Documentation: install using ${green('y-npm install --global aws-cdk-docs')}`);
+        print(`❌ AWS CDK Documentation: install using ${colors.green('y-npm install --global aws-cdk-docs')}`);
         return false;
     }
 }

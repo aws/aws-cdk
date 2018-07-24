@@ -1,0 +1,2 @@
+# The only AWS account number allowed to be used in tests (used by git-secrets)
+123456789012

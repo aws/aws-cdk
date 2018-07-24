@@ -8,3 +8,6 @@ lib/generated/resources.ts
 .nyc_output
 coverage
 .jsii
+
+.LAST_BUILD
+.nycrc

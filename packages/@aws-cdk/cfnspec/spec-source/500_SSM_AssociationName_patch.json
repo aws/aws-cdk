@@ -1,0 +1,16 @@
+{
+    "ResourceTypes": {
+        "AWS::SSM::Association": {
+            "patch": {
+                "description": "rename +Name+ to +DocumentName+ to clearly indicate what the attribute is for",
+                "operations": [
+                    {
+                        "from": "/Properties/Name",
+                        "op": "move",
+                        "path": "/Properties/DocumentName"
+                    }
+                ]
+            }
+        }
+    }
+}

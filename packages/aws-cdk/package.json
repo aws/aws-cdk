@@ -8,11 +8,20 @@
     "cdk": "bin/cdk"
   },
   "scripts": {
-    "build": "/bin/bash generate.sh && tslint -p . && tsc && chmod +x bin/cdk && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "nodeunit test/test.*.js"
+    "test": "cdk-test"
+  },
+  "cdk-build": {
+    "pre": [
+      "./generate.sh"
+    ]
+  },
+  "nyc": {
+    "lines": 8,
+    "branches": 3
   },
   "author": {
     "name": "Amazon Web Services",
@@ -20,6 +29,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
+    "@types/archiver": "^2.1.2",
     "@types/fs-extra": "^4.0.8",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
@@ -27,16 +37,15 @@
     "@types/uuid": "^3.4.3",
     "@types/yamljs": "^0.2.0",
     "@types/yargs": "^8.0.3",
+    "cdk-build-tools": "^0.7.3-beta",
     "mockery": "^2.1.0",
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation": "^0.7.3-beta",
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
-    "@aws-cdk/core": "^0.7.3-beta",
     "@aws-cdk/cx-api": "^0.7.3-beta",
-    "@aws-cdk/s3": "^0.7.3-beta",
     "@aws-cdk/util": "^0.7.3-beta",
+    "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
     "colors": "^1.2.1",
@@ -48,7 +57,7 @@
     "request": "^2.83.0",
     "source-map-support": "^0.5.6",
     "yamljs": "^0.2.0",
-    "yargs": "^9.0.1"
+    "yargs": "^12.0.1"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",

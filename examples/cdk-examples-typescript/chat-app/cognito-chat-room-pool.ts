@@ -1,5 +1,5 @@
-import * as cognito from '@aws-cdk/cognito';
-import * as cdk from '@aws-cdk/core';
+import cognito = require('@aws-cdk/aws-cognito');
+import cdk = require('@aws-cdk/cdk');
 
 export class CognitoChatRoomPool extends cdk.Construct {
     constructor(parent: cdk.Construct, name: string) {

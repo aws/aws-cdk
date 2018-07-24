@@ -1,10 +1,10 @@
 import 'source-map-support/register';
 
-import * as cdk from '@aws-cdk/core';
-import * as cx from '@aws-cdk/cx-api';
+import cdk = require('@aws-cdk/cdk');
+import cx = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 
-import { Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/cdk';
 import { countResources, exist, expect, haveType, MatchStyle, matchTemplate } from '../lib/index';
 
 passingExample('expect <stack> at <some path> to have <some type>', () => {

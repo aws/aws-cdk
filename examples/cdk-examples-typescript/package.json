@@ -4,10 +4,10 @@
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
-    "build": "tsc && tslint -p . && pkglint",
-    "watch": "tsc -w",
-    "lint": "tsc && tslint -p . --force",
-    "test": "echo ok",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
     "cdk": "cdk",
     "pkglint": "pkglint -f"
   },
@@ -18,22 +18,23 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "aws-cdk": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation": "^0.7.3-beta",
-    "@aws-cdk/cognito": "^0.7.3-beta",
-    "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/dynamodb": "^0.7.3-beta",
-    "@aws-cdk/ec2": "^0.7.3-beta",
-    "@aws-cdk/iam": "^0.7.3-beta",
-    "@aws-cdk/lambda": "^0.7.3-beta",
-    "@aws-cdk/neptune": "^0.7.3-beta",
-    "@aws-cdk/rds": "^0.7.3-beta",
-    "@aws-cdk/rtv": "^0.7.3-beta",
-    "@aws-cdk/s3": "^0.7.3-beta",
-    "@aws-cdk/sns": "^0.7.3-beta",
-    "@aws-cdk/sqs": "^0.7.3-beta"
+    "@aws-cdk/aws-cloudformation": "^0.7.3-beta",
+    "@aws-cdk/aws-cognito": "^0.7.3-beta",
+    "@aws-cdk/aws-dynamodb": "^0.7.3-beta",
+    "@aws-cdk/aws-ec2": "^0.7.3-beta",
+    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-lambda": "^0.7.3-beta",
+    "@aws-cdk/aws-neptune": "^0.7.3-beta",
+    "@aws-cdk/aws-rds": "^0.7.3-beta",
+    "@aws-cdk/aws-s3": "^0.7.3-beta",
+    "@aws-cdk/aws-sns": "^0.7.3-beta",
+    "@aws-cdk/aws-sqs": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/rtv": "^0.7.3-beta"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",
