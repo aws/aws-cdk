@@ -1,0 +1,2360 @@
+{
+  "fingerprint": "b16y5y1pc2W/b4T4dgIO0CZxHj7wZz419K9As6aowCs=",
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.7.3-beta"
+    }
+  },
+  "externals": {
+    "@aws-cdk/cdk.Construct": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents the building block of the construct graph.\nWhen a construct is created, it is always added as a child"
+      },
+      "fqn": "@aws-cdk/cdk.Construct",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string with a tree representation of this construct and it's children."
+          },
+          "name": "toTreeString",
+          "parameters": [
+            {
+              "name": "depth",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path, or undefined",
+            "returns": "a child by path or undefined if not found."
+          },
+          "name": "tryFindChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path\n\nThrows an exception if the descendant is not found.",
+            "returns": "Child with the given path."
+          },
+          "name": "findChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This can be used to set contextual values.\nContext must be set before any children are added, since children may consult context info during construction.\nIf the key already exists, it will be overridden."
+          },
+          "name": "setContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The context value"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Retrieves a value from tree context.\n\nContext is usually initialized at the root, but can be overridden at any point in the tree.",
+            "returns": "The context value or undefined"
+          },
+          "name": "getContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Retrieve a value from tree-global context\n\nIt is an error if the context object is not available."
+          },
+          "name": "requireContext",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a metadata entry to this construct.\nEntries are arbitrary values and will also include a stack trace to allow tracing back to\nthe code location for when the entry was added. It can be used, for example, to include source\nmapping in CloudFormation templates to improve diagnostics."
+          },
+          "name": "addMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "a string denoting the type of metadata"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the value of the metadata (can be a Token). If null/undefined, metadata will not be added."
+              },
+              "name": "data",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)"
+              },
+              "name": "from",
+              "type": {
+                "optional": true,
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { \"aws:cdk:info\": <message> } metadata entry to this construct.\nThe toolkit will display the info message when apps are synthesized."
+          },
+          "name": "addInfo",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The info message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { warning: <message> } metadata entry to this construct.\nThe toolkit will display the warning when an app is synthesized, or fail\nif run in --strict mode."
+          },
+          "name": "addWarning",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The warning message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an { error: <message> } metadata entry to this construct.\nThe toolkit will fail synthesis when errors are reported."
+          },
+          "name": "addError",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The error message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis.",
+            "returns": "An array of validation error messages, or an empty array if there the construct is valid."
+          },
+          "name": "validate",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Invokes 'validate' on all child constructs and then on this construct (depth-first).",
+            "returns": "A list of validation errors. If the list is empty, all constructs are valid."
+          },
+          "name": "validateTree",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.ValidationError"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the ancestors (including self) of this Construct up until and excluding the indicated component"
+          },
+          "name": "ancestors",
+          "parameters": [
+            {
+              "name": "upTo",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "aws": "-cdk/runtime`` instead.",
+            "comment": "Throws if the `props` bag doesn't include the property `name`.\nIn the future we can add some type-checking here, maybe even auto-generate during compilation.",
+            "deprecated": "use ``requireProperty`` from ``"
+          },
+          "name": "required",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The props bag."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the required property."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a child construct to this node.",
+            "returns": "The resolved path part name of the child"
+          },
+          "name": "addChild",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The child construct"
+              },
+              "name": "child",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "childName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Locks this construct from allowing more children to be added. After this\ncall, no more children can be added to this construct or to any children."
+          },
+          "name": "lock",
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Unlocks this costruct and allows mutations (adding children)."
+          },
+          "name": "unlock",
+          "protected": true
+        }
+      ],
+      "name": "Construct",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the parent of this node or undefined if this is a root node."
+          },
+          "immutable": true,
+          "name": "parent",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this construct"
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "All direct children of this construct."
+          },
+          "immutable": true,
+          "name": "children",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the path of all constructs from root to this construct, in string form.",
+            "returns": "/-separated path of this Construct."
+          },
+          "immutable": true,
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "An array of metadata objects associated with this construct.\nThis can be used, for example, to implement support for deprecation notices, source mapping, etc."
+          },
+          "immutable": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.MetadataEntry"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.IDependable": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a construct that can be \"depended on\" via `addDependency`."
+      },
+      "fqn": "@aws-cdk/cdk.IDependable",
+      "kind": "interface",
+      "name": "IDependable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Referenceable": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.StackElement"
+      },
+      "docs": {
+        "comment": "A construct, which is part of a stack and can be referenced using it's logical ID\nusing the CloudFormation intrinsic function { Ref: ID }."
+      },
+      "fqn": "@aws-cdk/cdk.Referenceable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Referenceable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID."
+          },
+          "immutable": true,
+          "name": "ref",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Resource": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Referenceable"
+      },
+      "docs": {
+        "comment": "Represents a CloudFormation resource."
+      },
+      "fqn": "@aws-cdk/cdk.Resource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a resource construct."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/cdk.ResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "A decoration used to create a CloudFormation attribute property."
+          },
+          "name": "attribute",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Custom name for the attribute (default is the name of the property)\nNOTE: we return \"any\" here to satistfy jsii, which doesn't support lambdas."
+              },
+              "name": "customName",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Returns a token for an runtime attribute of this resource.\nIdeally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility\nin case there is no generated attribute."
+          },
+          "name": "getAtt",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The name of the attribute."
+              },
+              "name": "attributeName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a dependency on another resource."
+          },
+          "name": "addDependency",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The other resource."
+              },
+              "name": "other",
+              "type": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Emits CloudFormation for this resource."
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "Resource",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Options for this resource, such as condition, update policy etc."
+          },
+          "immutable": true,
+          "name": "options",
+          "type": {
+            "fqn": "@aws-cdk/cdk.ResourceOptions"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource type."
+          },
+          "immutable": true,
+          "name": "resourceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource properties"
+          },
+          "immutable": true,
+          "name": "properties",
+          "protected": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.StackElement": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An element of a CloudFormation stack."
+      },
+      "fqn": "@aws-cdk/cdk.StackElement",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cdk.IDependable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged\nat the root level to ensure there are no identity conflicts.\n\nFor example, a Resource class will return something like:\n{\n     Resources: {\n         [this.logicalId]: {\n             Type: this.resourceType,\n             Properties: this.props,\n             Condition: this.condition\n         }\n     }\n}"
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "StackElement",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The logical ID for this CloudFormation stack element"
+          },
+          "immutable": true,
+          "name": "logicalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The stack this Construct has been made a part of"
+          },
+          "name": "stack",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.Stack"
+          }
+        },
+        {
+          "docs": {
+            "returns": "the stack trace of the point where this Resource was created from, sourced\nfrom the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most\nnode +internal+ entries filtered."
+          },
+          "immutable": true,
+          "name": "creationStackTrace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the path with respect to the stack"
+          },
+          "immutable": true,
+          "name": "stackPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Tag": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html"
+      },
+      "fqn": "@aws-cdk/cdk.Tag",
+      "kind": "interface",
+      "name": "Tag",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Token": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value\nin case, for example, that it requires some context or late-bound data."
+      },
+      "fqn": "@aws-cdk/cdk.Token",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "returns": "The resolved value for this token."
+          },
+          "name": "resolve",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Token",
+      "namespace": "@aws-cdk/cdk"
+    }
+  },
+  "name": "@aws-cdk/aws-elasticloadbalancing",
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ElasticLoadBalancing"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "aws-elasticloadbalancing",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.aws.elasticloadbalancing"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-elasticloadbalancing"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneName": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneName",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LoadBalancerCanonicalHostedZoneName",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing"
+    },
+    "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneNameId": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneNameId",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LoadBalancerCanonicalHostedZoneNameId",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing"
+    },
+    "@aws-cdk/aws-elasticloadbalancing.LoadBalancerDnsName": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerDnsName",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LoadBalancerDnsName",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing"
+    },
+    "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupGroupName": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupGroupName",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LoadBalancerSourceSecurityGroupGroupName",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing"
+    },
+    "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupOwnerAlias": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupOwnerAlias",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "LoadBalancerSourceSecurityGroupOwnerAlias",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing"
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElasticLoadBalancing::LoadBalancer``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``LoadBalancerResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``LoadBalancerResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "LoadBalancerResource",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CanonicalHostedZoneName"
+          },
+          "immutable": true,
+          "name": "loadBalancerCanonicalHostedZoneName",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneName"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "CanonicalHostedZoneNameID"
+          },
+          "immutable": true,
+          "name": "loadBalancerCanonicalHostedZoneNameId",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerCanonicalHostedZoneNameId"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "DNSName"
+          },
+          "immutable": true,
+          "name": "loadBalancerDnsName",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerDnsName"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "SourceSecurityGroup.GroupName"
+          },
+          "immutable": true,
+          "name": "loadBalancerSourceSecurityGroupGroupName",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupGroupName"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "SourceSecurityGroup.OwnerAlias"
+          },
+          "immutable": true,
+          "name": "loadBalancerSourceSecurityGroupOwnerAlias",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancerSourceSecurityGroupOwnerAlias"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AccessLoggingPolicyProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AppCookieStickinessPolicyProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionDrainingPolicyProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionSettingsProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.LBCookieStickinessPolicyProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty",
+        "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.PoliciesProperty"
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AccessLoggingPolicyProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-accessloggingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AccessLoggingPolicyProperty",
+      "kind": "interface",
+      "name": "AccessLoggingPolicyProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AccessLoggingPolicyProperty.EmitInterval``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-accessloggingpolicy.html#cfn-elb-accessloggingpolicy-emitinterval"
+          },
+          "name": "emitInterval",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AccessLoggingPolicyProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-accessloggingpolicy.html#cfn-elb-accessloggingpolicy-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AccessLoggingPolicyProperty.S3BucketName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-accessloggingpolicy.html#cfn-elb-accessloggingpolicy-s3bucketname"
+          },
+          "name": "s3BucketName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AccessLoggingPolicyProperty.S3BucketPrefix``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-accessloggingpolicy.html#cfn-elb-accessloggingpolicy-s3bucketprefix"
+          },
+          "name": "s3BucketPrefix",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AppCookieStickinessPolicyProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-AppCookieStickinessPolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AppCookieStickinessPolicyProperty",
+      "kind": "interface",
+      "name": "AppCookieStickinessPolicyProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AppCookieStickinessPolicyProperty.CookieName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-AppCookieStickinessPolicy.html#cfn-elb-appcookiestickinesspolicy-cookiename"
+          },
+          "name": "cookieName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.AppCookieStickinessPolicyProperty.PolicyName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-AppCookieStickinessPolicy.html#cfn-elb-appcookiestickinesspolicy-policyname"
+          },
+          "name": "policyName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionDrainingPolicyProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-connectiondrainingpolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionDrainingPolicyProperty",
+      "kind": "interface",
+      "name": "ConnectionDrainingPolicyProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ConnectionDrainingPolicyProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-connectiondrainingpolicy.html#cfn-elb-connectiondrainingpolicy-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ConnectionDrainingPolicyProperty.Timeout``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-connectiondrainingpolicy.html#cfn-elb-connectiondrainingpolicy-timeout"
+          },
+          "name": "timeout",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionSettingsProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-connectionsettings.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionSettingsProperty",
+      "kind": "interface",
+      "name": "ConnectionSettingsProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ConnectionSettingsProperty.IdleTimeout``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-connectionsettings.html#cfn-elb-connectionsettings-idletimeout"
+          },
+          "name": "idleTimeout",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty",
+      "kind": "interface",
+      "name": "HealthCheckProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.HealthCheckProperty.HealthyThreshold``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html#cfn-elb-healthcheck-healthythreshold"
+          },
+          "name": "healthyThreshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.HealthCheckProperty.Interval``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html#cfn-elb-healthcheck-interval"
+          },
+          "name": "interval",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.HealthCheckProperty.Target``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html#cfn-elb-healthcheck-target"
+          },
+          "name": "target",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.HealthCheckProperty.Timeout``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html#cfn-elb-healthcheck-timeout"
+          },
+          "name": "timeout",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.HealthCheckProperty.UnhealthyThreshold``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-health-check.html#cfn-elb-healthcheck-unhealthythreshold"
+          },
+          "name": "unhealthyThreshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.LBCookieStickinessPolicyProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-LBCookieStickinessPolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.LBCookieStickinessPolicyProperty",
+      "kind": "interface",
+      "name": "LBCookieStickinessPolicyProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.LBCookieStickinessPolicyProperty.CookieExpirationPeriod``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-LBCookieStickinessPolicy.html#cfn-elb-lbcookiestickinesspolicy-cookieexpirationperiod"
+          },
+          "name": "cookieExpirationPeriod",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.LBCookieStickinessPolicyProperty.PolicyName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-LBCookieStickinessPolicy.html#cfn-elb-lbcookiestickinesspolicy-policyname"
+          },
+          "name": "policyName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty",
+      "kind": "interface",
+      "name": "ListenersProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.InstancePort``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-instanceport"
+          },
+          "name": "instancePort",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.InstanceProtocol``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-instanceprotocol"
+          },
+          "name": "instanceProtocol",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.LoadBalancerPort``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-loadbalancerport"
+          },
+          "name": "loadBalancerPort",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.PolicyNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-policynames"
+          },
+          "name": "policyNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.Protocol``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-protocol"
+          },
+          "name": "protocol",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.ListenersProperty.SSLCertificateId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-listener.html#cfn-ec2-elb-listener-sslcertificateid"
+          },
+          "name": "sslCertificateId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.PoliciesProperty": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.PoliciesProperty",
+      "kind": "interface",
+      "name": "PoliciesProperty",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "parenttype": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.PoliciesProperty.Attributes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html#cfn-ec2-elb-policy-attributes"
+          },
+          "name": "attributes",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "json"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.PoliciesProperty.InstancePorts``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html#cfn-ec2-elb-policy-instanceports"
+          },
+          "name": "instancePorts",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.PoliciesProperty.LoadBalancerPorts``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html#cfn-ec2-elb-policy-loadbalancerports"
+          },
+          "name": "loadBalancerPorts",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.PoliciesProperty.PolicyName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html#cfn-ec2-elb-policy-policyname"
+          },
+          "name": "policyName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``LoadBalancerResource.PoliciesProperty.PolicyType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb-policy.html#cfn-ec2-elb-policy-policytype"
+          },
+          "name": "policyType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticloadbalancing",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResourceProps",
+      "kind": "interface",
+      "name": "LoadBalancerResourceProps",
+      "namespace": "@aws-cdk/aws-elasticloadbalancing.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Listeners``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-listeners"
+          },
+          "name": "listeners",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.AccessLoggingPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-accessloggingpolicy"
+          },
+          "name": "accessLoggingPolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AccessLoggingPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.AppCookieStickinessPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-appcookiestickinesspolicy"
+          },
+          "name": "appCookieStickinessPolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.AppCookieStickinessPolicyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.AvailabilityZones``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-availabilityzones"
+          },
+          "name": "availabilityZones",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.ConnectionDrainingPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-connectiondrainingpolicy"
+          },
+          "name": "connectionDrainingPolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionDrainingPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.ConnectionSettings``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-connectionsettings"
+          },
+          "name": "connectionSettings",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.ConnectionSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.CrossZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-crosszone"
+          },
+          "name": "crossZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.HealthCheck``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-healthcheck"
+          },
+          "name": "healthCheck",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Instances``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-instances"
+          },
+          "name": "instances",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.LBCookieStickinessPolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-lbcookiestickinesspolicy"
+          },
+          "name": "lbCookieStickinessPolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.LBCookieStickinessPolicyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.LoadBalancerName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-elbname"
+          },
+          "name": "loadBalancerName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Policies``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-policies"
+          },
+          "name": "policies",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticloadbalancing.cloudformation.LoadBalancerResource.PoliciesProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Scheme``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-scheme"
+          },
+          "name": "scheme",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.SecurityGroups``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-securitygroups"
+          },
+          "name": "securityGroups",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Subnets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-ec2-elb-subnets"
+          },
+          "name": "subnets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticLoadBalancing::LoadBalancer.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-elb.html#cfn-elasticloadbalancing-loadbalancer-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}

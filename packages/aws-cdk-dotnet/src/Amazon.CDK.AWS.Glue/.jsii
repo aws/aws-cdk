@@ -1,0 +1,5256 @@
+{
+  "fingerprint": "FUTeEhhZi5Z5FfAz+S8k3+472hcDnglioPEfXCYE/S4=",
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.7.3-beta"
+    }
+  },
+  "externals": {
+    "@aws-cdk/cdk.Construct": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents the building block of the construct graph.\nWhen a construct is created, it is always added as a child"
+      },
+      "fqn": "@aws-cdk/cdk.Construct",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string with a tree representation of this construct and it's children."
+          },
+          "name": "toTreeString",
+          "parameters": [
+            {
+              "name": "depth",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path, or undefined",
+            "returns": "a child by path or undefined if not found."
+          },
+          "name": "tryFindChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path\n\nThrows an exception if the descendant is not found.",
+            "returns": "Child with the given path."
+          },
+          "name": "findChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This can be used to set contextual values.\nContext must be set before any children are added, since children may consult context info during construction.\nIf the key already exists, it will be overridden."
+          },
+          "name": "setContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The context value"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Retrieves a value from tree context.\n\nContext is usually initialized at the root, but can be overridden at any point in the tree.",
+            "returns": "The context value or undefined"
+          },
+          "name": "getContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Retrieve a value from tree-global context\n\nIt is an error if the context object is not available."
+          },
+          "name": "requireContext",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a metadata entry to this construct.\nEntries are arbitrary values and will also include a stack trace to allow tracing back to\nthe code location for when the entry was added. It can be used, for example, to include source\nmapping in CloudFormation templates to improve diagnostics."
+          },
+          "name": "addMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "a string denoting the type of metadata"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the value of the metadata (can be a Token). If null/undefined, metadata will not be added."
+              },
+              "name": "data",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)"
+              },
+              "name": "from",
+              "type": {
+                "optional": true,
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { \"aws:cdk:info\": <message> } metadata entry to this construct.\nThe toolkit will display the info message when apps are synthesized."
+          },
+          "name": "addInfo",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The info message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { warning: <message> } metadata entry to this construct.\nThe toolkit will display the warning when an app is synthesized, or fail\nif run in --strict mode."
+          },
+          "name": "addWarning",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The warning message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an { error: <message> } metadata entry to this construct.\nThe toolkit will fail synthesis when errors are reported."
+          },
+          "name": "addError",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The error message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis.",
+            "returns": "An array of validation error messages, or an empty array if there the construct is valid."
+          },
+          "name": "validate",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Invokes 'validate' on all child constructs and then on this construct (depth-first).",
+            "returns": "A list of validation errors. If the list is empty, all constructs are valid."
+          },
+          "name": "validateTree",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.ValidationError"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the ancestors (including self) of this Construct up until and excluding the indicated component"
+          },
+          "name": "ancestors",
+          "parameters": [
+            {
+              "name": "upTo",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "aws": "-cdk/runtime`` instead.",
+            "comment": "Throws if the `props` bag doesn't include the property `name`.\nIn the future we can add some type-checking here, maybe even auto-generate during compilation.",
+            "deprecated": "use ``requireProperty`` from ``"
+          },
+          "name": "required",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The props bag."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the required property."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a child construct to this node.",
+            "returns": "The resolved path part name of the child"
+          },
+          "name": "addChild",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The child construct"
+              },
+              "name": "child",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "childName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Locks this construct from allowing more children to be added. After this\ncall, no more children can be added to this construct or to any children."
+          },
+          "name": "lock",
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Unlocks this costruct and allows mutations (adding children)."
+          },
+          "name": "unlock",
+          "protected": true
+        }
+      ],
+      "name": "Construct",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the parent of this node or undefined if this is a root node."
+          },
+          "immutable": true,
+          "name": "parent",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this construct"
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "All direct children of this construct."
+          },
+          "immutable": true,
+          "name": "children",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the path of all constructs from root to this construct, in string form.",
+            "returns": "/-separated path of this Construct."
+          },
+          "immutable": true,
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "An array of metadata objects associated with this construct.\nThis can be used, for example, to implement support for deprecation notices, source mapping, etc."
+          },
+          "immutable": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.MetadataEntry"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.IDependable": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a construct that can be \"depended on\" via `addDependency`."
+      },
+      "fqn": "@aws-cdk/cdk.IDependable",
+      "kind": "interface",
+      "name": "IDependable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Referenceable": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.StackElement"
+      },
+      "docs": {
+        "comment": "A construct, which is part of a stack and can be referenced using it's logical ID\nusing the CloudFormation intrinsic function { Ref: ID }."
+      },
+      "fqn": "@aws-cdk/cdk.Referenceable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Referenceable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID."
+          },
+          "immutable": true,
+          "name": "ref",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Resource": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Referenceable"
+      },
+      "docs": {
+        "comment": "Represents a CloudFormation resource."
+      },
+      "fqn": "@aws-cdk/cdk.Resource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a resource construct."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/cdk.ResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "A decoration used to create a CloudFormation attribute property."
+          },
+          "name": "attribute",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Custom name for the attribute (default is the name of the property)\nNOTE: we return \"any\" here to satistfy jsii, which doesn't support lambdas."
+              },
+              "name": "customName",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Returns a token for an runtime attribute of this resource.\nIdeally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility\nin case there is no generated attribute."
+          },
+          "name": "getAtt",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The name of the attribute."
+              },
+              "name": "attributeName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a dependency on another resource."
+          },
+          "name": "addDependency",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The other resource."
+              },
+              "name": "other",
+              "type": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Emits CloudFormation for this resource."
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "Resource",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Options for this resource, such as condition, update policy etc."
+          },
+          "immutable": true,
+          "name": "options",
+          "type": {
+            "fqn": "@aws-cdk/cdk.ResourceOptions"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource type."
+          },
+          "immutable": true,
+          "name": "resourceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource properties"
+          },
+          "immutable": true,
+          "name": "properties",
+          "protected": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.StackElement": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An element of a CloudFormation stack."
+      },
+      "fqn": "@aws-cdk/cdk.StackElement",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cdk.IDependable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged\nat the root level to ensure there are no identity conflicts.\n\nFor example, a Resource class will return something like:\n{\n     Resources: {\n         [this.logicalId]: {\n             Type: this.resourceType,\n             Properties: this.props,\n             Condition: this.condition\n         }\n     }\n}"
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "StackElement",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The logical ID for this CloudFormation stack element"
+          },
+          "immutable": true,
+          "name": "logicalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The stack this Construct has been made a part of"
+          },
+          "name": "stack",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.Stack"
+          }
+        },
+        {
+          "docs": {
+            "returns": "the stack trace of the point where this Resource was created from, sourced\nfrom the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most\nnode +internal+ entries filtered."
+          },
+          "immutable": true,
+          "name": "creationStackTrace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the path with respect to the stack"
+          },
+          "immutable": true,
+          "name": "stackPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Token": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value\nin case, for example, that it requires some context or late-bound data."
+      },
+      "fqn": "@aws-cdk/cdk.Token",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "returns": "The resolved value for this token."
+          },
+          "name": "resolve",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Token",
+      "namespace": "@aws-cdk/cdk"
+    }
+  },
+  "name": "@aws-cdk/aws-glue",
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Glue"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "aws-glue",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.aws.glue"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-glue"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-glue.cloudformation.ClassifierResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-classifier.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ClassifierResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Classifier``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ClassifierResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ClassifierResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.ClassifierResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ClassifierResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.ClassifierResource.GrokClassifierProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ClassifierResource.GrokClassifierProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-classifier-grokclassifier.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ClassifierResource.GrokClassifierProperty",
+      "kind": "interface",
+      "name": "GrokClassifierProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.ClassifierResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.ClassifierResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ClassifierResource.GrokClassifierProperty.Classification``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-classifier-grokclassifier.html#cfn-glue-classifier-grokclassifier-classification"
+          },
+          "name": "classification",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ClassifierResource.GrokClassifierProperty.CustomPatterns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-classifier-grokclassifier.html#cfn-glue-classifier-grokclassifier-custompatterns"
+          },
+          "name": "customPatterns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ClassifierResource.GrokClassifierProperty.GrokPattern``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-classifier-grokclassifier.html#cfn-glue-classifier-grokclassifier-grokpattern"
+          },
+          "name": "grokPattern",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ClassifierResource.GrokClassifierProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-classifier-grokclassifier.html#cfn-glue-classifier-grokclassifier-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ClassifierResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-classifier.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ClassifierResourceProps",
+      "kind": "interface",
+      "name": "ClassifierResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Classifier.GrokClassifier``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-classifier.html#cfn-glue-classifier-grokclassifier"
+          },
+          "name": "grokClassifier",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.ClassifierResource.GrokClassifierProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ConnectionResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-connection.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Connection``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ConnectionResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ConnectionResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ConnectionResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.ConnectionResource.ConnectionInputProperty",
+        "@aws-cdk/aws-glue.cloudformation.ConnectionResource.PhysicalConnectionRequirementsProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ConnectionResource.ConnectionInputProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResource.ConnectionInputProperty",
+      "kind": "interface",
+      "name": "ConnectionInputProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.ConnectionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.ConnectionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.ConnectionProperties``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectionproperties"
+          },
+          "name": "connectionProperties",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.ConnectionType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype"
+          },
+          "name": "connectionType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.MatchCriteria``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-matchcriteria"
+          },
+          "name": "matchCriteria",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.ConnectionInputProperty.PhysicalConnectionRequirements``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-physicalconnectionrequirements"
+          },
+          "name": "physicalConnectionRequirements",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResource.PhysicalConnectionRequirementsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ConnectionResource.PhysicalConnectionRequirementsProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-physicalconnectionrequirements.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResource.PhysicalConnectionRequirementsProperty",
+      "kind": "interface",
+      "name": "PhysicalConnectionRequirementsProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.ConnectionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.ConnectionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ConnectionResource.PhysicalConnectionRequirementsProperty.AvailabilityZone``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-physicalconnectionrequirements.html#cfn-glue-connection-physicalconnectionrequirements-availabilityzone"
+          },
+          "name": "availabilityZone",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.PhysicalConnectionRequirementsProperty.SecurityGroupIdList``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-physicalconnectionrequirements.html#cfn-glue-connection-physicalconnectionrequirements-securitygroupidlist"
+          },
+          "name": "securityGroupIdList",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConnectionResource.PhysicalConnectionRequirementsProperty.SubnetId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-physicalconnectionrequirements.html#cfn-glue-connection-physicalconnectionrequirements-subnetid"
+          },
+          "name": "subnetId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.ConnectionResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-connection.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResourceProps",
+      "kind": "interface",
+      "name": "ConnectionResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Connection.CatalogId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-connection.html#cfn-glue-connection-catalogid"
+          },
+          "name": "catalogId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Connection.ConnectionInput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-connection.html#cfn-glue-connection-connectioninput"
+          },
+          "name": "connectionInput",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.ConnectionResource.ConnectionInputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Crawler``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``CrawlerResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``CrawlerResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "CrawlerResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.CrawlerResource.JdbcTargetProperty",
+        "@aws-cdk/aws-glue.cloudformation.CrawlerResource.S3TargetProperty",
+        "@aws-cdk/aws-glue.cloudformation.CrawlerResource.ScheduleProperty",
+        "@aws-cdk/aws-glue.cloudformation.CrawlerResource.SchemaChangePolicyProperty",
+        "@aws-cdk/aws-glue.cloudformation.CrawlerResource.TargetsProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource.JdbcTargetProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-jdbctarget.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.JdbcTargetProperty",
+      "kind": "interface",
+      "name": "JdbcTargetProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``CrawlerResource.JdbcTargetProperty.ConnectionName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-jdbctarget.html#cfn-glue-crawler-jdbctarget-connectionname"
+          },
+          "name": "connectionName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``CrawlerResource.JdbcTargetProperty.Exclusions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-jdbctarget.html#cfn-glue-crawler-jdbctarget-exclusions"
+          },
+          "name": "exclusions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``CrawlerResource.JdbcTargetProperty.Path``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-jdbctarget.html#cfn-glue-crawler-jdbctarget-path"
+          },
+          "name": "path",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource.S3TargetProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-s3target.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.S3TargetProperty",
+      "kind": "interface",
+      "name": "S3TargetProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``CrawlerResource.S3TargetProperty.Exclusions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-s3target.html#cfn-glue-crawler-s3target-exclusions"
+          },
+          "name": "exclusions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``CrawlerResource.S3TargetProperty.Path``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-s3target.html#cfn-glue-crawler-s3target-path"
+          },
+          "name": "path",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource.ScheduleProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-schedule.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.ScheduleProperty",
+      "kind": "interface",
+      "name": "ScheduleProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``CrawlerResource.ScheduleProperty.ScheduleExpression``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-schedule.html#cfn-glue-crawler-schedule-scheduleexpression"
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource.SchemaChangePolicyProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-schemachangepolicy.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.SchemaChangePolicyProperty",
+      "kind": "interface",
+      "name": "SchemaChangePolicyProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``CrawlerResource.SchemaChangePolicyProperty.DeleteBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-schemachangepolicy.html#cfn-glue-crawler-schemachangepolicy-deletebehavior"
+          },
+          "name": "deleteBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``CrawlerResource.SchemaChangePolicyProperty.UpdateBehavior``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-schemachangepolicy.html#cfn-glue-crawler-schemachangepolicy-updatebehavior"
+          },
+          "name": "updateBehavior",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResource.TargetsProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-targets.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.TargetsProperty",
+      "kind": "interface",
+      "name": "TargetsProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.CrawlerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``CrawlerResource.TargetsProperty.JdbcTargets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-targets.html#cfn-glue-crawler-targets-jdbctargets"
+          },
+          "name": "jdbcTargets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.JdbcTargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``CrawlerResource.TargetsProperty.S3Targets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-targets.html#cfn-glue-crawler-targets-s3targets"
+          },
+          "name": "s3Targets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.S3TargetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.CrawlerResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResourceProps",
+      "kind": "interface",
+      "name": "CrawlerResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.DatabaseName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-databasename"
+          },
+          "name": "databaseName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Role``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-role"
+          },
+          "name": "role",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Targets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-targets"
+          },
+          "name": "targets",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.TargetsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Classifiers``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-classifiers"
+          },
+          "name": "classifiers",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-name"
+          },
+          "name": "crawlerName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.Schedule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.ScheduleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.SchemaChangePolicy``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-schemachangepolicy"
+          },
+          "name": "schemaChangePolicy",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.CrawlerResource.SchemaChangePolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Crawler.TablePrefix``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-crawler.html#cfn-glue-crawler-tableprefix"
+          },
+          "name": "tablePrefix",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.DatabaseResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-database.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.DatabaseResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Database``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``DatabaseResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``DatabaseResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.DatabaseResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "DatabaseResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.DatabaseResource.DatabaseInputProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.DatabaseResource.DatabaseInputProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.DatabaseResource.DatabaseInputProperty",
+      "kind": "interface",
+      "name": "DatabaseInputProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.DatabaseResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.DatabaseResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``DatabaseResource.DatabaseInputProperty.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html#cfn-glue-database-databaseinput-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``DatabaseResource.DatabaseInputProperty.LocationUri``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html#cfn-glue-database-databaseinput-locationuri"
+          },
+          "name": "locationUri",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``DatabaseResource.DatabaseInputProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html#cfn-glue-database-databaseinput-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``DatabaseResource.DatabaseInputProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html#cfn-glue-database-databaseinput-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.DatabaseResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-database.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.DatabaseResourceProps",
+      "kind": "interface",
+      "name": "DatabaseResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Database.CatalogId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-database.html#cfn-glue-database-catalogid"
+          },
+          "name": "catalogId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Database.DatabaseInput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-database.html#cfn-glue-database-databaseinput"
+          },
+          "name": "databaseInput",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.DatabaseResource.DatabaseInputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.DevEndpointResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.DevEndpointResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::DevEndpoint``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``DevEndpointResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``DevEndpointResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.DevEndpointResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "DevEndpointResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.DevEndpointResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.DevEndpointResourceProps",
+      "kind": "interface",
+      "name": "DevEndpointResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.PublicKey``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-publickey"
+          },
+          "name": "publicKey",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.RoleArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-rolearn"
+          },
+          "name": "roleArn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.EndpointName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-endpointname"
+          },
+          "name": "endpointName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.ExtraJarsS3Path``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-extrajarss3path"
+          },
+          "name": "extraJarsS3Path",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.ExtraPythonLibsS3Path``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-extrapythonlibss3path"
+          },
+          "name": "extraPythonLibsS3Path",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.NumberOfNodes``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-numberofnodes"
+          },
+          "name": "numberOfNodes",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.SecurityGroupIds``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-securitygroupids"
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::DevEndpoint.SubnetId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-devendpoint.html#cfn-glue-devendpoint-subnetid"
+          },
+          "name": "subnetId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.JobResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Job``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``JobResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``JobResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.JobResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "JobResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.JobResource.ConnectionsListProperty",
+        "@aws-cdk/aws-glue.cloudformation.JobResource.ExecutionPropertyProperty",
+        "@aws-cdk/aws-glue.cloudformation.JobResource.JobCommandProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.JobResource.ConnectionsListProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-connectionslist.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.ConnectionsListProperty",
+      "kind": "interface",
+      "name": "ConnectionsListProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``JobResource.ConnectionsListProperty.Connections``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-connectionslist.html#cfn-glue-job-connectionslist-connections"
+          },
+          "name": "connections",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.JobResource.ExecutionPropertyProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-executionproperty.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.ExecutionPropertyProperty",
+      "kind": "interface",
+      "name": "ExecutionPropertyProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``JobResource.ExecutionPropertyProperty.MaxConcurrentRuns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-executionproperty.html#cfn-glue-job-executionproperty-maxconcurrentruns"
+          },
+          "name": "maxConcurrentRuns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.JobResource.JobCommandProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-jobcommand.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.JobCommandProperty",
+      "kind": "interface",
+      "name": "JobCommandProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.JobResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``JobResource.JobCommandProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-jobcommand.html#cfn-glue-job-jobcommand-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``JobResource.JobCommandProperty.ScriptLocation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-jobcommand.html#cfn-glue-job-jobcommand-scriptlocation"
+          },
+          "name": "scriptLocation",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.JobResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.JobResourceProps",
+      "kind": "interface",
+      "name": "JobResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.Command``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-command"
+          },
+          "name": "command",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.JobCommandProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.Role``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-role"
+          },
+          "name": "role",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.AllocatedCapacity``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-allocatedcapacity"
+          },
+          "name": "allocatedCapacity",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.Connections``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-connections"
+          },
+          "name": "connections",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.ConnectionsListProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.DefaultArguments``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-defaultarguments"
+          },
+          "name": "defaultArguments",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.ExecutionProperty``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-executionproperty"
+          },
+          "name": "executionProperty",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.JobResource.ExecutionPropertyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.LogUri``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-loguri"
+          },
+          "name": "logUri",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.MaxRetries``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-maxretries"
+          },
+          "name": "maxRetries",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Job.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-job.html#cfn-glue-job-name"
+          },
+          "name": "jobName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Partition``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``PartitionResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``PartitionResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "PartitionResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.ColumnProperty",
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.OrderProperty",
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.PartitionInputProperty",
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.SerdeInfoProperty",
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.SkewedInfoProperty",
+        "@aws-cdk/aws-glue.cloudformation.PartitionResource.StorageDescriptorProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.ColumnProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-column.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.ColumnProperty",
+      "kind": "interface",
+      "name": "ColumnProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.ColumnProperty.Comment``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-column.html#cfn-glue-partition-column-comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.ColumnProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-column.html#cfn-glue-partition-column-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.ColumnProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-column.html#cfn-glue-partition-column-type"
+          },
+          "name": "type",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.OrderProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-order.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.OrderProperty",
+      "kind": "interface",
+      "name": "OrderProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.OrderProperty.Column``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-order.html#cfn-glue-partition-order-column"
+          },
+          "name": "column",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.OrderProperty.SortOrder``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-order.html#cfn-glue-partition-order-sortorder"
+          },
+          "name": "sortOrder",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.PartitionInputProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-partitioninput.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.PartitionInputProperty",
+      "kind": "interface",
+      "name": "PartitionInputProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.PartitionInputProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-partitioninput.html#cfn-glue-partition-partitioninput-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.PartitionInputProperty.StorageDescriptor``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-partitioninput.html#cfn-glue-partition-partitioninput-storagedescriptor"
+          },
+          "name": "storageDescriptor",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.StorageDescriptorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.PartitionInputProperty.Values``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-partitioninput.html#cfn-glue-partition-partitioninput-values"
+          },
+          "name": "values",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.SerdeInfoProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-serdeinfo.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.SerdeInfoProperty",
+      "kind": "interface",
+      "name": "SerdeInfoProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.SerdeInfoProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-serdeinfo.html#cfn-glue-partition-serdeinfo-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.SerdeInfoProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-serdeinfo.html#cfn-glue-partition-serdeinfo-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.SerdeInfoProperty.SerializationLibrary``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-serdeinfo.html#cfn-glue-partition-serdeinfo-serializationlibrary"
+          },
+          "name": "serializationLibrary",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.SkewedInfoProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-skewedinfo.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.SkewedInfoProperty",
+      "kind": "interface",
+      "name": "SkewedInfoProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.SkewedInfoProperty.SkewedColumnNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-skewedinfo.html#cfn-glue-partition-skewedinfo-skewedcolumnnames"
+          },
+          "name": "skewedColumnNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.SkewedInfoProperty.SkewedColumnValueLocationMaps``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-skewedinfo.html#cfn-glue-partition-skewedinfo-skewedcolumnvaluelocationmaps"
+          },
+          "name": "skewedColumnValueLocationMaps",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.SkewedInfoProperty.SkewedColumnValues``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-skewedinfo.html#cfn-glue-partition-skewedinfo-skewedcolumnvalues"
+          },
+          "name": "skewedColumnValues",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResource.StorageDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.StorageDescriptorProperty",
+      "kind": "interface",
+      "name": "StorageDescriptorProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.PartitionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.BucketColumns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-bucketcolumns"
+          },
+          "name": "bucketColumns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.Columns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-columns"
+          },
+          "name": "columns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.ColumnProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.Compressed``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-compressed"
+          },
+          "name": "compressed",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.InputFormat``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-inputformat"
+          },
+          "name": "inputFormat",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.Location``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-location"
+          },
+          "name": "location",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.NumberOfBuckets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-numberofbuckets"
+          },
+          "name": "numberOfBuckets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.OutputFormat``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-outputformat"
+          },
+          "name": "outputFormat",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.SerdeInfo``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-serdeinfo"
+          },
+          "name": "serdeInfo",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.SerdeInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.SkewedInfo``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-skewedinfo"
+          },
+          "name": "skewedInfo",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.SkewedInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.SortColumns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-sortcolumns"
+          },
+          "name": "sortColumns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.OrderProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``PartitionResource.StorageDescriptorProperty.StoredAsSubDirectories``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-partition-storagedescriptor.html#cfn-glue-partition-storagedescriptor-storedassubdirectories"
+          },
+          "name": "storedAsSubDirectories",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.PartitionResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResourceProps",
+      "kind": "interface",
+      "name": "PartitionResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Partition.CatalogId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html#cfn-glue-partition-catalogid"
+          },
+          "name": "catalogId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Partition.DatabaseName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html#cfn-glue-partition-databasename"
+          },
+          "name": "databaseName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Partition.PartitionInput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html#cfn-glue-partition-partitioninput"
+          },
+          "name": "partitionInput",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.PartitionResource.PartitionInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Partition.TableName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-partition.html#cfn-glue-partition-tablename"
+          },
+          "name": "tableName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-table.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Table``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``TableResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``TableResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.TableResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "TableResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.TableResource.ColumnProperty",
+        "@aws-cdk/aws-glue.cloudformation.TableResource.OrderProperty",
+        "@aws-cdk/aws-glue.cloudformation.TableResource.SerdeInfoProperty",
+        "@aws-cdk/aws-glue.cloudformation.TableResource.SkewedInfoProperty",
+        "@aws-cdk/aws-glue.cloudformation.TableResource.StorageDescriptorProperty",
+        "@aws-cdk/aws-glue.cloudformation.TableResource.TableInputProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.ColumnProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-column.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.ColumnProperty",
+      "kind": "interface",
+      "name": "ColumnProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.ColumnProperty.Comment``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-column.html#cfn-glue-table-column-comment"
+          },
+          "name": "comment",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.ColumnProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-column.html#cfn-glue-table-column-name"
+          },
+          "name": "name",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.ColumnProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-column.html#cfn-glue-table-column-type"
+          },
+          "name": "type",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.OrderProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-order.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.OrderProperty",
+      "kind": "interface",
+      "name": "OrderProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.OrderProperty.Column``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-order.html#cfn-glue-table-order-column"
+          },
+          "name": "column",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.OrderProperty.SortOrder``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-order.html#cfn-glue-table-order-sortorder"
+          },
+          "name": "sortOrder",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.SerdeInfoProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-serdeinfo.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.SerdeInfoProperty",
+      "kind": "interface",
+      "name": "SerdeInfoProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.SerdeInfoProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-serdeinfo.html#cfn-glue-table-serdeinfo-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.SerdeInfoProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-serdeinfo.html#cfn-glue-table-serdeinfo-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.SerdeInfoProperty.SerializationLibrary``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-serdeinfo.html#cfn-glue-table-serdeinfo-serializationlibrary"
+          },
+          "name": "serializationLibrary",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.SkewedInfoProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-skewedinfo.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.SkewedInfoProperty",
+      "kind": "interface",
+      "name": "SkewedInfoProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.SkewedInfoProperty.SkewedColumnNames``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-skewedinfo.html#cfn-glue-table-skewedinfo-skewedcolumnnames"
+          },
+          "name": "skewedColumnNames",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.SkewedInfoProperty.SkewedColumnValueLocationMaps``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-skewedinfo.html#cfn-glue-table-skewedinfo-skewedcolumnvaluelocationmaps"
+          },
+          "name": "skewedColumnValueLocationMaps",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.SkewedInfoProperty.SkewedColumnValues``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-skewedinfo.html#cfn-glue-table-skewedinfo-skewedcolumnvalues"
+          },
+          "name": "skewedColumnValues",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.StorageDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.StorageDescriptorProperty",
+      "kind": "interface",
+      "name": "StorageDescriptorProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.BucketColumns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-bucketcolumns"
+          },
+          "name": "bucketColumns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "primitive": "string"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.Columns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-columns"
+          },
+          "name": "columns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.ColumnProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.Compressed``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-compressed"
+          },
+          "name": "compressed",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.InputFormat``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-inputformat"
+          },
+          "name": "inputFormat",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.Location``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-location"
+          },
+          "name": "location",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.NumberOfBuckets``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-numberofbuckets"
+          },
+          "name": "numberOfBuckets",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.OutputFormat``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-outputformat"
+          },
+          "name": "outputFormat",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.SerdeInfo``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-serdeinfo"
+          },
+          "name": "serdeInfo",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.SerdeInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.SkewedInfo``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-skewedinfo"
+          },
+          "name": "skewedInfo",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.SkewedInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.SortColumns``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-sortcolumns"
+          },
+          "name": "sortColumns",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.OrderProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.StorageDescriptorProperty.StoredAsSubDirectories``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-storagedescriptor.html#cfn-glue-table-storagedescriptor-storedassubdirectories"
+          },
+          "name": "storedAsSubDirectories",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResource.TableInputProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.TableInputProperty",
+      "kind": "interface",
+      "name": "TableInputProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TableResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.Owner``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-owner"
+          },
+          "name": "owner",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.Parameters``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters"
+          },
+          "name": "parameters",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.PartitionKeys``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-partitionkeys"
+          },
+          "name": "partitionKeys",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.ColumnProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.Retention``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-retention"
+          },
+          "name": "retention",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.StorageDescriptor``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-storagedescriptor"
+          },
+          "name": "storageDescriptor",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.StorageDescriptorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.TableType``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-tabletype"
+          },
+          "name": "tableType",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.ViewExpandedText``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-viewexpandedtext"
+          },
+          "name": "viewExpandedText",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TableResource.TableInputProperty.ViewOriginalText``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-vieworiginaltext"
+          },
+          "name": "viewOriginalText",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TableResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-table.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TableResourceProps",
+      "kind": "interface",
+      "name": "TableResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Table.CatalogId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-table.html#cfn-glue-table-catalogid"
+          },
+          "name": "catalogId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Table.DatabaseName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-table.html#cfn-glue-table-databasename"
+          },
+          "name": "databaseName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Table.TableInput``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-table.html#cfn-glue-table-tableinput"
+          },
+          "name": "tableInput",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.TableResource.TableInputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TriggerResource": {
+      "assembly": "@aws-cdk/aws-glue",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::Glue::Trigger``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``TriggerResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``TriggerResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "TriggerResource",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-glue.cloudformation.TriggerResource.ActionProperty",
+        "@aws-cdk/aws-glue.cloudformation.TriggerResource.ConditionProperty",
+        "@aws-cdk/aws-glue.cloudformation.TriggerResource.PredicateProperty"
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TriggerResource.ActionProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-action.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.ActionProperty",
+      "kind": "interface",
+      "name": "ActionProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TriggerResource.ActionProperty.Arguments``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-action.html#cfn-glue-trigger-action-arguments"
+          },
+          "name": "arguments",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "json"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TriggerResource.ActionProperty.JobName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-action.html#cfn-glue-trigger-action-jobname"
+          },
+          "name": "jobName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TriggerResource.ConditionProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-condition.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.ConditionProperty",
+      "kind": "interface",
+      "name": "ConditionProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TriggerResource.ConditionProperty.JobName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-condition.html#cfn-glue-trigger-condition-jobname"
+          },
+          "name": "jobName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TriggerResource.ConditionProperty.LogicalOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-condition.html#cfn-glue-trigger-condition-logicaloperator"
+          },
+          "name": "logicalOperator",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TriggerResource.ConditionProperty.State``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-condition.html#cfn-glue-trigger-condition-state"
+          },
+          "name": "state",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TriggerResource.PredicateProperty": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-predicate.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.PredicateProperty",
+      "kind": "interface",
+      "name": "PredicateProperty",
+      "namespace": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "parenttype": "@aws-cdk/aws-glue.cloudformation.TriggerResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``TriggerResource.PredicateProperty.Conditions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-predicate.html#cfn-glue-trigger-predicate-conditions"
+          },
+          "name": "conditions",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.ConditionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``TriggerResource.PredicateProperty.Logical``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-trigger-predicate.html#cfn-glue-trigger-predicate-logical"
+          },
+          "name": "logical",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-glue.cloudformation.TriggerResourceProps": {
+      "assembly": "@aws-cdk/aws-glue",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html"
+      },
+      "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResourceProps",
+      "kind": "interface",
+      "name": "TriggerResourceProps",
+      "namespace": "@aws-cdk/aws-glue.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Actions``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-actions"
+          },
+          "name": "actions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.ActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-name"
+          },
+          "name": "triggerName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Predicate``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-predicate"
+          },
+          "name": "predicate",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-glue.cloudformation.TriggerResource.PredicateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::Glue::Trigger.Schedule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-glue-trigger.html#cfn-glue-trigger-schedule"
+          },
+          "name": "schedule",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}

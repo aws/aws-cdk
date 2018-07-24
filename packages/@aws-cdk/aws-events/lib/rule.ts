@@ -3,7 +3,7 @@ import { EventPattern } from './event-pattern';
 import { cloudformation, RuleArn } from './events.generated';
 import { TargetInputTemplate } from './input-options';
 import { EventRuleRef } from './rule-ref';
-import { IEventRuleTarget } from './target';
+import { IEventRuleTargetProps } from './target';
 import { mergeEventPattern } from './util';
 
 export interface EventRuleProps {
@@ -57,7 +57,7 @@ export interface EventRuleProps {
      * Input will be the full matched event. If you wish to specify custom
      * target input, use `addTarget(target[, inputOptions])`.
      */
-    targets?: IEventRuleTarget[];
+    targets?: IEventRuleTargetProps[];
 }
 
 /**
@@ -97,7 +97,7 @@ export class EventRule extends EventRuleRef {
      *
      * No-op if target is undefined.
      */
-    public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
+    public addTarget(target?: IEventRuleTargetProps, inputOptions?: TargetInputTemplate) {
         if (!target) { return; }
 
         // check if a target with this ID already exists

@@ -1,0 +1,1059 @@
+{
+  "fingerprint": "zps9pm+OmSiTDQbLA6TfJBIK8QNZfk6gAwnvXFied7I=",
+  "dependencies": {
+    "@aws-cdk/aws-iam": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.CXAPI"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cxapi",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "aws-iam",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk.aws.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        }
+      },
+      "version": "0.7.3-beta"
+    },
+    "@aws-cdk/aws-ssm": {
+      "dependencies": {
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.CXAPI"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cxapi",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK.AWS.SSM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "aws-ssm",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk.aws.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        }
+      },
+      "version": "0.7.3-beta"
+    },
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.7.3-beta"
+    }
+  },
+  "externals": {
+    "@aws-cdk/aws-iam.IIdentityResource": {
+      "assembly": "@aws-cdk/aws-iam",
+      "docs": {
+        "deprecated": "Use IPrincipal"
+      },
+      "fqn": "@aws-cdk/aws-iam.IIdentityResource",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/aws-iam.IPrincipal"
+        }
+      ],
+      "kind": "interface",
+      "name": "IIdentityResource",
+      "namespace": "@aws-cdk/aws-iam"
+    },
+    "@aws-cdk/aws-iam.IPrincipal": {
+      "assembly": "@aws-cdk/aws-iam",
+      "docs": {
+        "comment": "A construct that represents an IAM principal, such as a user, group or role."
+      },
+      "fqn": "@aws-cdk/aws-iam.IPrincipal",
+      "kind": "interface",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Adds an IAM statement to the default inline policy associated with this\nprincipal. If a policy doesn't exist, it is created."
+          },
+          "name": "addToPolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/cdk.PolicyStatement"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Attaches an inline policy to this principal.\nThis is the same as calling `policy.addToXxx(principal)`."
+          },
+          "name": "attachInlinePolicy",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The policy resource to attach to this principal."
+              },
+              "name": "policy",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.Policy"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Attaches a managed policy to this principal."
+          },
+          "name": "attachManagedPolicy",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The ARN of the managed policy"
+              },
+              "name": "arn",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "IPrincipal",
+      "namespace": "@aws-cdk/aws-iam",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The IAM principal of this identity (i.e. AWS principal, service principal, etc)."
+          },
+          "immutable": true,
+          "name": "principal",
+          "type": {
+            "fqn": "@aws-cdk/cdk.PolicyPrincipal"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Arn": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "docs": {
+        "comment": "An Amazon Resource Name (ARN).\nhttp://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html"
+      },
+      "fqn": "@aws-cdk/cdk.Arn",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Creates an ARN from components.\nIf any component is the empty string,\nan empty string will be inserted into the generated ARN\nat the location that component corresponds to."
+          },
+          "name": "fromComponents",
+          "parameters": [
+            {
+              "name": "components",
+              "type": {
+                "fqn": "@aws-cdk/cdk.ArnComponents"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Arn"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Given an ARN, parses it and returns components.\n\nThe ARN it will be parsed and validated. The separator (`sep`) will be\nset to '/' if the 6th component includes a '/', in which case, `resource`\nwill be set to the value before the '/' and `resourceName` will be the\nrest. In case there is no '/', `resource` will be set to the 6th\ncomponents and `resourceName` will be set to the rest of the string.",
+            "returns": "an ArnComponents object which allows access to the various\ncomponents of the ARN."
+          },
+          "name": "parse",
+          "parameters": [
+            {
+              "name": "arn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.ArnComponents"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Given a Token evaluating to ARN, parses it and returns components.\n\nThe ARN cannot be validated, since we don't have the actual value yet\nat the time of this function call. You will have to know the separator\nand the type of ARN.\n\nThe resulting `ArnComponents` object will contain tokens for the\nsubexpressions of the ARN, not string literals.\n\nWARNING: this function cannot properly parse the complete final\nresourceName (path) out of ARNs that use '/' to both separate the\n'resource' from the 'resourceName' AND to subdivide the resourceName\nfurther. For example, in S3 ARNs:\n\n      arn:aws:s3:::my_corporate_bucket/path/to/exampleobject.png\n\nAfter parsing the resourceName will not contain 'path/to/exampleobject.png'\nbut simply 'path'. This is a limitation because there is no slicing\nfunctionality in CloudFormation templates.",
+            "returns": "an ArnComponents object which allows access to the various\ncomponents of the ARN."
+          },
+          "name": "parseToken",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The input token that contains an ARN"
+              },
+              "name": "arn",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Token"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The separator used to separate resource from resourceName"
+              },
+              "name": "sep",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Whether there is a name component in the ARN at all.\nFor example, SNS Topics ARNs have the 'resource' component contain the\ntopic name, and no 'resourceName' component."
+              },
+              "name": "hasName",
+              "type": {
+                "optional": true,
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.ArnComponents"
+          },
+          "static": true
+        }
+      ],
+      "name": "Arn",
+      "namespace": "@aws-cdk/cdk"
+    },
+    "@aws-cdk/cdk.AwsStackName": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.PseudoParameter"
+      },
+      "fqn": "@aws-cdk/cdk.AwsStackName",
+      "initializer": {
+        "initializer": true
+      },
+      "kind": "class",
+      "name": "AwsStackName",
+      "namespace": "@aws-cdk/cdk"
+    },
+    "@aws-cdk/cdk.Construct": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents the building block of the construct graph.\nWhen a construct is created, it is always added as a child"
+      },
+      "fqn": "@aws-cdk/cdk.Construct",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string with a tree representation of this construct and it's children."
+          },
+          "name": "toTreeString",
+          "parameters": [
+            {
+              "name": "depth",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path, or undefined",
+            "returns": "a child by path or undefined if not found."
+          },
+          "name": "tryFindChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path\n\nThrows an exception if the descendant is not found.",
+            "returns": "Child with the given path."
+          },
+          "name": "findChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This can be used to set contextual values.\nContext must be set before any children are added, since children may consult context info during construction.\nIf the key already exists, it will be overridden."
+          },
+          "name": "setContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The context value"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Retrieves a value from tree context.\n\nContext is usually initialized at the root, but can be overridden at any point in the tree.",
+            "returns": "The context value or undefined"
+          },
+          "name": "getContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Retrieve a value from tree-global context\n\nIt is an error if the context object is not available."
+          },
+          "name": "requireContext",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a metadata entry to this construct.\nEntries are arbitrary values and will also include a stack trace to allow tracing back to\nthe code location for when the entry was added. It can be used, for example, to include source\nmapping in CloudFormation templates to improve diagnostics."
+          },
+          "name": "addMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "a string denoting the type of metadata"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the value of the metadata (can be a Token). If null/undefined, metadata will not be added."
+              },
+              "name": "data",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)"
+              },
+              "name": "from",
+              "type": {
+                "optional": true,
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { \"aws:cdk:info\": <message> } metadata entry to this construct.\nThe toolkit will display the info message when apps are synthesized."
+          },
+          "name": "addInfo",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The info message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { warning: <message> } metadata entry to this construct.\nThe toolkit will display the warning when an app is synthesized, or fail\nif run in --strict mode."
+          },
+          "name": "addWarning",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The warning message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an { error: <message> } metadata entry to this construct.\nThe toolkit will fail synthesis when errors are reported."
+          },
+          "name": "addError",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The error message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis.",
+            "returns": "An array of validation error messages, or an empty array if there the construct is valid."
+          },
+          "name": "validate",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Invokes 'validate' on all child constructs and then on this construct (depth-first).",
+            "returns": "A list of validation errors. If the list is empty, all constructs are valid."
+          },
+          "name": "validateTree",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.ValidationError"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the ancestors (including self) of this Construct up until and excluding the indicated component"
+          },
+          "name": "ancestors",
+          "parameters": [
+            {
+              "name": "upTo",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "aws": "-cdk/runtime`` instead.",
+            "comment": "Throws if the `props` bag doesn't include the property `name`.\nIn the future we can add some type-checking here, maybe even auto-generate during compilation.",
+            "deprecated": "use ``requireProperty`` from ``"
+          },
+          "name": "required",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The props bag."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the required property."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a child construct to this node.",
+            "returns": "The resolved path part name of the child"
+          },
+          "name": "addChild",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The child construct"
+              },
+              "name": "child",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "childName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Locks this construct from allowing more children to be added. After this\ncall, no more children can be added to this construct or to any children."
+          },
+          "name": "lock",
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Unlocks this costruct and allows mutations (adding children)."
+          },
+          "name": "unlock",
+          "protected": true
+        }
+      ],
+      "name": "Construct",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the parent of this node or undefined if this is a root node."
+          },
+          "immutable": true,
+          "name": "parent",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this construct"
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "All direct children of this construct."
+          },
+          "immutable": true,
+          "name": "children",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the path of all constructs from root to this construct, in string form.",
+            "returns": "/-separated path of this Construct."
+          },
+          "immutable": true,
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "An array of metadata objects associated with this construct.\nThis can be used, for example, to implement support for deprecation notices, source mapping, etc."
+          },
+          "immutable": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.MetadataEntry"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.PseudoParameter": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/cdk.PseudoParameter",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "PseudoParameter",
+      "namespace": "@aws-cdk/cdk"
+    },
+    "@aws-cdk/cdk.Token": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value\nin case, for example, that it requires some context or late-bound data."
+      },
+      "fqn": "@aws-cdk/cdk.Token",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "returns": "The resolved value for this token."
+          },
+          "name": "resolve",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Token",
+      "namespace": "@aws-cdk/cdk"
+    }
+  },
+  "name": "@aws-cdk/rtv",
+  "readme": {
+    "markdown": "## Runtime Values\n\nThe CDK allows apps to advertise values from __construction time__ to __runtime\ncode__. For example, consider code in a Lambda function which needs to know the\nURL of the SQS queue created as part of your CDK app.\n\nRuntime values are advertised as textual SSM parameters with the following key:\n\n```\n/rtv/<stack-name>/<package>/<name>\n```\n\nTherefore, in order to advertise a value you will need to:\n\n1. Make the current stack name available as an environment variable to your\n   runtime code. The convention is to use `RTV_STACK_NAME`.\n2. Use the `RuntimeValue` construct in order to create the SSM parameter and\n   specify least-privilege permissions.\n\nFor example, say we want to publish a queue's URL to a lambda function.\n\n### Construction Code\n\n```ts\nimport { RuntimeValue } from '@aws-cdk/rtv'\n\nconst queue = new Queue(this, 'MyQueue', { /* props.... */ });\nconst fn = new Lambda(this, 'MyFunction', { /* props... */ });\nconst fleet = new Fleet(this, 'MyFleet', { /* props... */ });\n\n// this line defines an AWS::SSM::Parameter resource with the\n// key \"/rtv/<stack-name>/com.myorg/MyQueueURL\" and the actual queue URL as value\nconst queueUrlRtv = new RuntimeValue(this, 'QueueRTV', {\n    package: 'com.myorg',\n    name: 'MyQueueURL',\n    value: queue.queueUrl\n});\n\n// this line adds read permissions for this SSM parameter to the policies associated with\n// the IAM roles of the Lambda function and the EC2 fleet\nqueueUrlRtv.grantRead(fn.role);\nqueueUrlRtv.grantRead(fleet.role);\n\n// adds the `RTV_STACK_NAME` to the environment of the lambda function\n// and the fleet (via user-data)\nfn.env(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);\nfleet.env(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);\n```\n\n### Runtime Code\n\nThen, your runtime code will need to use the SSM Parameter Store AWS SDK in\norder to format the SSM parameter key and read the value. In future releases, we\nwill provide runtime libraries to make this easy.\n"
+  },
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.RTV"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "rtv",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.rtv"
+    },
+    "js": {
+      "npm": "@aws-cdk/rtv"
+    }
+  },
+  "types": {
+    "@aws-cdk/rtv.ParameterName": {
+      "assembly": "@aws-cdk/rtv",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "docs": {
+        "comment": "The full name of the runtime value's SSM parameter."
+      },
+      "fqn": "@aws-cdk/rtv.ParameterName",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "ParameterName",
+      "namespace": "@aws-cdk/rtv"
+    },
+    "@aws-cdk/rtv.RuntimeValue": {
+      "assembly": "@aws-cdk/rtv",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "Defines a value published from construction code which needs to be accessible\nby runtime code."
+      },
+      "fqn": "@aws-cdk/rtv.RuntimeValue",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/rtv.RuntimeValueProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Grants a principal read permissions on this runtime value."
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The principal (e.g. Role, User, Group)"
+              },
+              "name": "principal",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IIdentityResource",
+                "optional": true
+              }
+            }
+          ]
+        }
+      ],
+      "name": "RuntimeValue",
+      "namespace": "@aws-cdk/rtv",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The recommended name of the environment variable to use to set the stack name\nfrom which the runtime value is published."
+          },
+          "immutable": true,
+          "name": "ENV_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "comment": "The value to assign to the `RTV_STACK_NAME` environment variable."
+          },
+          "immutable": true,
+          "name": "ENV_VALUE",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.AwsStackName"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of the runtime parameter."
+          },
+          "immutable": true,
+          "name": "parameterName",
+          "type": {
+            "fqn": "@aws-cdk/rtv.ParameterName"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The ARN fo the SSM parameter used for this runtime value."
+          },
+          "immutable": true,
+          "name": "parameterArn",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Arn"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/rtv.RuntimeValueProps": {
+      "assembly": "@aws-cdk/rtv",
+      "datatype": true,
+      "fqn": "@aws-cdk/rtv.RuntimeValueProps",
+      "kind": "interface",
+      "name": "RuntimeValueProps",
+      "namespace": "@aws-cdk/rtv",
+      "properties": [
+        {
+          "docs": {
+            "comment": "A namespace for the runtime value.\nIt is recommended to use the name of the library/package that advertises this value."
+          },
+          "name": "package",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The value to advertise. Can be either a primitive value or a token."
+          },
+          "name": "value",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}

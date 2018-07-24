@@ -23,7 +23,7 @@ export interface LambdaRefProps {
     role?: iam.Role;
 }
 
-export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTarget, logs.ILogSubscriptionDestination {
+export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTargetProps, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.

@@ -1,0 +1,29 @@
+using Amazon.CDK;
+using AWS.Jsii.Runtime.Deputy;
+using System.Collections.Generic;
+
+namespace Amazon.CDK.AWS.ECS.cloudformation.TaskDefinitionResource
+{
+    /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html </remarks>
+    [JsiiInterface(typeof(ILogConfigurationProperty), "@aws-cdk/aws-ecs.cloudformation.TaskDefinitionResource.LogConfigurationProperty")]
+    public interface ILogConfigurationProperty
+    {
+        /// <summary>``TaskDefinitionResource.LogConfigurationProperty.LogDriver``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-containerdefinition-logconfiguration-logdriver </remarks>
+        [JsiiProperty("logDriver", "{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}")]
+        object LogDriver
+        {
+            get;
+            set;
+        }
+
+        /// <summary>``TaskDefinitionResource.LogConfigurationProperty.Options``</summary>
+        /// <remarks>link: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions-logconfiguration.html#cfn-ecs-taskdefinition-containerdefinition-logconfiguration-options </remarks>
+        [JsiiProperty("options", "{\"union\":{\"types\":[{\"fqn\":\"@aws-cdk/cdk.Token\"},{\"collection\":{\"kind\":\"map\",\"elementtype\":{\"union\":{\"types\":[{\"primitive\":\"string\"},{\"fqn\":\"@aws-cdk/cdk.Token\"}]}}}}]},\"optional\":true}")]
+        object Options
+        {
+            get;
+            set;
+        }
+    }
+}
