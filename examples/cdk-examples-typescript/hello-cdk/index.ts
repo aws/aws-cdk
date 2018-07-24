@@ -1,21 +1,21 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
-import { KeyAttributeType, Table } from '@aws-cdk/dynamodb';
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+import cdk = require('@aws-cdk/cdk');
 
-class HelloCDK extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class HelloCDK extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-        const table = new Table(this, 'Table', {
+        const table = new dynamodb.Table(this, 'Table', {
             readCapacity: 1,
             writeCapacity: 1
         });
 
-        table.addPartitionKey('ID', KeyAttributeType.String);
-        table.addSortKey('Timestamp', KeyAttributeType.Number);
+        table.addPartitionKey('ID', dynamodb.KeyAttributeType.String);
+        table.addSortKey('Timestamp', dynamodb.KeyAttributeType.Number);
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 new HelloCDK(app, 'Hello');
 

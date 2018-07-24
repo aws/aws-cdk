@@ -1,10 +1,10 @@
-import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from "@aws-cdk/cx-api";
-import { CloudFormation } from "aws-sdk";
+import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import { CloudFormation } from 'aws-sdk';
 import fs = require('fs-extra');
 import path = require('path');
-import { ToolkitInfo } from "./api/toolkit-info";
+import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
-import { debug, success } from "./logging";
+import { debug, success } from './logging';
 
 export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
     const assets = findAssets(stack.metadata);

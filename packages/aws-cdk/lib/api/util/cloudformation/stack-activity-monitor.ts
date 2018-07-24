@@ -1,7 +1,7 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import * as aws from 'aws-sdk';
-import * as colors from 'colors/safe';
-import { format } from 'util';
+import cxapi = require('@aws-cdk/cx-api');
+import aws = require('aws-sdk');
+import colors = require('colors/safe');
+import util = require('util');
 
 interface StackActivity {
     readonly event: aws.CloudFormation.StackEvent;
@@ -148,7 +148,7 @@ export class StackActivityMonitor {
             suffix = `\n${md.entry.data} was created at: ${md.path}\n\t${md.entry.trace.join('\n\t\\_ ')}`;
         }
 
-        process.stderr.write(format(color(`%s %s  %s  [%s] %s %s%s\n`),
+        process.stderr.write(util.format(color(`%s %s  %s  [%s] %s %s%s\n`),
                     this.progress(),
                     e.Timestamp,
                     padRight(18, "" + e.ResourceStatus),
@@ -166,10 +166,10 @@ export class StackActivityMonitor {
     private progress(): string {
         if (this.resourcesTotal == null) {
             // Don't have total, show simple count and hope the human knows
-            return format('[%s]', this.resourcesDone);
+            return util.format('[%s]', this.resourcesDone);
         }
 
-        return format('[%s/%s]',
+        return util.format('[%s/%s]',
                 padLeft(this.resourceDigits, this.resourcesDone.toString()),
                 padLeft(this.resourceDigits, this.resourcesTotal != null ? this.resourcesTotal.toString() : '?'));
     }
@@ -182,7 +182,7 @@ export class StackActivityMonitor {
             return;
         }
 
-        process.stderr.write(format(colors.blue('%s Currently in progress: %s\n'),
+        process.stderr.write(util.format(colors.blue('%s Currently in progress: %s\n'),
             this.progress(),
             Array.from(this.resourcesInProgress).join(', ')));
 

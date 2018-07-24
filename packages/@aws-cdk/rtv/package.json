@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.rtv",
-      "dotnet": "Amazon.Cdk.Rtv"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.rtv",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "rtv"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.RTV"
+      }
     }
   },
   "repository": {
@@ -35,16 +43,16 @@
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
     "pkglint": "^0.7.3-beta",
+    "@aws-cdk/aws-ec2": "^0.7.3-beta",
+    "@aws-cdk/aws-lambda": "^0.7.3-beta",
+    "@aws-cdk/aws-sqs": "^0.7.3-beta",
     "@aws-cdk/assert": "^0.7.3-beta",
-    "@aws-cdk/ec2": "^0.7.3-beta",
-    "@aws-cdk/sqs": "^0.7.3-beta",
-    "@aws-cdk/lambda": "^0.7.3-beta",
     "cdk-build-tools": "^0.7.3-beta",
     "cdk-integ-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/core": "^0.7.3-beta",
-    "@aws-cdk/iam": "^0.7.3-beta",
-    "@aws-cdk/ssm": "^0.7.3-beta"
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-ssm": "^0.7.3-beta"
   }
 }

@@ -10,7 +10,7 @@ The library bundles each AWS service resources in a dedicated namespace. Simply 
 with the classes it defines:
 
 ```ts
-import { Construct } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/cdk';
 import { kms, s3 } from '@aws-cdk/resources';
 
 /**

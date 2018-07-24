@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import colors = require('colors/safe');
 import { data } from './logging';
 
 let previousTemplate: any = { };

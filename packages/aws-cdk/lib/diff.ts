@@ -1,8 +1,6 @@
-import {
-    diffTemplate, formatDifferences
-} from '@aws-cdk/cloudformation-diff';
-import { SynthesizedStack } from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import cfnDiff = require('@aws-cdk/cloudformation-diff');
+import cxapi = require('@aws-cdk/cx-api');
+import colors = require('colors/safe');
 import { print } from './logging';
 
 /**
@@ -13,10 +11,10 @@ import { print } from './logging';
  *
  * @returns the count of differences that were rendered.
  */
-export function printStackDiff(oldTemplate: any, newTemplate: SynthesizedStack): number {
-    const diff = diffTemplate(oldTemplate, newTemplate.template);
+export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack): number {
+    const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
     if (!diff.isEmpty) {
-        formatDifferences(process.stderr, diff);
+        cfnDiff.formatDifferences(process.stderr, diff);
     } else {
         print(colors.green('There were no differences'));
     }
