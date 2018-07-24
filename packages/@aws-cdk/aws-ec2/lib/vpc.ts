@@ -268,7 +268,7 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * Mapping of NatGateway by AZ
      */
-    private natGatewayByAZ: Obj<Token> = {};
+    private natGatewayByAZ: Obj<cdk.Token> = {};
 
     /**
      * Subnet configurations for this VPC
@@ -313,7 +313,7 @@ export class VpcNetwork extends VpcNetworkRef {
             tags
         });
 
-        this.availabilityZones = new AvailabilityZoneProvider(this).availabilityZones;
+        this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
         this.availabilityZones.sort();
         if (props.maxAZs != null) {
            this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);

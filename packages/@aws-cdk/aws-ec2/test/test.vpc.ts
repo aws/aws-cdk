@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import {  AvailabilityZoneProvider, Stack } from '@aws-cdk/cdk';
+import { AvailabilityZoneProvider, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { DefaultInstanceTenancy, SubnetType, VpcNetwork } from '../lib';
 
