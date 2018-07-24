@@ -1,4 +1,7 @@
+import { Stack } from '@aws-cdk/core';
+import { Bucket } from '@aws-cdk/s3';
 import { Test } from 'nodeunit';
+import { AmazonS3Source, Pipeline, Stage } from '../lib';
 import { validateName } from '../lib/validation';
 
 interface NameValidationTestCase {
@@ -28,4 +31,54 @@ export = {
 
         test.done();
     },
+
+    'Stage validation': {
+        'should fail if Stage has no Actions'(test: Test) {
+            const stage = stageForTesting();
+
+            test.deepEqual(stage.validate().length, 1);
+
+            test.done();
+        }
+    },
+
+    'Pipeline validation': {
+        'should fail if Pipeline has no Stages'(test: Test) {
+            const stack = new Stack();
+            const pipeline = new Pipeline(stack, 'Pipeline');
+
+            test.deepEqual(pipeline.validate().length, 1);
+
+            test.done();
+        },
+
+        'should fail if Pipeline has a Source Action in a non-first Stage'(test: Test) {
+            const stack = new Stack();
+            const pipeline = new Pipeline(stack, 'Pipeline');
+            const firstStage = new Stage(pipeline, 'FirstStage');
+            const secondStage = new Stage(pipeline, 'SecondStage');
+
+            const bucket = new Bucket(stack, 'PipelineBucket');
+            new AmazonS3Source(firstStage, 'FirstAction', {
+                artifactName: 'FirstArtifact',
+                bucket,
+                bucketKey: 'key',
+            });
+            new AmazonS3Source(secondStage, 'SecondAction', {
+                artifactName: 'SecondAction',
+                bucket,
+                bucketKey: 'key',
+            });
+
+            test.deepEqual(pipeline.validate().length, 1);
+
+            test.done();
+        }
+    }
 };
+
+function stageForTesting(): Stage {
+    const stack = new Stack();
+    const pipeline = new Pipeline(stack, 'pipeline');
+    return new Stage(pipeline, 'stage');
+}
