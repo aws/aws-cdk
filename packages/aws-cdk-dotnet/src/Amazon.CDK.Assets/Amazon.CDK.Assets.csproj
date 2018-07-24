@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors></Authors>
+    <Company></Company>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="aws-cdk-assets-0.7.3-beta.tgz" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWS.Jsii.Runtime" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Amazon.CDK.AWS.IAM\Amazon.CDK.AWS.IAM.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.AWS.S3\Amazon.CDK.AWS.S3.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.AWS.IAM\Amazon.CDK.AWS.IAM.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.AWS.KMS\Amazon.CDK.AWS.KMS.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.AWS.IAM\Amazon.CDK.AWS.IAM.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK\Amazon.CDK.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+    <ProjectReference Include="..\Amazon.CDK.CXAPI\Amazon.CDK.CXAPI.csproj" />
+  </ItemGroup>
+</Project>

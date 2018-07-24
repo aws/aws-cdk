@@ -34,7 +34,7 @@ export interface BuildProjectRefProps {
  * (or one defined in a different CDK Stack),
  * use the {@link import} method.
  */
-export abstract class BuildProjectRef extends cdk.Construct implements events.IEventRuleTarget {
+export abstract class BuildProjectRef extends cdk.Construct implements events.IEventRuleTargetProps {
     /**
      * Import a Project defined either outside the CDK,
      * or in a different CDK Stack
@@ -97,7 +97,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
      *
      * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
      */
-    public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onStateChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = new events.EventRule(this, name, options);
         rule.addTarget(target);
         rule.addEventPattern({
@@ -118,7 +118,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
      *
      * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-build-notifications.html
      */
-    public onPhaseChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onPhaseChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = new events.EventRule(this, name, options);
         rule.addTarget(target);
         rule.addEventPattern({
@@ -136,7 +136,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Defines an event rule which triggers when a build starts.
      */
-    public onBuildStarted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onBuildStarted(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({
             detail: {
@@ -149,7 +149,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Defines an event rule which triggers when a build fails.
      */
-    public onBuildFailed(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onBuildFailed(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({
             detail: {
@@ -162,7 +162,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Defines an event rule which triggers when a build completes successfully.
      */
-    public onBuildSucceeded(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onBuildSucceeded(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({
             detail: {

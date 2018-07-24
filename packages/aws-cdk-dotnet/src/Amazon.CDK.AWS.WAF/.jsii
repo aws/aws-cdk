@@ -1,0 +1,2720 @@
+{
+  "fingerprint": "TRXZc1rVQ3GUoDeIejHM7BcTzdx/z9MlyKcLFsGcgho=",
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.7.3-beta"
+    }
+  },
+  "externals": {
+    "@aws-cdk/cdk.Construct": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents the building block of the construct graph.\nWhen a construct is created, it is always added as a child"
+      },
+      "fqn": "@aws-cdk/cdk.Construct",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string with a tree representation of this construct and it's children."
+          },
+          "name": "toTreeString",
+          "parameters": [
+            {
+              "name": "depth",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path, or undefined",
+            "returns": "a child by path or undefined if not found."
+          },
+          "name": "tryFindChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path\n\nThrows an exception if the descendant is not found.",
+            "returns": "Child with the given path."
+          },
+          "name": "findChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This can be used to set contextual values.\nContext must be set before any children are added, since children may consult context info during construction.\nIf the key already exists, it will be overridden."
+          },
+          "name": "setContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The context value"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Retrieves a value from tree context.\n\nContext is usually initialized at the root, but can be overridden at any point in the tree.",
+            "returns": "The context value or undefined"
+          },
+          "name": "getContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Retrieve a value from tree-global context\n\nIt is an error if the context object is not available."
+          },
+          "name": "requireContext",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a metadata entry to this construct.\nEntries are arbitrary values and will also include a stack trace to allow tracing back to\nthe code location for when the entry was added. It can be used, for example, to include source\nmapping in CloudFormation templates to improve diagnostics."
+          },
+          "name": "addMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "a string denoting the type of metadata"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the value of the metadata (can be a Token). If null/undefined, metadata will not be added."
+              },
+              "name": "data",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)"
+              },
+              "name": "from",
+              "type": {
+                "optional": true,
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { \"aws:cdk:info\": <message> } metadata entry to this construct.\nThe toolkit will display the info message when apps are synthesized."
+          },
+          "name": "addInfo",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The info message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { warning: <message> } metadata entry to this construct.\nThe toolkit will display the warning when an app is synthesized, or fail\nif run in --strict mode."
+          },
+          "name": "addWarning",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The warning message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an { error: <message> } metadata entry to this construct.\nThe toolkit will fail synthesis when errors are reported."
+          },
+          "name": "addError",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The error message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis.",
+            "returns": "An array of validation error messages, or an empty array if there the construct is valid."
+          },
+          "name": "validate",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Invokes 'validate' on all child constructs and then on this construct (depth-first).",
+            "returns": "A list of validation errors. If the list is empty, all constructs are valid."
+          },
+          "name": "validateTree",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.ValidationError"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the ancestors (including self) of this Construct up until and excluding the indicated component"
+          },
+          "name": "ancestors",
+          "parameters": [
+            {
+              "name": "upTo",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "aws": "-cdk/runtime`` instead.",
+            "comment": "Throws if the `props` bag doesn't include the property `name`.\nIn the future we can add some type-checking here, maybe even auto-generate during compilation.",
+            "deprecated": "use ``requireProperty`` from ``"
+          },
+          "name": "required",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The props bag."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the required property."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a child construct to this node.",
+            "returns": "The resolved path part name of the child"
+          },
+          "name": "addChild",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The child construct"
+              },
+              "name": "child",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "childName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Locks this construct from allowing more children to be added. After this\ncall, no more children can be added to this construct or to any children."
+          },
+          "name": "lock",
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Unlocks this costruct and allows mutations (adding children)."
+          },
+          "name": "unlock",
+          "protected": true
+        }
+      ],
+      "name": "Construct",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the parent of this node or undefined if this is a root node."
+          },
+          "immutable": true,
+          "name": "parent",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this construct"
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "All direct children of this construct."
+          },
+          "immutable": true,
+          "name": "children",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the path of all constructs from root to this construct, in string form.",
+            "returns": "/-separated path of this Construct."
+          },
+          "immutable": true,
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "An array of metadata objects associated with this construct.\nThis can be used, for example, to implement support for deprecation notices, source mapping, etc."
+          },
+          "immutable": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.MetadataEntry"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.IDependable": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a construct that can be \"depended on\" via `addDependency`."
+      },
+      "fqn": "@aws-cdk/cdk.IDependable",
+      "kind": "interface",
+      "name": "IDependable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Referenceable": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.StackElement"
+      },
+      "docs": {
+        "comment": "A construct, which is part of a stack and can be referenced using it's logical ID\nusing the CloudFormation intrinsic function { Ref: ID }."
+      },
+      "fqn": "@aws-cdk/cdk.Referenceable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Referenceable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID."
+          },
+          "immutable": true,
+          "name": "ref",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Resource": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Referenceable"
+      },
+      "docs": {
+        "comment": "Represents a CloudFormation resource."
+      },
+      "fqn": "@aws-cdk/cdk.Resource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a resource construct."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/cdk.ResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "A decoration used to create a CloudFormation attribute property."
+          },
+          "name": "attribute",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Custom name for the attribute (default is the name of the property)\nNOTE: we return \"any\" here to satistfy jsii, which doesn't support lambdas."
+              },
+              "name": "customName",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Returns a token for an runtime attribute of this resource.\nIdeally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility\nin case there is no generated attribute."
+          },
+          "name": "getAtt",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The name of the attribute."
+              },
+              "name": "attributeName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a dependency on another resource."
+          },
+          "name": "addDependency",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The other resource."
+              },
+              "name": "other",
+              "type": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Emits CloudFormation for this resource."
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "Resource",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Options for this resource, such as condition, update policy etc."
+          },
+          "immutable": true,
+          "name": "options",
+          "type": {
+            "fqn": "@aws-cdk/cdk.ResourceOptions"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource type."
+          },
+          "immutable": true,
+          "name": "resourceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource properties"
+          },
+          "immutable": true,
+          "name": "properties",
+          "protected": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.StackElement": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An element of a CloudFormation stack."
+      },
+      "fqn": "@aws-cdk/cdk.StackElement",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cdk.IDependable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged\nat the root level to ensure there are no identity conflicts.\n\nFor example, a Resource class will return something like:\n{\n     Resources: {\n         [this.logicalId]: {\n             Type: this.resourceType,\n             Properties: this.props,\n             Condition: this.condition\n         }\n     }\n}"
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "StackElement",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The logical ID for this CloudFormation stack element"
+          },
+          "immutable": true,
+          "name": "logicalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The stack this Construct has been made a part of"
+          },
+          "name": "stack",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.Stack"
+          }
+        },
+        {
+          "docs": {
+            "returns": "the stack trace of the point where this Resource was created from, sourced\nfrom the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most\nnode +internal+ entries filtered."
+          },
+          "immutable": true,
+          "name": "creationStackTrace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the path with respect to the stack"
+          },
+          "immutable": true,
+          "name": "stackPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Token": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value\nin case, for example, that it requires some context or late-bound data."
+      },
+      "fqn": "@aws-cdk/cdk.Token",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "returns": "The resolved value for this token."
+          },
+          "name": "resolve",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Token",
+      "namespace": "@aws-cdk/cdk"
+    }
+  },
+  "name": "@aws-cdk/aws-waf",
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.WAF"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "aws-waf",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.aws.waf"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-waf"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::ByteMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ByteMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ByteMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ByteMatchSetResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty",
+        "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.FieldToMatchProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty",
+      "kind": "interface",
+      "name": "ByteMatchTupleProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.PositionalConstraint``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-positionalconstraint"
+          },
+          "name": "positionalConstraint",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TargetString``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-targetstring"
+          },
+          "name": "targetString",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TargetStringBase64``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-targetstringbase64"
+          },
+          "name": "targetStringBase64",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.ByteMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ByteMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResourceProps",
+      "kind": "interface",
+      "name": "ByteMatchSetResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::ByteMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-name"
+          },
+          "name": "byteMatchSetName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::ByteMatchSet.ByteMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-bytematchtuples"
+          },
+          "name": "byteMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.ByteMatchSetResource.ByteMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.IPSetResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.IPSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::IPSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``IPSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``IPSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.IPSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "IPSetResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.IPSetResource.IPSetDescriptorProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.IPSetResource.IPSetDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.IPSetResource.IPSetDescriptorProperty",
+      "kind": "interface",
+      "name": "IPSetDescriptorProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.IPSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.IPSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``IPSetResource.IPSetDescriptorProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html#cfn-waf-ipset-ipsetdescriptors-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``IPSetResource.IPSetDescriptorProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html#cfn-waf-ipset-ipsetdescriptors-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.IPSetResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.IPSetResourceProps",
+      "kind": "interface",
+      "name": "IPSetResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::IPSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-name"
+          },
+          "name": "ipSetName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::IPSet.IPSetDescriptors``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-ipsetdescriptors"
+          },
+          "name": "ipSetDescriptors",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.IPSetResource.IPSetDescriptorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.RuleResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.RuleResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::Rule``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``RuleResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``RuleResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.RuleResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "RuleResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.RuleResource.PredicateProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.RuleResource.PredicateProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.RuleResource.PredicateProperty",
+      "kind": "interface",
+      "name": "PredicateProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.RuleResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.RuleResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.DataId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-dataid"
+          },
+          "name": "dataId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.Negated``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-negated"
+          },
+          "name": "negated",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``RuleResource.PredicateProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.RuleResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.RuleResourceProps",
+      "kind": "interface",
+      "name": "RuleResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::Rule.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::Rule.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-name"
+          },
+          "name": "ruleName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::Rule.Predicates``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-predicates"
+          },
+          "name": "predicates",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.RuleResource.PredicateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::SizeConstraintSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SizeConstraintSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SizeConstraintSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SizeConstraintSetResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.FieldToMatchProperty",
+        "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.SizeConstraintProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.SizeConstraintProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.SizeConstraintProperty",
+      "kind": "interface",
+      "name": "SizeConstraintProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.ComparisonOperator``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-comparisonoperator"
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.Size``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-size"
+          },
+          "name": "size",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SizeConstraintSetResource.SizeConstraintProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResourceProps",
+      "kind": "interface",
+      "name": "SizeConstraintSetResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::SizeConstraintSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-name"
+          },
+          "name": "sizeConstraintSetName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::SizeConstraintSet.SizeConstraints``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-sizeconstraints"
+          },
+          "name": "sizeConstraints",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.SizeConstraintSetResource.SizeConstraintProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::SqlInjectionMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``SqlInjectionMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``SqlInjectionMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "SqlInjectionMatchSetResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty",
+        "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty",
+      "kind": "interface",
+      "name": "SqlInjectionMatchTupleProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResourceProps",
+      "kind": "interface",
+      "name": "SqlInjectionMatchSetResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::SqlInjectionMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-name"
+          },
+          "name": "sqlInjectionMatchSetName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::SqlInjectionMatchSet.SqlInjectionMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples"
+          },
+          "name": "sqlInjectionMatchTuples",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.SqlInjectionMatchSetResource.SqlInjectionMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.WebACLResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::WebACL``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``WebACLResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``WebACLResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "WebACLResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.WebACLResource.ActivatedRuleProperty",
+        "@aws-cdk/aws-waf.cloudformation.WebACLResource.WafActionProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.WebACLResource.ActivatedRuleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource.ActivatedRuleProperty",
+      "kind": "interface",
+      "name": "ActivatedRuleProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.WebACLResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.WebACLResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``WebACLResource.ActivatedRuleProperty.Action``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-action"
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource.WafActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``WebACLResource.ActivatedRuleProperty.Priority``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-priority"
+          },
+          "name": "priority",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``WebACLResource.ActivatedRuleProperty.RuleId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-ruleid"
+          },
+          "name": "ruleId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.WebACLResource.WafActionProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-action.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource.WafActionProperty",
+      "kind": "interface",
+      "name": "WafActionProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.WebACLResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.WebACLResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``WebACLResource.WafActionProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-action.html#cfn-waf-webacl-action-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.WebACLResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResourceProps",
+      "kind": "interface",
+      "name": "WebACLResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::WebACL.DefaultAction``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-defaultaction"
+          },
+          "name": "defaultAction",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource.WafActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::WebACL.MetricName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-metricname"
+          },
+          "name": "metricName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::WebACL.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-name"
+          },
+          "name": "webAclName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::WebACL.Rules``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-rules"
+          },
+          "name": "rules",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.WebACLResource.ActivatedRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::WAF::XssMatchSet``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``XssMatchSetResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``XssMatchSetResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "XssMatchSetResource",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.FieldToMatchProperty",
+        "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.XssMatchTupleProperty"
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.FieldToMatchProperty",
+      "kind": "interface",
+      "name": "FieldToMatchProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``XssMatchSetResource.FieldToMatchProperty.Data``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch-data"
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``XssMatchSetResource.FieldToMatchProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch-type"
+          },
+          "name": "type",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.XssMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.XssMatchTupleProperty",
+      "kind": "interface",
+      "name": "XssMatchTupleProperty",
+      "namespace": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource",
+      "parenttype": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``XssMatchSetResource.XssMatchTupleProperty.FieldToMatch``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch"
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``XssMatchSetResource.XssMatchTupleProperty.TextTransformation``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html#cfn-waf-xssmatchset-xssmatchtuple-texttransformation"
+          },
+          "name": "textTransformation",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-waf.cloudformation.XssMatchSetResourceProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html"
+      },
+      "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResourceProps",
+      "kind": "interface",
+      "name": "XssMatchSetResourceProps",
+      "namespace": "@aws-cdk/aws-waf.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::WAF::XssMatchSet.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-name"
+          },
+          "name": "xssMatchSetName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::WAF::XssMatchSet.XssMatchTuples``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-xssmatchtuples"
+          },
+          "name": "xssMatchTuples",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.cloudformation.XssMatchSetResource.XssMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}
