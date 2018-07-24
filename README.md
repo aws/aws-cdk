@@ -74,7 +74,7 @@ Set-ExecutionPolicy Unrestricted
 Install (or update) `aws-cdk` and `aws-cdk-docs` globally
 
 ```shell
-y-npm install --global aws-cdk aws-cdk-docs
+y-npm install --global aws-cdk aws-cdk-docs # sudo might be needed
 ```
 
 > `y-npm` is an npm wrapper which allows installing npm modules from a local repository located at `~/.cdk/y/npm`. `y-npm` will fall back to the public npm repository if a module cannot be found locally.
