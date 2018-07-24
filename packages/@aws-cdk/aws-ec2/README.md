@@ -25,6 +25,155 @@ into all private subnets, and provide a parameter called `vpcPlacement` to
 allow you to override the placement. [Read more about
 subnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).
 
+
+#### Advanced Subnet Configuration
+If you require the ability to configure subnets the `VpcNetwork` can be
+customized with `SubnetConfiguration` array. This is best explained by an
+example:
+
+```ts
+import ec2 = require('@aws-cdk/aws-ec2');
+
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/21',
+  subnetConfiguration: [
+    {
+      cidrMask: 24,
+      name: 'Ingress',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      cidrMask: 24,
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 28,
+      name: 'Database',
+      subnetType: SubnetType.Isolated,
+    }
+  ],
+});
+```
+
+The example above is one possible configuration, but the user can use the
+constructs above to implement many other network configurations.
+
+The `VpcNetwork` from the above configuration in a Region with three
+availability zones will be the following:
+ * IngressSubnet1: 10.0.0.0/24
+ * IngressSubnet2: 10.0.1.0/24
+ * IngressSubnet3: 10.0.2.0/24
+ * ApplicationSubnet1: 10.0.3.0/24
+ * ApplicationSubnet2: 10.0.4.0/24
+ * ApplicationSubnet3: 10.0.5.0/24
+ * DatabaseSubnet1: 10.0.6.0/28
+ * DatabaseSubnet2: 10.0.6.16/28
+ * DatabaseSubnet3: 10.0.6.32/28
+
+Each `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a
+route to the NAT Gateway in the same availability zone. Each `Isolated` subnet
+will not have a route to the internet, but is routeable inside the VPC. The
+numbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1
+and ApplicationSubnet1 will be in the same avialbility zone).
+
+`Isolated` Subnets provide simplified secure networking principles, but come at
+an operational complexity. The lack of an internet route means that if you deploy
+instances in this subnet you will not be able to patch from the internet, this is
+commonly reffered to as 
+[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/). 
+Features such as
+[cfn-signal](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
+are also unavailable. Using these subnets for managed services (RDS,
+Elasticache, Redshift) is a very practical use because the managed services do
+not incur additional operational overhead.
+
+Many times when you plan to build an application you don't know how many
+instances of the application you will need and therefore you don't know how much
+IP space to allocate. For example, you know the application will only have
+Elastic Loadbalancers in the public subnets and you know you will have 1-3 RDS
+databases for your data tier, and the rest of the IP space should just be evenly
+distributed for the application.
+
+```ts
+import ec2 = require('@aws-cdk/aws-ec2');
+
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/16',
+  subnetConfiguration: [
+    {
+      cidrMask: 26,
+      name: 'Public',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 27,
+      name: 'Database',
+      subnetType: SubnetType.Isolated,
+    }
+  ],
+});
+```
+
+The `VpcNetwork` from the above configuration in a Region with three
+availability zones will be the following:
+ * PublicSubnet1: 10.0.0.0/26
+ * PublicSubnet2: 10.0.0.64/26
+ * PublicSubnet3: 10.0.2.128/26
+ * DatabaseSubnet1: 10.0.0.192/27
+ * DatabaseSubnet2: 10.0.0.224/27
+ * DatabaseSubnet3: 10.0.1.0/27
+ * ApplicationSubnet1: 10.0.64.0/18
+ * ApplicationSubnet2: 10.0.128.0/18
+ * ApplicationSubnet3: 10.0.192.0/18
+
+Any subnet configuration without a `cidrMask` will be counted up and allocated
+evenly across the remaining IP space.
+
+Teams may also become cost conscious and be willing to trade availability for
+cost. For example, in your test environments perhaps you would like the same VPC
+as production, but instead of 3 NAT Gateways you would like only 1. This will
+save on the cost, but trade the 3 availability zone to a 1 for all egress
+traffic. This can be accomplished with a single parameter configuration:
+
+```ts
+import ec2 = require('@aws-cdk/aws-ec2');
+
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
+  cidr: '10.0.0.0/16',
+  natGateways: 1,
+  subnetConfiguration: [
+    {
+      cidrMask: 26,
+      name: 'Public',
+      subnetType: SubnetType.Public,
+      natGateway: true,
+    },
+    {
+      name: 'Application',
+      subnetType: SubnetType.Private,
+    },
+    {
+      cidrMask: 27,
+      name: 'Database',
+      subnetType: SubnetType.Isolated,
+    }
+  ],
+});
+```
+
+The `VpcNetwork` above will have the exact same subnet definitions as listed
+above. However, this time the VPC will have only 1 NAT Gateway and all
+Application subnets will route to the NAT Gateway.
+
+### Fleet
+
 ### Auto Scaling Group
 
 An `AutoScalingGroup` represents a number of instances on which you run your code. You
