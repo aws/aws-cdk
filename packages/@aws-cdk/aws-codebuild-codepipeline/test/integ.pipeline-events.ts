@@ -1,10 +1,12 @@
 // Use pipeline as CloudWAtch event target
 
+import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
+import codecommitPipeline = require('@aws-cdk/aws-codecommit-codepipeline');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import codebuild = require('../lib');
+import codebuildPipeline = require('../lib');
 
 const app = new cdk.App(process.argv);
 
@@ -17,8 +19,8 @@ const buildStage = new codepipeline.Stage(pipeline, 'Build');
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', { repositoryName: 'foo' });
 const project = new codebuild.BuildProject(stack, 'BuildProject', { source: new codebuild.CodePipelineSource() });
 
-const sourceAction = new codecommit.PipelineSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
-new codebuild.PipelineBuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
+const sourceAction = new codecommitPipeline.PipelineSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
+new codebuildPipeline.PipelineBuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
 
 const topic = new sns.Topic(stack, 'MyTopic');
 topic.subscribeEmail('benisrae', 'benisrae@amazon.com');
