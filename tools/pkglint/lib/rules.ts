@@ -107,33 +107,22 @@ export class JSIISectionPresent extends ValidationRule {
 }
 
 /**
- * JSII Java namespace is required and must look sane
+ * JSII Java package is required and must look sane
  */
-export class JSIIJavaNamespaceIsRequired extends ValidationRule {
+export class JSIIJavaPackageIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'java']) as string | undefined;
+        const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
         if (!java) {
-            pkg.report({ message: 'JSII package must have "java" namespace' });
+            pkg.report({ message: 'JSII package must have a "java" target with "package"' });
             return;
         }
 
-        const prefix = 'com.amazonaws.cdk';
-
-        if (!java.startsWith(prefix)) {
-            pkg.report({ message: `Java namespace must start with '${prefix}'` });
-        }
-
-        const parts = java.split('.').slice(prefix.split('.').length);
-        if (parts.length > 1) {
-            pkg.report({ message: 'Java namespace must have at most one extra component' });
-        }
-
-        if (parts.length === 1) {
-            const expectedName = cdkModuleName(pkg.json.name).replace(/-/g, '');
-            expectJSON(pkg, 'jsii.names.java', prefix + '.' + expectedName);
-        }
+        const moduleName = cdkModuleName(pkg.json.name);
+        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage);
+        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'com.amazonaws.cdk');
+        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId);
     }
 }
 
@@ -155,12 +144,24 @@ export class NoJsiiDep extends ValidationRule {
 }
 
 /**
- * Strips off 'aws-cdk-' if the module name starts with it.
+ * Computes the module name for various other purposes (java package, ...)
  */
 function cdkModuleName(name: string) {
+    const isCdkPkg = name === '@aws-cdk/cdk';
+    const isCorePkg = !name.startsWith('@aws-cdk/aws-');
+
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
-    return name;
+    name = name.replace(/^(?:aws|cdk)-/, '');
+
+    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
+    const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
+
+    return {
+        javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
+        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
+        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
+    };
 }
 
 /**
@@ -170,35 +171,17 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'names', 'dotnet']) as string | undefined;
-        if (!java) {
-            pkg.report({ message: 'JSII package must have "dotnet" namespace' });
+        const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+        if (!dotnet) {
+            pkg.report({ message: 'JSII package must have a "dotnet" target with "namespace"' });
             return;
         }
 
-        const prefix = 'Amazon.Cdk';
-
-        if (!java.startsWith(prefix)) {
-            pkg.report({ message: `.NET namespace must start with '${prefix}'` });
-        }
-
-        const parts = java.split('.').slice(prefix.split('.').length);
-        if (parts.length > 1) {
-            pkg.report({ message: '.NET namespace must have at most one extra component' });
-        }
-
-        if (parts.length === 1) {
-            // Check that the .NET namespace agrees with the package name
-            //
-            // Since the .NET namespace might introduce arbitrary casing, we need to compare the
-            // other way around, check that the lowercased version of it matches our package name.
-
-            const expected = cdkModuleName(pkg.json.name).replace(/-/g, '');
-            if (expected !== parts[0].toLowerCase()) {
-                pkg.report({
-                    message: `.NET namespace must match JS package name, '${parts[0]}' vs '${expected}'`
-                });
-            }
+        const moduleName = cdkModuleName(pkg.json.name);
+        if (dotnet.toLocaleLowerCase() !== moduleName.dotnetNamespace.toLocaleLowerCase()) {
+            pkg.report({
+                message: `.NET namespace must (case-insensitively) match JS package name, '${moduleName.dotnetNamespace}' vs '${dotnet}'`
+            });
         }
     }
 }

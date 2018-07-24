@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import * as sqs from '@aws-cdk/sqs';
+import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 
 class CloudFormationExample extends cdk.Stack {
     constructor(parent: cdk.App) {

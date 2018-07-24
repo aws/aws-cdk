@@ -20,7 +20,7 @@ Applets are files in the YAML or JSON format that have the following root attrib
 where MODULE can represent
 a local file, such as :code:`./my-module`,
 a local dependency, such as :code:`my-dependency`,
-or a global module, such as :code:`@aws-cdk/s3`
+or a global module, such as :code:`@aws-cdk/aws-s3`
 and CLASS is the name of a class exported by the module.
 
 .. code:: js

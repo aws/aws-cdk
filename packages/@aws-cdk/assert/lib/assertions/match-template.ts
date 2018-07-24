@@ -1,4 +1,4 @@
-import { diffTemplate, formatDifferences, ResourceImpact, TemplateDiff } from '@aws-cdk/cloudformation-diff';
+import cfnDiff = require('@aws-cdk/cloudformation-diff');
 import { Assertion } from '../assertion';
 import { StackInspector } from '../inspector';
 
@@ -38,11 +38,11 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
     }
 
     public assertUsing(inspector: StackInspector): boolean {
-        const diff = diffTemplate(this.template, inspector.value);
+        const diff = cfnDiff.diffTemplate(this.template, inspector.value);
         const acceptable = this.isDiffAcceptable(diff);
         if (!acceptable) {
             // Print the diff
-            formatDifferences(process.stderr, diff);
+            cfnDiff.formatDifferences(process.stderr, diff);
 
             // Print the actual template
             process.stdout.write('--------------------------------------------------------------------------------------\n');
@@ -52,21 +52,21 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
         return acceptable;
     }
 
-    private isDiffAcceptable(diff: TemplateDiff): boolean {
+    private isDiffAcceptable(diff: cfnDiff.TemplateDiff): boolean {
         switch (this.matchStyle) {
         case MatchStyle.EXACT:
             return diff.count === 0;
         case MatchStyle.NO_REPLACES:
             for (const key of Object.keys(diff.resources.changes)) {
                 const change = diff.resources.changes[key]!;
-                if (change.changeImpact === ResourceImpact.MAY_REPLACE) { return false; }
-                if (change.changeImpact === ResourceImpact.WILL_REPLACE) { return false; }
+                if (change.changeImpact === cfnDiff.ResourceImpact.MAY_REPLACE) { return false; }
+                if (change.changeImpact === cfnDiff.ResourceImpact.WILL_REPLACE) { return false; }
             }
             return true;
         case MatchStyle.SUPERSET:
             for (const key of Object.keys(diff.resources.changes)) {
                 const change = diff.resources.changes[key]!;
-                return change.changeImpact === ResourceImpact.WILL_CREATE;
+                return change.changeImpact === cfnDiff.ResourceImpact.WILL_CREATE;
             }
         }
         throw new Error(`Unsupported match style: ${this.matchStyle}`);

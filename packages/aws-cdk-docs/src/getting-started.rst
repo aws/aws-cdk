@@ -103,7 +103,7 @@ In this section we will create an empty project structure for your CDK app.
                 </plugins>
             </build>
 
-Add @aws-cdk/core as a dependency
+Add @aws-cdk/cdk as a dependency
 ---------------------------------
 
 Now, we will install the CDK core library (:py:mod:`_aws-cdk_core`). This
@@ -113,11 +113,11 @@ library includes the basic classes needed to write CDK stacks and apps.
 
     .. group-tab:: JavaScript
 
-        Use **y-npm** to install the **@aws-cdk/core** package:
+        Use **y-npm** to install the **@aws-cdk/cdk** package:
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/core
+            y-npm install @aws-cdk/cdk
 
         .. note:: We are using **y-npm** instead of **npm** in order to install npm
             modules from the local npm repository included with your CDK
@@ -126,12 +126,12 @@ library includes the basic classes needed to write CDK stacks and apps.
 
     .. group-tab:: TypeScript
 
-        Use **y-npm** to install the **@aws-cdk/core** package. We also need **@types/node**
+        Use **y-npm** to install the **@aws-cdk/cdk** package. We also need **@types/node**
         since we will be using **process.argv** in our code:
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/core @types/node
+            y-npm install @aws-cdk/cdk @types/node
 
         .. note:: We are using **y-npm** instead of **npm** in order to install npm
             modules from the local npm repository included with your CDK
@@ -176,7 +176,7 @@ class. Let's create our first, empty **App**:
 
         // index.js
 
-        const cdk = require('@aws-cdk/core');
+        const cdk = require('@aws-cdk/cdk');
 
         class MyFirstApp extends cdk.App {
             constructor(argv) {
@@ -190,7 +190,7 @@ class. Let's create our first, empty **App**:
 
         // index.ts
 
-        import * as cdk from '@aws-cdk/core';
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstApp extends cdk.App {
             constructor(argv: string[]) {
@@ -404,7 +404,7 @@ Now, let's define our first stack and add it to our app.
         :emphasize-lines: 4,5,6,7,8,14
 
         // index.js
-        const cdk = require('@aws-cdk/core');
+        const cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent, id, props) {
@@ -426,7 +426,7 @@ Now, let's define our first stack and add it to our app.
         :emphasize-lines: 4,5,6,7,8,14
 
         // index.ts
-        import * as cdk from '@aws-cdk/core';
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
@@ -539,7 +539,7 @@ there's nothing to deploy.
 
 Let's define an S3 bucket.
 
-First, we need to install the **@aws-cdk/s3** package:
+First, we need to install the **@aws-cdk/aws-s3** package:
 
 .. tabs::
 
@@ -547,13 +547,13 @@ First, we need to install the **@aws-cdk/s3** package:
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/s3
+            y-npm install @aws-cdk/aws-s3
 
     .. group-tab:: TypeScript
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/s3
+            y-npm install @aws-cdk/aws-s3
 
     .. group-tab:: Java
 
@@ -569,8 +569,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
         :emphasize-lines: 3,9,10,11
 
         // index.js
-        const cdk = require('@aws-cdk/core');
-        const s3 = require('@aws-cdk/s3');
+        const s3 = require('@aws-cdk/aws-s3');
+        const cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent, id, props) {
@@ -586,8 +586,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
         :emphasize-lines: 3,9,10,11
 
         // index.ts
-        import * as cdk from '@aws-cdk/core';
-        import * as s3 from '@aws-cdk/s3';
+        import s3 = require('@aws-cdk/aws-s3');
+        import cdk = require('@aws-cdk/cdk');
 
         class MyFirstStack extends cdk.Stack {
             constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
@@ -607,8 +607,8 @@ the :py:class:`_aws-cdk_s3.Bucket` class:
 
         import com.amazonaws.cdk.App;
         import com.amazonaws.cdk.Stack;
-        import com.amazonaws.cdk.s3.Bucket;
-        import com.amazonaws.cdk.s3.BucketProps;
+        import com.amazonaws.cdk.aws.s3.Bucket;
+        import com.amazonaws.cdk.aws.s3.BucketProps;
 
         public class MyStack extends Stack {
             public MyStack(final App parent, final String id) {

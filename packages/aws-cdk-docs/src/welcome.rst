@@ -32,9 +32,9 @@ in :doc:`getting-started`.
 
    .. code-tab:: js
 
-      const cdk = require('@aws-cdk/core');
-      const sqs = require('@aws-cdk/sqs');
-      const sns = require('@aws-cdk/sns');
+      const sns = require('@aws-cdk/aws-sns');
+      const sqs = require('@aws-cdk/aws-sqs');
+      const cdk = require('@aws-cdk/cdk');
 
       class HelloStack extends cdk.Stack {
         constructor(parent, id, props) {
@@ -51,17 +51,17 @@ in :doc:`getting-started`.
 
    .. code-tab:: ts
 
-      import * as cdk from '@aws-cdk/core';
-      import { Topic } from '@aws-cdk/sns';
-      import { Queue } from '@aws-cdk/sqs';
+      import sns = require('@aws-cdk/aws-sns');
+      import sqs = require('@aws-cdk/aws-sqs');
+      import cdk = require('@aws-cdk/cdk');
 
       class HelloStack extends cdk.Stack {
-        constructor(parent: App, name: string, props?: cdk.StackProps) {
+        constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
           super(parent, name, props);
 
-          const topic = new Topic(this, 'MyTopic');
+          const topic = new sns.Topic(this, 'MyTopic');
 
-          const queue = new Queue(this, 'MyQueue', {
+          const queue = new sqs.Queue(this, 'MyQueue', {
             visibilityTimeoutSec: 300
           });
 
@@ -74,10 +74,10 @@ in :doc:`getting-started`.
       import com.amazonaws.cdk.App;
       import com.amazonaws.cdk.Stack;
       import com.amazonaws.cdk.StackProps;
-      import com.amazonaws.cdk.sns.Topic;
-      import com.amazonaws.cdk.sns.TopicProps;
-      import com.amazonaws.cdk.sqs.Queue;
-      import com.amazonaws.cdk.sqs.QueueProps;
+      import com.amazonaws.cdk.aws.sns.Topic;
+      import com.amazonaws.cdk.aws.sns.TopicProps;
+      import com.amazonaws.cdk.aws.sqs.Queue;
+      import com.amazonaws.cdk.aws.sqs.QueueProps;
 
       public class HelloStack extends Stack {
           public HelloStack(final App parent, final String name, final StackProps props) {
