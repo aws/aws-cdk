@@ -1,8 +1,8 @@
-import { Stack } from '@aws-cdk/core';
-import * as api from '@aws-cdk/cx-api';
+import cdk = require('@aws-cdk/cdk');
+import api = require('@aws-cdk/cx-api');
 import { StackInspector } from './inspector';
 
-export function expect(stack: api.SynthesizedStack | Stack): StackInspector {
+export function expect(stack: api.SynthesizedStack | cdk.Stack): StackInspector {
     // Can't use 'instanceof' here, that breaks if we have multiple copies
     // of this library.
     const sstack: api.SynthesizedStack = isStackClassInstance(stack) ? {
@@ -14,6 +14,6 @@ export function expect(stack: api.SynthesizedStack | Stack): StackInspector {
     return new StackInspector(sstack);
 }
 
-function isStackClassInstance(x: api.SynthesizedStack | Stack): x is Stack {
+function isStackClassInstance(x: api.SynthesizedStack | cdk.Stack): x is cdk.Stack {
     return 'toCloudFormation' in x;
 }

@@ -1,6 +1,6 @@
 package com.amazonaws.cdk.examples;
 
-import com.amazonaws.cdk.sqs.QueueProps;
+import com.amazonaws.cdk.aws.sqs.QueueProps;
 
 /**
  * Props for {@link SinkQueue}.

@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 
-import { blue, disable as disableColor, green } from 'colors/safe';
-import * as fs from 'fs-extra';
+import colors = require('colors/safe');
+import fs = require('fs-extra');
 import { determineStorageDirectory } from '../lib/determine-storage-directory';
 import { findAllPackages } from '../lib/find-all-packages';
 import { debug, setVerbose } from '../lib/logging';
@@ -12,7 +12,7 @@ import { withTemporaryFile } from '../lib/with-temporary-file';
 async function main(argv: string[]): Promise<number> {
     // Disable colors if $Y_NPM_NO_COLOR is set to a truthy value
     if (process.env.Y_NPM_NO_COLOR) {
-        disableColor();
+        colors.disable();
     }
     // Make verbose if $Y_NPM_VERBOSE is set to a truthy value
     if (process.env.Y_NPM_VERBOSE) {
@@ -34,7 +34,7 @@ async function main(argv: string[]): Promise<number> {
     return (await withTemporaryFile('npmrc', async npmrc => {
         return await withVerdaccio(storage, argv.find(arg => arg === 'publish') != null, async verdaccio => {
             const userConfig = `registry=http:${verdaccio.endpoint}\n${verdaccio.endpoint}:_authToken=none\n`;
-            debug(`Writing user config to ${green(npmrc)}:\n${blue(userConfig)}`);
+            debug(`Writing user config to ${colors.green(npmrc)}:\n${colors.blue(userConfig)}`);
             await fs.writeFile(npmrc, userConfig);
             return await(await runNpmCommand(argv, { npm_config_registry: undefined, npm_config_userconfig: npmrc }));
         });
@@ -44,7 +44,7 @@ async function main(argv: string[]): Promise<number> {
 
     async function listLocalPackages(dir: string = storage) {
         for (const pkg of await findAllPackages(dir)) {
-            process.stdout.write(`${green(pkg.name)}@${blue(pkg.maxVersion || '*')}\n`);
+            process.stdout.write(`${colors.green(pkg.name)}@${colors.blue(pkg.maxVersion || '*')}\n`);
         }
     }
 }

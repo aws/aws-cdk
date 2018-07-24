@@ -1,18 +1,18 @@
-import { App, Stack } from '@aws-cdk/core';
-import { InlineJavaScriptLambda } from '@aws-cdk/lambda';
-import { Queue } from '@aws-cdk/sqs';
+import lambda = require('@aws-cdk/aws-lambda');
+import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 import { RuntimeValue } from '../lib';
 
 function runtimeCode(_event: any, _context: any, callback: any) {
     return callback();
 }
 
-class TestStack extends Stack {
-    constructor(parent: App, name: string) {
+class TestStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string) {
         super(parent, name);
 
-        const queue = new Queue(this, 'MyQueue');
-        const fn = new InlineJavaScriptLambda(this, 'MyFunction', {
+        const queue = new sqs.Queue(this, 'MyQueue');
+        const fn = new lambda.InlineJavaScriptLambda(this, 'MyFunction', {
             handler: { fn: runtimeCode },
         });
 
@@ -33,7 +33,7 @@ class TestStack extends Stack {
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 new TestStack(app, 'aws-cdk-rtv-lambda');
 

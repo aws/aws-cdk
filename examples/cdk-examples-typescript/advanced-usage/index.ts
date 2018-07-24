@@ -1,10 +1,10 @@
-import { cloudformation } from '@aws-cdk/cloudformation';
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/ec2';
-import * as iam from '@aws-cdk/iam';
-import * as s3 from '@aws-cdk/s3';
-import * as sns from '@aws-cdk/sns';
-import * as sqs from '@aws-cdk/sqs';
+import { cloudformation } from '@aws-cdk/aws-cloudformation';
+import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
+import s3 = require('@aws-cdk/aws-s3');
+import sns = require('@aws-cdk/aws-sns');
+import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 
 /**
  * This stack demonstrates the use of the IAM policy library shipped with the CDK.

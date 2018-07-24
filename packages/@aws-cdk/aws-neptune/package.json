@@ -1,0 +1,58 @@
+{
+  "name": "@aws-cdk/aws-neptune",
+  "version": "0.7.3-beta",
+  "description": "CDK Constructs for AWS Neptune",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.neptune",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-neptune"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Neptune"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f"
+  },
+  "nyc": {
+    "lines": 25
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "rds"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "cdk-build-tools": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-ec2": "^0.7.3-beta",
+    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-kms": "^0.7.3-beta",
+    "@aws-cdk/aws-rds": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta"
+  }
+}

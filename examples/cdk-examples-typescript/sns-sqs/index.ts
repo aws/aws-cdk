@@ -1,6 +1,6 @@
-import * as cdk from "@aws-cdk/core";
-import * as sns from '@aws-cdk/sns';
-import * as sqs from '@aws-cdk/sqs';
+import sns = require('@aws-cdk/aws-sns');
+import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 
 class ACL extends cdk.Stack {
     constructor(parent: cdk.App, name: string) {

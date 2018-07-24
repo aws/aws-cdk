@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import * as yargs from 'yargs';
+import yargs = require('yargs');
 import generate from '../lib';
 
 // tslint:disable-next-line:no-unused-expression

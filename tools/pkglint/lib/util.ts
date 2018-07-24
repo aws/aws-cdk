@@ -10,7 +10,7 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any) {
     const actual = deepGet(pkg.json, parts);
     if (actual !== expected) {
         pkg.report({
-            message: `${jsonPath} should be '${expected}', is '${actual}'`,
+            message: `${jsonPath} should be ${JSON.stringify(expected)}, is ${JSON.stringify(actual)}`,
             fix: () => { deepSet(pkg.json, parts, expected); }
         });
     }

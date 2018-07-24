@@ -1,0 +1,58 @@
+{
+  "name": "@aws-cdk/assets",
+  "version": "0.7.3-beta",
+  "description": "Integration of CDK apps with local assets",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.assets",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "assets"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Assets"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "assets"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "aws-cdk": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cdk-integ-tools": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-s3": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/cx-api": "^0.7.3-beta"
+  }
+}

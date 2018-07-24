@@ -27,7 +27,7 @@ shown in the following example.
 
 .. code-block:: js
 
-   import { Stack, StackProps } from '@aws-cdk/core'
+   import { Stack, StackProps } from '@aws-cdk/cdk'
 
    interface MyStackProps extends StackProps {
        encryptedStorage: boolean;

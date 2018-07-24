@@ -9,9 +9,9 @@
  * @see https://github.com/awslabs/aws-cdk/pull/128
  */
 
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import fs = require('fs');
+import os = require('os');
+import path = require('path');
 
 const sharedCredentialsFile =
     process.env.AWS_SHARED_CREDENTIALS_FILE ? process.env.AWS_SHARED_CREDENTIALS_FILE

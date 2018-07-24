@@ -1,5 +1,5 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { makeObject } from '@aws-cdk/util';
+import cxapi = require('@aws-cdk/cx-api');
+import util = require('@aws-cdk/util');
 
 type RenameTable = {[key: string]: string};
 
@@ -74,7 +74,7 @@ export function parseRenames(renameExpr: string|undefined): Renames {
         return new Renames({}, clauses[0]);
     }
 
-    const table = makeObject(clauses
+    const table = util.makeObject(clauses
         .map(s => s.trim())
         .filter(s => s.length > 0)
         .map(clause => clause.split(':', 2) as [string, string]));

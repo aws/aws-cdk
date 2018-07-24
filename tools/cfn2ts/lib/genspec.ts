@@ -2,14 +2,14 @@
 //
 // Does not include the actual code generation itself.
 
-import { schema } from '@aws-cdk/cdk-cfnspec';
-import { toCamelCase, toPascalCase } from 'codemaker';
+import { schema } from '@aws-cdk/cfnspec';
+import codemaker = require('codemaker');
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
-import * as util from './util';
+import util = require('./util');
 
 const RESOURCE_CLASS_POSTFIX = 'Resource';
 
-export const CORE_NAMESPACE = 'core';
+export const CORE_NAMESPACE = 'cdk';
 
 /**
  * The name of corresponding objects in the generated code
@@ -99,8 +99,8 @@ export class CodeName {
     }
 }
 
-export const TAG_NAME = new CodeName('', 'core', 'Tag');
-export const TOKEN_NAME = new CodeName('', 'core', 'Token');
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
 export class Attribute {
     constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {
@@ -149,7 +149,7 @@ export function cfnMapperName(typeName: CodeName): CodeName {
 export function validatorName(typeName: CodeName): CodeName {
     if (typeName.packageName === '') {
         // Built-in or intrinsic type, built-in validators
-        return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${toPascalCase(typeName.className)}`);
+        return new CodeName('', CORE_NAMESPACE, '', undefined, `validate${codemaker.toPascalCase(typeName.className)}`);
     }
 
     return new CodeName(typeName.packageName, '', `${util.joinIf(typeName.namespace, '_', typeName.className)}Validator`);
@@ -201,7 +201,7 @@ function descriptiveAttributeName(resourceName: CodeName, attributeName: string)
     // if property name already starts with the resource name, then just use it as-is
     // otherwise, prepend the resource name
     if (!attributeName.toLowerCase().startsWith(resName.toLowerCase())) {
-        attributeName = resName + toPascalCase(attributeName);
+        attributeName = `${resName}${codemaker.toPascalCase(attributeName)}`;
     }
 
     return attributeName;
@@ -218,7 +218,7 @@ function descriptiveAttributeName(resourceName: CodeName, attributeName: string)
  */
 export function cloudFormationToScriptName(name: string): string {
     if (name === 'VPCs') { return 'vpcs'; }
-    const ret = toCamelCase(name);
+    const ret = codemaker.toCamelCase(name);
 
     const suffixes: { [key: string]: string } = { ARNs: 'Arns', MBs: 'MBs', AZs: 'AZs' };
 

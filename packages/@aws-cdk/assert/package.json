@@ -25,9 +25,9 @@
     "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
     "@aws-cdk/cloudformation-diff": "^0.7.3-beta",
-    "@aws-cdk/core": "^0.7.3-beta",
+    "@aws-cdk/cx-api": "^0.7.3-beta",
     "source-map-support": "^0.5.6"
   },
   "repository": {

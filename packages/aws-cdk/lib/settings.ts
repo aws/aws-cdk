@@ -1,7 +1,7 @@
-import { deepClone, deepGet, deepMerge, deepSet } from '@aws-cdk/util';
-import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as fs_path from 'path';
+import util = require('@aws-cdk/util');
+import fs = require('fs-extra');
+import os = require('os');
+import fs_path = require('path');
 import { warning } from './logging';
 
 export type SettingsMap = {[key: string]: any};
@@ -63,7 +63,7 @@ export class Settings {
     }
 
     public merge(other: Settings): Settings {
-        return new Settings(deepMerge(this.settings, other.settings));
+        return new Settings(util.deepMerge(this.settings, other.settings));
     }
 
     public empty(): boolean {
@@ -71,11 +71,11 @@ export class Settings {
     }
 
     public get(path: string[]): any {
-        return deepClone(deepGet(this.settings, path));
+        return util.deepClone(util.deepGet(this.settings, path));
     }
 
     public set(path: string[], value: any): Settings {
-        deepSet(this.settings, path, value);
+        util.deepSet(this.settings, path, value);
         return this;
     }
 }

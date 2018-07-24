@@ -2,7 +2,7 @@
 import fs = require('fs-extra');
 import path = require('path');
 import 'source-map-support/register';
-import * as yargs from 'yargs';
+import yargs = require('yargs');
 
 const argv = yargs
     .option('output', { type: 'string', alias: 'o', desc: 'Where to write resources.js' })

@@ -77,7 +77,7 @@ Parameters
 
 .. code-block:: js
 
-    import { Parameter } from '@aws-cdk/core';
+    import { Parameter } from '@aws-cdk/cdk';
 
     const p = new Parameter(this, 'MyParam', { type: 'String' });
     new sns.TopicResource(this, 'MyTopic', { displayName: p.ref });
@@ -91,7 +91,7 @@ Outputs
 
 .. code-block:: js
 
-    import { Output } from '@aws-cdk/core';
+    import { Output } from '@aws-cdk/cdk';
 
     const queue = new sqs.QueueResource(this, 'MyQueue');
     const out = new Output(this, 'MyQueueArn', { value: queue.queueArn });
@@ -108,7 +108,7 @@ Conditions
 
 .. code-block:: js
 
-    import { Condition } from '@aws-cdk/core';
+    import { Condition } from '@aws-cdk/cdk';
     const cond = new Condition(this, 'MyCondition', {
         expression: new FnIf(...)
     });
@@ -125,7 +125,7 @@ Intrinsic Functions
 
 .. code-block:: js
 
-    import { FnJoin } from '@aws-cdk/core';
+    import { FnJoin } from '@aws-cdk/cdk';
     new FnJoin(",", ...)
 
 .. _pseudo_parameters:
@@ -137,7 +137,7 @@ Pseudo Parameters
 
 .. code-block:: js
 
-    import { AwsRegion } from '@aws-cdk/core';
+    import { AwsRegion } from '@aws-cdk/cdk';
     new AwsRegion()
 
 .. Add a new topic in "Advanced Topics" about integrating

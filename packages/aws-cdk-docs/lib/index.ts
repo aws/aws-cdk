@@ -1,3 +1,3 @@
-import * as path from 'path';
+import path = require('path');
 
 export const documentationIndexPath = path.join(path.dirname(__dirname), 'dist', 'docs', 'index.html');

@@ -1,0 +1,59 @@
+{
+  "name": "@aws-cdk/aws-quickstarts",
+  "version": "0.7.3-beta",
+  "description": "AWS Quickstarts for the CDK",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.quickstarts",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-quickstarts"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.QuickStarts"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "quickstarts"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "cdk-build-tools": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.7.3-beta",
+    "@aws-cdk/aws-ec2": "^0.7.3-beta",
+    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-rds": "^0.7.3-beta",
+    "@aws-cdk/cdk": "^0.7.3-beta",
+    "@aws-cdk/util": "^0.7.3-beta"
+  },
+  "bundledDependencies": [
+    "@aws-cdk/util"
+  ]
+}

@@ -1,7 +1,7 @@
-import { Construct, ServicePrincipal, Stack } from '@aws-cdk/core';
-import { Role } from '@aws-cdk/iam';
-import * as lambda from '@aws-cdk/lambda';
-import * as sqs from '@aws-cdk/sqs';
+import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
+import sqs = require('@aws-cdk/aws-sqs');
+import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { RuntimeValue } from '../lib';
 
@@ -9,7 +9,7 @@ import { RuntimeValue } from '../lib';
 
 export = {
     'RuntimeValue is awesome'(test: Test) {
-        const stack = new Stack();
+        const stack = new cdk.Stack();
 
         new RuntimeValueTest(stack, 'RuntimeValue');
 
@@ -18,15 +18,15 @@ export = {
     }
 };
 
-class RuntimeValueTest extends Construct {
+class RuntimeValueTest extends cdk.Construct {
 
-    constructor(parent: Construct, name: string) {
+    constructor(parent: cdk.Construct, name: string) {
         super(parent, name);
 
         const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
 
-        const role = new Role(this, 'Role', {
-            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+        const role = new iam.Role(this, 'Role', {
+            assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
         });
 
         new lambda.cloudformation.FunctionResource(this, 'Function', {

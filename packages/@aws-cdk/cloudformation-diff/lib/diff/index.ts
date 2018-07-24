@@ -1,5 +1,5 @@
-import { filteredSpecification, schema } from '@aws-cdk/cdk-cfnspec';
-import * as types from './types';
+import cfnspec = require('@aws-cdk/cfnspec');
+import types = require('./types');
 import { diffKeyedEntities } from './util';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
@@ -38,7 +38,7 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
         if (oldType !== newType) {
             resourceType = { oldType, newType };
         } else {
-            const typeSpec = filteredSpecification(oldType);
+            const typeSpec = cfnspec.filteredSpecification(oldType);
             const impl = typeSpec.ResourceTypes[oldType];
             propertyChanges = diffKeyedEntities(oldValue.Properties,
                                                 newValue.Properties,
@@ -50,7 +50,7 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
 
     return new types.ResourceDifference(oldValue, newValue, { resourceType, propertyChanges, otherChanges });
 
-    function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: schema.ResourceType) {
+    function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: cfnspec.schema.ResourceType) {
         let changeImpact: types.ResourceImpact | undefined;
         const spec = resourceSpec && resourceSpec.Properties && resourceSpec.Properties[key];
         if (spec) {

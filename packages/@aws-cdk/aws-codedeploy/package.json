@@ -1,0 +1,57 @@
+{
+  "name": "@aws-cdk/aws-codedeploy",
+  "version": "0.7.3-beta",
+  "description": "The CDK Construct Library for AWS::CodeDeploy",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.codedeploy",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-codedeploy"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CodeDeploy"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::CodeDeploy"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "codedeploy"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.7.3-beta"
+  }
+}

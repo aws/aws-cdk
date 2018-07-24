@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/ec2';
+import ec2 = require('@aws-cdk/aws-ec2');
+import cdk = require('@aws-cdk/cdk');
 
 class AppWithVpc extends cdk.Stack {
     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {

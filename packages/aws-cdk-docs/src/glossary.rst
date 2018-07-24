@@ -55,7 +55,7 @@ environment
 |l2|
    A construct that provides high-level APIs for AWS services.
    Their names imply the underlying AWS service.
-   For example, |S3| resources are available through the **@aws-cdk/s3** package.
+   For example, |S3| resources are available through the **@aws-cdk/aws-s3** package.
 
 .. |l3|
    A construct that abstracts common architectural

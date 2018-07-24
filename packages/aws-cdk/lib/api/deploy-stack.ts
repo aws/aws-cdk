@@ -1,8 +1,8 @@
-import { StackInfo, SynthesizedStack } from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
-import * as colors from 'colors/safe';
-import * as uuid from 'uuid';
-import * as YAML from 'yamljs';
+import cxapi = require('@aws-cdk/cx-api');
+import aws = require('aws-sdk');
+import colors = require('colors/safe');
+import uuid = require('uuid');
+import YAML = require('yamljs');
 import { prepareAssets } from '../assets';
 import { debug, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
@@ -22,7 +22,7 @@ export interface DeployStackResult {
     readonly stackArn: string;
 }
 
-export async function deployStack(stack: SynthesizedStack,
+export async function deployStack(stack: cxapi.SynthesizedStack,
                                   sdk: SDK = new SDK(),
                                   toolkitInfo?: ToolkitInfo,
                                   deployName?: string,
@@ -75,7 +75,7 @@ export async function deployStack(stack: SynthesizedStack,
     return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
 
-async function getStackOutputs(cfn: CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
+async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Promise<{ [name: string]: string }> {
     const description = await describeStack(cfn, stackName);
     const result: { [name: string]: string } = {};
     if (description && description.Outputs) {
@@ -86,7 +86,7 @@ async function getStackOutputs(cfn: CloudFormation, stackName: string): Promise<
     return result;
 }
 
-async function createEmptyStack(cfn: CloudFormation, stackName: string, quiet: boolean): Promise<void> {
+async function createEmptyStack(cfn: aws.CloudFormation, stackName: string, quiet: boolean): Promise<void> {
     debug('Creating new empty stack named %s', stackName);
 
     const template = {
@@ -113,7 +113,7 @@ async function createEmptyStack(cfn: CloudFormation, stackName: string, quiet: b
  * @param sdk         an AWS SDK to use when interacting with S3
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
     const templateJson = YAML.stringify(stack.template, 16, 4);
     if (toolkitInfo) {
         const s3KeyPrefix = `cdk/${stack.name}/`;
@@ -134,7 +134,7 @@ async function makeBodyParameter(stack: SynthesizedStack, toolkitInfo?: ToolkitI
     }
 }
 
-export async function destroyStack(stack: StackInfo, sdk: SDK = new SDK(), deployName?: string, quiet: boolean = false) {
+export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK = new SDK(), deployName?: string, quiet: boolean = false) {
     if (!stack.environment) {
         throw new Error(`The stack ${stack.name} does not have an environment`);
     }

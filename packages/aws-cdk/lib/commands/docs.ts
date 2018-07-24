@@ -1,7 +1,7 @@
-import { exec } from 'child_process';
-import { green } from 'colors/safe';
-import * as process from 'process';
-import * as yargs from 'yargs';
+import childProcess = require('child_process');
+import colors = require('colors/safe');
+import process = require('process');
+import yargs = require('yargs');
 import { debug, error, warning } from '../../lib/logging';
 
 export const command = 'docs';
@@ -32,9 +32,9 @@ export async function handler(argv: Arguments): Promise<number> {
     }
 
     const browserCommand = argv.browser.replace(/%u/g, documentationIndexPath);
-    debug(`Opening documentation ${green(browserCommand)}`);
+    debug(`Opening documentation ${colors.green(browserCommand)}`);
     return await new Promise<number>((resolve, reject) => {
-        exec(browserCommand, (err, stdout, stderr) => {
+        childProcess.exec(browserCommand, (err, stdout, stderr) => {
             if (err) { return reject(err); }
             if (stdout) { debug(stdout); }
             if (stderr) { warning(stderr); }

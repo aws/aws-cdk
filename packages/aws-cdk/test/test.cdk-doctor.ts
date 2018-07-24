@@ -1,4 +1,4 @@
-import * as mockery from 'mockery';
+import mockery = require('mockery');
 import { ICallbackFunction, Test, testCase } from 'nodeunit';
 
 module.exports = testCase({

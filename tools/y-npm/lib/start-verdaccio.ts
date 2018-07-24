@@ -1,10 +1,10 @@
-import { Server } from 'http';
-import * as path from 'path';
+import http = require('http');
+import path = require('path');
 import { findAllPackages } from './find-all-packages';
 import { debug, error } from './logging';
 
 export interface VerdaccioHandle {
-    server: Server;
+    server: http.Server;
     endpoint: string;
 }
 
@@ -28,7 +28,7 @@ export interface VerdaccioHandle {
 export async function startVerdaccio(storage: string, forPublishing: boolean): Promise<VerdaccioHandle> {
     const packages = forPublishing ? { '**': { access: '$all', publish: '$all' } } : await buildPackageConfig(storage);
     return await new Promise<VerdaccioHandle>((resolve, reject) => {
-        function verdaccioHandler(webServer: Server, addr: any, _pkgName: string, _pkgVersion: string) {
+        function verdaccioHandler(webServer: http.Server, addr: any, _pkgName: string, _pkgVersion: string) {
             webServer.listen(addr.port || addr.path, addr.host, () => {
                 debug('Verdaccio startup completed.');
                 resolve({ server: webServer, endpoint: `//${addr.host}:${addr.port || addr.path}/` });
