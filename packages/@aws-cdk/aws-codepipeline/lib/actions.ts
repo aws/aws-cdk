@@ -167,7 +167,7 @@ export abstract class Action extends cdk.Construct {
         };
     }
 
-    public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onStateChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = new events.EventRule(this.stage.pipeline, name, options);
         rule.addTarget(target);
         rule.addEventPattern({

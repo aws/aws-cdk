@@ -187,7 +187,7 @@
 
 A new cross-stack programming model is introduced to support CloudWatch Events.
 Event sources implement `onXxx` methods for various events that can emitted by
-that source and event targets implement `IEventRuleTarget`, so they can be
+that source and event targets implement `IEventRuleTargetProps`, so they can be
 polymorphically added to rules.
 
 ```ts

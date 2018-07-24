@@ -1,0 +1,2495 @@
+{
+  "fingerprint": "K2gV0cTFebVSyL1BoeTps4NNSu0vgtLbCtS/0Dysow4=",
+  "dependencies": {
+    "@aws-cdk/cdk": {
+      "dependencies": {
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk"
+        },
+        "js": {
+          "npm": "@aws-cdk/cdk"
+        }
+      },
+      "version": "0.7.3-beta"
+    }
+  },
+  "externals": {
+    "@aws-cdk/cdk.Construct": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents the building block of the construct graph.\nWhen a construct is created, it is always added as a child"
+      },
+      "fqn": "@aws-cdk/cdk.Construct",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new construct node."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Returns a string representation of this construct."
+          },
+          "name": "toString",
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns a string with a tree representation of this construct and it's children."
+          },
+          "name": "toTreeString",
+          "parameters": [
+            {
+              "name": "depth",
+              "type": {
+                "optional": true,
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path, or undefined",
+            "returns": "a child by path or undefined if not found."
+          },
+          "name": "tryFindChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return a descendant by path\n\nThrows an exception if the descendant is not found.",
+            "returns": "Child with the given path."
+          },
+          "name": "findChild",
+          "parameters": [
+            {
+              "name": "path",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This can be used to set contextual values.\nContext must be set before any children are added, since children may consult context info during construction.\nIf the key already exists, it will be overridden."
+          },
+          "name": "setContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The context value"
+              },
+              "name": "value",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Retrieves a value from tree context.\n\nContext is usually initialized at the root, but can be overridden at any point in the tree.",
+            "returns": "The context value or undefined"
+          },
+          "name": "getContext",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The context key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Retrieve a value from tree-global context\n\nIt is an error if the context object is not available."
+          },
+          "name": "requireContext",
+          "parameters": [
+            {
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a metadata entry to this construct.\nEntries are arbitrary values and will also include a stack trace to allow tracing back to\nthe code location for when the entry was added. It can be used, for example, to include source\nmapping in CloudFormation templates to improve diagnostics."
+          },
+          "name": "addMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "a string denoting the type of metadata"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "the value of the metadata (can be a Token). If null/undefined, metadata will not be added."
+              },
+              "name": "data",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "a function under which to restrict the metadata entry's stack trace (defaults to this.addMetadata)"
+              },
+              "name": "from",
+              "type": {
+                "optional": true,
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { \"aws:cdk:info\": <message> } metadata entry to this construct.\nThe toolkit will display the info message when apps are synthesized."
+          },
+          "name": "addInfo",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The info message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a { warning: <message> } metadata entry to this construct.\nThe toolkit will display the warning when an app is synthesized, or fail\nif run in --strict mode."
+          },
+          "name": "addWarning",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The warning message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds an { error: <message> } metadata entry to this construct.\nThe toolkit will fail synthesis when errors are reported."
+          },
+          "name": "addError",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The error message."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Construct"
+          }
+        },
+        {
+          "docs": {
+            "comment": "This method can be implemented by derived constructs in order to perform\nvalidation logic. It is called on all constructs before synthesis.",
+            "returns": "An array of validation error messages, or an empty array if there the construct is valid."
+          },
+          "name": "validate",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Invokes 'validate' on all child constructs and then on this construct (depth-first).",
+            "returns": "A list of validation errors. If the list is empty, all constructs are valid."
+          },
+          "name": "validateTree",
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.ValidationError"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the ancestors (including self) of this Construct up until and excluding the indicated component"
+          },
+          "name": "ancestors",
+          "parameters": [
+            {
+              "name": "upTo",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct",
+                "optional": true
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "aws": "-cdk/runtime`` instead.",
+            "comment": "Throws if the `props` bag doesn't include the property `name`.\nIn the future we can add some type-checking here, maybe even auto-generate during compilation.",
+            "deprecated": "use ``requireProperty`` from ``"
+          },
+          "name": "required",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The props bag."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The name of the required property."
+              },
+              "name": "name",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a child construct to this node.",
+            "returns": "The resolved path part name of the child"
+          },
+          "name": "addChild",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The child construct"
+              },
+              "name": "child",
+              "type": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              }
+            },
+            {
+              "name": "childName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Locks this construct from allowing more children to be added. After this\ncall, no more children can be added to this construct or to any children."
+          },
+          "name": "lock",
+          "protected": true
+        },
+        {
+          "docs": {
+            "comment": "Unlocks this costruct and allows mutations (adding children)."
+          },
+          "name": "unlock",
+          "protected": true
+        }
+      ],
+      "name": "Construct",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the parent of this node or undefined if this is a root node."
+          },
+          "immutable": true,
+          "name": "parent",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Construct",
+            "optional": true
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of this construct"
+          },
+          "immutable": true,
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "All direct children of this construct."
+          },
+          "immutable": true,
+          "name": "children",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.Construct"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the path of all constructs from root to this construct, in string form.",
+            "returns": "/-separated path of this Construct."
+          },
+          "immutable": true,
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "An array of metadata objects associated with this construct.\nThis can be used, for example, to implement support for deprecation notices, source mapping, etc."
+          },
+          "immutable": true,
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.MetadataEntry"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.IDependable": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a construct that can be \"depended on\" via `addDependency`."
+      },
+      "fqn": "@aws-cdk/cdk.IDependable",
+      "kind": "interface",
+      "name": "IDependable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Referenceable": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.StackElement"
+      },
+      "docs": {
+        "comment": "A construct, which is part of a stack and can be referenced using it's logical ID\nusing the CloudFormation intrinsic function { Ref: ID }."
+      },
+      "fqn": "@aws-cdk/cdk.Referenceable",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "Referenceable",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID."
+          },
+          "immutable": true,
+          "name": "ref",
+          "type": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Resource": {
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Referenceable"
+      },
+      "docs": {
+        "comment": "Represents a CloudFormation resource."
+      },
+      "fqn": "@aws-cdk/cdk.Resource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a resource construct."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/cdk.ResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "A decoration used to create a CloudFormation attribute property."
+          },
+          "name": "attribute",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "Custom name for the attribute (default is the name of the property)\nNOTE: we return \"any\" here to satistfy jsii, which doesn't support lambdas."
+              },
+              "name": "customName",
+              "type": {
+                "optional": true,
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "primitive": "any"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "comment": "Returns a token for an runtime attribute of this resource.\nIdeally, use generated attribute accessors (e.g. `resource.arn`), but this can be used for future compatibility\nin case there is no generated attribute."
+          },
+          "name": "getAtt",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The name of the attribute."
+              },
+              "name": "attributeName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/cdk.Token"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Adds a dependency on another resource."
+          },
+          "name": "addDependency",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The other resource."
+              },
+              "name": "other",
+              "type": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "variadic": true
+            }
+          ],
+          "variadic": true
+        },
+        {
+          "docs": {
+            "comment": "Emits CloudFormation for this resource."
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        },
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "Resource",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "Options for this resource, such as condition, update policy etc."
+          },
+          "immutable": true,
+          "name": "options",
+          "type": {
+            "fqn": "@aws-cdk/cdk.ResourceOptions"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource type."
+          },
+          "immutable": true,
+          "name": "resourceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "AWS resource properties"
+          },
+          "immutable": true,
+          "name": "properties",
+          "protected": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.StackElement": {
+      "abstract": true,
+      "assembly": "@aws-cdk/cdk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Construct"
+      },
+      "docs": {
+        "comment": "An element of a CloudFormation stack."
+      },
+      "fqn": "@aws-cdk/cdk.StackElement",
+      "initializer": {
+        "docs": {
+          "comment": "Creates an entity and binds it to a tree.\nNote that the root of the tree must be a Stack object (not just any Root)."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The parent construct"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cdk.IDependable"
+        }
+      ],
+      "kind": "class",
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Returns the CloudFormation 'snippet' for this entity. The snippet will only be merged\nat the root level to ensure there are no identity conflicts.\n\nFor example, a Resource class will return something like:\n{\n     Resources: {\n         [this.logicalId]: {\n             Type: this.resourceType,\n             Properties: this.props,\n             Condition: this.condition\n         }\n     }\n}"
+          },
+          "name": "toCloudFormation",
+          "returns": {
+            "primitive": "json"
+          }
+        }
+      ],
+      "name": "StackElement",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The logical ID for this CloudFormation stack element"
+          },
+          "immutable": true,
+          "name": "logicalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The stack this Construct has been made a part of"
+          },
+          "name": "stack",
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/cdk.Stack"
+          }
+        },
+        {
+          "docs": {
+            "returns": "the stack trace of the point where this Resource was created from, sourced\nfrom the +metadata+ entry typed +aws:cdk:logicalId+, and with the bottom-most\nnode +internal+ entries filtered."
+          },
+          "immutable": true,
+          "name": "creationStackTrace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "Return the path with respect to the stack"
+          },
+          "immutable": true,
+          "name": "stackPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Returns the set of all stack elements (resources, parameters, conditions)\nthat should be added when a resource \"depends on\" this construct."
+          },
+          "immutable": true,
+          "name": "dependencyElements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cdk.IDependable"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Tag": {
+      "assembly": "@aws-cdk/cdk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html"
+      },
+      "fqn": "@aws-cdk/cdk.Tag",
+      "kind": "interface",
+      "name": "Tag",
+      "namespace": "@aws-cdk/cdk",
+      "properties": [
+        {
+          "docs": {
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-key"
+          },
+          "name": "key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html#cfn-resource-tags-value"
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cdk.Token": {
+      "assembly": "@aws-cdk/cdk",
+      "docs": {
+        "comment": "Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value\nin case, for example, that it requires some context or late-bound data."
+      },
+      "fqn": "@aws-cdk/cdk.Token",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "returns": "The resolved value for this token."
+          },
+          "name": "resolve",
+          "returns": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "name": "Token",
+      "namespace": "@aws-cdk/cdk"
+    }
+  },
+  "name": "@aws-cdk/aws-elasticbeanstalk",
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ElasticBeanstalk"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "aws-elasticbeanstalk",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.aws.elasticbeanstalk"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-elasticbeanstalk"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-elasticbeanstalk.EnvironmentEndpointUrl": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Token"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.EnvironmentEndpointUrl",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a token that resolves to `value`. If value is a function,\nthe function is evaluated upon resolution and the value it returns will be\nuesd as the token's value."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "name": "valueOrFunction",
+            "type": {
+              "optional": true,
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "name": "EnvironmentEndpointUrl",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk"
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElasticBeanstalk::Application``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ApplicationResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ApplicationResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResourceProps",
+              "optional": true
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ApplicationResource",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationResourceLifecycleConfigProperty",
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationVersionLifecycleConfigProperty",
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxAgeRuleProperty",
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxCountRuleProperty"
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationResourceLifecycleConfigProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationresourcelifecycleconfig.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationResourceLifecycleConfigProperty",
+      "kind": "interface",
+      "name": "ApplicationResourceLifecycleConfigProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ApplicationResource.ApplicationResourceLifecycleConfigProperty.ServiceRole``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationresourcelifecycleconfig.html#cfn-elasticbeanstalk-application-applicationresourcelifecycleconfig-servicerole"
+          },
+          "name": "serviceRole",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.ApplicationResourceLifecycleConfigProperty.VersionLifecycleConfig``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationresourcelifecycleconfig.html#cfn-elasticbeanstalk-application-applicationresourcelifecycleconfig-versionlifecycleconfig"
+          },
+          "name": "versionLifecycleConfig",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationVersionLifecycleConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationVersionLifecycleConfigProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationversionlifecycleconfig.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationVersionLifecycleConfigProperty",
+      "kind": "interface",
+      "name": "ApplicationVersionLifecycleConfigProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ApplicationResource.ApplicationVersionLifecycleConfigProperty.MaxAgeRule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationversionlifecycleconfig.html#cfn-elasticbeanstalk-application-applicationversionlifecycleconfig-maxagerule"
+          },
+          "name": "maxAgeRule",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxAgeRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.ApplicationVersionLifecycleConfigProperty.MaxCountRule``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-applicationversionlifecycleconfig.html#cfn-elasticbeanstalk-application-applicationversionlifecycleconfig-maxcountrule"
+          },
+          "name": "maxCountRule",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxCountRuleProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxAgeRuleProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxagerule.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxAgeRuleProperty",
+      "kind": "interface",
+      "name": "MaxAgeRuleProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxAgeRuleProperty.DeleteSourceFromS3``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxagerule.html#cfn-elasticbeanstalk-application-maxagerule-deletesourcefroms3"
+          },
+          "name": "deleteSourceFromS3",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxAgeRuleProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxagerule.html#cfn-elasticbeanstalk-application-maxagerule-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxAgeRuleProperty.MaxAgeInDays``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxagerule.html#cfn-elasticbeanstalk-application-maxagerule-maxageindays"
+          },
+          "name": "maxAgeInDays",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxCountRuleProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxcountrule.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.MaxCountRuleProperty",
+      "kind": "interface",
+      "name": "MaxCountRuleProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxCountRuleProperty.DeleteSourceFromS3``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxcountrule.html#cfn-elasticbeanstalk-application-maxcountrule-deletesourcefroms3"
+          },
+          "name": "deleteSourceFromS3",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxCountRuleProperty.Enabled``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxcountrule.html#cfn-elasticbeanstalk-application-maxcountrule-enabled"
+          },
+          "name": "enabled",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationResource.MaxCountRuleProperty.MaxCount``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-application-maxcountrule.html#cfn-elasticbeanstalk-application-maxcountrule-maxcount"
+          },
+          "name": "maxCount",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "number"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResourceProps",
+      "kind": "interface",
+      "name": "ApplicationResourceProps",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Application.ApplicationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-name"
+          },
+          "name": "applicationName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Application.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Application.ResourceLifecycleConfig``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk.html#cfn-elasticbeanstalk-application-resourcelifecycleconfig"
+          },
+          "name": "resourceLifecycleConfig",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationResource.ApplicationResourceLifecycleConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElasticBeanstalk::ApplicationVersion``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ApplicationVersionResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ApplicationVersionResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ApplicationVersionResource",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource.SourceBundleProperty"
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource.SourceBundleProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-sourcebundle.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource.SourceBundleProperty",
+      "kind": "interface",
+      "name": "SourceBundleProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ApplicationVersionResource.SourceBundleProperty.S3Bucket``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-sourcebundle.html#cfn-beanstalk-sourcebundle-s3bucket"
+          },
+          "name": "s3Bucket",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ApplicationVersionResource.SourceBundleProperty.S3Key``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-sourcebundle.html#cfn-beanstalk-sourcebundle-s3key"
+          },
+          "name": "s3Key",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResourceProps",
+      "kind": "interface",
+      "name": "ApplicationVersionResourceProps",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ApplicationVersion.ApplicationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html#cfn-elasticbeanstalk-applicationversion-applicationname"
+          },
+          "name": "applicationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ApplicationVersion.SourceBundle``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html#cfn-elasticbeanstalk-applicationversion-sourcebundle"
+          },
+          "name": "sourceBundle",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ApplicationVersionResource.SourceBundleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ApplicationVersion.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-version.html#cfn-elasticbeanstalk-applicationversion-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElasticBeanstalk::ConfigurationTemplate``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``ConfigurationTemplateResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``ConfigurationTemplateResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "ConfigurationTemplateResource",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.ConfigurationOptionSettingProperty",
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.SourceConfigurationProperty"
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.ConfigurationOptionSettingProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-configurationoptionsetting.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.ConfigurationOptionSettingProperty",
+      "kind": "interface",
+      "name": "ConfigurationOptionSettingProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.ConfigurationOptionSettingProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-configurationoptionsetting.html#cfn-elasticbeanstalk-configurationtemplate-configurationoptionsetting-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.ConfigurationOptionSettingProperty.OptionName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-configurationoptionsetting.html#cfn-elasticbeanstalk-configurationtemplate-configurationoptionsetting-optionname"
+          },
+          "name": "optionName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.ConfigurationOptionSettingProperty.ResourceName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-configurationoptionsetting.html#cfn-elasticbeanstalk-configurationtemplate-configurationoptionsetting-resourcename"
+          },
+          "name": "resourceName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.ConfigurationOptionSettingProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-configurationoptionsetting.html#cfn-elasticbeanstalk-configurationtemplate-configurationoptionsetting-value"
+          },
+          "name": "value",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.SourceConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-sourceconfiguration.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.SourceConfigurationProperty",
+      "kind": "interface",
+      "name": "SourceConfigurationProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.SourceConfigurationProperty.ApplicationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-sourceconfiguration.html#cfn-elasticbeanstalk-configurationtemplate-sourceconfiguration-applicationname"
+          },
+          "name": "applicationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``ConfigurationTemplateResource.SourceConfigurationProperty.TemplateName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticbeanstalk-configurationtemplate-sourceconfiguration.html#cfn-elasticbeanstalk-configurationtemplate-sourceconfiguration-templatename"
+          },
+          "name": "templateName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResourceProps",
+      "kind": "interface",
+      "name": "ConfigurationTemplateResourceProps",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.ApplicationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-applicationname"
+          },
+          "name": "applicationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.EnvironmentId``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-environmentid"
+          },
+          "name": "environmentId",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.OptionSettings``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-optionsettings"
+          },
+          "name": "optionSettings",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.ConfigurationOptionSettingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.PlatformArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-platformarn"
+          },
+          "name": "platformArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.SolutionStackName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-solutionstackname"
+          },
+          "name": "solutionStackName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::ConfigurationTemplate.SourceConfiguration``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticbeanstalk-configurationtemplate.html#cfn-elasticbeanstalk-configurationtemplate-sourceconfiguration"
+          },
+          "name": "sourceConfiguration",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.ConfigurationTemplateResource.SourceConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "base": {
+        "fqn": "@aws-cdk/cdk.Resource"
+      },
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource",
+      "initializer": {
+        "docs": {
+          "comment": "Creates a new ``AWS::ElasticBeanstalk::Environment``."
+        },
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "the ``cdk.Construct`` this ``EnvironmentResource`` is a part of"
+            },
+            "name": "parent",
+            "type": {
+              "fqn": "@aws-cdk/cdk.Construct"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the name of the resource in the ``cdk.Construct`` tree"
+            },
+            "name": "name",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "the properties of this ``EnvironmentResource``"
+            },
+            "name": "properties",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResourceProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "name": "renderProperties",
+          "protected": true,
+          "returns": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "name": "EnvironmentResource",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "comment": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "name": "resourceTypeName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "cloudformation_attribute": "EndpointURL"
+          },
+          "immutable": true,
+          "name": "environmentEndpointUrl",
+          "type": {
+            "fqn": "@aws-cdk/aws-elasticbeanstalk.EnvironmentEndpointUrl"
+          }
+        }
+      ],
+      "subtypes": [
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.OptionSettingProperty",
+        "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.TierProperty"
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.OptionSettingProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-option-settings.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.OptionSettingProperty",
+      "kind": "interface",
+      "name": "OptionSettingProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.OptionSettingProperty.Namespace``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-option-settings.html#cfn-beanstalk-optionsettings-namespace"
+          },
+          "name": "namespace",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.OptionSettingProperty.OptionName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-option-settings.html#cfn-beanstalk-optionsettings-optionname"
+          },
+          "name": "optionName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.OptionSettingProperty.ResourceName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-option-settings.html#cfn-elasticbeanstalk-environment-optionsetting-resourcename"
+          },
+          "name": "resourceName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.OptionSettingProperty.Value``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-option-settings.html#cfn-beanstalk-optionsettings-value"
+          },
+          "name": "value",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.TierProperty": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment-tier.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.TierProperty",
+      "kind": "interface",
+      "name": "TierProperty",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource",
+      "parenttype": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.TierProperty.Name``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment-tier.html#cfn-beanstalk-env-tier-name"
+          },
+          "name": "name",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.TierProperty.Type``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment-tier.html#cfn-beanstalk-env-tier-type"
+          },
+          "name": "type",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``EnvironmentResource.TierProperty.Version``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment-tier.html#cfn-beanstalk-env-tier-version"
+          },
+          "name": "version",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResourceProps": {
+      "assembly": "@aws-cdk/aws-elasticbeanstalk",
+      "datatype": true,
+      "docs": {
+        "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html"
+      },
+      "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResourceProps",
+      "kind": "interface",
+      "name": "EnvironmentResourceProps",
+      "namespace": "@aws-cdk/aws-elasticbeanstalk.cloudformation",
+      "properties": [
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.ApplicationName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-applicationname"
+          },
+          "name": "applicationName",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.CNAMEPrefix``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-cnameprefix"
+          },
+          "name": "cnamePrefix",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.Description``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-description"
+          },
+          "name": "description",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.EnvironmentName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-name"
+          },
+          "name": "environmentName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.OptionSettings``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-optionsettings"
+          },
+          "name": "optionSettings",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.OptionSettingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.PlatformArn``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-platformarn"
+          },
+          "name": "platformArn",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.SolutionStackName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-solutionstackname"
+          },
+          "name": "solutionStackName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.Tags``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-elasticbeanstalk-environment-tags"
+          },
+          "name": "tags",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/cdk.Token"
+                          },
+                          {
+                            "fqn": "@aws-cdk/cdk.Tag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.TemplateName``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-templatename"
+          },
+          "name": "templateName",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.Tier``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-tier"
+          },
+          "name": "tier",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-elasticbeanstalk.cloudformation.EnvironmentResource.TierProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "``AWS::ElasticBeanstalk::Environment.VersionLabel``",
+            "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-beanstalk-environment.html#cfn-beanstalk-environment-versionlabel"
+          },
+          "name": "versionLabel",
+          "type": {
+            "optional": true,
+            "union": {
+              "types": [
+                {
+                  "primitive": "string"
+                },
+                {
+                  "fqn": "@aws-cdk/cdk.Token"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}

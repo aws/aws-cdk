@@ -1,0 +1,379 @@
+{
+  "fingerprint": "XbAmyfIPfIjkJQgj39ne+JEhfkSZCOpIrw2weW9GjRk=",
+  "name": "@aws-cdk/cx-api",
+  "schema": "jsii/1.0",
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.CXAPI"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cxapi",
+        "groupId": "com.amazonaws.cdk"
+      },
+      "package": "com.amazonaws.cdk.cxapi"
+    },
+    "js": {
+      "npm": "@aws-cdk/cx-api"
+    }
+  },
+  "types": {
+    "@aws-cdk/cx-api.AssetMetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.AssetMetadataEntry",
+      "kind": "interface",
+      "name": "AssetMetadataEntry",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "packaging",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "s3BucketParameter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "s3KeyParameter",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.Environment": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Models an AWS execution environment, for use within the CDK toolkit."
+      },
+      "fqn": "@aws-cdk/cx-api.Environment",
+      "kind": "interface",
+      "name": "Environment",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The arbitrary name of this environment (user-set, or at least user-meaningful) "
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The 12-digit AWS account ID for the account this environment deploys into "
+          },
+          "name": "account",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The AWS region name where this environment deploys into "
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.ListStacksRequest": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.ListStacksRequest",
+      "kind": "interface",
+      "name": "ListStacksRequest",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "context",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.ListStacksResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.ListStacksResponse",
+      "kind": "interface",
+      "name": "ListStacksResponse",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.StackInfo"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.MetadataEntry": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "An metadata entry in the construct."
+      },
+      "fqn": "@aws-cdk/cx-api.MetadataEntry",
+      "kind": "interface",
+      "name": "MetadataEntry",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The type of the metadata entry."
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The data."
+          },
+          "name": "data",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "comment": "A stack trace for when the entry was created."
+          },
+          "name": "trace",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.MissingContext": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Represents a missing piece of context.\n(should have been an interface, but jsii still doesn't have support for structs)."
+      },
+      "fqn": "@aws-cdk/cx-api.MissingContext",
+      "kind": "interface",
+      "name": "MissingContext",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "provider",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "scope",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "name": "args",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.StackId": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Identifies a single stack"
+      },
+      "fqn": "@aws-cdk/cx-api.StackId",
+      "kind": "interface",
+      "name": "StackId",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.StackInfo": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Identifies and contains metadata about a stack"
+      },
+      "fqn": "@aws-cdk/cx-api.StackInfo",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cx-api.StackId"
+        }
+      ],
+      "kind": "interface",
+      "name": "StackInfo",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "environment",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.Environment",
+            "optional": true
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SynthesizeRequest": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.SynthesizeRequest",
+      "kind": "interface",
+      "name": "SynthesizeRequest",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "name": "context",
+          "type": {
+            "optional": true,
+            "primitive": "any"
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SynthesizeResponse": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "fqn": "@aws-cdk/cx-api.SynthesizeResponse",
+      "kind": "interface",
+      "name": "SynthesizeResponse",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "stacks",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.SynthesizedStack"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ]
+    },
+    "@aws-cdk/cx-api.SynthesizedStack": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "A complete synthesized stack"
+      },
+      "fqn": "@aws-cdk/cx-api.SynthesizedStack",
+      "interfaces": [
+        {
+          "fqn": "@aws-cdk/cx-api.StackInfo"
+        }
+      ],
+      "kind": "interface",
+      "name": "SynthesizedStack",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "name": "missing",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/cx-api.MissingContext"
+              },
+              "kind": "map"
+            },
+            "optional": true
+          }
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/cx-api.MetadataEntry"
+                  },
+                  "kind": "array"
+                }
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "name": "template",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ]
+    }
+  },
+  "version": "0.7.3-beta"
+}
