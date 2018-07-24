@@ -90,7 +90,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      *
      * @default max over 5 minutes
      */
-    public static metricAllConcurrentExecutions(props?: MetricCustomization): Metric {
+    public static metricAllConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         // Mini-FAQ: why max? This metric is a gauge that is emitted every
         // minute, so either max or avg or a percentile make sense (but sum
         // doesn't). Max is more sensitive to spiky load changes which is
@@ -105,7 +105,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      *
      * @default max over 5 minutes
      */
-    public static metricAllUnreservedConcurrentExecutions(props?: MetricCustomization): Metric {
+    public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return LambdaRef.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
     }
 
