@@ -44,7 +44,7 @@ In this section we will create an empty project structure for your CDK app.
             mkdir hello-cdk
             cd hello-cdk
             git init
-            npm init -y
+            npm init -y # creates package.json
 
     .. group-tab:: TypeScript
 
@@ -106,7 +106,7 @@ In this section we will create an empty project structure for your CDK app.
 Add @aws-cdk/cdk as a dependency
 ---------------------------------
 
-Now, we will install the CDK core library (:py:mod:`_aws-cdk_core`). This
+Now, we will install the CDK core library (:py:mod:`@aws-cdk/cdk`). This
 library includes the basic classes needed to write CDK stacks and apps.
 
 .. tabs::
@@ -167,59 +167,65 @@ library includes the basic classes needed to write CDK stacks and apps.
 Define your CDK app
 -------------------
 
-CDK apps are modeled as classes which extend the :py:class:`_aws-cdk_core.App`
+CDK apps are modeled as classes which extend the :py:class:`@aws-cdk/cdk.App`
 class. Let's create our first, empty **App**:
 
 .. tabs::
 
-    .. code-tab:: js
+    .. group-tab:: JavaScript
 
-        // index.js
+        In **index.js**:
 
-        const cdk = require('@aws-cdk/cdk');
+        .. code-block:: js
 
-        class MyFirstApp extends cdk.App {
-            constructor(argv) {
-                super(argv);
-            }
-        }
+            const cdk = require('@aws-cdk/cdk');
 
-        process.stdout.write(new MyFirstApp(process.argv).run());
-
-    .. code-tab:: ts
-
-        // index.ts
-
-        import cdk = require('@aws-cdk/cdk');
-
-        class MyFirstApp extends cdk.App {
-            constructor(argv: string[]) {
-                super(argv);
-            }
-        }
-
-        process.stdout.write(new MyFirstApp(process.argv).run());
-
-    .. code-tab:: java
-
-        // src/main/java/com/acme/MyApp.java
-
-        package com.acme;
-
-        import com.amazonaws.cdk.App;
-
-        import java.util.Arrays;
-        import java.util.List;
-
-        public class MyApp extends App {
-            public MyApp(final List<String> argv) {
-                super(argv);
+            class MyApp extends cdk.App {
+                constructor(argv) {
+                    super(argv);
+                }
             }
 
-            public static void main(final String[] argv) {
-                System.out.println(new MyApp(Arrays.asList(argv)).run());
+            process.stdout.write(new MyApp(process.argv).run());
+
+    .. group-tab:: TypeScript
+
+        In **index.ts**:
+
+        .. code-block:: ts
+
+            import cdk = require('@aws-cdk/cdk');
+
+            class MyApp extends cdk.App {
+                constructor(argv: string[]) {
+                    super(argv);
+                }
             }
-        }
+
+            process.stdout.write(new MyApp(process.argv).run());
+
+    .. group-tab:: Java
+
+        In **src/main/java/com/acme/MyApp.java**:
+
+        .. code-block:: java
+
+            package com.acme;
+
+            import com.amazonaws.cdk.App;
+
+            import java.util.Arrays;
+            import java.util.List;
+
+            public class MyApp extends App {
+                public MyApp(final List<String> argv) {
+                    super(argv);
+                }
+
+                public static void main(final String[] argv) {
+                    System.out.println(new MyApp(Arrays.asList(argv)).run());
+                }
+            }
 
 .. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
     currently needed in order to allow the CDK Toolkit to interact with your app. In the future
@@ -400,85 +406,96 @@ Now, let's define our first stack and add it to our app.
 
 .. tabs::
 
-    .. code-tab:: js
-        :emphasize-lines: 4,5,6,7,8,14
+    .. group-tab:: JavaScript
 
-        // index.js
-        const cdk = require('@aws-cdk/cdk');
+        In **index.js**:
 
-        class MyFirstStack extends cdk.Stack {
-            constructor(parent, id, props) {
-                super(parent, id, props);
-            }
-        }
+        .. code-block:: js
+            :emphasize-lines: 3,4,5,6,7,13
 
-        class MyFirstApp extends cdk.App {
-            constructor(argv) {
-                super(argv);
+            const cdk = require('@aws-cdk/cdk');
 
-                new MyFirstStack(this, 'hello-cdk');
-            }
-        }
-
-        process.stdout.write(new MyFirstApp(process.argv).run());
-
-    .. code-tab:: ts
-        :emphasize-lines: 4,5,6,7,8,14
-
-        // index.ts
-        import cdk = require('@aws-cdk/cdk');
-
-        class MyFirstStack extends cdk.Stack {
-            constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
-                super(parent, id, props);
-            }
-        }
-
-        class MyFirstApp extends cdk.App {
-            constructor(argv: string[]) {
-                super(argv);
-
-                new MyFirstStack(this, 'hello-cdk');
-            }
-        }
-
-        process.stdout.write(new MyFirstApp(process.argv).run());
-
-    .. code-tab:: java
-        :emphasize-lines: 1,2,3,4,5,6,7,8,9,10,11,25
-
-        // src/main/java/com/acme/MyStack.java
-
-        package com.acme;
-
-        import com.amazonaws.cdk.App;
-        import com.amazonaws.cdk.Stack;
-
-        public class MyStack extends Stack {
-            public MyStack(final App parent, final String id) {
-                super(parent, id);
-            }
-        }
-
-        // src/main/java/com/acme/MyApp.java
-        package com.acme;
-
-        import com.amazonaws.cdk.App;
-
-        import java.util.Arrays;
-        import java.util.List;
-
-        public class MyApp extends App {
-            public MyApp(final List<String> argv) {
-                super(argv);
-
-                new MyStack(this, "hello-cdk");
+            class MyStack extends cdk.Stack {
+                constructor(parent, id, props) {
+                    super(parent, id, props);
+                }
             }
 
-            public static void main(final String[] argv) {
-                System.out.println(new MyApp(Arrays.asList(argv)).run());
+            class MyApp extends cdk.App {
+                constructor(argv) {
+                    super(argv);
+
+                    new MyStack(this, 'hello-cdk');
+                }
             }
-        }
+
+            process.stdout.write(new MyApp(process.argv).run());
+
+    .. group-tab:: TypeScript
+
+        In **index.ts**:
+
+        .. code-block:: ts
+            :emphasize-lines: 3,4,5,6,7,13
+
+            import cdk = require('@aws-cdk/cdk');
+
+            class MyStack extends cdk.Stack {
+                constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+                    super(parent, id, props);
+                }
+            }
+
+            class MyApp extends cdk.App {
+                constructor(argv: string[]) {
+                    super(argv);
+
+                    new MyStack(this, 'hello-cdk');
+                }
+            }
+
+            process.stdout.write(new MyApp(process.argv).run());
+
+    .. group-tab:: Java
+
+        In **src/main/java/com/acme/MyStack.java**:
+
+        .. code-block:: java
+
+            package com.acme;
+
+            import com.amazonaws.cdk.App;
+            import com.amazonaws.cdk.Stack;
+
+            public class MyStack extends Stack {
+                public MyStack(final App parent, final String id) {
+                    super(parent, id);
+                }
+            }
+
+        In **src/main/java/com/acme/MyApp.java**:
+
+        .. code-block:: java
+            :emphasize-lines: 12
+
+            package com.acme;
+
+            import com.amazonaws.cdk.App;
+
+            import java.util.Arrays;
+            import java.util.List;
+
+            public class MyApp extends App {
+                public MyApp(final List<String> argv) {
+                    super(argv);
+
+                    new MyStack(this, "hello-cdk");
+                }
+
+                public static void main(final String[] argv) {
+                    System.out.println(new MyApp(Arrays.asList(argv)).run());
+                }
+            }
 
 The initializer signature of **cdk.Stack** includes three arguments: **parent**,
 **id** and **props**. This is the signature for every class in the CDK
@@ -561,64 +578,73 @@ First, we need to install the **@aws-cdk/aws-s3** package:
         there is no need to explicitly install the S3 library.
 
 Now, let's define an S3 bucket in our stack. S3 buckets are represented by
-the :py:class:`_aws-cdk_s3.Bucket` class:
+the :py:class:`@aws-cdk/aws-s3.Bucket` class:
 
 .. tabs::
 
-    .. code-tab:: js
-        :emphasize-lines: 3,9,10,11
+    .. group-tab:: JavaScript
 
-        // index.js
-        const s3 = require('@aws-cdk/aws-s3');
-        const cdk = require('@aws-cdk/cdk');
+        In **index.js**:
 
-        class MyFirstStack extends cdk.Stack {
-            constructor(parent, id, props) {
-                super(parent, id, props);
+        .. code-block:: js
+            :emphasize-lines: 2,8,9,10
 
-                new s3.Bucket(this, 'MyFirstBucket', {
-                    versioned: true
-                });
+            const cdk = require('@aws-cdk/cdk');
+            const s3 = require('@aws-cdk/aws-s3');
+
+            class MyStack extends cdk.Stack {
+                constructor(parent, id, props) {
+                    super(parent, id, props);
+
+                    new s3.Bucket(this, 'MyFirstBucket', {
+                        versioned: true
+                    });
+                }
             }
-        }
 
-    .. code-tab:: ts
-        :emphasize-lines: 3,9,10,11
+    .. group-tab:: TypeScript
 
-        // index.ts
-        import s3 = require('@aws-cdk/aws-s3');
-        import cdk = require('@aws-cdk/cdk');
+        In **index.ts**:
 
-        class MyFirstStack extends cdk.Stack {
-            constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
-                super(parent, id, props);
+        .. code-block:: ts
+            :emphasize-lines: 2,8,9,10
 
-                new s3.Bucket(this, 'MyFirstBucket', {
-                    versioned: true
-                });
+            import cdk = require('@aws-cdk/cdk');
+            import s3 = require('@aws-cdk/aws-s3');
+
+            class MyStack extends cdk.Stack {
+                constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+                    super(parent, id, props);
+
+                    new s3.Bucket(this, 'MyFirstBucket', {
+                        versioned: true
+                    });
+                }
             }
-        }
 
-    .. code-tab:: java
-        :emphasize-lines: 6,7,13,14,15
+    .. group-tab:: Java
 
-        // src/main/java/com/acme/MyStack.java
-        package com.acme;
+        In **src/main/java/com/acme/MyStack.java**:
 
-        import com.amazonaws.cdk.App;
-        import com.amazonaws.cdk.Stack;
-        import com.amazonaws.cdk.aws.s3.Bucket;
-        import com.amazonaws.cdk.aws.s3.BucketProps;
+        .. code-block:: java
+            :emphasize-lines: 6,7,13,14,15
 
-        public class MyStack extends Stack {
-            public MyStack(final App parent, final String id) {
-                super(parent, id);
+            package com.acme;
 
-                new Bucket(this, "MyFirstBucket", BucketProps.builder()
-                        .withVersioned(true)
-                        .build());
+            import com.amazonaws.cdk.App;
+            import com.amazonaws.cdk.Stack;
+            import com.amazonaws.cdk.aws.s3.Bucket;
+            import com.amazonaws.cdk.aws.s3.BucketProps;
+
+            public class MyStack extends Stack {
+                public MyStack(final App parent, final String id) {
+                    super(parent, id);
+
+                    new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                            .withVersioned(true)
+                            .build());
+                }
             }
-        }
 
 A few things to notice:
 
@@ -695,30 +721,35 @@ Let's configure our bucket to use KMS managed encryption:
 
 .. tabs::
 
-    .. code-tab:: js
-        :emphasize-lines: 3
+    .. group-tab:: JavaScript
 
-        new s3.Bucket(this, 'MyFirstBucket', {
-            versioned: true,
-            encryption: s3.BucketEncryption.KmsManaged
-        });
+        .. code-block:: js
+            :emphasize-lines: 3
 
+            new s3.Bucket(this, 'MyFirstBucket', {
+                versioned: true,
+                encryption: s3.BucketEncryption.KmsManaged
+            });
 
-    .. code-tab:: ts
-        :emphasize-lines: 3
+    .. group-tab:: TypeScript
 
-        new s3.Bucket(this, 'MyFirstBucket', {
-            versioned: true,
-            encryption: s3.BucketEncryption.KmsManaged
-        });
+        .. code-block:: ts
+            :emphasize-lines: 3
 
-    .. code-tab:: java
-        :emphasize-lines: 3
+            new s3.Bucket(this, 'MyFirstBucket', {
+                versioned: true,
+                encryption: s3.BucketEncryption.KmsManaged
+            });
 
-        new Bucket(this, "MyFirstBucket", BucketProps.builder()
-                .withVersioned(true)
-                .withEncryption("MANAGED")
-                .build());
+    .. group-tab:: Java
+
+        .. code-block:: java
+            :emphasize-lines: 3
+
+            new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                    .withVersioned(true)
+                    .withEncryption("MANAGED")
+                    .build());
 
 Compile your program:
 
@@ -743,7 +774,7 @@ Compile your program:
 Preparing for deployment using **cdk diff**
 -------------------------------------------
 
-Before we deploy our updated stack, we can use the **cdk diff* command to evaluate
+Before we deploy our updated stack, we can use the **cdk diff** command to evaluate
 the difference between our CDK app and the deployed stack:
 
 .. code-block:: sh
