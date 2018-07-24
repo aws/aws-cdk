@@ -38,8 +38,8 @@ const PER_USER_DEFAULTS = '~/.cdk.json';
 async function parseCommandLineArguments() {
     const initTemplateLanuages = await availableInitLanguages;
     return yargs
-        .usage('Usage: cdk -a <cloud-executable> COMMAND')
-        .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line of cloud executable (e.g. "node bin/my-app.js")' })
+        .usage('Usage: cdk -a <cdk-app> COMMAND')
+        .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")' })
         .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter.', nargs: 1, requiresArg: 'KEY=VALUE' })
         // tslint:disable-next-line:max-line-length
         .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
@@ -50,18 +50,17 @@ async function parseCommandLineArguments() {
         .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
-        .demandCommand(1)
-        .command('list', 'Lists all stacks in the cloud executable (alias: ls)')
-            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' })
+        .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
+            .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
         // tslint:disable-next-line:max-line-length
-        .command('synth [STACKS..]', 'Synthesizes and prints the cloud formation template for this stack (alias: synthesize, construct, cons)', yargs => yargs
+        .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
             .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
         .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
             .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
-        .command('deploy [STACKS...]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+        .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
             .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
-        .command('destroy [STACKS...]', 'Destroy the stack(s) named STACKS', yargs => yargs
+        .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
             .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
         .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
             .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' }))
@@ -73,6 +72,8 @@ async function parseCommandLineArguments() {
             .option('list', { type: 'boolean', desc: 'list the available templates' }))
         .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
         .version(VERSION)
+        .demandCommand(1, '') // just print help
+        .help()
         .epilogue([
             'If your app has a single stack, there is no need to specify the stack name',
             'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
@@ -105,6 +106,8 @@ async function initCommandLine() {
     if (argv.verbose) {
         setVerbose();
     }
+
+    debug('Command line arguments:', argv);
 
     const aws = new SDK();
 
@@ -165,6 +168,9 @@ async function initCommandLine() {
     async function main(command: string, args: any): Promise<number | string | {} | void> {
         const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
+        args.STACKS = args.STACKS || [];
+        args.ENVIRONMENTS = args.ENVIRONMENTS || [];
+
         switch (command) {
             case 'ls':
             case 'list':
@@ -182,8 +188,6 @@ async function initCommandLine() {
             case 'destroy':
                 return await cliDestroy(args.STACKS, args.force);
 
-            case 'cons':
-            case 'construct':
             case 'synthesize':
             case 'synth':
                 return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);

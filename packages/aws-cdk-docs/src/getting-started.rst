@@ -382,7 +382,7 @@ To list the stacks in this app, you can use the CDK toolkit's **ls** command.
 
 .. code-block:: sh
 
-    cdk ls
+    cdk ls -l
 
 The result will be quite disappointing:
 
@@ -520,7 +520,7 @@ stack:
 
 .. code-block:: sh
 
-    cdk ls  # don't forget to compile your project first!
+    cdk ls -l
     -
         name: hello-cdk
         environment:
