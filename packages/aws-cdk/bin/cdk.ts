@@ -51,10 +51,10 @@ async function parseCommandLineArguments() {
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .demandCommand(1)
-        .command([ 'ls', 'list' ], 'Lists all stacks in the app (alias: ls)', yargs => yargs
+        .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
             .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
         // tslint:disable-next-line:max-line-length
-        .command(['synth [STACKS..]', 'synthesize [STACKS...]', 'construct [STACKS...]', 'cons [STACKS...]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
+        .command([ 'synthesize [STACKS..]', 'synth [STACKS...]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
             .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
         .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
@@ -184,8 +184,6 @@ async function initCommandLine() {
             case 'destroy':
                 return await cliDestroy(args.STACKS, args.force);
 
-            case 'cons':
-            case 'construct':
             case 'synthesize':
             case 'synth':
                 return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);
