@@ -87,11 +87,11 @@ Step Two: Install the |cdk| libraries
 =====================================
 
 Run the following command to install the |S3|,
-???, and ??? libraries:
+|APIGATEWAY|, and ??? libraries:
 
 .. code-block: sh
 
-   y-npm i @aws-cdk/s3 ???
+   y-npm i @aws-cdk/s3 @aws-cdk/apigateway
 
 .. _step_three:
 
@@ -167,10 +167,38 @@ automatically compile our TypeScript code into JavaScript as we save the file:
    npm run watch
 
 Rerun **cdk synth**.
-You should see something like the following:
+You should see something like the following,
+where ABC123YZ is an eight-character value that the |cdk|
+calculates to ensure that the resource is unique:
 
 .. code-block: json
 
    Resources:
-       ApplesAppleStoreE5F233DA:
+       ApplesAppleStoreABC123YZ:
            Type: 'AWS::S3::Bucket'
+
+.. _step_five:
+
+Step Five: Add an |APIGATEWAY| ??? to the Apple Service
+=======================================================
+
+Add an |APIGATEWAY| ??? to the service so we can ???.
+
+Add the following **import** statement to *apple_service.ts*:
+
+.. code-block: ts
+
+   import { Api } from '@aws-cdk/apigateway';
+
+And add the following code to the end of the constructor for the **AppleService** class:
+
+.. code-block: ts
+
+   new Bucket(this, 'AppleStore');
+
+Let's see what we have so far.
+Run the following command to see the current |CFN| template:
+
+.. code-block: sh
+
+   cdk synth
