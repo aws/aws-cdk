@@ -32,9 +32,9 @@ customized with `SubnetConfiguration` array. This is best explained by an
 example:
 
 ```ts
-import { VpcNetwork } from '@aws-cdk/ec2';
+import ec2 = require('@aws-cdk/aws-ec2');
 
-new VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/21',
   subnetConfiguration: [
     {
@@ -97,9 +97,9 @@ databases for your data tier, and the rest of the IP space should just be evenly
 distributed for the application.
 
 ```ts
-import { VpcNetwork } from '@aws-cdk/ec2';
+import ec2 = require('@aws-cdk/aws-ec2');
 
-new VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
   subnetConfiguration: [
     {
@@ -143,9 +143,9 @@ save on the cost, but trade the 3 availability zone to a 1 for all egress
 traffic. This can be accomplished with a single parameter configuration:
 
 ```ts
-import { VpcNetwork } from '@aws-cdk/ec2';
+import ec2 = require('@aws-cdk/aws-ec2');
 
-new VpcNetwork(stack, 'TheVPC', {
+const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
   subnetConfiguration: [
