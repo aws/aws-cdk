@@ -82,9 +82,9 @@ namespace Amazon.CDK.AWS.EC2
         /// <summary>SNS topic to send notifications about fleet changes</summary>
         /// <remarks>default: No fleet change notifications will be sent.</remarks>
         [JsiiProperty("notificationsTopic", "{\"fqn\":\"@aws-cdk/aws-sns.cloudformation.TopicResource\",\"optional\":true}")]
-        public virtual TopicResource_ NotificationsTopic
+        public virtual TopicResource NotificationsTopic
         {
-            get => GetInstanceProperty<TopicResource_>();
+            get => GetInstanceProperty<TopicResource>();
             set => SetInstanceProperty(value);
         }
 

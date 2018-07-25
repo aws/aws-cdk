@@ -11,6 +11,7 @@ namespace Amazon.CDK.AWS.EC2
         {
         }
 
+        /// <summary>The availability zone for the subnet</summary>
         [JsiiProperty("availabilityZone", "{\"primitive\":\"string\"}")]
         public virtual string AvailabilityZone
         {
@@ -18,6 +19,7 @@ namespace Amazon.CDK.AWS.EC2
             set => SetInstanceProperty(value);
         }
 
+        /// <summary>The VPC which this subnet is part of</summary>
         [JsiiProperty("vpcId", "{\"fqn\":\"@aws-cdk/cdk.Token\"}")]
         public virtual Token VpcId
         {
@@ -25,6 +27,7 @@ namespace Amazon.CDK.AWS.EC2
             set => SetInstanceProperty(value);
         }
 
+        /// <summary>The CIDR notation for this subnet</summary>
         [JsiiProperty("cidrBlock", "{\"primitive\":\"string\"}")]
         public virtual string CidrBlock
         {
@@ -32,6 +35,11 @@ namespace Amazon.CDK.AWS.EC2
             set => SetInstanceProperty(value);
         }
 
+        /// <summary>
+        /// Controls if a public IP is associated to an instance at launch
+        /// 
+        /// Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
+        /// </summary>
         [JsiiProperty("mapPublicIpOnLaunch", "{\"primitive\":\"boolean\",\"optional\":true}")]
         public virtual bool? MapPublicIpOnLaunch
         {

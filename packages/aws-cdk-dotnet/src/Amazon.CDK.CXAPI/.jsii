@@ -1,5 +1,5 @@
 {
-  "fingerprint": "XbAmyfIPfIjkJQgj39ne+JEhfkSZCOpIrw2weW9GjRk=",
+  "fingerprint": "Hm1vkDcKeqizEJYMLZJkzps5R1QGvtx2e0Gw/TMUFe8=",
   "name": "@aws-cdk/cx-api",
   "schema": "jsii/1.0",
   "targets": {
@@ -18,6 +18,33 @@
     }
   },
   "types": {
+    "@aws-cdk/cx-api.AppRuntime": {
+      "assembly": "@aws-cdk/cx-api",
+      "datatype": true,
+      "docs": {
+        "comment": "Information about the application's runtime components."
+      },
+      "fqn": "@aws-cdk/cx-api.AppRuntime",
+      "kind": "interface",
+      "name": "AppRuntime",
+      "namespace": "@aws-cdk/cx-api",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The list of libraries loaded in the application, associated with their versions."
+          },
+          "name": "libraries",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ]
+    },
     "@aws-cdk/cx-api.AssetMetadataEntry": {
       "assembly": "@aws-cdk/cx-api",
       "datatype": true,
@@ -318,6 +345,13 @@
               },
               "kind": "array"
             }
+          }
+        },
+        {
+          "name": "runtime",
+          "type": {
+            "fqn": "@aws-cdk/cx-api.AppRuntime",
+            "optional": true
           }
         }
       ]

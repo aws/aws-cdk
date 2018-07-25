@@ -54,6 +54,20 @@ namespace Amazon.CDK.AWS.CodePipeline
             get => GetInstanceProperty<PipelineArn>();
         }
 
+        /// <summary>The name of the pipeline</summary>
+        [JsiiProperty("pipelineName", "{\"fqn\":\"@aws-cdk/aws-codepipeline.PipelineName\"}")]
+        public virtual PipelineName PipelineName
+        {
+            get => GetInstanceProperty<PipelineName>();
+        }
+
+        /// <summary>The version of the pipeline</summary>
+        [JsiiProperty("pipelineVersion", "{\"fqn\":\"@aws-cdk/aws-codepipeline.PipelineVersion\"}")]
+        public virtual PipelineVersion PipelineVersion
+        {
+            get => GetInstanceProperty<PipelineVersion>();
+        }
+
         /// <summary>Bucket used to store output artifacts</summary>
         [JsiiProperty("artifactBucket", "{\"fqn\":\"@aws-cdk/aws-s3.BucketRef\"}")]
         public virtual BucketRef ArtifactBucket

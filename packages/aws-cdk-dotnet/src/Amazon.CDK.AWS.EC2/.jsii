@@ -1,5 +1,5 @@
 {
-  "fingerprint": "y73Tx4RiLX7nkdLi+WyimulE++7YIdBq8fzJgwkpkeo=",
+  "fingerprint": "FTIQ/zdBshDmqODKNJNVVOcQBDfJ35xwFElmyzs8QDc=",
   "bundled": {
     "@aws-cdk/util": "^0.7.3-beta"
   },
@@ -472,6 +472,372 @@
         },
         "@aws-cdk/aws-lambda": {
           "dependencies": {
+            "@aws-cdk/assets": {
+              "dependencies": {
+                "@aws-cdk/aws-iam": {
+                  "dependencies": {
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.AWS.IAM"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "aws-iam",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.aws.iam"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-iam"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/aws-s3": {
+                  "dependencies": {
+                    "@aws-cdk/aws-iam": {
+                      "dependencies": {
+                        "@aws-cdk/cdk": {
+                          "dependencies": {
+                            "@aws-cdk/cx-api": {
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.CXAPI"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cxapi",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.cxapi"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cx-api"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cdk"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.AWS.IAM"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "aws-iam",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.aws.iam"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/aws-iam"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/aws-kms": {
+                      "dependencies": {
+                        "@aws-cdk/aws-iam": {
+                          "dependencies": {
+                            "@aws-cdk/cdk": {
+                              "dependencies": {
+                                "@aws-cdk/cx-api": {
+                                  "targets": {
+                                    "dotnet": {
+                                      "namespace": "Amazon.CDK.CXAPI"
+                                    },
+                                    "java": {
+                                      "maven": {
+                                        "artifactId": "cxapi",
+                                        "groupId": "com.amazonaws.cdk"
+                                      },
+                                      "package": "com.amazonaws.cdk.cxapi"
+                                    },
+                                    "js": {
+                                      "npm": "@aws-cdk/cx-api"
+                                    }
+                                  },
+                                  "version": "0.7.3-beta"
+                                }
+                              },
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cdk",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cdk"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.AWS.IAM"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "aws-iam",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.aws.iam"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/aws-iam"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        },
+                        "@aws-cdk/cdk": {
+                          "dependencies": {
+                            "@aws-cdk/cx-api": {
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.CXAPI"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cxapi",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.cxapi"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cx-api"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cdk"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.AWS.KMS"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "aws-kms",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.aws.kms"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/aws-kms"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.AWS.S3"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "aws-s3",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.aws.s3"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-s3"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/cx-api": {
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.CXAPI"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cxapi",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.Assets"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "assets",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.assets"
+                },
+                "js": {
+                  "npm": "@aws-cdk/assets"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
             "@aws-cdk/aws-cloudwatch": {
               "dependencies": {
                 "@aws-cdk/aws-iam": {
@@ -1147,6 +1513,24 @@
                 }
               },
               "version": "0.7.3-beta"
+            },
+            "@aws-cdk/cx-api": {
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.CXAPI"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cxapi",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.7.3-beta"
             }
           },
           "targets": {
@@ -1658,6 +2042,9 @@
       "interfaces": [
         {
           "fqn": "@aws-cdk/aws-iam.IIdentityResource"
+        },
+        {
+          "fqn": "@aws-cdk/aws-iam.IPrincipal"
         },
         {
           "fqn": "@aws-cdk/cdk.IDependable"
@@ -3204,7 +3591,7 @@
   },
   "name": "@aws-cdk/aws-ec2",
   "readme": {
-    "markdown": "## AWS Compute and Networking Construct Library\n\nThe `@aws-cdk/aws-ec2` package contains primitives for setting up networking,\ninstances, and load balancers.\n\n### VPC\n\nMost projects need a Virtual Private Cloud to provide security by means of\nnetwork partitioning. This is easily achieved by creating an instance of\n`VpcNetwork`:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nconst vpc = new ec2.VpcNetwork(this, 'VPC');\n```\n\nAll default Constructs requires EC2 instances to be launched inside a VPC, so\nyou should generally start by defining a VPC whenever you need to launch\ninstances for your project.\n\nOur default `VpcNetwork` class creates a private and public subnet for every\navailability zone. Classes that use the VPC will generally launch instances\ninto all private subnets, and provide a parameter called `vpcPlacement` to\nallow you to override the placement. [Read more about\nsubnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).\n\n### Auto Scaling Group\n\nAn `AutoScalingGroup` represents a number of instances on which you run your code. You\npick the size of the fleet, the instance type and the OS image:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nnew ec2.AutoScalingGroup(stack, 'ASG', {\n    vpc,\n    instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),\n    machineImage: new ec2.LinuxImage({\n        'us-east-1': 'ami-97785bed'\n    })\n});\n```\n\n> NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the\n> internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want\n> your instances to be able to start arbitrary connections.\n\n### AMIs\n\nAMIs control the OS that gets launched when you start your instance.\n\nDepending on the type of AMI, you select it a different way.\n\nThe latest version of Windows images are regionally published under labels,\nso you can select Windows images like this:\n\n    new ec2.WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase)\n\nYou can select the latest Amazon Linux image like this:\n\n    new ec2.AmazonLinuxImage()\n\nOther Linux images are unfortunately not currently published this way, so you have\nto supply a region-to-AMI map when creating a Linux image:\n\n    machineImage: new ec2.GenericLinuxImage({\n        'us-east-1': 'ami-97785bed',\n        'eu-west-1': 'ami-12345678',\n        // ...\n    })\n\n> NOTE: Selecting Linux images will change when the information is published in an automatically\n> consumable way.\n\n### Load Balancer\n\nLoad balancers send traffic to one or more fleets. Create a load balancer,\nset up listeners and a health check, and supply the fleet(s) you want to load\nbalance to in the `targets` property.\n\nThe load balancer allows all connections by default. If you want to change that,\npass the `allowConnectionsFrom` property while setting up the listener.\n\n```ts\nnew ec2.ClassicLoadBalancer(stack, 'LB', {\n    vpc,\n    internetFacing: true,\n    listeners: [{\n        externalPort: 80,\n    }],\n    healthCheck: {\n        port: 80\n    },\n    targets: [fleet]\n});\n```\n\n### Allowing Connections\n\nIn AWS, all connections to and from EC2 instances are governed by *Security\nGroups*. You can think of these as a firewall with rules. All Constructs that\ncreate instances on your behalf implicitly have such a security group.\nUnless otherwise indicated using properites, the security groups start out\nempty; that is, no connections are allowed by default.\n\nIn general, whenever you link two Constructs together (such as the load balancer and the\nfleet in the previous example), the security groups will be automatically updated to allow\nnetwork connections between the indicated instances. In other cases, you will need to\nconfigure these allows connections yourself, for example if the connections you want to\nallow do not originate from instances in a CDK construct, or if you want to allow\nconnections among instances inside a single security group.\n\nAll Constructs with security groups have a member called `connections`, which\ncan be used to configure permissible connections. In the most general case, a\ncall to allow connections needs both a connection peer and the type of\nconnection to allow:\n\n```ts\nlb.connections.allowFrom(new ec2.AnyIPv4(), new ec2.TcpPort(443), 'Allow inbound');\n\n// Or using a convenience function\nlb.connections.allowFromAnyIpv4(new ec2.TcpPort(443), 'Allow inbound');\n```\n\n### Connection Peers\n\nThere are various classes that implement the connection peer part:\n\n```ts\n// Simple connection peers\nlet peer = new ec2.CidrIp(\"10.0.0.0/16\");\nlet peer = new ec2.AnyIPv4();\nlet peer = new ec2.CidrIpv6(\"::0/0\");\nlet peer = new ec2.AnyIPv6();\nlet peer = new ec2.PrefixList(\"pl-12345\");\nfleet.connections.allowTo(peer, new ec2.TcpPort(443), 'Allow outbound HTTPS');\n```\n\nAny object that has a security group can itself be used as a connection peer:\n\n```ts\n// These automatically create appropriate ingress and egress rules in both security groups\nfleet1.connections.allowTo(fleet2, new ec2.TcpPort(80), 'Allow between fleets');\n\nfleet.connections.allowTcpPort(80), 'Allow from load balancer');\n```\n\n### Port Ranges\n\nThe connections that are allowed are specified by port ranges. A number of classes provide\nthe connection specifier:\n\n```ts\nnew ec2.TcpPort(80);\nnew ec2.TcpPortRange(60000, 65535);\nnew ec2.TcpAllPorts();\nnew ec2.AllConnections();\n```\n\n> NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.\n> However, you can write your own classes to implement those.\n\n### Default Ports\n\nSome Constructs have default ports associated with them. For example, the\nlistener of a load balancer does (it's the public port), or instances of an\nRDS database (it's the port the database is accepting connections on).\n\nIf the object you're calling the peering method on has a default port associated with it, you can call\n`allowDefaultPortFrom()` and omit the port specifier. If the argument has an associated default port, call\n`allowToDefaultPort()`.\n\nFor example:\n\n```ts\n// Port implicit in listener\n(listener.connections as ec2.DefaultConnections).allowDefaultPortFromAnyIpv4('Allow public');\n\n// Port implicit in peer\n(fleet.connections as ec2.DefaultConnections).allowToDefaultPort(rdsDatabase, 'Fleet can access database');\n```\n"
+    "markdown": "## AWS Compute and Networking Construct Library\n\nThe `@aws-cdk/aws-ec2` package contains primitives for setting up networking,\ninstances, and load balancers.\n\n### VPC\n\nMost projects need a Virtual Private Cloud to provide security by means of\nnetwork partitioning. This is easily achieved by creating an instance of\n`VpcNetwork`:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nconst vpc = new ec2.VpcNetwork(this, 'VPC');\n```\n\nAll default Constructs requires EC2 instances to be launched inside a VPC, so\nyou should generally start by defining a VPC whenever you need to launch\ninstances for your project.\n\nOur default `VpcNetwork` class creates a private and public subnet for every\navailability zone. Classes that use the VPC will generally launch instances\ninto all private subnets, and provide a parameter called `vpcPlacement` to\nallow you to override the placement. [Read more about\nsubnets](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Subnets.html).\n\n\n#### Advanced Subnet Configuration\nIf you require the ability to configure subnets the `VpcNetwork` can be\ncustomized with `SubnetConfiguration` array. This is best explained by an\nexample:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nconst vpc = new ec2.VpcNetwork(stack, 'TheVPC', {\n  cidr: '10.0.0.0/21',\n  subnetConfiguration: [\n    {\n      cidrMask: 24,\n      name: 'Ingress',\n      subnetType: SubnetType.Public,\n      natGateway: true,\n    },\n    {\n      cidrMask: 24,\n      name: 'Application',\n      subnetType: SubnetType.Private,\n    },\n    {\n      cidrMask: 28,\n      name: 'Database',\n      subnetType: SubnetType.Isolated,\n    }\n  ],\n});\n```\n\nThe example above is one possible configuration, but the user can use the\nconstructs above to implement many other network configurations.\n\nThe `VpcNetwork` from the above configuration in a Region with three\navailability zones will be the following:\n * IngressSubnet1: 10.0.0.0/24\n * IngressSubnet2: 10.0.1.0/24\n * IngressSubnet3: 10.0.2.0/24\n * ApplicationSubnet1: 10.0.3.0/24\n * ApplicationSubnet2: 10.0.4.0/24\n * ApplicationSubnet3: 10.0.5.0/24\n * DatabaseSubnet1: 10.0.6.0/28\n * DatabaseSubnet2: 10.0.6.16/28\n * DatabaseSubnet3: 10.0.6.32/28\n\nEach `Public` Subnet will have a NAT Gateway. Each `Private` Subnet will have a\nroute to the NAT Gateway in the same availability zone. Each `Isolated` subnet\nwill not have a route to the internet, but is routeable inside the VPC. The\nnumbers [1-3] will consistently map to availability zones (e.g. IngressSubnet1\nand ApplicationSubnet1 will be in the same avialbility zone).\n\n`Isolated` Subnets provide simplified secure networking principles, but come at\nan operational complexity. The lack of an internet route means that if you deploy\ninstances in this subnet you will not be able to patch from the internet, this is\ncommonly reffered to as\n[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/).\nFeatures such as\n[cfn-signal](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)\nare also unavailable. Using these subnets for managed services (RDS,\nElasticache, Redshift) is a very practical use because the managed services do\nnot incur additional operational overhead.\n\nMany times when you plan to build an application you don't know how many\ninstances of the application you will need and therefore you don't know how much\nIP space to allocate. For example, you know the application will only have\nElastic Loadbalancers in the public subnets and you know you will have 1-3 RDS\ndatabases for your data tier, and the rest of the IP space should just be evenly\ndistributed for the application.\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nconst vpc = new ec2.VpcNetwork(stack, 'TheVPC', {\n  cidr: '10.0.0.0/16',\n  subnetConfiguration: [\n    {\n      cidrMask: 26,\n      name: 'Public',\n      subnetType: SubnetType.Public,\n      natGateway: true,\n    },\n    {\n      name: 'Application',\n      subnetType: SubnetType.Private,\n    },\n    {\n      cidrMask: 27,\n      name: 'Database',\n      subnetType: SubnetType.Isolated,\n    }\n  ],\n});\n```\n\nThe `VpcNetwork` from the above configuration in a Region with three\navailability zones will be the following:\n * PublicSubnet1: 10.0.0.0/26\n * PublicSubnet2: 10.0.0.64/26\n * PublicSubnet3: 10.0.2.128/26\n * DatabaseSubnet1: 10.0.0.192/27\n * DatabaseSubnet2: 10.0.0.224/27\n * DatabaseSubnet3: 10.0.1.0/27\n * ApplicationSubnet1: 10.0.64.0/18\n * ApplicationSubnet2: 10.0.128.0/18\n * ApplicationSubnet3: 10.0.192.0/18\n\nAny subnet configuration without a `cidrMask` will be counted up and allocated\nevenly across the remaining IP space.\n\nTeams may also become cost conscious and be willing to trade availability for\ncost. For example, in your test environments perhaps you would like the same VPC\nas production, but instead of 3 NAT Gateways you would like only 1. This will\nsave on the cost, but trade the 3 availability zone to a 1 for all egress\ntraffic. This can be accomplished with a single parameter configuration:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nconst vpc = new ec2.VpcNetwork(stack, 'TheVPC', {\n  cidr: '10.0.0.0/16',\n  natGateways: 1,\n  subnetConfiguration: [\n    {\n      cidrMask: 26,\n      name: 'Public',\n      subnetType: SubnetType.Public,\n      natGateway: true,\n    },\n    {\n      name: 'Application',\n      subnetType: SubnetType.Private,\n    },\n    {\n      cidrMask: 27,\n      name: 'Database',\n      subnetType: SubnetType.Isolated,\n    }\n  ],\n});\n```\n\nThe `VpcNetwork` above will have the exact same subnet definitions as listed\nabove. However, this time the VPC will have only 1 NAT Gateway and all\nApplication subnets will route to the NAT Gateway.\n\n### Fleet\n\n### Auto Scaling Group\n\nAn `AutoScalingGroup` represents a number of instances on which you run your code. You\npick the size of the fleet, the instance type and the OS image:\n\n```ts\nimport ec2 = require('@aws-cdk/aws-ec2');\n\nnew ec2.AutoScalingGroup(stack, 'ASG', {\n    vpc,\n    instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),\n    machineImage: new ec2.LinuxImage({\n        'us-east-1': 'ami-97785bed'\n    })\n});\n```\n\n> NOTE: AutoScalingGroup has an property called `allowAllOutbound` (allowing the instances to contact the\n> internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want\n> your instances to be able to start arbitrary connections.\n\n### AMIs\n\nAMIs control the OS that gets launched when you start your instance.\n\nDepending on the type of AMI, you select it a different way.\n\nThe latest version of Windows images are regionally published under labels,\nso you can select Windows images like this:\n\n    new ec2.WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase)\n\nYou can select the latest Amazon Linux image like this:\n\n    new ec2.AmazonLinuxImage()\n\nOther Linux images are unfortunately not currently published this way, so you have\nto supply a region-to-AMI map when creating a Linux image:\n\n    machineImage: new ec2.GenericLinuxImage({\n        'us-east-1': 'ami-97785bed',\n        'eu-west-1': 'ami-12345678',\n        // ...\n    })\n\n> NOTE: Selecting Linux images will change when the information is published in an automatically\n> consumable way.\n\n### Load Balancer\n\nLoad balancers send traffic to one or more fleets. Create a load balancer,\nset up listeners and a health check, and supply the fleet(s) you want to load\nbalance to in the `targets` property.\n\nThe load balancer allows all connections by default. If you want to change that,\npass the `allowConnectionsFrom` property while setting up the listener.\n\n```ts\nnew ec2.ClassicLoadBalancer(stack, 'LB', {\n    vpc,\n    internetFacing: true,\n    listeners: [{\n        externalPort: 80,\n    }],\n    healthCheck: {\n        port: 80\n    },\n    targets: [fleet]\n});\n```\n\n### Allowing Connections\n\nIn AWS, all connections to and from EC2 instances are governed by *Security\nGroups*. You can think of these as a firewall with rules. All Constructs that\ncreate instances on your behalf implicitly have such a security group.\nUnless otherwise indicated using properites, the security groups start out\nempty; that is, no connections are allowed by default.\n\nIn general, whenever you link two Constructs together (such as the load balancer and the\nfleet in the previous example), the security groups will be automatically updated to allow\nnetwork connections between the indicated instances. In other cases, you will need to\nconfigure these allows connections yourself, for example if the connections you want to\nallow do not originate from instances in a CDK construct, or if you want to allow\nconnections among instances inside a single security group.\n\nAll Constructs with security groups have a member called `connections`, which\ncan be used to configure permissible connections. In the most general case, a\ncall to allow connections needs both a connection peer and the type of\nconnection to allow:\n\n```ts\nlb.connections.allowFrom(new ec2.AnyIPv4(), new ec2.TcpPort(443), 'Allow inbound');\n\n// Or using a convenience function\nlb.connections.allowFromAnyIpv4(new ec2.TcpPort(443), 'Allow inbound');\n```\n\n### Connection Peers\n\nThere are various classes that implement the connection peer part:\n\n```ts\n// Simple connection peers\nlet peer = new ec2.CidrIp(\"10.0.0.0/16\");\nlet peer = new ec2.AnyIPv4();\nlet peer = new ec2.CidrIpv6(\"::0/0\");\nlet peer = new ec2.AnyIPv6();\nlet peer = new ec2.PrefixList(\"pl-12345\");\nfleet.connections.allowTo(peer, new ec2.TcpPort(443), 'Allow outbound HTTPS');\n```\n\nAny object that has a security group can itself be used as a connection peer:\n\n```ts\n// These automatically create appropriate ingress and egress rules in both security groups\nfleet1.connections.allowTo(fleet2, new ec2.TcpPort(80), 'Allow between fleets');\n\nfleet.connections.allowTcpPort(80), 'Allow from load balancer');\n```\n\n### Port Ranges\n\nThe connections that are allowed are specified by port ranges. A number of classes provide\nthe connection specifier:\n\n```ts\nnew ec2.TcpPort(80);\nnew ec2.TcpPortRange(60000, 65535);\nnew ec2.TcpAllPorts();\nnew ec2.AllConnections();\n```\n\n> NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.\n> However, you can write your own classes to implement those.\n\n### Default Ports\n\nSome Constructs have default ports associated with them. For example, the\nlistener of a load balancer does (it's the public port), or instances of an\nRDS database (it's the port the database is accepting connections on).\n\nIf the object you're calling the peering method on has a default port associated with it, you can call\n`allowDefaultPortFrom()` and omit the port specifier. If the argument has an associated default port, call\n`allowToDefaultPort()`.\n\nFor example:\n\n```ts\n// Port implicit in listener\n(listener.connections as ec2.DefaultConnections).allowDefaultPortFromAnyIpv4('Allow public');\n\n// Port implicit in peer\n(fleet.connections as ec2.DefaultConnections).allowToDefaultPort(rdsDatabase, 'Fleet can access database');\n```\n"
   },
   "schema": "jsii/1.0",
   "targets": {
@@ -5649,27 +6036,6 @@
       "name": "OperatingSystemType",
       "namespace": "@aws-cdk/aws-ec2"
     },
-    "@aws-cdk/aws-ec2.OutboundTrafficMode": {
-      "assembly": "@aws-cdk/aws-ec2",
-      "docs": {
-        "comment": "The outbound traffic mode defines whether the VPC is configured to route outbound traffic."
-      },
-      "fqn": "@aws-cdk/aws-ec2.OutboundTrafficMode",
-      "kind": "enum",
-      "members": [
-        {
-          "name": "None"
-        },
-        {
-          "name": "FromPublicSubnetsOnly"
-        },
-        {
-          "name": "FromPublicAndPrivateSubnets"
-        }
-      ],
-      "name": "OutboundTrafficMode",
-      "namespace": "@aws-cdk/aws-ec2"
-    },
     "@aws-cdk/aws-ec2.PrefixList": {
       "assembly": "@aws-cdk/aws-ec2",
       "docs": {
@@ -6246,6 +6612,47 @@
       "name": "SubnetAvailabilityZone",
       "namespace": "@aws-cdk/aws-ec2"
     },
+    "@aws-cdk/aws-ec2.SubnetConfiguration": {
+      "assembly": "@aws-cdk/aws-ec2",
+      "datatype": true,
+      "docs": {
+        "comment": "Specify configuration parameters for a VPC to be built"
+      },
+      "fqn": "@aws-cdk/aws-ec2.SubnetConfiguration",
+      "kind": "interface",
+      "name": "SubnetConfiguration",
+      "namespace": "@aws-cdk/aws-ec2",
+      "properties": [
+        {
+          "docs": {
+            "comment": "The CIDR Mask or the number of leading 1 bits in the routing mask\n\nValid values are 16 - 28"
+          },
+          "name": "cidrMask",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The type of Subnet to configure.\n\nThe Subnet type will control the ability to route and connect to the\nInternet."
+          },
+          "name": "subnetType",
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.SubnetType"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The common Logical Name for the `VpcSubnet`\n\nThi name will be suffixed with an integer correlating to a specific\navailability zone."
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ]
+    },
     "@aws-cdk/aws-ec2.SubnetIpv6CidrBlocks": {
       "assembly": "@aws-cdk/aws-ec2",
       "base": {
@@ -6319,6 +6726,27 @@
       },
       "kind": "class",
       "name": "SubnetNetworkAclAssociationId",
+      "namespace": "@aws-cdk/aws-ec2"
+    },
+    "@aws-cdk/aws-ec2.SubnetType": {
+      "assembly": "@aws-cdk/aws-ec2",
+      "docs": {
+        "comment": "The type of Subnet"
+      },
+      "fqn": "@aws-cdk/aws-ec2.SubnetType",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "Isolated"
+        },
+        {
+          "name": "Private"
+        },
+        {
+          "name": "Public"
+        }
+      ],
+      "name": "SubnetType",
       "namespace": "@aws-cdk/aws-ec2"
     },
     "@aws-cdk/aws-ec2.SubnetVpcId": {
@@ -6706,6 +7134,23 @@
           }
         },
         {
+          "const": true,
+          "docs": {
+            "comment": "The default subnet configuration\n\n1 Public and 1 Private subnet per AZ evenly split"
+          },
+          "immutable": true,
+          "name": "DEFAULT_SUBNETS",
+          "static": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.SubnetConfiguration"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
           "docs": {
             "comment": "Identifier for this VPC"
           },
@@ -6736,6 +7181,21 @@
           },
           "immutable": true,
           "name": "privateSubnets",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.VpcSubnetRef"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "comment": "List of isolated subnets in this VPC"
+          },
+          "immutable": true,
+          "name": "isolatedSubnets",
           "type": {
             "collection": {
               "elementtype": {
@@ -6853,16 +7313,6 @@
         },
         {
           "docs": {
-            "comment": "Defines whether the VPC is configured to route outbound traffic from private and/or public subnets.\nBy default, outbound traffic will be allowed from public and private subnets."
-          },
-          "name": "outboundTraffic",
-          "type": {
-            "fqn": "@aws-cdk/aws-ec2.OutboundTrafficMode",
-            "optional": true
-          }
-        },
-        {
-          "docs": {
             "comment": "Define the maximum number of AZs to use in this region\n\nIf the region has more AZs than you want to use (for example, because of EIP limits),\npick a lower number here. The AZs will be sorted and picked from the start of the list.",
             "default": "All AZs in the region"
           },
@@ -6870,6 +7320,33 @@
           "type": {
             "optional": true,
             "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Define the maximum number of NAT Gateways for this VPC\n\nSetting this number enables a VPC to trade availability for the cost of\nrunning a NAT Gateway. For example, if set this to 1 and your subnet\nconfiguration is for 3 Public subnets with natGateway = `true` then only\none of the Public subnets will have a gateway and all Private subnets\nwill route to this NAT Gateway.",
+            "default": "maxAZs"
+          },
+          "name": "natGateways",
+          "type": {
+            "optional": true,
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "comment": "Configure the subnets to build for each AZ\n\nThe subnets are constructed in the context of the VPC so you only need\nspecify the configuration. The VPC details (VPC ID, specific CIDR,\nspecific AZ will be calculated during creation)\n\nFor example if you want 1 public subnet, 1 private subnet, and 1 isolated\nsubnet in each AZ provide the following:\nsubnetConfiguration: [\n      {\n          cidrMask: 24,\n          name: 'ingress',\n          subnetType: SubnetType.Public,\n      },\n      {\n          cidrMask: 24,\n          name: 'application',\n          subnetType: SubnetType.Private,\n      },\n      {\n          cidrMask: 28,\n          name: 'rds',\n          subnetType: SubnetType.Isolated,\n      }\n]\n\n`cidrMask` is optional and if not provided the IP space in the VPC will be\nevenly divided between the requested subnets.",
+            "default": "the VPC CIDR will be evenly divided between 1 public and 1\nprivate subnet per AZ"
+          },
+          "name": "subnetConfiguration",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.SubnetConfiguration"
+              },
+              "kind": "array"
+            },
+            "optional": true
           }
         }
       ]
@@ -7365,24 +7842,36 @@
       "namespace": "@aws-cdk/aws-ec2",
       "properties": [
         {
+          "docs": {
+            "comment": "The availability zone for the subnet"
+          },
           "name": "availabilityZone",
           "type": {
             "primitive": "string"
           }
         },
         {
+          "docs": {
+            "comment": "The VPC which this subnet is part of"
+          },
           "name": "vpcId",
           "type": {
             "fqn": "@aws-cdk/cdk.Token"
           }
         },
         {
+          "docs": {
+            "comment": "The CIDR notation for this subnet"
+          },
           "name": "cidrBlock",
           "type": {
             "primitive": "string"
           }
         },
         {
+          "docs": {
+            "comment": "Controls if a public IP is associated to an instance at launch\n\nDefaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated."
+          },
           "name": "mapPublicIpOnLaunch",
           "type": {
             "optional": true,

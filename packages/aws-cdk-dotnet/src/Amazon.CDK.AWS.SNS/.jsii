@@ -1,5 +1,5 @@
 {
-  "fingerprint": "e6dybOIDOBopouAH5ifnkBjo2rYf6G2wZjK/Dbm11Mo=",
+  "fingerprint": "cbo+C0QnuirLpntcDtzauODE/ubpY/iJqIACy41t8GU=",
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": {
       "dependencies": {
@@ -293,6 +293,372 @@
     },
     "@aws-cdk/aws-lambda": {
       "dependencies": {
+        "@aws-cdk/assets": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.AWS.IAM"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "aws-iam",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.aws.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
+            "@aws-cdk/aws-s3": {
+              "dependencies": {
+                "@aws-cdk/aws-iam": {
+                  "dependencies": {
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.AWS.IAM"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "aws-iam",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.aws.iam"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-iam"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/aws-kms": {
+                  "dependencies": {
+                    "@aws-cdk/aws-iam": {
+                      "dependencies": {
+                        "@aws-cdk/cdk": {
+                          "dependencies": {
+                            "@aws-cdk/cx-api": {
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.CXAPI"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cxapi",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.cxapi"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cx-api"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cdk"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.AWS.IAM"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "aws-iam",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.aws.iam"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/aws-iam"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.AWS.KMS"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "aws-kms",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.aws.kms"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-kms"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.AWS.S3"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "aws-s3",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.aws.s3"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-s3"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.CXAPI"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cxapi",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
+            "@aws-cdk/cx-api": {
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.CXAPI"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cxapi",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.Assets"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "assets",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.assets"
+            },
+            "js": {
+              "npm": "@aws-cdk/assets"
+            }
+          },
+          "version": "0.7.3-beta"
+        },
         "@aws-cdk/aws-cloudwatch": {
           "dependencies": {
             "@aws-cdk/aws-iam": {
@@ -965,6 +1331,24 @@
             },
             "js": {
               "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.7.3-beta"
+        },
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
             }
           },
           "version": "0.7.3-beta"
