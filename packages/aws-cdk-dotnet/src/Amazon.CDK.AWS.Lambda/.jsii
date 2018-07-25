@@ -1,6 +1,372 @@
 {
-  "fingerprint": "3zZkXwr0bEyL60o3nWO3Fooo+r2ojLM9ujGeUIfrqts=",
+  "fingerprint": "I6vJOrRyu4+U7s20uJqgeBUbzZlrjn4i6+LPpaaNbH0=",
   "dependencies": {
+    "@aws-cdk/assets": {
+      "dependencies": {
+        "@aws-cdk/aws-iam": {
+          "dependencies": {
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.CXAPI"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cxapi",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.IAM"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "aws-iam",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.aws.iam"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-iam"
+            }
+          },
+          "version": "0.7.3-beta"
+        },
+        "@aws-cdk/aws-s3": {
+          "dependencies": {
+            "@aws-cdk/aws-iam": {
+              "dependencies": {
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.AWS.IAM"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "aws-iam",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.aws.iam"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-iam"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
+            "@aws-cdk/aws-kms": {
+              "dependencies": {
+                "@aws-cdk/aws-iam": {
+                  "dependencies": {
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.AWS.IAM"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "aws-iam",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.aws.iam"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/aws-iam"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
+                "@aws-cdk/cdk": {
+                  "dependencies": {
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cdk",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cdk"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.AWS.KMS"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "aws-kms",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.aws.kms"
+                },
+                "js": {
+                  "npm": "@aws-cdk/aws-kms"
+                }
+              },
+              "version": "0.7.3-beta"
+            },
+            "@aws-cdk/cdk": {
+              "dependencies": {
+                "@aws-cdk/cx-api": {
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.CXAPI"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cxapi",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                }
+              },
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cdk",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cdk"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.AWS.S3"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "aws-s3",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.aws.s3"
+            },
+            "js": {
+              "npm": "@aws-cdk/aws-s3"
+            }
+          },
+          "version": "0.7.3-beta"
+        },
+        "@aws-cdk/cdk": {
+          "dependencies": {
+            "@aws-cdk/cx-api": {
+              "targets": {
+                "dotnet": {
+                  "namespace": "Amazon.CDK.CXAPI"
+                },
+                "java": {
+                  "maven": {
+                    "artifactId": "cxapi",
+                    "groupId": "com.amazonaws.cdk"
+                  },
+                  "package": "com.amazonaws.cdk.cxapi"
+                },
+                "js": {
+                  "npm": "@aws-cdk/cx-api"
+                }
+              },
+              "version": "0.7.3-beta"
+            }
+          },
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cdk",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk"
+            },
+            "js": {
+              "npm": "@aws-cdk/cdk"
+            }
+          },
+          "version": "0.7.3-beta"
+        },
+        "@aws-cdk/cx-api": {
+          "targets": {
+            "dotnet": {
+              "namespace": "Amazon.CDK.CXAPI"
+            },
+            "java": {
+              "maven": {
+                "artifactId": "cxapi",
+                "groupId": "com.amazonaws.cdk"
+              },
+              "package": "com.amazonaws.cdk.cxapi"
+            },
+            "js": {
+              "npm": "@aws-cdk/cx-api"
+            }
+          },
+          "version": "0.7.3-beta"
+        }
+      },
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "assets",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        }
+      },
+      "version": "0.7.3-beta"
+    },
     "@aws-cdk/aws-cloudwatch": {
       "dependencies": {
         "@aws-cdk/aws-iam": {
@@ -676,9 +1042,45 @@
         }
       },
       "version": "0.7.3-beta"
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cxapi",
+            "groupId": "com.amazonaws.cdk"
+          },
+          "package": "com.amazonaws.cdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        }
+      },
+      "version": "0.7.3-beta"
     }
   },
   "externals": {
+    "@aws-cdk/assets.AssetPackaging": {
+      "assembly": "@aws-cdk/assets",
+      "docs": {
+        "comment": "Defines the way an asset is packaged before it is uploaded to S3."
+      },
+      "fqn": "@aws-cdk/assets.AssetPackaging",
+      "kind": "enum",
+      "members": [
+        {
+          "name": "ZipDirectory"
+        },
+        {
+          "name": "File"
+        }
+      ],
+      "name": "AssetPackaging",
+      "namespace": "@aws-cdk/assets"
+    },
     "@aws-cdk/aws-cloudwatch.Metric": {
       "assembly": "@aws-cdk/aws-cloudwatch",
       "docs": {
@@ -1145,6 +1547,9 @@
       "interfaces": [
         {
           "fqn": "@aws-cdk/aws-iam.IIdentityResource"
+        },
+        {
+          "fqn": "@aws-cdk/aws-iam.IPrincipal"
         },
         {
           "fqn": "@aws-cdk/cdk.IDependable"
@@ -3133,7 +3538,7 @@
   },
   "name": "@aws-cdk/aws-lambda",
   "readme": {
-    "markdown": "## AWS Lambda Construct Library\n\n```ts\nconst fn = new Lambda(this, 'MyFunction', {\n    runtime: LambdaRuntime.DOTNETCORE_2,\n    code: new LambdaS3Code(bucket, 'myKey'),\n    handler: 'index.handler'\n});\n\nfn.role.addToPolicy(new PolicyStatement()....);\n```\n\n### Inline node.js Lambda Functions\n\nThe subclass called `LambdaInlineNodeJS` allows embedding the function's handler\nas a JavaScript function within the construct code.\n\nThe following example defines a node.js Lambda and an S3 bucket. When invoked,\na file named \"myfile.txt\" will be uploaded to the bucket with the string \"hello, world\".\n\nA few things to note:\n\n - The function's execution role is granted read/write permissions on the\n   bucket.\n - The require statement for `aws-sdk` is invoked within the function's body. Due to\n   node.js' module caching, this is equivalent in performance to requiring\n   outside.\n - The bucket name is passed to the function via the environment variable\n   `BUCKET_NAME`.\n\n```ts\nconst bucket = new Bucket(this, 'MyBucket');\n\nconst lambda = new InlineJavaScriptLambda(this, 'MyLambda', {\n    environment: {\n        BUCKET_NAME: bucket.bucketName\n    },\n    handler: {\n        fn: (_event: any, _context: any, callback: any) => {\n            const S3 = require('aws-sdk').S3;\n            const s3 = new S3();\n            const bucketName = process.env.BUCKET_NAME;\n            s3.upload({ Bucket: bucketName, Key: 'myfile.txt', Body: 'Hello, world' }, (err, data) => {\n                if (err) {\n                    return callback(err);\n                }\n                console.log(data);\n                return callback();\n            });\n        }\n    }\n});\n\nbucket.grantReadWrite(lambda.role);\n```\n"
+    "markdown": "## AWS Lambda Construct Library\n\nThis construct library allows you to define AWS Lambda functions.\n\n```ts\nconst fn = new Lambda(this, 'MyFunction', {\n    runtime: LambdaRuntime.NodeJS810,\n    handler: 'index.handler'\n    code: LambdaCode.inline('exports.handler = function(event, ctx, cb) { return cb(null, \"hi\"); }'),\n});\n```\n\n### Handler Code\n\nThe `LambdaCode` class includes static convenience methods for various types of\nruntime code.\n\n * `LambdaCode.bucket(bucket, key[, objectVersion])` - specify an S3 object that\n   contains the archive of your runtime code.\n * `LambdaCode.inline(code)` - inline the handle code as a string. This is\n   limited to 4KB. The class `InlineJavaScriptLambda` can be used to simplify\n   inlining JavaScript functions.\n * `LambdaCode.directory(directory)` - specify a directory in the local filesystem\n   which will be zipped and uploaded to S3 before deployment.\n * `LambdaCode.file(path)` - specify a file to be used for Lambda code. This can\n   be, for example a JAR or a ZIP file, based on the runtime used.\n\nThe following example shows how to define a Python function and deploy the code from the\nlocal directory `my-lambda-handler` to it:\n\n```ts\nnew Lambda(this, 'MyLambda', {\n    code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),\n    handler: 'index.main',\n    runtime: LambdaRuntime.Python36\n});\n```\n\nWhen deploying a stack that contains this code, the directory will be zip\narchived and then uploaded to an S3 bucket, then the exact location of the S3\nobjects will be passed when the stack is deployed.\n"
   },
   "schema": "jsii/1.0",
   "targets": {
@@ -3712,6 +4117,26 @@
         },
         {
           "docs": {
+            "comment": "The runtime configured for this lambda."
+          },
+          "immutable": true,
+          "name": "runtime",
+          "type": {
+            "fqn": "@aws-cdk/aws-lambda.LambdaRuntime"
+          }
+        },
+        {
+          "docs": {
+            "comment": "The name of the handler configured for this lambda."
+          },
+          "immutable": true,
+          "name": "handler",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
             "comment": "Whether the addPermission() call adds any permissions\n\nTrue for new Lambdas, false for imported Lambdas (they might live in different accounts)."
           },
           "immutable": true,
@@ -3723,6 +4148,67 @@
         }
       ]
     },
+    "@aws-cdk/aws-lambda.LambdaAssetCode": {
+      "assembly": "@aws-cdk/aws-lambda",
+      "base": {
+        "fqn": "@aws-cdk/aws-lambda.LambdaCode"
+      },
+      "docs": {
+        "comment": "Lambda code from a local directory."
+      },
+      "fqn": "@aws-cdk/aws-lambda.LambdaAssetCode",
+      "initializer": {
+        "initializer": true,
+        "parameters": [
+          {
+            "docs": {
+              "comment": "The path to the asset file or directory."
+            },
+            "name": "path",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "comment": "The asset packaging format"
+            },
+            "name": "packaging",
+            "type": {
+              "fqn": "@aws-cdk/assets.AssetPackaging"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "methods": [
+        {
+          "docs": {
+            "comment": "Called when the lambda is initialized to allow this object to\nbind to the stack, add resources and have fun."
+          },
+          "name": "bind",
+          "parameters": [
+            {
+              "name": "lambda",
+              "type": {
+                "fqn": "@aws-cdk/aws-lambda.Lambda"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Called during stack synthesis to render the CodePropery for the\nLambda function."
+          },
+          "name": "toJSON",
+          "returns": {
+            "fqn": "@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty"
+          }
+        }
+      ],
+      "name": "LambdaAssetCode",
+      "namespace": "@aws-cdk/aws-lambda"
+    },
     "@aws-cdk/aws-lambda.LambdaCode": {
       "abstract": true,
       "assembly": "@aws-cdk/aws-lambda",
@@ -3733,19 +4219,131 @@
       "kind": "class",
       "methods": [
         {
-          "abstract": true,
-          "name": "toJSON",
+          "docs": {
+            "returns": "`LambdaS3Code` associated with the specified S3 object."
+          },
+          "name": "bucket",
           "parameters": [
             {
-              "name": "runtime",
+              "docs": {
+                "comment": "The S3 bucket"
+              },
+              "name": "bucket",
               "type": {
-                "fqn": "@aws-cdk/aws-lambda.LambdaRuntime"
+                "fqn": "@aws-cdk/aws-s3.BucketRef"
+              }
+            },
+            {
+              "docs": {
+                "comment": "The object key"
+              },
+              "name": "key",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "comment": "Optional S3 object version"
+              },
+              "name": "objectVersion",
+              "type": {
+                "optional": true,
+                "primitive": "string"
               }
             }
           ],
           "returns": {
+            "fqn": "@aws-cdk/aws-lambda.LambdaS3Code"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "returns": "`LambdaInlineCode` with inline code."
+          },
+          "name": "inline",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The actual handler code (limited to 4KiB)"
+              },
+              "name": "code",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-lambda.LambdaInlineCode"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "returns": "Zip archives the contents of a directory on disk and uses this\nas the lambda handler's code."
+          },
+          "name": "directory",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The directory to zip"
+              },
+              "name": "directoryToZip",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-lambda.LambdaAssetCode"
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "returns": "Uses a file on disk as a lambda handler's code."
+          },
+          "name": "file",
+          "parameters": [
+            {
+              "docs": {
+                "comment": "The file path"
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "fqn": "@aws-cdk/aws-lambda.LambdaAssetCode"
+          },
+          "static": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "comment": "Called during stack synthesis to render the CodePropery for the\nLambda function."
+          },
+          "name": "toJSON",
+          "returns": {
             "fqn": "@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty"
           }
+        },
+        {
+          "docs": {
+            "comment": "Called when the lambda is initialized to allow this object to\nbind to the stack, add resources and have fun."
+          },
+          "name": "bind",
+          "parameters": [
+            {
+              "name": "_lambda",
+              "type": {
+                "fqn": "@aws-cdk/aws-lambda.Lambda"
+              }
+            }
+          ]
         }
       ],
       "name": "LambdaCode",
@@ -3755,6 +4353,9 @@
       "assembly": "@aws-cdk/aws-lambda",
       "base": {
         "fqn": "@aws-cdk/aws-lambda.LambdaCode"
+      },
+      "docs": {
+        "comment": "Lambda code from an inline string (limited to 4KiB)."
       },
       "fqn": "@aws-cdk/aws-lambda.LambdaInlineCode",
       "initializer": {
@@ -3771,15 +4372,24 @@
       "kind": "class",
       "methods": [
         {
-          "name": "toJSON",
+          "docs": {
+            "comment": "Called when the lambda is initialized to allow this object to\nbind to the stack, add resources and have fun."
+          },
+          "name": "bind",
           "parameters": [
             {
-              "name": "runtime",
+              "name": "lambda",
               "type": {
-                "fqn": "@aws-cdk/aws-lambda.LambdaRuntime"
+                "fqn": "@aws-cdk/aws-lambda.Lambda"
               }
             }
-          ],
+          ]
+        },
+        {
+          "docs": {
+            "comment": "Called during stack synthesis to render the CodePropery for the\nLambda function."
+          },
+          "name": "toJSON",
           "returns": {
             "fqn": "@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty"
           }
@@ -4634,6 +5244,9 @@
       "base": {
         "fqn": "@aws-cdk/aws-lambda.LambdaCode"
       },
+      "docs": {
+        "comment": "Lambda code from an S3 archive."
+      },
       "fqn": "@aws-cdk/aws-lambda.LambdaS3Code",
       "initializer": {
         "initializer": true,
@@ -4662,15 +5275,10 @@
       "kind": "class",
       "methods": [
         {
+          "docs": {
+            "comment": "Called during stack synthesis to render the CodePropery for the\nLambda function."
+          },
           "name": "toJSON",
-          "parameters": [
-            {
-              "name": "_runtime",
-              "type": {
-                "fqn": "@aws-cdk/aws-lambda.LambdaRuntime"
-              }
-            }
-          ],
           "returns": {
             "fqn": "@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty"
           }

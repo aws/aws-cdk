@@ -4,7 +4,7 @@ using AWS.Jsii.Runtime.Deputy;
 namespace Amazon.CDK.AWS.IAM
 {
     [JsiiClass(typeof(Group), "@aws-cdk/aws-iam.Group", "[{\"name\":\"parent\",\"type\":{\"fqn\":\"@aws-cdk/cdk.Construct\"}},{\"name\":\"name\",\"type\":{\"primitive\":\"string\"}},{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-iam.GroupProps\",\"optional\":true}}]")]
-    public class Group : Construct, IIIdentityResource
+    public class Group : Construct, IIIdentityResource, IIPrincipal
     {
         public Group(Construct parent, string name, IGroupProps props): base(new DeputyProps(new object[]{parent, name, props}))
         {

@@ -10,5 +10,12 @@ namespace Amazon.CDK.CXAPI
             get;
             set;
         }
+
+        [JsiiProperty("runtime", "{\"fqn\":\"@aws-cdk/cx-api.AppRuntime\",\"optional\":true}", true)]
+        public IAppRuntime Runtime
+        {
+            get;
+            set;
+        }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "fingerprint": "PdreHOQo68LFjeF32jKc76TwdPRiG6hYazY7gjcDnWM=",
+  "fingerprint": "agv3oJRXkzcnaMe4I2luXIiL3OM/w91yKmXyRmph6Eo=",
   "dependencies": {
     "@aws-cdk/aws-ec2": {
       "dependencies": {
@@ -471,6 +471,372 @@
             },
             "@aws-cdk/aws-lambda": {
               "dependencies": {
+                "@aws-cdk/assets": {
+                  "dependencies": {
+                    "@aws-cdk/aws-iam": {
+                      "dependencies": {
+                        "@aws-cdk/cdk": {
+                          "dependencies": {
+                            "@aws-cdk/cx-api": {
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.CXAPI"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cxapi",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.cxapi"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cx-api"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cdk"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.AWS.IAM"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "aws-iam",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.aws.iam"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/aws-iam"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/aws-s3": {
+                      "dependencies": {
+                        "@aws-cdk/aws-iam": {
+                          "dependencies": {
+                            "@aws-cdk/cdk": {
+                              "dependencies": {
+                                "@aws-cdk/cx-api": {
+                                  "targets": {
+                                    "dotnet": {
+                                      "namespace": "Amazon.CDK.CXAPI"
+                                    },
+                                    "java": {
+                                      "maven": {
+                                        "artifactId": "cxapi",
+                                        "groupId": "com.amazonaws.cdk"
+                                      },
+                                      "package": "com.amazonaws.cdk.cxapi"
+                                    },
+                                    "js": {
+                                      "npm": "@aws-cdk/cx-api"
+                                    }
+                                  },
+                                  "version": "0.7.3-beta"
+                                }
+                              },
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cdk",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cdk"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.AWS.IAM"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "aws-iam",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.aws.iam"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/aws-iam"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        },
+                        "@aws-cdk/aws-kms": {
+                          "dependencies": {
+                            "@aws-cdk/aws-iam": {
+                              "dependencies": {
+                                "@aws-cdk/cdk": {
+                                  "dependencies": {
+                                    "@aws-cdk/cx-api": {
+                                      "targets": {
+                                        "dotnet": {
+                                          "namespace": "Amazon.CDK.CXAPI"
+                                        },
+                                        "java": {
+                                          "maven": {
+                                            "artifactId": "cxapi",
+                                            "groupId": "com.amazonaws.cdk"
+                                          },
+                                          "package": "com.amazonaws.cdk.cxapi"
+                                        },
+                                        "js": {
+                                          "npm": "@aws-cdk/cx-api"
+                                        }
+                                      },
+                                      "version": "0.7.3-beta"
+                                    }
+                                  },
+                                  "targets": {
+                                    "dotnet": {
+                                      "namespace": "Amazon.CDK"
+                                    },
+                                    "java": {
+                                      "maven": {
+                                        "artifactId": "cdk",
+                                        "groupId": "com.amazonaws.cdk"
+                                      },
+                                      "package": "com.amazonaws.cdk"
+                                    },
+                                    "js": {
+                                      "npm": "@aws-cdk/cdk"
+                                    }
+                                  },
+                                  "version": "0.7.3-beta"
+                                }
+                              },
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.AWS.IAM"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "aws-iam",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.aws.iam"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/aws-iam"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            },
+                            "@aws-cdk/cdk": {
+                              "dependencies": {
+                                "@aws-cdk/cx-api": {
+                                  "targets": {
+                                    "dotnet": {
+                                      "namespace": "Amazon.CDK.CXAPI"
+                                    },
+                                    "java": {
+                                      "maven": {
+                                        "artifactId": "cxapi",
+                                        "groupId": "com.amazonaws.cdk"
+                                      },
+                                      "package": "com.amazonaws.cdk.cxapi"
+                                    },
+                                    "js": {
+                                      "npm": "@aws-cdk/cx-api"
+                                    }
+                                  },
+                                  "version": "0.7.3-beta"
+                                }
+                              },
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cdk",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cdk"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.AWS.KMS"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "aws-kms",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.aws.kms"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/aws-kms"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        },
+                        "@aws-cdk/cdk": {
+                          "dependencies": {
+                            "@aws-cdk/cx-api": {
+                              "targets": {
+                                "dotnet": {
+                                  "namespace": "Amazon.CDK.CXAPI"
+                                },
+                                "java": {
+                                  "maven": {
+                                    "artifactId": "cxapi",
+                                    "groupId": "com.amazonaws.cdk"
+                                  },
+                                  "package": "com.amazonaws.cdk.cxapi"
+                                },
+                                "js": {
+                                  "npm": "@aws-cdk/cx-api"
+                                }
+                              },
+                              "version": "0.7.3-beta"
+                            }
+                          },
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cdk",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cdk"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.AWS.S3"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "aws-s3",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.aws.s3"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/aws-s3"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/cdk": {
+                      "dependencies": {
+                        "@aws-cdk/cx-api": {
+                          "targets": {
+                            "dotnet": {
+                              "namespace": "Amazon.CDK.CXAPI"
+                            },
+                            "java": {
+                              "maven": {
+                                "artifactId": "cxapi",
+                                "groupId": "com.amazonaws.cdk"
+                              },
+                              "package": "com.amazonaws.cdk.cxapi"
+                            },
+                            "js": {
+                              "npm": "@aws-cdk/cx-api"
+                            }
+                          },
+                          "version": "0.7.3-beta"
+                        }
+                      },
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cdk",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cdk"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    },
+                    "@aws-cdk/cx-api": {
+                      "targets": {
+                        "dotnet": {
+                          "namespace": "Amazon.CDK.CXAPI"
+                        },
+                        "java": {
+                          "maven": {
+                            "artifactId": "cxapi",
+                            "groupId": "com.amazonaws.cdk"
+                          },
+                          "package": "com.amazonaws.cdk.cxapi"
+                        },
+                        "js": {
+                          "npm": "@aws-cdk/cx-api"
+                        }
+                      },
+                      "version": "0.7.3-beta"
+                    }
+                  },
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.Assets"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "assets",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.assets"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/assets"
+                    }
+                  },
+                  "version": "0.7.3-beta"
+                },
                 "@aws-cdk/aws-cloudwatch": {
                   "dependencies": {
                     "@aws-cdk/aws-iam": {
@@ -1146,6 +1512,24 @@
                     }
                   },
                   "version": "0.7.3-beta"
+                },
+                "@aws-cdk/cx-api": {
+                  "targets": {
+                    "dotnet": {
+                      "namespace": "Amazon.CDK.CXAPI"
+                    },
+                    "java": {
+                      "maven": {
+                        "artifactId": "cxapi",
+                        "groupId": "com.amazonaws.cdk"
+                      },
+                      "package": "com.amazonaws.cdk.cxapi"
+                    },
+                    "js": {
+                      "npm": "@aws-cdk/cx-api"
+                    }
+                  },
+                  "version": "0.7.3-beta"
                 }
               },
               "targets": {
@@ -1665,267 +2049,6 @@
     }
   },
   "externals": {
-    "@aws-cdk/aws-ec2.Connections": {
-      "assembly": "@aws-cdk/aws-ec2",
-      "docs": {
-        "comment": "Connections for an object that does not have default ports"
-      },
-      "fqn": "@aws-cdk/aws-ec2.Connections",
-      "initializer": {
-        "initializer": true,
-        "parameters": [
-          {
-            "name": "securityGroup",
-            "type": {
-              "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
-            }
-          }
-        ]
-      },
-      "interfaces": [
-        {
-          "fqn": "@aws-cdk/aws-ec2.IConnections"
-        }
-      ],
-      "kind": "class",
-      "methods": [
-        {
-          "docs": {
-            "comment": "Allow connections to the peer on their default port"
-          },
-          "name": "allowToDefaultPort",
-          "parameters": [
-            {
-              "name": "other",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IDefaultConnectable"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow connections to the peer on the given port"
-          },
-          "name": "allowTo",
-          "parameters": [
-            {
-              "name": "other",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IConnectable"
-              }
-            },
-            {
-              "name": "portRange",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IPortRange"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow connections from the peer on the given port"
-          },
-          "name": "allowFrom",
-          "parameters": [
-            {
-              "name": "other",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IConnectable"
-              }
-            },
-            {
-              "name": "portRange",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IPortRange"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow hosts inside the security group to connect to each other on the given port"
-          },
-          "name": "allowInternally",
-          "parameters": [
-            {
-              "name": "portRange",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IPortRange"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow to all IPv4 ranges"
-          },
-          "name": "allowToAnyIpv4",
-          "parameters": [
-            {
-              "name": "portRange",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IPortRange"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow from any IPv4 ranges"
-          },
-          "name": "allowFromAnyIpv4",
-          "parameters": [
-            {
-              "name": "portRange",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IPortRange"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        }
-      ],
-      "name": "Connections",
-      "namespace": "@aws-cdk/aws-ec2",
-      "properties": [
-        {
-          "docs": {
-            "comment": "Access to the peer that we're connecting to\n\nIt's convenient to put this on the Connections object since\nall participants in this protocol have one anyway, and the Connections\nobjects have access to it, so they don't need to implement two interfaces."
-          },
-          "immutable": true,
-          "name": "connectionPeer",
-          "type": {
-            "fqn": "@aws-cdk/aws-ec2.IConnectionPeer"
-          }
-        }
-      ]
-    },
-    "@aws-cdk/aws-ec2.DefaultConnections": {
-      "assembly": "@aws-cdk/aws-ec2",
-      "base": {
-        "fqn": "@aws-cdk/aws-ec2.Connections"
-      },
-      "docs": {
-        "comment": "A class to orchestrate connections that already has default ports"
-      },
-      "fqn": "@aws-cdk/aws-ec2.DefaultConnections",
-      "initializer": {
-        "initializer": true,
-        "parameters": [
-          {
-            "name": "securityGroup",
-            "type": {
-              "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
-            }
-          },
-          {
-            "name": "defaultPortRangeProvider",
-            "type": {
-              "fqn": "@aws-cdk/aws-ec2.IDefaultConnectable"
-            }
-          }
-        ]
-      },
-      "kind": "class",
-      "methods": [
-        {
-          "docs": {
-            "comment": "Allow connections from the peer on our default port\n\nEven if the peer has a default port, we will always use our default port."
-          },
-          "name": "allowDefaultPortFrom",
-          "parameters": [
-            {
-              "name": "other",
-              "type": {
-                "fqn": "@aws-cdk/aws-ec2.IConnectable"
-              }
-            },
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow hosts inside the security group to connect to each other"
-          },
-          "name": "allowDefaultPortInternally",
-          "parameters": [
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        },
-        {
-          "docs": {
-            "comment": "Allow default connections from all IPv4 ranges"
-          },
-          "name": "allowDefaultPortFromAnyIpv4",
-          "parameters": [
-            {
-              "name": "description",
-              "type": {
-                "primitive": "string"
-              }
-            }
-          ]
-        }
-      ],
-      "name": "DefaultConnections",
-      "namespace": "@aws-cdk/aws-ec2",
-      "properties": [
-        {
-          "immutable": true,
-          "name": "defaultPortRange",
-          "type": {
-            "fqn": "@aws-cdk/aws-ec2.IPortRange"
-          }
-        }
-      ]
-    },
     "@aws-cdk/aws-ec2.IConnectable": {
       "assembly": "@aws-cdk/aws-ec2",
       "datatype": true,
@@ -3663,7 +3786,7 @@
           "immutable": true,
           "name": "connections",
           "type": {
-            "fqn": "@aws-cdk/aws-ec2.DefaultConnections"
+            "fqn": "@aws-cdk/aws-ec2.IConnections"
           }
         },
         {
