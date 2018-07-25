@@ -1,5 +1,5 @@
 {
-  "fingerprint": "Dh8E6CBg+NOI7UpXXCNhFwsrpV+GZUmb3Wm+8LVDu3E=",
+  "fingerprint": "oQuWlMqqoYWwM6dsrqf6+nhZwSVb4BqGxbVFJaCvauE=",
   "dependencies": {
     "@aws-cdk/aws-iam": {
       "dependencies": {
@@ -221,6 +221,9 @@
       "interfaces": [
         {
           "fqn": "@aws-cdk/aws-iam.IIdentityResource"
+        },
+        {
+          "fqn": "@aws-cdk/aws-iam.IPrincipal"
         },
         {
           "fqn": "@aws-cdk/cdk.IDependable"

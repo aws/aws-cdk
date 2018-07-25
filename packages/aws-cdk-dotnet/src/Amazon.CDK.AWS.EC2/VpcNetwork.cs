@@ -50,6 +50,18 @@ namespace Amazon.CDK.AWS.EC2
         }
 
         = GetStaticProperty<string>(typeof(VpcNetwork));
+        /// <summary>
+        /// The default subnet configuration
+        /// 
+        /// 1 Public and 1 Private subnet per AZ evenly split
+        /// </summary>
+        [JsiiProperty("DEFAULT_SUBNETS", "{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"fqn\":\"@aws-cdk/aws-ec2.SubnetConfiguration\"}}}")]
+        public static ISubnetConfiguration[] DEFAULT_SUBNETS
+        {
+            get;
+        }
+
+        = GetStaticProperty<ISubnetConfiguration[]>(typeof(VpcNetwork));
         /// <summary>Identifier for this VPC</summary>
         [JsiiProperty("vpcId", "{\"fqn\":\"@aws-cdk/aws-ec2.VpcNetworkId\"}")]
         public override VpcNetworkId VpcId
@@ -67,6 +79,13 @@ namespace Amazon.CDK.AWS.EC2
         /// <summary>List of private subnets in this VPC</summary>
         [JsiiProperty("privateSubnets", "{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"fqn\":\"@aws-cdk/aws-ec2.VpcSubnetRef\"}}}")]
         public override VpcSubnetRef[] PrivateSubnets
+        {
+            get => GetInstanceProperty<VpcSubnetRef[]>();
+        }
+
+        /// <summary>List of isolated subnets in this VPC</summary>
+        [JsiiProperty("isolatedSubnets", "{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"fqn\":\"@aws-cdk/aws-ec2.VpcSubnetRef\"}}}")]
+        public virtual VpcSubnetRef[] IsolatedSubnets
         {
             get => GetInstanceProperty<VpcSubnetRef[]>();
         }

@@ -15,5 +15,12 @@ namespace Amazon.CDK.CXAPI
             get => GetInstanceProperty<ISynthesizedStack[]>();
             set => SetInstanceProperty(value);
         }
+
+        [JsiiProperty("runtime", "{\"fqn\":\"@aws-cdk/cx-api.AppRuntime\",\"optional\":true}")]
+        public virtual IAppRuntime Runtime
+        {
+            get => GetInstanceProperty<IAppRuntime>();
+            set => SetInstanceProperty(value);
+        }
     }
 }
