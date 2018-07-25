@@ -60,6 +60,7 @@
   "dependencies": {
     "@aws-cdk/aws-codecommit": "^0.7.3-beta",
     "@aws-cdk/aws-codepipeline": "^0.7.3-beta",
+    "@aws-cdk/aws-cloudwatch": "^0.7.3-beta",
     "@aws-cdk/aws-events": "^0.7.3-beta",
     "@aws-cdk/aws-iam": "^0.7.3-beta",
     "@aws-cdk/aws-kms": "^0.7.3-beta",
