@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/core');
+import cdk = require('@aws-cdk/cdk');
 import path = require('path');
 import { Lambda, LambdaCode, LambdaRuntime } from '../lib';
 

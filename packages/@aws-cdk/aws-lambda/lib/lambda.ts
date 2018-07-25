@@ -159,7 +159,7 @@ export class Lambda extends LambdaRef {
         const resource = new cloudformation.FunctionResource(this, 'Resource', {
             functionName: props.functionName,
             description: props.description,
-            code: new Token(() => props.code.toJSON()),
+            code: new cdk.Token(() => props.code.toJSON()),
             handler: props.handler,
             timeout: props.timeout,
             runtime: props.runtime.name,

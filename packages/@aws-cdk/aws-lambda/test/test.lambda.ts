@@ -283,7 +283,7 @@ export = {
 
     'Lambda code can be read from a local directory via an asset'(test: Test) {
         // GIVEN
-        const stack = new Stack();
+        const stack = new cdk.Stack();
         new Lambda(stack, 'MyLambda', {
             code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),
             handler: 'index.handler',

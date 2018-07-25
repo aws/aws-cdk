@@ -1,5 +1,5 @@
-import s3 = require('@aws-cdk/aws-s3');
 import assets = require('@aws-cdk/assets');
+import s3 = require('@aws-cdk/aws-s3');
 import { Lambda } from './lambda';
 import { cloudformation } from './lambda.generated';
 
