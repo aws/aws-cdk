@@ -79,7 +79,7 @@ async function prepareFileAsset(
     if (changed) {
         success(` 👑  Asset ${asset.path} (${asset.packaging}) uploaded: ${s3url}`);
     } else {
-        success(` 👑  Asset ${asset.path} (${asset.packaging}) is up-to-date: ${s3url}`);
+        debug(` 👑  Asset ${asset.path} (${asset.packaging}) is up-to-date: ${s3url}`);
     }
 
     return [
