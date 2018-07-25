@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -169,6 +170,85 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
             }
         });
         return rule;
+    }
+
+    /**
+     * @returns a CloudWatch metric associated with this build project.
+     * @param metricName The name of the metric
+     * @param props Customization properties
+     */
+    public metric(metricName: string, props: cloudwatch.MetricCustomization) {
+        return new cloudwatch.Metric({
+            namespace: 'AWS/CodeBuild',
+            metricName,
+            dimensions: { ProjectName: this.projectName },
+            ...props
+        });
+    }
+
+    /**
+     * Measures the number of builds triggered.
+     *
+     * Units: Count
+     *
+     * Valid CloudWatch statistics: Sum
+     *
+     * @default sum over 5 minutes
+     */
+    public metricBuilds(props?: cloudwatch.MetricCustomization) {
+        return this.metric('Builds', {
+            statistic: 'sum',
+            ...props,
+        });
+    }
+
+    /**
+     * Measures the duration of all builds over time.
+     *
+     * Units: Seconds
+     *
+     * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
+     *
+     * @default average over 5 minutes
+     */
+    public metricDuration(props?: cloudwatch.MetricCustomization) {
+        return this.metric('Duration', {
+            statistic: 'avg',
+            ...props
+        });
+    }
+
+    /**
+     * Measures the number of successful builds.
+     *
+     * Units: Count
+     *
+     * Valid CloudWatch statistics: Sum
+     *
+     * @default sum over 5 minutes
+     */
+    public metricSucceededBuilds(props?: cloudwatch.MetricCustomization) {
+        return this.metric('SucceededBuilds', {
+            statistic: 'sum',
+            ...props,
+        });
+    }
+
+    /**
+     * Measures the number of builds that failed because of client error or
+     * because of a timeout.
+     *
+     * Units: Count
+     *
+     * Valid CloudWatch statistics: Sum
+     *
+     * @default sum over 5 minutes
+     */
+    public metricFailedBuilds(props?: cloudwatch.MetricCustomization) {
+        return this.metric('FailedBuilds', {
+            statistic: 'sum',
+            ...props,
+        });
     }
 
     /**
