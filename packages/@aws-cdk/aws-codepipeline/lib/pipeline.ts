@@ -10,8 +10,17 @@ import validation = require('./validation');
 /**
  * The ARN of a pipeline
  */
-export class PipelineArn extends cdk.Arn {
-}
+export class PipelineArn extends cdk.Arn { }
+
+/**
+ * The name of the pipeline.
+ */
+export class PipelineName extends cdk.Token { }
+
+/**
+ * The pipeline version.
+ */
+export class PipelineVersion extends cdk.Token { }
 
 export interface PipelineProps {
     /**
@@ -63,6 +72,16 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     public readonly pipelineArn: PipelineArn;
 
     /**
+     * The name of the pipeline
+     */
+    public readonly pipelineName: PipelineName;
+
+    /**
+     * The version of the pipeline
+     */
+    public readonly pipelineVersion: PipelineVersion;
+
+    /**
      * Bucket used to store output artifacts
      */
     public readonly artifactBucket: s3.BucketRef;
@@ -102,10 +121,13 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
 
         this.artifactBucket.grantReadWrite(this.role);
 
+        this.pipelineName = codePipeline.ref;
+        this.pipelineVersion = codePipeline.getAtt('Version');
+
         // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
         this.pipelineArn = new PipelineArn(cdk.Arn.fromComponents({
             service: 'codepipeline',
-            resource: codePipeline.ref
+            resource: this.pipelineName
         }));
     }
 
