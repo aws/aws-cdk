@@ -1,11 +1,62 @@
+import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
+import { Lambda } from './lambda';
 import { cloudformation } from './lambda.generated';
-import { LambdaRuntime } from './runtime';
 
 export abstract class LambdaCode {
-    public abstract toJSON(runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty;
+    /**
+     * @returns `LambdaS3Code` associated with the specified S3 object.
+     * @param bucket The S3 bucket
+     * @param key The object key
+     * @param objectVersion Optional S3 object version
+     */
+    public static bucket(bucket: s3.BucketRef, key: string, objectVersion?: string) {
+        return new LambdaS3Code(bucket, key, objectVersion);
+    }
+
+    /**
+     * @returns `LambdaInlineCode` with inline code.
+     * @param code The actual handler code (limited to 4KiB)
+     */
+    public static inline(code: string) {
+        return new LambdaInlineCode(code);
+    }
+
+    /**
+     * @returns Zip archives the contents of a directory on disk and uses this
+     * as the lambda handler's code.
+     * @param directoryToZip The directory to zip
+     */
+    public static directory(directoryToZip: string) {
+        return new LambdaAssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
+    }
+
+    /**
+     * @returns Uses a file on disk as a lambda handler's code.
+     * @param filePath The file path
+     */
+    public static file(filePath: string) {
+        return new LambdaAssetCode(filePath, assets.AssetPackaging.File);
+    }
+
+    /**
+     * Called during stack synthesis to render the CodePropery for the
+     * Lambda function.
+     */
+    public abstract toJSON(): cloudformation.FunctionResource.CodeProperty;
+
+    /**
+     * Called when the lambda is initialized to allow this object to
+     * bind to the stack, add resources and have fun.
+     */
+    public bind(_lambda: Lambda) {
+        return;
+    }
 }
 
+/**
+ * Lambda code from an S3 archive.
+ */
 export class LambdaS3Code extends LambdaCode {
     private bucketName: s3.BucketName;
 
@@ -19,7 +70,7 @@ export class LambdaS3Code extends LambdaCode {
         this.bucketName = bucket.bucketName;
     }
 
-    public toJSON(_runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty {
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
         return {
             s3Bucket: this.bucketName,
             s3Key: this.key,
@@ -28,6 +79,9 @@ export class LambdaS3Code extends LambdaCode {
     }
 }
 
+/**
+ * Lambda code from an inline string (limited to 4KiB).
+ */
 export class LambdaInlineCode extends LambdaCode {
     constructor(private code: string) {
         super();
@@ -37,13 +91,48 @@ export class LambdaInlineCode extends LambdaCode {
         }
     }
 
-    public toJSON(runtime: LambdaRuntime): cloudformation.FunctionResource.CodeProperty {
-        if (!runtime.supportsInlineCode) {
-            throw new Error(`Inline source not supported for: ${runtime.name}`);
+    public bind(lambda: Lambda) {
+        if (!lambda.runtime.supportsInlineCode) {
+            throw new Error(`Inline source not allowed for ${lambda.runtime.name}`);
         }
+    }
 
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
         return {
             zipFile: this.code
+        };
+    }
+}
+
+/**
+ * Lambda code from a local directory.
+ */
+export class LambdaAssetCode extends LambdaCode {
+    private asset?: assets.Asset;
+
+    /**
+     * @param path The path to the asset file or directory.
+     * @param packaging The asset packaging format
+     */
+    constructor(
+        private readonly path: string,
+        private readonly packaging: assets.AssetPackaging) {
+        super();
+    }
+
+    public bind(lambda: Lambda) {
+        this.asset = new assets.Asset(lambda, 'Code', {
+            path: this.path,
+            packaging: this.packaging
+        });
+
+        this.asset.grantRead(lambda.role);
+    }
+
+    public toJSON(): cloudformation.FunctionResource.CodeProperty {
+        return  {
+            s3Bucket: this.asset!.s3BucketName,
+            s3Key: this.asset!.s3ObjectKey
         };
     }
 }
