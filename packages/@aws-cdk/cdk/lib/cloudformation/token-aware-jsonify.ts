@@ -4,14 +4,21 @@ import { FnSub } from './fn';
 /**
  * Jsonify a deep structure to a string while preserving tokens
  *
- * Sometimes we have JSON structures that contain CloudFormation
- * intrinsics like { Ref } and { Fn::GetAtt }, but the model requires
- * that we stringify the JSON structure and pass it into the parameter.
+ * Sometimes we have JSON structures that contain CloudFormation intrinsics like
+ * { Ref } and { Fn::GetAtt }, but the model requires that we stringify the JSON
+ * structure and pass it into the parameter.
  *
  * Doing this makes it so that CloudFormation does not resolve the intrinsics
- * anymore, since it does not look into every string. To resolve this,
- * we stringify into a string and put placeholders in wich we substitute
- * with the resolved references using { Fn::Sub }.
+ * anymore, since it does not look into every string. To resolve this, we
+ * stringify into a string and put placeholders in wich we substitute with the
+ * resolved references using { Fn::Sub }.
+ *
+ * Since the result is expected to be a stringified JSON, we need to make sure
+ * any textual values resolved from tokens are also stringified, so we also
+ * stringify any string values in resolved tokens (for example, "\n" will be
+ * replaced by "\\n", quotes will be escaped, etc). This might not be needed (or
+ * even could be harmful) for certain tokens (e.g. Fn::GetAtt), but we prefer to
+ * make the common case fool-proof, and hope for the best.
  *
  * Will only work correctly for intrinsics that return a string value.
  */
@@ -30,12 +37,35 @@ export function tokenAwareJsonify(structure: any): any {
   const tokenId: {[key: string]: string} = {};
   const substitutionMap: {[key: string]: any} = {};
 
+  function stringifyStrings(x: any): any {
+    if (typeof(x) === 'string') {
+      const jsonS = JSON.stringify(x);
+      return jsonS.substr(1, jsonS.length - 2); // trim quotes
+    }
+
+    if (Array.isArray(x)) {
+      return x.map(stringifyStrings);
+    }
+
+    if (typeof(x) === 'object') {
+      const result: any = {};
+      for (const key of Object.keys(x)) {
+        result[key] = stringifyStrings(x[key]);
+      }
+
+      return result;
+    }
+
+    return x;
+  }
+
   function rememberToken(x: Token) {
     // Get a representation of the resolved Token that we can use as a hash key.
-    const reprKey = JSON.stringify(resolve(x));
+    const resolved = resolve(x);
+    const reprKey = JSON.stringify(resolved);
     if (!(reprKey in tokenId)) {
       tokenId[reprKey] = `ref${counter}`;
-      substitutionMap[tokenId[reprKey]] = x;
+      substitutionMap[tokenId[reprKey]] = stringifyStrings(resolved);
       counter += 1;
     }
     return `<<<TOKEN:${tokenId[reprKey]}>>>`;
