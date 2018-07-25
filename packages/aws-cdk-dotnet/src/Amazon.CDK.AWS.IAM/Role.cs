@@ -10,7 +10,7 @@ namespace Amazon.CDK.AWS.IAM
     /// the specified AWS service principal defined in `serviceAssumeRole`.
     /// </summary>
     [JsiiClass(typeof(Role), "@aws-cdk/aws-iam.Role", "[{\"name\":\"parent\",\"type\":{\"fqn\":\"@aws-cdk/cdk.Construct\"}},{\"name\":\"name\",\"type\":{\"primitive\":\"string\"}},{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-iam.RoleProps\"}}]")]
-    public class Role : Construct, IIIdentityResource, IIDependable
+    public class Role : Construct, IIIdentityResource, IIPrincipal, IIDependable
     {
         public Role(Construct parent, string name, IRoleProps props): base(new DeputyProps(new object[]{parent, name, props}))
         {

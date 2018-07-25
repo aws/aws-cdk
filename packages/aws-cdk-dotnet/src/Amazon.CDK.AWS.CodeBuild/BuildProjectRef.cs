@@ -1,4 +1,5 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.CloudWatch;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.IAM;
 using AWS.Jsii.Runtime.Deputy;
@@ -143,6 +144,72 @@ namespace Amazon.CDK.AWS.CodeBuild
         public virtual EventRule OnBuildSucceeded(string name, IIEventRuleTargetProps target, IEventRuleProps options)
         {
             return InvokeInstanceMethod<EventRule>(new object[]{name, target, options});
+        }
+
+        /// <param name = "metricName">The name of the metric</param>
+        /// <param name = "props">Customization properties</param>
+        /// <returns>a CloudWatch metric associated with this build project.</returns>
+        [JsiiMethod("metric", "{\"fqn\":\"@aws-cdk/aws-cloudwatch.Metric\"}", "[{\"name\":\"metricName\",\"type\":{\"primitive\":\"string\"}},{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-cloudwatch.MetricCustomization\"}}]")]
+        public virtual Metric Metric(string metricName, IMetricCustomization props)
+        {
+            return InvokeInstanceMethod<Metric>(new object[]{metricName, props});
+        }
+
+        /// <summary>
+        /// Measures the number of builds triggered.
+        /// 
+        /// Units: Count
+        /// 
+        /// Valid CloudWatch statistics: Sum
+        /// </summary>
+        /// <remarks>default: sum over 5 minutes</remarks>
+        [JsiiMethod("metricBuilds", "{\"fqn\":\"@aws-cdk/aws-cloudwatch.Metric\"}", "[{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-cloudwatch.MetricCustomization\",\"optional\":true}}]")]
+        public virtual Metric MetricBuilds(IMetricCustomization props)
+        {
+            return InvokeInstanceMethod<Metric>(new object[]{props});
+        }
+
+        /// <summary>
+        /// Measures the duration of all builds over time.
+        /// 
+        /// Units: Seconds
+        /// 
+        /// Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
+        /// </summary>
+        /// <remarks>default: average over 5 minutes</remarks>
+        [JsiiMethod("metricDuration", "{\"fqn\":\"@aws-cdk/aws-cloudwatch.Metric\"}", "[{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-cloudwatch.MetricCustomization\",\"optional\":true}}]")]
+        public virtual Metric MetricDuration(IMetricCustomization props)
+        {
+            return InvokeInstanceMethod<Metric>(new object[]{props});
+        }
+
+        /// <summary>
+        /// Measures the number of successful builds.
+        /// 
+        /// Units: Count
+        /// 
+        /// Valid CloudWatch statistics: Sum
+        /// </summary>
+        /// <remarks>default: sum over 5 minutes</remarks>
+        [JsiiMethod("metricSucceededBuilds", "{\"fqn\":\"@aws-cdk/aws-cloudwatch.Metric\"}", "[{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-cloudwatch.MetricCustomization\",\"optional\":true}}]")]
+        public virtual Metric MetricSucceededBuilds(IMetricCustomization props)
+        {
+            return InvokeInstanceMethod<Metric>(new object[]{props});
+        }
+
+        /// <summary>
+        /// Measures the number of builds that failed because of client error or
+        /// because of a timeout.
+        /// 
+        /// Units: Count
+        /// 
+        /// Valid CloudWatch statistics: Sum
+        /// </summary>
+        /// <remarks>default: sum over 5 minutes</remarks>
+        [JsiiMethod("metricFailedBuilds", "{\"fqn\":\"@aws-cdk/aws-cloudwatch.Metric\"}", "[{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-cloudwatch.MetricCustomization\",\"optional\":true}}]")]
+        public virtual Metric MetricFailedBuilds(IMetricCustomization props)
+        {
+            return InvokeInstanceMethod<Metric>(new object[]{props});
         }
     }
 }

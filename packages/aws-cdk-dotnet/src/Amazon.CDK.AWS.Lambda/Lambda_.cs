@@ -51,6 +51,20 @@ namespace Amazon.CDK.AWS.Lambda
             get => GetInstanceProperty<Role>();
         }
 
+        /// <summary>The runtime configured for this lambda.</summary>
+        [JsiiProperty("runtime", "{\"fqn\":\"@aws-cdk/aws-lambda.LambdaRuntime\"}")]
+        public virtual LambdaRuntime Runtime
+        {
+            get => GetInstanceProperty<LambdaRuntime>();
+        }
+
+        /// <summary>The name of the handler configured for this lambda.</summary>
+        [JsiiProperty("handler", "{\"primitive\":\"string\"}")]
+        public virtual string Handler
+        {
+            get => GetInstanceProperty<string>();
+        }
+
         /// <summary>
         /// Whether the addPermission() call adds any permissions
         /// 

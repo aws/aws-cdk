@@ -4,6 +4,7 @@ using AWS.Jsii.Runtime.Deputy;
 
 namespace Amazon.CDK.AWS.Lambda
 {
+    /// <summary>Lambda code from an S3 archive.</summary>
     [JsiiClass(typeof(LambdaS3Code), "@aws-cdk/aws-lambda.LambdaS3Code", "[{\"name\":\"bucket\",\"type\":{\"fqn\":\"@aws-cdk/aws-s3.BucketRef\"}},{\"name\":\"key\",\"type\":{\"primitive\":\"string\"}},{\"name\":\"objectVersion\",\"type\":{\"primitive\":\"string\",\"optional\":true}}]")]
     public class LambdaS3Code : LambdaCode
     {
@@ -19,10 +20,14 @@ namespace Amazon.CDK.AWS.Lambda
         {
         }
 
-        [JsiiMethod("toJSON", "{\"fqn\":\"@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty\"}", "[{\"name\":\"_runtime\",\"type\":{\"fqn\":\"@aws-cdk/aws-lambda.LambdaRuntime\"}}]")]
-        public override ICodeProperty ToJSON(LambdaRuntime _runtime)
+        /// <summary>
+        /// Called during stack synthesis to render the CodePropery for the
+        /// Lambda function.
+        /// </summary>
+        [JsiiMethod("toJSON", "{\"fqn\":\"@aws-cdk/aws-lambda.cloudformation.FunctionResource.CodeProperty\"}", "[]")]
+        public override ICodeProperty ToJSON()
         {
-            return InvokeInstanceMethod<ICodeProperty>(new object[]{_runtime});
+            return InvokeInstanceMethod<ICodeProperty>(new object[]{});
         }
     }
 }

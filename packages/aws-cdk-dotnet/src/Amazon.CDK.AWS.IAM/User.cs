@@ -4,7 +4,7 @@ using AWS.Jsii.Runtime.Deputy;
 namespace Amazon.CDK.AWS.IAM
 {
     [JsiiClass(typeof(User), "@aws-cdk/aws-iam.User", "[{\"name\":\"parent\",\"type\":{\"fqn\":\"@aws-cdk/cdk.Construct\"}},{\"name\":\"name\",\"type\":{\"primitive\":\"string\"}},{\"name\":\"props\",\"type\":{\"fqn\":\"@aws-cdk/aws-iam.UserProps\",\"optional\":true}}]")]
-    public class User : Construct, IIIdentityResource
+    public class User : Construct, IIIdentityResource, IIPrincipal
     {
         public User(Construct parent, string name, IUserProps props): base(new DeputyProps(new object[]{parent, name, props}))
         {

@@ -71,17 +71,6 @@ namespace Amazon.CDK.AWS.EC2
         }
 
         /// <summary>
-        /// Defines whether the VPC is configured to route outbound traffic from private and/or public subnets.
-        /// By default, outbound traffic will be allowed from public and private subnets.
-        /// </summary>
-        [JsiiProperty("outboundTraffic", "{\"fqn\":\"@aws-cdk/aws-ec2.OutboundTrafficMode\",\"optional\":true}")]
-        public virtual OutboundTrafficMode OutboundTraffic
-        {
-            get => GetInstanceProperty<OutboundTrafficMode>();
-            set => SetInstanceProperty(value);
-        }
-
-        /// <summary>
         /// Define the maximum number of AZs to use in this region
         /// 
         /// If the region has more AZs than you want to use (for example, because of EIP limits),
@@ -92,6 +81,64 @@ namespace Amazon.CDK.AWS.EC2
         public virtual double? MaxAZs
         {
             get => GetInstanceProperty<double? >();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>
+        /// Define the maximum number of NAT Gateways for this VPC
+        /// 
+        /// Setting this number enables a VPC to trade availability for the cost of
+        /// running a NAT Gateway. For example, if set this to 1 and your subnet
+        /// configuration is for 3 Public subnets with natGateway = `true` then only
+        /// one of the Public subnets will have a gateway and all Private subnets
+        /// will route to this NAT Gateway.
+        /// </summary>
+        /// <remarks>default: maxAZs</remarks>
+        [JsiiProperty("natGateways", "{\"primitive\":\"number\",\"optional\":true}")]
+        public virtual double? NatGateways
+        {
+            get => GetInstanceProperty<double? >();
+            set => SetInstanceProperty(value);
+        }
+
+        /// <summary>
+        /// Configure the subnets to build for each AZ
+        /// 
+        /// The subnets are constructed in the context of the VPC so you only need
+        /// specify the configuration. The VPC details (VPC ID, specific CIDR,
+        /// specific AZ will be calculated during creation)
+        /// 
+        /// For example if you want 1 public subnet, 1 private subnet, and 1 isolated
+        /// subnet in each AZ provide the following:
+        /// subnetConfiguration: [
+        ///       {
+        ///           cidrMask: 24,
+        ///           name: 'ingress',
+        ///           subnetType: SubnetType.Public,
+        ///       },
+        ///       {
+        ///           cidrMask: 24,
+        ///           name: 'application',
+        ///           subnetType: SubnetType.Private,
+        ///       },
+        ///       {
+        ///           cidrMask: 28,
+        ///           name: 'rds',
+        ///           subnetType: SubnetType.Isolated,
+        ///       }
+        /// ]
+        /// 
+        /// `cidrMask` is optional and if not provided the IP space in the VPC will be
+        /// evenly divided between the requested subnets.
+        /// </summary>
+        /// <remarks>
+        /// default: the VPC CIDR will be evenly divided between 1 public and 1
+        /// private subnet per AZ
+        /// </remarks>
+        [JsiiProperty("subnetConfiguration", "{\"collection\":{\"kind\":\"array\",\"elementtype\":{\"fqn\":\"@aws-cdk/aws-ec2.SubnetConfiguration\"}},\"optional\":true}")]
+        public virtual ISubnetConfiguration[] SubnetConfiguration
+        {
+            get => GetInstanceProperty<ISubnetConfiguration[]>();
             set => SetInstanceProperty(value);
         }
     }
