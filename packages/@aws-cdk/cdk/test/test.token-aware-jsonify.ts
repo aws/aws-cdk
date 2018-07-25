@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { AwsRegion, resolve, tokenAwareJsonify, FnConcat } from '../lib';
+import { AwsRegion, FnConcat, resolve, tokenAwareJsonify } from '../lib';
 
 export = {
   'substitutes tokens'(test: Test)  {
