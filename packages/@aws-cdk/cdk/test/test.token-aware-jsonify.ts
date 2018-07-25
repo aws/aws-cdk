@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { AwsRegion, resolve, tokenAwareJsonify } from '../lib';
+import { AwsRegion, resolve, tokenAwareJsonify, FnConcat } from '../lib';
 
 export = {
   'substitutes tokens'(test: Test)  {
@@ -56,4 +56,19 @@ export = {
 
     test.done();
   },
+
+  'string values in resolved tokens should be represented as stringified strings'(test: Test) {
+    // WHEN
+    const result = tokenAwareJsonify({
+      test1: new FnConcat('Hello', 'This\nIs', 'Very "cool"'),
+    });
+
+    // THEN
+    test.deepEqual(resolve(result), { 'Fn::Sub':
+    [ '{"test1":"${ref0}"}',
+      { ref0:
+         { 'Fn::Join': [ '', [ 'Hello', 'This\\nIs', 'Very \\"cool\\"' ] ] } } ] });
+
+    test.done();
+  }
 };
