@@ -830,5 +830,27 @@ export = {
         }));
 
         test.done();
+    },
+
+    '.metricXxx() methods can be used to obtain Metrics for CodeBuild projects'(test: Test) {
+        const stack = new cdk.Stack();
+
+        const project = new codebuild.BuildProject(stack, 'MyBuildProject', { source: new codebuild.CodePipelineSource() });
+
+        const metricBuilds = project.metricBuilds();
+        test.same(metricBuilds.dimensions!.ProjectName, project.projectName);
+        test.deepEqual(metricBuilds.namespace, 'AWS/CodeBuild');
+        test.deepEqual(metricBuilds.statistic, 'sum', 'default stat is SUM');
+        test.deepEqual(metricBuilds.metricName, 'Builds');
+
+        const metricDuration = project.metricDuration({ label: 'hello' });
+
+        test.deepEqual(metricDuration.metricName, 'Duration');
+        test.deepEqual(metricDuration.label, 'hello');
+
+        test.deepEqual(project.metricFailedBuilds().metricName, 'FailedBuilds');
+        test.deepEqual(project.metricSucceededBuilds().metricName, 'SucceededBuilds');
+
+        test.done();
     }
 };
