@@ -31,17 +31,17 @@ as they provide the best developer experience.
 To illustrate the advantages that an |l2| has over
 a |l1|, let's look at an example.
 
-The :py:mod:`@aws-cdk/sns` Construct Library includes the `Topic` construct that
+The :py:mod:`@aws-cdk/aws-sns` Construct Library includes the `Topic` construct that
 you can use to define an |SNS| topic:
 
 .. code-block:: js
 
-    import { Topic } from '@aws-cdk/sns';
+    import { Topic } from '@aws-cdk/aws-sns';
     const topic = new Topic(this, 'MyTopic');
 
 An |l2| encapsulate the
 details of working with these AWS resources. For example, to subscribe a queue to a topic,
-call the :py:meth:`@aws-cdk/sns.Topic.subscribeQueue` method with a queue object as the second argument:
+call the :py:meth:`@aws-cdk/aws-sns.Topic.subscribeQueue` method with a queue object as the second argument:
 
 .. code-block:: js
 
@@ -175,11 +175,11 @@ First import the required packages.
 
 .. code-block:: js
 
-   import { App, Stack } from '@aws-cdk/core';
-   import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
+   import { App, Stack } from '@aws-cdk/cdk';
+   import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/aws-lambda';
    import { RuntimeValue } from '@aws-cdk/rtv';
-   import { Bucket } from '@aws-cdk/s3';
-   import { Topic } from '@aws-cdk/sns';
+   import { Bucket } from '@aws-cdk/aws-s3';
+   import { Topic } from '@aws-cdk/aws-sns';
 
 Add an SNS topic to the stack and advertise the topic ARN as a runtime value.
 

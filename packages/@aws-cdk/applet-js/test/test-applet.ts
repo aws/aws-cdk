@@ -1,4 +1,4 @@
-import { App, Parameter, Stack, StackProps } from '@aws-cdk/core';
+import { App, Parameter, Stack, StackProps } from '@aws-cdk/cdk';
 
 export interface TestAppletProps extends StackProps {
     prop1: string

@@ -1,6 +1,6 @@
-import { Environment } from '@aws-cdk/cx-api';
-import { CloudFormation, S3 } from 'aws-sdk';
-import * as colors from 'colors/safe';
+import cxapi = require('@aws-cdk/cx-api');
+import aws = require('aws-sdk');
+import colors = require('colors/safe');
 import { md5hash } from '../archive';
 import { debug } from '../logging';
 import { Mode } from './aws-auth/credentials';
@@ -13,7 +13,7 @@ export class ToolkitInfo {
         sdk: SDK,
         bucketName: string,
         bucketEndpoint: string,
-        environment: Environment
+        environment: cxapi.Environment
     }) { }
 
     public get bucketUrl() {
@@ -66,7 +66,7 @@ export class ToolkitInfo {
 
 }
 
-async function objectExists(s3: S3, bucket: string, key: string) {
+async function objectExists(s3: aws.S3, bucket: string, key: string) {
     try {
         await s3.headObject({ Bucket: bucket, Key: key }).promise();
         return true;
@@ -79,7 +79,7 @@ async function objectExists(s3: S3, bucket: string, key: string) {
     }
 }
 
-export async function loadToolkitInfo(environment: Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
+export async function loadToolkitInfo(environment: cxapi.Environment, sdk: SDK, stackName: string): Promise<ToolkitInfo | undefined> {
     const cfn = await sdk.cloudFormation(environment, Mode.ForReading);
     const stack = await waitForStack(cfn, stackName);
     if (!stack) {
@@ -94,7 +94,7 @@ export async function loadToolkitInfo(environment: Environment, sdk: SDK, stackN
     });
 }
 
-function getOutputValue(stack: CloudFormation.Stack, output: string): string {
+function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string {
     let result: string | undefined;
     if (stack.Outputs) {
         const found = stack.Outputs.find(o => o.OutputKey === output);

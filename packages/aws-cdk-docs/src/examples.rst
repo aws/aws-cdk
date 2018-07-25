@@ -38,7 +38,7 @@ the |cdk|.
 
    code-block:: js
 
-   import { Stack, StackProps } from '@aws-cdk/core'
+   import { Stack, StackProps } from '@aws-cdk/cdk'
 
    interface MyStackProps extends StackProps {
      encryptedStorage: boolean;
@@ -64,7 +64,7 @@ the |cdk|.
 
    code-block:: js
 
-   import { App } from '@aws-cdk/core'
+   import { App } from '@aws-cdk/cdk'
    import { MyStack } from './my-stack'
    import { DeploymentPipeline } from './my-deployment'
 
@@ -122,25 +122,25 @@ and sort key **Timestamp**.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps } from '@aws-cdk/core';
-   import { KeyAttributeType, Table } from '@aws-cdk/dynamodb'
+   import dynamodb = require('@aws-cdk/aws-dynamodb');
+   import cdk = require('@aws-cdk/cdk');
 
-   class MyStack extends Stack {
-     constructor(parent: App, name: string, props?: StackProps) {
+   class MyStack extends cdk.Stack {
+     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
        super(parent, name, props);
 
-       const table = new Table(this, 'Table', {
+       const table = new dynamodb.Table(this, 'Table', {
          tableName: 'MyAppTable',
          readCapacity: 5,
          writeCapacity: 5
        });
 
-       table.addPartitionKey('Alias', KeyAttributeType.String);
-       table.addSortKey('Timestamp', KeyAttributeType.String);
+       table.addPartitionKey('Alias', dynamodb.KeyAttributeType.String);
+       table.addSortKey('Timestamp', dynamodb.KeyAttributeType.String);
      }
    }
 
-   const app = new App(process.argv);
+   const app = new cdk.App(process.argv);
 
    new MyStack(app, 'MyStack');
 
@@ -155,25 +155,25 @@ The following example creates the Aurora database **MyAuroraDatabase**.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps, Token } from '@aws-cdk/core';
-   import { InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork } from '@aws-cdk/ec2';
-   import { DatabaseCluster, DatabaseClusterEngine } from '@aws-cdk/rds';
+   import ec2 = require('@aws-cdk/aws-ec2');
+   import rds = require('@aws-cdk/aws-rds');
+   import cdk = require('@aws-cdk/cdk');
 
-   class MyStack extends Stack {
-     constructor(parent: App, name: string, props?: StackProps) {
+   class MyStack extends cdk.Stack {
+     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
        super(parent, name, props);
 
-       const vpc = new VpcNetwork(this, 'VPC');
+       const vpc = new ec2.VpcNetwork(this, 'VPC');
 
-       new DatabaseCluster(this, 'MyRdsDb', {
+       new rds.DatabaseCluster(this, 'MyRdsDb', {
          defaultDatabaseName: 'MyAuroraDatabase',
          masterUser: {
-           username: new Token('admin'),
-           password: new Token('123456')
+           username: new cdk.Token('admin'),
+           password: new cdk.Token('123456')
          },
-         engine: DatabaseClusterEngine.Aurora,
+         engine: rds.DatabaseClusterEngine.Aurora,
          instanceProps: {
-           instanceType: new InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Small),
+           instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
            vpc: vpc,
            vpcPlacement: {
              usePublicSubnets: true
@@ -183,7 +183,7 @@ The following example creates the Aurora database **MyAuroraDatabase**.
      }
    }
 
-   const app = new App(process.argv);
+   const app = new cdk.App(process.argv);
 
    new MyStack(app, 'MyStack');
 
@@ -199,21 +199,21 @@ encryption provided by |S3|.
 
 .. code-block:: js
 
-   import { App, Stack, StackProps } from '@aws-cdk/core';
-   import { Bucket, BucketEncryption } from '@aws-cdk/s3';
+   import s3 = require('@aws-cdk/aws-s3');
+   import cdk = require('@aws-cdk/cdk');
 
-   class MyStack extends Stack {
-     constructor(parent: App, name: string, props?: StackProps) {
+   class MyStack extends cdk.Stack {
+     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
        super(parent, name, props);
 
-       new Bucket(this, 'MyBucket', {
+       new s3.Bucket(this, 'MyBucket', {
          bucketName: 'MyS3Bucket',
-         encryption: BucketEncryption.KmsManaged
+         encryption: s3.BucketEncryption.KmsManaged
        });
      }
    }
 
-   const app = new App(process.argv);
+   const app = new cdk.App(process.argv);
 
    new MyStack(app, 'MyStack');
 

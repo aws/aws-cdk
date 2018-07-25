@@ -25,12 +25,12 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
+    "@types/fs-extra": "^4.0.8",
+    "@types/yargs": "^8.0.3",
     "pkglint": "^0.7.3-beta",
     "cdk-build-tools": "^0.7.3-beta"
   },
   "dependencies": {
-    "@types/fs-extra": "^4.0.8",
-    "@types/yargs": "^8.0.3",
     "fs-extra": "^4.0.2",
     "yargs": "^9.0.1"
   },

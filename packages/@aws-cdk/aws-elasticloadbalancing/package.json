@@ -1,0 +1,57 @@
+{
+  "name": "@aws-cdk/aws-elasticloadbalancing",
+  "version": "0.7.3-beta",
+  "description": "CDK Constructs for AWS ElasticLoadBalancing",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.elasticloadbalancing",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-elasticloadbalancing"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ElasticLoadBalancing"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::ElasticLoadBalancing"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "elasticloadbalancing"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "LicenseRef-LICENSE",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.3-beta",
+    "cdk-build-tools": "^0.7.3-beta",
+    "cfn2ts": "^0.7.3-beta",
+    "pkglint": "^0.7.3-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.7.3-beta"
+  }
+}

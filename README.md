@@ -11,8 +11,8 @@ for defining cloud infrastructure in code.
 
 Make sure you have the following prerequisites installed:
 
-* [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
-* [AWS CLI](https://aws.amazon.com/cli/) (only needed if you intend to download the release from S3).
+* [Node.js LTS (8.11.x)](https://nodejs.org/en/download) - required for the command-line toolkit and language bindings
+* [AWS CLI](https://aws.amazon.com/cli/) - recommended in general, but only needed if you intend to download the release from S3
 * The development toolchain of the language you intend to use (TypeScript,
   Python, Java, .NET, Ruby...)
 
@@ -35,27 +35,46 @@ To download from S3:
 aws s3 cp <s3-url> ~/aws-cdk.zip
 ```
 
-### Install to ~/.cdk
+### Extract the installation archive to ~/.cdk
 
-Once you've downloaded the bits, install them into `~/.cdk`:
+Once you've downloaded the bits, install them into `~/.cdk` and add to your `PATH`:
+
+#### Linux/MacOS (bash/zsh)
 
 ```shell
+# Unpack to ~/.cdk
 rm -fr ~/.cdk
 mkdir ~/.cdk
 unzip <path-to-zip-file> -d ~/.cdk
+
+# Add to PATH and reload profile
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc && source ~/.bashrc  # for bash
+echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc && source ~/.zshrc    # for zsh
 ```
 
-Make sure the `~/.cdk/bin` is in your `PATH`
+#### Windows (PowerShell)
 
-```shell
-# at the end of your ~/.bashrc or ~/.zshrc file
-export PATH=$PATH:$HOME/.cdk/bin
+Open an elevated PowerShell terminal ("Run as Administrator"):
+
+```powershell
+# Unpack to ~/.cdk
+Remove-Item -Force -Recurse ~/.cdk
+New-Item -Type Directory ~/.cdk
+Expand-Archive -Path <path-to-zip-file> -DestinationPath ~/.cdk
+
+# Add to PATH and reload profile
+New-Item -Force -ItemType Directory -Path (Split-Path $PROFILE)
+Add-Content -Path $PROFILE -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\node_modules\.bin"'
+Set-ExecutionPolicy Unrestricted
+& $PROFILE
 ```
+
+### Install the command-line toolkit and docs
 
 Install (or update) `aws-cdk` and `aws-cdk-docs` globally
 
 ```shell
-y-npm install --global aws-cdk aws-cdk-docs
+y-npm install --global aws-cdk aws-cdk-docs # sudo might be needed
 ```
 
 > `y-npm` is an npm wrapper which allows installing npm modules from a local repository located at `~/.cdk/y/npm`. `y-npm` will fall back to the public npm repository if a module cannot be found locally.

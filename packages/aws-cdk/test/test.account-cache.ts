@@ -1,6 +1,6 @@
-import * as fs from 'fs-extra';
+import fs = require('fs-extra');
 import { ICallbackFunction, Test } from 'nodeunit';
-import * as path from 'path';
+import path = require('path');
 import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
 
 export = {

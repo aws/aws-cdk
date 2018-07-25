@@ -1,19 +1,19 @@
-import { App, Construct, Stack, StackProps } from '@aws-cdk/core';
-import { Lambda, LambdaRuntime, LambdaS3Code } from '@aws-cdk/lambda';
-import { BucketName, BucketRef } from '@aws-cdk/s3';
+import lambda = require('@aws-cdk/aws-lambda');
+import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
 import { CognitoChatRoomPool } from './cognito-chat-room-pool';
 import { DynamoPostsTable } from './dynamodb-posts-table';
 
-class MyStack extends Stack {
-    constructor(parent: App, name: string, props?: StackProps) {
+class MyStack extends cdk.Stack {
+    constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
         new DynamoPostsTable(this, 'Posts');
 
         new CognitoChatRoomPool(this, 'UserPool');
 
-        const bucket = BucketRef.import(this, 'DougsBucket', {
-            bucketName: new BucketName('dougs-chat-app')
+        const bucket = s3.BucketRef.import(this, 'DougsBucket', {
+            bucketName: new s3.BucketName('dougs-chat-app')
         });
 
         new ChatAppFunction(this, 'StartAddBucket', {
@@ -69,24 +69,24 @@ class MyStack extends Stack {
 }
 
 interface ChatAppFuncProps {
-    bucket: BucketRef;
+    bucket: s3.BucketRef;
     zipFile: string;
 }
 
 /*
  * Extend Function as all of the Chat app functions have these common props.
  */
-class ChatAppFunction extends Lambda {
-    constructor(parent: Construct, name: string, props: ChatAppFuncProps) {
+class ChatAppFunction extends lambda.Lambda {
+    constructor(parent: cdk.Construct, name: string, props: ChatAppFuncProps) {
         super(parent, name, {
-            code: new LambdaS3Code(props.bucket, props.zipFile),
-            runtime: LambdaRuntime.NodeJS610,
+            code: new lambda.LambdaS3Code(props.bucket, props.zipFile),
+            runtime: lambda.LambdaRuntime.NodeJS610,
             handler: 'index.handler'
         });
     }
 }
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
 // Add the stack to the app
 // (apps can host many stacks, for example, one for each region)

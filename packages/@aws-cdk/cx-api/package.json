@@ -6,9 +6,17 @@
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "names": {
-      "java": "com.amazonaws.cdk.cxapi",
-      "dotnet": "Amazon.Cdk.CxApi"
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.cxapi",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "cxapi"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CXAPI"
+      }
     }
   },
   "scripts": {
