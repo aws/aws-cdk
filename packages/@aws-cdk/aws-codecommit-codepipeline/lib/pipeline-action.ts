@@ -1,6 +1,6 @@
+import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
-import { RepositoryRef } from './repository';
 
 /**
  * Construction properties of the {@link PipelineSource CodeCommit source CodePipeline Action}.
@@ -15,7 +15,7 @@ export interface PipelineSourceProps {
     /**
      * The CodeCommit repository.
      */
-    repository: RepositoryRef;
+    repository: codecommit.RepositoryRef;
 
     /**
      * @default 'master'

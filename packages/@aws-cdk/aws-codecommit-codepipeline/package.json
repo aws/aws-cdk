@@ -1,21 +1,21 @@
 {
-  "name": "@aws-cdk/aws-codecommit",
+  "name": "@aws-cdk/aws-codecommit-codepipeline",
   "version": "0.7.3-beta",
-  "description": "CDK Constructs for AWS CodeCommit",
+  "description": "AWS CodePipline Actions for AWS CodeCommit",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codecommit",
+        "package": "com.amazonaws.cdk.aws.codecommitcodepipeline",
         "maven": {
           "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codecommit"
+          "artifactId": "aws-codecommitcodepipeline"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeCommit"
+        "namespace": "Amazon.CDK.AWS.CodeCommitCodePipeline"
       }
     }
   },
@@ -31,18 +31,16 @@
     "integ": "cdk-integ",
     "pkglint": "pkglint -f"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::CodeCommit"
-  },
   "nyc": {
-    "lines": 30,
-    "branches": 48
+    "lines": 60,
+    "branches": 30
   },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "codecommit"
+    "codecommit",
+    "codepipeline",
+    "constructs"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -50,17 +48,14 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/aws-sns": "^0.7.3-beta",
     "@aws-cdk/assert": "^0.7.3-beta",
-    "aws-sdk": "^2.259.1",
     "cdk-build-tools": "^0.7.3-beta",
     "cdk-integ-tools": "^0.7.3-beta",
-    "cfn2ts": "^0.7.3-beta",
     "pkglint": "^0.7.3-beta"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^0.7.3-beta",
-    "@aws-cdk/aws-iam": "^0.7.3-beta",
+    "@aws-cdk/aws-codecommit": "^0.7.3-beta",
+    "@aws-cdk/aws-codepipeline": "^0.7.3-beta",
     "@aws-cdk/cdk": "^0.7.3-beta"
   }
 }
