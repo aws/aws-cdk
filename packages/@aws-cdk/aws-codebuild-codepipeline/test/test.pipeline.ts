@@ -1,11 +1,13 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
+import codecommitPipeline = require('@aws-cdk/aws-codecommit-codepipeline');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { BuildProject, CodePipelineSource, PipelineBuildAction } from '../lib';
+import { PipelineBuildAction } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -18,13 +20,15 @@ export = {
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
         const sourceStage = new codepipeline.Stage(pipeline, 'source');
-        const source = new codecommit.PipelineSource(sourceStage, 'source', {
+        const source = new codecommitPipeline.PipelineSource(sourceStage, 'source', {
             artifactName: 'SourceArtifact',
             repository: repo,
         });
 
         const buildStage = new codepipeline.Stage(pipeline, 'build');
-        const project = new BuildProject(stack, 'MyBuildProject', { source: new CodePipelineSource() });
+        const project = new codebuild.BuildProject(stack, 'MyBuildProject', {
+           source: new codebuild.CodePipelineSource()
+        });
 
         new PipelineBuildAction(buildStage, 'build', {
             project,

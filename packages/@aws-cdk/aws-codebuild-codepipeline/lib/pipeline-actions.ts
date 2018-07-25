@@ -1,6 +1,6 @@
+import codebuild = require('@aws-cdk/aws-codebuild');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
-import { BuildProjectRef } from './project';
 
 /**
  * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
@@ -19,7 +19,7 @@ export interface PipelineBuildActionProps {
     /**
      * The build project
      */
-    project: BuildProjectRef;
+    project: codebuild.BuildProjectRef;
 }
 
 /**
