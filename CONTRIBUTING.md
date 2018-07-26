@@ -83,17 +83,23 @@ This will get you into an interactive docker shell. You can then run
    All external dependencies will be installed and internal deps will be
    cross-linked.
 
-#### buildup
+### buildup/builddown
 
-If you only want to work on a subset of the repo, you can use the `buildup` script to
-build only a single package and all it's dependencies.
+If you only want to work on a subset of the repo, you can use `scripts/buildup` and
+`scripts/builddown` to build a package and all it's dependencies (up) or 
+dependents (down).
 
-1. Run `./install.sh` from the root to make sure all modules are installed.
-2. It is useful to add `./scripts` to your PATH.
+Make sure to run `./install.sh` from the root to make sure all modules are installed.
+
+It is useful to add the `./scripts` directory to your PATH.
 
 Then, change the working directory to any package in the repo and run:
 
-    buildup
+    buildup # will also build all dependencies
+
+Or:
+
+    builddown # will also build all consumers
 
 ### Development Iteration
 
