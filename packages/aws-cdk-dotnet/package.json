@@ -1,6 +1,6 @@
 {
     "name": "aws-cdk-dotnet",
-    "version": "0.7.3-beta",
+    "version": "0.7.4-beta",
     "description": "The AWS CDK for .NET",
     "private": true,
     "main": "index.js",
@@ -21,8 +21,8 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-      "aws-cdk-all": "^0.7.3-beta",
-      "pkgtools": "^0.7.3-beta"
+      "aws-cdk-all": "^0.7.4-beta",
+      "pkgtools": "^0.7.4-beta"
     },
     "keywords": [
       "aws",
