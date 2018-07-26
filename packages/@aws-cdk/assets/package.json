@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets",
-  "version": "0.7.3-beta",
+  "version": "0.7.4-beta",
   "description": "Integration of CDK apps with local assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -43,16 +43,16 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.3-beta",
-    "aws-cdk": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta",
-    "cdk-integ-tools": "^0.7.3-beta"
+    "@aws-cdk/assert": "^0.7.4-beta",
+    "aws-cdk": "^0.7.4-beta",
+    "cdk-build-tools": "^0.7.4-beta",
+    "cdk-integ-tools": "^0.7.4-beta",
+    "pkglint": "^0.7.4-beta"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.7.3-beta",
-    "@aws-cdk/aws-s3": "^0.7.3-beta",
-    "@aws-cdk/cdk": "^0.7.3-beta",
-    "@aws-cdk/cx-api": "^0.7.3-beta"
+    "@aws-cdk/aws-iam": "^0.7.4-beta",
+    "@aws-cdk/aws-s3": "^0.7.4-beta",
+    "@aws-cdk/cdk": "^0.7.4-beta",
+    "@aws-cdk/cx-api": "^0.7.4-beta"
   }
 }

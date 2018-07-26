@@ -1,14 +1,137 @@
-## [UNRELEASED]
+[@rix0rrr]:      https://github.com/rix0rrr
+[@sam-goodwin]:  https://github.com/sam-goodwin
+[@RomainMuller]: https://github.com/RomainMuller
+[@eladb]:        https://github.com/eladb
+[@skinny85]:     https://github.com/skinny85
+[@moofish32]:    https://github.com/moofish32
+[@mpiroc]:       https://github.com/mpiroc
 
-* CloudWatch: add `Metric.grantPutMetricData()` to give `PutMetricData` permissions to IAM
-   identities. ([#258])
-* [FIXED] `cdk docs` works but a message __Unknown command: docs__ is printed ([#256])
-* Lambda (feature): add `role` parameter, making it possible to specify an
-  externally defined execution role.
-* VpcNetwork (BREAKING): add the ability customize subnet configurations ([#250]). Subnet allocation was changed to improve IP space efficiency but this forces `VpcNetwork` instances to be replaced
+## 0.7.4 - 2018-07-26
 
-[#258]: https://github.com/awslabs/aws-cdk/pull/258
-[#250]: https://github.com/awslabs/aws-cdk/pull/250
+### Highlights
+
+* A huge shout-out to our first external contributor, [@moofish32], for many
+  valuable improvements to the EC2 VPC construct.
+* The `AWS::CDK::Metadata` resource is injected to templates to analyze usage
+  and notify about deprecated modules to improve security.
+* Added capability for bundling local assets (files/directories) and referencing
+  them in CDK constructs. This allows, for example, to define Lambda functions
+  with runtime code in the same project and deploy them using the toolkit.
+* Reorganization of CodePipeline actions into separate libraries.
+* A new library for CloudWatch Logs.
+
+### AWS Construct Library
+
+* _**BREAKING**_: All AWS libraries renamed from `@aws-cdk/xxx` to
+  `@aws-cdk/aws-xxx` in order to avoid conflicts with framework modules
+  ([@RomainMuller] in [#384]).
+* _**BREAKING**_: The __@aws-cdk/resources__ module has been deprecated.
+  Low-level CloudFormation resources (e.g. `BucketResource`) are now integrated
+  into their respective library under the `cloudformation` namespace to improves
+  discoverability and organization of the layers ([@RomainMuller] in [#264]).
+
+### Framework
+
+* Introducing __CDK Assets__ which are local files or directories that can be
+  "bundled" into CDK constructs and apps. During deployment assets are packaged
+  (i.e. zipped), uploaded to S3 and their deployed location can be referenced in
+  CDK apps via the `s3BucketName` and `s3ObjectKey` and `s3Url` and read
+  permissions can be granted via `asset.grantRead(principal)` ([@eladb] in
+  [#371])
+* Return dummy values instead of fail synthesis if environmental context (AZs,
+  SSM parameters) doesn't exist in order to support unit tests. When
+  synthesizing through the toolkit, an error will be displayed if the context
+  cannot be found ([@eladb] in [#227])
+* Added `construct.addError(msg)`, `addWarning(msg)` and `addInfo(msg)` which
+  will emit messages during synthesis via the toolkit. Errors will fail
+  synthesis (unless `--ignore-errors` is used), warnings will be displayed and
+  will fail synthesis if `--strict` is used ([@eladb] in [#227])
+
+### Command Line Toolkit
+
+* The toolkit now injects a special CloudFormation resource `AWS::CDK::Metadata`
+  to all synthesized templates which includes library versions used in the app.
+  This allows the CDK team to analyze usage and notify users if they use
+  deprecated versions. To opt-out, use the switch `--no-version-reporting` or
+  set `version-reporting` to `false` in your `cdk.json` ([@RomainMuller] in
+  [#221]).
+* __Bug fix__: Fixed "unknown command: docs" ([@RomainMuller] in [#256])
+* Changed output of `cdk list` to just print stack names (scripting-compatible).
+  Use `cdk ls -l` to print full info ([@eladb] in [#380])
+
+### AWS EC2
+
+* _**BREAKING**_: Add the ability customize subnet configurations.
+  Subnet allocation was changed to improve IP space efficiency. `VpcNetwork`
+  instances will need to be replaced ([@moofish32] in [#250])
+* ***BREAKING***: Renamed `Fleet` to `AutoScalingGroup` to align with service
+  terminology ([@RomainMuller] in [#318])
+
+### AWS Lambda
+
+* Supports runtime code via local files or directories through assets ([@eladb]
+  in [#405])
+* Support custom execution role in props ([@rix0rrr] in [#205])
+* Add static `metricAllConcurrentExecutions` and
+  `metricAllUnreservedConcurrentExecutions` which returns account/region-level
+  metrics for all functions ([@rix0rrr] in [#379])
+
+### AWS CloudWatch
+
+* Added `Metric.grantMetricPutData` which grants cloudwatch:PutData
+  to IAM principals ([@rix0rrr] in [#214])
+* __Bug fix__: Allow text included in dashboard widgets to include characters
+  that require JSON-escaping ([@eladb] in [#406]).
+
+### AWS CloudWatch Logs (new)
+
+* A new construct library for AWS CloudWatch Logs with support for log groups,
+  metric filters, and subscription filters ([@rix0rrr] in [#307]).
+
+### AWS S3
+
+* Added `bucketUrl` and `urlForObject(key)` to `BucketRef` ([@eladb] in [#370])
+
+### AWS CodeBuild
+
+* Add CloudWatch metrics to `BuildProject` ([@eladb] in [#407])
+
+### AWS CodePipeline
+
+* _**BREAKING**_: Moved CodeCommit and CodeBuild and LambdaInvoke actions from
+  the CodePipeline library to `@aws-cdk/aws-xxx-codepipline` modules
+  ([@skinny85] in [#401] and [#402]).
+* Added attributes `pipelineName` and `pipelineVersion` ([@eladb] in [#408])
+
+### Docs
+
+* __fix__: add instructions and fix Windows setup ([@mpiroc] in [#320])
+* __fix__: show emphasis of modified code in code snippets ([@eladb] in [#396])
+
+[#256]: https://github.com/awslabs/aws-cdk/issues/256
+[#214]: https://github.com/awslabs/aws-cdk/issues/214
+[#205]: https://github.com/awslabs/aws-cdk/issues/205
+[#318]: https://github.com/awslabs/aws-cdk/issues/318
+[#264]: https://github.com/awslabs/aws-cdk/issues/264
+[#307]: https://github.com/awslabs/aws-cdk/issues/307
+[#238]: https://github.com/awslabs/aws-cdk/issues/238
+[#370]: https://github.com/awslabs/aws-cdk/issues/370
+[#371]: https://github.com/awslabs/aws-cdk/issues/371
+[#227]: https://github.com/awslabs/aws-cdk/issues/227
+[#320]: https://github.com/awslabs/aws-cdk/issues/320
+[#379]: https://github.com/awslabs/aws-cdk/issues/379
+[#384]: https://github.com/awslabs/aws-cdk/issues/384
+[#250]: https://github.com/awslabs/aws-cdk/issues/250
+[#405]: https://github.com/awslabs/aws-cdk/issues/405
+[#380]: https://github.com/awslabs/aws-cdk/issues/380
+[#408]: https://github.com/awslabs/aws-cdk/issues/408
+[#406]: https://github.com/awslabs/aws-cdk/issues/406
+[#401]: https://github.com/awslabs/aws-cdk/issues/401
+[#402]: https://github.com/awslabs/aws-cdk/issues/402
+[#258]: https://github.com/awslabs/aws-cdk/issues/258
+[#396]: https://github.com/awslabs/aws-cdk/issues/396
+[#250]: https://github.com/awslabs/aws-cdk/issues/250
+[#250]: https://github.com/awslabs/aws-cdk/issues/409
 
 ## 0.7.3 - 2018-07-09
 
@@ -85,7 +208,6 @@
 [#245]: https://github.com/awslabs/aws-cdk/pull/245
 [awslabs/jsii#43]: https://github.com/awslabs/jsii/pull/43
 
-[@rix0rrr]: https://github.com/rix0rrr
 
 ## 0.7.2 - 2018-06-19
 
@@ -107,10 +229,6 @@
 
 [CloudFormation resource specification]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
 [AWS Kinesis Data Streams]: https://aws.amazon.com/kinesis/data-streams
-
-[@sam-goodwin]:  https://github.com/sam-goodwin
-[@RomainMuller]: https://github.com/RomainMuller
-[@eladb]:        https://github.com/eladb
 
 [#86]:  https://github.com/awslabs/aws-cdk/pull/86
 [#128]: https://github.com/awslabs/aws-cdk/pull/128
