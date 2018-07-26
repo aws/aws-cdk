@@ -11,21 +11,24 @@
 ### Highlights
 
 * A huge shout-out to our first external contributor, [@moofish32], for many
-  valuable improvements to the EC2 VPC construct.
+  valuable improvements to the EC2 VPC construct ([@moofish32] in [#250]).
 * The `AWS::CDK::Metadata` resource is injected to templates to analyze usage
-  and notify about deprecated modules to improve security.
+  and notify about deprecated modules to improve security. To opt-out, use the
+  switch `--no-version-reporting` or set `version-reporting` to `false` in your
+  `cdk.json` ([@RomainMuller] in [#221]).
 * Added capability for bundling local assets (files/directories) and referencing
   them in CDK constructs. This allows, for example, to define Lambda functions
-  with runtime code in the same project and deploy them using the toolkit.
-* Reorganization of CodePipeline actions into separate libraries.
-* A new library for CloudWatch Logs.
+  with runtime code in the same project and deploy them using the toolkit
+  ([@eladb] in [#371]).
+* Reorganization of CodePipeline actions into separate libraries ([@skinny85] in [#401] and [#402]).
+* A new library for CloudWatch Logs ([@rix0rrr] in [#307]).
 
 ### AWS Construct Library
 
 * _**BREAKING**_: All AWS libraries renamed from `@aws-cdk/xxx` to
   `@aws-cdk/aws-xxx` in order to avoid conflicts with framework modules
   ([@RomainMuller] in [#384]).
-* _**BREAKING**_: The __@aws-cdk/resources__ module has been deprecated.
+* _**BREAKING**_: The __@aws-cdk/resources__ module has been removed.
   Low-level CloudFormation resources (e.g. `BucketResource`) are now integrated
   into their respective library under the `cloudformation` namespace to improves
   discoverability and organization of the layers ([@RomainMuller] in [#264]).
@@ -52,9 +55,7 @@
 * The toolkit now injects a special CloudFormation resource `AWS::CDK::Metadata`
   to all synthesized templates which includes library versions used in the app.
   This allows the CDK team to analyze usage and notify users if they use
-  deprecated versions. To opt-out, use the switch `--no-version-reporting` or
-  set `version-reporting` to `false` in your `cdk.json` ([@RomainMuller] in
-  [#221]).
+  deprecated versions ([@RomainMuller] in [#221]).
 * __Bug fix__: Fixed "unknown command: docs" ([@RomainMuller] in [#256])
 * Changed output of `cdk list` to just print stack names (scripting-compatible).
   Use `cdk ls -l` to print full info ([@eladb] in [#380])
@@ -64,7 +65,7 @@
 * _**BREAKING**_: Add the ability customize subnet configurations.
   Subnet allocation was changed to improve IP space efficiency. `VpcNetwork`
   instances will need to be replaced ([@moofish32] in [#250])
-* ***BREAKING***: Renamed `Fleet` to `AutoScalingGroup` to align with service
+* _**BREAKING**_: Renamed `Fleet` to `AutoScalingGroup` to align with service
   terminology ([@RomainMuller] in [#318])
 
 ### AWS Lambda
