@@ -1,0 +1,18 @@
+#!/bin/bash
+set -euo pipefail
+
+lerna_root() {
+    if [ -f $1/lerna.json ]; then
+        echo $(cd $1 && pwd)
+        return
+    fi
+
+    lerna_root $1/..
+}
+
+export PATH=$(lerna_root .)/node_modules/.bin:$PATH
+export PATH=$(cd $(dirname $0) && pwd):$PATH # add script directory to PATH
+
+for dep in $(localdeps); do
+    (cd ${dep} && npm run build)
+done
