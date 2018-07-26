@@ -27,6 +27,14 @@ version matches the version of this guide (|cdk-version|):
 
     cdk --version
 
+.. note::
+
+    This guide walks you through the process of creating a CDK project
+    step-by-step as an opportunity to explain some of the reasoning and details
+    behind the project structure and tools. It is also possible to use the
+    :code:`cdk init` command to get started quickly from a project
+    template in supported languages.
+
 Initialize the project
 ----------------------
 
