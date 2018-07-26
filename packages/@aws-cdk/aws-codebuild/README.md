@@ -30,7 +30,7 @@ new BuildProject(this, 'MyProject', {
 
 ### Using BuildProject as an event target
 
-The `BuildProject` construct implements the `IEventRuleTarget` interface. This means that it can be
+The `BuildProject` construct implements the `IEventRuleTargetProps` interface. This means that it can be
 used as a target for event rules:
 
 ```ts

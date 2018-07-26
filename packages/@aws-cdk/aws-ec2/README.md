@@ -324,8 +324,8 @@ For example:
 
 ```ts
 // Port implicit in listener
-listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
+(listener.connections as ec2.DefaultConnections).allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
-fleet.connections.allowToDefaultPort(rdsDatabase, 'Fleet can access database');
+(fleet.connections as ec2.DefaultConnections).allowToDefaultPort(rdsDatabase, 'Fleet can access database');
 ```

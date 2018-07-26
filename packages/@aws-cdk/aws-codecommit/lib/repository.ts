@@ -57,7 +57,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * Defines a CloudWatch event rule which triggers for repository events. Use
      * `rule.addEventPattern(pattern)` to specify a filter.
      */
-    public onEvent(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onEvent(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = new events.EventRule(this, name, options);
         rule.addEventPattern({
             source: [ 'aws.codecommit' ],
@@ -71,7 +71,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * Defines a CloudWatch event rule which triggers when a "CodeCommit
      * Repository State Change" event occurs.
      */
-    public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onStateChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onEvent(name, target, options);
         rule.addEventPattern({
             detailType: [ 'CodeCommit Repository State Change' ],
@@ -83,7 +83,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * Defines a CloudWatch event rule which triggers when a reference is
      * created (i.e. a new brach/tag is created) to the repository.
      */
-    public onReferenceCreated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onReferenceCreated(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({ detail: { event: [ 'referenceCreated' ] } });
         return rule;
@@ -93,7 +93,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * Defines a CloudWatch event rule which triggers when a reference is
      * updated (i.e. a commit is pushed to an existig branch) from the repository.
      */
-    public onReferenceUpdated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onReferenceUpdated(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({ detail: { event: [ 'referenceUpdated' ] } });
         return rule;
@@ -103,7 +103,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * Defines a CloudWatch event rule which triggers when a reference is
      * delete (i.e. a branch/tag is deleted) from the repository.
      */
-    public onReferenceDeleted(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onReferenceDeleted(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onStateChange(name, target, options);
         rule.addEventPattern({ detail: { event: [ 'referenceDeleted' ] } });
         return rule;
@@ -112,7 +112,7 @@ export abstract class RepositoryRef extends cdk.Construct {
     /**
      * Defines a CloudWatch event rule which triggers when a pull request state is changed.
      */
-    public onPullRequestStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onPullRequestStateChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onEvent(name, target, options);
         rule.addEventPattern({ detailType: [ 'CodeCommit Pull Request State Change' ] });
         return rule;
@@ -121,7 +121,7 @@ export abstract class RepositoryRef extends cdk.Construct {
     /**
      * Defines a CloudWatch event rule which triggers when a comment is made on a pull request.
      */
-    public onCommentOnPullRequest(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onCommentOnPullRequest(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onEvent(name, target, options);
         rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Pull Request' ] });
         return rule;
@@ -130,7 +130,7 @@ export abstract class RepositoryRef extends cdk.Construct {
     /**
      * Defines a CloudWatch event rule which triggers when a comment is made on a commit.
      */
-    public onCommentOnCommit(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
+    public onCommentOnCommit(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps) {
         const rule = this.onEvent(name, target, options);
         rule.addEventPattern({ detailType: [ 'CodeCommit Comment on Commit' ] });
         return rule;
@@ -141,7 +141,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      * @param target The target of the event
      * @param branch The branch to monitor. Defaults to all branches.
      */
-    public onCommit(name: string, target?: events.IEventRuleTarget, branch?: string) {
+    public onCommit(name: string, target?: events.IEventRuleTargetProps, branch?: string) {
         const rule = this.onReferenceUpdated(name, target);
         if (branch) {
             rule.addEventPattern({ detail: { referenceName: [ branch ] }});
