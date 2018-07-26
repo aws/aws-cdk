@@ -1,6 +1,6 @@
 {
   "name": "cdk-examples-typescript",
-  "version": "0.7.3-beta",
+  "version": "0.7.4-beta",
   "description": "A bunch of CDK examples",
   "private": true,
   "scripts": {
@@ -17,24 +17,24 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "aws-cdk": "^0.7.3-beta",
-    "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta"
+    "aws-cdk": "^0.7.4-beta",
+    "cdk-build-tools": "^0.7.4-beta",
+    "pkglint": "^0.7.4-beta"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.7.3-beta",
-    "@aws-cdk/aws-cognito": "^0.7.3-beta",
-    "@aws-cdk/aws-dynamodb": "^0.7.3-beta",
-    "@aws-cdk/aws-ec2": "^0.7.3-beta",
-    "@aws-cdk/aws-iam": "^0.7.3-beta",
-    "@aws-cdk/aws-lambda": "^0.7.3-beta",
-    "@aws-cdk/aws-neptune": "^0.7.3-beta",
-    "@aws-cdk/aws-rds": "^0.7.3-beta",
-    "@aws-cdk/aws-s3": "^0.7.3-beta",
-    "@aws-cdk/aws-sns": "^0.7.3-beta",
-    "@aws-cdk/aws-sqs": "^0.7.3-beta",
-    "@aws-cdk/cdk": "^0.7.3-beta",
-    "@aws-cdk/rtv": "^0.7.3-beta"
+    "@aws-cdk/aws-cloudformation": "^0.7.4-beta",
+    "@aws-cdk/aws-cognito": "^0.7.4-beta",
+    "@aws-cdk/aws-dynamodb": "^0.7.4-beta",
+    "@aws-cdk/aws-ec2": "^0.7.4-beta",
+    "@aws-cdk/aws-iam": "^0.7.4-beta",
+    "@aws-cdk/aws-lambda": "^0.7.4-beta",
+    "@aws-cdk/aws-neptune": "^0.7.4-beta",
+    "@aws-cdk/aws-rds": "^0.7.4-beta",
+    "@aws-cdk/aws-s3": "^0.7.4-beta",
+    "@aws-cdk/aws-sns": "^0.7.4-beta",
+    "@aws-cdk/aws-sqs": "^0.7.4-beta",
+    "@aws-cdk/cdk": "^0.7.4-beta",
+    "@aws-cdk/rtv": "^0.7.4-beta"
   },
   "repository": {
     "url": "git://github.com/awslabs/aws-cdk",

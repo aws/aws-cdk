@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/util",
-  "version": "0.7.3-beta",
+  "version": "0.7.4-beta",
   "description": "Utility routines used for implementing CDK libraries",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -27,8 +27,7 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta",
-    "cdk-build-tools": "^0.7.3-beta"
-  },
-  "dependencies": {}
+    "cdk-build-tools": "^0.7.4-beta",
+    "pkglint": "^0.7.4-beta"
+  }
 }

@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "0.7.3-beta",
+  "version": "0.7.4-beta",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "index.js",
   "repository": {
@@ -24,12 +24,12 @@
   },
   "license": "LicenseRef-LICENSE",
   "devDependencies": {
-    "pkglint": "^0.7.3-beta"
+    "pkglint": "^0.7.4-beta"
   },
   "dependencies": {
     "@types/yargs": "^8.0.3",
-    "yargs": "^9.0.1",
-    "merkle-build": "^0.7.3-beta"
+    "merkle-build": "^0.7.4-beta",
+    "yargs": "^9.0.1"
   },
   "keywords": [
     "aws",
