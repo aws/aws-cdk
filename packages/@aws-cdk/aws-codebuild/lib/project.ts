@@ -254,7 +254,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Allows using build projects as event rule targets.
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
