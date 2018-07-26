@@ -95,9 +95,6 @@ Then, change the working directory to any package in the repo and run:
 
     buildup
 
-This will traverse the dep tree and build all dependencies in topological order.
-It uses the `scripts/localdeps` script.
-
 ### Development Iteration
 
 After you've bootstrapped the repo, you would probably want to work on individual packages.
