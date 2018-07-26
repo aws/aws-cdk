@@ -147,7 +147,7 @@ export = {
         test.deepEqual(
             JSON.parse(JSON.stringify(
                 new asl.ParallelState({
-                    branches: [
+                    branches: new asl.Branches(
                         new asl.Branch({
                             startAt: "LookupAddress",
                             states: new asl.States({
@@ -166,7 +166,7 @@ export = {
                                 })
                             })
                         })
-                    ],
+                    ),
                     next: "NextState"
                 })
             )),
