@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
+scope=$(${scriptdir}/current-scope)
+exec lerna run build --scope ${scope} --include-filtered-dependents
