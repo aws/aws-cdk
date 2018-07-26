@@ -10,9 +10,9 @@
 
 .. _cloudformation:
 
-###########################
-Working with CloudFormation
-###########################
+############################
+The AWS CloudFormation Layer
+############################
 
 AWS construct libraries (such as :py:mod:`@aws-cdk/aws-s3`) include constructs
 that offer rich APIs for defining AWS infrastructure. For example, the
@@ -23,14 +23,14 @@ Topics, etc.
 Under the hood, these constructs are implemented using CloudFormation resources,
 which are available under the **cloudformation** namespace of each library. For
 example, the :py:class:`@aws-cdk/aws-s3.Bucket` construct uses the
-:py:class:`@aws-cdk/aws-s3.cloudformation/BucketResource` resource (as well as
+:py:class:`@aws-cdk/aws-s3.cloudformation.BucketResource` resource (as well as
 other resources, depending on what bucket APIs are used).
 
 .. important::
 
   Generally, when building CDK apps, you shouldn't need to interact
   CloudFormation directly. However, there might be advanced use cases and
-  migration scenarios where this might be desirable. We are also aware that
+  migration scenarios where this might be required. We are also aware that
   there might be gaps in capabilities in the AWS Construct Library over time.
 
 CloudFormation Resources
