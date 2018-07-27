@@ -46,7 +46,7 @@ export interface EventRuleTargetProps {
 /**
  * An abstract target for EventRules.
  */
-export interface IEventRuleTargetProps {
+export interface IEventRuleTarget {
     /**
      * Returns the rule target specification.
      * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
