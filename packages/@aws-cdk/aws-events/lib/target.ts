@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './events.generated';
 
-export interface EventRuleTarget {
+export interface EventRuleTargetProps {
     /**
      * A unique, user-defined identifier for the target. Acceptable values
      * include alphanumeric characters, periods (.), hyphens (-), and
@@ -46,10 +46,10 @@ export interface EventRuleTarget {
 /**
  * An abstract target for EventRules.
  */
-export interface IEventRuleTargetProps {
+export interface IEventRuleTarget {
     /**
      * Returns the rule target specification.
      * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
      */
-    readonly eventRuleTarget: EventRuleTarget;
+    readonly eventRuleTarget: EventRuleTargetProps;
 }

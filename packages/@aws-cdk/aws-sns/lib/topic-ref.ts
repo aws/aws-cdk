@@ -16,7 +16,7 @@ export class TopicArn extends cdk.Arn { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTargetProps, cloudwatch.IAlarmAction {
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction {
     /**
      * Import a Topic defined elsewhere
      */
@@ -206,7 +206,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * Returns a RuleTarget that can be used to trigger this SNS topic as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTargetProps {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addAction('sns:Publish')

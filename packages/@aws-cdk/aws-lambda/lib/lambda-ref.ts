@@ -23,7 +23,7 @@ export interface LambdaRefProps {
     role?: iam.Role;
 }
 
-export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTargetProps, logs.ILogSubscriptionDestination {
+export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTarget, logs.ILogSubscriptionDestination {
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -177,7 +177,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTargetProps {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addPermission('InvokedByCloudWatch', {
                 action: 'lambda:InvokeFunction',

@@ -59,7 +59,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends cdk.Construct implements events.IEventRuleTargetProps {
+export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     /**
      * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
      * a more specific IAM role.
@@ -148,7 +148,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTargetPr
      *      rule.addTarget(pipeline);
      *
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public get eventRuleTarget(): events.EventRuleTargetProps {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one
@@ -184,7 +184,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTargetPr
      * more than a single onStateChange event, you will need to explicitly
      * specify a name.
      */
-    public onStateChange(name: string, target?: events.IEventRuleTargetProps, options?: events.EventRuleProps): events.EventRule {
+    public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps): events.EventRule {
         const rule = new events.EventRule(this, name, options);
         rule.addTarget(target);
         rule.addEventPattern({

@@ -83,6 +83,24 @@ This will get you into an interactive docker shell. You can then run
    All external dependencies will be installed and internal deps will be
    cross-linked.
 
+### buildup/builddown
+
+If you only want to work on a subset of the repo, you can use `scripts/buildup` and
+`scripts/builddown` to build a package and all it's dependencies (up) or 
+dependents (down).
+
+Make sure to run `./install.sh` from the root to make sure all modules are installed.
+
+It is useful to add the `./scripts` directory to your PATH.
+
+Then, change the working directory to any package in the repo and run:
+
+    buildup # will also build all dependencies
+
+Or:
+
+    builddown # will also build all consumers
+
 ### Development Iteration
 
 After you've bootstrapped the repo, you would probably want to work on individual packages.
@@ -211,7 +229,7 @@ Guidelines:
 You can use `find-cycles` to print a list of internal dependency cycles:
 
 ```shell
-$ tools/find-cycles/find-cycles.sh
+$ scripts/find-cycles.sh
 Cycle: @aws-cdk/aws-iam => @aws-cdk/assert => aws-cdk => @aws-cdk/aws-s3 => @aws-cdk/aws-kms => @aws-cdk/aws-iam
 Cycle: @aws-cdk/assert => aws-cdk => @aws-cdk/aws-s3 => @aws-cdk/aws-kms => @aws-cdk/assert
 Cycle: @aws-cdk/aws-iam => @aws-cdk/assert => aws-cdk => @aws-cdk/aws-s3 => @aws-cdk/aws-iam
