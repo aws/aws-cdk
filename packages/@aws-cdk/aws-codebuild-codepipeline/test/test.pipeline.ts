@@ -30,7 +30,7 @@ export = {
            source: new codebuild.CodePipelineSource()
         });
 
-        new codebuildPipeline.PipelineBuildAction(buildStage, 'build', {
+        new codebuildPipeline.BuildAction(buildStage, 'build', {
             project,
             inputArtifact: source.artifact
         });

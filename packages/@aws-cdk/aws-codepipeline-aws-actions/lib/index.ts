@@ -1,8 +1,8 @@
 import codebuild_ = require('@aws-cdk/aws-codebuild-codepipeline');
 
 export namespace codebuild {
-    export import PipelineBuildActionProps = codebuild_.PipelineBuildActionProps;
-    export import PipelineBuildAction = codebuild_.PipelineBuildAction;
+    export import BuildActionProps = codebuild_.BuildActionProps;
+    export import BuildAction = codebuild_.BuildAction;
 }
 
 import codecommit_ = require('@aws-cdk/aws-codecommit-codepipeline');

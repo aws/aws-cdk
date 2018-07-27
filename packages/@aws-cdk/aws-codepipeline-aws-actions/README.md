@@ -17,7 +17,7 @@ new codepipelineAwsActions.codecommit.PipelineSource(sourceStage, 'Source', {
 });
 
 const buildStage = new codepipeline.Stage(pipeline, 'Build');
-new codepipelineAwsActions.codebuild.PipelineBuildAction(buildStage, 'Build', {
+new codepipelineAwsActions.codebuild.BuildAction(buildStage, 'Build', {
     // ...
 });
 ```

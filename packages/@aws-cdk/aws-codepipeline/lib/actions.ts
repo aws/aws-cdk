@@ -88,7 +88,7 @@ export interface ActionProps {
 /**
  * Low level class for generically creating pipeline actions.
  * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSource} or
- * {@link codebuild.PipelineBuildAction}.
+ * {@link codebuild.BuildAction}.
  */
 export abstract class Action extends cdk.Construct {
     /**
@@ -408,7 +408,7 @@ export interface BuildActionProps {
 
 /**
  * Low level class for build actions.
- * It is recommended that concrete types are used instead, such as {@link codebuild.PipelineBuildAction}.
+ * It is recommended that concrete types are used instead, such as {@link codebuild.BuildAction}.
  */
 export abstract class BuildAction extends Action {
     public readonly artifact?: Artifact;

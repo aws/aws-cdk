@@ -19,7 +19,7 @@ const repository = new codecommit.Repository(stack, 'CodeCommitRepo', { reposito
 const project = new codebuildPipeline.PipelineProject(stack, 'BuildProject');
 
 const sourceAction = new codecommitPipeline.PipelineSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
-new codebuildPipeline.PipelineBuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
+new codebuildPipeline.BuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
 
 const topic = new sns.Topic(stack, 'MyTopic');
 topic.subscribeEmail('benisrae', 'benisrae@amazon.com');
