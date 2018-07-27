@@ -1,17 +1,13 @@
-import { Token, tokenAwareJsonify, istoken } from "@aws-cdk/core";
+import { istoken, Token, tokenAwareJsonify } from "@aws-cdk/cdk";
 import { isString } from "util";
-import { requireOneOf } from "./util";
+import { requireNextOrEnd, requireOneOf } from "./util";
 
 /**
  * Models the Amazon States Language
  *
  * {@link https://states-language.net/spec.html}
  */
-export namespace amazon_states_language {
-    function requireNextOrEnd(props: any) {
-        requireOneOf(props, ['next', 'end']);
-    }
-
+export namespace AmazonStatesLanguage {
     /**
      * Converts all keys to PascalCase when serializing to JSON.
      */
@@ -67,8 +63,11 @@ export namespace amazon_states_language {
             if (props.timeoutSeconds !== undefined && !istoken(props.timeoutSeconds) && !Number.isInteger(props.timeoutSeconds)) {
                 throw new Error("timeoutSeconds must be an integer");
             }
+            if (isString(props.startAt) && !props.states.hasState(props.startAt)) {
+                throw new Error(`Specified startAt state '${props.startAt}' does not exist in states map`);
+            }
             const allStates = props.states.stateNames();
-            if (new Set(allStates).size !== allStates.length) {
+            if (!allStates.some(istoken) && new Set(allStates).size !== allStates.length) {
                 throw new Error('State names are not unique within the whole state machine');
             }
             super(props);
@@ -112,15 +111,18 @@ export namespace amazon_states_language {
     }
 
     export class Branch extends PascalCaseJson {
+        private readonly states: States;
+
         constructor(props: BranchProps) {
             if (isString(props.startAt) && !props.states.hasState(props.startAt)) {
                 throw new Error(`Specified startAt state '${props.startAt}' does not exist in states map`);
             }
             super(props);
+            this.states = props.states;
         }
 
         public stateNames(): Array<string | Token> {
-            return this.props.states.stateNames();
+            return this.states.stateNames();
         }
     }
 
@@ -133,23 +135,22 @@ export namespace amazon_states_language {
      * {@link https://states-language.net/spec.html#states-fields}
      */
     export class States extends PascalCaseJson {
-        constructor(states: { [name: string]: State }) {
+        constructor(states: { [key: string]: State }) {
             const longNames = Object.keys(states).filter(n => n.length > 128);
             if (longNames.length > 0) {
                 throw new Error(`State names ${JSON.stringify(longNames)} exceed 128 characters in length`);
             }
-            Object.keys(states).forEach(stateName => {
-                const state = states[stateName];
+            for (const [stateName, state] of Object.entries(states)) {
                 const next = state.next();
                 if (!state.isTerminal() && next.length === 0 && !(state instanceof ChoiceState)) {
                     throw new Error(`Non-terminal and non-ChoiceState state '${state}' does not have a 'next' field`);
                 }
                 next.forEach(referencedState => {
-                    if (!(referencedState in states)) {
+                    if (!istoken(referencedState) && !(referencedState in states)) {
                         throw new Error(`State '${stateName}' references unknown Next state '${referencedState}'`);
                     }
                 });
-            });
+            }
             super(states);
         }
 
@@ -161,8 +162,8 @@ export namespace amazon_states_language {
             return this.props.hasOwnProperty(name);
         }
 
-        public stateNames(): string[] {
-            const names = Object.keys(this.props);
+        public stateNames(): Array<string | Token> {
+            const names: Array<string | Token> = Object.keys(this.props);
             Object.values(this.props).map(
                 state => (state instanceof ParallelState) ? state.stateNames() : []
             ).forEach(branchNames => branchNames.forEach(name => names.push(name)));
@@ -186,7 +187,7 @@ export namespace amazon_states_language {
          * After the interpreter executes an End State, the state machine will
          * terminate and return a result.
          */
-        end: true | Token;
+        end: true;
     }
 
     export interface NextOrEndField {
@@ -418,7 +419,7 @@ export namespace amazon_states_language {
         catch?: Catchers;
     }
 
-    function validateErrorAllAppearsLast(props: ErrorEquals[]) {
+    function validateErrorAllNotBeforeLast(props: ErrorEquals[]) {
         props.slice(0, -1).forEach(prop => {
             if (prop.errorEquals.includes(ErrorCode.ALL)) {
                 throw new Error(
@@ -430,14 +431,14 @@ export namespace amazon_states_language {
 
     export class Retriers extends PascalCaseJson {
         constructor(retriers: Retrier[]) {
-            validateErrorAllAppearsLast(retriers.map(retrier => retrier.props));
+            validateErrorAllNotBeforeLast(retriers.map(retrier => retrier.props));
             super(retriers);
         }
     }
 
     export class Catchers extends PascalCaseJson {
         constructor(catchers: Catcher[]) {
-            validateErrorAllAppearsLast(catchers.map(catcher => catcher.props));
+            validateErrorAllNotBeforeLast(catchers.map(catcher => catcher.props));
             super(catchers);
         }
     }
@@ -469,7 +470,7 @@ export namespace amazon_states_language {
 
     export abstract class BaseState extends PascalCaseJson implements State {
         constructor(type: StateType, props: any) {
-            super({ ...props, ...{type: StateType[type]}});
+            super({ ...props, ...{ type: StateType[type] } });
         }
 
         public isTerminal() {
@@ -541,7 +542,7 @@ export namespace amazon_states_language {
             if (props.timeoutSeconds !== undefined && !istoken(props.timeoutSeconds) && !Number.isInteger(props.timeoutSeconds)) {
                 throw new Error(`timeoutSeconds '${props.timeoutSeconds}' is not an integer`);
             }
-            if (props.heartbeatSeconds !== undefined && !istoken(props.timeoutSeconds) && !Number.isInteger(props.heartbeatSeconds)) {
+            if (props.heartbeatSeconds !== undefined && !istoken(props.heartbeatSeconds) && !Number.isInteger(props.heartbeatSeconds)) {
                 throw new Error(`heartbeatSeconds '${props.heartbeatSeconds}' is not an integer`);
             }
             if (props.timeoutSeconds !== undefined && props.heartbeatSeconds !== undefined && props.heartbeatSeconds >= props.timeoutSeconds) {
@@ -600,7 +601,7 @@ export namespace amazon_states_language {
             super(props);
         }
 
-        public toJSON(): any {
+        public toJSON(): { [key: string]: any } {
             return {
                 Variable: this.props.variable,
                 [ComparisonOperator[this.props.comparisonOperator]]: this.props.value
@@ -610,97 +611,97 @@ export namespace amazon_states_language {
 
     export class StringEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.StringEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringEquals } });
         }
     }
 
     export class StringLessThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.StringLessThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringLessThan } });
         }
     }
 
     export class StringGreaterThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.StringGreaterThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringGreaterThan } });
         }
     }
 
     export class StringLessThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.StringLessThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringLessThanEquals } });
         }
     }
 
     export class StringGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.StringGreaterThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringGreaterThanEquals } });
         }
     }
 
     export class NumericEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<number | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.NumericEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericEquals } });
         }
     }
 
     export class NumericLessThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<number | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.NumericLessThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericLessThan } });
         }
     }
 
     export class NumericGreaterThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<number | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.NumericGreaterThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericGreaterThan } });
         }
     }
 
     export class NumericLessThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<number | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.NumericLessThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericLessThanEquals } });
         }
     }
 
     export class NumericGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<number | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.NumericGreaterThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericGreaterThanEquals } });
         }
     }
 
     export class BooleanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<boolean | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.BooleanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.BooleanEquals } });
         }
     }
 
     export class TimestampEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.TimestampEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampEquals } });
         }
     }
 
     export class TimestampLessThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.TimestampLessThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampLessThan } });
         }
     }
 
     export class TimestampGreaterThanComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.TimestampGreaterThan}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampGreaterThan } });
         }
     }
 
     export class TimestampLessThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.TimestampLessThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampLessThanEquals } });
         }
     }
 
     export class TimestampGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
         constructor(props: VariableComparisonOperationProps<string | Token>) {
-            super({...props, ...{comparisonOperator: ComparisonOperator.TimestampGreaterThanEquals}});
+            super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampGreaterThanEquals } });
         }
     }
 
@@ -714,27 +715,25 @@ export namespace amazon_states_language {
             if (props.comparisonOperations.length === 0) {
                 throw new Error('\'comparisonOperations\' is empty. Must be non-empty array of ChoiceRules');
             }
-            super({
-                [ComparisonOperator[props.comparisonOperator]]: props.comparisonOperations
-            });
+            super({ [ComparisonOperator[props.comparisonOperator]]: props.comparisonOperations });
         }
     }
 
     export class AndComparisonOperation extends ArrayComparisonOperation {
         constructor(...comparisonOperations: ComparisonOperation[]) {
-            super({ comparisonOperator: ComparisonOperator.And, comparisonOperations});
+            super({ comparisonOperator: ComparisonOperator.And, comparisonOperations });
         }
     }
 
     export class OrComparisonOperation extends ArrayComparisonOperation {
         constructor(...comparisonOperations: ComparisonOperation[]) {
-            super({ comparisonOperator: ComparisonOperator.Or, comparisonOperations});
+            super({ comparisonOperator: ComparisonOperator.Or, comparisonOperations });
         }
     }
 
     export class NotComparisonOperation extends ComparisonOperation {
         constructor(comparisonOperation: ComparisonOperation) {
-            super({ [ComparisonOperator[ComparisonOperator.Not]]: comparisonOperation});
+            super({ [ComparisonOperator[ComparisonOperator.Not]]: comparisonOperation });
         }
     }
 
@@ -747,7 +746,7 @@ export namespace amazon_states_language {
      */
     export class ChoiceRule extends PascalCaseJson {
         constructor(props: ChoiceRuleProps) {
-            super({...props.comparisonOperation.props, next: props.next});
+            super({ ...props.comparisonOperation.props, next: props.next });
         }
     }
 
@@ -803,7 +802,7 @@ export namespace amazon_states_language {
         }
 
         public next() {
-            return this.props.choices.nextStates().concat([this.props.default]);
+            return this.props.choices.nextStates.concat([this.props.default]);
         }
     }
 
@@ -848,8 +847,7 @@ export namespace amazon_states_language {
         }
     }
 
-    export interface SucceedStateProps extends Commentable, InputOutputPathFields {
-    }
+    export interface SucceedStateProps extends Commentable, InputOutputPathFields { }
 
     /**
      * Terminate the state machine successfully.
@@ -866,7 +864,7 @@ export namespace amazon_states_language {
         }
     }
 
-    export interface FailStateProps extends BaseState, Commentable {
+    export interface FailStateProps extends Commentable {
         /**
          * An Error Name used for error handling in a {@link Retrier} or {@link Catcher},
          * or for operational/diagnostic purposes.
@@ -902,13 +900,16 @@ export namespace amazon_states_language {
     }
 
     export class Branches extends PascalCaseJson {
-        constructor(...branches: Branch[]) {
+        private readonly branches: Branch[];
+
+        constructor(branches: Branch[]) {
             super(branches);
+            this.branches = branches;
         }
 
         public stateNames(): Array<string | Token> {
             const names: Array<string | Token> = [];
-            this.props.branches.forEach((branch: Branch) => branch.stateNames().forEach(name => names.push(name)));
+            this.branches.forEach(branch => branch.stateNames().forEach(name => names.push(name)));
             return names;
         }
     }
@@ -919,13 +920,18 @@ export namespace amazon_states_language {
      * {@link https://states-language.net/spec.html#parallel-state}
      */
     export class ParallelState extends BaseState {
+        private readonly branches: Branches;
+
         constructor(props: ParallelStateProps) {
             requireNextOrEnd(props);
             super(StateType.Parallel, props);
+            this.branches = props.branches;
         }
 
         public stateNames(): Array<string | Token> {
-            return this.props.branches.stateNames();
+            return this.branches.stateNames();
         }
     }
 }
+
+export import asl = AmazonStatesLanguage;
