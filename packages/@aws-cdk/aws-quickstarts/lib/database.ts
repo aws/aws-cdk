@@ -19,7 +19,7 @@ export interface SqlServerProps {
  */
 export class SqlServer extends cdk.Construct implements ec2.IConnectable {
     private static readonly PORT = 1433;
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.IConnections;
     public readonly defaultPortRange: ec2.IPortRange;
     private readonly securityGroup: ec2.SecurityGroup;
 

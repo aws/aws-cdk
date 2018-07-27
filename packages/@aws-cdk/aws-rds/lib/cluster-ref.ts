@@ -21,7 +21,7 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.ID
     /**
      * Access to the network connections
      */
-    public abstract readonly connections: ec2.DefaultConnections;
+    public abstract readonly connections: ec2.IConnections;
 
     /**
      * Identifier of the cluster
@@ -122,7 +122,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Access to the network connections
      */
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.IConnections;
 
     /**
      * Identifier of the cluster

@@ -22,7 +22,7 @@ export interface RemoteDesktopGatewayProps {
  */
 export class RemoteDesktopGateway extends cdk.Construct implements ec2.IDefaultConnectable {
     private static readonly PORT = 3389;
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.IConnections;
     public readonly defaultPortRange: ec2.IPortRange;
 
     constructor(parent: cdk.Construct, name: string, props: RemoteDesktopGatewayProps) {
