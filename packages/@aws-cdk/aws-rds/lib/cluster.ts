@@ -125,12 +125,12 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Access to the network connections
      */
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.IConnections;
 
     /**
      * Security group identifier of this database
      */
-    protected securityGroupId: ec2.SecurityGroupId;
+    protected readonly securityGroupId: ec2.SecurityGroupId;
 
     constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
         super(parent, name);

@@ -16,7 +16,6 @@ export interface SecurityGroupRefProps {
  */
 export interface ISecurityGroup extends IConnectionPeer {
     readonly securityGroupId: SecurityGroupId;
-    readonly canInlineRule: boolean;
 
     addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string): void;
     addEgressRule(peer: IConnectionPeer, connection: IPortRange, description: string): void;

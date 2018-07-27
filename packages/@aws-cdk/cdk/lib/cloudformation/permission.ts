@@ -169,10 +169,10 @@ export class PolicyStatement extends Token {
     private principal = new Array<any>();
     private resource = new Array<any>();
     private condition: { [key: string]: any } = { };
-    private effect?: PolicyStatement.Effect;
+    private effect?: PolicyStatementEffect;
     private sid?: any;
 
-    constructor(effect: PolicyStatement.Effect = PolicyStatement.Effect.Allow) {
+    constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
         super();
         this.effect = effect;
     }
@@ -277,7 +277,7 @@ export class PolicyStatement extends Token {
      * Sets the permission effect to deny access to resources.
      */
     public allow(): PolicyStatement {
-        this.effect = PolicyStatement.Effect.Allow;
+        this.effect = PolicyStatementEffect.Allow;
         return this;
     }
 
@@ -285,7 +285,7 @@ export class PolicyStatement extends Token {
      * Sets the permission effect to allow access to resources.
      */
     public deny(): PolicyStatement {
-        this.effect = PolicyStatement.Effect.Deny;
+        this.effect = PolicyStatementEffect.Deny;
         return this;
     }
 
@@ -371,9 +371,7 @@ export class PolicyStatement extends Token {
     }
 }
 
-export namespace PolicyStatement {
-    export enum Effect {
-        Allow = 'Allow',
-        Deny = 'Deny',
-    }
+export enum PolicyStatementEffect {
+    Allow = 'Allow',
+    Deny = 'Deny',
 }
