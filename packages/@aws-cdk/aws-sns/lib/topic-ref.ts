@@ -16,7 +16,7 @@ export class TopicArn extends cdk.Arn { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTargetProps, cloudwatch.IAlarmAction {
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction {
     /**
      * Import a Topic defined elsewhere
      */
