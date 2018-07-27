@@ -1,0 +1,59 @@
+{
+  "name": "@aws-cdk/aws-codepipeline-aws-actions",
+  "version": "0.7.4-beta",
+  "description": "AWS service Actions for AWS Code Pipeline",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "com.amazonaws.cdk.aws.codepipelineawsactions",
+        "maven": {
+          "groupId": "com.amazonaws.cdk",
+          "artifactId": "aws-codepipelineawsactions"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CodePipelineAwsActions"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/awslabs/aws-cdk"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f"
+  },
+  "nyc": {
+    "lines": 0
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "codepipeline",
+    "actions"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.7.4-beta",
+    "cdk-build-tools": "^0.7.4-beta",
+    "cdk-integ-tools": "^0.7.4-beta",
+    "pkglint": "^0.7.4-beta"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-codebuild-codepipeline": "^0.7.4-beta",
+    "@aws-cdk/aws-codecommit-codepipeline": "^0.7.4-beta",
+    "@aws-cdk/aws-lambda-codepipeline": "^0.7.4-beta"
+  }
+}
