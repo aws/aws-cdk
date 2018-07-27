@@ -15,6 +15,6 @@ export namespace codecommit {
 import lambda_ = require('@aws-cdk/aws-lambda-codepipeline');
 
 export namespace lambda {
-    export import PipelineInvokeAction = lambda_.PipelineInvokeAction;
-    export import PipelineInvokeActionProps = lambda_.PipelineInvokeActionProps;
+    export import InvokeActionProps = lambda_.InvokeActionProps;
+    export import InvokeAction = lambda_.InvokeAction;
 }

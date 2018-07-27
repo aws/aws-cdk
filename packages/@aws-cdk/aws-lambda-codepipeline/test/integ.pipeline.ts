@@ -30,7 +30,7 @@ const lambdaFun = new lambda.Lambda(stack, 'LambdaFun', {
     runtime: lambda.LambdaRuntime.NodeJS610,
 });
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
-new lambda_codepipeline.PipelineInvokeAction(lambdaStage, 'Lambda', {
+new lambda_codepipeline.InvokeAction(lambdaStage, 'Lambda', {
     lambda: lambdaFun,
 });
 

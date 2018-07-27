@@ -3,12 +3,12 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { PipelineInvokeAction } from '../lib/pipeline-action';
+import { InvokeAction } from '../lib/pipeline-action';
 
 // tslint:disable:object-literal-key-quotes
 
 export = {
-    'PipelineInvokeAction can be used to invoke lambda functions from a CodePipeline'(test: Test) {
+    'Pipeline InvokeAction can be used to invoke a Lambda function from a CodePipeline'(test: Test) {
         const stack = new cdk.Stack();
 
         const lambdaFun = new lambda.Lambda(stack, 'Function', {
@@ -19,7 +19,7 @@ export = {
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-        new PipelineInvokeAction(new codepipeline.Stage(pipeline, 'Stage'), 'InvokeAction', {
+        new InvokeAction(new codepipeline.Stage(pipeline, 'Stage'), 'InvokeAction', {
             lambda: lambdaFun,
             userParameters: 'foo-bar/42'
         });
