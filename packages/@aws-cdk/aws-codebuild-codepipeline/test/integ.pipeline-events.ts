@@ -18,7 +18,7 @@ const buildStage = new codepipeline.Stage(pipeline, 'Build');
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', { repositoryName: 'foo' });
 const project = new codebuildPipeline.PipelineProject(stack, 'BuildProject');
 
-const sourceAction = new codecommitPipeline.PipelineSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
+const sourceAction = new codecommitPipeline.SourceAction(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
 new codebuildPipeline.BuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });
 
 const topic = new sns.Topic(stack, 'MyTopic');

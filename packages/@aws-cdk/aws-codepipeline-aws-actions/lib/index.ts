@@ -8,8 +8,8 @@ export namespace codebuild {
 import codecommit_ = require('@aws-cdk/aws-codecommit-codepipeline');
 
 export namespace codecommit {
-    export import PipelineSourceProps = codecommit_.PipelineSourceProps;
-    export import PipelineSource = codecommit_.PipelineSource;
+    export import SourceActionProps = codecommit_.SourceActionProps;
+    export import SourceAction = codecommit_.SourceAction;
 }
 
 import lambda_ = require('@aws-cdk/aws-lambda-codepipeline');

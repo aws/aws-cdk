@@ -3,9 +3,9 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Construction properties of the {@link PipelineSource CodeCommit source CodePipeline Action}.
+ * Construction properties of the {@link SourceAction CodeCommit source CodePipeline Action}.
  */
-export interface PipelineSourceProps {
+export interface SourceActionProps {
     /**
      * The name of the source's output artifact. Output artifacts are used by CodePipeline as
      * inputs into other actions.
@@ -31,10 +31,10 @@ export interface PipelineSourceProps {
 }
 
 /**
- * CodePipeline Source that is provided by an AWS CodeCommit repository.
+ * CodePipeline source Action that is provided by an AWS CodeCommit repository.
  */
-export class PipelineSource extends codepipeline.Source {
-    constructor(parent: codepipeline.Stage, name: string, props: PipelineSourceProps) {
+export class SourceAction extends codepipeline.Source {
+    constructor(parent: codepipeline.Stage, name: string, props: SourceActionProps) {
         super(parent, name, {
             provider: 'CodeCommit',
             configuration: {

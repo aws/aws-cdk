@@ -15,7 +15,7 @@ const repository = new codecommit.Repository( // ...
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceStage = new codepipeline.Stage(pipeline, 'Source');
-new codecommitPipeline.PipelineSource(sourceStage, 'CodeCommit', {
+new codecommitPipeline.SourceAction(sourceStage, 'CodeCommit', {
     repository: repository,
 });
 ```

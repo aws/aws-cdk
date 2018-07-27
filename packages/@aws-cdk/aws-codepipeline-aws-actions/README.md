@@ -12,7 +12,7 @@ import codepipelineAwsActions = require('@aws-cdk/aws-codepipeline-aws-actions')
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'Source');
-new codepipelineAwsActions.codecommit.PipelineSource(sourceStage, 'Source', {
+new codepipelineAwsActions.codecommit.SourceAction(sourceStage, 'Source', {
     // ...
 });
 
