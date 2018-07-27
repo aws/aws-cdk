@@ -3,6 +3,7 @@ import { Construct } from './core/construct';
 
 const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
+const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 
 /**
  * Base class for the model side of context providers
@@ -157,13 +158,40 @@ export class SSMParameterProvider {
     }
 }
 
+export interface HostedZoneFilter {
+    name: string;
+    privateZone?: boolean;
+    vpcId?: string;
+}
+
+/**
+ * Context provider that will lookup the Hosted Zone ID for the given arguments
+ */
+export class HostedZoneProvider {
+    private provider: ContextProvider;
+
+    constructor(context: Construct) {
+        this.provider = new ContextProvider(context);
+    }
+
+    /**
+     * Return the hosted zone meeting the filter
+     */
+    public getZone(filter: HostedZoneFilter): string {
+        const scope = this.provider.accountRegionScope('HostedZoneProvider');
+        const args: string[] = [filter.name];
+        if (filter.privateZone) { args.push(`${filter.privateZone}`); }
+        if (filter.vpcId) { args.push(filter.vpcId); }
+        return this.provider.getStringValue(HOSTED_ZONE_PROVIDER, scope, args, 'dummy');
+    }
+}
+
 function formatMissingScopeError(provider: string, args: string[]) {
     let s = `Cannot determine scope for context provider ${provider}`;
     if (args.length > 0) {
         s += JSON.stringify(args);
     }
-    s += '.';
-    s += '\n';
+    s += '.\n';
     s += 'This usually happens when AWS credentials are not available and the default account/region cannot be determined.';
     return s;
 }
