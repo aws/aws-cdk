@@ -35,9 +35,10 @@ export class Construct {
      * Creates a new construct node.
      *
      * @param parent The parent construct
-     * @param props  Properties for this construct
+     * @param name The logical identfifier of the new Construct
+     * @param props Optional properties for this construct
      */
-    constructor(parent: Construct, name: string) {
+    constructor(parent: Construct, name: string, props?: any) {
         this.name = name;
         this.parent = parent;
 
@@ -49,7 +50,7 @@ export class Construct {
             }
 
             // Has side effect so must be very last thing in constructor
-            parent.addChild(this, this.name);
+            parent.addChild(this, this.name, props);
         } else {
             // This is a root construct.
             this.name = name;
@@ -324,12 +325,11 @@ export class Construct {
      * Adds a child construct to this node.
      *
      * @param child The child construct
-     * @param name The type name of the child construct.
-     * @returns The resolved path part name of the child
+     * @param childName The logical ID of the child construct
+     * @param _props The optional properties of the child construct
      */
-    protected addChild(child: Construct, childName: string) {
+    protected addChild(child: Construct, childName: string, _props?: any) {
         if (this.locked) {
-
             // special error if root is locked
             if (!this.path) {
                 throw new Error('Cannot add children during synthesis');

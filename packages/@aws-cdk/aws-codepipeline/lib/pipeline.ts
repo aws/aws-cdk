@@ -4,7 +4,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
 import { cloudformation } from './codepipeline.generated';
-import { Stage } from './stage';
+import { Stage, StagePlacement, StageProps } from './stage';
 import validation = require('./validation');
 
 /**
@@ -86,7 +86,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      */
     public readonly artifactBucket: s3.BucketRef;
 
-    private readonly stages = new Array<Stage>();
+    private readonly _stages = new Array<Stage>();
     private eventsRole?: iam.Role;
 
     constructor(parent: cdk.Construct, name: string, props?: PipelineProps) {
@@ -129,6 +129,20 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
             service: 'codepipeline',
             resource: this.pipelineName
         }));
+    }
+
+    /**
+     * Get a duplicate of this Pipeline's list of Stages.
+     */
+    public get stages(): Stage[] {
+        return this._stages.slice();
+    }
+
+    /**
+     * Get the number of Stages in this Pipeline.
+     */
+    public get stagesLength(): number {
+        return this._stages.length;
     }
 
     /**
@@ -216,23 +230,71 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      *       onChildAdded type hook.
      * @override
      */
-    protected addChild(child: cdk.Construct, name: string) {
-        super.addChild(child, name);
+    protected addChild(child: cdk.Construct, name: string, props?: any) {
+        super.addChild(child, name, props);
         if (child instanceof Stage) {
-            this.appendStage(child);
+            this.appendStage(child, props ? (props as StageProps).placed : undefined);
         }
     }
 
-    private appendStage(stage: Stage) {
-        if (this.stages.find(x => x.name === stage.name)) {
+    private appendStage(stage: Stage, placement?: StagePlacement) {
+        if (this._stages.find(x => x.name === stage.name)) {
             throw new Error(`A stage with name '${stage.name}' already exists`);
         }
 
-        this.stages.push(stage);
+        const index = placement
+            ? this.calculateInsertIndexFromPlacement(placement)
+            : this.stagesLength;
+
+        this._stages.splice(index, 0, stage);
+    }
+
+    private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
+        // check if at most one placement property was provided
+        const providedPlacementProps = ['rightBeforeStage', 'justAfterStage', 'atIndex']
+            .filter((prop) => (placement as any)[prop] !== undefined);
+        if (providedPlacementProps.length > 1) {
+            throw new Error("Error adding Stage to the Pipeline: " +
+                `you can only provide at most one placement property, ${providedPlacementProps} were given`);
+        }
+
+        if (placement.rightBeforeStage !== undefined) {
+            const targetIndex = this.findStageIndex(placement.rightBeforeStage);
+            if (targetIndex === -1) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `the requested Stage to add it before, '${placement.rightBeforeStage.name}', was not found`);
+            }
+            return targetIndex;
+        }
+
+        if (placement.justAfterStage !== undefined) {
+            const targetIndex = this.findStageIndex(placement.justAfterStage);
+            if (targetIndex === -1) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `the requested Stage to add it after, '${placement.justAfterStage.name}', was not found`);
+            }
+            return targetIndex + 1;
+        }
+
+        if (placement.atIndex !== undefined) {
+            const index = placement.atIndex;
+            if (index < 0 || index > this.stagesLength) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `{ placed: atIndex } should be between 0 and the number of stages in the Pipeline (${this.stagesLength}), ` +
+                    ` got: ${index}`);
+            }
+            return index;
+        }
+
+        return this.stagesLength;
+    }
+
+    private findStageIndex(targetStage: Stage) {
+        return this._stages.findIndex((stage: Stage) => stage === targetStage);
     }
 
     private validateSourceActionLocations(): string[] {
-        return util.flatMap(this.stages, (stage, i) => {
+        return util.flatMap(this._stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
             return util.flatMap(stage.actions, (action, _) =>
                 validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.name, stage.name)
@@ -241,7 +303,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private validateHasStages(): string[] {
-        if (this.stages.length < 2) {
+        if (this._stages.length < 2) {
             return ['Pipeline must have at least two stages'];
         }
         return [];
@@ -270,6 +332,6 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private renderStages(): cloudformation.PipelineResource.StageDeclarationProperty[] {
-        return this.stages.map(stage => stage.render());
+        return this._stages.map(stage => stage.render());
     }
 }

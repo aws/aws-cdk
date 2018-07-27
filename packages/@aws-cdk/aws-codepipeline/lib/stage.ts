@@ -6,6 +6,52 @@ import { Pipeline } from './pipeline';
 import validation = require('./validation');
 
 /**
+ * The construction properties for {@link Stage}.
+ */
+export interface StageProps {
+    /**
+     * Allows specifying where should the newly created {@link Stage}
+     * be placed in the Pipeline.
+     *
+     * @default the stage is added to the end of the Pipeline
+     */
+    readonly placed?: StagePlacement;
+}
+
+/**
+ * Allows you to control where to place a new Stage when it's added to the Pipeline.
+ * Note that you can provide only one of the below properties -
+ * specifying more than one will result in a validation error.
+ *
+ * @see #rightBeforeStage
+ * @see #justAfterStage
+ * @see #atIndex
+ */
+export interface StagePlacement {
+    /**
+     * Inserts the new Stage as a parent of the given Stage
+     * (changing its current parent Stage, if it had one).
+     */
+    readonly rightBeforeStage?: Stage;
+
+    /**
+     * Inserts the new Stage as a child of the given Stage
+     * (changing its current child Stage, if it had one).
+     */
+    readonly justAfterStage?: Stage;
+
+    /**
+     * Inserts the new Stage at the given index in the Pipeline,
+     * moving the Stage currently at that index,
+     * and any subsequent ones, one index down.
+     * Indexing starts at 0.
+     * The maximum allowed value is {@link Pipeline#stagesLength},
+     * which will insert the new Stage at the end of the Pipeline.
+     */
+    readonly atIndex?: number;
+}
+
+/**
  * A stage in a pipeline. Stages are added to a pipeline by constructing a Stage with
  * the pipeline as the first argument to the constructor.
  *
@@ -27,8 +73,8 @@ export class Stage extends cdk.Construct {
      * always be attached to a pipeline. It's illogical to construct a Stage
      * with any other parent.
      */
-    constructor(parent: Pipeline, name: string) {
-        super(parent, name);
+    constructor(parent: Pipeline, name: string, props?: StageProps) {
+        super(parent, name, props);
         this.pipeline = parent;
         validation.validateName('Stage', name);
     }
