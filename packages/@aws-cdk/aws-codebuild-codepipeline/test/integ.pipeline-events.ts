@@ -1,6 +1,5 @@
 // Use pipeline as CloudWAtch event target
 
-import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codecommitPipeline = require('@aws-cdk/aws-codecommit-codepipeline');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
@@ -17,7 +16,7 @@ const sourceStage = new codepipeline.Stage(pipeline, 'Source');
 const buildStage = new codepipeline.Stage(pipeline, 'Build');
 
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', { repositoryName: 'foo' });
-const project = new codebuild.BuildProject(stack, 'BuildProject', { source: new codebuild.CodePipelineSource() });
+const project = new codebuildPipeline.PipelineProject(stack, 'BuildProject');
 
 const sourceAction = new codecommitPipeline.PipelineSource(sourceStage, 'CodeCommitSource', { artifactName: 'Source', repository });
 new codebuildPipeline.PipelineBuildAction(buildStage, 'CodeBuildAction', { inputArtifact: sourceAction.artifact, project });

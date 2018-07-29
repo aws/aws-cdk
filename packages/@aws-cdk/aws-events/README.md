@@ -43,7 +43,7 @@ For example, to define an rule that triggers a CodeBuild project build when a
 commit is pushed to the "master" branch of a CodeCommit repository:
 
 ```ts
-const onCommitRule = repo.onCommit('OnCommitToMaster', buildProject, 'master');
+const onCommitRule = repo.onCommit('OnCommitToMaster', project, 'master');
 ```
 
 You can add additional targets, with optional [input
