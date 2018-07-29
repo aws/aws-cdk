@@ -7,7 +7,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { PipelineBuildAction } from '../lib';
+import codebuildPipeline = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
 
@@ -26,11 +26,11 @@ export = {
         });
 
         const buildStage = new codepipeline.Stage(pipeline, 'build');
-        const project = new codebuild.BuildProject(stack, 'MyBuildProject', {
+        const project = new codebuild.Project(stack, 'MyBuildProject', {
            source: new codebuild.CodePipelineSource()
         });
 
-        new PipelineBuildAction(buildStage, 'build', {
+        new codebuildPipeline.PipelineBuildAction(buildStage, 'build', {
             project,
             inputArtifact: source.artifact
         });
@@ -206,5 +206,41 @@ export = {
 
         test.deepEqual([], pipeline.validate());
         test.done();
-    }
+    },
+
+    'PipelineProject': {
+        'with a custom Project Name': {
+            'sets the source and artifacts to CodePipeline'(test: Test) {
+                const stack = new cdk.Stack();
+
+                new codebuildPipeline.PipelineProject(stack, 'MyProject', {
+                    projectName: 'MyProject',
+                });
+
+                expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+                  "Name": "MyProject",
+                  "Source": {
+                    "Type": "CODEPIPELINE"
+                  },
+                  "Artifacts": {
+                    "Type": "CODEPIPELINE"
+                  },
+                  "ServiceRole": {
+                    "Fn::GetAtt": [
+                      "MyProjectRole9BBE5233",
+                      "Arn"
+                    ]
+                  },
+                  "Environment": {
+                    "Type": "LINUX_CONTAINER",
+                    "PrivilegedMode": false,
+                    "Image": "aws/codebuild/ubuntu-base:14.04",
+                    "ComputeType": "BUILD_GENERAL1_SMALL"
+                  }
+                }));
+
+                test.done();
+            }
+        }
+    },
 };

@@ -2,14 +2,14 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { BuildProject, CodeCommitSource } from '../lib';
+import { CodeCommitSource, Project } from '../lib';
 
 const app = new cdk.App(process.argv);
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
 
 const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'aws-cdk-codebuild-events' });
-const project = new BuildProject(stack, 'MyProject', { source: new CodeCommitSource(repo) });
+const project = new Project(stack, 'MyProject', { source: new CodeCommitSource(repo) });
 
 const topic = new sns.Topic(stack, 'MyTopic');
 topic.subscribeEmail('Personal', 'benisrae@amazon.com');

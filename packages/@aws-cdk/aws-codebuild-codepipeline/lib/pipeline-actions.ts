@@ -19,7 +19,7 @@ export interface PipelineBuildActionProps {
     /**
      * The build project
      */
-    project: codebuild.BuildProjectRef;
+    project: codebuild.ProjectRef;
 }
 
 /**
