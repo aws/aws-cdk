@@ -1,10 +1,10 @@
 import s3 = require('@aws-cdk/aws-s3');
 import { cloudformation } from './codebuild.generated';
-import { BuildProject } from './project';
+import { Project } from './project';
 
 export abstract class BuildArtifacts {
     public abstract toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty;
-    public bind(_project: BuildProject) {
+    public bind(_project: Project) {
         return;
     }
 }
@@ -64,7 +64,7 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
         super();
     }
 
-    public bind(project: BuildProject) {
+    public bind(project: Project) {
         this.props.bucket.grantReadWrite(project.role);
     }
 

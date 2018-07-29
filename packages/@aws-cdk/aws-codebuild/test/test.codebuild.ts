@@ -13,7 +13,7 @@ export = {
             const stack = new cdk.Stack();
 
             const source = new codebuild.CodePipelineSource();
-            new codebuild.BuildProject(stack, 'MyProject', {
+            new codebuild.Project(stack, 'MyProject', {
                 source
             });
 
@@ -177,7 +177,7 @@ export = {
 
             const source = new codebuild.CodeCommitSource(repo);
 
-            new codebuild.BuildProject(stack, 'MyProject', {
+            new codebuild.Project(stack, 'MyProject', {
                 source
             });
 
@@ -360,8 +360,11 @@ export = {
             const stack = new cdk.Stack();
             const bucket = new s3.Bucket(stack, 'MyBucket');
 
-            new codebuild.BuildProject(stack, 'MyProject', {
-              source: new codebuild.S3BucketSource(bucket, 'path/to/source.zip')
+            new codebuild.Project(stack, 'MyProject', {
+              source: new codebuild.S3BucketSource(bucket, 'path/to/source.zip'),
+              environment: {
+                  buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+              },
             });
 
             expect(stack).toMatch({
@@ -551,10 +554,10 @@ export = {
                       ]
                     },
                     "Environment": {
-                      "Type": "LINUX_CONTAINER",
+                      "Type": "WINDOWS_CONTAINER",
                       "PrivilegedMode": false,
-                      "Image": "aws/codebuild/ubuntu-base:14.04",
-                      "ComputeType": "BUILD_GENERAL1_SMALL"
+                      "Image": "aws/codebuild/windows-base:1.0",
+                      "ComputeType": "BUILD_GENERAL1_MEDIUM"
                     }
                   }
                 }
@@ -569,7 +572,7 @@ export = {
             'both source and artifacs are set to CodePipeline'(test: Test) {
                 const stack = new cdk.Stack();
 
-                new codebuild.BuildProject(stack, 'MyProject', {
+                new codebuild.Project(stack, 'MyProject', {
                     source: new codebuild.CodePipelineSource(),
                     artifacts: new codebuild.CodePipelineBuildArtifacts()
                 });
@@ -601,7 +604,7 @@ export = {
             'if sourcde is set to CodePipeline, and artifacts are not set, they are defaulted to CodePipeline'(test: Test) {
                 const stack = new cdk.Stack();
 
-                new codebuild.BuildProject(stack, 'MyProject', {
+                new codebuild.Project(stack, 'MyProject', {
                     source: new codebuild.CodePipelineSource()
                 });
 
@@ -632,12 +635,12 @@ export = {
             'fails if one of source/artifacts is set to CodePipeline and the other isn\'t'(test: Test) {
                   const stack = new cdk.Stack();
 
-                  test.throws(() => new codebuild.BuildProject(stack, 'MyProject', {
+                  test.throws(() => new codebuild.Project(stack, 'MyProject', {
                       source: new codebuild.CodePipelineSource(),
                       artifacts: new codebuild.NoBuildArtifacts()
                   }), /Both source and artifacts must be set to CodePipeline/);
 
-                  test.throws(() => new codebuild.BuildProject(stack, 'YourProject', {
+                  test.throws(() => new codebuild.Project(stack, 'YourProject', {
                       source: new codebuild.CodeCommitSource(new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })),
                       artifacts: new codebuild.CodePipelineBuildArtifacts()
                   }), /Both source and artifacts must be set to CodePipeline/);
@@ -649,7 +652,7 @@ export = {
 
     'events'(test: Test) {
         const stack = new cdk.Stack();
-        const project = new codebuild.BuildProject(stack, 'MyProject', {
+        const project = new codebuild.Project(stack, 'MyProject', {
             source: new codebuild.CodePipelineSource()
         });
 
@@ -769,7 +772,7 @@ export = {
     'environment variables can be overridden at the project level'(test: Test) {
         const stack = new cdk.Stack();
 
-        new codebuild.BuildProject(stack, 'Project', {
+        new codebuild.Project(stack, 'Project', {
           source: new codebuild.CodePipelineSource(),
           environment: {
             environmentVariables: {
@@ -835,7 +838,7 @@ export = {
     '.metricXxx() methods can be used to obtain Metrics for CodeBuild projects'(test: Test) {
         const stack = new cdk.Stack();
 
-        const project = new codebuild.BuildProject(stack, 'MyBuildProject', { source: new codebuild.CodePipelineSource() });
+        const project = new codebuild.Project(stack, 'MyBuildProject', { source: new codebuild.CodePipelineSource() });
 
         const metricBuilds = project.metricBuilds();
         test.same(metricBuilds.dimensions!.ProjectName, project.projectName);
@@ -850,6 +853,23 @@ export = {
 
         test.deepEqual(project.metricFailedBuilds().metricName, 'FailedBuilds');
         test.deepEqual(project.metricSucceededBuilds().metricName, 'SucceededBuilds');
+
+        test.done();
+    },
+
+    'using ComputeType.Small with a Windows image fails validation'(test: Test) {
+        const stack = new cdk.Stack();
+        const invalidEnvironment: codebuild.BuildEnvironment = {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
+            computeType: codebuild.ComputeType.Small,
+        };
+
+        test.throws(() => {
+            new codebuild.Project(stack, 'MyProject', {
+                source: new codebuild.CodePipelineSource(),
+                environment: invalidEnvironment,
+            });
+        }, /Windows images do not support the Small ComputeType/);
 
         test.done();
     }

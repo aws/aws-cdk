@@ -20,7 +20,7 @@ const source = new codecommitPipeline.PipelineSource(sourceStage, 'source', {
 });
 
 const buildStage = new codepipeline.Stage(pipeline, 'build');
-const project = new codebuild.BuildProject(stack, 'MyBuildProject', {
+const project = new codebuild.Project(stack, 'MyBuildProject', {
     source: new codebuild.CodePipelineSource(),
 });
 

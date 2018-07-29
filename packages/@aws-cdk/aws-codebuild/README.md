@@ -5,40 +5,48 @@ Define a project. This will also create an IAM Role and IAM Policy for CodeBuild
 Create a CodeBuild project with CodePipeline as the source:
 
 ```ts
-new BuildProject(this, 'MyFirstProject', {
-    source: new CodePipelineSource()
+import codebuild = require('@aws-cdk/aws-codebuild');
+
+new codebuild.Project(this, 'MyFirstProject', {
+    source: new codebuild.CodePipelineSource()
 });
 ```
 
 Create a CodeBuild project with CodeCommit as the source:
 
 ```ts
-const repo = new Repository(this, 'MyRepo', { repositoryName: 'foo' });
-new BuildProject(this, 'MyFirstCodeCommitProject', {
-    source: new CodeCommitSource(repo)
+import codebuild = require('@aws-cdk/aws-codebuild');
+import codecommit = require('@aws-cdk/aws-codecommit');
+
+const repo = new codecommit.Repository(this, 'MyRepo', { repositoryName: 'foo' });
+new codebuild.Project(this, 'MyFirstCodeCommitProject', {
+    source: new codebuild.CodeCommitSource(repo)
 });
 ```
 
 Create a CodeBuild project with an S3 bucket as the source:
 
 ```ts
-const bucket = new Bucket(this, 'MyBucket');
-new BuildProject(this, 'MyProject', {
-    source: new S3BucketSource(bucket, 'path/to/source.zip')
+import codebuild = require('@aws-cdk/aws-codebuild');
+import s3 = require('@aws-cdk/aws-s3');
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+new codebuild.Project(this, 'MyProject', {
+    source: new codebuild.S3BucketSource(bucket, 'path/to/source.zip')
 });
 ```
 
-### Using BuildProject as an event target
+### Using Project as an event target
 
-The `BuildProject` construct implements the `IEventRuleTarget` interface. This means that it can be
+The `Project` construct implements the `IEventRuleTarget` interface. This means that it can be
 used as a target for event rules:
 
 ```ts
 // start build when a commit is pushed
-codeCommitRepository.onCommit('OnCommit', buildProject);
+codeCommitRepository.onCommit('OnCommit', project);
 ```
 
-### Using BuildProject as an event source
+### Using Project as an event source
 
 To define CloudWatch event rules for build projects, use one of the `onXxx` methods:
 

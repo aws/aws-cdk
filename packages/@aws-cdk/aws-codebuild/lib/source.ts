@@ -2,7 +2,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './codebuild.generated';
-import { BuildProject } from './project';
+import { Project } from './project';
 
 /**
  * Source Provider definition for a CodeBuild project
@@ -14,7 +14,7 @@ export abstract class BuildSource {
      * binding operations on the source. For example, it can grant permissions to the
      * code build project to read from the S3 bucket.
      */
-    public bind(_project: BuildProject) {
+    public bind(_project: Project) {
         return;
     }
 
@@ -29,7 +29,7 @@ export class CodeCommitSource extends BuildSource {
         super();
     }
 
-    public bind(project: BuildProject) {
+    public bind(project: Project) {
         // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
         project.addToRolePolicy(new cdk.PolicyStatement()
             .addAction('codecommit:GitPull')
@@ -54,7 +54,7 @@ export class CodePipelineSource extends BuildSource {
         };
     }
 
-    public bind(_project: BuildProject) {
+    public bind(_project: Project) {
         // TODO: permissions on the pipeline bucket?
     }
 }
@@ -126,7 +126,7 @@ export class S3BucketSource extends BuildSource {
         };
     }
 
-    public bind(project: BuildProject) {
+    public bind(project: Project) {
         this.bucket.grantRead(project.role);
     }
 }

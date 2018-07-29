@@ -31,7 +31,7 @@ targets as a result:
 
 ```ts
 // starts a CodeBuild project when a commit is pushed to the "master" branch of the repo
-repo.onCommit('CommitToMaster', buildProject, 'master');
+repo.onCommit('CommitToMaster', project, 'master');
 
 // publishes a message to an SNS topic when a comment is made on a pull request
 const rule = repo.onCommentOnPullRequest('CommentOnPullRequest');
