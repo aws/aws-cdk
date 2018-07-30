@@ -29,6 +29,21 @@ module.exports = testCase({
             } finally {
                 test.done();
             }
+        },
+        async 'exits with 0 when opening the browser fails'(test: Test) {
+            mockery.registerMock('child_process', {
+                exec(_: string, cb: (err: Error, stdout?: string, stderr?: string) => void) {
+                    cb(new Error('TEST'));
+                }
+            });
+            try {
+                const result = await require('../lib/commands/docs').handler(argv);
+                test.equal(result, 0, 'exit status was 0');
+            } catch (e) {
+                test.doesNotThrow(() => { throw e; });
+            } finally {
+                test.done();
+            }
         }
     }
 });

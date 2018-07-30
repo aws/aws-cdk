@@ -30,7 +30,7 @@ export function handler(argv: Arguments): Promise<number> {
         childProcess.exec(browserCommand, (err, stdout, stderr) => {
             if (err) {
                 debug(`An error occurred when trying to open a browser: ${err.stack || err.message}`);
-                return resolve(127);
+                return resolve(0);
             }
             if (stdout) { debug(stdout); }
             if (stderr) { warning(stderr); }
