@@ -23,13 +23,13 @@ export interface Arguments extends yargs.Arguments {
 export function handler(argv: Arguments): Promise<number> {
     const docVersion = require('../../package.json').version;
     const url = `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`;
+    print(`Docs for this version can be found at 🔗 ${colors.green(url)}`);
     const browserCommand = argv.browser.replace(/%u/g, url);
     debug(`Opening documentation ${colors.green(browserCommand)}`);
     return new Promise<number>((resolve, _reject) => {
         childProcess.exec(browserCommand, (err, stdout, stderr) => {
             if (err) {
-                warning(`An error occurred when trying to open a browser: ${err.message}`);
-                print(`The documentation can be found at 🔗 ${colors.green(url)}`);
+                debug(`An error occurred when trying to open a browser: ${err.stack || err.message}`);
                 return resolve(127);
             }
             if (stdout) { debug(stdout); }
