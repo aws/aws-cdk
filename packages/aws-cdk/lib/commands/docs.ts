@@ -2,7 +2,7 @@ import childProcess = require('child_process');
 import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
-import { debug, error, warning } from '../../lib/logging';
+import { debug,  warning } from '../../lib/logging';
 
 export const command = 'docs';
 export const describe = 'Opens the documentation in a browser';
@@ -21,17 +21,8 @@ export interface Arguments extends yargs.Arguments {
 }
 
 export async function handler(argv: Arguments): Promise<number> {
-    let documentationIndexPath: string;
-    try {
-        // tslint:disable-next-line:no-var-require Taking an un-declared dep on aws-cdk-docs, to avoid a dependency circle
-        const docs = require('aws-cdk-docs');
-        documentationIndexPath = docs.documentationIndexPath;
-    } catch (err) {
-        error('Unable to open CDK documentation - the aws-cdk-docs package appears to be missing. Please run `npm install -g aws-cdk-docs`');
-        return -1;
-    }
-
-    const browserCommand = argv.browser.replace(/%u/g, documentationIndexPath);
+    const docVersion = require('../../package.json').version;
+    const browserCommand = argv.browser.replace(/%u/g, `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`);
     debug(`Opening documentation ${colors.green(browserCommand)}`);
     return await new Promise<number>((resolve, reject) => {
         childProcess.exec(browserCommand, (err, stdout, stderr) => {

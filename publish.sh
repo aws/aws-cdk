@@ -79,19 +79,11 @@ echo "📖 Publishing to GitHub Pages"
 GIT_REPO=$(mktemp -d)
 CLEANUP+=("echo '🚮 Cleaning up GitHub Pages working copy'" "rm -fr ${GIT_REPO}")
 
-DOC_STAGING=$(mktemp -d)
-CLEANUP+=("echo '🚮 Cleaning up Documentations staging directory'" "rm -fr ${DOC_STAGING}")
-
-(
-    cd ${DOC_STAGING}
-    ${WORK_DIR}/bin/y-npm i aws-cdk-docs --no-save
-)
-
 git clone -b gh-pages --depth=1 ssh://github.com/awslabs/aws-cdk ${GIT_REPO}
 mkdir -p ${GIT_REPO}/versions
 
-rsync -ar --delete --exclude=/.git --exclude=/versions ${DOC_STAGING}/node_modules/aws-cdk-docs/dist/docs/ ${GIT_REPO}/
-rsync -ar --delete ${DOC_STAGING}/node_modules/aws-cdk-docs/dist/docs/ ${GIT_REPO}/versions/${PKG_VERSION}/
+rsync -ar --delete --exclude=/.git --exclude=/versions ${WORK_DIR}/docs/ ${GIT_REPO}/
+rsync -ar --delete ${WORK_DIR}/docs/ ${GIT_REPO}/versions/${PKG_VERSION}/
 
 (
     cd ${GIT_REPO}

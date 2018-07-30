@@ -51,9 +51,9 @@ mkdir -p repo/maven
 rsync -av ${root}/packages/aws-cdk-java/maven-repo/ repo/maven/
 rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ repo/maven/
 
-# Symlink the docs website to docs
-echo "Symlinking docs"
-ln -s node_modules/aws-cdk-docs/dist/docs docs
+# Copy the docs website to docs
+echo "Copying docs"
+cp -r ${root}/packages/aws-cdk-docs/dist/docs docs
 
 # Create an archive under ./dist
 echo "Creating ZIP bundle"
