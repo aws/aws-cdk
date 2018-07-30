@@ -45,6 +45,8 @@ echo "💼 Working directory: ${WORK_DIR}"
 echo "🗜 Unzipping release bundle (be patient - this may take a while)"
 unzip -q ${RELEASE_BUNDLE} -d ${WORK_DIR}
 
+PKG_VERSION=$(cat ${WORK_DIR}/.version)
+
 #######
 # NPM #
 #######
@@ -86,11 +88,15 @@ CLEANUP+=("echo '🚮 Cleaning up Documentations staging directory'" "rm -fr ${D
 )
 
 git clone -b gh-pages --depth=1 ssh://github.com/awslabs/aws-cdk ${GIT_REPO}
-rsync -ar --delete --exclude=/.git ${DOC_STAGING}/node_modules/aws-cdk-docs/dist/docs/ ${GIT_REPO}/
+mkdir -p ${GIT_REPO}/versions
+
+rsync -ar --delete --exclude=/.git --exclude=/versions ${DOC_STAGING}/node_modules/aws-cdk-docs/dist/docs/ ${GIT_REPO}/
+rsync -ar --delete ${DOC_STAGING}/node_modules/aws-cdk-docs/dist/docs/ ${GIT_REPO}/versions/${PKG_VERSION}/
+
 (
     cd ${GIT_REPO}
     git add .
-    git commit -m "Release $(cat ${WORK_DIR}/.version)"
+    git commit -m "Release ${PKG_VERSION}"
     git push
 )
 
