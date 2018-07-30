@@ -26,7 +26,8 @@ echo "Staging: ${staging}"
 #   │  └ maven
 #   ├─ y
 #   │  └─ npm
-#   └─ node_modules
+#   ├─ node_modules
+#   └─ .version
 
 # Creating a `y-npm` registry
 echo "Preparing local NPM registry"
@@ -57,6 +58,7 @@ ln -s node_modules/aws-cdk-docs/dist/docs docs
 # Create an archive under ./dist
 echo "Creating ZIP bundle"
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+echo ${version} > .version
 dist=${root}/dist
 output=${dist}/aws-cdk-${version}.zip
 rm -fr ${dist}
