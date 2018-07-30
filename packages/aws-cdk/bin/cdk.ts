@@ -168,8 +168,8 @@ async function initCommandLine() {
     }
 
     async function main(command: string, args: any): Promise<number | string | {} | void> {
-        const toolkitStackName = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
-        const trackVersions = completeConfig().get(['versionReporting']);
+        const toolkitStackName: string = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+        const trackVersions: boolean = completeConfig().get(['versionReporting']);
 
         args.STACKS = args.STACKS || [];
         args.ENVIRONMENTS = args.ENVIRONMENTS || [];
@@ -180,7 +180,7 @@ async function initCommandLine() {
                 return await cliList({ long: args.long });
 
             case 'diff':
-                return await diffStack(await findStack(args.STACK), args.template);
+                return await diffStack(await findStack(args.STACK), trackVersions, args.template);
 
             case 'bootstrap':
                 return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName);
