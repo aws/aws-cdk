@@ -1,7 +1,8 @@
 import fs = require('fs');
 import path = require('path');
+import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectDevDependency, expectJSON, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -40,11 +41,29 @@ export class RepositoryCorrect extends ValidationRule {
 }
 
 /**
- * The license must be LicenseRef-LICENSE (beta).
+ * The license must be Apache-2.0.
  */
 export class License extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        expectJSON(pkg, 'license', 'LicenseRef-LICENSE');
+        expectJSON(pkg, 'license', 'Apache-2.0');
+    }
+}
+
+/**
+ * There must be a license file that corresponds to the Apache-2.0 license.
+ */
+export class LicenseFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        fileShouldBe(pkg, 'LICENSE', LICENSE);
+    }
+}
+
+/**
+ * There must be a NOTICE file.
+ */
+export class NoticeFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        fileShouldBe(pkg, 'NOTICE', NOTICE);
     }
 }
 
