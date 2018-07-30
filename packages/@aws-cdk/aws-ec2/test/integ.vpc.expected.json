@@ -18,7 +18,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1RouteTableC46AB2F4": {
@@ -80,7 +86,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet2RouteTable1DF17386": {
@@ -142,7 +154,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet3RouteTable15028F08": {
@@ -204,7 +222,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet1RouteTable8819E6E2": {
@@ -246,7 +270,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
@@ -288,7 +318,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet3RouteTableB790927C": {

@@ -181,6 +181,13 @@ export interface SubnetConfiguration {
      * availability zone.
      */
     name: string;
+
+    /**
+     * The AWS resource tags to associate with the Subnet.
+     *
+     */
+    tags?: cdk.Tag[];
+
 }
 
 /**
@@ -400,7 +407,8 @@ export class VpcNetwork extends VpcNetworkRef {
                 vpcId: this.vpcId,
                 cidrBlock: this.networkBuilder.addSubnet(cidrMask),
                 mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.Public),
-            };
+                tags: subnetConfig.tags,
+                };
 
             switch (subnetConfig.subnetType) {
                 case SubnetType.Public:
@@ -452,6 +460,11 @@ export interface VpcSubnetProps {
      * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
      */
     mapPublicIpOnLaunch?: boolean;
+
+    /**
+     * The AWS resource tags to associate with the Subnet.
+     */
+    tags?: cdk.Tag[];
 }
 
 /**
@@ -469,6 +482,11 @@ export class VpcSubnet extends VpcSubnetRef {
     public readonly subnetId: VpcSubnetId;
 
     /**
+     * The tags for this subnet
+     */
+    public readonly tags: cdk.Tag[];
+
+    /**
      * The routeTableId attached to this subnet.
      */
     private readonly routeTableId: cdk.Token;
@@ -476,11 +494,20 @@ export class VpcSubnet extends VpcSubnetRef {
     constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
         this.availabilityZone = props.availabilityZone;
+        if (props.tags !== undefined) {
+            this.tags = props.tags.slice(0);
+            if (this.tags.filter( tag => tag.key === 'Name' ).length !== 1) {
+                this.tags.push({key: 'Name', value: name});
+            }
+        } else {
+            this.tags = [{key: 'Name', value: name}];
+        }
         const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
             vpcId: props.vpcId,
             cidrBlock: props.cidrBlock,
             availabilityZone: props.availabilityZone,
             mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
+            tags: this.tags,
         });
         this.subnetId = subnet.ref;
         const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
