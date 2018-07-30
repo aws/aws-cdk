@@ -33,7 +33,7 @@ echo "Preparing local NPM registry"
 mkdir -p y/npm
 export Y_NPM_REPOSITORY="${staging}/y/npm"
 Y_NPM="${root}/tools/y-npm/bin/y-npm"
-for tarball in $(find ${root}/.local-npm -iname '*.tgz') $(find ${root}/pack -iname '*.tgz'); do
+for tarball in $(find ${root}/pack -iname '*.tgz'); do
     ${Y_NPM} publish ${tarball}
 done
 

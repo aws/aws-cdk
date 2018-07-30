@@ -2,6 +2,7 @@
   "name": "aws-cdk-docs",
   "version": "0.7.4-beta",
   "description": "AWS CDK Documentation",
+  "private": true,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
