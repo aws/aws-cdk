@@ -115,17 +115,17 @@ Create an empty project structure for the |cdk| app.
 
 .. _add_core:
 
-Add @aws-cdk/core as a Dependency
-=================================
+Add @aws-cdk/cdk as a Dependency
+================================
 
-Install the |cdk| core library (:py:mod:`_aws-cdk_core`). This
+Install the |cdk| core library (:py:mod:`@aws-cdk/cdk`). This
 library includes the basic classes needed to write |cdk| stacks and apps.
 
 .. tabs::
 
     .. group-tab:: JavaScript
 
-        Install the **@aws-cdk/core** package:
+        Install the **@aws-cdk/cdk** package:
 
         .. code-block:: sh
 
@@ -138,8 +138,8 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
     .. group-tab:: TypeScript
 
-        Install the **@aws-cdk/core** package and the **@types/node**,
-	the latter to use **process.argv**:
+        Install the **@aws-cdk/cdk** package and the **@types/node**,
+        the latter to use **process.argv**:
 
         .. code-block:: sh
 
@@ -181,7 +181,7 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 Define the |cdk| App
 ====================
 
-|cdk| apps are modeled as classes which extend the :py:class:`_aws-cdk_core.App`
+|cdk| apps are modeled as classes which extend the :py:class:`@aws-cdk/cdk.App`
 class. Let's create our first, empty **App**:
 
 .. tabs::
@@ -342,7 +342,7 @@ your project directory:
 
     .. group-tab:: Java
 
-	Specify a 
+        Specify a 
         **CLASSPATH**, which contains both the compiled code and dependencies,
         to execute the Java program.
         Use **maven-dependency-plugin** to produce the file **.classpath.txt**
@@ -578,7 +578,7 @@ there's nothing to deploy.
 
 Let's define an |S3| bucket.
 
-Install the **@aws-cdk/s3** package:
+Install the **@aws-cdk/aws-s3** package:
 
 .. tabs::
 
@@ -600,7 +600,7 @@ Install the **@aws-cdk/s3** package:
         there is no need to explicitly install the |S3| library.
 
 Next, define an |S3| bucket in the stack. |S3| buckets are represented by
-the :py:class:`_aws-cdk_s3.Bucket` class:
+the :py:class:`#aws-cdk/aws-s3.Bucket` class:
 
 .. tabs::
 

@@ -38,7 +38,7 @@
 .. |nuget-package| replace:: aws-cdk
 .. |maven-id| replace:: aws-cdk
 .. |git-repo| replace:: https://github.com/awslabs/aws-cdk
-.. |npm-cmd| replace:: y-npm
+.. |npm-cmd| replace:: npm
 
 .. Construct levels
 
