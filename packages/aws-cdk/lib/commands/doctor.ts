@@ -19,8 +19,7 @@ export async function handler(): Promise<number> {
 
 const verifications: Array<() => boolean | Promise<boolean>> = [
     displayVersionInformation,
-    displayAwsEnvironmentVariables,
-    checkDocumentationIsAvailable
+    displayAwsEnvironmentVariables
 ];
 
 // ### Verifications ###
@@ -41,15 +40,4 @@ function displayAwsEnvironmentVariables() {
         print(`  - ${colors.blue(key)} = ${colors.green(process.env[key]!)}`);
     }
     return true;
-}
-
-function checkDocumentationIsAvailable() {
-    try {
-        const version = require('aws-cdk-docs/package.json').version;
-        print(`✅ AWS CDK Documentation: ${version}`);
-        return true;
-    } catch (e) {
-        print(`❌ AWS CDK Documentation: install using ${colors.green('y-npm install --global aws-cdk-docs')}`);
-        return false;
-    }
 }
