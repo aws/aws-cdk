@@ -17,6 +17,7 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 import os, codecs
+import guzzle_sphinx_theme
 
 # -*- coding: utf-8 -*-
 #
@@ -32,7 +33,7 @@ import os, codecs
 service_name_long = u'AWS Cloud Development Kit (BETA)'
 service_docs_home = u'http://aws.amazon.com/documentation/CDK/'
 
-project = u'User Guide'
+project = u'AWS Cloud Development Kit'
 project_desc = u'User Guide'
 project_basename = u'CDK/ug'
 
@@ -123,14 +124,20 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
-html_theme_path = ["_themes",]
+html_theme_path = guzzle_sphinx_theme.html_theme_path()
+html_theme = 'guzzle_sphinx_theme'
+# Register the theme as an extension to generate a sitemap.xml
+extensions.append("guzzle_sphinx_theme")
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    # Set the name of the project to appear in the sidebar
+    "project_nav_name": "AWS CDK " + version,
+    "base_url": "https://awslabs.github.io/aws-cdk"
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -146,7 +153,7 @@ html_theme_path = ["_themes",]
 # 'searchbox.html']``.
 #
 html_sidebars = {
-    '**': [ 'globaltoc.html', 'searchbox.html' ]
+    '**': [ 'logo-text.html', 'globaltoc.html', 'searchbox.html' ]
 }
 
 rst_epilog = '\n'
