@@ -23,7 +23,7 @@ export interface Arguments extends yargs.Arguments {
 export function handler(argv: Arguments): Promise<number> {
     const docVersion = require('../../package.json').version;
     const url = `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`;
-    print(`Docs for this version can be found at 🔗 ${colors.green(url)}`);
+    print(colors.green(url));
     const browserCommand = argv.browser.replace(/%u/g, url);
     debug(`Opening documentation ${colors.green(browserCommand)}`);
     return new Promise<number>((resolve, _reject) => {
