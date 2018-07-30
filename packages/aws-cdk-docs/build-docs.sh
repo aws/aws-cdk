@@ -19,7 +19,7 @@ staging="dist/staging"
 output="dist/docs"
 refdocs="refs"
 refdocsdir="${staging}/${refdocs}"
-refs_index="${staging}/reference.rst"
+refs_index="${staging}/aws-construct-lib.rst"
 
 #----------------------------------------------------------------------
 # PREREQ CHECK
@@ -45,8 +45,7 @@ echo "Generating reference docs toctree under ${refs_index}..."
 cat ${refs_index}.template > ${refs_index}
 ls -1 ${refdocsdir} | grep '.rst$' | sed -e 's/\.rst//' | sort | xargs -I{} echo "   ${refdocs}/{}" >> ${refs_index}
 
-export CDK_VERSION=$(cdk-version)
+export CDK_VERSION=$(cdk-version || echo "0.0.0.0")
 echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
-# was: sphinx-build -M ...
 sphinx-build -b html $staging $output

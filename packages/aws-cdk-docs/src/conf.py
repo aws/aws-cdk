@@ -29,11 +29,11 @@ import os, codecs
 
 # The long version of the service or SDK name, such as "Amazon Simple Workflow
 # Service", "AWS Flow Framework for Ruby" or "AWS SDK for Java"
-service_name_long = u'AWS Cloud Development Kit (BETA)'
-service_docs_home = u'http://aws.amazon.com/documentation/CDK/'
+service_name_long = u'AWS Cloud Development Kit'
+service_docs_home = u'https://awslabs.github.io/aws-cdk'
 
-project = u'User Guide'
-project_desc = u'User Guide'
+project = u'AWS Cloud Development Kit'
+project_desc = u'AWS Cloud Development Kit'
 project_basename = u'CDK/ug'
 
 # This name is used as the manual / PDF name. Don't include the extension
@@ -48,11 +48,6 @@ forum_id = u'0'
 docset_path_slug = u'CDK'
 version_path_slug = u'latest'
 guide_path_slug = u'ug'
-
-# Add beta banner
-guide_banner = """
-This documentation is for the beta release of the AWS Cloud Development Kit (CDK).
-"""
 
 build_html = True
 build_pdf = True
@@ -124,7 +119,6 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
-html_theme_path = ["_themes",]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

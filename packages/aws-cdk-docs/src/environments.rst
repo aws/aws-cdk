@@ -17,7 +17,7 @@ Environments and Authentication
 The |cdk| refers to the combination of an account ID and a Region as an *environment*.
 The simplest environment is the one you get by default,
 which is the one you get when you have set up your credentials and a default Region as described in
-:ref:`credentials_and_region`.
+:ref:`credentials`.
 
 When you create a |stack-class| instance, you can supply the target deployment environment
 for the stack using the **env** property, as shown in the following example,
@@ -75,7 +75,7 @@ the first time you call |cx-synth-code|.
 
 The |cdk| currently supports the following context providers.
 
-:py:class:`_aws-cdk_core.AvailabilityZoneProvider`
+:py:class:`@aws-cdk/cdk.AvailabilityZoneProvider`
    Use this provider to get the list of all supported availability zones in this environment.
    For example, the following code iterates over all of the AZs in the current environment.
 
@@ -87,7 +87,7 @@ The |cdk| currently supports the following context providers.
       // do somethning for each zone!
    }
 
-:py:class:`_aws-cdk_core.SSMParameterProvider`
+:py:class:`@aws-cdk/cdk.SSMParameterProvider`
    Use this provider to read values from the current Region's SSM parameter store.
    For example, the follow code returns the value of the 'my-awesome-value' key:
 
