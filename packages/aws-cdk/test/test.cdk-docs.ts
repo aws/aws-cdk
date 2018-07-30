@@ -9,6 +9,7 @@ module.exports = testCase({
             mockery.registerMock('../../lib/logging', {
                 debug() { return; },
                 error() { return; },
+                print() { return; },
                 warning() { return; }
             });
             mockery.enable({ useCleanCache: true, warnOnReplace: true, warnOnUnregistered: false });

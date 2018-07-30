@@ -21,7 +21,7 @@
   },
   "nyc": {
     "lines": 8,
-    "branches": 3
+    "branches": 2.9
   },
   "author": {
     "name": "Amazon Web Services",
