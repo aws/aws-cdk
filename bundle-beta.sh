@@ -26,7 +26,8 @@ echo "Staging: ${staging}"
 #   │  └ maven
 #   ├─ y
 #   │  └─ npm
-#   └─ node_modules
+#   ├─ node_modules
+#   └─ .version
 
 # Creating a `y-npm` registry
 echo "Preparing local NPM registry"
@@ -50,13 +51,14 @@ mkdir -p repo/maven
 rsync -av ${root}/packages/aws-cdk-java/maven-repo/ repo/maven/
 rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ repo/maven/
 
-# Symlink the docs website to docs
-echo "Symlinking docs"
-ln -s node_modules/aws-cdk-docs/dist/docs docs
+# Copy the docs website to docs
+echo "Copying docs"
+cp -r ${root}/packages/aws-cdk-docs/dist/docs docs
 
 # Create an archive under ./dist
 echo "Creating ZIP bundle"
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+echo ${version} > .version
 dist=${root}/dist
 output=${dist}/aws-cdk-${version}.zip
 rm -fr ${dist}
