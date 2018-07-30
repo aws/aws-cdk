@@ -30,6 +30,19 @@ export function fileShouldContain(pkg: PackageJson, fileName: string, line: stri
 }
 
 /**
+ * Export a package-level file to contain specific content
+ */
+export function fileShouldBe(pkg: PackageJson, fileName: string, content: string) {
+    const isContent = pkg.fileIsSync(fileName, content);
+    if (!isContent) {
+        pkg.report({
+            message: `${fileName} should contain exactly '${content}'`,
+            fix: () => pkg.writeFileSync(fileName, content)
+        });
+    }
+}
+
+/**
  * Enforce a dev dependency
  */
 export function expectDevDependency(pkg: PackageJson, packageName: string, version: string) {
