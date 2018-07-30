@@ -4,29 +4,45 @@
 
 The **AWS Cloud Development Kit (AWS CDK)** is an infrastructure modeling framework that allows you to define your cloud resources using an imperative programming interface. The CDK is currently in developer preview. We look forward to community feedback and collaboration.
 
-You can use the CDK to define your cloud architecture in code, by composing and creating reusable cloud components called *constructs*. You build your application using the *AWS CDK Construct Library*, a set of classes that encompass all of AWS' services, and then use the *CDK Toolkit* command-line interface to run your program, convert your code to a CloudFormation template, and execute the deployment. Underneath it all is the *CDK Framework* which defines the APIs for the various components.
+Developers can use one of the supported programming languages to define
+reusable cloud components called **constructs**, which are composed
+together to form **Apps**. Apps are synthesized to AWS
+CloudFormation Templates and deployed to the AWS Cloud using the **CDK
+Command Line Toolkit**.
 
-Here's what it looks like:
+The CDK is shipped with a rich library of constructs called the **AWS
+Construct Library**, which includes constructs for all AWS services.
+
+You will end up writing code that looks like this:
+
+```ts
+const queue = new sqs.Queue(this, 'MyQueue', {
+    visibilityTimeoutSec: 300
+});
+
+const topic = new sns.Topic(this, 'MyTopic');
+
+topic.subscribeQueue(queue);
+```
+
+Here's an example screencast:
+
+![Example usage of CDK](screencast.gif)
 
 ## Installation
 
 ### Prerequisites
 
-Make sure you have the following prerequisites installed:
+Make sure you have [Node.js LTS (8.11.x)](https://nodejs.org/en/download) installed.
 
-* [Node.js LTS (8.11.x)](https://nodejs.org/en/download) - required for the command-line toolkit and language bindings
-* [AWS CLI](https://aws.amazon.com/cli/) - recommended in general, but only needed if you intend to download the release from S3
-* The development toolchain of the language you intend to use (TypeScript,
-  Python, Java, .NET, Ruby...)
-
-### Getting Started (TypeScript)
+### Getting Started
 
 Install the toolkit, create a demo project in the current directory, and deploy
 it:
 
 ```shell
 npm install -g aws-cdk
-cdk init app --language=typescript
+cdk init app --language=typescript   # or java
 npm run build
 cdk deploy
 ```
@@ -57,4 +73,4 @@ See [CONTRIBUTING](./CONTRIBUTING.md).
 
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-See [LICENSE](./LICENSE.md) file for license terms.
+See [LICENSE](./LICENSE) file for license terms.
