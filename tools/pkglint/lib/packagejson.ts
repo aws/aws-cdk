@@ -183,6 +183,14 @@ export class PackageJson {
     }
 
     /**
+     * Whether the package-level file content is the given text
+     */
+    public fileIsSync(fileName: string, content: string): boolean {
+        const data = this.readFileSync(fileName);
+        return data === content;
+    }
+
+    /**
      * Add the given line to the package-level file
      */
     public addToFileSync(fileName: string, line: string) {
@@ -193,16 +201,28 @@ export class PackageJson {
         }
     }
 
-    private readFileLinesSync(fileName: string): string[] {
+    /**
+     * Writes the given content into a file.
+     * @param fileName the name of the package-level file to write.
+     * @param content  the desired content of the file.
+     */
+    public writeFileSync(fileName: string, content: string) {
         const fullPath = path.join(this.packageRoot, fileName);
-        if (!fs.existsSync(fileName)) { return []; }
-        return fs.readFileSync(fullPath, { encoding: 'utf-8' }).split('\n');
+        fs.writeFileSync(fullPath, content, { encoding: 'utf-8' });
+    }
+
+    private readFileSync(fileName: string): string {
+        const fullPath = path.join(this.packageRoot, fileName);
+        if (!fs.existsSync(fullPath)) { return ''; }
+        return fs.readFileSync(fullPath, { encoding: 'utf-8' });
+    }
+
+    private readFileLinesSync(fileName: string): string[] {
+        return this.readFileSync(fileName).split('\n');
     }
 
     private writeFileLinesSync(fileName: string, lines: string[]) {
-        const fullPath = path.join(this.packageRoot, fileName);
-        const body = lines.join('\n');
-        fs.writeFileSync(fullPath, body, { encoding: 'utf-8' });
+        this.writeFileSync(fileName, lines.join('\n'));
     }
 }
 

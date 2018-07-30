@@ -23,7 +23,7 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",

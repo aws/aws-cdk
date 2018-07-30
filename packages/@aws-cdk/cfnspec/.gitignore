@@ -2,3 +2,8 @@
 *.js
 node_modules
 spec
+
+.LAST_BUILD
+.nyc_output
+coverage
+.nycrc
