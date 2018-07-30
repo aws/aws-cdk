@@ -49,7 +49,7 @@ cdk deploy
 
 ### Manual Installation
 
-If you prefer to have complete control over the installation and version
+If you prefer to have full control over the installation and version
 of the CDK, the complete distribution is also available as a single signed
 zip file.
 
