@@ -22,7 +22,8 @@
     "fs-extra": "^4.0.2",
     "json-diff": "^0.3.1",
     "sort-json": "^2.0.0",
-    "cdk-build-tools": "^0.7.4-beta"
+    "cdk-build-tools": "^0.7.4-beta",
+    "pkglint": "^0.7.4-beta"
   },
   "dependencies": {
     "md5": "^2.2.1"

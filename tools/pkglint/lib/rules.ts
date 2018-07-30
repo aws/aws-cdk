@@ -304,6 +304,8 @@ export class PkgLintAsScript extends ValidationRule {
     public validate(pkg: PackageJson): void {
         const script = 'pkglint -f';
 
+        expectDevDependency(pkg, 'pkglint', '^' + monoRepoVersion());
+
         if (!pkg.npmScript('pkglint')) {
             pkg.report({
                 message: 'a script called "pkglint" must be included to allow fixing package linting issues',
