@@ -2,7 +2,7 @@ import childProcess = require('child_process');
 import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
-import { debug,  warning } from '../../lib/logging';
+import { debug,  print, warning } from '../../lib/logging';
 
 export const command = 'docs';
 export const describe = 'Opens the documentation in a browser';
@@ -20,13 +20,18 @@ export interface Arguments extends yargs.Arguments {
     browser: string
 }
 
-export async function handler(argv: Arguments): Promise<number> {
+export function handler(argv: Arguments): Promise<number> {
     const docVersion = require('../../package.json').version;
-    const browserCommand = argv.browser.replace(/%u/g, `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`);
+    const url = `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`;
+    const browserCommand = argv.browser.replace(/%u/g, url);
     debug(`Opening documentation ${colors.green(browserCommand)}`);
-    return await new Promise<number>((resolve, reject) => {
+    return new Promise<number>((resolve, _reject) => {
         childProcess.exec(browserCommand, (err, stdout, stderr) => {
-            if (err) { return reject(err); }
+            if (err) {
+                warning(`An error occurred when trying to open a browser: ${err.message}`);
+                print(`The documentation can be found at 🔗 ${colors.green(url)}`);
+                return resolve(127);
+            }
             if (stdout) { debug(stdout); }
             if (stderr) { warning(stderr); }
             resolve(0);
