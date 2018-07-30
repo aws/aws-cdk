@@ -213,7 +213,7 @@ export class PackageJson {
 
     private readFileSync(fileName: string): string {
         const fullPath = path.join(this.packageRoot, fileName);
-        if (!fs.existsSync(fileName)) { return ''; }
+        if (!fs.existsSync(fullPath)) { return ''; }
         return fs.readFileSync(fullPath, { encoding: 'utf-8' });
     }
 
