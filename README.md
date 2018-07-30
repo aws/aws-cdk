@@ -25,7 +25,7 @@ const topic = new sns.Topic(this, 'MyTopic');
 topic.subscribeQueue(queue);
 ```
 
-Here's an example screencast:
+The following screencast shows the experience of installing and working with the CDK:
 
 ![Example usage of CDK](screencast.gif)
 
