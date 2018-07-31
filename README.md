@@ -36,7 +36,7 @@ on AWS.
 [apps]: https://awslabs.github.io/aws-cdk/apps.html
 [User Guide]: https://awslabs.github.io/aws-cdk
 [Getting Started]: https://awslabs.github.io/aws-cdk/getting-started.html
-[AWS CDK Toolkit]: https://awslabs.github.io/aws-cdk/toolkit.html
+[AWS CDK Toolkit]: https://awslabs.github.io/aws-cdk/tools.html#command-line-toolkit-cdk
 [AWS Construct Library]: https://awslabs.github.io/aws-cdk/aws-construct-lib.html
 
 ## Getting Started
