@@ -4,6 +4,10 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
 ### Commands
+The `cdk` tool provides commands to manage the whole lifecycle of your CDK app: [creating](#cdk-init) a new project,
+[listing](#cdk-list) the stacks in an app, [synthesizing](#cdk-synth) the CloudFormation templates, [diffing](#cdk-diff)
+against your currently deployed infrastructure, [deploying](#cdk-deploy) into AWS accounts, and more.
+
 #### `cdk docs`
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
 
@@ -33,21 +37,8 @@ Available templates:
 $ cdk init lib --language=typescript
 ```
 
-#### `cdk bootstrap`
-Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
-`cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
-
-```shell
-# Deploys to all environments
-$ cdk bootstrap --app='node bin/main.js'
-
-# Deploys only to environments foo and bar
-$ cdk bootstrap --app='node bin/main.js' foo bar
-```
-
 #### `cdk list`
-Lists the stacks modeled in the CDK application.
+Lists the stacks modeled in the CDK app.
 
 ```shell
 # List all stacks in the CDK app 'node bin/main.js'
@@ -79,7 +70,7 @@ $ cdk list --app='node bin/main.js' --long
 ```
 
 #### `cdk synthesize`
-Synthesize the CDK Application and outputs CloudFormation templates. If the application contains multiple stacks and no
+Synthesize the CDK app and outputs CloudFormation templates. If the application contains multiple stacks and no
 stack name is provided in the command-line arguments, the `--output` option is mandatory and a CloudFormation template
 will be generated in the output folder for each stack.
 
@@ -87,36 +78,36 @@ By default, templates are generated in YAML format. The `--json` option can be u
 
 ```shell
 # Generate the template for StackName and output it to STDOUT
-$ cdk synthesize --app='node bin/main.js' StackName
+$ cdk synthesize --app='node bin/main.js' MyStackName
 
-# Generate the template for StackName and save it to template.yml
-$ cdk synthesize --app='node bin/main.js' StackName --output=template.yml
+# Generate the template for MyStackName and save it to template.yml
+$ cdk synth --app='node bin/main.js' MyStackName --output=template.yml
 
 # Generate templates for all the stacks and save them into templates/
-$ cdk synthesize --app='node bin/main.js' --output=templates
+$ cdk synth --app='node bin/main.js' --output=templates
+```
+
+#### `cdk diff`
+Computes differences between the infrastructure specified in the current state of the CDK app and the currently
+deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
+found.
+
+```shell
+# Diff against the currently deployed stack
+$ cdk diff --app='node bin/main.js' MyStackName
+
+# Diff against a specific template document
+$ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 ```
 
 #### `cdk deploy`
-Deploys a stack of your CDK application to it's environment. During the deployment, the toolkit will output progress
+Deploys a stack of your CDK app to it's environment. During the deployment, the toolkit will output progress
 indications, similar to what can be observed in the AWS CloudFormation Console. If the environment was never
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
 51,200 bytes will successfully deploy.
 
 ```shell
-$ cdk deploy --app='node bin/main.js' StackName
-```
-
-#### `cdk diff`
-Computes differences between the infrastructure specified in the current state of the CDK Application and the currently
-deployed application (or a user-specified CloudFomration template). This command returns non-`0` if any differences are
-found.
-
-```shell
-# Diff against the currently deployed stack
-$ cdk diff --app='node bin/main.js' StackName
-
-# Diff against a specific template document
-$ cdk diff --app='node bin/main.js' StackName --template=path/to/template.yml
+$ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
 #### `cdk destroy`
@@ -125,7 +116,20 @@ configured with a `DeletionPolicy` of `Retain`). During the stack destruction, t
 information similar to what `cdk deploy` provides.
 
 ```shell
-$ cdk destroy --app='node bin/main.js' StackName
+$ cdk destroy --app='node bin/main.js' MyStackName
+```
+
+#### `cdk bootstrap`
+Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
+`cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
+update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
+
+```shell
+# Deploys to all environments
+$ cdk bootstrap --app='node bin/main.js'
+
+# Deploys only to environments foo and bar
+$ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
 #### `cdk doctor`
@@ -152,11 +156,11 @@ configuration's order of precedence is:
 Some of the interesting keys that can be used in the JSON configuration files:
 ```json
 {
-    "app": "node bin/main.js", // Command to start the CDK Application (--app='node bin/main.js')
-    "context": {               // Context entries                      (--context=key:value)
+    "app": "node bin/main.js", // Command to start the CDK app     (--app='node bin/main.js')
+    "context": {               // Context entries                  (--context=key:value)
         "key": "value",
     },
-    "toolkitStackName": "foo", // Customize 'bootstrap' stack name     (--toolkit-stack-name=foo)
-    "versionReporting": false, // Opt-out of version reporting         (--no-version-reporting)
+    "toolkitStackName": "foo", // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
+    "versionReporting": false, // Opt-out of version reporting     (--no-version-reporting)
 }
 ```
