@@ -6,6 +6,7 @@ dist
 pack
 .BUILD_COMPLETED
 .local-npm
+.tools
 coverage
 .nyc_output
 .LAST_BUILD
