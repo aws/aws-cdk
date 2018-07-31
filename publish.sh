@@ -88,7 +88,7 @@ CLEANUP+=("echo '🚮 Cleaning up GitHub Pages working copy'" "rm -fr ${GIT_REPO
 git clone -b gh-pages --depth=1 ssh://github.com/awslabs/aws-cdk ${GIT_REPO}
 mkdir -p ${GIT_REPO}/versions
 
-rsync -ar --delete --exclude=/.git --exclude=/versions ${WORK_DIR}/docs/ ${GIT_REPO}/
+rsync -ar --delete --exclude=/.git --exclude=/.nojekyll --exclude=/versions ${WORK_DIR}/docs/ ${GIT_REPO}/
 rsync -ar --delete ${WORK_DIR}/docs/ ${GIT_REPO}/versions/${PKG_VERSION}/
 
 (
