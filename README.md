@@ -53,6 +53,8 @@ $ npm i -g aws-cdk
 Initialize a project:
 
 ```bash
+$ mkdir hello-cdk
+$ cd hello-cdk
 $ cdk init app --language=typescript
 # or
 $ cdk init app --language=java
