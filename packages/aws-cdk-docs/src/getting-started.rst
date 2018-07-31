@@ -8,9 +8,6 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. note:: Some of the instructions in this topic will change when the |cdk| is published
-   to the public package repositories.
-
 .. _getting_started:
 
 #############
@@ -19,26 +16,46 @@ Hello, |cdk|!
 
 This topic walks you through creating and deploying your first |cdk| app.
 
-The following instructions assume that you have already installed the |cdk| on
-your system. To verify, run the following command to verify that the installed
-version matches the version of this guide (|cdk-version|):
+Setup
+=====
+
+Prerequisites
+-------------
+
+`Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ - required for the
+command-line toolkit and language bindings.
+
+`AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
+used to setup the :ref:`credentials <credentials>` for your AWS account.
+
+Install the command-line toolkit
+--------------------------------
+
+The toolkit can be installed via `npm <https://www.npmjs.org>`_ as follows:
+
+.. code-block:: sh
+
+    npm install -g aws-cdk
+
+You can run this command to see the currently installed version of the toolkit
+(This guide is aligned with |version|):
 
 .. code-block:: sh
 
     cdk --version
 
+.. _initializing:
+
+Initializing the Project
+========================
+
 .. note::
 
-    This guide walks you through the process of creating a CDK project
+    This guide walks you through the process of creating a |cdk| project
     step-by-step to explain some of the reasoning and details
     behind the project structure and tools. It is also possible to use the
     :code:`cdk init` command to get started quickly from a project
     template in supported languages.
-
-.. _initializing:
-    
-Initializing the Project
-========================
 
 Create an empty project structure for the |cdk| app.
 
@@ -129,26 +146,16 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/cdk
-
-        .. note:: The **y-npm** command installs npm
-            modules from the local npm repository included with your |cdk|
-            installation. These instructions will change once the |cdk| is 
-            published publically.
+            npm install @aws-cdk/cdk
 
     .. group-tab:: TypeScript
 
-        Install the **@aws-cdk/cdk** package and the **@types/node**,
-        the latter to use **process.argv**:
+        Install the **@aws-cdk/cdk** package and the **@types/node** (the latter
+        is needed because we reference **process.argv** in our code):
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/cdk @types/node
-
-        .. note:: The **y-npm** command installs npm
-            modules from the local npm repository included with your |cdk|
-            installation. These instructions will change once the |cdk| is 
-            published publically.
+            npm install @aws-cdk/cdk @types/node
 
     .. group-tab:: Java
 
@@ -156,32 +163,22 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
         .. code-block:: xml
 
-            <repositories>
-                <!-- Beta only: local |cdk| maven repo -->
-                <repository>
-                    <id>cdk</id>
-                    <url>file:///${env.HOME}/.cdk/repo/maven</url>
-                </repository>
-            </repositories>
-
             <dependencies>
                 <dependency>
                     <groupId>com.amazonaws.cdk</groupId>
                     <artifactId>aws-cdk</artifactId>
 
-                    <!-- make sure to use the |cdk| installed version here (i.e. "0.7.3-beta") -->
-                    <version>0.7.3-beta</version>
+                    <!-- make sure to use the CDK installed version here (i.e. "0.7.3-beta") -->
+                    <version>|cdk-version|</version>
                 </dependency>
             </dependencies>
-
-        .. note:: The **<repository>** section is only needed during private Beta.
 
 .. _define_app:
 
 Define the |cdk| App
 ====================
 
-|cdk| apps are modeled as classes which extend the :py:class:`@aws-cdk/cdk.App`
+|cdk| apps are modeled as classes which extend the :py:class:`App <@aws-cdk/cdk.App>`
 class. Let's create our first, empty **App**:
 
 .. tabs::
@@ -283,7 +280,7 @@ If needed, compile the code:
 
 This is it, you now created your first, alas empty, |cdk| app.
 
-.. _configure_toolkit:
+.. _credentials:
 
 Configure the |cdk| Toolkit
 ===========================
@@ -292,7 +289,7 @@ Use the |cdk| toolkit to view the contents of this app.
 
 .. note::
 
-    You must specify your default credentials and region to use the toolkit,
+    You must specify your default credentials and region to use the toolkit.
 
     Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
     ``aws configure`` command to specify your default credentials and region.
@@ -586,13 +583,13 @@ Install the **@aws-cdk/aws-s3** package:
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/aws-s3
+            npm install @aws-cdk/aws-s3
 
     .. group-tab:: TypeScript
 
         .. code-block:: sh
 
-            y-npm install @aws-cdk/aws-s3
+            npm install @aws-cdk/aws-s3
 
     .. group-tab:: Java
 
@@ -600,7 +597,7 @@ Install the **@aws-cdk/aws-s3** package:
         there is no need to explicitly install the |S3| library.
 
 Next, define an |S3| bucket in the stack. |S3| buckets are represented by
-the :py:class:`@aws-cdk/aws-s3.Bucket` class:
+the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
 .. tabs::
 
@@ -804,7 +801,7 @@ Compile the program:
 Preparing for Deployment
 ========================
 
-Before you deploy the updated stack, use the **cdk diff* command to evaluate
+Before you deploy the updated stack, use the ``cdk diff`` command to evaluate
 the difference between the |cdk| app and the deployed stack:
 
 .. code-block:: sh
