@@ -9,9 +9,9 @@ framework that allows you to define your cloud resources using an imperative
 programming interface. The CDK is currently in developer preview. We look
 forward to community feedback and collaboration.
 
-[AWS CDK Homepage](https://awslabs.github.io/aws-cdk) |
-[Getting Started](https://awslabs.github.io/aws-cdk/getting-started.html) |
-[API Docs](https://awslabs.github.io/aws-cdk/reference.html) |
+[User Guide] |
+[Getting Started] |
+[API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
 [Getting Help](#getting-help)
 
 ![Example usage of CDK](screencast.gif)
@@ -34,30 +34,42 @@ on AWS.
 [constructs]: https://awslabs.github.io/aws-cdk/constructs.html
 [stacks]: https://awslabs.github.io/aws-cdk/stack.html
 [apps]: https://awslabs.github.io/aws-cdk/apps.html
+[User Guide]: https://awslabs.github.io/aws-cdk
+[Getting Started]: https://awslabs.github.io/aws-cdk/getting-started.html
 [AWS CDK Toolkit]: https://awslabs.github.io/aws-cdk/toolkit.html
 [AWS Construct Library]: https://awslabs.github.io/aws-cdk/aws-construct-lib.html
 
 ## Getting Started
 
-Install the command-line toolkit from npm (requires [Node.js >= 8.11.x](https://nodejs.org/en/download)):
+* For a detailed walkthrough, see [Getting Started] in the AWS CDK [User Guide]
+* See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file
 
-```shell
-npm i -g aws-cdk
-```
-
-Initialize an app project in one of the supported languages:
+Install the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
 
 ```bash
-cdk init app --language=typescript
+$ npm i -g aws-cdk
+```
+
+Initialize a project:
+
+```bash
+$ cdk init app --language=typescript
 # or
-cdk init app --language=java
+$ cdk init app --language=java
 # more languages (coming soon)...
 ```
 
-Follow on-screen instructions for next steps.
+Use the `cdk` command-line toolkit to interact with your project:
 
-> NOTE: The AWS CDK is also available as a single signed zip file. See
-[Manual Installation](MANUAL_INSTALLATION.md) for more information.
+ * `cdk deploy`: deploys your app into an AWS account
+ * `cdk synth`: synthesizes an AWS CloudFormation template for your app
+ * `cdk diff`: compares your app with the deployed stack
+
+Read the [docs]():
+
+```bash
+$ cdk docs
+```
 
 ## Getting Help
 
