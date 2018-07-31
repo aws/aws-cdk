@@ -600,7 +600,7 @@ Install the **@aws-cdk/aws-s3** package:
         there is no need to explicitly install the |S3| library.
 
 Next, define an |S3| bucket in the stack. |S3| buckets are represented by
-the :py:class:`#aws-cdk/aws-s3.Bucket` class:
+the :py:class:`@aws-cdk/aws-s3.Bucket` class:
 
 .. tabs::
 
