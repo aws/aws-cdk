@@ -12,11 +12,11 @@ against your currently deployed infrastructure, [deploying](#cdk-deploy) into AW
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
 
 ```console
-# Open the documentation in the default browser (using 'open')
+$ # Open the documentation in the default browser (using 'open')
 $ cdk docs
 https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
 
-# Open the documentation in Chrome.
+$ # Open the documentation in Chrome.
 $ cdk docs --browser='chrome %u'
 https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
 ```
@@ -25,7 +25,7 @@ https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
 Creates a new CDK project.
 
 ```console
-# List the available template types & languages
+$ # List the available template types & languages
 $ cdk init --list
 Available templates:
 * app: Template for a CDK Application
@@ -33,7 +33,7 @@ Available templates:
 * lib: Template for a CDK Construct Library
    └─ cdk init lib --language=typescript
 
-# Create a new library application in typescript
+$ # Create a new library application in typescript
 $ cdk init lib --language=typescript
 ```
 
@@ -41,13 +41,13 @@ $ cdk init lib --language=typescript
 Lists the stacks modeled in the CDK app.
 
 ```console
-# List all stacks in the CDK app 'node bin/main.js'
+$ # List all stacks in the CDK app 'node bin/main.js'
 $ cdk list --app='node bin/main.js'
 Foo
 Bar
 Baz
 
-# List all stack including all details (add --json to output JSON instead of YAML)
+$ # List all stack including all details (add --json to output JSON instead of YAML)
 $ cdk list --app='node bin/main.js' --long
 -
     name: Foo
@@ -77,13 +77,13 @@ will be generated in the output folder for each stack.
 By default, templates are generated in YAML format. The `--json` option can be used to switch to JSON.
 
 ```console
-# Generate the template for StackName and output it to STDOUT
+$ # Generate the template for StackName and output it to STDOUT
 $ cdk synthesize --app='node bin/main.js' MyStackName
 
-# Generate the template for MyStackName and save it to template.yml
+$ # Generate the template for MyStackName and save it to template.yml
 $ cdk synth --app='node bin/main.js' MyStackName --output=template.yml
 
-# Generate templates for all the stacks and save them into templates/
+$ # Generate templates for all the stacks and save them into templates/
 $ cdk synth --app='node bin/main.js' --output=templates
 ```
 
@@ -93,10 +93,10 @@ deployed application (or a user-specified CloudFormation template). This command
 found.
 
 ```console
-# Diff against the currently deployed stack
+$ # Diff against the currently deployed stack
 $ cdk diff --app='node bin/main.js' MyStackName
 
-# Diff against a specific template document
+$ # Diff against a specific template document
 $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 ```
 
@@ -125,10 +125,10 @@ Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), t
 update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
 
 ```console
-# Deploys to all environments
+$ # Deploys to all environments
 $ cdk bootstrap --app='node bin/main.js'
 
-# Deploys only to environments foo and bar
+$ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
 
