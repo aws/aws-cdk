@@ -1,9 +1,6 @@
 ## AWS CDK Toolkit
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
-
-### Commands
 Command                           | Description
 ----------------------------------|-------------------------------------------------------------------------------------
 [`cdk docs`](#cdk-docs)           | Access the online documentation
@@ -16,7 +13,9 @@ Command                           | Description
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
 
+This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
+### Commands
 #### `cdk docs`
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
 
