@@ -12,22 +12,30 @@
 Welcome
 #######
 
-Welcome to the |cdk-long| (|cdk|) User Guide.
+Welcome to the |cdk-long| (|cdk|) User Guide!
 
 The |cdk| is an infrastructure modeling framework that allows you to define your
-cloud resources using an imperative programming interface.
+cloud resources using an imperative programming interface. *The CDK is currently
+in developer preview. We look forward to community feedback and collaboration*.
+
+To get started see :doc:`getting-started`
+
+.. image:: screencast.gif
 
 Developers can use one of the supported programming languages to define reusable
 cloud components called :doc:`constructs`, which are composed together into
 :doc:`stacks` and :doc:`apps`.
 
-Apps are synthesized to AWS CloudFormation Templates and deployed to the AWS
-Cloud using the :ref:`CDK Command Line Toolkit <toolkit>` or via a CI/CD pipeline.
+The :ref:`AWS CDK Toolkit <toolkit>` is a command-line tool for interacting with CDK
+apps. It allows developers to synthesize artifacts such as AWS CloudFormation
+Templates, deploy stacks to development AWS accounts and "diff" against a
+deployed stack to understand the impact of a code change.
 
-The CDK is shipped with a rich library of constructs called the :doc:`AWS Construct
-Library <aws-construct-lib>`, which includes constructs for all AWS services.
-
-To get started see :doc:`getting-started`
+The :doc:`AWS Construct Library <aws-construct-lib>` includes a module for each
+AWS service with constructs that offer rich APIs that encapsulate the details of
+how to use AWS. The AWS Construct Library aims to reduce the complexity and
+glue-logic required when integrating various AWS services to achieve your goals
+on AWS.
 
 .. note:: There is no charge for using the |cdk|, however you may incur AWS charges for creating or using AWS
           `chargeable resources <http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#chargeable-resources>`_,
@@ -42,16 +50,14 @@ Additional Documentation and Resources
 In addition to this guide, the following are other resources available to |cdk| users:
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
+* `Gitter Channel <https://gitter.im/awslabs/aws-cdk>`_
+* `Stack Overflow <https://stackoverflow.com/questions/tagged/aws-cdk>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
   * `Examples <https://github.com/awslabs/aws-cdk/tree/master/examples>`_
   * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
-
-.. TBD:
-   * FAQ (link)
-   * Installing the |cdk| (video) (link)
 
 About Amazon Web Services
 =========================
@@ -78,3 +84,5 @@ To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and c
    AWS CloudFormation Library <cloudformation>
    Examples <examples>
    Tools <tools>
+   Module Reference <reference>
+

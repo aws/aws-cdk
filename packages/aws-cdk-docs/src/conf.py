@@ -33,7 +33,7 @@ service_name_long = u'AWS Cloud Development Kit'
 service_docs_home = u'https://awslabs.github.io/aws-cdk'
 
 project = u'AWS Cloud Development Kit'
-project_desc = u'AWS Cloud Development Kit'
+project_desc = u'The AWS CDK is a software development framework for defining cloud infrastructure components in code'
 project_basename = u'CDK/ug'
 
 # This name is used as the manual / PDF name. Don't include the extension

@@ -8,7 +8,7 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _reference:
+.. _aws_construct_lib:
 
 #####################
 AWS Construct Library
@@ -35,18 +35,17 @@ subscribing an AWS SNS :py:class:`Topic <@aws-cdk/aws-sns.Topic>` to a AWS Lambd
 policy will automatically be modified to allow the specific topic to invoke the
 function.
 
-Furthermore, most AWS Constructs expose ``grantXxx`` methods which allow
-intent-based permission definitions. For example, the AWS S3 :py:class:`Bucket
-<@aws-cdk/aws-s3.Bucket>` construct has a :py:meth:`grantRead(principal)
-<@aws-cdk/aws-s3.BucketRef.grantRead>` method which accepts an AWS IAM
-:py:class:`Principal <@aws-cdk/aws-iam.IPrincipal>` such as a :py:class:`User
-<@aws-cdk/aws-iam.User>` or a :py:class:`Role <@aws-cdk/aws-iam.Role>`, and will
-modify their policy to allow the principal to read objects from the bucket.
+Furthermore, most AWS Constructs expose ``grant*`` methods which allow
+intent-based permission definitions. For example, the AWS S3 :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>`
+construct has a :py:meth:`grantRead(principal) <@aws-cdk/aws-s3.BucketRef.grantRead>`
+method which accepts an AWS IAM :py:class:`Principal <@aws-cdk/aws-iam.IPrincipal>`
+such as a :py:class:`User <@aws-cdk/aws-iam.User>` or a :py:class:`Role <@aws-cdk/aws-iam.Role>`,
+and will modify their policy to allow the principal to read objects from the bucket.
 
 Event-driven APIs
 ------------------
 
-Many of the AWS constructs include ``onXxx`` methods which can be used to react
+Many of the AWS constructs include ``on*`` methods which can be used to react
 to events emitted by the construct. For example, the AWS CodeCommit
 :py:mod:`Repository <@aws-cdk/aws-codecommit.Repository>` construct has an
 :py:meth:`onCommit <@aws-cdk/aws-codecommit.RepositoryRef.onCommit>` method.
@@ -63,13 +62,12 @@ documentation.
 Security Groups
 ---------------
 
-EC2 network entities such as the :py:mod:`Elastic Load Balancer
-<@aws-cdk/aws-ec2.ElasticLoadBalancer` and :py:mod:`AutoScalingGroup
-<@aws-cdk/aws-ec2.AutoScalingGroup>` instances can connect to each other
+EC2 network entities such as the :py:mod:`Elastic Load Balancer <@aws-cdk/aws-ec2.ElasticLoadBalancer`
+and :py:mod:`AutoScalingGroup <@aws-cdk/aws-ec2.AutoScalingGroup>` instances can connect to each other
 based on definitions of security groups.
 
 The AWS CDK provides a rich API for defining security group connections. For more information,
-see :py:doc:`@aws-cdk/aws-ec2 <refs/_aws-cdk_aws-ec2>` documentation.
+see **Allowing Connections** in the :doc:`@aws-cdk/aws-ec2 <refs/_aws-cdk_aws-ec2>` documentation.
 
 Metrics
 -------
@@ -99,10 +97,3 @@ AWS CloudFormation Layer
 Every module in the AWS Construct Library includes a ``cloudformation`` namespace which contains
 low-level constructs which represent the low-level AWS CloudFormation semantics of this service.
 See :py:doc:`cloudformation` for details.
-
-Reference
----------
-
-.. toctree::
-   :maxdepth: 1
-

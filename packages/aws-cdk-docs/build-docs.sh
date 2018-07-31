@@ -19,7 +19,7 @@ staging="dist/staging"
 output="dist/docs"
 refdocs="refs"
 refdocsdir="${staging}/${refdocs}"
-refs_index="${staging}/aws-construct-lib.rst"
+refs_index="${staging}/reference.rst"
 
 #----------------------------------------------------------------------
 # PREREQ CHECK
