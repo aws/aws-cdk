@@ -23,7 +23,7 @@ class NeptuneDemoStack extends cdk.Stack {
                 password: new rds.Password('eRSDwst7lpzu'),
             }
         });
-        (database.connections as ec2.DefaultConnections).allowDefaultPortFrom(new ec2.AnyIPv4(), 'Allow the world to connect');
+        database.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), 'Allow the world to connect');
     }
 }
 
