@@ -1,6 +1,6 @@
 {
   "name": "y-npm",
-  "version": "0.7.4-beta",
+  "version": "0.8.0",
   "description": "Run npm commands using a local registry overlay",
   "author": {
     "name": "Amazon Web Services",
@@ -32,8 +32,8 @@
     "@types/colors": "^1.2.1",
     "@types/fs-extra": "^4.0.8",
     "@types/semver": "^5.5.0",
-    "cdk-build-tools": "^0.7.4-beta",
-    "pkglint": "^0.7.4-beta"
+    "cdk-build-tools": "^0.8.0",
+    "pkglint": "^0.8.0"
   },
   "keywords": [
     "aws",
