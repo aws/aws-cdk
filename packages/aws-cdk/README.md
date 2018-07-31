@@ -165,7 +165,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```js
 {
     "app": "node bin/main.js", // Command to start the CDK app     (--app='node bin/main.js')
-    "context": {               // Context entries                  (--context=key:value)
+    "context": {               // Context entries                  (--context=key=value)
         "key": "value",
     },
     "toolkitStackName": "foo", // Customize 'bootstrap' stack name (--toolkit-stack-name=foo)
