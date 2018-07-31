@@ -11,7 +11,7 @@ against your currently deployed infrastructure, [deploying](#cdk-deploy) into AW
 #### `cdk docs`
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
 
-```shell
+```console
 # Open the documentation in the default browser (using 'open')
 $ cdk docs
 https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
@@ -24,7 +24,7 @@ https://awslabs.github.io/aws-cdk/versions/0.7.4-beta/
 #### `cdk init`
 Creates a new CDK project.
 
-```shell
+```console
 # List the available template types & languages
 $ cdk init --list
 Available templates:
@@ -40,7 +40,7 @@ $ cdk init lib --language=typescript
 #### `cdk list`
 Lists the stacks modeled in the CDK app.
 
-```shell
+```console
 # List all stacks in the CDK app 'node bin/main.js'
 $ cdk list --app='node bin/main.js'
 Foo
@@ -76,7 +76,7 @@ will be generated in the output folder for each stack.
 
 By default, templates are generated in YAML format. The `--json` option can be used to switch to JSON.
 
-```shell
+```console
 # Generate the template for StackName and output it to STDOUT
 $ cdk synthesize --app='node bin/main.js' MyStackName
 
@@ -92,7 +92,7 @@ Computes differences between the infrastructure specified in the current state o
 deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
 found.
 
-```shell
+```console
 # Diff against the currently deployed stack
 $ cdk diff --app='node bin/main.js' MyStackName
 
@@ -106,7 +106,7 @@ indications, similar to what can be observed in the AWS CloudFormation Console. 
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
 51,200 bytes will successfully deploy.
 
-```shell
+```console
 $ cdk deploy --app='node bin/main.js' MyStackName
 ```
 
@@ -115,7 +115,7 @@ Deletes a stack from it's environment. This will cause the resources in the stac
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
 information similar to what `cdk deploy` provides.
 
-```shell
+```console
 $ cdk destroy --app='node bin/main.js' MyStackName
 ```
 
@@ -124,7 +124,7 @@ Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), t
 `cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
 update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument.
 
-```shell
+```console
 # Deploys to all environments
 $ cdk bootstrap --app='node bin/main.js'
 
@@ -137,7 +137,7 @@ Inspect the current command-line environment and configurations, and collect inf
 troubleshooting problems. It is usually a good idea to include the information provided by this command when submitting
 a bug report.
 
-```shell
+```console
 $ cdk doctor
 ℹ️ CDK Version: 0.7.4-beta (build 0191444)
 ℹ️ AWS environment variables:
