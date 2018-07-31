@@ -8,7 +8,7 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. note:: Some of the instructions in this topic will change when the CDK will be published
+.. note:: Some of the instructions in this topic will change when the |cdk| is published
    to the public package repositories.
 
 .. _getting_started:
@@ -17,9 +17,9 @@
 Hello, |cdk|!
 #############
 
-This topic will walk you through creating and deploying your first CDK app.
+This topic walks you through creating and deploying your first |cdk| app.
 
-The following instructions assume that you have already installed the CDK on
+The following instructions assume that you have already installed the |cdk| on
 your system. To verify, run the following command to verify that the installed
 version matches the version of this guide (|cdk-version|):
 
@@ -30,15 +30,17 @@ version matches the version of this guide (|cdk-version|):
 .. note::
 
     This guide walks you through the process of creating a CDK project
-    step-by-step as an opportunity to explain some of the reasoning and details
+    step-by-step to explain some of the reasoning and details
     behind the project structure and tools. It is also possible to use the
     :code:`cdk init` command to get started quickly from a project
     template in supported languages.
 
-Initialize the project
-----------------------
+.. _initializing:
+    
+Initializing the Project
+========================
 
-In this section we will create an empty project structure for your CDK app.
+Create an empty project structure for the |cdk| app.
 
 .. tabs::
 
@@ -111,39 +113,41 @@ In this section we will create an empty project structure for your CDK app.
                 </plugins>
             </build>
 
-Add @aws-cdk/cdk as a dependency
----------------------------------
+.. _add_core:
 
-Now, we will install the CDK core library (:py:mod:`@aws-cdk/cdk`). This
-library includes the basic classes needed to write CDK stacks and apps.
+Add @aws-cdk/cdk as a Dependency
+================================
+
+Install the |cdk| core library (:py:mod:`@aws-cdk/cdk`). This
+library includes the basic classes needed to write |cdk| stacks and apps.
 
 .. tabs::
 
     .. group-tab:: JavaScript
 
-        Use **y-npm** to install the **@aws-cdk/cdk** package:
+        Install the **@aws-cdk/cdk** package:
 
         .. code-block:: sh
 
             y-npm install @aws-cdk/cdk
 
-        .. note:: We are using **y-npm** instead of **npm** in order to install npm
-            modules from the local npm repository included with your CDK
-            installation. These instructions will change once the CDK will be
+        .. note:: The **y-npm** command installs npm
+            modules from the local npm repository included with your |cdk|
+            installation. These instructions will change once the |cdk| is 
             published publically.
 
     .. group-tab:: TypeScript
 
-        Use **y-npm** to install the **@aws-cdk/cdk** package. We also need **@types/node**
-        since we will be using **process.argv** in our code:
+        Install the **@aws-cdk/cdk** package and the **@types/node**,
+        the latter to use **process.argv**:
 
         .. code-block:: sh
 
             y-npm install @aws-cdk/cdk @types/node
 
-        .. note:: We are using **y-npm** instead of **npm** in order to install npm
-            modules from the local npm repository included with your CDK
-            installation. These instructions will change once the CDK will be
+        .. note:: The **y-npm** command installs npm
+            modules from the local npm repository included with your |cdk|
+            installation. These instructions will change once the |cdk| is 
             published publically.
 
     .. group-tab:: Java
@@ -153,7 +157,7 @@ library includes the basic classes needed to write CDK stacks and apps.
         .. code-block:: xml
 
             <repositories>
-                <!-- Beta only: local CDK maven repo -->
+                <!-- Beta only: local |cdk| maven repo -->
                 <repository>
                     <id>cdk</id>
                     <url>file:///${env.HOME}/.cdk/repo/maven</url>
@@ -165,17 +169,19 @@ library includes the basic classes needed to write CDK stacks and apps.
                     <groupId>com.amazonaws.cdk</groupId>
                     <artifactId>aws-cdk</artifactId>
 
-                    <!-- make sure to use the CDK installed version here (i.e. "0.7.3-beta") -->
+                    <!-- make sure to use the |cdk| installed version here (i.e. "0.7.3-beta") -->
                     <version>0.7.3-beta</version>
                 </dependency>
             </dependencies>
 
         .. note:: The **<repository>** section is only needed during private Beta.
 
-Define your CDK app
--------------------
+.. _define_app:
 
-CDK apps are modeled as classes which extend the :py:class:`@aws-cdk/cdk.App`
+Define the |cdk| App
+====================
+
+|cdk| apps are modeled as classes which extend the :py:class:`@aws-cdk/cdk.App`
 class. Let's create our first, empty **App**:
 
 .. tabs::
@@ -236,11 +242,12 @@ class. Let's create our first, empty **App**:
             }
 
 .. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
-    currently needed in order to allow the CDK Toolkit to interact with your app. In the future
-    the toolkit will include per-language shims that will remove this boilerplate.
+    currently needed in order to allow the |cdk| Toolkit to interact with your app.
 
-Compile your code
------------------
+.. _complie_code:
+
+Compile the Code
+================
 
 If needed, compile the code:
 
@@ -274,12 +281,14 @@ If needed, compile the code:
 
             mvn compile
 
-This is it, you now created your first, alas empty, CDK app.
+This is it, you now created your first, alas empty, |cdk| app.
 
-Configure CDK toolkit via **cdk.json**
---------------------------------------
+.. _configure_toolkit:
 
-We will now use the CDK toolkit to view the contents of this app.
+Configure the |cdk| Toolkit
+===========================
+
+Use the |cdk| toolkit to view the contents of this app.
 
 .. note::
 
@@ -300,10 +309,10 @@ We will now use the CDK toolkit to view the contents of this app.
     See `Environment Variables <https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html>`_
     in the CLI User Guide for details.
 
-The CDK toolkit needs to know how to execute your CDK app. It requires that the
-:code:`--app` command-line option will point to an executable program that adhere's
+The |cdk| toolkit needs to know how to execute your |cdk| app. It requires that the
+:code:`--app` command-line option points to an executable program that adheres
 to the toolkit's protocol (this is what the **ARGV/STDOUT** boilerplate
-implements). Alternatively to explicitly specifying :code:`--app` every time you use
+implements). Alternatively, to explicitly specifying :code:`--app` every time you use
 the toolkit, we recommend that you create a :code:`cdk.json` file at the root of
 your project directory:
 
@@ -333,9 +342,10 @@ your project directory:
 
     .. group-tab:: Java
 
-        In order to execute our Java program, we will need to specify a
-        **CLASSPATH** which contains both our compiled code and dependencies.
-        We will use **maven-dependency-plugin** to produce a file **.classpath.txt**
+        Specify a 
+        **CLASSPATH**, which contains both the compiled code and dependencies,
+        to execute the Java program.
+        Use **maven-dependency-plugin** to produce the file **.classpath.txt**
         whenever the project is compiled:
 
         .. code-block:: xml
@@ -367,21 +377,21 @@ your project directory:
                 </plugins>
             </build>
 
-        Run **mvn compile** and verify the **.classpath.txt** exist:
+        Run **mvn compile** and verify that **.classpath.txt** exists:
 
         .. code-block:: sh
 
             mvn compile
             ls .classpath.txt
 
-        Now, create a shim **app.sh** which will be used to execute our CDK Java app:
+        Create a shim **app.sh** to execute the |cdk| Java app:
 
         .. code-block:: sh
 
             #!/bin/bash
             exec java -cp target/classes:$(cat .classpath.txt) com.acme.MyApp app $@
 
-        And now we can define the :code:`-- app` option in **cdk.json**:
+        Define the :code:`-- app` option in **cdk.json**:
 
         .. code-block:: json
 
@@ -389,28 +399,31 @@ your project directory:
               "app": "/bin/bash ./app.sh"
             }
 
-List all stacks in your app
----------------------------
+.. _list_stacks:
 
-To list the stacks in this app, you can use the CDK toolkit's **ls** command.
+List the Stacks in the App
+==========================
+
+Use the |cdk| toolkit's **ls** command to list the stacks in the app.
 
 .. code-block:: sh
 
     cdk ls -l
 
-The result will be quite disappointing:
+The result is an empty array:
 
 .. code-block:: sh
 
     []
 
-An empty array, which makes sense, since our app still doesn't have any stacks
-in it.
+An empty array makes sense, since our app doesn't have any stacks.
 
-Define a stack
---------------
+.. _define_stack:
 
-Now, let's define our first stack and add it to our app.
+Define a Stack
+==============
+
+Define a stack and add it to the app.
 
 .. tabs::
 
@@ -505,17 +518,17 @@ Now, let's define our first stack and add it to our app.
                 }
             }
 
-The initializer signature of **cdk.Stack** includes three arguments: **parent**,
-**id** and **props**. This is the signature for every class in the CDK
+The initializer signature of **cdk.Stack** includes thr arguments: **parent**,
+**id**, and **props**. This is the signature for every class in the |cdk|
 framework. These classes are called **"constructs"** and they are composed
-together to a tree:
+together into a tree:
 
 * **parent** represents the parent construct. By specifying the parent construct
   upon initialization, constructs can obtain contextual information when they
   are initialized. For example, the region a stack is deployed to can be
   obtained via a call to **Stack.find(this).requireRegion()**. See Context for
   more information.
-* **id** is a local string identifier of the construct within the tree.
+* **id** is a local string that identifies the construct within the tree.
   Constructs must have a unique ID amongst their siblings.
 * **props** is the set of initialization properties for this construct.
 
@@ -539,8 +552,7 @@ Compile your program:
 
             mvn compile
 
-
-Now, when we run **cdk ls**, the result shows that your app includes a single
+Run **cdk ls** to see that the app includes a single
 stack:
 
 .. code-block:: sh
@@ -556,15 +568,17 @@ stack:
 Notice that your stack has been automatically associated with the default AWS
 account and region configured in the AWS CLI.
 
-Define an S3 bucket
--------------------
+.. _define_bucket:
 
-Now, what can we do with this app? Nothing yet. Our stack is still empty so,
+Define an |S3| Bucket
+=====================
+
+Now, what can we do with this app? Nothing yet. Our stack is still empty, so 
 there's nothing to deploy.
 
-Let's define an S3 bucket.
+Let's define an |S3| bucket.
 
-First, we need to install the **@aws-cdk/aws-s3** package:
+Install the **@aws-cdk/aws-s3** package:
 
 .. tabs::
 
@@ -582,10 +596,10 @@ First, we need to install the **@aws-cdk/aws-s3** package:
 
     .. group-tab:: Java
 
-        During beta, we bundled all CDK modules into the aws-cdk Maven package, so
-        there is no need to explicitly install the S3 library.
+        During beta, all |cdk| modules are bundles into the **aws-cdk** Maven package, so
+        there is no need to explicitly install the |S3| library.
 
-Now, let's define an S3 bucket in our stack. S3 buckets are represented by
+Next, define an |S3| bucket in the stack. |S3| buckets are represented by
 the :py:class:`@aws-cdk/aws-s3.Bucket` class:
 
 .. tabs::
@@ -656,11 +670,11 @@ the :py:class:`@aws-cdk/aws-s3.Bucket` class:
 
 A few things to notice:
 
-* **s3.Bucket** is construct. This means it's initialization signature will have
-  **parent**, **id** and **props**. In this case, the bucket is an immediate
-  child of **MyStack**, it's id is 'MyFirstBucket'.
-* We configured out bucket to have versioning enabled by setting the
-  :code:`versioned` property to :code:`true`.
+* **s3.Bucket** is construct. This means it's initialization signature has
+  **parent**, **id**, and **props**. In this case, the bucket is an immediate
+  child of **MyStack**, and its ID is 'MyFirstBucket'.
+* Since the bucket's :code:`versioned` property is :code:`true`,
+  versioning is enabled on the bucket.
 
 Compile your program:
 
@@ -682,19 +696,21 @@ Compile your program:
 
             mvn compile
 
-Synthesize a CloudFormation template
-------------------------------------
+.. _synthesize_template:
 
-Now, that our stack contains a bucket, we can ask the toolkit to synthesize a
-CloudFormation template for our stack (don't forget to compile your project):
+Synthesize an |CFN| Template
+============================
+
+Synthesize a 
+|cfn| template for the stack (don't forget to first compile the project if you have made any changes):
 
 .. code-block:: sh
 
     cdk synth hello-cdk
 
-.. note:: Since our CDK app only contains a single stack, you can omit :code:`hello-cdk`.
+.. note:: Since the |cdk| app only contains a single stack, you can omit :code:`hello-cdk`.
 
-This command will execute our CDK app and synthesize a CloudFormation template for the
+This command executes the |cdk| app and synthesize an |CFN| template for the
 **hello-cdk** stack:
 
 .. code-block:: yaml
@@ -709,23 +725,27 @@ This command will execute our CDK app and synthesize a CloudFormation template f
 You can see that the stack contains an **AWS::S3::Bucket** resource with the desired
 versioning configuration.
 
-Deploying our stack
--------------------
+.. _deploy_stack:
 
-To deploy our stack, use **cdk deploy**:
+Deploying the Stack
+===================
+
+Use **cdk deploy** to deploy the stack:
 
 .. code-block:: sh
 
     cdk deploy hello-cdk
 
-The **deploy** command will synthesize a CloudFormation template from your stack
-and then invoke the CloudFormation create/update API to deploy it into your AWS
-account. Progress will be emitted to your console.
+The **deploy** command synthesizes an |CFN| template from the stack
+and then invokes the |CFN| create/update API to deploy it into your AWS
+account. The command displays information as it progresses.
 
-Modifying your code
--------------------
+.. _modify_cde:
 
-Let's configure our bucket to use KMS managed encryption:
+Modifying the Code
+==================
+
+Configure the bucket to use KMS managed encryption:
 
 .. tabs::
 
@@ -759,7 +779,7 @@ Let's configure our bucket to use KMS managed encryption:
                     .withEncryption("MANAGED")
                     .build());
 
-Compile your program:
+Compile the program:
 
 .. tabs::
 
@@ -779,19 +799,21 @@ Compile your program:
 
             mvn compile
 
-Preparing for deployment using **cdk diff**
--------------------------------------------
+.. _prepare_deployment:
 
-Before we deploy our updated stack, we can use the **cdk diff** command to evaluate
-the difference between our CDK app and the deployed stack:
+Preparing for Deployment
+========================
+
+Before you deploy the updated stack, use the **cdk diff* command to evaluate
+the difference between the |cdk| app and the deployed stack:
 
 .. code-block:: sh
 
     cdk diff hello-cdk
 
-The toolkit will query your AWS account for the current CloudFormation template for the
-**hello-cdk** stack, and will compare the result with the template synthesized from your app.
-The output should look like this:
+The toolkit queries your AWS account for the current |CFN| template for the
+**hello-cdk** stack, and compares the result with the template synthesized from the app.
+The output should look like the following:
 
 .. code-block:: sh
 
@@ -803,17 +825,17 @@ As you can see, the diff indicates that the
 **ServerSideEncryptionConfiguration** property of the bucket is now set to
 enable server-side encryption.
 
-You can also that the bucket is not going to be replaced but rather updated
+You can also see that the bucket is not going to be replaced but rather updated
 ("**Updating MyFirstBucketB8884501**").
 
-Now, run **cdk deploy** to update your stack:
+Run **cdk deploy** to update the stack:
 
 .. code-block:: sh
 
     cdk deploy
 
-The toolkit will update your bucket configuration to enable server-side KMS
-encryption for your bucket:
+The toolkit updates the bucket configuration to enable server-side KMS
+encryption for the bucket:
 
 .. code-block:: sh
 
