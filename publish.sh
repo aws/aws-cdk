@@ -59,6 +59,12 @@ if [ ${OLD_REGISTRY} != ${REGISTRY} ]; then
     npm config set registry ${REGISTRY}
     CLEANUP+=("echo '👈 Resetting NPM registry to ${OLD_REGISTRY}'" "npm config set registry ${OLD_REGISTRY}")
 fi
+OLD_SCOPE_REGISTRY=$(npm config get @aws-cdk:registry)
+if [ ${OLD_SCOPE_REGISTRY} != ${REGISTRY} ]; then
+    echo "👉 Switching to NPM registry ${REGISTRY} for @aws-cdk scope"
+    npm config set @aws-cdk:registry ${REGISTRY}
+    CLEANUP+=("echo '👈 Resetting NPM registry to ${OLD_SCOPE_REGISTRY} for @aws-cdk scope'" "npm config set @aws-cdk:registry ${OLD_SCOPE_REGISTRY}")
+fi
 
 TOKENS=$(npm token list 2>&1 || echo '')
 if echo ${TOKENS} | grep 'EAUTHUNKNOWN' > /dev/null; then
