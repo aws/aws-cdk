@@ -4,85 +4,56 @@
 
 The **AWS Cloud Development Kit (AWS CDK)** is an infrastructure modeling framework that allows you to define your cloud resources using an imperative programming interface. The CDK is currently in developer preview. We look forward to community feedback and collaboration.
 
-## Getting Started
+Developers can use one of the supported programming languages to define
+reusable cloud components called **constructs**, which are composed
+together to form **Apps**. Apps are synthesized to AWS
+CloudFormation Templates and deployed to the AWS Cloud using the **CDK
+Command Line Toolkit**.
+
+The CDK is shipped with a rich library of constructs called the **AWS
+Construct Library**, which includes constructs for all AWS services.
+
+You will end up writing code that looks like this:
+
+```ts
+const queue = new sqs.Queue(this, 'MyQueue', {
+    visibilityTimeoutSec: 300
+});
+
+const topic = new sns.Topic(this, 'MyTopic');
+
+topic.subscribeQueue(queue);
+```
+
+The following screencast shows the experience of installing and working with the CDK:
+
+![Example usage of CDK](screencast.gif)
+
+## Installation
 
 ### Prerequisites
 
-Make sure you have the following prerequisites installed:
+Make sure you have [Node.js LTS (8.11.x)](https://nodejs.org/en/download) installed.
 
-* [Node.js LTS (8.11.x)](https://nodejs.org/en/download) - required for the command-line toolkit and language bindings
-* [AWS CLI](https://aws.amazon.com/cli/) - recommended in general, but only needed if you intend to download the release from S3
-* The development toolchain of the language you intend to use (TypeScript,
-  Python, Java, .NET, Ruby...)
+### Getting Started
 
-### Downloading the bits
-
-The CDK is distributed as a single zip file which contains:
-
-1. The CDK command-line toolkit
-2. Documentation HTML
-2. JavaScript/TypeScript Framework and AWS Constructs
-3. Java Framework and AWS Constructs
-
-You can either download the zip file from the
-[Releases](http://github.com/awslabs/aws-cdk/releases) page on GitHub or if you
-prefer, download them bits from S3 using the URL provided by our team.
-
-To download from S3:
+Install the toolkit, create a demo project in the current directory, and deploy
+it:
 
 ```shell
-aws s3 cp <s3-url> ~/aws-cdk.zip
+npm install -g aws-cdk
+cdk init app --language=typescript   # or java
+npm run build
+cdk deploy
 ```
 
-### Extract the installation archive to ~/.cdk
+### Manual Installation
 
-Once you've downloaded the bits, install them into `~/.cdk` and add to your `PATH`:
+If you prefer to have full control over the installation and version
+of the CDK, the complete distribution is also available as a single signed
+zip file.
 
-#### Linux/MacOS (bash/zsh)
-
-```shell
-# Unpack to ~/.cdk
-rm -fr ~/.cdk
-mkdir ~/.cdk
-unzip <path-to-zip-file> -d ~/.cdk
-
-# Add to PATH and reload profile
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.bashrc && source ~/.bashrc  # for bash
-echo 'PATH=$PATH:$HOME/.cdk/bin' >> ~/.zshrc && source ~/.zshrc    # for zsh
-```
-
-#### Windows (PowerShell)
-
-Open an elevated PowerShell terminal ("Run as Administrator"):
-
-```powershell
-# Unpack to ~/.cdk
-Remove-Item -Force -Recurse ~/.cdk
-New-Item -Type Directory ~/.cdk
-Expand-Archive -Path <path-to-zip-file> -DestinationPath ~/.cdk
-
-# Add to PATH and reload profile
-New-Item -Force -ItemType Directory -Path (Split-Path $PROFILE)
-Add-Content -Path $PROFILE -Value '$env:Path = "$env:Path;$env:UserProfile\.cdk\node_modules\.bin"'
-Set-ExecutionPolicy Unrestricted
-& $PROFILE
-```
-
-### Install the command-line toolkit and docs
-
-Install (or update) `aws-cdk` globally
-
-```shell
-y-npm install --global aws-cdk # sudo might be needed
-```
-
-> `y-npm` is an npm wrapper which allows installing npm modules from a local repository located at `~/.cdk/y/npm`. `y-npm` will fall back to the public npm repository if a module cannot be found locally.
-
-To check which CDK version you have installed:
-
-```shell
-cdk --version
-```
+[See `MANUAL_INSTALLATION.md` for more information](MANUAL_INSTALLATION.md)
 
 ### Viewing Documentation
 
@@ -92,41 +63,7 @@ To view CDK documentation bundled with the release, run:
 cdk docs
 ```
 
-### Next steps?
-
-Follow the "Getting Started" guide in CDK docs to initialize your first CDK
-project and deploy it to an AWS account.
-
-### Verifying the integrity of your download
-
-You can verify that your download is complete and correct by validating
-its signature against our public signing key. To do so, you need
-the following things:
-
-* [GNU Privacy Guard](https://gnupg.org/) needs to be installed.
-* Download our public key: https://s3.amazonaws.com/aws-cdk-beta/cdk-team.asc
-* Make sure you have downloaded both `aws-cdk-x.y.z.zip`
-  and `aws-cdk-x.y.z.zip.sig`.
-
-Then run the following commands:
-
-```shell
-gpg --import cdk-team.asc
-gpg --verify aws-cdk-x.y.z.zip.sig aws-cdk-x.y.z.zip
-```
-
-If everything is correct, the output will contain the line:
-
-```
-gpg: Good signature from "AWS CDK Team <aws-cdk@amazon.com>"
-```
-
-If you obtained via the above URL, you can ignore the following message:
-
-```
-gpg: WARNING: This key is not certified with a trusted signature!
-gpg:          There is no indication that the signature belongs to the owner.
-```
+Or view the [online documentation](http://awslabs.github.io/aws-cdk).
 
 ## Development
 
