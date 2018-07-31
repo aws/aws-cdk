@@ -74,6 +74,9 @@ docker run --net=host -it -v $PWD:$PWD -w $PWD ${IMAGE}
 This will get you into an interactive docker shell. You can then run
 `./install.sh` and `./build.sh` as described below.
 
+Also install the [git-secrets](https://github.com/awslabs/git-secrets) tool
+and activate it on your working copy of the `aws-cdk` repository.
+
 ### Bootstrapping
 
 1. Clone this repository (or run `git clean -fdx` to clean up all build artifacts).
