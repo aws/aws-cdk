@@ -5,6 +5,29 @@
 [@skinny85]:     https://github.com/skinny85
 [@moofish32]:    https://github.com/moofish32
 [@mpiroc]:       https://github.com/mpiroc
+[@Doug-AWS]:     https://github.com/Doug-AWS
+
+## 0.8.0 - 2018-07-31
+
+___This is the first public release of the AWS CDK!___
+
+* Change license to Apache-2.0 ([@RomainMuller] in [#428])
+* Multiple README updates, including animated gif screencast, as preparation for
+  public release ([@rix0rrr] in [#433], [@eladb] in [#439])
+* Multiple documentation updates for public release ([@Doug-AWS] in [#420],
+  [@eladb] in [#436])
+* Toolkit (__bug fix__): Correctly account for `CDK::Metadata` in `cdk diff`
+  ([@RomainMuller] in [#435])
+* AWS CodeBuild (_**BREAKING**_): Usability improvements for the CodeBuild
+  library ([@skinny85] in [#412])
+
+[#412]: https://github.com/awslabs/aws-cdk/issues/412
+[#435]: https://github.com/awslabs/aws-cdk/issues/435
+[#439]: https://github.com/awslabs/aws-cdk/issues/439
+[#428]: https://github.com/awslabs/aws-cdk/issues/428
+[#433]: https://github.com/awslabs/aws-cdk/issues/433
+[#436]: https://github.com/awslabs/aws-cdk/issues/436
+[#420]: https://github.com/awslabs/aws-cdk/issues/420
 
 ## 0.7.4 - 2018-07-26
 
