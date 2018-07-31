@@ -23,9 +23,8 @@ ___This is the first public release of the AWS CDK!___
 
 [#412]: https://github.com/awslabs/aws-cdk/issues/412
 [#435]: https://github.com/awslabs/aws-cdk/issues/435
-[#435]: https://github.com/awslabs/aws-cdk/issues/435
 [#439]: https://github.com/awslabs/aws-cdk/issues/439
-[#428]: https://github.com/awslabs/aws-cdk/issues/435
+[#428]: https://github.com/awslabs/aws-cdk/issues/428
 [#433]: https://github.com/awslabs/aws-cdk/issues/433
 [#436]: https://github.com/awslabs/aws-cdk/issues/436
 [#420]: https://github.com/awslabs/aws-cdk/issues/420
