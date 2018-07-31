@@ -77,7 +77,7 @@ Please use these community resources for getting help. We use the GitHub issues
 for tracking bugs and feature requests.
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
-  and tag it with `aws-sdk-cdk`
+  and tag it with `aws-cdk`
 * Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
 * Open a support ticket with [AWS Support](https://console.aws.amazon.com/support/home#/)
 * If it turns out that you may have found a bug,
