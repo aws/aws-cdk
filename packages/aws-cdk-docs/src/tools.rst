@@ -14,8 +14,10 @@
 |cdk| Tools
 ###########
 
-cdk
-===
+.. _toolkit:
+
+Command-line Toolkit (cdk)
+--------------------------
 
 ``cdk`` (the |toolkit|) is the main tool you use to exercise your *CDK App*. It will execute
 the CDK app you have written and compiled, interrogate the application
@@ -84,17 +86,28 @@ Below are the actions you can take on your CDK app:
    If one of cdk.json or ~/.cdk.json exists, options specified there will be used
    as defaults. Settings in cdk.json take precedence.
 
-.. _jsii:
+.. _versionReporting:
 
-   jsii
-   ====
+Version Reporting
+=================
 
-.. Hang on, we tell them to use
-   npm run build
-   to compile and
-   npm run watch
-   in the getting started topic. Which is it???
+In order to gain insights in how the |cdk| is used, the versions of libraries used by |cdk| applications are collected
+and reported using a resource identified as ``AWS::CDK::Metadata`` that is added to CloudFormation templates, and can easily
+be reviewed. This information may also be used to identify stacks using a package with known serious security or
+reliability issues and contact their users with important information.
 
-   Use this tool to compile your |cdk| TypeScript code into JavaScript.
-   You can add the **-w** option to have the tool watch for changes in your code,
-   and automatically compile the changes, using **jsii**, as you save the file.
+The |cdk| reports the name and version of npm modules that are loaded into the application at synthesis time, unless
+their ``package.json`` file contains the ``"private": true`` attribute.
+
+The ``AWS::CDK::Metadata`` resource looks like the following:
+
+.. code-block:: yaml
+
+   CDKMetadata:
+     Type: "AWS::CDK::Metadata"
+     Properties:
+       Modules: "@aws-cdk/core=0.7.2-beta,@aws-cdk/s3=0.7.2-beta,lodash=4.17.10"
+
+Opting out of version reporting can be done by adding the
+``--no-version-reporting`` argument to ``cdk`` command invocations or by setting
+the ``versionReporting`` key in ``./cdk.json`` or ``~/cdk.json`` to ``false``.

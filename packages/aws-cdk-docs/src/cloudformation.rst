@@ -10,12 +10,12 @@
 
 .. _cloudformation:
 
-############################
-The AWS CloudFormation Layer
-############################
+##########################
+AWS CloudFormation Library
+##########################
 
-AWS construct libraries (such as :py:mod:`@aws-cdk/aws-s3`) include constructs
-that offer rich APIs for defining AWS infrastructure. For example, the
+The :doc:`AWS Construct Library <aws-construct-lib>` includes constructs with rich APIs
+for defining AWS infrastructure. For example, the
 :py:class:`@aws-cdk/aws-s3.Bucket` construct can be used to define S3 Buckets,
 the :py:class:`@aws-cdk/aws-sns.Topic` construct can be used to define SNS
 Topics, etc.
@@ -33,8 +33,8 @@ other resources, depending on what bucket APIs are used).
   migration scenarios where this might be required. We are also aware that
   there might be gaps in capabilities in the AWS Construct Library over time.
 
-CloudFormation Resources
-========================
+Resources
+---------
 
 CloudFormation resource classes are automatically generated from the `AWS
 CloudFormation Resource Specification
