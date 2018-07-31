@@ -204,7 +204,7 @@ async function postInstallTypescript() {
     const command = 'npm';
     print(`Executing ${colors.green(`${command} install`)}...`);
     try {
-        await execute('npm', 'install');
+        await execute(command, 'install');
     } catch (e) {
         throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
     }
