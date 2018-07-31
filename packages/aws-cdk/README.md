@@ -4,9 +4,18 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
 
 ### Commands
-The `cdk` tool provides commands to manage the whole lifecycle of your CDK app: [creating](#cdk-init) a new project,
-[listing](#cdk-list) the stacks in an app, [synthesizing](#cdk-synth) the CloudFormation templates, [diffing](#cdk-diff)
-against your currently deployed infrastructure, [deploying](#cdk-deploy) into AWS accounts, and more.
+Command                           | Description
+----------------------------------|-------------------------------------------------------------------------------------
+[`cdk docs`](#cdk-docs)           | Access the online documentation
+[`cdk init`](#cdk-init)           | Start a new CDK project (app or library)
+[`cdk list`](#cdk-list)           | List stacks in an application
+[`cdk synth`](#cdk-synth)         | Synthesize a CDK app to CloudFormation template(s)
+[`cdk diff`](#cdk-diff)           | Diff stacks against current state
+[`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
+[`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
+[`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
+[`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
+
 
 #### `cdk docs`
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
