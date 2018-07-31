@@ -201,13 +201,10 @@ async function postInstall(language: string) {
 }
 
 async function postInstallTypescript() {
-    const yNpm = os.platform() === 'win32' ?
-        path.join(CDK_HOME, 'node_modules', '.bin', 'y-npm.cmd') :
-        path.join(CDK_HOME, 'bin', 'y-npm');
-    const command = await fs.pathExists(yNpm) ? yNpm : 'npm';
+    const command = 'npm';
     print(`Executing ${colors.green(`${command} install`)}...`);
     try {
-        await execute(command, 'install');
+        await execute('npm', 'install');
     } catch (e) {
         throw new Error(`${colors.green(`${command} install`)} failed: ` + e.message);
     }
