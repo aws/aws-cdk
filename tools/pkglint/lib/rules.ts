@@ -78,6 +78,24 @@ export class AuthorAWS extends ValidationRule {
 }
 
 /**
+ * There must be a README.md file.
+ */
+export class ReadmeFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        const readmeFile = path.join(pkg.packageRoot, 'README.md');
+        if (!fs.existsSync(readmeFile)) {
+            pkg.report({
+                message: 'There must be a README.md file at the root of the package',
+                fix: () => fs.writeFileSync(
+                    readmeFile,
+                    `## ${pkg.json.description}\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.`
+                )
+            });
+        }
+    }
+}
+
+/**
  * Keywords must contain CDK keywords and be sorted
  */
 export class CDKKeywords extends ValidationRule {
@@ -103,24 +121,6 @@ export class CDKKeywords extends ValidationRule {
                 message: 'Keywords must mention AWS',
                 fix: () => { pkg.json.keywords.splice(0, 0, 'aws'); }
             });
-        }
-    }
-}
-
-/**
- * Package.json must have 'jsii' section if and only if it's a JSII package
- */
-export class JSIISectionPresent extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        const hasJSIISection = 'jsii' in pkg.json;
-        if (isJSII(pkg)) {
-            if (!hasJSIISection) {
-                pkg.report({ message: 'JSII package must have "jsii" section in package.json' });
-            }
-        } else {
-            if (hasJSIISection) {
-                pkg.report({ message: 'Non-JSII package must not have "jsii" section in package.json' });
-            }
         }
     }
 }
