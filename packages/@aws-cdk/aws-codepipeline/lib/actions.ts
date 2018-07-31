@@ -87,8 +87,8 @@ export interface ActionProps {
 
 /**
  * Low level class for generically creating pipeline actions.
- * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSource} or
- * {@link codebuild.PipelineBuildAction}.
+ * It is recommended that concrete types are used instead, such as {@link codecommit.SourceAction} or
+ * {@link codebuild.BuildAction}.
  */
 export abstract class Action extends cdk.Construct {
     /**
@@ -243,7 +243,7 @@ export interface SourceProps {
 /**
  * Low level class for source actions.
  * It is recommended that concrete types are used instead, such as {@link AmazonS3Source} or
- * {@link codecommit.PipelineSource}.
+ * {@link codecommit.SourceAction}.
  */
 export abstract class Source extends Action {
     public readonly artifact: Artifact;
@@ -408,7 +408,7 @@ export interface BuildActionProps {
 
 /**
  * Low level class for build actions.
- * It is recommended that concrete types are used instead, such as {@link codebuild.PipelineBuildAction}.
+ * It is recommended that concrete types are used instead, such as {@link codebuild.BuildAction}.
  */
 export abstract class BuildAction extends Action {
     public readonly artifact?: Artifact;

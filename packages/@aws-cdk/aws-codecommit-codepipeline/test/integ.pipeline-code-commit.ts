@@ -1,7 +1,7 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
-import { PipelineSource } from '../lib/pipeline-action';
+import { SourceAction } from '../lib/pipeline-action';
 
 const app = new cdk.App(process.argv);
 
@@ -12,7 +12,7 @@ const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-re
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'source');
-new PipelineSource(sourceStage, 'source', {
+new SourceAction(sourceStage, 'source', {
     artifactName: 'SourceArtifact',
     repository: repo,
 });

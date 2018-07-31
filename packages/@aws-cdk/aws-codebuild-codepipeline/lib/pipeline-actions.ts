@@ -3,9 +3,9 @@ import codepipeline = require('@aws-cdk/aws-codepipeline');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
+ * Construction properties of the {@link BuildAction CodeBuild build CodePipeline Action}.
  */
-export interface PipelineBuildActionProps {
+export interface BuildActionProps {
     /**
      * The source to use as input for this build
      */
@@ -25,8 +25,8 @@ export interface PipelineBuildActionProps {
 /**
  * CodePipeline build Action that uses AWS CodeBuild.
  */
-export class PipelineBuildAction extends codepipeline.BuildAction {
-    constructor(parent: codepipeline.Stage, name: string, props: PipelineBuildActionProps) {
+export class BuildAction extends codepipeline.BuildAction {
+    constructor(parent: codepipeline.Stage, name: string, props: BuildActionProps) {
         // This happened when ProjectName was accidentally set to the project's ARN:
         // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
 

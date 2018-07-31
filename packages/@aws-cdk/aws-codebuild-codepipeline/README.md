@@ -15,8 +15,8 @@ const project = new codebuildPipeline.PipelineProject(this, 'MyProject', {
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const buildStage = new codepipeline.Stage(pipeline, 'Build');
-new codebuildPipeline.PipelineBuildAction(buildStage, 'CodeBuild', {
-    project
+new codebuildPipeline.BuildAction(buildStage, 'CodeBuild', {
+    project,
 });
 ```
 

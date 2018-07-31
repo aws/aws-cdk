@@ -52,7 +52,7 @@ export interface PipelineProps {
  * const sourceStage = new Stage(pipeline, 'Source');
  *
  * // add a source action to the stage
- * new codecommit.PipelineSource(sourceStage, 'Source', {
+ * new codecommitPipeline.SourceAction(sourceStage, 'Source', {
  *     artifactName: 'SourceArtifact',
  *     repository: repo,
  * });

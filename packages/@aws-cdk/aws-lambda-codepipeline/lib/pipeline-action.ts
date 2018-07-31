@@ -3,9 +3,9 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Construction properties of the {@link PipelineInvokeAction Lambda invoke CodePipeline Action}.
+ * Construction properties of the {@link InvokeAction Lambda invoke CodePipeline Action}.
  */
-export interface PipelineInvokeActionProps {
+export interface InvokeActionProps {
     /**
      * The lambda function to invoke.
      */
@@ -44,8 +44,8 @@ export interface PipelineInvokeActionProps {
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
  */
-export class PipelineInvokeAction extends codepipeline.Action {
-    constructor(parent: codepipeline.Stage, name: string, props: PipelineInvokeActionProps) {
+export class InvokeAction extends codepipeline.Action {
+    constructor(parent: codepipeline.Stage, name: string, props: InvokeActionProps) {
         super(parent, name, {
             category: codepipeline.ActionCategory.Invoke,
             provider: 'Lambda',
@@ -80,7 +80,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
      * Add an input artifact
      * @param artifact
      */
-    public addInputArtifact(artifact: codepipeline.Artifact): PipelineInvokeAction {
+    public addInputArtifact(artifact: codepipeline.Artifact): InvokeAction {
         super.addInputArtifact(artifact);
         return this;
     }

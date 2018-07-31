@@ -15,7 +15,7 @@ const lambdaFun = new lambda.Lambda(// ...
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
-new lambdaCodepipeline.PipelineInvokeAction(lambdaStage, 'Lambda', {
+new lambdaCodepipeline.InvokeAction(lambdaStage, 'Lambda', {
     lambda: lambdaFun,
 });
 ```
