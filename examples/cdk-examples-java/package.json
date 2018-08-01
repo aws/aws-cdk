@@ -21,9 +21,6 @@
     "url": "https://aws.amazon.com"
   },
   "license": "Apache-2.0",
-  "dependencies": {
-    "aws-cdk-java": "^0.8.0"
-  },
   "devDependencies": {
     "aws-cdk": "^0.8.0",
     "pkgtools": "^0.8.0"
