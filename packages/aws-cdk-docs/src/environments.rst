@@ -62,35 +62,3 @@ and explicitly specify accounts and Regions for production stacks.
    individual accounts so that you can deploy to multiple accounts using one
    invocation of ``cdk deploy``, but this feature is not available yet.
 
-.. _environment_context:
-
-Environmental Context
-=====================
-
-When you synthesize a stack to create a |CFN| template, the |cdk| might need information based on the
-environment (account and Region), such as the availability zones or AMIs available in the Region.
-To enable this feature, the |toolkit| uses *context providers*,
-and saves the context information into |cx-json|
-the first time you call |cx-synth-code|.
-
-The |cdk| currently supports the following context providers.
-
-:py:class:`@aws-cdk/cdk.AvailabilityZoneProvider`
-   Use this provider to get the list of all supported availability zones in this environment.
-   For example, the following code iterates over all of the AZs in the current environment.
-
-.. code:: js
-
-   const zones: string[] = new AvailabilityZoneProvider(this).availabilityZones;
-
-   for (let zone of zones) {
-      // do somethning for each zone!
-   }
-
-:py:class:`@aws-cdk/cdk.SSMParameterProvider`
-   Use this provider to read values from the current Region's SSM parameter store.
-   For example, the follow code returns the value of the 'my-awesome-value' key:
-
-.. code:: js
-
-   const ami: string = new SSMParameterProvider(this).getString('my-awesome-value');
