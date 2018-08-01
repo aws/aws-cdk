@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ "${1:-}" == "" ]]; then
-    echo "Usage: sign.sh FILE [FILE...]" >&2
+    echo "Usage: sign-files.sh FILE [FILE...]" >&2
     echo "">&2
     echo "Creates detached signature as FILE.sig." >&2
     exit 1
