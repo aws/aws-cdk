@@ -67,7 +67,7 @@ Use the `cdk` command-line toolkit to interact with your project:
  * `cdk synth`: synthesizes an AWS CloudFormation template for your app
  * `cdk diff`: compares your app with the deployed stack
 
-Read the [docs]():
+Read the [docs](https://awslabs.github.io/aws-cdk/):
 
 ```bash
 $ cdk docs
