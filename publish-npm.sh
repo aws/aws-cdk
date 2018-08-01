@@ -76,26 +76,4 @@ for TGZ in $(find ${WORK_DIR}/y/npm -iname '*.tgz'); do
     npm publish $TGZ --access=public
 done
 
-################
-# GitHub Pages #
-################
-
-echo "📖 Publishing to GitHub Pages"
-
-GIT_REPO=$(mktemp -d)
-CLEANUP+=("echo '🚮 Cleaning up GitHub Pages working copy'" "rm -fr ${GIT_REPO}")
-
-git clone -b gh-pages --depth=1 ssh://github.com/awslabs/aws-cdk ${GIT_REPO}
-mkdir -p ${GIT_REPO}/versions
-
-rsync -ar --delete --exclude=/.git --exclude=/versions ${WORK_DIR}/docs/ ${GIT_REPO}/
-rsync -ar --delete ${WORK_DIR}/docs/ ${GIT_REPO}/versions/${PKG_VERSION}/
-
-(
-    cd ${GIT_REPO}
-    git add .
-    git commit -m "Release ${PKG_VERSION}"
-    git push
-)
-
 echo "✅ All OK!"
