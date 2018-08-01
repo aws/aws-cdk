@@ -19,13 +19,15 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any) {
 /**
  * Export a package-level file to contain a given line
  */
-export function fileShouldContain(pkg: PackageJson, fileName: string, line: string) {
-    const doesContain = pkg.fileContainsSync(fileName, line);
-    if (!doesContain) {
-        pkg.report({
-            message: `${fileName} should contain '${line}'`,
-            fix: () => pkg.addToFileSync(fileName, line)
-        });
+export function fileShouldContain(pkg: PackageJson, fileName: string, ...lines: string[]) {
+    for (const line of lines) {
+        const doesContain = pkg.fileContainsSync(fileName, line);
+        if (!doesContain) {
+            pkg.report({
+                message: `${fileName} should contain '${line}'`,
+                fix: () => pkg.addToFileSync(fileName, line)
+            });
+        }
     }
 }
 

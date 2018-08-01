@@ -15,7 +15,7 @@ export PATH=${PYTHON_DEPS}/bin:$PATH
 
 #----------------------------------------------------------------------
 # CONFIG
-staging="dist/staging"
+staging=".staging"
 output="dist/docs"
 refdocs="refs"
 refdocsdir="${staging}/${refdocs}"
@@ -38,7 +38,7 @@ rsync -av src/ ${staging}
 
 for p in $(find-jsii-packages); do
     echo "Generating reference docs for $p to ${staging}/${refdocs}"
-    jsii-pacmak --target sphinx --outdir ${refdocsdir} $p
+    jsii-pacmak -t sphinx --outdir ${refdocsdir} $p
 done
 
 echo "Generating reference docs toctree under ${refs_index}..."

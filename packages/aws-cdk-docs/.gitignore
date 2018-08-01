@@ -2,3 +2,4 @@
 *.d.ts
 dist
 python-deps
+.staging

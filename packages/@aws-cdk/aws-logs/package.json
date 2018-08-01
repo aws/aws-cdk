@@ -29,7 +29,8 @@
     "watch": "cdk-watch",
     "test": "cdk-test",
     "integ": "cdk-integ",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
   },
   "cdk-build": {
     "cloudformation": "AWS::Logs"

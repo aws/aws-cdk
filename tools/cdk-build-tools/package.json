@@ -24,10 +24,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "pkglint": "^0.8.0"
+    "pkglint": "^0.8.0",
+    "@types/fs-extra": "^5.0.4",
+    "@types/yargs": "^8.0.3"
   },
   "dependencies": {
-    "@types/yargs": "^8.0.3",
+    "fs-extra": "^7.0.0",
     "merkle-build": "^0.8.0",
     "yargs": "^9.0.1"
   },
