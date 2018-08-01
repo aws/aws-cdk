@@ -11,7 +11,8 @@
     "ignore": true
   },
   "scripts": {
-    "build": "/bin/bash generate.sh && cd project && mvn package",
+    "build": "echo 'ignore'",
+    "java-build": "/bin/bash generate.sh && cd project && mvn package",
     "cdk": "cdk",
     "test": "echo ok"
   },
