@@ -11,7 +11,8 @@
   "bin": {
     "cdk-build": "bin/cdk-build",
     "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test"
+    "cdk-test": "bin/cdk-test",
+    "cdk-package": "bin/cdk-package"
   },
   "scripts": {
     "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
