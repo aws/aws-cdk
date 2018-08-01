@@ -147,13 +147,12 @@ class NullConnectable implements IConnectable {
 }
 
 /**
- * This object is used by peers who don't allow reverse connections
- *
- * Because Connections is no longer an interface but a concrete class,
- * we must inherit from it and create it with an instance of ISecurityGroup.
+ * This object is used by peers who don't allow reverse connections.
  */
 export class SecurityGrouplessConnections extends Connections {
     constructor(public readonly connectionPeer: IConnectionPeer) {
+        // Because Connections is no longer an interface but a concrete class,
+        // we must inherit from it and create it with an instance of ISecurityGroup.
         super(new NullSecurityGroup());
     }
 
