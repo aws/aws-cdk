@@ -1,20 +1,20 @@
-package com.amazonaws.cdk.examples;
+package software.amazon.awscdk.examples;
 
-import com.amazonaws.cdk.App;
-import com.amazonaws.cdk.Stack;
-import com.amazonaws.cdk.StackProps;
-import com.amazonaws.cdk.Construct;
-import com.amazonaws.cdk.aws.ec2.AutoScalingGroup;
-import com.amazonaws.cdk.aws.ec2.AutoScalingGroupProps;
-import com.amazonaws.cdk.aws.ec2.InstanceType;
-import com.amazonaws.cdk.aws.ec2.VpcNetwork;
-import com.amazonaws.cdk.aws.ec2.WindowsImage;
-import com.amazonaws.cdk.aws.ec2.WindowsVersion;
-import com.amazonaws.cdk.aws.s3.cloudformation.BucketResource;
-import com.amazonaws.cdk.aws.s3.cloudformation.BucketResourceProps;
-import com.amazonaws.cdk.aws.sns.Topic;
-import com.amazonaws.cdk.aws.sqs.Queue;
-import com.amazonaws.cdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.Construct;
+import software.amazon.awscdk.services.ec2.AutoScalingGroup;
+import software.amazon.awscdk.services.ec2.AutoScalingGroupProps;
+import software.amazon.awscdk.services.ec2.InstanceType;
+import software.amazon.awscdk.services.ec2.VpcNetwork;
+import software.amazon.awscdk.services.ec2.WindowsImage;
+import software.amazon.awscdk.services.ec2.WindowsVersion;
+import software.amazon.awscdk.services.s3.cloudformation.BucketResource;
+import software.amazon.awscdk.services.s3.cloudformation.BucketResourceProps;
+import software.amazon.awscdk.services.sns.Topic;
+import software.amazon.awscdk.services.sqs.Queue;
+import software.amazon.awscdk.services.sqs.QueueProps;
 
 import java.util.Collections;
 import java.util.List;

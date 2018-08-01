@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.glue",
+        "package": "software.amazon.awscdk.services.glue",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-glue"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "glue"
         }
       },
       "dotnet": {

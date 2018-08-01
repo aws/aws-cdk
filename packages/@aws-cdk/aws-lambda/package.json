@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.lambda",
+        "package": "software.amazon.awscdk.services.lambda",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-lambda"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "lambda"
         }
       },
       "dotnet": {

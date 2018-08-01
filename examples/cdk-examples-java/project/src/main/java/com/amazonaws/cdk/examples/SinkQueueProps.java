@@ -1,6 +1,6 @@
-package com.amazonaws.cdk.examples;
+package software.amazon.awscdk.examples;
 
-import com.amazonaws.cdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.services.sqs.QueueProps;
 
 /**
  * Props for {@link SinkQueue}.
@@ -27,7 +27,7 @@ public class SinkQueueProps {
 
     /**
      * Props for the queue itself
-     * @default See {@link com.amazonaws.cdk.sqs.Queue} defaults
+     * @default See {@link software.amazon.awscdk.services.sqs.Queue} defaults
      */
     public QueueProps getQueueProps() {
         return queueProps;

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.inspector",
+        "package": "software.amazon.awscdk.services.inspector",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-inspector"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "inspector"
         }
       },
       "dotnet": {

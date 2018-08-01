@@ -140,7 +140,7 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
 
         const moduleName = cdkModuleName(pkg.json.name);
         expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage);
-        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'com.amazonaws.cdk');
+        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
         expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId);
     }
 }
@@ -173,12 +173,12 @@ function cdkModuleName(name: string) {
     name = name.replace(/^@aws-cdk\//, '');
     name = name.replace(/^(?:aws|cdk)-/, '');
 
-    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
+    const javaSuffix = `${isCorePkg ? '' : '.services'}.${name.replace(/-/g, '')}`;
     const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
 
     return {
-        javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
+        javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : javaSuffix}`,
+        mavenArtifactId: isCdkPkg ? 'core' : `${name.replace(/-/g, '')}`,
         dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
     };
 }

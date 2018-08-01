@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.ssm",
+        "package": "software.amazon.awscdk.services.ssm",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-ssm"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "ssm"
         }
       },
       "dotnet": {
