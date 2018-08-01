@@ -484,7 +484,7 @@ export class VpcSubnet extends VpcSubnetRef {
     /**
      * The tags for this subnet
      */
-    public readonly tags: cdk.Tag[];
+    private readonly tags: cdk.Token[] = [];
 
     /**
      * The routeTableId attached to this subnet.
@@ -495,12 +495,12 @@ export class VpcSubnet extends VpcSubnetRef {
         super(parent, name);
         this.availabilityZone = props.availabilityZone;
         if (props.tags !== undefined) {
-            this.tags = props.tags.slice(0);
-            if (this.tags.filter( tag => tag.key === 'Name' ).length !== 1) {
-                this.tags.push({key: 'Name', value: name});
+            this.tags = props.tags.map( tag => new cdk.Token(tag) );
+            if (props.tags.filter( tag => tag.key === 'Name' ).length !== 1) {
+                this.tags.push(new cdk.Token({key: 'Name', value: name}));
             }
         } else {
-            this.tags = [{key: 'Name', value: name}];
+            this.tags = [new cdk.Token({key: 'Name', value: name})];
         }
         const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
             vpcId: props.vpcId,
@@ -522,6 +522,10 @@ export class VpcSubnet extends VpcSubnetRef {
         });
 
         this.dependencyElements.push(subnet, table, routeAssoc);
+    }
+
+    public addTag(tag: cdk.Tag): void {
+        this.tags.push(new cdk.Token(tag));
     }
 
     protected addDefaultRouteToNAT(natGatewayId: cdk.Token) {

@@ -1,7 +1,7 @@
 import { countResources, expect, haveResource, isSuperObject} from '@aws-cdk/assert';
 import { AvailabilityZoneProvider, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { DefaultInstanceTenancy, SubnetType, VpcNetwork } from '../lib';
+import { DefaultInstanceTenancy, SubnetType, VpcNetwork, VpcSubnet } from '../lib';
 
 export = {
 
@@ -248,7 +248,7 @@ export = {
         },
         "with maxAZs set to 2"(test: Test) {
             const stack = getTestStack();
-            new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
+            const myVpc = new VpcNetwork(stack, 'VPC', { maxAZs: 2 });
             expect(stack).to(countResources("AWS::EC2::Subnet", 4));
             expect(stack).to(countResources("AWS::EC2::Route", 4));
             for (let i = 0; i < 4; i++) {
@@ -260,6 +260,20 @@ export = {
                 DestinationCidrBlock: '0.0.0.0/0',
                 NatGatewayId: { },
             }));
+            expect(stack).notTo(haveResource("AWS::EC2::Subnet",
+                hasTags([
+                    { Key: 'AddedTag', Value: 'NewThing' },
+                ])
+            ));
+            (myVpc.publicSubnets as VpcSubnet[]).forEach((subnet) => {
+                subnet.addTag({key: "AddedTag", value: "NewThing"});
+            });
+            expect(stack).to(haveResource('AWS::EC2::Subnet',
+                hasTags([
+                    { Key: 'AddedTag', Value: 'NewThing' },
+                ])
+            ));
+
             test.done();
         },
         "with natGateway set to 1"(test: Test) {
