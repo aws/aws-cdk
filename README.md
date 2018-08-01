@@ -32,7 +32,7 @@ glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
 [constructs]: https://awslabs.github.io/aws-cdk/constructs.html
-[stacks]: https://awslabs.github.io/aws-cdk/stack.html
+[stacks]: https://awslabs.github.io/aws-cdk/stacks.html
 [apps]: https://awslabs.github.io/aws-cdk/apps.html
 [User Guide]: https://awslabs.github.io/aws-cdk
 [Getting Started]: https://awslabs.github.io/aws-cdk/getting-started.html
