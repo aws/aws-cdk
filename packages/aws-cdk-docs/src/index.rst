@@ -50,7 +50,7 @@ Additional Documentation and Resources
 In addition to this guide, the following are other resources available to |cdk| users:
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
-* `Gitter Channel <https://gitter.im/awslabs/aws-cdk>`_
+* `Gitter Channel <https://gitter.im/aws-cdk/lobby>`_
 * `Stack Overflow <https://stackoverflow.com/questions/tagged/aws-cdk>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
@@ -84,5 +84,5 @@ To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and c
    AWS CloudFormation Library <cloudformation>
    Examples <examples>
    Tools <tools>
-   Module Reference <reference>
+   Reference <reference>
 
