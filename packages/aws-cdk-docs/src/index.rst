@@ -50,7 +50,7 @@ Additional Documentation and Resources
 In addition to this guide, the following are other resources available to |cdk| users:
 
 * `AWS Developer blog <https://aws.amazon.com/blogs/developer/>`_
-* `Gitter Channel <https://gitter.im/aws-cdk/lobby>`_
+* `Gitter Channel <https://gitter.im/aws-cdk/Lobby?source=orgpage>`_
 * `Stack Overflow <https://stackoverflow.com/questions/tagged/aws-cdk>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
