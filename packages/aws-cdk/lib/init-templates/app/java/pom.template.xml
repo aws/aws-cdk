@@ -53,7 +53,7 @@
     <dependencies>
         <!-- AWS Cloud Development Kit -->
         <dependency>
-            <groupId>com.amazonaws.cdk</groupId>
+            <groupId>com.amazonaws.cdk.aws-cdk</groupId>
             <artifactId>aws-cdk</artifactId>
             <version>LATEST</version>
         </dependency>
