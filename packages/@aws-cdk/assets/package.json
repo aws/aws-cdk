@@ -8,9 +8,9 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.assets",
+        "package": "software.amazon.awscdk.assets",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
+          "groupId": "software.amazon.awscdk",
           "artifactId": "assets"
         }
       },

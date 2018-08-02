@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.dax",
+        "package": "software.amazon.awscdk.aws.dax",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-dax"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.dax"
         }
       },
       "dotnet": {

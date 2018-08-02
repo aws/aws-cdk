@@ -165,8 +165,8 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
             <dependencies>
                 <dependency>
-                    <groupId>com.amazonaws.cdk</groupId>
-                    <artifactId>aws-cdk</artifactId>
+                    <groupId>software.amazon.awscdk</groupId>
+                    <artifactId>cdk</artifactId>
                     <version><!-- cdk-version --></version>
                 </dependency>
             </dependencies>
@@ -221,7 +221,7 @@ class. Let's create our first, empty **App**:
 
             package com.acme;
 
-            import com.amazonaws.cdk.App;
+            import software.amazon.awscdk.App;
 
             import java.util.Arrays;
             import java.util.List;
@@ -337,7 +337,7 @@ your project directory:
 
     .. group-tab:: Java
 
-        Specify a 
+        Specify a
         **CLASSPATH**, which contains both the compiled code and dependencies,
         to execute the Java program.
 
@@ -479,8 +479,8 @@ Define a stack and add it to the app.
 
             package com.acme;
 
-            import com.amazonaws.cdk.App;
-            import com.amazonaws.cdk.Stack;
+            import software.amazon.awscdk.App;
+            import software.amazon.awscdk.Stack;
 
             public class MyStack extends Stack {
                 public MyStack(final App parent, final String id) {
@@ -495,7 +495,7 @@ Define a stack and add it to the app.
 
             package com.acme;
 
-            import com.amazonaws.cdk.App;
+            import software.amazon.awscdk.App;
 
             import java.util.Arrays;
             import java.util.List;
@@ -568,7 +568,7 @@ details on how to associate stacks to environments.
 Define an |S3| Bucket
 =====================
 
-Now, what can we do with this app? Nothing yet. Our stack is still empty, so 
+Now, what can we do with this app? Nothing yet. Our stack is still empty, so
 there's nothing to deploy.
 
 Let's define an |S3| bucket.
@@ -596,8 +596,8 @@ Install the **@aws-cdk/aws-s3** package:
         .. code-block:: sh
 
             <dependency>
-                <groupId>com.amazonaws.cdk</groupId>
-                <artifactId>aws-s3</artifactId>
+                <groupId>software.amazon.awscdk</groupId>
+                <artifactId>aws.s3</artifactId>
                 <version><!-- cdk-version --></version>
             </dependency>
 
@@ -655,10 +655,10 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
             package com.acme;
 
-            import com.amazonaws.cdk.App;
-            import com.amazonaws.cdk.Stack;
-            import com.amazonaws.cdk.aws.s3.Bucket;
-            import com.amazonaws.cdk.aws.s3.BucketProps;
+            import software.amazon.awscdk.App;
+            import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.aws.s3.Bucket;
+            import software.amazon.awscdk.aws.s3.BucketProps;
 
             public class MyStack extends Stack {
                 public MyStack(final App parent, final String id) {

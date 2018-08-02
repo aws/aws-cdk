@@ -5,14 +5,20 @@ import { PackageJson } from "./packagejson";
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any) {
+export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp) {
     const parts = jsonPath.split('.');
     const actual = deepGet(pkg.json, parts);
-    if (actual !== expected) {
+    if (applyIgnore(actual) !== applyIgnore(expected)) {
         pkg.report({
-            message: `${jsonPath} should be ${JSON.stringify(expected)}, is ${JSON.stringify(actual)}`,
+            message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
             fix: () => { deepSet(pkg.json, parts, expected); }
         });
+    }
+
+    function applyIgnore(val: any): any {
+        if (!ignore || val == null) { return val; }
+        const str = JSON.stringify(val);
+        return str.replace(ignore, '');
     }
 }
 

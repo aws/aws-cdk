@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.servicediscovery",
+        "package": "software.amazon.awscdk.aws.servicediscovery",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-servicediscovery"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.servicediscovery"
         }
       },
       "dotnet": {

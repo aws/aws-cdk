@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.budgets",
+        "package": "software.amazon.awscdk.aws.budgets",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-budgets"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.budgets"
         }
       },
       "dotnet": {

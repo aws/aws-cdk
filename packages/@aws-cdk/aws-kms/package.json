@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.kms",
+        "package": "software.amazon.awscdk.aws.kms",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-kms"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.kms"
         }
       },
       "dotnet": {

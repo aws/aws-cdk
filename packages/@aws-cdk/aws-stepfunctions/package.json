@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.stepfunctions",
+        "package": "software.amazon.awscdk.aws.stepfunctions",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-stepfunctions"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.stepfunctions"
         }
       },
       "dotnet": {

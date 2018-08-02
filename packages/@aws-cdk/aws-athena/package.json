@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.athena",
+        "package": "software.amazon.awscdk.aws.athena",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-athena"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.athena"
         }
       },
       "dotnet": {

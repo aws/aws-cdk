@@ -1,8 +1,9 @@
+import caseUtils = require('case');
 import fs = require('fs');
 import path = require('path');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -132,16 +133,23 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
-        const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
-        if (!java) {
-            pkg.report({ message: 'JSII package must have a "java" target with "package"' });
-            return;
-        }
-
         const moduleName = cdkModuleName(pkg.json.name);
-        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage);
-        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'com.amazonaws.cdk');
-        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId);
+
+        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
+        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /./g);
+
+        const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
+        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage, /./g);
+        if (java) {
+            const expectedPrefix = moduleName.javaPackage.split('.').slice(0, 3).join('.');
+            const actualPrefix = java.split('.').slice(0, 3).join('.');
+            if (expectedPrefix !== actualPrefix) {
+                pkg.report({
+                    message: `JSII "java" package must share the first 3 elements of the expected one: ${expectedPrefix} vs ${actualPrefix}`,
+                    fix: () => deepSet(pkg.json, ['jsii', 'targets', 'java', 'package'], moduleName.javaPackage)
+                });
+            }
+        }
     }
 }
 
@@ -190,19 +198,16 @@ export class NoJsiiDep extends ValidationRule {
  */
 function cdkModuleName(name: string) {
     const isCdkPkg = name === '@aws-cdk/cdk';
-    const isCorePkg = !name.startsWith('@aws-cdk/aws-');
 
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
-    name = name.replace(/^(?:aws|cdk)-/, '');
 
-    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
-    const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
+    const dotnetSuffix = name.split('-').map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s)).join('.');
 
     return {
-        javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
-        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
+        javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/-/g, '.')}`}`,
+        mavenArtifactId: isCdkPkg ? 'cdk' : name.replace(/-/g, '.'),
+        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
     };
 }
 
@@ -214,16 +219,18 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
         if (!isJSII(pkg)) { return; }
 
         const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
-        if (!dotnet) {
-            pkg.report({ message: 'JSII package must have a "dotnet" target with "namespace"' });
-            return;
-        }
-
         const moduleName = cdkModuleName(pkg.json.name);
-        if (dotnet.toLocaleLowerCase() !== moduleName.dotnetNamespace.toLocaleLowerCase()) {
-            pkg.report({
-                message: `.NET namespace must (case-insensitively) match JS package name, '${moduleName.dotnetNamespace}' vs '${dotnet}'`
-            });
+        expectJSON(pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /./g);
+
+        if (dotnet) {
+            const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
+            const expectedPrefix = moduleName.dotnetNamespace.split('.').slice(0, 2).join('.');
+            if (actualPrefix !== expectedPrefix) {
+                pkg.report({
+                    message: `.NET namespace must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
+                    fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace'], moduleName.dotnetNamespace)
+                });
+            }
         }
     }
 }

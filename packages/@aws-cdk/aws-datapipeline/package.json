@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.datapipeline",
+        "package": "software.amazon.awscdk.aws.datapipeline",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-datapipeline"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.datapipeline"
         }
       },
       "dotnet": {

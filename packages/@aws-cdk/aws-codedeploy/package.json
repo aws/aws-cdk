@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codedeploy",
+        "package": "software.amazon.awscdk.aws.codedeploy",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codedeploy"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.codedeploy"
         }
       },
       "dotnet": {

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codebuild",
+        "package": "software.amazon.awscdk.aws.codebuild",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codebuild"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.codebuild"
         }
       },
       "dotnet": {
