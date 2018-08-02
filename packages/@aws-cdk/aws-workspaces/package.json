@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.workspaces",
+        "package": "software.amazon.awscdk.services.workspaces",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-workspaces"
+          "artifactId": "workspaces"
         }
       },
       "dotnet": {

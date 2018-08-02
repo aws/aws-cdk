@@ -148,7 +148,7 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
         expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /-/g);
 
         const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
-        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage, /./g);
+        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage, /\./g);
         if (java) {
             const expectedPrefix = moduleName.javaPackage.split('.').slice(0, 3).join('.');
             const actualPrefix = java.split('.').slice(0, 3).join('.');
@@ -214,8 +214,10 @@ function cdkModuleName(name: string) {
     const dotnetSuffix = name.split('-').map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s)).join('.');
 
     return {
-        javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/-/g, '.')}`}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : name,
+        javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+        mavenArtifactId: isCdkPkg ? 'cdk'
+                                  : name.startsWith('aws-') ? name.replace(/^aws-/, '')
+                                                            : `cdk-${name}`,
         dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
     };
 }
@@ -229,7 +231,7 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
         const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
         const moduleName = cdkModuleName(pkg.json.name);
-        expectJSON(pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /./g);
+        expectJSON(pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /*case insensitive*/ true);
 
         if (dotnet) {
             const actualPrefix = dotnet.split('.').slice(0, 2).join('.');

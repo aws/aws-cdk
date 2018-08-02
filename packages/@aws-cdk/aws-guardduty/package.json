@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.guardduty",
+        "package": "software.amazon.awscdk.services.guardduty",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-guardduty"
+          "artifactId": "guardduty"
         }
       },
       "dotnet": {

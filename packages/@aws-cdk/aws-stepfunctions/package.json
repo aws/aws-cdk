@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.stepfunctions",
+        "package": "software.amazon.awscdk.services.stepfunctions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-stepfunctions"
+          "artifactId": "stepfunctions"
         }
       },
       "dotnet": {

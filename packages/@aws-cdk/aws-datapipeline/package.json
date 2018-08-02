@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.datapipeline",
+        "package": "software.amazon.awscdk.services.datapipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-datapipeline"
+          "artifactId": "datapipeline"
         }
       },
       "dotnet": {

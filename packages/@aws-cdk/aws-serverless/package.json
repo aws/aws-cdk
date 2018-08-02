@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.serverless",
+        "package": "software.amazon.awscdk.services.serverless",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-serverless"
+          "artifactId": "serverless"
         }
       },
       "dotnet": {

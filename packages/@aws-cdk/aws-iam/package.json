@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.iam",
+        "package": "software.amazon.awscdk.services.iam",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-iam"
+          "artifactId": "iam"
         }
       },
       "dotnet": {

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.route53",
+        "package": "software.amazon.awscdk.services.route53",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-route53"
+          "artifactId": "route53"
         }
       },
       "dotnet": {

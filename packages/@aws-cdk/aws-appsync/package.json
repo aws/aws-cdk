@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.appsync",
+        "package": "software.amazon.awscdk.services.appsync",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-appsync"
+          "artifactId": "appsync"
         }
       },
       "dotnet": {

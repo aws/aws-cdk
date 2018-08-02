@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.elasticsearch",
+        "package": "software.amazon.awscdk.services.elasticsearch",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-elasticsearch"
+          "artifactId": "elasticsearch"
         }
       },
       "dotnet": {

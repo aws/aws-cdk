@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.autoscaling",
+        "package": "software.amazon.awscdk.services.autoscaling",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-autoscaling"
+          "artifactId": "autoscaling"
         }
       },
       "dotnet": {

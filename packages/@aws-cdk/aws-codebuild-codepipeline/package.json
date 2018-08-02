@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.codebuild.codepipeline",
+        "package": "software.amazon.awscdk.services.codebuild.codepipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-codebuild-codepipeline"
+          "artifactId": "codebuild-codepipeline"
         }
       },
       "dotnet": {

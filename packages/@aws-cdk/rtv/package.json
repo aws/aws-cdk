@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.rtv",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "rtv"
+          "artifactId": "cdk-rtv"
         }
       },
       "dotnet": {

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.iot",
+        "package": "software.amazon.awscdk.services.iot",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-iot"
+          "artifactId": "iot"
         }
       },
       "dotnet": {

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.cognito",
+        "package": "software.amazon.awscdk.services.cognito",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-cognito"
+          "artifactId": "cognito"
         }
       },
       "dotnet": {
