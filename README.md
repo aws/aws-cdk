@@ -2,7 +2,7 @@
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiRUlEQk1UWVhQRDduSy9iWWtpa012bmJSU0t2aXpCeEtTT2VpWDhlVmxldVU0ZXBoSzRpdTk1cGNNTThUaUtYVU5BMVZnd1ZhT2FTMWZjNkZ0RE5hSlpNPSIsIml2UGFyYW1ldGVyU3BlYyI6IllIUjJNUEZKY3NqYnR6S3EiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 [![Version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/aws-cdk/Lobby)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/awslabs/aws-cdk)
 
 The **AWS Cloud Development Kit (AWS CDK)** is an infrastructure modeling
 framework that allows you to define your cloud resources using an imperative
@@ -80,7 +80,7 @@ for tracking bugs and feature requests.
 
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
-* Come join the AWS CDK community on [Gitter](https://gitter.im/aws-cdk/Lobby)
+* Come join the AWS CDK community on [Gitter](https://gitter.im/awslabs/aws-cdk)
 * Open a support ticket with [AWS Support](https://console.aws.amazon.com/support/home#/)
 * If it turns out that you may have found a bug,
   please open an [issue](https://github.com/awslabs/aws-cdk/issues/new)
