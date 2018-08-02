@@ -8,3 +8,4 @@ tslint.json
 .jsii
 
 .LAST_BUILD
+.LAST_PACKAGE

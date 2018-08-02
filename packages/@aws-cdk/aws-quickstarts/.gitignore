@@ -7,3 +7,4 @@ dist
 .jsii
 
 .LAST_BUILD
+.LAST_PACKAGE
