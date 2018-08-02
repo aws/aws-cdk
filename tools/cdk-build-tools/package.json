@@ -11,7 +11,8 @@
   "bin": {
     "cdk-build": "bin/cdk-build",
     "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test"
+    "cdk-test": "bin/cdk-test",
+    "cdk-package": "bin/cdk-package"
   },
   "scripts": {
     "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
@@ -24,10 +25,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "pkglint": "^0.8.0"
+    "pkglint": "^0.8.0",
+    "@types/fs-extra": "^5.0.4",
+    "@types/yargs": "^8.0.3"
   },
   "dependencies": {
-    "@types/yargs": "^8.0.3",
+    "fs-extra": "^7.0.0",
     "merkle-build": "^0.8.0",
     "yargs": "^9.0.1"
   },

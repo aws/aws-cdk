@@ -8,7 +8,7 @@ import { Timers } from "./timer";
  *
  * Is platform-aware, handles errors nicely.
  */
-export async function shell(command: string[], timers?: Timers): Promise<void> {
+export async function shell(command: string[], timers?: Timers): Promise<string> {
     const timer = (timers || new Timers()).start(command[0]);
 
     await makeShellScriptExecutable(command[0]);
@@ -16,17 +16,23 @@ export async function shell(command: string[], timers?: Timers): Promise<void> {
     const child = child_process.spawn(command[0], command.slice(1), {
         // Need this for Windows where we want .cmd and .bat to be found as well.
         shell: true,
+        stdio: [ 'ignore', 'pipe', 'inherit' ]
     });
 
-    return new Promise<void>((resolve, reject) => {
-        child.stdout.on('data', process.stdout.write.bind(process.stdout));
-        child.stderr.on('data', process.stderr.write.bind(process.stderr));
-        child.on('error', reject);
+    return new Promise<string>((resolve, reject) => {
+        const stdout = new Array<any>();
 
-        child.on('exit', code => {
+        child.stdout.on('data', chunk => {
+            process.stdout.write(chunk);
+            stdout.push(chunk);
+        });
+
+        child.once('error', reject);
+
+        child.once('exit', code => {
             timer.end();
             if (code === 0) {
-                resolve();
+                resolve(Buffer.concat(stdout).toString('utf-8'));
             } else {
                 reject(new Error(`${renderCommandLine(command)} exited with error code ${code}`));
             }
