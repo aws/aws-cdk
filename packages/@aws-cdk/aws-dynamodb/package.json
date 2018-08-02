@@ -56,5 +56,6 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.8.0",
     "@aws-cdk/cdk": "^0.8.0"
-  }
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }
