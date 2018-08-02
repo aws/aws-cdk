@@ -3,11 +3,11 @@ package com.myorg;
 import com.amazonaws.cdk.App;
 import com.amazonaws.cdk.Stack;
 import com.amazonaws.cdk.StackProps;
-import com.amazonaws.cdk.iam.User;
-import com.amazonaws.cdk.sns.Topic;
-import com.amazonaws.cdk.sns.TopicProps;
-import com.amazonaws.cdk.sqs.Queue;
-import com.amazonaws.cdk.sqs.QueueProps;
+import com.amazonaws.cdk.aws.iam.User;
+import com.amazonaws.cdk.aws.sns.Topic;
+import com.amazonaws.cdk.aws.sns.TopicProps;
+import com.amazonaws.cdk.aws.sqs.Queue;
+import com.amazonaws.cdk.aws.sqs.QueueProps;
 
 public class HelloStack extends Stack {
     public HelloStack(final App parent, final String name) {

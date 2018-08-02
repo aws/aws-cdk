@@ -1,8 +1,8 @@
 package com.myorg;
 
 import com.amazonaws.cdk.Construct;
-import com.amazonaws.cdk.iam.IIdentityResource;
-import com.amazonaws.cdk.s3.Bucket;
+import com.amazonaws.cdk.aws.iam.IIdentityResource;
+import com.amazonaws.cdk.aws.s3.Bucket;
 
 import java.util.ArrayList;
 import java.util.List;
