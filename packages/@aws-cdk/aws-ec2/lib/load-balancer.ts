@@ -1,7 +1,7 @@
 import elasticloadbalancing = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { AnyIPv4, IConnectionPeer, IPortRange, TcpPort } from './connection';
-import { Connections, DefaultConnections, IConnectable, IConnections, IDefaultConnectable } from './connections';
+import { Connections, IConnectable, IDefaultConnectable } from './connections';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 
@@ -191,7 +191,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * Control all connections from and to this load balancer
      */
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     public readonly connectionPeer: IConnectionPeer;
 
@@ -254,7 +254,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
 
         // Allow connections on the public port for all supplied peers (default: everyone)
         ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
-            (port.connections as DefaultConnections).allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
+            port.connections.allowDefaultPortFrom(peer, `Default rule allow on ${listener.externalPort}`);
         });
 
         this.newInstancePort(instancePort);
@@ -330,10 +330,10 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
  * listener.
  */
 export class ClassicListenerPort implements IDefaultConnectable {
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     constructor(securityGroup: ISecurityGroup, public readonly defaultPortRange: IPortRange) {
-        this.connections = new DefaultConnections(securityGroup, this);
+        this.connections = new Connections(securityGroup, defaultPortRange);
     }
 }
 
