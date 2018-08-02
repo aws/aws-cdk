@@ -1,9 +1,9 @@
-package com.amazonaws.cdk.examples;
+package software.amazon.awscdk.examples;
 
-import com.amazonaws.cdk.Construct;
-import com.amazonaws.cdk.aws.sns.Topic;
-import com.amazonaws.cdk.aws.sqs.Queue;
-import com.amazonaws.cdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.Construct;
+import software.amazon.awscdk.aws.sns.Topic;
+import software.amazon.awscdk.aws.sqs.Queue;
+import software.amazon.awscdk.aws.sqs.QueueProps;
 
 import java.util.Arrays;
 import java.util.List;

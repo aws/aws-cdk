@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codecommit",
+        "package": "software.amazon.awscdk.aws.codecommit",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codecommit"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.codecommit"
         }
       },
       "dotnet": {

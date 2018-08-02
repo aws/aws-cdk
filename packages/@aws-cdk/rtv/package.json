@@ -8,9 +8,9 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.rtv",
+        "package": "software.amazon.awscdk.rtv",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
+          "groupId": "software.amazon.awscdk",
           "artifactId": "rtv"
         }
       },
