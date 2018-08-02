@@ -1,5 +1,0 @@
-maven-repo
-project
-*.tgz
-!*.t.js
-!index.js

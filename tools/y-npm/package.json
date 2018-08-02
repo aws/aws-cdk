@@ -2,6 +2,7 @@
   "name": "y-npm",
   "version": "0.8.0",
   "description": "Run npm commands using a local registry overlay",
+  "private": true,
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
@@ -19,7 +20,8 @@
     "watch": "cdk-watch",
     "lint": "tslint -p .",
     "test": "cdk-test",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
   },
   "dependencies": {
     "colors": "^1.2.1",

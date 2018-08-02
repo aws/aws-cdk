@@ -20,40 +20,52 @@ echo "Staging: ${staging}"
 # Bundle structure
 # ================
 #   aws-cdk-${version}.zip
+#   │
 #   ├─ bin
-#   ├─ docs
-#   ├─ repo
-#   │  └ maven
-#   ├─ y
-#   │  └─ npm
 #   ├─ node_modules
+#   ├─ y
+#   │  └─ npm - y-npm repository for local installs (duplicate tarballs)
+#   │
+#   ├─ docs   - rendered docsite
+#   ├─ npm    - npm tarballs
+#   ├─ dotnet - nuget packages
+#   ├─ java   - maven repository
+#   │
 #   └─ .version
 
+# Bootstrap our distribution with "pack/", which contains the collection of all
+# dist/ directories in the repo (this is what ./pack.sh is doing). This includes
+# 'docs', 'npm', 'java' and 'dotnet' and any other jsii language artifacts.
+rsync -av ${root}/pack/ .
+# Also bundle the JSII java runtime in the Maven Repository
+rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ ./java/
+
+# We are keeping y-npm support only for backwards compatibility reasons and until
+# we publish y-npm itself and can devise instructions on how to use the self-contained .zip.
+# Integration tests also depend on this behavior for now.
+
+y_npm_dir="${root}/tools/y-npm"
+Y_NPM="${y_npm_dir}/bin/y-npm"
+
 # Creating a `y-npm` registry
-echo "Preparing local NPM registry"
-mkdir -p y/npm
+echo "Preparing local NPM registry under y/npm"
 export Y_NPM_REPOSITORY="${staging}/y/npm"
-Y_NPM="${root}/tools/y-npm/bin/y-npm"
-for tarball in $(find ${root}/pack -iname '*.tgz'); do
+mkdir -p ${Y_NPM_REPOSITORY}
+
+# Publish all tarballs from the "npm" dist to this repo
+# Yes, this means we will have duplicate tgz for now.
+echo "Publishing CDK npm modules into y/npm"
+for tarball in $PWD/npm/*.tgz; do
     ${Y_NPM} publish ${tarball}
 done
 
-echo "Installing y-npm" # using y-npm, we're so META!
-${Y_NPM} install --global-style --no-save y-npm
-# Because y-npm is installed on the build server, we need to bootstrap
+echo "Installing y-npm under node_modules"
+y_npm_tarball=${y_npm_dir}/$(cd ${y_npm_dir} && npm pack) # produce a tarball
+npm install --global-style --no-save ${y_npm_tarball}
+# Because y-npm is installed on the build server (Linux), we need to bootstrap
 # it on windows by manually creating the shim batch file.
-cp ${root}/tools/y-npm/bin/y-npm.template.cmd node_modules/.bin/y-npm.cmd
+cp ${y_npm_dir}/bin/y-npm.template.cmd node_modules/.bin/y-npm.cmd
 ln -s node_modules/.bin bin
-
-# Create a local maven repository
-echo "Preparing local MVN registry"
-mkdir -p repo/maven
-rsync -av ${root}/packages/aws-cdk-java/maven-repo/ repo/maven/
-rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ repo/maven/
-
-# Copy the docs website to docs
-echo "Copying docs"
-cp -r ${root}/packages/aws-cdk-docs/dist/docs docs
 
 # Create an archive under ./dist
 echo "Creating ZIP bundle"

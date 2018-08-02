@@ -1,4 +1,5 @@
 import { ChangeDetector } from "merkle-build";
+import ignoreList = require('./ignore-list');
 import { makeExecutable, shell } from "./os";
 import { currentPackageJson, packageCompiler } from "./package-info";
 import { Timers } from "./timer";
@@ -15,24 +16,7 @@ export async function compileCurrentPackage(timers: Timers, force?: boolean): Pr
     //
     // (Which might be false in case the compiler is jsii, but what can we do?)
     const detector = new ChangeDetector('.', {
-        ignore: [
-            // Output directories that are not part of the build dependencies
-            'coverage', 'dist',
-
-            // Slight hack: we have a dependency cycle of
-            //
-            //    aws-cdk => @aws-cdk/* => cdk-integ-tools => aws-cdk
-            //
-            // This cycle manifests itself as a symlink cycle. In the general
-            // case, we cannot calculate the source hash of the source tree now,
-            // but we can apply more knowledge: we know that 'aws-cdk' cannot affect
-            // the build output of the package, because it's never a source dependency.
-            //
-            // We break the cycle by excluding that package.
-            //
-            // https://github.com/awslabs/aws-cdk/pull/32
-            'aws-cdk'
-        ]
+        ignore: ignoreList
     });
 
     const isChanged = await timers.recordAsync('detectChanges', () => detector.isChanged());

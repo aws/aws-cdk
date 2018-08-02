@@ -12,7 +12,8 @@
     "lint": "cdk-lint",
     "watch": "cdk-watch",
     "pkglint": "pkglint -f",
-    "test": "cdk-test"
+    "test": "cdk-test",
+    "package": "cdk-package"
   },
   "author": {
     "name": "Amazon Web Services",

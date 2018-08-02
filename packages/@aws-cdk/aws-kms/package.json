@@ -29,7 +29,8 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "integ": "cdk-integ"
+    "integ": "cdk-integ",
+    "package": "cdk-package"
   },
   "cdk-build": {
     "cloudformation": "AWS::KMS"

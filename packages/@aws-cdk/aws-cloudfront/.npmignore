@@ -6,3 +6,7 @@ dist
 coverage
 .nyc_output
 *.tgz
+
+.LAST_PACKAGE
+.LAST_BUILD
+!*.js

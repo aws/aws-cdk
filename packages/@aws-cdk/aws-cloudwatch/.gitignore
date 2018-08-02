@@ -13,3 +13,4 @@ lib/generated/resources.ts
 .nyc_output
 coverage
 .nycrc
+.LAST_PACKAGE

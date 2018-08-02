@@ -12,3 +12,4 @@ dist
 .nyc_output
 coverage
 .nycrc
+.LAST_PACKAGE

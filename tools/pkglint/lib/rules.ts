@@ -145,6 +145,29 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
     }
 }
 
+export class CDKPackage extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        // skip private packages
+        if (pkg.json.private) { return; }
+
+        const merkleMarker = '.LAST_PACKAGE';
+
+        expectJSON(pkg, 'scripts.package', 'cdk-package');
+
+        const outdir = 'dist';
+
+        // if this is
+        if (isJSII(pkg)) {
+            expectJSON(pkg, 'jsii.outdir', outdir);
+        }
+
+        fileShouldContain(pkg, '.npmignore', outdir);
+        fileShouldContain(pkg, '.gitignore', outdir);
+        fileShouldContain(pkg, '.npmignore', merkleMarker);
+        fileShouldContain(pkg, '.gitignore', merkleMarker);
+    }
+}
+
 /**
  * Verifies there is no dependency on "jsii" since it's defined at the repo
  * level.
@@ -226,7 +249,24 @@ export class MustUseCDKBuild extends ValidationRule {
         expectJSON(pkg, 'scripts.build', 'cdk-build');
 
         // cdk-build will write a hash file that we have to ignore.
-        fileShouldContain(pkg, '.gitignore', '.LAST_BUILD');
+        const merkleMarker = '.LAST_BUILD';
+        fileShouldContain(pkg, '.gitignore', merkleMarker);
+        fileShouldContain(pkg, '.npmignore', merkleMarker);
+    }
+}
+
+export class NpmIgnoreForJsiiModules extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+
+        fileShouldContain(pkg, '.npmignore',
+            '*.ts',
+            '!*.d.ts',
+            '!*.js',
+            'coverage',
+            '.nyc_output',
+            '*.tgz',
+        );
     }
 }
 

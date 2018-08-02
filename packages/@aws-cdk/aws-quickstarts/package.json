@@ -28,7 +28,8 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test"
+    "test": "cdk-test",
+    "package": "cdk-package"
   },
   "keywords": [
     "aws",
