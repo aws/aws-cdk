@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codecommitcodepipeline",
+        "package": "software.amazon.awscdk.aws.codecommit.codepipeline",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codecommitcodepipeline"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.codecommit.codepipeline"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeCommitCodePipeline"
+        "namespace": "Amazon.CDK.AWS.Codecommit.Codepipeline"
       }
     }
   },

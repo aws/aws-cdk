@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.cloudwatch",
+        "package": "software.amazon.awscdk.aws.cloudwatch",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-cloudwatch"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.cloudwatch"
         }
       },
       "dotnet": {

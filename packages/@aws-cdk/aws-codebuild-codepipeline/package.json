@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.codebuildcodepipeline",
+        "package": "software.amazon.awscdk.aws.codebuild.codepipeline",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-codebuildcodepipeline"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.codebuild.codepipeline"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeBuildCodePipeline"
+        "namespace": "Amazon.CDK.AWS.Codebuild.Codepipeline"
       }
     }
   },

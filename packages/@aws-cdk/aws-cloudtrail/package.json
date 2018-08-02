@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.cloudtrail",
+        "package": "software.amazon.awscdk.aws.cloudtrail",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-cloudtrail"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.cloudtrail"
         }
       },
       "dotnet": {
