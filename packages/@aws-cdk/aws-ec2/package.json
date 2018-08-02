@@ -63,5 +63,6 @@
   },
   "bundledDependencies": [
     "@aws-cdk/util"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

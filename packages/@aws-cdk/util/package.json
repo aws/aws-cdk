@@ -30,5 +30,6 @@
   "devDependencies": {
     "cdk-build-tools": "^0.8.0",
     "pkglint": "^0.8.0"
-  }
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

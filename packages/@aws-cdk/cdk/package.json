@@ -60,5 +60,6 @@
   "bundledDependencies": [
     "json-diff",
     "js-base64"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }
