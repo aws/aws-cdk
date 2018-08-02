@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.dax",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.dax"
+          "artifactId": "aws-dax"
         }
       },
       "dotnet": {

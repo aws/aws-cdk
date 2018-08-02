@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.events",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.events"
+          "artifactId": "aws-events"
         }
       },
       "dotnet": {

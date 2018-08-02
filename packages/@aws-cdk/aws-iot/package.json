@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.iot",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.iot"
+          "artifactId": "aws-iot"
         }
       },
       "dotnet": {

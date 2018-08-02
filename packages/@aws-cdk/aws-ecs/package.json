@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.ecs",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.ecs"
+          "artifactId": "aws-ecs"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.cloudwatch",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.cloudwatch"
+          "artifactId": "aws-cloudwatch"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.ecr",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.ecr"
+          "artifactId": "aws-ecr"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.cognito",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.cognito"
+          "artifactId": "aws-cognito"
         }
       },
       "dotnet": {

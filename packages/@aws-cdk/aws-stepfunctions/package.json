@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.stepfunctions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.stepfunctions"
+          "artifactId": "aws-stepfunctions"
         }
       },
       "dotnet": {

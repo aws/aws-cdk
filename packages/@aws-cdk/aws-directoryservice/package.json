@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.directoryservice",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.directoryservice"
+          "artifactId": "aws-directoryservice"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.elasticloadbalancing",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.elasticloadbalancing"
+          "artifactId": "aws-elasticloadbalancing"
         }
       },
       "dotnet": {

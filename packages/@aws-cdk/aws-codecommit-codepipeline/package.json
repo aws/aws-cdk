@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.codecommit.codepipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.codecommit.codepipeline"
+          "artifactId": "aws-codecommit-codepipeline"
         }
       },
       "dotnet": {

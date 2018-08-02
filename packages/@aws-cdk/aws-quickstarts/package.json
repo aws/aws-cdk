@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.quickstarts",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.quickstarts"
+          "artifactId": "aws-quickstarts"
         }
       },
       "dotnet": {

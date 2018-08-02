@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.sdb",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.sdb"
+          "artifactId": "aws-sdb"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.lambda",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.lambda"
+          "artifactId": "aws-lambda"
         }
       },
       "dotnet": {

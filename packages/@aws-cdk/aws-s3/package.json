@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.s3",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.s3"
+          "artifactId": "aws-s3"
         }
       },
       "dotnet": {

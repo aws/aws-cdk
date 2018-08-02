@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.applicationautoscaling",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.applicationautoscaling"
+          "artifactId": "aws-applicationautoscaling"
         }
       },
       "dotnet": {

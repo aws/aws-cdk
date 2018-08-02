@@ -54,22 +54,22 @@
         <!-- Respective AWS Construct Libraries -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>aws.iam</artifactId>
+            <artifactId>aws-iam</artifactId>
             <version>%cdk-version%</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>aws.s3</artifactId>
+            <artifactId>aws-s3</artifactId>
             <version>%cdk-version%</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>aws.sns</artifactId>
+            <artifactId>aws-sns</artifactId>
             <version>%cdk-version%</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>aws.sqs</artifactId>
+            <artifactId>aws-sqs</artifactId>
             <version>%cdk-version%</version>
         </dependency>
 

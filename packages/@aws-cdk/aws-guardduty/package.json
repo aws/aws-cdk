@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.guardduty",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.guardduty"
+          "artifactId": "aws-guardduty"
         }
       },
       "dotnet": {

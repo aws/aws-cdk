@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.cloudformation",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.cloudformation"
+          "artifactId": "aws-cloudformation"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.wafregional",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.wafregional"
+          "artifactId": "aws-wafregional"
         }
       },
       "dotnet": {

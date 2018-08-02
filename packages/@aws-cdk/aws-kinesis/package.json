@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.kinesis",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.kinesis"
+          "artifactId": "aws-kinesis"
         }
       },
       "dotnet": {

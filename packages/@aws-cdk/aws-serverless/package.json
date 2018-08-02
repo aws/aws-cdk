@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.serverless",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.serverless"
+          "artifactId": "aws-serverless"
         }
       },
       "dotnet": {

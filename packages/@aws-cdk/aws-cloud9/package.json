@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.cloud9",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.cloud9"
+          "artifactId": "aws-cloud9"
         }
       },
       "dotnet": {

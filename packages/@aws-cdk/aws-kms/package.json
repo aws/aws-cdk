@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.kms",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.kms"
+          "artifactId": "aws-kms"
         }
       },
       "dotnet": {

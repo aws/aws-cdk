@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.codedeploy",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.codedeploy"
+          "artifactId": "aws-codedeploy"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.servicecatalog",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.servicecatalog"
+          "artifactId": "aws-servicecatalog"
         }
       },
       "dotnet": {

@@ -145,7 +145,7 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
         const moduleName = cdkModuleName(pkg.json.name);
 
         expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
-        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /./g);
+        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /-/g);
 
         const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
         expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage, /./g);
@@ -215,7 +215,7 @@ function cdkModuleName(name: string) {
 
     return {
         javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/-/g, '.')}`}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : name.replace(/-/g, '.'),
+        mavenArtifactId: isCdkPkg ? 'cdk' : name,
         dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
     };
 }

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.datapipeline",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.datapipeline"
+          "artifactId": "aws-datapipeline"
         }
       },
       "dotnet": {

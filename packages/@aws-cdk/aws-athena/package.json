@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.athena",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.athena"
+          "artifactId": "aws-athena"
         }
       },
       "dotnet": {

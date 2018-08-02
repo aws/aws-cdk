@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.rds",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.rds"
+          "artifactId": "aws-rds"
         }
       },
       "dotnet": {

@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.aws.inspector",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.inspector"
+          "artifactId": "aws-inspector"
         }
       },
       "dotnet": {

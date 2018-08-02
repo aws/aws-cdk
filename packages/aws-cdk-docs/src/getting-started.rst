@@ -597,7 +597,7 @@ Install the **@aws-cdk/aws-s3** package:
 
             <dependency>
                 <groupId>software.amazon.awscdk</groupId>
-                <artifactId>aws.s3</artifactId>
+                <artifactId>aws-s3</artifactId>
                 <version><!-- cdk-version --></version>
             </dependency>
 
