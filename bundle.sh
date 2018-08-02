@@ -15,7 +15,8 @@ if [ -z "${commit}" ]; then
   commit="$(git rev-parse --verify HEAD)"
 fi
 
-echo "Bundling ${version}-${commit:0:7}..."
+full_version="${version}+${commit:0:7}"
+echo "Bundling ${full_version}..."
 
 staging="$(mktemp -d)"
 cleanup() {
@@ -83,7 +84,7 @@ echo "Creating ZIP bundle"
 
 echo ${version} > .version
 dist=${root}/dist
-output=${dist}/aws-cdk-${version}+${commit:0:7}.zip
+output="${dist}/aws-cdk-${full_version}.zip"
 rm -fr ${dist}
 mkdir -p ${dist}
 zip -y -r ${output} .
