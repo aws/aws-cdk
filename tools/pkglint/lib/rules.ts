@@ -42,6 +42,15 @@ export class RepositoryCorrect extends ValidationRule {
 }
 
 /**
+ * Homepage must point to the GitHub repository page.
+ */
+export class HomepageCorrect extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        expectJSON(pkg, 'homepage', 'https://github.com/awslabs/aws-cdk');
+    }
+}
+
+/**
  * The license must be Apache-2.0.
  */
 export class License extends ValidationRule {

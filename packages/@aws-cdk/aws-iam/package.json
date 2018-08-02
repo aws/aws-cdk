@@ -57,5 +57,6 @@
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.8.0"
-  }
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

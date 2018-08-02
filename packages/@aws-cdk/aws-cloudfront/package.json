@@ -58,5 +58,6 @@
     "@aws-cdk/aws-kms": "^0.8.0",
     "@aws-cdk/aws-s3": "^0.8.0",
     "@aws-cdk/cdk": "^0.8.0"
-  }
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }
