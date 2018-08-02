@@ -23,11 +23,6 @@ echo $NUGET_CONFIG_CONTENT > ./src/NuGet.config
 AWS_CDK=../@aws-cdk
 echo "Searching $AWS_CDK for jsii packages..."
 for i in $( ls $AWS_CDK ); do
-    # Generation of aws-custom-resources is blocked due to https://github.com/awslabs/aws-cdk/issues/383
-    if [ "$i" == "aws-custom-resources" ]; then
-        continue
-    fi
-
     AWS_CDK_PACKAGE=$AWS_CDK/$i
     AWS_CDK_ASSEMBLY=$AWS_CDK_PACKAGE/.jsii
     if [ -e $AWS_CDK_ASSEMBLY ]; then

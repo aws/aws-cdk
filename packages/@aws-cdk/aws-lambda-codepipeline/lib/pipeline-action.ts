@@ -80,7 +80,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
      * Add an input artifact
      * @param artifact
      */
-    public addInputArtifact(artifact: codepipeline.Artifact): PipelineInvokeAction {
+    protected addInputArtifact(artifact: codepipeline.Artifact): codepipeline.Action {
         super.addInputArtifact(artifact);
         return this;
     }
