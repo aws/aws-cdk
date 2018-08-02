@@ -4,16 +4,12 @@ set -euo pipefail
 ###
 # Usage: ./publish-docs.sh <release-zip>
 #
-# Publishes the content of a release bundle ZIP file to the standard package
-# repositories for the various supported languages:
-# * Javascript & TypeScript: NPM
-# * Documentation: GitHub Pages
-# * (More to come later)
+# Publishes the documentation from a release bundle ZIP file to GitHub Pages
 ###
 
 if [ $# -ne 1 ]; then
     echo "Missing release zip file argument"
-    echo "Usage: ./publish.sh <release-zip>"
+    echo "Usage: ./publish-docs.sh <release-zip>"
     exit 1
 fi
 

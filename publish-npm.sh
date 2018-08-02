@@ -2,18 +2,14 @@
 set -euo pipefail
 
 ###
-# Usage: ./publish.sh <release-zip>
+# Usage: ./publish-npm.sh <release-zip>
 #
-# Publishes the content of a release bundle ZIP file to the standard package
-# repositories for the various supported languages:
-# * Javascript & TypeScript: NPM
-# * Documentation: GitHub Pages
-# * (More to come later)
+# Publishes the content of a release bundle ZIP file to NPM
 ###
 
 if [ $# -ne 1 ]; then
     echo "Missing release zip file argument"
-    echo "Usage: ./publish.sh <release-zip>"
+    echo "Usage: ./publish-npm.sh <release-zip>"
     exit 1
 fi
 
