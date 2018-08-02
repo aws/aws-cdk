@@ -77,14 +77,35 @@ process.stdout.write(`
 
     <dependencies>
         <dependency>
-            <groupId>com.amazonaws</groupId>
+            <groupId>software.amazon.jsii</groupId>
             <artifactId>jsii-runtime</artifactId>
             <version>${jsii.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.amazonaws.cdk</groupId>
-            <artifactId>aws-cdk</artifactId>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>cdk</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>ec2</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>${cdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>sqs</artifactId>
             <version>${cdk.version}</version>
         </dependency>
 
