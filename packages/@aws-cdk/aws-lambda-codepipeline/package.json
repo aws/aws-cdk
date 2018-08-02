@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.lambdacodepipeline",
+        "package": "software.amazon.awscdk.aws.lambda.codepipeline",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-lambdacodepipeline"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.lambda.codepipeline"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.LambdaCodePipeline"
+        "namespace": "Amazon.CDK.AWS.Lambda.Codepipeline"
       }
     }
   },

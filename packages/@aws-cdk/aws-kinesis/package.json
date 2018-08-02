@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.kinesis",
+        "package": "software.amazon.awscdk.aws.kinesis",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-kinesis"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.kinesis"
         }
       },
       "dotnet": {

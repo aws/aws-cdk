@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.customresources",
+        "package": "software.amazon.awscdk.aws.custom.resources",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-customresources"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.custom.resources"
         }
       },
       "dotnet": {

@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.elasticloadbalancingv2",
+        "package": "software.amazon.awscdk.aws.elasticloadbalancingv2",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-elasticloadbalancingv2"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "aws.elasticloadbalancingv2"
         }
       },
       "dotnet": {
