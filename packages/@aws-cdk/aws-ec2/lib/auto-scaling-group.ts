@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { AllConnections, AnyIPv4, IConnectionPeer } from './connection';
-import { Connections, IConnections } from './connections';
+import { Connections } from './connections';
 import { InstanceType } from './instance-types';
 import { ClassicLoadBalancer, IClassicLoadBalancerTarget } from './load-balancer';
 import { IMachineImageSource, OperatingSystemType } from './machine-image';
@@ -94,7 +94,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
     /**
      * Allows specify security group connections for instances of this fleet.
      */
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     /**
      * The IAM role assumed by instances of this fleet.

@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Connections, IConnectable, IConnections, SecurityGroup, TcpPort, VpcNetwork } from '../lib';
+import { Connections, IConnectable, SecurityGroup, TcpPort, VpcNetwork } from '../lib';
 
 export = {
     'peering between two security groups does not recursive infinitely'(test: Test) {
@@ -23,6 +23,6 @@ export = {
 };
 
 class ConnectionsHolder implements IConnectable {
-    constructor(public readonly connections: IConnections) {
+    constructor(public readonly connections: Connections) {
     }
 }

@@ -81,8 +81,8 @@ and ApplicationSubnet1 will be in the same avialbility zone).
 `Isolated` Subnets provide simplified secure networking principles, but come at
 an operational complexity. The lack of an internet route means that if you deploy
 instances in this subnet you will not be able to patch from the internet, this is
-commonly reffered to as 
-[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/). 
+commonly reffered to as
+[fully baked images](https://aws.amazon.com/answers/configuration-management/aws-ami-design/).
 Features such as
 [cfn-signal](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-signal.html)
 are also unavailable. Using these subnets for managed services (RDS,
@@ -324,8 +324,8 @@ For example:
 
 ```ts
 // Port implicit in listener
-(listener.connections as ec2.DefaultConnections).allowDefaultPortFromAnyIpv4('Allow public');
+listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 
 // Port implicit in peer
-(fleet.connections as ec2.DefaultConnections).allowToDefaultPort(rdsDatabase, 'Fleet can access database');
+fleet.connections.allowToDefaultPort(rdsDatabase, 'Fleet can access database');
 ```

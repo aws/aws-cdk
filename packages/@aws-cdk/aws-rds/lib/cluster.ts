@@ -125,7 +125,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Access to the network connections
      */
-    public readonly connections: ec2.IConnections;
+    public readonly connections: ec2.Connections;
 
     /**
      * Security group identifier of this database
@@ -215,7 +215,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
         }
 
         this.defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
-        this.connections = new ec2.DefaultConnections(securityGroup, this);
+        this.connections = new ec2.Connections(securityGroup, this.defaultPortRange);
     }
 }
 

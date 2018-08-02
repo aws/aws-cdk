@@ -1,5 +1,5 @@
 import { Token } from "@aws-cdk/cdk";
-import { IConnectable, IConnections, SecurityGrouplessConnections } from "./connections";
+import { Connections, IConnectable, SecurityGrouplessConnections } from "./connections";
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
@@ -26,7 +26,7 @@ export interface IConnectionPeer {
  */
 export class CidrIp implements IConnectionPeer, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     constructor(private readonly cidrIp: string) {
         this.connections = new SecurityGrouplessConnections(this);
@@ -60,7 +60,7 @@ export class AnyIPv4 extends CidrIp {
  */
 export class CidrIpv6 implements IConnectionPeer, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     constructor(private readonly cidrIpv6: string) {
         this.connections = new SecurityGrouplessConnections(this);
@@ -100,7 +100,7 @@ export class AnyIPv6 extends CidrIpv6 {
  */
 export class PrefixList implements IConnectionPeer, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: IConnections;
+    public readonly connections: Connections;
 
     constructor(private readonly prefixListId: string) {
         this.connections = new SecurityGrouplessConnections(this);
