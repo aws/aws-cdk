@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.directoryservice",
+        "package": "software.amazon.awscdk.services.directoryservice",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-directoryservice"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "directoryservice"
         }
       },
       "dotnet": {

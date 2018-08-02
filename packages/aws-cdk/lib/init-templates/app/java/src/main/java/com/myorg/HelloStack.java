@@ -1,13 +1,13 @@
 package com.myorg;
 
-import com.amazonaws.cdk.App;
-import com.amazonaws.cdk.Stack;
-import com.amazonaws.cdk.StackProps;
-import com.amazonaws.cdk.iam.User;
-import com.amazonaws.cdk.sns.Topic;
-import com.amazonaws.cdk.sns.TopicProps;
-import com.amazonaws.cdk.sqs.Queue;
-import com.amazonaws.cdk.sqs.QueueProps;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.iam.User;
+import software.amazon.awscdk.services.sns.Topic;
+import software.amazon.awscdk.services.sns.TopicProps;
+import software.amazon.awscdk.services.sqs.Queue;
+import software.amazon.awscdk.services.sqs.QueueProps;
 
 public class HelloStack extends Stack {
     public HelloStack(final App parent, final String name) {

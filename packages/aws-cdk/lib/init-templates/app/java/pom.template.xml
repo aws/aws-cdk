@@ -53,8 +53,8 @@
     <dependencies>
         <!-- AWS Cloud Development Kit -->
         <dependency>
-            <groupId>com.amazonaws.cdk</groupId>
-            <artifactId>aws-cdk</artifactId>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>core</artifactId>
             <version>LATEST</version>
         </dependency>
 

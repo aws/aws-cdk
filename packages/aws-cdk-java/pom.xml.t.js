@@ -12,8 +12,8 @@ process.stdout.write(`<?xml version="1.0" encoding="UTF-8"?>
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.amazonaws.cdk</groupId>
-    <artifactId>aws-cdk</artifactId>
+    <groupId>software.amazon.awscdk</groupId>
+    <artifactId>core</artifactId>
     <version>${version}</version>
 
     <properties>

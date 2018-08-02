@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.emr",
+        "package": "software.amazon.awscdk.services.emr",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-emr"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "emr"
         }
       },
       "dotnet": {

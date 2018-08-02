@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.cloud9",
+        "package": "software.amazon.awscdk.services.cloud9",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-cloud9"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cloud9"
         }
       },
       "dotnet": {

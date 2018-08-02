@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.neptune",
+        "package": "software.amazon.awscdk.services.neptune",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-neptune"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "neptune"
         }
       },
       "dotnet": {

@@ -27,8 +27,8 @@ process.stdout.write(`
         </repository>
     </repositories>
 
-    <groupId>com.amazonaws.cdk</groupId>
-    <artifactId>cdk-examples-java</artifactId>
+    <groupId>software.amazon.awscdk</groupId>
+    <artifactId>examples</artifactId>
     <version>${version}</version>
 
     <properties>
@@ -57,7 +57,7 @@ process.stdout.write(`
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.amazonaws.cdk.examples.HelloJavaApp</mainClass>
+                            <mainClass>software.amazon.awscdk.examples.HelloJavaApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -83,8 +83,8 @@ process.stdout.write(`
         </dependency>
 
         <dependency>
-            <groupId>com.amazonaws.cdk</groupId>
-            <artifactId>aws-cdk</artifactId>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>core</artifactId>
             <version>${cdk.version}</version>
         </dependency>
 

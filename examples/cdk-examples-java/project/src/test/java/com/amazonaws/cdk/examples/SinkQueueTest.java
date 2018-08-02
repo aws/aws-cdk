@@ -1,9 +1,9 @@
-package com.amazonaws.cdk.examples;
+package software.amazon.awscdk.examples;
 
-import com.amazonaws.cdk.App;
-import com.amazonaws.cdk.Stack;
-import com.amazonaws.cdk.aws.sns.Topic;
-import com.amazonaws.cdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.services.sns.Topic;
+import software.amazon.awscdk.services.sqs.QueueProps;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsii.JsiiException;

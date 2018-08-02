@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.events",
+        "package": "software.amazon.awscdk.services.events",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-events"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "events"
         }
       },
       "dotnet": {

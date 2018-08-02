@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk",
+        "package": "software.amazon.awscdk",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "cdk"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "core"
         }
       },
       "dotnet": {

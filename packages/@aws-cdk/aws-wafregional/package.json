@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.wafregional",
+        "package": "software.amazon.awscdk.services.wafregional",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-wafregional"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "wafregional"
         }
       },
       "dotnet": {

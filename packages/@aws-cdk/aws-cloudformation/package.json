@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.cloudformation",
+        "package": "software.amazon.awscdk.services.cloudformation",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-cloudformation"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cloudformation"
         }
       },
       "dotnet": {
