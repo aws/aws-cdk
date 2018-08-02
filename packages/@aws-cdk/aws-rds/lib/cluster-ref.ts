@@ -21,7 +21,7 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.ID
     /**
      * Access to the network connections
      */
-    public abstract readonly connections: ec2.IConnections;
+    public abstract readonly connections: ec2.Connections;
 
     /**
      * Identifier of the cluster
@@ -122,7 +122,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Access to the network connections
      */
-    public readonly connections: ec2.IConnections;
+    public readonly connections: ec2.Connections;
 
     /**
      * Identifier of the cluster
@@ -159,7 +159,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
 
         this.securityGroupId = props.securityGroupId;
         this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
-        this.connections = new ec2.DefaultConnections(new ec2.SecurityGroupRef(this, 'SecurityGroup', props), this);
+        this.connections = new ec2.Connections(new ec2.SecurityGroupRef(this, 'SecurityGroup', props), this.defaultPortRange);
         this.clusterIdentifier = props.clusterIdentifier;
         this.clusterEndpoint = new Endpoint(props.clusterEndpointAddress, props.port);
         this.readerEndpoint = new Endpoint(props.readerEndpointAddress, props.port);

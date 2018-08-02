@@ -20,6 +20,6 @@ const cluster = new DatabaseCluster(stack, 'Database', {
     }
 });
 
-(cluster.connections as ec2.DefaultConnections).allowDefaultPortFromAnyIpv4('Open to the world');
+cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 process.stdout.write(app.run());
