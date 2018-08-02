@@ -33,7 +33,7 @@ export default class CodeGenerator {
             fingerprint: spec.Fingerprint
         };
 
-        this.code.line('// Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.');
+        this.code.line('// Copyright 2012-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.');
         this.code.line('// Generated from the AWS CloudFormation Resource Specification');
         this.code.line('// See: docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html');
         this.code.line(`// @cfn2ts:meta@ ${JSON.stringify(meta)}`);
