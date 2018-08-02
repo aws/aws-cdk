@@ -108,7 +108,7 @@ export class NeptuneDatabase extends cdk.Construct implements ec2.IConnectable {
      */
     public readonly instanceEndpoints: rds.Endpoint[] = [];
 
-    public readonly connections: ec2.IConnections;
+    public readonly connections: ec2.Connections;
 
     private readonly cluster: rds.DatabaseCluster;
 

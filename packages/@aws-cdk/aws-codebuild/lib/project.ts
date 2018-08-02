@@ -301,7 +301,7 @@ export interface CommonProjectProps {
      * Filename or contents of buildspec in JSON format.
      * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
      */
-    buildSpec?: object;
+    buildSpec?: any;
 
     /**
      * Service Role to assume while running the build.
@@ -419,7 +419,9 @@ export class Project extends ProjectRef {
         artifacts.bind(this);
 
         const sourceJson = source.toSourceJSON();
-        if (props.buildSpec) {
+        if (typeof props.buildSpec === 'string') {
+            sourceJson.buildSpec = props.buildSpec;
+        } else {
             sourceJson.buildSpec = JSON.stringify(props.buildSpec);
         }
 

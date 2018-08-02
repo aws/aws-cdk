@@ -78,6 +78,8 @@ mkdir -p ${dist}
 zip -y -r ${output} .
 echo ${output}
 
-# Sign the bundle
-/bin/bash $root/sign.sh $output
+chmod +x $root/scripts/with-signing-key.sh
+chmod +x $root/scripts/sign-files.sh
 
+# Sign the bundle
+$root/scripts/with-signing-key.sh $root/scripts/sign-files.sh $output

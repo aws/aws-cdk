@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cdk",
   "version": "0.8.0",
-  "description": "AWS Cloud Development Kit for Javascript",
+  "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {

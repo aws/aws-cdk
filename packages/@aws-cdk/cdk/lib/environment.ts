@@ -3,7 +3,7 @@
  */
 export interface Environment {
     /**
-     * The AWS accopunt ID for this environment.
+     * The AWS account ID for this environment.
      * If not specified, the context parameter `default-account` is used.
      */
     account?: string;

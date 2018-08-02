@@ -84,5 +84,5 @@ To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and c
    AWS CloudFormation Library <cloudformation>
    Examples <examples>
    Tools <tools>
-   Module Reference <reference>
+   Reference <reference>
 

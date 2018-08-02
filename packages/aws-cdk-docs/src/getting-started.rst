@@ -167,9 +167,7 @@ library includes the basic classes needed to write |cdk| stacks and apps.
                 <dependency>
                     <groupId>com.amazonaws.cdk</groupId>
                     <artifactId>aws-cdk</artifactId>
-
-                    <!-- make sure to use the CDK installed version here (i.e. "0.7.3-beta") -->
-                    <version>|cdk-version|</version>
+                    <version><!-- cdk-version --></version>
                 </dependency>
             </dependencies>
 
@@ -342,12 +340,11 @@ your project directory:
         Specify a 
         **CLASSPATH**, which contains both the compiled code and dependencies,
         to execute the Java program.
-        Use **maven-dependency-plugin** to produce the file **.classpath.txt**
+
+        Use **maven-dependency-plugin** in your **pom.xml** file to produce the file **.classpath.txt**
         whenever the project is compiled:
 
         .. code-block:: xml
-
-            <!-- pom.xml -->
 
             <build>
                 <plugins>
@@ -388,7 +385,7 @@ your project directory:
             #!/bin/bash
             exec java -cp target/classes:$(cat .classpath.txt) com.acme.MyApp app $@
 
-        Define the :code:`-- app` option in **cdk.json**:
+        Define the :code:`--app` option in **cdk.json**:
 
         .. code-block:: json
 
@@ -523,9 +520,9 @@ together into a tree:
 * **parent** represents the parent construct. By specifying the parent construct
   upon initialization, constructs can obtain contextual information when they
   are initialized. For example, the region a stack is deployed to can be
-  obtained via a call to **Stack.find(this).requireRegion()**. See Context for
-  more information.
-* **id** is a local string that identifies the construct within the tree.
+  obtained via a call to :py:meth:`Stack.find(this).requireRegion() <@aws-cdk/cdk.Stack.requireRegion>`.
+  See :doc:`context` for more information.
+* **id** is a string that locally identifies this construct within the tree.
   Constructs must have a unique ID amongst their siblings.
 * **props** is the set of initialization properties for this construct.
 
@@ -563,7 +560,8 @@ stack:
             region: <your-default-region>
 
 Notice that your stack has been automatically associated with the default AWS
-account and region configured in the AWS CLI.
+account and region configured in the AWS CLI. See :doc:`environments` for more
+details on how to associate stacks to environments.
 
 .. _define_bucket:
 
@@ -593,8 +591,15 @@ Install the **@aws-cdk/aws-s3** package:
 
     .. group-tab:: Java
 
-        During beta, all |cdk| modules are bundles into the **aws-cdk** Maven package, so
-        there is no need to explicitly install the |S3| library.
+        Edit your **pom.xml** file:
+
+        .. code-block:: sh
+
+            <dependency>
+                <groupId>com.amazonaws.cdk</groupId>
+                <artifactId>aws-s3</artifactId>
+                <version><!-- cdk-version --></version>
+            </dependency>
 
 Next, define an |S3| bucket in the stack. |S3| buckets are represented by
 the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
@@ -667,11 +672,18 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
 A few things to notice:
 
-* **s3.Bucket** is construct. This means it's initialization signature has
-  **parent**, **id**, and **props**. In this case, the bucket is an immediate
-  child of **MyStack**, and its ID is 'MyFirstBucket'.
-* Since the bucket's :code:`versioned` property is :code:`true`,
-  versioning is enabled on the bucket.
+* :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` is a construct.
+  This means it's initialization signature has **parent**, **id**, and **props**.
+  In this case, the bucket is an immediate child of **MyStack**.
+* ``MyFirstBucket`` is the **logical id** of the bucket construct, **not** the physical name of the
+  S3 bucket. The logical ID is used to uniquely identify resources in your stack
+  across deployments. See :doc:`logical-ids` for more details on how to work
+  with logical IDs. To specify a physical name for your bucket, you can set the
+  :py:meth:`bucketName <@aws-cdk/aws-s3.BucketProps.bucketName>` property when
+  you define your bucket.
+* Since the bucket's :py:meth:`versioned <@aws-cdk/aws-s3.BucketProps.versioned>`
+  property is :code:`true`, `versioning <https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html>`_
+  is enabled on the bucket.
 
 Compile your program:
 
@@ -698,8 +710,7 @@ Compile your program:
 Synthesize an |CFN| Template
 ============================
 
-Synthesize a 
-|cfn| template for the stack (don't forget to first compile the project if you have made any changes):
+Synthesize a |cfn| template for the stack:
 
 .. code-block:: sh
 
@@ -718,9 +729,20 @@ This command executes the |cdk| app and synthesize an |CFN| template for the
             Properties:
                 VersioningConfiguration:
                     Status: Enabled
+        CDKMetadata:
+            Type: 'AWS::CDK::Metadata'
+            Properties:
+                Modules: # ...
 
 You can see that the stack contains an **AWS::S3::Bucket** resource with the desired
 versioning configuration.
+
+.. note::
+
+    The **AWS::CDK::Metadata** resource was automatically added to your template
+    by the toolkit. This allows us to learn which libraries were used in your
+    stack. See :ref:`version-reporting` for more details and how to
+    :ref:`opt-out <version-reporting-opt-out>`.
 
 .. _deploy_stack:
 
@@ -731,7 +753,7 @@ Use **cdk deploy** to deploy the stack:
 
 .. code-block:: sh
 
-    cdk deploy hello-cdk
+    cdk deploy
 
 The **deploy** command synthesizes an |CFN| template from the stack
 and then invokes the |CFN| create/update API to deploy it into your AWS
@@ -806,7 +828,7 @@ the difference between the |cdk| app and the deployed stack:
 
 .. code-block:: sh
 
-    cdk diff hello-cdk
+    cdk diff
 
 The toolkit queries your AWS account for the current |CFN| template for the
 **hello-cdk** stack, and compares the result with the template synthesized from the app.
@@ -842,3 +864,13 @@ encryption for the bucket:
     [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
     ✅  Deployment of stack hello-cdk completed successfully
+
+What Next?
+==========
+
+ * Learn more about :doc:`CDK Concepts <concepts>`
+ * Check out the `examples directory <https://github.com/awslabs/aws-cdk/tree/master/examples>`_ in your GitHub repository
+ * Learn about the rich APIs offered by the :doc:`AWS Construct Library <aws-construct-lib>`
+ * Work directly with CloudFormation using the :doc:`AWS CloudFormation Library <cloudformation>`
+ * Come talk to us on `Gitter <https://gitter.im/awslabs/aws-cdk>`_
+
