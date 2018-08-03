@@ -6,7 +6,7 @@ import software.amazon.awscdk.services.sns.Topic;
 import software.amazon.awscdk.services.sqs.QueueProps;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jsii.JsiiException;
+import software.amazon.jsii.JsiiException;
 import org.junit.Test;
 
 import java.io.IOException;
