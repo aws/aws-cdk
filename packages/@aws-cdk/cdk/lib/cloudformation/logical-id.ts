@@ -46,12 +46,17 @@ export interface IAddressingScheme {
  *   (i.e. `L1/L2/Pipeline/Pipeline`), they will be de-duplicated to make the
  *   resulting human portion of the ID more pleasing: `L1L2Pipeline<HASH>`
  *   instead of `L1L2PipelinePipeline<HASH>`
- * - If a component is named "Resource" it will be omitted from the path. This
- *   allows L2 construct to use this convention to "hide" the wrapped L1 from
- *   the logical ID.
+ * - If a component is named "Default" it will be omitted from the path. This
+ *   allows refactoring higher level abstractions around constructs without affecting
+ *   the IDs of already deployed resources.
+ * - If a component is named "Resource" it will be omitted from the user-visible
+ *   path, but included in the hash. This reduces visual noise in the human readable
+ *   part of the identifier.
  */
 export class HashedAddressingScheme implements IAddressingScheme {
     public allocateAddress(addressComponents: string[]): string {
+        addressComponents = addressComponents.filter(x => x !== HIDDEN_ID);
+
         if (addressComponents.length === 0) {
             throw new Error('Construct has empty Logical ID');
         }
@@ -65,13 +70,26 @@ export class HashedAddressingScheme implements IAddressingScheme {
 
         const hash = pathHash(addressComponents);
         const human = removeDupes(addressComponents)
-            .filter(x => x !== 'Resource')
+            .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
             .join('')
             .slice(0, MAX_HUMAN_LEN);
 
         return human + hash;
     }
 }
+
+/**
+ * Resources with this ID are hidden from humans
+ *
+ * They do not appear in the human-readable part of the logical ID,
+ * but they are included in the hash calculation.
+ */
+const HIDDEN_FROM_HUMAN_ID = 'Resource';
+
+/**
+ * Resources with this ID are complete hidden from the logical ID calculation.
+ */
+const HIDDEN_ID = 'Default';
 
 /**
  * Class that keeps track of the logical IDs that are assigned to resources

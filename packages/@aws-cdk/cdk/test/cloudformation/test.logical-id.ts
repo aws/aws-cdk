@@ -105,6 +105,33 @@ const uniqueTests = {
         });
 
         test.done();
+    },
+
+    'can transparently wrap constructs using "Default" id'(test: Test) {
+        // GIVEN
+        const stack1 = new Stack();
+        const parent1 = new Construct(stack1, 'Parent');
+        new Resource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+        const template1 = stack1.toCloudFormation();
+
+        // AND
+        const theId1 = Object.keys(template1.Resources)[0];
+        test.equal('AWS::TAAS::Thing', template1.Resources[theId1].Type);
+
+        // WHEN
+        const stack2 = new Stack();
+        const parent2 = new Construct(stack2, 'Parent');
+        const invisibleWrapper = new Construct(parent2, 'Default');
+        new Resource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+        const template2 = stack1.toCloudFormation();
+
+        const theId2 = Object.keys(template2.Resources)[0];
+        test.equal('AWS::TAAS::Thing', template2.Resources[theId2].Type);
+
+        // THEN: same ID, same object
+        test.equal(theId1, theId2);
+
+        test.done();
     }
 };
 
