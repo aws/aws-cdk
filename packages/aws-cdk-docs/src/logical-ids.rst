@@ -32,13 +32,13 @@ Each resource in the construct tree has a unique path that represents its
 location within the tree.
 Since logical IDs can only use alphanumeric characters and also restricted in
 length, the CDK is unable to simply use a delimited path as the logical ID.
-Instead, logical IDs are allocated by concatenating a human-friendly rendition 
-from the path (concatenation, de-duplicate, trim) with an eight-character MD5 
-hash of the delimited path. 
-This final component is necessary since |CFN| logical IDs cannot include 
-the delimiting slash character (/), so simply concatenating the component 
-values does not work. For example, concatenating the components of the 
-path */a/b/c* produces **abc**, which is the same as concatenating the components of 
+Instead, logical IDs are allocated by concatenating a human-friendly rendition
+from the path (concatenation, de-duplicate, trim) with an eight-character MD5
+hash of the delimited path.
+This final component is necessary since |CFN| logical IDs cannot include
+the delimiting slash character (/), so simply concatenating the component
+values does not work. For example, concatenating the components of the
+path */a/b/c* produces **abc**, which is the same as concatenating the components of
 the path */ab/c*.
 
 .. code-block:: text
@@ -46,7 +46,7 @@ the path */ab/c*.
     VPCPrivateSubnet2RouteTable0A19E10E
     <-----------human---------><-hash->
 
-Low-level CloudFormation resources (from `@aws-cdk/resources`) 
+Low-level CloudFormation resources (from `@aws-cdk/resources`)
 that are direct children of the |stack-class| class use
 their name as their logical ID without modification. This makes it easier to
 port existing templates into a CDK app.
@@ -67,8 +67,13 @@ Logical IDs remain unchanged across updates
 
 The |cdk| applies some heuristics to improve the human-friendliness of the prefix:
 
-- If a path component is **Resource**, it is omitted.
-  This postfix does not normally contribute any additional useful information to the ID.
+- If a path component is **Default**, is is hidden completely from the logical ID
+  computation. You will generally want to use this if you create a new construct
+  that wraps an existing one. By naming the inner construct **Default**, you
+  ensure that the logical identifiers of resources in already-deployed copy of
+  that construct do not change.
+- If a path component is **Resource**, it is omitted from the human readable portion.
+  of the logical ID. This postfix does not normally contribute any additional useful information to the ID.
 - If two subsequent names in the path are the same, only one is retained.
 - If the prefix exceeds 240 characters, it is trimmed to 240 characters.
   This ensures that the total length of the logical ID does not exceed the 255 character
@@ -92,7 +97,7 @@ logical IDs to certain resources, given either their full path or
         // a good practice would be to always put these at the top of your stack initializer.
         this.renameLogical('MyTableCD117FA1', 'MyTable');
         this.renameLogical('MyQueueAB4432A3', 'MyAwesomeQueue');
-        
+
         new Table(this, 'MyTable');
         new Queue(this, 'MyQueue');
       }
@@ -128,5 +133,5 @@ stacks. `cdk diff` will tell you which resources are about to be destroyed:
     [-] ☢️ Destroying MyTable (type: AWS::DynamoDB::Table)
     [+] 🆕 Creating MyTableCD117FA1 (type: AWS::DynamoDB::Table)
 
-Now, you can add a :py:meth:`aws-cdk.Stack.renameLogical` call before the 
+Now, you can add a :py:meth:`aws-cdk.Stack.renameLogical` call before the
 table is defined to rename **MyTableCD117FA1** to **MyTable**.

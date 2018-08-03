@@ -33,7 +33,7 @@ async function main() {
             testCommand.push(...['nyc', '--clean']);
         }
         testCommand.push('nodeunit');
-        testCommand.push(...testFiles);
+        testCommand.push(...testFiles.map(f => f.path));
 
         await shell(testCommand, timers);
     }
