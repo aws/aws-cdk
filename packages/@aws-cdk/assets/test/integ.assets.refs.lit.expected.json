@@ -4,9 +4,13 @@
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-asset-refs/SampleAsset\""
     },
-    "SampleAssetS3ObjectKey6F5D200B": {
+    "SampleAssetS3Prefix6E89595F": {
       "Type": "String",
-      "Description": "S3 object for asset \"aws-cdk-asset-refs/SampleAsset\""
+      "Description": "S3 prefix for asset \"aws-cdk-asset-refs/SampleAsset\""
+    },
+    "SampleAssetS3VersionKey3E106D34": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"aws-cdk-asset-refs/SampleAsset\""
     }
   },
   "Outputs": {
@@ -20,7 +24,7 @@
     },
     "S3ObjectKey": {
       "Value": {
-        "Ref": "SampleAssetS3ObjectKey6F5D200B"
+        "Ref": "SampleAssetS3VersionKey3E106D34"
       },
       "Export": {
         "Name": "aws-cdk-asset-refs:S3ObjectKey"
@@ -46,7 +50,7 @@
             },
             "/",
             {
-              "Ref": "SampleAssetS3ObjectKey6F5D200B"
+              "Ref": "SampleAssetS3VersionKey3E106D34"
             }
           ]
         ]
@@ -123,7 +127,15 @@
                       },
                       "/",
                       {
-                        "Ref": "SampleAssetS3ObjectKey6F5D200B"
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Ref": "SampleAssetS3Prefix6E89595F"
+                            },
+                            "*"
+                          ]
+                        ]
                       }
                     ]
                   ]

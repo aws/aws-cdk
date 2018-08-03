@@ -69,8 +69,10 @@ async function prepareFileAsset(
 
     const data = await fs.readFile(filePath);
 
+    const s3KeyPrefix = `assets/${asset.id}/`;
+
     const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
-        s3KeyPrefix: 'assets/',
+        s3KeyPrefix,
         s3KeySuffix: path.extname(filePath),
         contentType
     });
@@ -84,7 +86,8 @@ async function prepareFileAsset(
 
     return [
         { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-        { ParameterKey: asset.s3KeyParameter, ParameterValue: key }
+        { ParameterKey: asset.s3KeyParameter, ParameterValue: key },
+        { ParameterKey: asset.s3PrefixParameter, ParameterValue: s3KeyPrefix },
     ];
 }
 

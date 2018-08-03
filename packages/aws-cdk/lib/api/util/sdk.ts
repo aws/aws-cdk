@@ -15,54 +15,113 @@ import { AccountAccessKeyCache } from './account-cache';
  * to the requested account.
  */
 export class SDK {
-    private defaultAccountFetched = false;
-    private defaultAccountId?: string = undefined;
     private readonly userAgent: string;
-    private readonly accountCache = new AccountAccessKeyCache();
+    private readonly s3ClientCache: AWSClientCache<S3>;
+    private readonly cfnClientCache: AWSClientCache<CloudFormation>;
+    private readonly ec2ClientCache: AWSClientCache<EC2>;
+    private readonly ssmClientCache: AWSClientCache<SSM>;
 
     constructor() {
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.userAgent = `${pkg.name}/${pkg.version}`;
+
+        this.s3ClientCache = new AWSClientCache(S3, this.userAgent);
+        this.cfnClientCache = new AWSClientCache(CloudFormation, this.userAgent);
+        this.ec2ClientCache = new AWSClientCache(EC2, this.userAgent);
     }
 
-    public async cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {
-        return new CloudFormation({
-            region: environment.region,
-            credentialProvider: await this.getCredentialProvider(environment.account, mode),
-            customUserAgent: this.userAgent
-        });
+    public cloudFormation(environment: Environment, mode: Mode): Promise<CloudFormation> {
+        return this.cfnClientCache.get(environment.account, environment.region, mode);
     }
 
-    public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<EC2> {
-        return new EC2({
-            region,
-            credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
-            customUserAgent: this.userAgent
-        });
+    public ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<EC2> {
+        return this.ec2ClientCache.get(awsAccountId, region, mode);
     }
 
-    public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<SSM> {
-        return new SSM({
-            region,
-            credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
-            customUserAgent: this.userAgent
-        });
+    public ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<SSM> {
+        return this.ssmClientCache.get(awsAccountId, region, mode);
     }
 
     public async s3(environment: Environment, mode: Mode): Promise<S3> {
-        return new S3({
-            region: environment.region,
-            credentialProvider: await this.getCredentialProvider(environment.account, mode),
-            customUserAgent: this.userAgent
-        });
+        return this.s3ClientCache.get(environment.account, environment.region, mode);
     }
 
     public defaultRegion() {
         return config.region;
     }
 
-    public async defaultAccount() {
+    public defaultAccount(): Promise<string | undefined> {
+        return DEFAULT_ACCOUNT.get();
+    }
+}
+
+/**
+ * Factory and cache for AWS clients
+ */
+class AWSClientCache<T> {
+    private readonly cache: {[key: string]: T} = {};
+
+    public constructor(private readonly klass: new (u: any) => T, private readonly userAgent: string) {
+    }
+
+    public async get(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<T> {
+        const key = `${awsAccountId}-${region}-${mode}`;
+        if (!(key in this.cache)) {
+            this.cache[key] = new this.klass({
+                region,
+                credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
+                customUserAgent: this.userAgent
+            });
+        }
+        return this.cache[key];
+    }
+
+    private async getCredentialProvider(awsAccountId: string | undefined, mode: Mode): Promise<CredentialProviderChain | undefined> {
+        // If requested account is undefined or equal to default account, use default credentials provider.
+        const defaultAccount = await DEFAULT_ACCOUNT.get();
+        if (!awsAccountId || awsAccountId === defaultAccount) {
+            debug(`Using default AWS SDK credentials for account ${awsAccountId}`);
+            return undefined;
+        }
+
+        const triedSources: CredentialProviderSource[] = [];
+
+        // Otherwise, inspect the various credential sources we have
+        for (const source of PluginHost.instance.credentialProviderSources) {
+            if (!(await source.isAvailable())) {
+                debug('Credentials source %s is not available, ignoring it.', source.name);
+                continue;
+            }
+            triedSources.push(source);
+
+            if (!(await source.canProvideCredentials(awsAccountId))) { continue; }
+            debug(`Using ${source.name} credentials for account ${awsAccountId}`);
+
+            return await source.getProvider(awsAccountId, mode);
+        }
+
+        const sourceNames = ['default credentials'].concat(triedSources.map(s => s.name)).join(', ');
+
+        throw new Error(`Need to perform AWS calls for account ${awsAccountId}, but no credentials found. Tried: ${sourceNames}.`);
+    }
+}
+
+/**
+ * Class to retrieve the current default account
+ *
+ * This requires making an STS call using the credentials
+ * currently available to the AWS SDK, and is heavily cached.
+ */
+class DefaultAccount {
+    private defaultAccountFetched = false;
+    private defaultAccountId?: string = undefined;
+    private readonly accountCache = new AccountAccessKeyCache();
+
+    /**
+     * Return the default account
+     */
+    public async get(): Promise<string | undefined> {
         if (!this.defaultAccountFetched) {
             this.defaultAccountId = await this.lookupDefaultAccount();
             this.defaultAccountFetched = true;
@@ -70,7 +129,7 @@ export class SDK {
         return this.defaultAccountId;
     }
 
-    private async lookupDefaultAccount() {
+    private async lookupDefaultAccount(): Promise<string | undefined> {
         try {
             debug('Resolving default credentials');
             const chain = new CredentialProviderChain();
@@ -99,33 +158,12 @@ export class SDK {
             return undefined;
         }
     }
-
-    private async getCredentialProvider(awsAccountId: string | undefined, mode: Mode): Promise<CredentialProviderChain | undefined> {
-        // If requested account is undefined or equal to default account, use default credentials provider.
-        const defaultAccount = await this.defaultAccount();
-        if (!awsAccountId || awsAccountId === defaultAccount) {
-            debug(`Using default AWS SDK credentials for account ${awsAccountId}`);
-            return undefined;
-        }
-
-        const triedSources: CredentialProviderSource[] = [];
-
-        // Otherwise, inspect the various credential sources we have
-        for (const source of PluginHost.instance.credentialProviderSources) {
-            if (!(await source.isAvailable())) {
-                debug('Credentials source %s is not available, ignoring it.', source.name);
-                continue;
-            }
-            triedSources.push(source);
-
-            if (!(await source.canProvideCredentials(awsAccountId))) { continue; }
-            debug(`Using ${source.name} credentials for account ${awsAccountId}`);
-
-            return await source.getProvider(awsAccountId, mode);
-        }
-
-        const sourceNames = ['default credentials'].concat(triedSources.map(s => s.name)).join(', ');
-
-        throw new Error(`Need to perform AWS calls for account ${awsAccountId}, but no credentials found. Tried: ${sourceNames}.`);
-    }
 }
+
+/**
+ * Singleton instance of DefaultAccount.
+ *
+ * Per execution there will only ever be one default account, so we might as well
+ * cache it process-wide.
+ */
+const DEFAULT_ACCOUNT = new DefaultAccount();

@@ -109,10 +109,35 @@ export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
 
 export const ASSET_METADATA = 'aws:cdk:asset';
 export interface AssetMetadataEntry {
+    /**
+     * Path on disk to the asset
+     */
     path: string;
+
+    /**
+     * Logical identifier for the asset
+     */
+    id: string;
+
+    /**
+     * Requested packaging style
+     */
     packaging: 'zip' | 'file';
+
+    /**
+     * Name of parameter where S3 bucket should be passed in
+     */
     s3BucketParameter: string;
+
+    /**
+     * Name of parameter where S3 key should be passed in
+     */
     s3KeyParameter: string;
+
+    /**
+     * Name of parameter where S3 folder should be passed in
+     */
+    s3PrefixParameter: string;
 }
 
 /**

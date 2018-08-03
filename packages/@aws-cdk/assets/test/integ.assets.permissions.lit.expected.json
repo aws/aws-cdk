@@ -4,9 +4,13 @@
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-asset-refs/MyFile\""
     },
-    "MyFileS3ObjectKey4641930D": {
+    "MyFileS3PrefixF078A585": {
       "Type": "String",
-      "Description": "S3 object for asset \"aws-cdk-asset-refs/MyFile\""
+      "Description": "S3 prefix for asset \"aws-cdk-asset-refs/MyFile\""
+    },
+    "MyFileS3VersionKey568C3C9F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"aws-cdk-asset-refs/MyFile\""
     }
   },
   "Resources": {
@@ -76,7 +80,15 @@
                       },
                       "/",
                       {
-                        "Ref": "MyFileS3ObjectKey4641930D"
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Ref": "MyFileS3PrefixF078A585"
+                            },
+                            "*"
+                          ]
+                        ]
                       }
                     ]
                   ]
