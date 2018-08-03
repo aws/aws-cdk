@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.ecs",
+        "package": "software.amazon.awscdk.services.ecs",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.ecs"
+          "artifactId": "ecs"
         }
       },
       "dotnet": {
