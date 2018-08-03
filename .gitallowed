@@ -1,2 +1,8 @@
 # The only AWS account number allowed to be used in tests (used by git-secrets)
-123456789012
+account = '123456789012';
+# Account patterns used in the README
+account: '000000000000'
+account: '111111111111'
+account: '333333333333'
+# Account patterns used in the CHANGELOG
+account: '123456789012'
