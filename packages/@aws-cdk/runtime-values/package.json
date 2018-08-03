@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/rtv",
+  "name": "@aws-cdk/runtime-values",
   "version": "0.8.0",
   "description": "Runtime values support for the AWS CDK",
   "main": "lib/index.js",
@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.rtv",
+        "package": "software.amazon.awscdk.runtimevalues",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-rtv"
+          "artifactId": "cdk-runtime-values"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.RTV"
+        "namespace": "Amazon.CDK.RuntimeValues"
       }
     }
   },
@@ -35,7 +35,7 @@
   "keywords": [
     "aws",
     "cdk",
-    "rtv"
+    "runtime-values"
   ],
   "author": {
     "name": "Amazon Web Services",

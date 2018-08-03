@@ -7,6 +7,10 @@
 [@mpiroc]:       https://github.com/mpiroc
 [@Doug-AWS]:     https://github.com/Doug-AWS
 
+## UNRELEASED
+
+* _**BREAKING**_: renamed `@aws-cdk/rtv` to `@aws-cdk/runtime-values`.
+
 ## 0.8.0 - 2018-07-31
 
 ___This is the first public release of the AWS CDK!___

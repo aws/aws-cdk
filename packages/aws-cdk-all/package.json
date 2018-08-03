@@ -89,7 +89,7 @@
     "@aws-cdk/aws-workspaces": "^0.8.0",
     "@aws-cdk/cdk": "^0.8.0",
     "@aws-cdk/cx-api": "^0.8.0",
-    "@aws-cdk/rtv": "^0.8.0"
+    "@aws-cdk/runtime-values": "^0.8.0"
   },
   "keywords": [
     "aws",

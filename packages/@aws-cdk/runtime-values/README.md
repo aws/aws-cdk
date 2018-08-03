@@ -22,7 +22,7 @@ For example, say we want to publish a queue's URL to a lambda function.
 ### Construction Code
 
 ```ts
-import { RuntimeValue } from '@aws-cdk/rtv'
+import { RuntimeValue } from '@aws-cdk/runtime-values'
 
 const queue = new Queue(this, 'MyQueue', { /* props.... */ });
 const fn = new Lambda(this, 'MyFunction', { /* props... */ });
