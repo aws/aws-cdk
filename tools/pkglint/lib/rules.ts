@@ -37,7 +37,7 @@ export class DescriptionIsRequired extends ValidationRule {
 export class RepositoryCorrect extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'repository.type', 'git');
-        expectJSON(pkg, 'repository.url', 'git://github.com/awslabs/aws-cdk');
+        expectJSON(pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
     }
 }
 
@@ -78,12 +78,13 @@ export class NoticeFile extends ValidationRule {
 }
 
 /**
- * Author must be AWS
+ * Author must be AWS (as an Organization)
  */
 export class AuthorAWS extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'author.name', 'Amazon Web Services');
         expectJSON(pkg, 'author.url', 'https://aws.amazon.com');
+        expectJSON(pkg, 'author.organization', true);
     }
 }
 
