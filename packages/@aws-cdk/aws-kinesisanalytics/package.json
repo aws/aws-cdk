@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.kinesisanalytics",
+        "package": "software.amazon.awscdk.services.kinesisanalytics",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.kinesisanalytics"
+          "artifactId": "kinesisanalytics"
         }
       },
       "dotnet": {

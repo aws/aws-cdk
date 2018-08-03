@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.apigateway",
+        "package": "software.amazon.awscdk.services.apigateway",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.apigateway"
+          "artifactId": "apigateway"
         }
       },
       "dotnet": {

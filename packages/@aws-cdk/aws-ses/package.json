@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.ses",
+        "package": "software.amazon.awscdk.services.ses",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.ses"
+          "artifactId": "ses"
         }
       },
       "dotnet": {
