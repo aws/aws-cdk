@@ -512,7 +512,7 @@ Define a stack and add it to the app.
                 }
             }
 
-The initializer signature of **cdk.Stack** includes thr arguments: **parent**,
+The initializer signature of **cdk.Stack** includes the arguments: **parent**,
 **id**, and **props**. This is the signature for every class in the |cdk|
 framework. These classes are called **"constructs"** and they are composed
 together into a tree:
