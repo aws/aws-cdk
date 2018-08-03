@@ -1,6 +1,6 @@
 package software.amazon.awscdk.examples;
 
-import software.amazon.awscdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.services.sqs.QueueProps;
 
 /**
  * Props for {@link SinkQueue}.

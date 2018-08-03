@@ -3,11 +3,11 @@ package com.myorg;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.aws.iam.User;
-import software.amazon.awscdk.aws.sns.Topic;
-import software.amazon.awscdk.aws.sns.TopicProps;
-import software.amazon.awscdk.aws.sqs.Queue;
-import software.amazon.awscdk.aws.sqs.QueueProps;
+import software.amazon.awscdk.services.iam.User;
+import software.amazon.awscdk.services.sns.Topic;
+import software.amazon.awscdk.services.sns.TopicProps;
+import software.amazon.awscdk.services.sqs.Queue;
+import software.amazon.awscdk.services.sqs.QueueProps;
 
 public class HelloStack extends Stack {
     public HelloStack(final App parent, final String name) {

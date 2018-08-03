@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.dax",
+        "package": "software.amazon.awscdk.services.dax",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.dax"
+          "artifactId": "dax"
         }
       },
       "dotnet": {

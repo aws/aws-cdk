@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.assets",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "assets"
+          "artifactId": "cdk-assets"
         }
       },
       "dotnet": {

@@ -597,7 +597,7 @@ Install the **@aws-cdk/aws-s3** package:
 
             <dependency>
                 <groupId>software.amazon.awscdk</groupId>
-                <artifactId>aws.s3</artifactId>
+                <artifactId>s3</artifactId>
                 <version><!-- cdk-version --></version>
             </dependency>
 
@@ -657,8 +657,8 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
             import software.amazon.awscdk.App;
             import software.amazon.awscdk.Stack;
-            import software.amazon.awscdk.aws.s3.Bucket;
-            import software.amazon.awscdk.aws.s3.BucketProps;
+            import software.amazon.awscdk.services.s3.Bucket;
+            import software.amazon.awscdk.services.s3.BucketProps;
 
             public class MyStack extends Stack {
                 public MyStack(final App parent, final String id) {

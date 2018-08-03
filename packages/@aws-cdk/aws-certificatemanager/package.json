@@ -8,10 +8,10 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.certificatemanager",
+        "package": "software.amazon.awscdk.services.certificatemanager",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.certificatemanager"
+          "artifactId": "certificatemanager"
         }
       },
       "dotnet": {

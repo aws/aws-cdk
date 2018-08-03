@@ -5,10 +5,10 @@ import { PackageJson } from "./packagejson";
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp) {
+export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
     const parts = jsonPath.split('.');
     const actual = deepGet(pkg.json, parts);
-    if (applyIgnore(actual) !== applyIgnore(expected)) {
+    if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
         pkg.report({
             message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
             fix: () => { deepSet(pkg.json, parts, expected); }
@@ -19,6 +19,12 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ig
         if (!ignore || val == null) { return val; }
         const str = JSON.stringify(val);
         return str.replace(ignore, '');
+    }
+
+    function applyCaseInsensitive(val: any): any {
+        if (!caseInsensitive || val == null) { return val; }
+        const str = JSON.stringify(val);
+        return str.toLowerCase();
     }
 }
 

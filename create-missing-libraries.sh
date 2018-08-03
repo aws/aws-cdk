@@ -58,10 +58,10 @@ EOM
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.aws.${PB}",
+        "package": "software.amazon.awscdk.services.${PB}",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws.${PB}"
+          "artifactId": "${PB}"
         }
       },
       "dotnet": {
