@@ -22,10 +22,10 @@ export interface SingletonLambdaProps extends lambda.LambdaProps {
  * for every SingletonLambda you create.
  */
 export class SingletonLambda extends lambda.LambdaRef {
-    public functionName: lambda.FunctionName;
-    public functionArn: lambda.FunctionArn;
-    public role?: iam.Role | undefined;
-    protected canCreatePermissions: boolean;
+    public readonly functionName: lambda.FunctionName;
+    public readonly functionArn: lambda.FunctionArn;
+    public readonly role?: iam.Role | undefined;
+    protected readonly canCreatePermissions: boolean;
     private lambdaFunction: lambda.LambdaRef;
 
     constructor(parent: cdk.Construct, name: string, props: SingletonLambdaProps) {
