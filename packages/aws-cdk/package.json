@@ -26,7 +26,8 @@
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
   "license": "Apache-2.0",
   "devDependencies": {
@@ -61,7 +62,7 @@
     "yargs": "^9.0.1"
   },
   "repository": {
-    "url": "git://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
   },
   "keywords": [
