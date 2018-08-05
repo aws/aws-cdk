@@ -24,6 +24,7 @@ export class LambdaRuntime {
     public static readonly Python36 = new LambdaRuntime('python3.6', { supportsInlineCode: true }) as InlinableLambdaRuntime;
     public static readonly DotNetCore1 = new LambdaRuntime('dotnetcore1.0');
     public static readonly DotNetCore2 = new LambdaRuntime('dotnetcore2.0');
+    public static readonly DotNetCore21 = new LambdaRuntime('dotnetcore2.1');
     public static readonly Go1x = new LambdaRuntime('go1.x');
 
     /** The name of this runtime, as expected by the Lambda resource. */
