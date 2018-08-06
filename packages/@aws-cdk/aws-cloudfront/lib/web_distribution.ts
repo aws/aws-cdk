@@ -454,6 +454,11 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
     };
 
+    /**
+     * Private variable that holds the full distrubtion config. We use this in the validate method.
+     */
+    private origins: cloudformation.DistributionResource.OriginProperty[];
+
     constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
         super(parent, name);
 
@@ -508,7 +513,10 @@ export class CloudFrontWebDistribution extends cdk.Construct {
                         "origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref
                     ),
                 };
+            } else if (originConfig.s3OriginSource) {
+                originProperty.s3OriginConfig = {};
             }
+
             if (originConfig.customOriginSource) {
                 originProperty.customOriginConfig = {
                     httpPort: originConfig.customOriginSource.httpPort || 80,
@@ -526,6 +534,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
             originIndex++;
         }
         distributionConfig.origins = origins;
+        this.origins = origins;
 
         const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
         if (defaultBehaviors.length !== 1) {
@@ -556,6 +565,16 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
         this.domainName = distribution.distributionDomainName;
 
+    }
+
+    public validate(): string[] {
+        const messages: string[] = [];
+        this.origins.forEach(origin => {
+            if (!origin.s3OriginConfig && !origin.customOriginConfig) {
+                messages.push(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
+            }
+        });
+        return messages;
     }
 
     private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

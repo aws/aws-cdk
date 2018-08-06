@@ -44,7 +44,8 @@ export = {
                             "DomainName"
                           ]
                         },
-                        "Id": "origin1"
+                        "Id": "origin1",
+                        "S3OriginConfig": {}
                       }
                     ],
                     "ViewerCertificate": {
@@ -117,7 +118,8 @@ export = {
                             "DomainName"
                           ]
                         },
-                        "Id": "origin1"
+                        "Id": "origin1",
+                        "S3OriginConfig": {}
                       }
                     ],
                     "ViewerCertificate": {
