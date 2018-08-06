@@ -17,8 +17,10 @@ for module in ${modules}; do
     link_dir=node_modules
   fi
 
-  echo "${module} => $link_dir/$(basename $module)"
-  ln -fs ${module} $link_dir
+  module_dir=${link_dir}/$(basename $module)
+  echo "${module} => ${module_dir}"
+  rm -fr ${module_dir}
+  ln -fs ${module} ${link_dir}
 
   # Symlink executable scripts into place as well. This is not completely
   # according to spec (we look in the bin/ directory instead of the { "scripts"
