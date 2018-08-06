@@ -4,16 +4,13 @@ phases:
   install:
     commands:
       - /bin/bash ./install.sh
-  pre_build:
-    commands:
-      - /bin/bash ./update-version.sh
   build:
     commands:
       - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./bundle-beta.sh"
+      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./bundle.sh"
 artifacts:
   files:
     - "**/*"
