@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-custom-resources",
+  "name": "@aws-cdk/custom-resources",
   "version": "0.8.0",
   "description": "CDK Constructs to make it easier to build custom resources",
   "main": "lib/index.js",
@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.customresources",
+        "package": "software.amazon.awscdk.customresources",
         "maven": {
           "groupId": "software.amazon.awscdk",
           "artifactId": "custom-resources"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CustomResources"
+        "namespace": "Amazon.CDK.CustomResources"
       }
     }
   },
