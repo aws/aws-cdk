@@ -1,5 +1,5 @@
 import { Environment} from '@aws-cdk/cx-api';
-import { CloudFormation, config, CredentialProviderChain, EC2, S3, SSM, STS } from 'aws-sdk';
+import { CloudFormation, config, CredentialProviderChain, EC2, Route53, S3, SSM, STS } from 'aws-sdk';
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
@@ -54,6 +54,14 @@ export class SDK {
         return new S3({
             region: environment.region,
             credentialProvider: await this.getCredentialProvider(environment.account, mode),
+            customUserAgent: this.userAgent
+        });
+    }
+
+    public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<Route53> {
+        return new Route53({
+            region,
+            credentialProvider: await this.getCredentialProvider(awsAccountId, mode),
             customUserAgent: this.userAgent
         });
     }

@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { App, AvailabilityZoneProvider, Construct, MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
+import { App, AvailabilityZoneProvider, Construct, HostedZoneProvider, MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
 
 export = {
     'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -53,22 +53,44 @@ export = {
         test.done();
     },
 
+    'HostedZoneProvider will return context values if availble'(test: Test) {
+        const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+        const filter = {name: 'test.com'};
+        new HostedZoneProvider(stack).getZone(filter);
+        const key = expectedContextKey(stack);
+
+        stack.setContext(key, 'HOSTEDZONEID');
+
+        const zone = resolve(new HostedZoneProvider(stack).getZone(filter));
+        test.deepEqual(zone, 'HOSTEDZONEID');
+
+        test.done();
+    },
+
     'Return default values if "env" is undefined to facilitate unit tests, but also expect metadata to include "error" messages'(test: Test) {
         const app = new App();
         const stack = new Stack(app, 'test-stack');
 
         const child = new Construct(stack, 'ChildConstruct');
 
+        const hostedChild = new Construct(stack, 'HostedChildConstruct');
+
         test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
         test.deepEqual(new SSMParameterProvider(child).getString('foo'), 'dummy');
+
+        test.deepEqual(new  HostedZoneProvider(hostedChild).getZone({name: 'test.com'}), 'dummy');
 
         const output = app.synthesizeStack(stack.name);
 
         const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
         const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
 
+        const hostedError: MetadataEntry | undefined = output.metadata['/test-stack/HostedChildConstruct']
+            .find(x => x.type === cxapi.ERROR_METADATA_KEY);
+
         test.ok(azError && (azError.data as string).includes('Cannot determine scope for context provider availability-zones.'));
         test.ok(ssmError && (ssmError.data as string).includes('Cannot determine scope for context provider ssm["foo"].'));
+        test.ok(hostedError && (hostedError.data as string).includes('Cannot determine scope for context provider hosted-zone'));
 
         test.done();
     },
