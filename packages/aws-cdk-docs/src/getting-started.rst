@@ -873,9 +873,8 @@ Using cdk init to Create a Project
 ==================================
 
 If you've already created your project using
-the previous, manual steps,
-you can skip these instructions and continue on with
-`Compiling the Code`_.
+the previous manual steps,
+you can skip these instructions.
 
 Create the directory for your project,
 and navigate into that directory.
@@ -912,6 +911,11 @@ and navigate into that directory.
          cdk init -l Java
 
 You now have an |cdk| app.
+
+- To compile your code, if required, see `Compiling the Code`_
+- To list the stacks in your app, see `List the Stacks in the App`_
+- To synthesize an |CFN| template, see `Synthesize an |CFN| Template`_
+- To deploy your stack (create your AWS resources), see `Deploying the Stack`_
     
 What Next?
 ==========
