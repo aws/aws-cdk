@@ -10,9 +10,9 @@
 
 .. _getting_started:
 
-#############
-Hello, |cdk|!
-#############
+##############################
+Getting Started with the |cdk|
+##############################
 
 This topic walks you through creating and deploying your first |cdk| app.
 
@@ -31,31 +31,32 @@ used to setup the :ref:`credentials <credentials>` for your AWS account.
 Install the command-line toolkit
 --------------------------------
 
-The toolkit can be installed via `npm <https://www.npmjs.org>`_ as follows:
+Install the toolkit using the following `npm <https://www.npmjs.org>`_ command.
 
 .. code-block:: sh
 
     npm install -g aws-cdk
 
-You can run this command to see the currently installed version of the toolkit
-(This guide is aligned with |version|):
+After you've installed the toolkit,
+run the following command to see the currently installed version of the toolkit.
 
 .. code-block:: sh
 
     cdk --version
 
-.. _initializing:
+You should see |version|.
 
-Initializing the Project
-========================
+.. _creating_project
+
+Creating a Project
+==================
 
 .. note::
 
-    This guide walks you through the process of creating a |cdk| project
-    step-by-step to explain some of the reasoning and details
-    behind the project structure and tools. It is also possible to use the
-    :code:`cdk init` command to get started quickly from a project
-    template in supported languages.
+    This guide walks you through the manually creating a |cdk| project. 
+    See `Using cdk init to Create a Project`_ for instructions on using the 
+    :code:`cdk init` command to create a project from a 
+    template in any of the supported languages.
 
 Create an empty project structure for the |cdk| app.
 
@@ -239,10 +240,10 @@ class. Let's create our first, empty **App**:
 .. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
     currently needed in order to allow the |cdk| Toolkit to interact with your app.
 
-.. _complie_code:
+.. _compiling_code:
 
-Compile the Code
-================
+Compiling the Code
+==================
 
 If needed, compile the code:
 
@@ -254,29 +255,30 @@ If needed, compile the code:
 
     .. group-tab:: TypeScript
 
-        To compile your program from **.ts** to **.js**:
+        Use the **npm run build** command to compile your program from **.ts** to **.js**.
 
         .. code-block:: sh
 
             npm run build
 
-        You can also use the **watch** command to continuously compile your code
-        as it changes, so you don't have to invoke the compiler explicitly:
+        You can also use the **npm run watch** command
+	to compiles your code as you save it.
+	Run this command from a command window
+	separate from the one you use to run **cdk** commands.
 
         .. code-block:: sh
 
-            # run in another terminal session
             npm run watch
 
     .. group-tab:: Java
 
-        Compile your code using your IDE or via the command line via **mvn**:
+        Compile your code using your IDE or use the following **mvn** command.
 
         .. code-block:: sh
 
             mvn compile
 
-This is it, you now created your first, alas empty, |cdk| app.
+You have now created an empty |cdk| app.
 
 .. _credentials:
 
@@ -865,6 +867,52 @@ encryption for the bucket:
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
     ✅  Deployment of stack hello-cdk completed successfully
 
+.. _using_cdk_init:
+
+Using cdk init to Create a Project
+==================================
+
+If you've already created your project using
+the previous, manual steps,
+you can skip these instructions and continue on with
+`Compiling the Code`_.
+
+Create the directory for your project,
+and navigate into that directory.
+
+.. code-block:: sh
+
+    mkdir hello-cdk
+    cd hello-cdk
+
+.. tabs::
+
+   .. group-tab:: JavaScript
+
+      Create a new |cdk| project in JavaScript.
+
+      .. code-block:: sh
+
+         cdk init -l javascript
+
+   .. group-tab:: TypeScript
+
+      Create a new |cdk| project in TypeScript.
+
+      .. code-block:: sh
+
+         cdk init -l typescript
+
+   .. group-tab:: java
+
+      Create a new |cdk| project in Java.
+
+      .. code-block:: sh
+
+         cdk init -l Java
+
+You now have an |cdk| app.
+    
 What Next?
 ==========
 
