@@ -455,7 +455,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     };
 
     /**
-     * Private variable that holds the full distrubtion config. We use this in the validate method.
+     * Private variable that holds a copy of our origins. We use this in the validate method.
      */
     private origins: cloudformation.DistributionResource.OriginProperty[];
 
