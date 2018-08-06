@@ -1,9 +1,22 @@
-
 #!/bin/bash
-# Creates our beta bundle for the CDK.
+# Creates the bundle for the CDK.
 # Assume we have a bootstrapped and packaged repository
 set -euo pipefail
 root=$PWD
+
+# Get version from lerna
+version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+
+# Get commit from CodePipeline (or git, if we are in CodeBuild)
+# If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local 
+# build or CodePipeline build), use the HEAD commit hash).
+commit="${CODEBUILD_RESOLVED_SOURCE_VERSION:-}"
+if [ -z "${commit}" ]; then
+  commit="$(git rev-parse --verify HEAD)"
+fi
+
+full_version="${version}+${commit:0:7}"
+echo "Bundling ${full_version}..."
 
 staging="$(mktemp -d)"
 cleanup() {
@@ -19,8 +32,7 @@ echo "Staging: ${staging}"
 
 # Bundle structure
 # ================
-#   aws-cdk-${version}.zip
-#   │
+#   aws-cdk-${version}+${commit}.zip
 #   ├─ bin
 #   ├─ node_modules
 #   ├─ y
@@ -69,10 +81,10 @@ ln -s node_modules/.bin bin
 
 # Create an archive under ./dist
 echo "Creating ZIP bundle"
-version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+
 echo ${version} > .version
 dist=${root}/dist
-output=${dist}/aws-cdk-${version}.zip
+output="${dist}/aws-cdk-${full_version}.zip"
 rm -fr ${dist}
 mkdir -p ${dist}
 zip -y -r ${output} .
