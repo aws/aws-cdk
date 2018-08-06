@@ -1,6 +1,7 @@
 .. project-specific includes for this project.
 
 .. |cdk| replace:: AWS CDK
+.. |CDK| replace |cdk|
 .. |cdk-long| replace:: AWS Cloud Development Kit
 .. |toolkit| replace:: |cdk| Toolkit
 
@@ -49,3 +50,5 @@
 .. So back-to-back entities have a space between them
 
 .. |space| unicode:: 0x20
+
+.. |version| replace:: 0.8.0
