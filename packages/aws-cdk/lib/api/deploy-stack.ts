@@ -23,7 +23,7 @@ export interface DeployStackResult {
 }
 
 export async function deployStack(stack: cxapi.SynthesizedStack,
-                                  sdk: SDK = new SDK(),
+                                  sdk: SDK,
                                   toolkitInfo?: ToolkitInfo,
                                   deployName?: string,
                                   quiet: boolean = false): Promise<DeployStackResult> {
@@ -134,7 +134,7 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
     }
 }
 
-export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK = new SDK(), deployName?: string, quiet: boolean = false) {
+export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK, deployName?: string, quiet: boolean = false) {
     if (!stack.environment) {
         throw new Error(`The stack ${stack.name} does not have an environment`);
     }
