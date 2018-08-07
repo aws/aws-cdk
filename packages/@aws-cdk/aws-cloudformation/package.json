@@ -50,11 +50,14 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.8.0",
     "cdk-build-tools": "^0.8.0",
+    "cdk-integ-tools": "^0.8.0",
     "cfn2ts": "^0.8.0",
     "pkglint": "^0.8.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.8.0"
+    "@aws-cdk/cdk": "^0.8.0",
+    "@aws-cdk/aws-lambda": "^0.8.0",
+    "@aws-cdk/aws-sns": "^0.8.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

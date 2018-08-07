@@ -6,6 +6,7 @@ export * from './runtime';
 export * from './code';
 export * from './inline';
 export * from './lambda-version';
+export * from './singleton-lambda';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
