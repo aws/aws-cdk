@@ -38,13 +38,13 @@ Install the toolkit using the following `npm <https://www.npmjs.org>`_ command.
     npm install -g aws-cdk
 
 After you've installed the toolkit,
-run the following command to see the currently installed version of the toolkit.
+you can run the following command to see the currently installed version of the toolkit.
 
 .. code-block:: sh
 
     cdk --version
 
-You should see |version|.
+You should see |cdk-version|.
 
 .. _creating_project
 
@@ -53,8 +53,8 @@ Creating a Project
 
 .. note::
 
-    This guide walks you through the manually creating a |cdk| project. 
-    See `Using cdk init to Create a Project`_ for instructions on using the 
+    This guide walks you through manually creating a |cdk| project. 
+    See :ref:`using_cdk_init` for instructions on using the 
     :code:`cdk init` command to create a project from a 
     template in any of the supported languages.
 
@@ -261,10 +261,10 @@ If needed, compile the code:
 
             npm run build
 
-        You can also use the **npm run watch** command
-	to compiles your code as you save it.
-	Run this command from a command window
-	separate from the one you use to run **cdk** commands.
+        We recommend that you use the **npm run watch** command, 
+        which compiles your code whenever you save it.
+        Run this command from a command window
+        separate from the one you use to run **cdk** commands.
 
         .. code-block:: sh
 
@@ -866,56 +866,6 @@ encryption for the bucket:
     [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
     ✅  Deployment of stack hello-cdk completed successfully
-
-.. _using_cdk_init:
-
-Using cdk init to Create a Project
-==================================
-
-If you've already created your project using
-the previous manual steps,
-you can skip these instructions.
-
-Create the directory for your project,
-and navigate into that directory.
-
-.. code-block:: sh
-
-    mkdir hello-cdk
-    cd hello-cdk
-
-.. tabs::
-
-   .. group-tab:: JavaScript
-
-      Create a new |cdk| project in JavaScript.
-
-      .. code-block:: sh
-
-         cdk init -l javascript
-
-   .. group-tab:: TypeScript
-
-      Create a new |cdk| project in TypeScript.
-
-      .. code-block:: sh
-
-         cdk init -l typescript
-
-   .. group-tab:: java
-
-      Create a new |cdk| project in Java.
-
-      .. code-block:: sh
-
-         cdk init -l Java
-
-You now have an |cdk| app.
-
-- To compile your code, if required, see `Compiling the Code`_
-- To list the stacks in your app, see `List the Stacks in the App`_
-- To synthesize an |CFN| template, see `Synthesize an |CFN| Template`_
-- To deploy your stack (create your AWS resources), see `Deploying the Stack`_
     
 What Next?
 ==========
