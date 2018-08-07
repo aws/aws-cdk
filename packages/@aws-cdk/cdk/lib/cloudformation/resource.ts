@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
+import { HintedToken, Token } from '../core/tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
@@ -82,7 +82,7 @@ export class Resource extends Referenceable {
      * @param attributeName The name of the attribute.
      */
     public getAtt(attributeName: string): Token {
-        return new Token(() => ({ 'Fn::GetAtt': [this.logicalId, attributeName] }));
+        return new HintedToken(`${this.logicalId}.${attributeName}`, () => ({ 'Fn::GetAtt': [this.logicalId, attributeName] }));
     }
 
     /**

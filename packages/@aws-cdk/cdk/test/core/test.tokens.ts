@@ -141,6 +141,35 @@ export = {
 
         test.equal(date.toString(), resolved.toString());
         test.done();
+    },
+
+    'tokens can be stringified and stringification can be reversed'(test: Test) {
+        // GIVEN
+        const token = new Token(() => 'woof woof');
+
+        // WHEN
+        const stringified = `The dog says: ${token}`;
+        const resolved = resolve(stringified);
+
+        // THEN
+        test.deepEqual(resolved, {'Fn::Join': ['', ['The dog says: ', 'woof woof']]});
+        test.done();
+    },
+
+    'tokens can be JSON.stringified and stringification can be reversed'(test: Test) {
+        // GIVEN
+        const fido = {
+            name: 'Fido',
+            speaks: new Token(() => 'woof woof')
+        };
+
+        // WHEN
+        const resolved = resolve(JSON.stringify(fido));
+
+        // THEN
+        test.deepEqual(resolved, {'Fn::Join': ['',
+                ['{"name":"Fido","speaks":"', 'woof woof', '"}']]});
+        test.done();
     }
 };
 

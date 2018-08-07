@@ -1,8 +1,8 @@
-import { Token } from '../core/tokens';
+import { HintedToken } from '../core/tokens';
 
-export class PseudoParameter extends Token {
+export class PseudoParameter extends HintedToken {
     constructor(name: string) {
-        super(() => ({ Ref: name }));
+        super(name, () => ({ Ref: name }));
     }
 }
 
