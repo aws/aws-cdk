@@ -1,0 +1,4 @@
+language: node_js
+install: ./install.sh
+script: ./build.sh
+
