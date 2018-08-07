@@ -88,6 +88,18 @@ export class FnJoin extends Fn {
      * @param listOfValues The list of values you want combined.
      */
     constructor(delimiter: string, ...listOfValues: any[]) {
+        /*
+         * People often incorrectly use as ``new FnJoin('.', ['stuff', 'to', 'join'])``. Detect this usage pattern and
+         * correct the invokation so it produces the expected outcome instead of bailing out in error in CloudFormation.
+         *
+         * @see https://github.com/awslabs/aws-cdk/issues/512
+         */
+        if (listOfValues.length === 1 && Array.isArray(listOfValues[0])) {
+            listOfValues = listOfValues[0];
+        }
+        if (listOfValues.length === 0) {
+            throw new Error(`FnJoin requires at least one value to be provided`);
+        }
         super('Fn::Join', [ delimiter, listOfValues ]);
     }
 }
