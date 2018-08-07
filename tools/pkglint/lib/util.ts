@@ -22,7 +22,7 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ig
     }
 
     function applyCaseInsensitive(val: any): any {
-        if (!caseInsensitive || val == null) { return val; }
+        if (!caseInsensitive || val == null) { return JSON.stringify(val); }
         const str = JSON.stringify(val);
         return str.toLowerCase();
     }
