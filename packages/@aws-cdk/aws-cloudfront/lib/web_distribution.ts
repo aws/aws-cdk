@@ -454,11 +454,6 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
     };
 
-    /**
-     * Private variable that holds a copy of our origins. We use this in the validate method.
-     */
-    private origins: cloudformation.DistributionResource.OriginProperty[];
-
     constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
         super(parent, name);
 
@@ -533,8 +528,13 @@ export class CloudFrontWebDistribution extends cdk.Construct {
             origins.push(originProperty);
             originIndex++;
         }
+
+        origins.forEach(origin => {
+            if (!origin.s3OriginConfig && !origin.customOriginConfig) {
+                throw new Error(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
+            }
+        });
         distributionConfig.origins = origins;
-        this.origins = origins;
 
         const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);
         if (defaultBehaviors.length !== 1) {
@@ -565,16 +565,6 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
         this.domainName = distribution.distributionDomainName;
 
-    }
-
-    public validate(): string[] {
-        const messages: string[] = [];
-        this.origins.forEach(origin => {
-            if (!origin.s3OriginConfig && !origin.customOriginConfig) {
-                messages.push(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
-            }
-        });
-        return messages;
     }
 
     private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
