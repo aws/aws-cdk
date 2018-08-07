@@ -6,13 +6,13 @@ Example usage:
 ```ts
 const sourceBucket = new Bucket(this, 'Bucket');
  
-const distribution = new CloudFrontDistribution(this, 'MyDistribution', {
+const distribution = new CloudFrontWebDistribution(this, 'MyDistribution', {
     originConfigs: [
         {
             s3OriginSource: {
                 s3BucketSource: sourceBucket
             },
-            behaviors : [ {isDefaultBehavior}]
+            behaviors : [ {isDefaultBehavior: true}]
         }
     ]
  });
