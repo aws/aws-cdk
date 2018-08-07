@@ -1,4 +1,4 @@
 language: node_js
 install: ./install.sh
 script: ./build.sh
-
+node_js: 8.11.3
