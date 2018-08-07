@@ -85,6 +85,55 @@ Below are the actions you can take on your CDK app:
    If one of cdk.json or ~/.cdk.json exists, options specified there will be used
    as defaults. Settings in cdk.json take precedence.
 
+.. _using_cdk_init:
+
+Using cdk init to Create a Project
+==================================
+
+The :ref:`getting_started` topic manually creates a |cdk| project.
+This section describes how to create an empty project using the **cdk init** command.
+
+Create a directory for your project,
+and navigate into that directory.
+
+.. code-block:: sh
+
+    mkdir hello-cdk
+    cd hello-cdk
+
+.. tabs::
+
+   .. group-tab:: JavaScript
+
+      Create a new |cdk| project in JavaScript.
+
+      .. code-block:: sh
+
+         cdk init -l javascript
+
+   .. group-tab:: TypeScript
+
+      Create a new |cdk| project in TypeScript.
+
+      .. code-block:: sh
+
+         cdk init -l typescript
+
+   .. group-tab:: java
+
+      Create a new |cdk| project in Java.
+
+      .. code-block:: sh
+
+         cdk init -l Java
+
+You now have an |cdk| app.
+
+- To compile your code, if required, see :ref:`compiling_code`
+- To list the stacks in your app, use the **cdk ls** command
+- To synthesize an |CFN| template, use the **cdk synth** command
+- To deploy your stack (create your AWS resources), use the **cdk deploy** command
+
 .. _version-reporting:
 
 Version Reporting
