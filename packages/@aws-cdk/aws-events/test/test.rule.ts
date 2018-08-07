@@ -232,7 +232,7 @@ export = {
         // tokens can also used for JSON templates, but that means escaping is
         // the responsibility of the user.
         rule.addTarget(t4, {
-            jsonTemplate: new cdk.FnJoin(' ', '"', 'hello', '\"world\"', '"'),
+            jsonTemplate: new cdk.FnJoin(' ', ['"', 'hello', '\"world\"', '"']),
         });
 
         expect(stack).toMatch({

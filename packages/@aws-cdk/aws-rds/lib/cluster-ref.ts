@@ -211,6 +211,6 @@ export class Endpoint {
     constructor(address: DBClusterEndpointAddress, port: Port) {
         this.hostname = address;
         this.port = port;
-        this.socketAddress = new cdk.FnJoin(":", address, port);
+        this.socketAddress = new cdk.FnJoin(":", [address, port]);
     }
 }

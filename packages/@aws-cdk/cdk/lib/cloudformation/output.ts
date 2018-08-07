@@ -207,7 +207,7 @@ export class StringListOutput extends Construct {
             condition: props.condition,
             disableExport: props.disableExport,
             export: props.export,
-            value: new FnJoin(this.separator, ...props.values)
+            value: new FnJoin(this.separator, props.values)
         });
     }
 

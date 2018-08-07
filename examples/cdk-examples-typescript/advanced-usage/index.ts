@@ -157,7 +157,7 @@ class CloudFormationExample extends cdk.Stack {
         // outputs are constructs the synthesize into the template's "Outputs" section
         new cdk.Output(this, 'Output', {
             description: 'This is an output of the template',
-            value: new cdk.FnJoin(',', new cdk.AwsAccountId(), '/', param.ref)
+            value: new cdk.FnConcat(new cdk.AwsAccountId(), '/', param.ref)
         });
 
         // stack.templateOptions can be used to specify template-level options

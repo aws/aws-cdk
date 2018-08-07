@@ -172,7 +172,7 @@ Intrinsic Functions
 .. code-block:: js
 
     import cdk = require('@aws-cdk/cdk');
-    new cdk.FnJoin(",", ...)
+    new cdk.FnJoin(",", [...])
 
 .. _pseudo_parameters:
 
