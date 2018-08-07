@@ -109,8 +109,6 @@ async function initCommandLine() {
     debug('Command line arguments:', argv);
 
     const aws = new SDK(argv.profile);
-    // tslint:disable-next-line:no-console
-    console.log("Account: ", await aws.defaultAccount(), " region: ", aws.defaultRegion());
 
     const availableContextProviders: contextplugins.ProviderMap = {
         'availability-zones': new contextplugins.AZContextProviderPlugin(aws),

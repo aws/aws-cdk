@@ -28,13 +28,6 @@ export class SDK {
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.userAgent = `${pkg.name}/${pkg.version}`;
-
-        // tslint:disable-next-line:no-console
-        console.log(new Error().stack);
-
-        // tslint:disable-next-line:no-console
-        console.log('Profile', profile);
-
         this.defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
     }
 
