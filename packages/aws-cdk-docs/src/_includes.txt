@@ -50,5 +50,3 @@
 .. So back-to-back entities have a space between them
 
 .. |space| unicode:: 0x20
-
-.. |version| replace:: 0.8.0
