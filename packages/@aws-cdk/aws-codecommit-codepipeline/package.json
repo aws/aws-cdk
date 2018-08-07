@@ -16,7 +16,8 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Codecommit.Codepipeline"
-      }
+      },
+      "sphinx": {}
     }
   },
   "repository": {

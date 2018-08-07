@@ -16,7 +16,8 @@ export PATH=${PYTHON_DEPS}/bin:$PATH
 #----------------------------------------------------------------------
 # CONFIG
 staging=".staging"
-output="dist/docs"
+output="dist"
+refsrc="../pack/sphinx"
 refdocs="refs"
 refdocsdir="${staging}/${refdocs}"
 refs_index="${staging}/reference.rst"
@@ -36,10 +37,15 @@ echo "Staging Sphinx doc site under ${staging}"
 mkdir -p ${staging}
 rsync -av src/ ${staging}
 
-for p in $(find-jsii-packages); do
-    echo "Generating reference docs for $p to ${staging}/${refdocs}"
-    jsii-pacmak -t sphinx --outdir ${refdocsdir} $p
-done
+echo "Copying generated reference documentation..."
+if [ ! -d "${refsrc}" ]; then
+    echo "Cannot find ${refsrc} in the root directory of this repo"
+    echo "Did you run ./pack.sh?"
+    exit 1
+fi
+
+rm -fr ${refdocsdir}/
+rsync -av ${refsrc}/ ${refdocsdir}/
 
 echo "Generating reference docs toctree under ${refs_index}..."
 cat ${refs_index}.template > ${refs_index}
