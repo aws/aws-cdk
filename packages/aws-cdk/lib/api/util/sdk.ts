@@ -182,9 +182,6 @@ function makeCLICompatibleCredentialProvider(profile: string | undefined) {
  *   variables to be used to determine the region.
  */
 function getCLICompatibleDefaultRegion(profile: string | undefined): string | undefined {
-    let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-            process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
-
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Defaults inside constructor
@@ -193,11 +190,14 @@ function getCLICompatibleDefaultRegion(profile: string | undefined): string | un
         {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
         ];
 
+    let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
+            process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+
     while (!region && toCheck.length > 0) {
         const configFile = new SharedIniFile(toCheck.shift());
         const section = configFile.getProfile(profile);
         region = section && section.region;
-      }
+    }
 
     return region;
 }
