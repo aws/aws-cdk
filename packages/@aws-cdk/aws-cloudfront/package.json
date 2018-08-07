@@ -28,6 +28,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
+    "integ": "cdk-integ",
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
@@ -47,10 +48,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.0",
     "aws-sdk": "^2.259.1",
-    "cdk-build-tools": "^0.8.0",
     "cfn2ts": "^0.8.0",
+    "@aws-cdk/assert": "^0.8.0",
+    "cdk-build-tools": "^0.8.0",
+    "cdk-integ-tools": "^0.8.0",
     "pkglint": "^0.8.0"
   },
   "dependencies": {
