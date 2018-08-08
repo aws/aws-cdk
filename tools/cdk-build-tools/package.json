@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
+    "jsii": "^0.6.2",
     "merkle-build": "^0.8.0",
     "yargs": "^9.0.1"
   },
