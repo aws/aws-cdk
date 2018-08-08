@@ -33,6 +33,9 @@
   "cdk-build": {
     "cloudformation": "AWS::Lambda"
   },
+  "nyc": {
+    "lines": 75
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -55,6 +58,7 @@
   "dependencies": {
     "@aws-cdk/assets": "^0.8.1",
     "@aws-cdk/aws-cloudwatch": "^0.8.1",
+    "@aws-cdk/aws-codepipeline-api": "^0.8.1",
     "@aws-cdk/aws-events": "^0.8.1",
     "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/aws-logs": "^0.8.1",
