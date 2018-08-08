@@ -460,16 +460,16 @@ export class ApprovalAction extends Action {
 //     }
 // }
 
-// export class DeployAction extends Action {
-//     constructor(parent: Stage, name: string, provider: string, artifactBounds: ActionArtifactBounds, configuration?: any) {
-//         super(parent, name, {
-//           category: ActionCategory.Deploy,
-//           provider,
-//           artifactBounds,
-//           configuration
-//         });
-//     }
-// }
+export class DeployAction extends Action {
+    constructor(parent: Stage, name: string, provider: string, artifactBounds: ActionArtifactBounds, configuration?: any) {
+        super(parent, name, {
+          category: ActionCategory.Deploy,
+          provider,
+          artifactBounds,
+          configuration
+        });
+    }
+}
 
 // export class CodeDeploy extends DeployAction {
 //     constructor(parent: Stage, name: string, applicationName: string, deploymentGroupName: string) {
