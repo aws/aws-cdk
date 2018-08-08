@@ -14,6 +14,9 @@
           "artifactId": "config"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Config"
+      },
       "sphinx": {}
     }
   },
