@@ -14,9 +14,6 @@
           "artifactId": "dms"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DMS"
-      },
       "sphinx": {}
     }
   },

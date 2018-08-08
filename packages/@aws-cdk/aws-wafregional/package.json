@@ -14,9 +14,6 @@
           "artifactId": "wafregional"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.WAFRegional"
-      },
       "sphinx": {}
     }
   },

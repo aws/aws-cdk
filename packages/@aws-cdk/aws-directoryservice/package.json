@@ -14,9 +14,6 @@
           "artifactId": "directoryservice"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DirectoryService"
-      },
       "sphinx": {}
     }
   },
