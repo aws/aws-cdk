@@ -14,6 +14,9 @@
           "artifactId": "efs"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EFS"
+      },
       "sphinx": {}
     }
   },

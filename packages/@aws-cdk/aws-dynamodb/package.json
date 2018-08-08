@@ -14,6 +14,9 @@
           "artifactId": "dynamodb"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.DynamoDB"
+      },
       "sphinx": {}
     }
   },
