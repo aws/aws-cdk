@@ -9,7 +9,6 @@
   "devDependencies": {
     "@types/node": "^8.9.4",
     "@types/nodeunit": "^0.0.30",
-    "jsii-pacmak": "^0.6.2",
     "lerna": "^2.11.0",
     "nodeunit": "^0.11.2",
     "nyc": "^11.8.0",

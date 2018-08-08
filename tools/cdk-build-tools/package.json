@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
-    "jsii": "^0.6.2",
+    "jsii": "^0.6.4",
+    "jsii-pacmak": "^0.6.4",
     "merkle-build": "^0.8.0",
     "typescript": "^3.0.1",
     "yargs": "^9.0.1"
