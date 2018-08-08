@@ -10,6 +10,7 @@ phases:
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
+      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./build-docs.sh"
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./bundle.sh"
 artifacts:
   files:

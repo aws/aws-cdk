@@ -16,7 +16,8 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.RuntimeValues"
-      }
+      },
+      "sphinx": {}
     }
   },
   "repository": {
