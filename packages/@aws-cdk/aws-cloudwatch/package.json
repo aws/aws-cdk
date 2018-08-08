@@ -14,9 +14,6 @@
           "artifactId": "cloudwatch"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudWatch"
-      },
       "sphinx": {}
     }
   },

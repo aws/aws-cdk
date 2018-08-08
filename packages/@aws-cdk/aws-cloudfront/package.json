@@ -14,9 +14,6 @@
           "artifactId": "cloudfront"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudFront"
-      },
       "sphinx": {}
     }
   },
