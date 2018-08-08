@@ -163,6 +163,13 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
     }
 }
 
+export class JSIISphinxTarget extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+        expectJSON(pkg, 'jsii.targets.sphinx', { });
+    }
+}
+
 export class CDKPackage extends ValidationRule {
     public validate(pkg: PackageJson): void {
         // skip private packages

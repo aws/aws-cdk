@@ -16,7 +16,8 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Cognito"
-      }
+      },
+      "sphinx": {}
     }
   },
   "repository": {

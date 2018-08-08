@@ -130,6 +130,6 @@ EOM
 
         git add packages/${P}
 
-        echo "✅ Have fun with your new package ${P} (⚠️ don't forget to add it to 'aws-cdk-all')"
+        echo "✅ Have fun with your new package ${P}"
     fi
 done

@@ -15,14 +15,14 @@ export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ig
         });
     }
 
-    function applyIgnore(val: any): any {
-        if (!ignore || val == null) { return val; }
+    function applyIgnore(val: any): string {
+        if (!ignore || val == null) { return JSON.stringify(val); }
         const str = JSON.stringify(val);
         return str.replace(ignore, '');
     }
 
-    function applyCaseInsensitive(val: any): any {
-        if (!caseInsensitive || val == null) { return val; }
+    function applyCaseInsensitive(val: any): string {
+        if (!caseInsensitive || val == null) { return JSON.stringify(val); }
         const str = JSON.stringify(val);
         return str.toLowerCase();
     }
