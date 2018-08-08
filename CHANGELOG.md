@@ -21,6 +21,7 @@
 * __@aws-cdk/aws-codebuild__: allow `buildSpec` parameter to take a filename ([@rix0rrr] in [#470](https://github.com/awslabs/aws-cdk/issues/470))
 * __docs__: Improvements to Getting Started ([@eladb] in [#462](https://github.com/awslabs/aws-cdk/issues/462))
 * __docs__: Updates to README ([@Doug-AWS] in [#456](https://github.com/awslabs/aws-cdk/issues/456))
+* __docs__: Upgraded `jsii-pacmak` to `0.6.4`, which includes "language-native" type names and package coordinates ([@RomainMuller] in [awslabs/jsii#130](https://github.com/awslabs/jsii/pull/130))
 
 ### Bug fixes
 
