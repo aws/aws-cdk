@@ -1,0 +1,67 @@
+{
+  "name": "@aws-cdk/aws-cloudformation-codepipeline",
+  "version": "0.8.0",
+  "description": "AWS CodePipeline Actions for AWS CloudFormation",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "sphinx": {},
+      "java": {
+        "package": "software.amazon.awscdk.services.cloudformation.codepipeline",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cloudformation-codepipeline"
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
+  },
+  "nyc": {
+    "lines": 60,
+    "branches": 30
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "codepipeline",
+    "constructs",
+    "cloudformation"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.8.0",
+    "cdk-build-tools": "^0.8.0",
+    "cdk-integ-tools": "^0.8.0",
+    "pkglint": "^0.8.0",
+    "@aws-cdk/aws-codebuild-codepipeline": "^0.8.0",
+    "@aws-cdk/aws-s3": "^0.8.0",
+    "@aws-cdk/aws-codebuild": "^0.8.0",
+    "@aws-cdk/aws-codecommit": "^0.8.0",
+    "@aws-cdk/aws-codecommit-codepipeline": "^0.8.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-codepipeline": "^0.8.0",
+    "@aws-cdk/aws-iam": "^0.8.0",
+    "@aws-cdk/cdk": "^0.8.0"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
+}
