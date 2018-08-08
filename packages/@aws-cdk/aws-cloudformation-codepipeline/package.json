@@ -13,9 +13,6 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "cloudformation-codepipeline"
         }
-      },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudFormationCodePipeline"
       }
     }
   },

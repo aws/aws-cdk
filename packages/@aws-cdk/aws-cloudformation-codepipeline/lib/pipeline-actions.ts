@@ -2,7 +2,6 @@ import codepipeline  = require('@aws-cdk/aws-codepipeline');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 
-// tslint:disable:max-line-length
 /**
  * Properties common to all CloudFormation actions
  */
@@ -81,6 +80,7 @@ export class ExecuteChangeSet extends CloudFormationAction {
     }
 }
 
+// tslint:disable:max-line-length Because of long URLs in documentation
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
@@ -154,6 +154,7 @@ export interface CloudFormationDeploymentActionCommonProps extends CloudFormatio
      */
     parameterOverrides?: { [name: string]: any };
 }
+// tslint:enable:max-line-length
 
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
@@ -163,12 +164,12 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
 
     constructor(parent: codepipeline.Stage, id: string, props: CloudFormationDeploymentActionCommonProps, configuration: any) {
         super(parent, id, props, {
-            Capabilities: props.trustTemplate ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
+            ...configuration,
+            Capabilities: props.trustTemplate && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
             RoleArn: new cdk.Token(() => this.role.roleArn),
             ParameterOverrides: props.parameterOverrides,
             TemplateConfiguration: props.templateConfiguration,
             StackName: props.stackName,
-            ...configuration,
         });
 
         if (props.role) {
