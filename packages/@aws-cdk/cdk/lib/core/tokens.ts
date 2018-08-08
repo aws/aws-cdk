@@ -14,9 +14,13 @@ export class Token {
     private stringRepr?: string;
 
     /**
-     * Creates a token that resolves to `value`. If value is a function,
-     * the function is evaluated upon resolution and the value it returns will be
-     * used as the token's value.
+     * Creates a token that resolves to `value`.
+     *
+     * If value is a function, the function is evaluated upon resolution and
+     * the value it returns will be used as the token's value.
+     *
+     * @param valueOrFunction What this token will evaluate to, literal or function.
+     * @param stringRepresentation A human-readable string describing the token's value.
      */
     constructor(private readonly valueOrFunction?: any, public readonly stringRepresentation?: string) { }
 
@@ -205,9 +209,9 @@ class TokenStringMap {
      * string. This may be used to produce aesthetically pleasing and recognizable
      * token representations for humans.
      */
-    public register(token: Token | HintedToken): string {
+    public register(token: Token): string {
         const counter = Object.keys(this.tokenMap).length;
-        const representation = isHintedToken(token) ? token.representationHint : `TOKEN`;
+        const representation = token.stringRepresentation || `TOKEN`;
 
         const key = `${representation}.${counter}`;
         if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
@@ -237,8 +241,8 @@ class TokenStringMap {
      * Split a string on Token markers
      */
     private split(s: string): Span[] {
-        const re = new RegExp(`${BEGIN_TOKEN_MARKER}([${VALID_KEY_CHARS}]+)${END_TOKEN_MARKER}`, 'gu');
-        const ret: Span[] = [];
+        const re = new RegExp(`${regexQuote(BEGIN_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_TOKEN_MARKER)}`, 'gu');
+        const ret = new Array<Span>();
 
         let rest = 0;
         let m = re.exec(s);
@@ -268,7 +272,7 @@ class TokenStringMap {
             return span.value;
         }
         if (!(span.key in this.tokenMap)) {
-            throw new Error(`Unrecognized token representation: ${span.key}`);
+            throw new Error(`Unrecognized token key: ${span.key}`);
         }
 
         return resolve(this.tokenMap[span.key]);
@@ -287,11 +291,15 @@ interface TokenSpan {
 
 type Span = StringSpan | TokenSpan;
 
-const BEGIN_TOKEN_MARKER = '🔸🔹';
-const END_TOKEN_MARKER = '🔹🔸';
+const BEGIN_TOKEN_MARKER = '${Token[';
+const END_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
  * Singleton instance of the token string map
  */
 const TOKEN_STRING_MAP = new TokenStringMap();
+
+function regexQuote(s: string) {
+    return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}

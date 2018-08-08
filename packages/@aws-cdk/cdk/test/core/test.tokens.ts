@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { istoken, resolve, Token } from '../../lib';
+import { FnConcat, istoken, resolve, Token } from '../../lib';
 
 export = {
     'resolve a plain old object should just return the object'(test: Test) {
@@ -170,7 +170,27 @@ export = {
         test.deepEqual(resolved, {'Fn::Join': ['',
                 ['{"name":"Fido","speaks":"', 'woof woof', '"}']]});
         test.done();
-    }
+    },
+
+    'string literals in evaluated tokens are escaped when calling JSON.stringify()'(test: Test) {
+        // WHEN
+        const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
+
+        // WHEN
+        const resolved = resolve(JSON.stringify({
+            literal: 'I can also "contain" quotes',
+            token
+        }));
+
+        // THEN
+        test.deepEqual(resolved, { 'Fn::Join': ['', [
+            '{"literal": "I can also \\"contain\\" quotes","token":"',
+            {'Fn::Join': ['', ['Hello', 'This\\nIs', 'Very \\"cool\\"']]},
+            '"}'
+        ]]});
+
+        test.done();
+      }
 };
 
 class Promise2 extends Token {
