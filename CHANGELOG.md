@@ -19,6 +19,7 @@
 * __@aws-cdk/runtime-values__ (_**BREAKING**_): rename 'rtv' to 'runtime-values' ([@rix0rrr] in [#494](https://github.com/awslabs/aws-cdk/issues/494))
 * __@aws-cdk/aws-ec2__: Combine `Connections` and `DefaultConnections` classes ([@rix0rrr] in [#453](https://github.com/awslabs/aws-cdk/issues/453))
 * __@aws-cdk/aws-codebuild__: allow `buildSpec` parameter to take a filename ([@rix0rrr] in [#470](https://github.com/awslabs/aws-cdk/issues/470))
+* __@aws-cdk/aws-cloudformation-codepipeline__: add support for CloudFormation CodePipeline actions ([@mindstorms6] and [@rix0rrr] in [#525](https://github.com/awslabs/aws-cdk/pull/525)).
 * __docs__: Improvements to Getting Started ([@eladb] in [#462](https://github.com/awslabs/aws-cdk/issues/462))
 * __docs__: Updates to README ([@Doug-AWS] in [#456](https://github.com/awslabs/aws-cdk/issues/456))
 * __docs__: Upgraded `jsii-pacmak` to `0.6.4`, which includes "language-native" type names and package coordinates ([@RomainMuller] in [awslabs/jsii#130](https://github.com/awslabs/jsii/pull/130))
