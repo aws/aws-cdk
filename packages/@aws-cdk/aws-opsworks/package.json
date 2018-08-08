@@ -14,9 +14,7 @@
           "artifactId": "opsworks"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.OpsWorks"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "servicediscovery"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceDiscovery"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

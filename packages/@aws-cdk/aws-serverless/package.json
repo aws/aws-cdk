@@ -14,9 +14,7 @@
           "artifactId": "serverless"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Serverless"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

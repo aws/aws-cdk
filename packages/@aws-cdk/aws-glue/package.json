@@ -14,9 +14,7 @@
           "artifactId": "glue"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Glue"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

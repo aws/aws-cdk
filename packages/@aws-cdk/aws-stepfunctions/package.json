@@ -14,9 +14,7 @@
           "artifactId": "stepfunctions"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.StepFunctions"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

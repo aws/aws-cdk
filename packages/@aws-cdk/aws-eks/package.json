@@ -14,9 +14,7 @@
           "artifactId": "eks"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EKS"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

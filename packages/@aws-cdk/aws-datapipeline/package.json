@@ -14,9 +14,7 @@
           "artifactId": "datapipeline"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DataPipeline"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

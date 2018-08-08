@@ -14,9 +14,7 @@
           "artifactId": "inspector"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Inspector"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

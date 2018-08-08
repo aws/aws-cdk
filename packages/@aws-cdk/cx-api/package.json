@@ -14,9 +14,7 @@
           "artifactId": "cdk-cx-api"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.CXAPI"
-      }
+      "sphinx": {}
     }
   },
   "scripts": {

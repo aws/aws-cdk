@@ -14,9 +14,7 @@
           "artifactId": "elasticsearch"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Elasticsearch"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "route53"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Route53"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

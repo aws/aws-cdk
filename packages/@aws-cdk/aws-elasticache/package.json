@@ -14,9 +14,7 @@
           "artifactId": "elasticache"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ElastiCache"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

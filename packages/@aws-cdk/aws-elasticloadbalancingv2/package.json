@@ -14,9 +14,7 @@
           "artifactId": "elasticloadbalancingv2"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

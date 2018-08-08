@@ -14,9 +14,7 @@
           "artifactId": "kinesisanalytics"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisAnalytics"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
