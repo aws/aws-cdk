@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/util",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Utility routines used for implementing CDK libraries",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -29,8 +29,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.8.0",
-    "pkglint": "^0.8.0"
+    "cdk-build-tools": "^0.8.1",
+    "pkglint": "^0.8.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
