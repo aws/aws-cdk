@@ -14,9 +14,7 @@
           "artifactId": "lambda-codepipeline"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda.Codepipeline"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

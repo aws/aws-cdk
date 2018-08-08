@@ -1,0 +1,5 @@
+*.js
+*.d.ts
+dist
+python-deps
+.staging

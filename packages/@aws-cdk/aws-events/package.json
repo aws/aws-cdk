@@ -14,9 +14,7 @@
           "artifactId": "events"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Events"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

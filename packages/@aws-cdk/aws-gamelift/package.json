@@ -14,9 +14,7 @@
           "artifactId": "gamelift"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.GameLift"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

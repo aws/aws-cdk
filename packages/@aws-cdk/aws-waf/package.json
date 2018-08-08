@@ -14,9 +14,7 @@
           "artifactId": "waf"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.WAF"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

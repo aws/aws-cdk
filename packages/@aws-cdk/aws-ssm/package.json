@@ -14,9 +14,7 @@
           "artifactId": "ssm"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SSM"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

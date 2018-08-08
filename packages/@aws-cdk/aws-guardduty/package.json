@@ -14,9 +14,7 @@
           "artifactId": "guardduty"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.GuardDuty"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

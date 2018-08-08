@@ -14,9 +14,7 @@
           "artifactId": "sqs"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SQS"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

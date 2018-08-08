@@ -8,7 +8,7 @@ root=$PWD
 version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
 
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
-# If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local 
+# If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
 # build or CodePipeline build), use the HEAD commit hash).
 commit="${CODEBUILD_RESOLVED_SOURCE_VERSION:-}"
 if [ -z "${commit}" ]; then
@@ -49,8 +49,6 @@ echo "Staging: ${staging}"
 # dist/ directories in the repo (this is what ./pack.sh is doing). This includes
 # 'docs', 'npm', 'java' and 'dotnet' and any other jsii language artifacts.
 rsync -av ${root}/pack/ .
-# Also bundle the JSII java runtime in the Maven Repository
-rsync -av ${root}/node_modules/jsii-java-runtime/maven-repo/ ./java/
 
 # We are keeping y-npm support only for backwards compatibility reasons and until
 # we publish y-npm itself and can devise instructions on how to use the self-contained .zip.

@@ -14,9 +14,7 @@
           "artifactId": "cdk-runtime-values"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.RuntimeValues"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "ecr"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ECR"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

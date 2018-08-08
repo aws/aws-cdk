@@ -14,9 +14,7 @@
           "artifactId": "servicecatalog"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceCatalog"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "lambda"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "sdb"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SDB"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

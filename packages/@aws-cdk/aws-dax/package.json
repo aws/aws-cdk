@@ -14,9 +14,7 @@
           "artifactId": "dax"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DAX"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
