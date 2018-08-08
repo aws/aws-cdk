@@ -65,7 +65,7 @@ mkdir -p ${Y_NPM_REPOSITORY}
 # Publish all tarballs from the "npm" dist to this repo
 # Yes, this means we will have duplicate tgz for now.
 echo "Publishing CDK npm modules into y/npm"
-for tarball in $PWD/npm/*.tgz; do
+for tarball in $PWD/js/*.tgz; do
     ${Y_NPM} publish ${tarball}
 done
 
