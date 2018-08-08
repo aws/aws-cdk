@@ -4,7 +4,7 @@
   "version": "0.8.1",
   "scripts": {
     "update": "/bin/bash build-tools/update.sh",
-    "build": "cdk-build",
+    "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
@@ -12,6 +12,9 @@
   },
   "nyc": {
     "lines": 50
+  },
+  "pkglint": {
+    "ignore": true
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
