@@ -35,7 +35,7 @@ const role = new Role(stack, 'CfnChangeSetRole', {
 new cfn_codepipeline.CreateReplaceChangeSet(cfnStage, 'DeployCFN', {
    changeSetName,
    stackName,
-   roleArn: role.roleArn,
+   role,
    templatePath: new ArtifactPath(source.artifact, 'test.yaml')
 });
 

@@ -8,7 +8,7 @@ import { Role } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CreateReplaceChangeSet, ExecuteChangeSet } from '../lib/pipeline-action';
+import { CreateReplaceChangeSet, CreateUpdateStack, ExecuteChangeSet } from '../lib/pipeline-action';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -59,9 +59,8 @@ export = {
     new CreateReplaceChangeSet(prodStage, 'BuildChangeSetProd', {
       stackName,
       changeSetName,
-      roleArn: changeSetExecRole.roleArn,
-      // Dat artifact path tho (LEGAACYYY)
-      templatePath: new ArtifactPath(buildAction.artifact!, 'build/sam/template.yaml'),
+      role: changeSetExecRole,
+      templatePath: new ArtifactPath(buildAction.artifact!, 'template.yaml'),
     });
 
     new ExecuteChangeSet(prodStage, 'ExecuteChangeSetProd', {
@@ -158,9 +157,9 @@ export = {
                 ]
               },
               "StackName": "BrelandsStack",
-              "TemplatePath": "OutputYo::build/sam/template.yaml"
+              "TemplatePath": "OutputYo::template.yaml"
             },
-            "InputArtifacts": [],
+            "InputArtifacts": [{"Name": "OutputYo"}],
             "Name": "BuildChangeSetProd",
             "OutputArtifacts": [],
             "RunOrder": 1
@@ -190,4 +189,142 @@ export = {
     test.done();
 
   },
+
+  'trustTemplate leads to admin role and full IAM capabilities'(test: Test) {
+    // GIVEN
+    const stack = new TestFixture();
+
+    // WHEN
+    new CreateUpdateStack(stack.deployStage, 'CreateUpdate', {
+      stackName: 'MyStack',
+      templatePath: stack.source.artifact.subartifact('template.yaml'),
+      trustTemplate: true,
+    });
+
+    const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
+
+    // THEN: Action in Pipeline has named IAM capabilities
+    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        { "Name": "Source" /* don't care about the rest */ },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "Configuration": {
+                "Capabilities": [ "CAPABILITY_NAMED_IAM" ],
+                "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
+                "ActionMode": "CREATE_UPDATE",
+                "StackName": "MyStack",
+                "TemplatePath": "SourceArtifact::template.yaml"
+              },
+              "InputArtifacts": [{"Name": "SourceArtifact"}],
+              "Name": "CreateUpdate",
+            },
+          ],
+        }
+      ]
+    }));
+
+    // THEN: Role is created with full permissions
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: "*",
+            Resource: "*"
+          }
+        ],
+      },
+      Roles: [{ Ref: roleId }]
+    }));
+
+    test.done();
+  },
+
+  'outputFileName leads to creation of output artifact'(test: Test) {
+    // GIVEN
+    const stack = new TestFixture();
+
+    // WHEN
+    new CreateUpdateStack(stack.deployStage, 'CreateUpdate', {
+      stackName: 'MyStack',
+      templatePath: stack.source.artifact.subartifact('template.yaml'),
+      outputFileName: 'CreateResponse.json',
+    });
+
+    // THEN: Action has output artifacts
+    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        { "Name": "Source" /* don't care about the rest */ },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "OutputArtifacts": [{"Name": "DeployCreateUpdateArtifact"}],
+              "Name": "CreateUpdate",
+            },
+          ],
+        }
+      ]
+    }));
+
+    test.done();
+  },
+
+  'replaceOnFailure switches action type'(test: Test) {
+    // GIVEN
+    const stack = new TestFixture();
+
+    // WHEN
+    new CreateUpdateStack(stack.deployStage, 'CreateUpdate', {
+      stackName: 'MyStack',
+      templatePath: stack.source.artifact.subartifact('template.yaml'),
+      replaceOnFailure: true,
+    });
+
+    // THEN: Action has output artifacts
+    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        { "Name": "Source" /* don't care about the rest */ },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "Configuration": {
+                "ActionMode": "REPLACE_ON_FAILURE",
+              },
+              "Name": "CreateUpdate",
+            },
+          ],
+        }
+      ]
+    }));
+
+    test.done();
+  },
 };
+
+/**
+ * A test stack with a half-prepared pipeline ready to add CloudFormation actions to
+ */
+class TestFixture extends cdk.Stack {
+  public readonly pipeline: Pipeline;
+  public readonly sourceStage: Stage;
+  public readonly deployStage: Stage;
+  public readonly repo: Repository;
+  public readonly source: PipelineSource;
+
+  constructor() {
+    super();
+
+    this.pipeline = new Pipeline(this, 'Pipeline');
+    this.sourceStage = new Stage(this.pipeline, 'Source');
+    this.deployStage = new Stage(this.pipeline, 'Deploy');
+    this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
+    this.source = new PipelineSource(this.sourceStage, 'Source', {
+      artifactName: 'SourceArtifact',
+      repository: this.repo,
+    });
+  }
+}

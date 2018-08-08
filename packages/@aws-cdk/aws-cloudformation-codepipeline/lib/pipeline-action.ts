@@ -1,231 +1,318 @@
-import { ArtifactPath, DeployAction, Stage, } from '@aws-cdk/aws-codepipeline';
-import { RoleArn } from '@aws-cdk/aws-iam';
+import codepipeline  = require('@aws-cdk/aws-codepipeline');
+import iam = require('@aws-cdk/aws-iam');
+import cdk = require('@aws-cdk/cdk');
 
-export enum CloudFormationCapabilities {
-    IAM = 'CAPABILITY_IAM',
-    NamedIAM = 'CAPABILITY_NAMED_IAM'
-}
-
-export interface CloudFormationCommonOptions {
+// tslint:disable:max-line-length
+/**
+ * Properties common to all CloudFormation actions
+ */
+export interface CloudFormationCommonProps {
     /**
-     * For stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation
-     * might create or update those resources. For example, you must specify CAPABILITY_IAM if your
-     * stack template contains AWS Identity and Access Management (IAM) resources. For more
-     * information, see Acknowledging IAM Resources in AWS CloudFormation Templates.
+     * The name of the stack to apply this action to
      */
-    capabilities?: CloudFormationCapabilities[];
+    stackName: string;
 
     /**
-     * A name for the output file, such as CreateStackOutput.json. AWS CodePipeline adds the file to
-     * the output artifact after performing the specified action.
+     * A name for the filename in the output artifact to store the AWS CloudFormation call's result.
+     *
+     * The file will contain the result of the call to AWS CloudFormation (for example
+     * the call to UpdateStack or CreateChangeSet).
+     *
+     * AWS CodePipeline adds the file to the output artifact after performing
+     * the specified action.
+     *
+     * @default No output artifact generated
      */
     outputFileName?: string;
 
     /**
-     * A JSON object that specifies values for template parameters. If you specify parameters that
-     * are also specified in the template configuration file, these values override them. All
-     * parameter names must be present in the stack template.
+     * The name of the output artifact to generate
      *
-     * Note: There is a maximum size limit of 1 kilobyte for the JSON object that can be stored in
-     * the ParameterOverrides property.
+     * Only applied if `outputFileName` is set as well.
      *
-     * We recommend that you use the template configuration file to specify most of your parameter
-     * values. Use parameter overrides to specify only dynamic parameter values (values that are
-     * unknown until you run the pipeline).
+     * @default Automatically generated artifact name.
      */
-    parameterOverrides?: { [name: string]: any };
-
-    /**
-     * The template configuration file can contain template parameter values and a stack policy.
-     * Note that if you include sensitive information, such as passwords, restrict access to this
-     * file. For more information, see AWS CloudFormation Artifacts.
-     */
-    templateConfiguration?: ArtifactPath;
+    outputArtifactName?: string;
 }
 
-export abstract class CloudFormationAction extends DeployAction {
-    constructor(parent: Stage, name: string, configuration?: any) {
-        super(parent, name, 'CloudFormation',  { minInputs: 0, maxInputs: 10, minOutputs: 0, maxOutputs: 1 }, configuration);
+/**
+ * Base class for Actions that execute CloudFormation
+ */
+export abstract class CloudFormationAction extends codepipeline.DeployAction {
+    /**
+     * Output artifact containing the CloudFormation call response
+     *
+     * Only present if configured by passing `outputFileName`.
+     */
+    public artifact?: codepipeline.Artifact;
+
+    constructor(parent: codepipeline.Stage, id: string, props: CloudFormationCommonProps, configuration?: any) {
+        super(parent, id, 'CloudFormation',  { minInputs: 0, maxInputs: 10, minOutputs: 0, maxOutputs: 1 }, {
+            ...configuration,
+            StackName: props.stackName,
+            OutputFileName: props.outputFileName,
+        });
+
+        if (props.outputFileName) {
+            this.artifact = this.addOutputArtifact(props.outputArtifactName || (this.parent!.name + this.name + 'Artifact'));
+        }
     }
 }
 
-export interface ExecuteChangeSetOptions extends CloudFormationCommonOptions {
-
+/**
+ * Properties for the ExecuteChangeSet action.
+ */
+export interface ExecuteChangeSetProps extends CloudFormationCommonProps {
     /**
-     * The stack name to execute a change set against.
-     */
-    stackName: string;
-
-    /**
-     * The name of an existing change set or a new change set that you want to create for the
-     * specified stack.
+     * Name of the change set to execute.
      */
     changeSetName: string;
 }
 
 /**
- * Executes a change set.
+ * CodePipeline action to execute a prepared change set.
  */
 export class ExecuteChangeSet extends CloudFormationAction {
-    constructor(parent: Stage, name: string, options: ExecuteChangeSetOptions) {
-        super(parent, name, {
+    constructor(parent: codepipeline.Stage, id: string, props: ExecuteChangeSetProps) {
+        super(parent, id, props, {
             ActionMode: 'CHANGE_SET_EXECUTE',
-            Capabilities: options.capabilities,
-            ChangeSetName: options.changeSetName,
-            OutputFileName: options.outputFileName,
+            ChangeSetName: props.changeSetName,
         });
     }
 }
 
-export interface CreateReplaceChangeSetOptions extends CloudFormationCommonOptions {
-
+/**
+ * Properties common to CloudFormation actions that stage deployments
+ */
+export interface CloudFormationDeploymentActionCommonProps extends CloudFormationCommonProps {
     /**
-     * The stack name to create/replace a change set for.
+     * IAM role to assume when deploying changes.
+     *
+     * If not specified, a fresh role is created. The role is created with zero
+     * permissions unless `trustTemplate` is true, in which case the role will have
+     * full permissions.
+     *
+     * @default A fresh role with full or no permissions (depending on the value of `trustTemplate`).
      */
-    stackName: string;
+    role?: iam.Role;
 
     /**
-     * The name of an existing change set or a new change set that you want to create for the
-     * specified stack.
+     * Acknowledge certain changes made as part of deployment
+     *
+     * For stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation
+     * might create or update those resources. For example, you must specify CAPABILITY_IAM if your
+     * stack template contains AWS Identity and Access Management (IAM) resources. For more
+     * information, see [Acknowledging IAM Resources in AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities).
+     *
+     * @default No capabitilities passed, unless `trustTemplate` is true
+     */
+    capabilities?: CloudFormationCapabilities[];
+
+    /**
+     * Whether the deployed templates are trusted.
+     *
+     * If `true`, the default `role` will have full permissions and the default
+     * `capabilities` will be set to `CloudFormationCapabilities.NamedIAM.`
+     *
+     * If `false`, you will have to set the appropriate IAM permissions and capabilities
+     * manually.
+     *
+     * @default false
+     */
+    trustTemplate?: boolean;
+
+    /**
+     * Input artifact to use for template parameters values and stack policy.
+     *
+     * The template configuration file should contain a JSON object that should look like this:
+     * `{ "Parameters": {...}, "Tags": {...}, "StackPolicy": {... }}`. For more information,
+     * see [AWS CloudFormation Artifacts](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-cfn-artifacts.html).
+     *
+     * Note that if you include sensitive information, such as passwords, restrict access to this
+     * file.
+     *
+     * @default No template configuration based on input artifacts
+     */
+    templateConfiguration?: codepipeline.ArtifactPath;
+
+    /**
+     * Additional template parameters.
+     *
+     * Template parameters specified here take precedence over template parameters
+     * found in the artifact specified by the `templateConfiguration` property.
+     *
+     * We recommend that you use the template configuration file to specify
+     * most of your parameter values. Use parameter overrides to specify only
+     * dynamic parameter values (values that are unknown until you run the
+     * pipeline).
+     *
+     * All parameter names must be present in the stack template.
+     *
+     * Note: the entire object cannot be more than 1kB.
+     *
+     * @default No overrides
+     */
+    parameterOverrides?: { [name: string]: any };
+}
+
+/**
+ * Base class for all CloudFormation actions that execute or stage deployments.
+ */
+export abstract class CloudFormationDeploymentAction extends CloudFormationAction {
+    public readonly role: iam.Role;
+
+    constructor(parent: codepipeline.Stage, id: string, props: CloudFormationDeploymentActionCommonProps, configuration: any) {
+        super(parent, id, props, {
+            Capabilities: props.trustTemplate ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
+            RoleArn: new cdk.Token(() => this.role.roleArn),
+            ParameterOverrides: props.parameterOverrides,
+            TemplateConfiguration: props.templateConfiguration,
+            StackName: props.stackName,
+            ...configuration,
+        });
+
+        if (props.role) {
+            this.role = props.role;
+        } else {
+            this.role = new iam.Role(this, 'Role', {
+                assumedBy: new cdk.ServicePrincipal('cloudformation.amazonaws.com')
+            });
+
+            if (props.trustTemplate) {
+                this.role.addToPolicy(new cdk.PolicyStatement().addAction('*').addAllResources());
+            }
+        }
+    }
+
+    /**
+     * Add statement to the service role assumed by CloudFormation while executing this action.
+     */
+    public addToRolePolicy(statement: cdk.PolicyStatement) {
+        return this.role.addToPolicy(statement);
+    }
+}
+
+/**
+ * Properties for the CreateReplaceChangeSet action.
+ */
+export interface CreateReplaceChangeSetProps extends CloudFormationDeploymentActionCommonProps {
+    /**
+     * Name of the change set to create or update.
      */
     changeSetName: string;
 
     /**
-     * The arn of the IAM service role that AWS CloudFormation assumes
-     * when it operates on resources in the specified stack.
+     * Input artifact with the ChangeSet's CloudFormation template
      */
-    roleArn: RoleArn;
-
-    /**
-     * The path to the template to pass to CloudFormation during the change set operation.
-     */
-    templatePath: ArtifactPath;
+    templatePath: codepipeline.ArtifactPath;
 }
 
 /**
+ * CodePipeline action to prepare a change set.
+ *
  * Creates the change set if it doesn't exist based on the stack name and template that you submit.
  * If the change set exists, AWS CloudFormation deletes it, and then creates a new one.
  */
-export class CreateReplaceChangeSet extends CloudFormationAction {
-    constructor(parent: Stage, name: string, options: CreateReplaceChangeSetOptions) {
-        super(parent, name, {
+export class CreateReplaceChangeSet extends CloudFormationDeploymentAction {
+    constructor(parent: codepipeline.Stage, id: string, props: CreateReplaceChangeSetProps) {
+        super(parent, id, props, {
             ActionMode: 'CHANGE_SET_REPLACE',
-            Capabilities: options.capabilities,
-            ChangeSetName: options.changeSetName,
-            OutputFileName: options.outputFileName,
-            ParameterOverrides: options.parameterOverrides,
-            RoleArn: options.roleArn,
-            StackName: options.stackName,
-            TemplateConfiguration: options.templateConfiguration,
-            TemplatePath: options.templatePath.location,
+            ChangeSetName: props.changeSetName,
+            TemplatePath: props.templatePath.location,
         });
+
+        this.addInputArtifact(props.templatePath.artifact);
     }
 }
 
-export interface CreateUpdateOptions extends CloudFormationCommonOptions {
-    /**
-     * The arn of the IAM service role that AWS CloudFormation assumes
-     * when it operates on resources in the specified stack.
-     */
-    roleArn: RoleArn;
-
-    /**
-     * The CloudFormation stack name to create or update
-     */
-    stackName: string;
-
-    /**
-     * The path to the CloudFormation template file (relative to an input artifact)
-     */
-    templatePath: ArtifactPath;
-}
-
 /**
- * Creates the stack if the specified stack doesn't exist. If the stack exists, AWS CloudFormation
- * updates the stack. Use this action to update existing stacks. AWS CodePipeline won't replace the
- * stack.
+ * Properties for the CreateUpdate action
  */
-export class CreateUpdate extends CloudFormationAction {
-    constructor(parent: Stage, name: string, options: CreateUpdateOptions) {
-        super(parent, name, {
-            ActionMode: 'CREATE_UPDATE',
-            Capabilities: options.capabilities,
-            OutputFileName: options.outputFileName,
-            ParameterOverrides: options.parameterOverrides,
-            RoleArn: options.roleArn,
-            StackName: options.stackName,
-            TemplateConfiguration: options.templateConfiguration,
-            TemplatePath: options.templatePath.location
-        });
-    }
-}
-
-export interface DeleteOnlyOptions extends CloudFormationCommonOptions {
+export interface CreateUpdateProps extends CloudFormationDeploymentActionCommonProps {
     /**
-     * The arn of the IAM service role that AWS CloudFormation assumes
-     * when it operates on resources in the specified stack.
+     * Input artifact with the CloudFormation template to deploy
      */
-    roleArn: RoleArn;
+    templatePath: codepipeline.ArtifactPath;
 
     /**
-     * The CloudFormation stack name to delete
+     * Replace the stack if it's in a failed state.
+     *
+     * If this is set to true and the stack is in a failed state (one of
+     * ROLLBACK_COMPLETE, ROLLBACK_FAILED, CREATE_FAILED, DELETE_FAILED, or
+     * UPDATE_ROLLBACK_FAILED), AWS CloudFormation deletes the stack and then
+     * creates a new stack.
+     *
+     * If this is not set to true and the stack is in a failed state,
+     * the deployment fails.
+     *
+     * @default false
      */
-    stackName: string;
+    replaceOnFailure?: boolean;
 }
 
 /**
+ * CodePipeline action to deploy a stack.
+ *
+ * Creates the stack if the specified stack doesn't exist. If the stack exists,
+ * AWS CloudFormation updates the stack. Use this action to update existing
+ * stacks.
+ *
+ * AWS CodePipeline won't replace the stack, and will fail deployment if the
+ * stack is in a failed state. Use `ReplaceOnFailure` for an action that
+ * will delete and recreate the stack to try and recover from failed states.
+ *
+ * Use this action to automatically replace failed stacks without recovering or
+ * troubleshooting them. You would typically choose this mode for testing.
+ */
+export class CreateUpdateStack extends CloudFormationDeploymentAction {
+    constructor(parent: codepipeline.Stage, id: string, props: CreateUpdateProps) {
+        super(parent, id, props, {
+            ActionMode: props.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
+            TemplatePath: props.templatePath.location
+        });
+        this.addInputArtifact(props.templatePath.artifact);
+    }
+}
+
+/**
+ * Properties for the DeleteOnly action
+ */
+// tslint:disable-next-line:no-empty-interface
+export interface DeleteStackOnlyProps extends CloudFormationDeploymentActionCommonProps {
+}
+
+/**
+ * CodePipeline action to delete a stack.
+ *
  * Deletes a stack. If you specify a stack that doesn't exist, the action completes successfully
  * without deleting a stack.
  */
-export class DeleteOnly extends CloudFormationAction {
-    constructor(parent: Stage, name: string, options: DeleteOnlyOptions) {
-        super(parent, name, {
+export class DeleteStackOnly extends CloudFormationDeploymentAction {
+    constructor(parent: codepipeline.Stage, id: string, props: DeleteStackOnlyProps) {
+        super(parent, id, props, {
             ActionMode: 'DELETE_ONLY',
-            Capabilities: options.capabilities,
-            OutputFileName: options.outputFileName,
-            RoleArn: options.roleArn,
-            StackName: options.stackName,
         });
     }
-}
-
-export interface ReplaceOnFailureOptions extends CloudFormationCommonOptions {
-    /**
-     * The arn of the IAM service role that AWS CloudFormation assumes
-     * when it operates on resources in the specified stack.
-     */
-    roleArn: RoleArn;
-
-    /**
-     * The CloudFormation stack name to replace/create
-     */
-    stackName: string;
-
-    /**
-     * The path to the CloudFormation template file (relative to an input artifact)
-     */
-    templatePath: ArtifactPath;
 }
 
 /**
- * Creates a stack if the specified stack doesn't exist. If the stack exists and is in a failed
- * state (reported as ROLLBACK_COMPLETE, ROLLBACK_FAILED, CREATE_FAILED, DELETE_FAILED, or
- * UPDATE_ROLLBACK_FAILED), AWS CloudFormation deletes the stack and then creates a new stack. If
- * the stack isn't in a failed state, AWS CloudFormation updates it. Use this action to
- * automatically replace failed stacks without recovering or troubleshooting them. You would
- * typically choose this mode for testing.
+ * Capabilities that affect whether CloudFormation is allowed to change IAM resources
  */
-export class ReplaceOnFailure extends CloudFormationAction {
-    constructor(parent: Stage, name: string, options: ReplaceOnFailureOptions) {
-        super(parent, name, {
-            ActionMode: 'REPLACE_ON_FAILURE',
-            Capabilities: options.capabilities,
-            OutputFileName: options.outputFileName,
-            ParameterOverrides: options.parameterOverrides,
-            RoleArn: options.roleArn,
-            StackName: options.stackName,
-            TemplateConfiguration: options.templateConfiguration,
-            TemplatePath: options.templatePath.location,
-        });
-    }
+export enum CloudFormationCapabilities {
+    /**
+     * Capability to create anonymous IAM resources
+     *
+     * Pass this capability if you're only creating anonymous resources.
+     */
+    IAM = 'CAPABILITY_IAM',
+
+    /**
+     * Capability to create named IAM resources.
+     *
+     * Pass this capability if you're creating IAM resources that have physical
+     * names.
+     *
+     * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
+     */
+    NamedIAM = 'CAPABILITY_NAMED_IAM'
 }

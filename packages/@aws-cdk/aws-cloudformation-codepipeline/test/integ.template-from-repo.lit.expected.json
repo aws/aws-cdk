@@ -62,34 +62,19 @@
             },
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
+                "codecommit:GetBranch",
+                "codecommit:GetCommit",
+                "codecommit:UploadArchive",
+                "codecommit:GetUploadArchiveStatus",
+                "codecommit:CancelUploadArchive"
               ],
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineBucketB967BD35",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineBucketB967BD35",
-                          "Arn"
-                        ]
-                      },
-                      "/",
-                      "*"
-                    ]
-                  ]
-                }
-              ]
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TemplateRepo2326F199",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -124,14 +109,17 @@
                 "ActionTypeId": {
                   "Category": "Source",
                   "Owner": "AWS",
-                  "Provider": "S3",
+                  "Provider": "CodeCommit",
                   "Version": "1"
                 },
                 "Configuration": {
-                  "S3Bucket": {
-                    "Ref": "PipelineBucketB967BD35"
+                  "RepositoryName": {
+                    "Fn::GetAtt": [
+                      "TemplateRepo2326F199",
+                      "Name"
+                    ]
                   },
-                  "S3ObjectKey": "key",
+                  "BranchName": "master",
                   "PollForSourceChanges": true
                 },
                 "InputArtifacts": [],
@@ -158,26 +146,55 @@
                 "Configuration": {
                   "RoleArn": {
                     "Fn::GetAtt": [
-                      "CfnChangeSetRole6F05F6FC",
+                      "PipelineDeployPrepareChangesRoleD28C853C",
                       "Arn"
                     ]
                   },
-                  "StackName": "IntegTest-TestActionStack",
+                  "StackName": "OurStack",
                   "ActionMode": "CHANGE_SET_REPLACE",
-                  "ChangeSetName": "ChangeSetIntegTest",
-                  "TemplatePath": "SourceArtifact::test.yaml"
+                  "ChangeSetName": "StagedChangeSet",
+                  "TemplatePath": "SourceArtifact::template.yaml"
                 },
                 "InputArtifacts": [
                   {
                     "Name": "SourceArtifact"
                   }
                 ],
-                "Name": "DeployCFN",
+                "Name": "PrepareChanges",
+                "OutputArtifacts": [],
+                "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Approval",
+                  "Owner": "AWS",
+                  "Provider": "Manual",
+                  "Version": "1"
+                },
+                "InputArtifacts": [],
+                "Name": "ApproveChanges",
+                "OutputArtifacts": [],
+                "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Deploy",
+                  "Owner": "AWS",
+                  "Provider": "CloudFormation",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ActionMode": "CHANGE_SET_EXECUTE",
+                  "ChangeSetName": "StagedChangeSet",
+                  "StackName": "OurStack"
+                },
+                "InputArtifacts": [],
+                "Name": "ExecuteChanges",
                 "OutputArtifacts": [],
                 "RunOrder": 1
               }
             ],
-            "Name": "CFN"
+            "Name": "Deploy"
           }
         ]
       },
@@ -186,15 +203,7 @@
         "PipelineRoleDefaultPolicyC7A05455"
       ]
     },
-    "PipelineBucketB967BD35": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-        "VersioningConfiguration": {
-          "Status": "Enabled"
-        }
-      }
-    },
-    "CfnChangeSetRole6F05F6FC": {
+    "PipelineDeployPrepareChangesRoleD28C853C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -209,6 +218,13 @@
           ],
           "Version": "2012-10-17"
         }
+      }
+    },
+    "TemplateRepo2326F199": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "template-repo",
+        "Triggers": []
       }
     }
   }
