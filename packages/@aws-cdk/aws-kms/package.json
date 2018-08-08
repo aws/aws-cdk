@@ -14,9 +14,6 @@
           "artifactId": "kms"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KMS"
-      },
       "sphinx": {}
     }
   },

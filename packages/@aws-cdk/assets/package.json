@@ -14,9 +14,6 @@
           "artifactId": "cdk-assets"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.Assets"
-      },
       "sphinx": {}
     }
   },

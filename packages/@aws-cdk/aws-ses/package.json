@@ -14,9 +14,6 @@
           "artifactId": "ses"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SES"
-      },
       "sphinx": {}
     }
   },

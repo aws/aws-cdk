@@ -14,9 +14,6 @@
           "artifactId": "elasticbeanstalk"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ElasticBeanstalk"
-      },
       "sphinx": {}
     }
   },
