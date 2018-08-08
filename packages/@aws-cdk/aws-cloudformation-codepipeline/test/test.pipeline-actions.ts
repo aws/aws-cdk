@@ -190,7 +190,7 @@ export = {
 
   },
 
-  'trustTemplate leads to admin role and full IAM capabilities'(test: Test) {
+  'fullPermissions leads to admin role and full IAM capabilities'(test: Test) {
     // GIVEN
     const stack = new TestFixture();
 
@@ -198,7 +198,7 @@ export = {
     new CreateUpdateStack(stack.deployStage, 'CreateUpdate', {
       stackName: 'MyStack',
       templatePath: stack.source.artifact.subartifact('template.yaml'),
-      trustTemplate: true,
+      fullPermissions: true,
     });
 
     const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
@@ -212,7 +212,7 @@ export = {
           "Actions": [
             {
               "Configuration": {
-                "Capabilities": [ "CAPABILITY_NAMED_IAM" ],
+                "Capabilities": "CAPABILITY_NAMED_IAM",
                 "RoleArn": { "Fn::GetAtt": [ roleId, "Arn" ] },
                 "ActionMode": "CREATE_UPDATE",
                 "StackName": "MyStack",
