@@ -156,16 +156,16 @@
                   "Version": "1"
                 },
                 "Configuration": {
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "ChangeSetIntegTest",
+                  "TemplatePath": "SourceArtifact::test.yaml",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "CfnChangeSetRole6F05F6FC",
                       "Arn"
                     ]
                   },
-                  "StackName": "IntegTest-TestActionStack",
-                  "ActionMode": "CHANGE_SET_REPLACE",
-                  "ChangeSetName": "ChangeSetIntegTest",
-                  "TemplatePath": "SourceArtifact::test.yaml"
+                  "StackName": "IntegTest-TestActionStack"
                 },
                 "InputArtifacts": [
                   {

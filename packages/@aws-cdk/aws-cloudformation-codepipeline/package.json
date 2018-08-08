@@ -7,6 +7,7 @@
   "jsii": {
     "outdir": "dist",
     "targets": {
+      "sphinx": {},
       "java": {
         "package": "software.amazon.awscdk.services.cloudformation.codepipeline",
         "maven": {

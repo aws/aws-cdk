@@ -53,7 +53,7 @@ export abstract class CloudFormationAction extends codepipeline.DeployAction {
         });
 
         if (props.outputFileName) {
-            this.artifact = this.addOutputArtifact(props.outputArtifactName || (this.parent!.name + this.name + 'Artifact'));
+            this.artifact = this.addOutputArtifact(props.outputArtifactName || (parent.name + this.name + 'Artifact'));
         }
     }
 }
@@ -169,9 +169,12 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
     public readonly role: iam.Role;
 
     constructor(parent: codepipeline.Stage, id: string, props: CloudFormationDeploymentActionCommonProps, configuration: any) {
+        const capabilities = props.fullPermissions && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities;
+
         super(parent, id, props, {
             ...configuration,
-            Capabilities: props.fullPermissions && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
+            // This must be a string, so flatten the list to a comma-separated string.
+            Capabilities: (capabilities && capabilities.join(',')) || undefined,
             RoleArn: new cdk.Token(() => this.role.roleArn),
             ParameterOverrides: props.parameterOverrides,
             TemplateConfiguration: props.templateConfiguration,

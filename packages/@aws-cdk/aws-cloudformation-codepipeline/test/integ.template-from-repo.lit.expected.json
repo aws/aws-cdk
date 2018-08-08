@@ -144,16 +144,17 @@
                   "Version": "1"
                 },
                 "Configuration": {
+                  "ActionMode": "CHANGE_SET_REPLACE",
+                  "ChangeSetName": "StagedChangeSet",
+                  "TemplatePath": "SourceArtifact::template.yaml",
+                  "Capabilities": "CAPABILITY_NAMED_IAM",
                   "RoleArn": {
                     "Fn::GetAtt": [
                       "PipelineDeployPrepareChangesRoleD28C853C",
                       "Arn"
                     ]
                   },
-                  "StackName": "OurStack",
-                  "ActionMode": "CHANGE_SET_REPLACE",
-                  "ChangeSetName": "StagedChangeSet",
-                  "TemplatePath": "SourceArtifact::template.yaml"
+                  "StackName": "OurStack"
                 },
                 "InputArtifacts": [
                   {
@@ -218,6 +219,27 @@
           ],
           "Version": "2012-10-17"
         }
+      }
+    },
+    "PipelineDeployPrepareChangesRoleDefaultPolicy8CDCCD73": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "*",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelineDeployPrepareChangesRoleDefaultPolicy8CDCCD73",
+        "Roles": [
+          {
+            "Ref": "PipelineDeployPrepareChangesRoleD28C853C"
+          }
+        ]
       }
     },
     "TemplateRepo2326F199": {
