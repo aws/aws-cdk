@@ -16,7 +16,8 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.KinesisFirehose"
-      }
+      },
+      "sphinx": {}
     }
   },
   "repository": {
