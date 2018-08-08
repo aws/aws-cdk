@@ -41,7 +41,7 @@ async function main() {
     } else {
         // just "npm pack" and deploy to "outdir"
         const tarball = (await shell([ 'npm', 'pack' ], timers)).trim();
-        const target = path.join(outdir, 'npm');
+        const target = path.join(outdir, 'js');
         await fs.remove(target);
         await fs.mkdirp(target);
         await fs.move(tarball, path.join(target, path.basename(tarball)));
