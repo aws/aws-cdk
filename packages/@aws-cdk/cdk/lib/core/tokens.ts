@@ -16,9 +16,9 @@ export class Token {
     /**
      * Creates a token that resolves to `value`. If value is a function,
      * the function is evaluated upon resolution and the value it returns will be
-     * uesd as the token's value.
+     * used as the token's value.
      */
-    constructor(private readonly valueOrFunction?: any) { }
+    constructor(private readonly valueOrFunction?: any, public readonly stringRepresentation?: string) { }
 
     /**
      * @returns The resolved value for this token.
@@ -40,6 +40,13 @@ export class Token {
      * when resolve() is called on the string.
      */
     public toString(): string {
+        const valueType = typeof this.valueOrFunction;
+        if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+            return this.valueOrFunction.toString();
+        }
+
+        // In particular: 'undefined' is not stringified here, since it should
+        // probably evaluate to a proper "undefined" later.
         if (this.stringRepr === undefined) {
             this.stringRepr = TOKEN_STRING_MAP.register(this);
         }
@@ -55,18 +62,6 @@ export class Token {
      */
     public toJSON(): any {
         return this.toString();
-    }
-}
-
-/**
- * A Token that has a human-readable representation hint
- *
- * This can be used to give Tokens a string representation that makes
- * sense to humans.
- */
-export class HintedToken extends Token {
-    constructor(public readonly representationHint: string, valueOrFunction?: any) {
-        super(valueOrFunction);
     }
 }
 
@@ -300,7 +295,3 @@ const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
  * Singleton instance of the token string map
  */
 const TOKEN_STRING_MAP = new TokenStringMap();
-
-function isHintedToken(token: any): token is HintedToken {
-    return 'representationHint' in token;
-}
