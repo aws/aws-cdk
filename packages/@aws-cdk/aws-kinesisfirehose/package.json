@@ -14,9 +14,6 @@
           "artifactId": "kinesisfirehose"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisFirehose"
-      },
       "sphinx": {}
     }
   },

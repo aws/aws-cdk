@@ -14,9 +14,6 @@
           "artifactId": "redshift"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Redshift"
-      },
       "sphinx": {}
     }
   },

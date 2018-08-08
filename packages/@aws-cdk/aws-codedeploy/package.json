@@ -14,9 +14,6 @@
           "artifactId": "codedeploy"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeDeploy"
-      },
       "sphinx": {}
     }
   },

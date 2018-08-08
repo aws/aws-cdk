@@ -92,7 +92,8 @@ export async function hasIntegTests(): Promise<boolean> {
  * Return the compiler for this package (either tsc or jsii)
  */
 export function packageCompiler() {
-    return isJsii() ? 'jsii' : 'tsc';
+    return isJsii() ? require.resolve(`jsii/bin/jsii`)
+                    : require.resolve(`typescript/bin/tsc`);
 }
 
 export interface CDKBuildOptions {

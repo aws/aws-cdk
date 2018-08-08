@@ -14,9 +14,6 @@
           "artifactId": "cloud9"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cloud9"
-      },
       "sphinx": {}
     }
   },

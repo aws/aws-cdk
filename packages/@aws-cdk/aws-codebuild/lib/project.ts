@@ -378,7 +378,7 @@ export class Project extends ProjectRef {
     /**
      * The IAM role for this project.
      */
-    public readonly role: iam.Role;
+    public readonly role?: iam.Role;
 
     /**
      * The ARN of the project.
@@ -450,7 +450,9 @@ export class Project extends ProjectRef {
      * @param statement The permissions statement to add
      */
     public addToRolePolicy(statement: cdk.PolicyStatement) {
-        return this.role.addToPolicy(statement);
+        if (this.role) {
+            this.role.addToPolicy(statement);
+        }
     }
 
     private createLoggingPermission() {

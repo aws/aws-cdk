@@ -14,9 +14,6 @@
           "artifactId": "codebuild"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeBuild"
-      },
       "sphinx": {}
     }
   },

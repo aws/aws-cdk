@@ -14,9 +14,6 @@
           "artifactId": "appsync"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.AppSync"
-      },
       "sphinx": {}
     }
   },

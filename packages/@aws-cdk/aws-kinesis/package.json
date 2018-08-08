@@ -14,9 +14,6 @@
           "artifactId": "kinesis"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Kinesis"
-      },
       "sphinx": {}
     }
   },

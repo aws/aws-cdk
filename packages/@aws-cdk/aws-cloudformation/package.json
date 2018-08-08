@@ -14,9 +14,6 @@
           "artifactId": "cloudformation"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudFormation"
-      },
       "sphinx": {}
     }
   },

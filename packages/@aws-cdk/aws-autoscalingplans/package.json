@@ -14,9 +14,6 @@
           "artifactId": "autoscalingplans"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.AutoScalingPlans"
-      },
       "sphinx": {}
     }
   },

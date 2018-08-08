@@ -14,9 +14,6 @@
           "artifactId": "logs"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Logs"
-      },
       "sphinx": {}
     }
   },

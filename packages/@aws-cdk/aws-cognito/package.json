@@ -14,9 +14,6 @@
           "artifactId": "cognito"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cognito"
-      },
       "sphinx": {}
     }
   },

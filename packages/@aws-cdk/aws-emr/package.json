@@ -14,9 +14,6 @@
           "artifactId": "emr"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EMR"
-      },
       "sphinx": {}
     }
   },

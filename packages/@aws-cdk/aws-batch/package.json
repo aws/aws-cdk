@@ -14,9 +14,6 @@
           "artifactId": "batch"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Batch"
-      },
       "sphinx": {}
     }
   },
