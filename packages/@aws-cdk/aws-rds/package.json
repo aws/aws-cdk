@@ -14,9 +14,7 @@
           "artifactId": "rds"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.RDS"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

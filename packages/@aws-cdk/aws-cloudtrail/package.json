@@ -14,9 +14,7 @@
           "artifactId": "cloudtrail"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudTrail"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

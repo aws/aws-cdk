@@ -14,9 +14,7 @@
           "artifactId": "neptune"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Neptune"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

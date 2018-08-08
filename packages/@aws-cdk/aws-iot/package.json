@@ -14,9 +14,7 @@
           "artifactId": "iot"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoT"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

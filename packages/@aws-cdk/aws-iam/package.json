@@ -14,9 +14,7 @@
           "artifactId": "iam"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IAM"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

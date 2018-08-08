@@ -9,3 +9,6 @@ dist
 .LAST_PACKAGE
 .LAST_BUILD
 !*.js
+
+# Include .jsii
+!.jsii

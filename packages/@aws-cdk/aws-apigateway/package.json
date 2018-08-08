@@ -14,9 +14,7 @@
           "artifactId": "apigateway"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.APIGateway"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

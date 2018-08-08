@@ -14,9 +14,7 @@
           "artifactId": "quickstarts"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.QuickStarts"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

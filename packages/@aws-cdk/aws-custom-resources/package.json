@@ -14,9 +14,7 @@
           "artifactId": "custom-resources"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CustomResources"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

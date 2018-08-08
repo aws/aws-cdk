@@ -14,9 +14,7 @@
           "artifactId": "budgets"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Budgets"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

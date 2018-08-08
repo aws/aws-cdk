@@ -14,9 +14,7 @@
           "artifactId": "sns"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SNS"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

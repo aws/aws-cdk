@@ -14,9 +14,7 @@
           "artifactId": "certificatemanager"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CertificateManager"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

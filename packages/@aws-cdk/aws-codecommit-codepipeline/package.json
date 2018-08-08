@@ -14,9 +14,7 @@
           "artifactId": "codecommit-codepipeline"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Codecommit.Codepipeline"
-      }
+      "sphinx": {}
     }
   },
   "repository": {

@@ -14,9 +14,7 @@
           "artifactId": "applicationautoscaling"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
