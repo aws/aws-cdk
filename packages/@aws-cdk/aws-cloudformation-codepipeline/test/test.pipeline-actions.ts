@@ -8,7 +8,7 @@ import { Role } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CreateReplaceChangeSet, CreateUpdateStack, ExecuteChangeSet } from '../lib/pipeline-action';
+import { CreateReplaceChangeSet, CreateUpdateStack, ExecuteChangeSet } from '../lib/pipeline-actions';
 
 // tslint:disable:object-literal-key-quotes
 
