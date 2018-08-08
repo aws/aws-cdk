@@ -28,6 +28,7 @@ const changeSetName = 'StagedChangeSet';
 new cfnpl.CreateReplaceChangeSet(prodStage, 'PrepareChanges', {
     stackName,
     changeSetName,
+    fullPermissions: true,
     templatePath: source.artifact.subartifact('template.yaml'),
 });
 

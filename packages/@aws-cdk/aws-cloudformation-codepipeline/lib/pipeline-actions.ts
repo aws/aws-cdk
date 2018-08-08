@@ -109,17 +109,23 @@ export interface CloudFormationDeploymentActionCommonProps extends CloudFormatio
     capabilities?: CloudFormationCapabilities[];
 
     /**
-     * Whether the deployed templates are trusted.
+     * Whether to grant full permissions to CloudFormation while deploying this template.
      *
-     * If `true`, the default `role` will have full permissions and the default
-     * `capabilities` will be set to `CloudFormationCapabilities.NamedIAM.`
+     * Setting this to `true` affects the defaults for `role` and `capabilities`, if you
+     * don't specify any alternatives.
      *
-     * If `false`, you will have to set the appropriate IAM permissions and capabilities
-     * manually.
+     * The default role that will be created for you will have full (i.e., `*`)
+     * permissions on all resources, and the deployment will have named IAM
+     * capabilities (i.e., able to create all IAM resources).
+     *
+     * This is a shorthand that you can use if you fully trust the templates that
+     * are deployed in this pipeline. If you want more fine-grained permissions,
+     * use `addToRolePolicy` and `capabilities` to control what the CloudFormation
+     * deployment is allowed to do.
      *
      * @default false
      */
-    trustTemplate?: boolean;
+    fullPermissions?: boolean;
 
     /**
      * Input artifact to use for template parameters values and stack policy.
@@ -165,7 +171,7 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
     constructor(parent: codepipeline.Stage, id: string, props: CloudFormationDeploymentActionCommonProps, configuration: any) {
         super(parent, id, props, {
             ...configuration,
-            Capabilities: props.trustTemplate && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
+            Capabilities: props.fullPermissions && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities,
             RoleArn: new cdk.Token(() => this.role.roleArn),
             ParameterOverrides: props.parameterOverrides,
             TemplateConfiguration: props.templateConfiguration,
@@ -179,7 +185,7 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
                 assumedBy: new cdk.ServicePrincipal('cloudformation.amazonaws.com')
             });
 
-            if (props.trustTemplate) {
+            if (props.fullPermissions) {
                 this.role.addToPolicy(new cdk.PolicyStatement().addAction('*').addAllResources());
             }
         }
