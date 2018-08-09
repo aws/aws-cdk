@@ -2,7 +2,7 @@ import { expect } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { CustomResource, SingletonLambda } from '../lib';
+import { CustomResource } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -92,7 +92,7 @@ class TestCustomResource extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string) {
     super(parent, name);
 
-    const singletonLambda = new SingletonLambda(this, 'Lambda', {
+    const singletonLambda = new lambda.SingletonLambda(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.LambdaInlineCode('def hello(): pass'),
       runtime: lambda.LambdaRuntime.Python27,
