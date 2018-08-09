@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import util = require('@aws-cdk/util');
 
-type RenameTable = {[key: string]: string};
+export type RenameTable = {[key: string]: string};
 
 /**
  * A class used to maintain a set of rename directives
