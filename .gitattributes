@@ -5,5 +5,6 @@
 # Until this is fixed, it is best to just set the whole repository to be LF.
 * eol=lf
 *.gif binary
+*.zip binary
 packages/@aws-cdk-testing/framework-integ/test/aws-eks/**/*.zip filter=lfs diff=lfs merge=lfs -text
 packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/**/*.zip filter=lfs diff=lfs merge=lfs -text
