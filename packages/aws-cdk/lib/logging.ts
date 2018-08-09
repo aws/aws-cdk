@@ -39,7 +39,7 @@ export function data(fmt: string, ...args: any[]) {
     console.log(util.format(fmt, ...args));
 }
 
-type LoggerFunction = (fmt: string, ...args: any[]) => void;
+export type LoggerFunction = (fmt: string, ...args: any[]) => void;
 
 /**
  * Create a logger output that features a constant prefix string.
