@@ -6,10 +6,31 @@
 [@moofish32]:    https://github.com/moofish32
 [@mpiroc]:       https://github.com/mpiroc
 [@Doug-AWS]:     https://github.com/Doug-AWS
+[@mindstorms6]:  https://github.com/mindstorms6
+[@Mortifera]:    https://github.com/Mortifera
 
-## UNRELEASED
+## 0.8.1 - 2018-08-08
 
-* _**BREAKING**_: renamed `@aws-cdk/rtv` to `@aws-cdk/runtime-values`.
+### Features
+
+* __aws-cdk__: Support `--profile` in command-line toolkit ([@rix0rrr] in [#517](https://github.com/awslabs/aws-cdk/issues/517))
+* __@aws-cdk/cdk__: Introduce `Default` construct id ([@rix0rrr] in [#496](https://github.com/awslabs/aws-cdk/issues/496))
+* __@aws-cdk/aws-lambda__: Add `LambdaRuntime.DotNetCore21` ([@Mortifera] in [#507](https://github.com/awslabs/aws-cdk/issues/507))
+* __@aws-cdk/runtime-values__ (_**BREAKING**_): rename 'rtv' to 'runtime-values' ([@rix0rrr] in [#494](https://github.com/awslabs/aws-cdk/issues/494))
+* __@aws-cdk/aws-ec2__: Combine `Connections` and `DefaultConnections` classes ([@rix0rrr] in [#453](https://github.com/awslabs/aws-cdk/issues/453))
+* __@aws-cdk/aws-codebuild__: allow `buildSpec` parameter to take a filename ([@rix0rrr] in [#470](https://github.com/awslabs/aws-cdk/issues/470))
+* __@aws-cdk/aws-cloudformation-codepipeline__: add support for CloudFormation CodePipeline actions ([@mindstorms6] and [@rix0rrr] in [#525](https://github.com/awslabs/aws-cdk/pull/525)).
+* __docs__: Improvements to Getting Started ([@eladb] in [#462](https://github.com/awslabs/aws-cdk/issues/462))
+* __docs__: Updates to README ([@Doug-AWS] in [#456](https://github.com/awslabs/aws-cdk/issues/456))
+* __docs__: Upgraded `jsii-pacmak` to `0.6.4`, which includes "language-native" type names and package coordinates ([@RomainMuller] in [awslabs/jsii#130](https://github.com/awslabs/jsii/pull/130))
+
+### Bug fixes
+
+* __aws-cdk__ (toolkit): Fix java `cdk init` template ([@RomainMuller] in [#490](https://github.com/awslabs/aws-cdk/issues/490))
+* __@aws-cdk/cdk__ (_**BREAKING**_): Align `FnJoin` signature to CloudFormation ([@RomainMuller] in [#516](https://github.com/awslabs/aws-cdk/issues/516))
+* __@aws-cdk/aws-cloudfront__: Fix origin error ([@mindstorms6] in [#514](https://github.com/awslabs/aws-cdk/issues/514))
+* __@aws-cdk/aws-lambda__: Invalid cast for inline LambdaRuntime members in Java ([@eladb] in [#505](https://github.com/awslabs/aws-cdk/issues/505))
+* __examples__: Fixed java examples ([@RomainMuller] in [#498](https://github.com/awslabs/aws-cdk/issues/498))
 
 ## 0.8.0 - 2018-07-31
 
