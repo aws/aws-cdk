@@ -874,4 +874,4 @@ What Next?
  * Check out the `examples directory <https://github.com/awslabs/aws-cdk/tree/master/examples>`_ in your GitHub repository
  * Learn about the rich APIs offered by the :doc:`AWS Construct Library <aws-construct-lib>`
  * Work directly with CloudFormation using the :doc:`AWS CloudFormation Library <cloudformation>`
- * Come talk to us on `Gitter <https://gitter.im/awslabs/aws-cdk>`_yyyyyy
+ * Come talk to us on `Gitter <https://gitter.im/awslabs/aws-cdk>`_
