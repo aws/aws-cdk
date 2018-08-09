@@ -1,2 +1,2 @@
-#!/bin/bash
-cat ../../lerna.json | grep "version" | xargs | cut -d" " -f2
+#!/usr/bin/env node
+console.log(require('../../../lerna.json').version);
