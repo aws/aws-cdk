@@ -14,6 +14,9 @@
           "artifactId": "s3"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.S3"
+      },
       "sphinx": {}
     }
   },

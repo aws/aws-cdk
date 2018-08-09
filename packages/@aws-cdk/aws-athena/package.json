@@ -14,6 +14,9 @@
           "artifactId": "athena"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Athena"
+      },
       "sphinx": {}
     }
   },

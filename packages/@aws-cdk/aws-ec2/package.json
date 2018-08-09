@@ -14,6 +14,9 @@
           "artifactId": "ec2"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EC2"
+      },
       "sphinx": {}
     }
   },
