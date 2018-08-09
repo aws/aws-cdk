@@ -1,4 +1,5 @@
 import { Token } from '../core/tokens';
+import { CLOUDFORMATION_ENGINE } from './intrinsics';
 // tslint:disable:max-line-length
 
 /**
@@ -7,7 +8,9 @@ import { Token } from '../core/tokens';
  */
 export class Fn extends Token {
     constructor(name: string, value: any) {
-        super(() => ({ [name]: value }));
+        super(() => ({ [name]: value }), {
+            intrinsicEngine: CLOUDFORMATION_ENGINE
+        });
     }
 }
 

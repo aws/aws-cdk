@@ -7,10 +7,39 @@ import { Construct } from "./construct";
 export const RESOLVE_METHOD = 'resolve';
 
 /**
+ * Additional properties for Tokens
+ */
+export interface TokenProps {
+    /**
+     * A human-readable string describing the token's value.
+     *
+     * This is used in the placeholder string of stringified Tokens, so that
+     * if humans look at the string its purpose makes sense to them.
+     *
+     * Must contain only alphanumeric and simple separator characters
+     * (_.:-).
+     *
+     * @default No string representation
+     */
+    stringRepresentation?: string;
+
+    /**
+     * Mark this Token as producing an intrinsic for the given engine.
+     *
+     * The results of instrinsic Tokens are not evaluated further,
+     * but used as-is.
+     */
+    intrinsicEngine?: string;
+}
+
+/**
  * Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value
  * in case, for example, that it requires some context or late-bound data.
  */
 export class Token {
+    public readonly stringRepresentation?: string;
+    public readonly intrinsicEngine?: string;
+
     private tokenKey?: string;
 
     /**
@@ -20,9 +49,12 @@ export class Token {
      * the value it returns will be used as the token's value.
      *
      * @param valueOrFunction What this token will evaluate to, literal or function.
-     * @param stringRepresentation A human-readable string describing the token's value.
+     * @param stringRepresentation
      */
-    constructor(private readonly valueOrFunction?: any, public readonly stringRepresentation?: string) { }
+    constructor(private readonly valueOrFunction?: any, props: TokenProps = {}) {
+        this.stringRepresentation = props.stringRepresentation;
+        this.intrinsicEngine = props.intrinsicEngine;
+    }
 
     /**
      * @returns The resolved value for this token.
@@ -107,6 +139,13 @@ export class Token {
  */
 export function istoken(obj: any) {
     return typeof(obj[RESOLVE_METHOD]) === 'function';
+}
+
+/**
+ * Return whether the given Token is an intrinsic
+ */
+function isIntrinsic(t: Token): boolean {
+    return t.intrinsicEngine !== undefined;
 }
 
 /**
