@@ -1,7 +1,7 @@
-import { cloudformation } from '@aws-cdk/aws-cloudformation';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
+import { cloudformation } from './cloudformation.generated';
 
 /**
  * Collection of arbitrary properties
