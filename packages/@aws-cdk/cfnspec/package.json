@@ -4,10 +4,11 @@
   "version": "0.8.1",
   "scripts": {
     "update": "/bin/bash build-tools/update.sh",
-    "build": "tsc && tslint -p . && node build-tools/build",
-    "test": "nyc nodeunit test/test.*.js",
-    "watch": "tsc -w",
-    "lint": "tslint -p ."
+    "build": "cdk-build && node build-tools/build",
+    "watch": "cdk-watch",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "package": "cdk-package"
   },
   "nyc": {
     "lines": 50
@@ -24,22 +25,25 @@
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^4.0.2",
     "json-diff": "^0.3.1",
+    "pkglint": "^0.8.1",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
     "md5": "^2.2.1"
   },
   "repository": {
-    "url": "git://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
   },
   "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }
