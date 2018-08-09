@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { FnConcat, istoken, resolve, Token } from '../../lib';
+import { CloudFormationIntrinsicToken, FnConcat, isToken, resolve, Token, tokenAwareJsonify } from '../../lib';
 import { evaluateIntrinsics } from './cfn-intrinsics';
 
 export = {
@@ -122,10 +122,10 @@ export = {
         test.done();
     },
 
-    'istoken(obj) can be used to determine if an object is a token'(test: Test) {
-        test.ok(istoken({ resolve: () => 123 }));
-        test.ok(istoken({ a: 1, b: 2, resolve: () => 'hello' }));
-        test.ok(!istoken({ a: 1, b: 2, resolve: 3 }));
+    'isToken(obj) can be used to determine if an object is a token'(test: Test) {
+        test.ok(isToken({ resolve: () => 123 }));
+        test.ok(isToken({ a: 1, b: 2, resolve: () => 'hello' }));
+        test.ok(!isToken({ a: 1, b: 2, resolve: 3 }));
         test.done();
     },
 
@@ -157,7 +157,7 @@ export = {
         test.done();
     },
 
-    'tokens can be JSON.stringified and stringification can be reversed'(test: Test) {
+    'tokens can be JSONified and JSONification can be reversed'(test: Test) {
         // GIVEN
         const fido = {
             name: 'Fido',
@@ -165,7 +165,7 @@ export = {
         };
 
         // WHEN
-        const resolved = resolve(JSON.stringify(fido));
+        const resolved = resolve(tokenAwareJsonify(fido));
 
         // THEN
         test.deepEqual(resolved, {'Fn::Join': ['',
@@ -173,63 +173,49 @@ export = {
         test.done();
     },
 
-    /*
-    'Tokens that resolve to undefined disappear under JSON.stringification()'(test: Test) {
-        // GIVEN
-        const bob1 = { name: 'Bob', speaks: new Token(() => undefined) };
-        const bob2 = { name: 'Bob', speaks: new Token(undefined) };
-
-        // WHEN
-        const resolved1 = resolve(JSON.stringify(bob1));
-        const resolved2 = resolve(JSON.stringify(bob2));
-
-        // THEN
-        const expected = {'Fn::Join': ['', ['{"name":"Bob"}']]};
-        test.deepEqual(resolved1, expected);
-        test.deepEqual(resolved2, expected);
-
-        test.done();
-    },
-    */
-
-    'Tokens that resolve to a number are unquoted during JSON.stringification'(test: Test) {
+    'During tokenAwareJsonify, its an error for a Token to not resolve to a string'(test: Test) {
         // GIVEN
         const fido1 = { name: "Fido", age: new Token(() => 1) };
-        const fido2 = { name: "Fido", age: new Token(1) };
-
-        // WHEN
-        const resolved1 = resolve(JSON.stringify(fido1));
-        const resolved2 = resolve(JSON.stringify(fido2));
 
         // THEN
-        const expected = {'Fn::Join': ['', ['{"name":"Fido","age":', 1, '}']]};
-        test.deepEqual(resolved1, expected);
-        test.deepEqual(resolved2, expected);
+        test.throws(() => {
+            resolve(tokenAwareJsonify(fido1));
+        });
 
         test.done();
     },
 
-    'lazy string literals in evaluated tokens are escaped when calling JSON.stringify()'(test: Test) {
+    'Non-lazy integers are allowed in tokenAwareJsonify()'(test: Test) {
+        // GIVEN
+        const fido = { name: "Fido", age: new Token(1) };
+
+        // WHEN
+        const resolved = evaluateIntrinsics(resolve(tokenAwareJsonify(fido)));
+
+        // THEN
+        test.deepEqual('{"name":"Fido","age":1}', resolved);
+
+        test.done();
+    },
+
+    'lazy string literals in evaluated tokens are escaped when calling tokenAwareJsonify()'(test: Test) {
         // WHEN
         const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
 
         // WHEN
-        const resolved = resolve(JSON.stringify({
+        const resolved = resolve(tokenAwareJsonify({
             literal: 'I can also "contain" quotes',
             token
         }));
 
         // THEN
-        test.deepEqual(resolved, { 'Fn::Join': ['', [
-            '{"literal": "I can also \\"contain\\" quotes","token":"',
-            {'Fn::Join': ['', ['Hello', 'This\\nIs', 'Very \\"cool\\"']]},
-            '"}'
-        ]]});
+        const expected = '{"literal":"I can also \\"contain\\" quotes","token":"HelloThis\\nIsVery \\"cool\\""}';
+        test.equal(evaluateIntrinsics(resolved), expected);
 
         test.done();
     },
 
-    'doubly nested strings evaluate correctly'(test: Test) {
+    'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
         // GIVEN
         const token1 = new Token(() => "world");
         const token2 = new Token(() => `hello ${token1}`);
@@ -245,32 +231,47 @@ export = {
         test.done();
     },
 
-    'combined strings in JSON context end up correctly'(test: Test) {
+    'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
         // WHEN
         const fidoSays = new Token(() => 'woof');
 
         // WHEN
-        const resolved = resolve(JSON.stringify({
+        const resolved = resolve(tokenAwareJsonify({
             information: `Did you know that Fido says: ${fidoSays}`
         }));
 
         // THEN
-        test.deepEqual(evaluateIntrinsics(resolved), '{"information": "Did you know that Fido says: woof"}');
+        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: woof"}');
 
         test.done();
     },
 
-    'quoted strings in embedded JSON context end up correctly'(test: Test) {
+    'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
         // WHEN
-        const fidoSays = new Token(() => '"woof"');
+        const fidoSays = new CloudFormationIntrinsicToken(() => ({ Ref: 'Something' }));
 
         // WHEN
-        const resolved = resolve(JSON.stringify({
+        const resolved = resolve(tokenAwareJsonify({
             information: `Did you know that Fido says: ${fidoSays}`
         }));
 
         // THEN
-        test.deepEqual(evaluateIntrinsics(resolved), '{"information": "Did you know that Fido says: \\"woof\\""}');
+        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: <<Ref:Something>>"}');
+
+        test.done();
+    },
+
+    'Quoted strings in embedded JSON context are escaped'(test: Test) {
+        // WHEN
+        const fidoSays = new Token(() => '"woof"');
+
+        // WHEN
+        const resolved = resolve(tokenAwareJsonify({
+            information: `Did you know that Fido says: ${fidoSays}`
+        }));
+
+        // THEN
+        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');
 
         test.done();
     },

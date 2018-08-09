@@ -7,39 +7,12 @@ import { Construct } from "./construct";
 export const RESOLVE_METHOD = 'resolve';
 
 /**
- * Additional properties for Tokens
- */
-export interface TokenProps {
-    /**
-     * A human-readable string describing the token's value.
-     *
-     * This is used in the placeholder string of stringified Tokens, so that
-     * if humans look at the string its purpose makes sense to them.
-     *
-     * Must contain only alphanumeric and simple separator characters
-     * (_.:-).
-     *
-     * @default No string representation
-     */
-    stringRepresentation?: string;
-
-    /**
-     * Mark this Token as producing an intrinsic for the given engine.
-     *
-     * The results of instrinsic Tokens are not evaluated further,
-     * but used as-is.
-     */
-    intrinsicEngine?: string;
-}
-
-/**
- * Represents a lazy-evaluated value. Can be used to delay evaluation of a certain value
- * in case, for example, that it requires some context or late-bound data.
+ * Represents a lazy-evaluated value.
+ *
+ * Can be used to delay evaluation of a certain value in case, for example,
+ * that it requires some context or late-bound data.
  */
 export class Token {
-    public readonly stringRepresentation?: string;
-    public readonly intrinsicEngine?: string;
-
     private tokenKey?: string;
 
     /**
@@ -48,12 +21,16 @@ export class Token {
      * If value is a function, the function is evaluated upon resolution and
      * the value it returns will be used as the token's value.
      *
+     * stringRepresentation is used in the placeholder string of stringified
+     * Tokens, so that if humans look at the string its purpose makes sense to
+     * them. Must contain only alphanumeric and simple separator characters
+     * (_.:-).
+     *
      * @param valueOrFunction What this token will evaluate to, literal or function.
-     * @param stringRepresentation
+     * @param stringRepresentation A human-readable string describing the token's value.
+     *
      */
-    constructor(private readonly valueOrFunction?: any, props: TokenProps = {}) {
-        this.stringRepresentation = props.stringRepresentation;
-        this.intrinsicEngine = props.intrinsicEngine;
+    constructor(private readonly valueOrFunction?: any, public readonly stringRepresentation?: string) {
     }
 
     /**
@@ -87,7 +64,7 @@ export class Token {
         // In particular: 'undefined' is not stringified here, since it should
         // probably evaluate to a proper "undefined" during resolve() later.
 
-        return this.getStringMarker(TokenContext.Scalar);
+        return this.stringMarker();
     }
 
     /**
@@ -109,27 +86,35 @@ export class Token {
      *
      * This feature is only supported for Tokens that resolve to strings, or
      * to intrinsics that will produce strings.
+     * In case the Token represents a value that is intrinsic to the deployment
+     * engine (e.g. CloudFormation), the value is unavailable at synthesis time
+     * and we cannot do this escaping. Typically the values returned by those
+     * intrinsics are alphanumeric identifiers that don't need escaping, so
+     * this is not an issue.
+     *
+     * This feature is only supported for Tokens that resolve to strings, or
+     * to intrinsics that will produce strings.
      */
     public toJSON(): any {
-        const valueType = typeof this.valueOrFunction;
-        if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+        // Return immediately if it doesn't look like this value is ever going to change.
+        if (!isIntrinsic(this.valueOrFunction) && typeof this.valueOrFunction !== 'function' && typeof this.valueOrFunction !== 'object') {
             return this.valueOrFunction;
         }
 
-        return this.getStringMarker(TokenContext.JSON);
+        // Otherwise return a marker for lazy evaluation.
+        return this.stringMarker();
     }
 
     /**
      * Allocate and encode the appropriate string marker for this Token
+     *
+     * Implements caching of the key.
      */
-    private getStringMarker(context: TokenContext) {
-        // Why not evaluate the function here to see if it resolves to a
-        // primitive? Because the value they're referring to might still change
-        // later on after embedding. So we always storing the function for later.
+    private stringMarker() {
         if (this.tokenKey === undefined) {
-            this.tokenKey = TOKEN_STRING_MAP.registerKey(this);
+            this.tokenKey = TOKEN_STRING_MAP.register(this);
         }
-        return TOKEN_STRING_MAP.makeMarker(this.tokenKey, context);
+        return this.tokenKey;
     }
 }
 
@@ -137,15 +122,13 @@ export class Token {
  * Returns true if obj is a token (i.e. has the resolve() method)
  * @param obj The object to test.
  */
-export function istoken(obj: any) {
+export function isToken(obj: any): obj is Token {
     return typeof(obj[RESOLVE_METHOD]) === 'function';
 }
 
-/**
- * Return whether the given Token is an intrinsic
- */
-function isIntrinsic(t: Token): boolean {
-    return t.intrinsicEngine !== undefined;
+export function istoken(obj: any): obj is Token {
+    process.emitWarning('Deprecated; use isToken() instead');
+    return isToken(obj);
 }
 
 /**
@@ -204,10 +187,18 @@ export function resolve(obj: any, prefix?: string[]): any {
     }
 
     //
+    // intrinsics - return intrinsic without further resolution
+    //
+
+    if (isIntrinsic(obj)) {
+        return obj;
+    }
+
+    //
     // tokens - invoke 'resolve' and continue to resolve recursively
     //
 
-    if (istoken(obj)) {
+    if (isToken(obj)) {
         const value = obj[RESOLVE_METHOD]();
         return resolve(value, path);
     }
@@ -250,8 +241,6 @@ export function resolve(obj: any, prefix?: string[]): any {
     return result;
 }
 
-import { FnConcat } from "../cloudformation/fn";
-
 /**
  * Central place where we keep a mapping from Tokens to their String representation
  *
@@ -270,17 +259,17 @@ class TokenStringMap {
     }
 
     /**
-     * Return a unique string for this Token, returning a key
+     * Generating a unique string for this Token, returning a key
      *
      * Every call for the same Token will produce a new unique string, no
      * attempt is made to deduplicate. Token objects should cache the
      * value themselves, if required.
      *
-     * If the token is an IRepresentableToken, it chooses its own representation
-     * string. This may be used to produce aesthetically pleasing and recognizable
-     * token representations for humans.
+     * The token can choose (part of) its own representation string with a
+     * hint. This may be used to produce aesthetically pleasing and
+     * recognizable token representations for humans.
      */
-    public registerKey(token: Token): string {
+    public register(token: Token): string {
         const counter = Object.keys(this.tokenMap).length;
         const representation = token.stringRepresentation || `TOKEN`;
 
@@ -290,47 +279,25 @@ class TokenStringMap {
         }
 
         this.tokenMap[key] = token;
-        return key;
-    }
-
-    /**
-     * From a key return a marker, encoding the processing context
-     */
-    public makeMarker(key: string, context: TokenContext): string {
-        if (context === TokenContext.Scalar) {
-            return `${BEGIN_SCALAR_TOKEN_MARKER}${key}${END_SCALAR_TOKEN_MARKER}`;
-        } else {
-            return `${BEGIN_JSON_TOKEN_MARKER}${key}${END_JSON_TOKEN_MARKER}`;
-        }
+        return `${BEGIN_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
     }
 
     /**
      * Replace any Token markers in this string with their resolved values
      */
     public resolveMarkers(s: string): any {
-        const spans = this.split(s);
-        const resolved = spans.map(this.resolveSpan.bind(this));
-
-        switch (resolved.length) {
-            case 0: return '';
-            case 1: return resolved[0];
-            default: return resolve(new FnConcat(...resolved));
-        }
+        const unresolved = this.splitMarkers(s);
+        const resolved = resolveFragments(unresolved);
+        return combineStringFragments(resolved);
     }
 
     /**
-     * Split a string on Token markers
+     * Split a string up into string and Token Spans
      */
-    private split(s: string): Span[] {
-        // In this regex: note that the JSON markers include the surrounding
-        // quotes which have been added by the JSON.stringify() function
-        // *around* the result of token.toJSON().
-
+    public splitMarkers(s: string): UnresolvedFragment[] {
         // tslint:disable-next-line:max-line-length
-        const re = new RegExp(`${regexQuote(BEGIN_SCALAR_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_SCALAR_TOKEN_MARKER)}`
-                            + `|`
-                            + `"${regexQuote(BEGIN_JSON_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_JSON_TOKEN_MARKER)}"`, 'gu');
-        const ret = new Array<Span>();
+        const re = new RegExp(`${regexQuote(BEGIN_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_TOKEN_MARKER)}`, 'g');
+        const ret = new Array<UnresolvedFragment>();
 
         let rest = 0;
         let m = re.exec(s);
@@ -341,8 +308,7 @@ class TokenStringMap {
 
             ret.push({
                 type: 'token',
-                key: m[2],
-                context: m[1] === BEGIN_SCALAR_TOKEN_MARKER ? TokenContext.Scalar : TokenContext.JSON
+                token: this.lookupToken(m[1])
             });
 
             rest = re.lastIndex;
@@ -353,46 +319,57 @@ class TokenStringMap {
             ret.push({ type: 'string', value: s.substring(rest) });
         }
 
+        if (ret.length === 0) {
+            ret.push({ type: 'string', value: '' });
+        }
+
         return ret;
     }
 
     /**
-     * Resolve a single Span
+     * Find a Token by key
      */
-    private resolveSpan(span: Span): any {
-        if (span.type === 'string') {
-            return span.value;
-        }
-        if (!(span.key in this.tokenMap)) {
-            throw new Error(`Unrecognized token key: ${span.key}`);
+    private lookupToken(key: string): Token {
+        if (!(key in this.tokenMap)) {
+            throw new Error(`Unrecognized token key: ${key}`);
         }
 
-        const resolved = resolve(this.tokenMap[span.key]);
-
-        switch (span.context) {
-            case TokenContext.JSON: return returnForJSONContext(resolved);
-            default: return resolved;
-        }
+        return this.tokenMap[key];
     }
 }
 
-interface StringSpan {
-    type: 'string';
-    value: string;
+/**
+ * Result of the split of a string with Tokens
+ *
+ * Either a literal part of the string, or an unresolved Token.
+ */
+type UnresolvedFragment = { type: 'string'; value: string } | { type: 'token'; token: Token };
+
+/**
+ * Resolves string fragments
+ */
+function resolveFragments(spans: UnresolvedFragment[]): StringFragment[] {
+    return spans.map(span => {
+        if (span.type === 'string') {
+            return { source: FragmentSource.Literal, value: span.value };
+        }
+
+        // If not, then it's a Token that needs resolving
+        const resolved = resolve(span.token);
+
+        // This must resolve to a string or an intrinsic to make any sense. Let's see
+        // what errors crop up if we're strict and then see if we want to loosen up the
+        // rules later.
+        if (!isIntrinsic(resolved) && typeof resolved !== 'string') {
+            throw new Error(`Result of Token evaluation must be a string, got: ${resolved}`);
+        }
+
+        return { source: FragmentSource.Token, value: resolved, intrinsicEngine: intrinsicEngine(resolved) };
+    });
 }
 
-interface TokenSpan {
-    type: 'token';
-    key: string;
-    context: TokenContext;
-}
-
-type Span = StringSpan | TokenSpan;
-
-const BEGIN_SCALAR_TOKEN_MARKER = '${Token[';
-const END_SCALAR_TOKEN_MARKER = ']}';
-const BEGIN_JSON_TOKEN_MARKER = '#{Token[';
-const END_JSON_TOKEN_MARKER = ']}';
+const BEGIN_TOKEN_MARKER = '${Token[';
+const END_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
@@ -405,46 +382,189 @@ function regexQuote(s: string) {
 }
 
 /**
- * Escape the resolved value for use in a JSON context.
- *
- * Only allowed if it's a string; otherwise the Token result
- * gets combined with other values in a
- *
- * Only if it's a primitive or array (not an intrinsic).
+ * The hidden marker property that marks an object as an engine-intrinsic value.
  */
-function returnForJSONContext(x: any): any {
-    if (typeof(x) === 'string') {
-        return JSON.stringify(x);
-    }
+const INTRINSIC_VALUE_PROPERTY = '__intrinsicValue__';
 
-    // Nonscalar values
-
-    if (Array.isArray(x)) {
-        return x.map(returnForJSONContext);
-    }
-
-    if (typeof(x) === 'object') {
-        const result: any = {};
-        for (const key of Object.keys(x)) {
-          result[key] = returnForJSONContext(x[key]);
-        }
-        return result;
-    }
-
+/**
+ * Mark a given object as an engine-intrinsic value.
+ *
+ * This will avoid it from being resolved by resolve(). Note that if the value
+ * returns any Tokens, they should be resolved before marking the object
+ * as an intrinsic.
+ *
+ * This could have been a wrapper class, but that breaks all test.deepEqual()s.
+ * So instead, it's implemented as a hidden property on the object (which is
+ * hidden from JSON.stringify() and test.deepEqual().
+ */
+export function markAsIntrinsic(x: any, engine: string): any {
+    Object.defineProperty(x, INTRINSIC_VALUE_PROPERTY, {
+        value: engine,
+        enumerable: false,
+        writable: false,
+    });
     return x;
 }
 
 /**
- * The context that a stringified Token is used in
+ * Return whether the given value is an intrinsic
  */
-enum TokenContext {
+export function isIntrinsic(x: any): boolean {
+    return x[INTRINSIC_VALUE_PROPERTY] !== undefined;
+}
+
+/**
+ * Return the intrinsic engine for the given intrinsic value
+ */
+export function intrinsicEngine(x: any): string | undefined {
+    return x[INTRINSIC_VALUE_PROPERTY];
+}
+
+/**
+ * A (resolved) fragment of a string to be combined.
+ *
+ * The values may be string literals or intrinsics.
+ */
+export interface StringFragment {
     /**
-     * Scalar string embedding
+     * Source of the fragment
      */
-    Scalar = 'Simple',
+    source: FragmentSource;
 
     /**
-     * String value embedded into a JSON document
+     * String value
+     *
+     * Either a string literal or an intrinsic.
      */
-    JSON = 'JSON'
+    value: any;
+
+    /**
+     * The intrinsic engine
+     */
+    intrinsicEngine?: string;
+}
+
+/**
+ * Where the resolved fragment came from (a string literal or a Token)
+ */
+export enum FragmentSource {
+    Literal = 'Literal',
+    Token = 'Token'
+}
+
+/**
+ * Interface for engine-specific Token marker handlers
+ */
+export interface IEngineTokenHandler {
+    /**
+     * Return the language intrinsic that will combine the strings in the given engine
+     */
+    combineStringFragments(fragments: StringFragment[]): any;
+}
+
+/**
+ * The engine that will be used if no Tokens are found
+ */
+export const DEFAULT_ENGINE_NAME = 'default';
+
+/**
+ * Global handler map
+ */
+const HANDLERS: {[engine: string]: IEngineTokenHandler} = {};
+
+/**
+ * Register a handler for all intrinsics for the given engine
+ */
+export function registerEngineTokenHandler(engineName: string, handler: IEngineTokenHandler) {
+    HANDLERS[engineName] = handler;
+}
+
+/**
+ * Combine resolved fragments using the appropriate engine.
+ *
+ * Resolves the result.
+ */
+function combineStringFragments(fragments: StringFragment[]): any {
+    if (fragments.length === 0) { return ''; }
+    if (fragments.length === 1) { return fragments[0].value; }
+
+    const engines = Array.from(new Set<string>(fragments.filter(f => f.intrinsicEngine !== undefined).map(f => f.intrinsicEngine!)));
+    if (engines.length > 1) {
+        throw new Error(`Combining different engines in one string fragment: ${engines.join(', ')}`);
+    }
+
+    const engine = engines.length > 0 ? engines[0] : DEFAULT_ENGINE_NAME;
+    if (!(engine in HANDLERS)) {
+        throw new Error(`No Token handler registered for engine: ${engine}`);
+    }
+
+    return resolve(HANDLERS[engine].combineStringFragments(fragments));
+}
+
+/**
+ * Turn an arbitrary structure potentially containing Tokens into JSON.
+ */
+export function tokenAwareJsonify(obj: any): any {
+    // This function must exist because even if we changed token.toJSON()
+    // to return a special marker, we couldn't handle both of the following
+    // cases correctly:
+    //
+    // [a] Embed into JSON structure directly, result:
+    //
+    //     {"key":"#{Token[0]}"}
+    //
+    // [b] First toString() to embed into string literal, then embed in JSON
+    // structure, result:
+    //
+    //     {"key":"larger string with ${Token[0]}"}
+    //
+    // In [a], we could detect from '#' vs the '$' that the value of Token[0]
+    // needs to undergo additional JSON-escaping, but we couldn't do the same in
+    // case [b], even though the resultant string needs to undergo JSON-escaping
+    // all the same.
+    //
+    // The correct way to handle this is to resolve scalars as usual, and do
+    // an additional layer of JSON-postprocessing afterwards.
+    return new Token(() => {
+        const unresolved = TOKEN_STRING_MAP.splitMarkers(JSON.stringify(obj));
+        const fragments = resolveFragments(unresolved);
+
+        // Here's the magic sauce: everything that used to be a string before
+        // has already been escaped, so we leave alone. Everything that came
+        // rolling fresh out of a Token could _theoretically_ be everything
+        // but in practice is either a string literal (escape!) or an intrinsic,
+        // which in this RARE case we also recurse over and escape the strings
+        // we find in it. This is technically cheating since we don't know which
+        // strings in the intrinsics are instructions and which will be rendered
+        // into the output, but in practice the instruction strings will not
+        // contain escapable characters anyway.
+        for (const fragment of fragments) {
+            if (fragment.source === FragmentSource.Token) {
+                fragment.value = deepEscape(fragment.value);
+            }
+        }
+
+        return combineStringFragments(fragments);
+    });
+
+    function deepEscape(x: any): any {
+        if (typeof x === 'string') {
+            // Whenever we escape a string we strip off the outermost quotes
+            // since we're already in a quoted context.
+            const stringified = JSON.stringify(x);
+            return stringified.substring(1, stringified.length - 1);
+        }
+
+        if (Array.isArray(x)) {
+            return x.map(deepEscape);
+        }
+
+        if (typeof x === 'object') {
+            for (const key of Object.keys(x)) {
+                x[key] = deepEscape(x[key]);
+            }
+        }
+
+        return x;
+    }
 }

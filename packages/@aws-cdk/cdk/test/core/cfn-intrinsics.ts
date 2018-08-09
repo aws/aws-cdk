@@ -26,13 +26,23 @@ export function evaluateIntrinsics(obj: any): any {
 
 const INTRINSICS: any = {
     'Fn::Join'(separator: string, args: string[]) {
-        return args.join(separator);
+        return args.map(evaluateIntrinsics).join(separator);
     },
+
+    'Ref'(logicalId: string) {
+        // We can't get the actual here, but we can at least return a marker
+        // that shows we would put the value here.
+        return `<<Ref:${logicalId}>>`;
+    }
 };
 
 function evaluateIntrinsic(name: string, args: any) {
     if (!(name in INTRINSICS)) {
         throw new Error(`Intrinsic ${name} not supported here`);
+    }
+
+    if (!Array.isArray(args)) {
+        args = [args];
     }
 
     return INTRINSICS[name].apply(INTRINSICS, args);

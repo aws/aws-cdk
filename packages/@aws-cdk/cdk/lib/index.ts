@@ -5,6 +5,7 @@ export * from './core/jsx';
 export * from './cloudformation/condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';
+export * from './cloudformation/intrinsics';
 export * from './cloudformation/logical-id';
 export * from './cloudformation/mapping';
 export * from './cloudformation/output';
@@ -19,7 +20,6 @@ export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
 export * from './cloudformation/arn';
 export * from './cloudformation/secret';
-export * from './cloudformation/token-aware-jsonify';
 
 export * from './app';
 export * from './context';

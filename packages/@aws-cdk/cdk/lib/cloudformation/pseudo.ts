@@ -1,12 +1,8 @@
-import { Token } from '../core/tokens';
-import { CLOUDFORMATION_ENGINE } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './intrinsics';
 
-export class PseudoParameter extends Token {
+export class PseudoParameter extends CloudFormationIntrinsicToken {
     constructor(name: string) {
-        super(() => ({ Ref: name }), {
-            stringRepresentation: name,
-            intrinsicEngine: CLOUDFORMATION_ENGINE
-        });
+        super(() => ({ Ref: name }), name);
     }
 }
 

@@ -3,7 +3,7 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, Token } from '../core/tokens';
 import { Environment } from '../environment';
-import { CLOUDFORMATION_ENGINE } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './intrinsics';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -392,11 +392,8 @@ export abstract class Referenceable extends StackElement {
     /**
      * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
      */
-    public get ref() {
-        return new Token(() => ({ Ref: this.logicalId }), {
-            stringRepresentation: `${this.logicalId}.Ref`,
-            intrinsicEngine: CLOUDFORMATION_ENGINE
-    });
+    public get ref(): Token {
+        return new CloudFormationIntrinsicToken(() => ({ Ref: this.logicalId }), `${this.logicalId}.Ref`);
     }
 }
 
