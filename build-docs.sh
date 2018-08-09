@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # render docs to docs/dist
-(cd docs && ./build-docs.sh)
+(cd docs && bash ./build-docs.sh)
 
 # deploy output to 'pack/docs'
 rm -fr pack/docs
