@@ -1,11 +1,14 @@
 import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
+import { Lambda, LambdaProps } from './lambda';
+import { FunctionName, LambdaRef } from './lambda-ref';
+import { FunctionArn } from './lambda.generated';
+import { LambdaPermission } from './permission';
 
 /**
  * Properties for a newly created singleton Lambda
  */
-export interface SingletonLambdaProps extends lambda.LambdaProps {
+export interface SingletonLambdaProps extends LambdaProps {
     /**
      * A unique identifier to identify this lambda
      *
@@ -13,6 +16,17 @@ export interface SingletonLambdaProps extends lambda.LambdaProps {
      * We recommend generating a UUID per provider.
      */
     uuid: string;
+
+    /**
+     * A descriptive name for the purpose of this Lambda.
+     *
+     * If the Lambda does not have a physical name, this string will be
+     * reflected its generated name. The combination of lambdaPurpose
+     * and uuid must be unique.
+     *
+     * @default SingletonLambda
+     */
+    lambdaPurpose?: string;
 }
 
 /**
@@ -21,17 +35,17 @@ export interface SingletonLambdaProps extends lambda.LambdaProps {
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
  */
-export class SingletonLambda extends lambda.LambdaRef {
-    public readonly functionName: lambda.FunctionName;
-    public readonly functionArn: lambda.FunctionArn;
+export class SingletonLambda extends LambdaRef {
+    public readonly functionName: FunctionName;
+    public readonly functionArn: FunctionArn;
     public readonly role?: iam.Role | undefined;
     protected readonly canCreatePermissions: boolean;
-    private lambdaFunction: lambda.LambdaRef;
+    private lambdaFunction: LambdaRef;
 
     constructor(parent: cdk.Construct, name: string, props: SingletonLambdaProps) {
         super(parent, name);
 
-        this.lambdaFunction = this.ensureLambda(props.uuid, props);
+        this.lambdaFunction = this.ensureLambda(props);
 
         this.functionArn = this.lambdaFunction.functionArn;
         this.functionName = this.lambdaFunction.functionName;
@@ -40,20 +54,20 @@ export class SingletonLambda extends lambda.LambdaRef {
         this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
     }
 
-    public addPermission(name: string, permission: lambda.LambdaPermission) {
+    public addPermission(name: string, permission: LambdaPermission) {
         return this.lambdaFunction.addPermission(name, permission);
     }
 
-    private ensureLambda(uuid: string, props: lambda.LambdaProps): lambda.LambdaRef {
-        const constructName = 'SingletonLambda' + slugify(uuid);
+    private ensureLambda(props: SingletonLambdaProps): LambdaRef {
+        const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
         const stack = cdk.Stack.find(this);
         const existing = stack.tryFindChild(constructName);
         if (existing) {
             // Just assume this is true
-            return existing as lambda.LambdaRef;
+            return existing as LambdaRef;
         }
 
-        return new lambda.Lambda(stack, constructName, props);
+        return new Lambda(stack, constructName, props);
     }
 }
 

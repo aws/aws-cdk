@@ -1,7 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
-import customResource = require('../lib');
+import cloudformation = require('../lib');
 
 interface DemoResourceProps {
     /**
@@ -21,8 +21,8 @@ class DemoResource extends cdk.Construct {
     constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
         super(parent, name);
 
-        const resource = new customResource.CustomResource(this, 'Resource', {
-            lambdaProvider: new customResource.SingletonLambda(this, 'Singleton', {
+        const resource = new cloudformation.CustomResource(this, 'Resource', {
+            lambdaProvider: new lambda.SingletonLambda(this, 'Singleton', {
                 uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 // This makes the demo only work as top-level TypeScript program, but that's fine for now
                 code: new lambda.LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
