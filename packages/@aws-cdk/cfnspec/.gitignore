@@ -7,3 +7,5 @@ spec
 .nyc_output
 coverage
 .nycrc
+dist
+.LAST_PACKAGE
