@@ -795,7 +795,7 @@ Configure the bucket to use KMS managed encryption:
 
             new Bucket(this, "MyFirstBucket", BucketProps.builder()
                     .withVersioned(true)
-                    .withEncryption("MANAGED")
+                    .withEncryption(BucketEncryption.KmsManaged)
                     .build());
 
 Compile the program:
