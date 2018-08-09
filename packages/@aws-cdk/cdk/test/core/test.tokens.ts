@@ -1,5 +1,6 @@
 import { Test } from 'nodeunit';
 import { FnConcat, istoken, resolve, Token } from '../../lib';
+import { evaluateIntrinsics } from './cfn-intrinsics';
 
 export = {
     'resolve a plain old object should just return the object'(test: Test) {
@@ -172,7 +173,43 @@ export = {
         test.done();
     },
 
-    'string literals in evaluated tokens are escaped when calling JSON.stringify()'(test: Test) {
+    /*
+    'Tokens that resolve to undefined disappear under JSON.stringification()'(test: Test) {
+        // GIVEN
+        const bob1 = { name: 'Bob', speaks: new Token(() => undefined) };
+        const bob2 = { name: 'Bob', speaks: new Token(undefined) };
+
+        // WHEN
+        const resolved1 = resolve(JSON.stringify(bob1));
+        const resolved2 = resolve(JSON.stringify(bob2));
+
+        // THEN
+        const expected = {'Fn::Join': ['', ['{"name":"Bob"}']]};
+        test.deepEqual(resolved1, expected);
+        test.deepEqual(resolved2, expected);
+
+        test.done();
+    },
+    */
+
+    'Tokens that resolve to a number are unquoted during JSON.stringification'(test: Test) {
+        // GIVEN
+        const fido1 = { name: "Fido", age: new Token(() => 1) };
+        const fido2 = { name: "Fido", age: new Token(1) };
+
+        // WHEN
+        const resolved1 = resolve(JSON.stringify(fido1));
+        const resolved2 = resolve(JSON.stringify(fido2));
+
+        // THEN
+        const expected = {'Fn::Join': ['', ['{"name":"Fido","age":', 1, '}']]};
+        test.deepEqual(resolved1, expected);
+        test.deepEqual(resolved2, expected);
+
+        test.done();
+    },
+
+    'lazy string literals in evaluated tokens are escaped when calling JSON.stringify()'(test: Test) {
         // WHEN
         const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
 
@@ -190,7 +227,53 @@ export = {
         ]]});
 
         test.done();
-      }
+    },
+
+    'doubly nested strings evaluate correctly'(test: Test) {
+        // GIVEN
+        const token1 = new Token(() => "world");
+        const token2 = new Token(() => `hello ${token1}`);
+
+        // WHEN
+        const resolved1 = resolve(token2.toString());
+        const resolved2 = resolve(token2);
+
+        // THEN
+        test.deepEqual(evaluateIntrinsics(resolved1), "hello world");
+        test.deepEqual(evaluateIntrinsics(resolved2), "hello world");
+
+        test.done();
+    },
+
+    'combined strings in JSON context end up correctly'(test: Test) {
+        // WHEN
+        const fidoSays = new Token(() => 'woof');
+
+        // WHEN
+        const resolved = resolve(JSON.stringify({
+            information: `Did you know that Fido says: ${fidoSays}`
+        }));
+
+        // THEN
+        test.deepEqual(evaluateIntrinsics(resolved), '{"information": "Did you know that Fido says: woof"}');
+
+        test.done();
+    },
+
+    'quoted strings in embedded JSON context end up correctly'(test: Test) {
+        // WHEN
+        const fidoSays = new Token(() => '"woof"');
+
+        // WHEN
+        const resolved = resolve(JSON.stringify({
+            information: `Did you know that Fido says: ${fidoSays}`
+        }));
+
+        // THEN
+        test.deepEqual(evaluateIntrinsics(resolved), '{"information": "Did you know that Fido says: \\"woof\\""}');
+
+        test.done();
+    },
 };
 
 class Promise2 extends Token {

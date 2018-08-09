@@ -11,7 +11,7 @@ export const RESOLVE_METHOD = 'resolve';
  * in case, for example, that it requires some context or late-bound data.
  */
 export class Token {
-    private stringRepr?: string;
+    private tokenKey?: string;
 
     /**
      * Creates a token that resolves to `value`.
@@ -37,24 +37,25 @@ export class Token {
     }
 
     /**
-     * Return a string representation of this token
+     * Return a reversible string representation of this token
      *
-     * This string representation can be embedded into strings and
-     * will be turned into the actual representation of the token
-     * when resolve() is called on the string.
+     * If the Token is initialized with a literal, the stringified value of the
+     * literal is returned. Otherwise, a special quoted string representation
+     * of the Token is returned that can be embedded into other strings.
+     *
+     * Strings with quoted Tokens in them can be restored back into
+     * complex values with the Tokens restored by calling `resolve()`
+     * on the string.
      */
     public toString(): string {
         const valueType = typeof this.valueOrFunction;
         if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
             return this.valueOrFunction.toString();
         }
-
         // In particular: 'undefined' is not stringified here, since it should
-        // probably evaluate to a proper "undefined" later.
-        if (this.stringRepr === undefined) {
-            this.stringRepr = TOKEN_STRING_MAP.register(this);
-        }
-        return this.stringRepr;
+        // probably evaluate to a proper "undefined" during resolve() later.
+
+        return this.getStringMarker(TokenContext.Scalar);
     }
 
     /**
@@ -63,9 +64,40 @@ export class Token {
      * Implements JSON.stringify()-compatibility for this Token. Note that it
      * returns a string representation for the Token pre-resolution, NOT the
      * resolved value of the Token.
+     *
+     * If the Token evaluates to a string literal, the string literal will
+     * undergo an additional level of escaping to make sure quotes and newlines
+     * embed properly into a larger JSON context.
+     *
+     * In case the Token represents a value that is intrinsic to the deployment
+     * engine (e.g. CloudFormation), the value is unavailable at synthesis time
+     * and we cannot do this escaping. Typically the values returned by those
+     * intrinsics are alphanumeric identifiers that don't need escaping, so
+     * this is not an issue.
+     *
+     * This feature is only supported for Tokens that resolve to strings, or
+     * to intrinsics that will produce strings.
      */
     public toJSON(): any {
-        return this.toString();
+        const valueType = typeof this.valueOrFunction;
+        if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+            return this.valueOrFunction;
+        }
+
+        return this.getStringMarker(TokenContext.JSON);
+    }
+
+    /**
+     * Allocate and encode the appropriate string marker for this Token
+     */
+    private getStringMarker(context: TokenContext) {
+        // Why not evaluate the function here to see if it resolves to a
+        // primitive? Because the value they're referring to might still change
+        // later on after embedding. So we always storing the function for later.
+        if (this.tokenKey === undefined) {
+            this.tokenKey = TOKEN_STRING_MAP.registerKey(this);
+        }
+        return TOKEN_STRING_MAP.makeMarker(this.tokenKey, context);
     }
 }
 
@@ -199,7 +231,7 @@ class TokenStringMap {
     }
 
     /**
-     * Return a unique string for this Token
+     * Return a unique string for this Token, returning a key
      *
      * Every call for the same Token will produce a new unique string, no
      * attempt is made to deduplicate. Token objects should cache the
@@ -209,7 +241,7 @@ class TokenStringMap {
      * string. This may be used to produce aesthetically pleasing and recognizable
      * token representations for humans.
      */
-    public register(token: Token): string {
+    public registerKey(token: Token): string {
         const counter = Object.keys(this.tokenMap).length;
         const representation = token.stringRepresentation || `TOKEN`;
 
@@ -219,8 +251,18 @@ class TokenStringMap {
         }
 
         this.tokenMap[key] = token;
+        return key;
+    }
 
-        return `${BEGIN_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
+    /**
+     * From a key return a marker, encoding the processing context
+     */
+    public makeMarker(key: string, context: TokenContext): string {
+        if (context === TokenContext.Scalar) {
+            return `${BEGIN_SCALAR_TOKEN_MARKER}${key}${END_SCALAR_TOKEN_MARKER}`;
+        } else {
+            return `${BEGIN_JSON_TOKEN_MARKER}${key}${END_JSON_TOKEN_MARKER}`;
+        }
     }
 
     /**
@@ -241,7 +283,14 @@ class TokenStringMap {
      * Split a string on Token markers
      */
     private split(s: string): Span[] {
-        const re = new RegExp(`${regexQuote(BEGIN_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_TOKEN_MARKER)}`, 'gu');
+        // In this regex: note that the JSON markers include the surrounding
+        // quotes which have been added by the JSON.stringify() function
+        // *around* the result of token.toJSON().
+
+        // tslint:disable-next-line:max-line-length
+        const re = new RegExp(`${regexQuote(BEGIN_SCALAR_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_SCALAR_TOKEN_MARKER)}`
+                            + `|`
+                            + `"${regexQuote(BEGIN_JSON_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_JSON_TOKEN_MARKER)}"`, 'gu');
         const ret = new Array<Span>();
 
         let rest = 0;
@@ -251,7 +300,11 @@ class TokenStringMap {
                 ret.push({ type: 'string', value: s.substring(rest, m.index) });
             }
 
-            ret.push({ type: 'token', key: m[1] });
+            ret.push({
+                type: 'token',
+                key: m[2],
+                context: m[1] === BEGIN_SCALAR_TOKEN_MARKER ? TokenContext.Scalar : TokenContext.JSON
+            });
 
             rest = re.lastIndex;
             m = re.exec(s);
@@ -275,7 +328,12 @@ class TokenStringMap {
             throw new Error(`Unrecognized token key: ${span.key}`);
         }
 
-        return resolve(this.tokenMap[span.key]);
+        const resolved = resolve(this.tokenMap[span.key]);
+
+        switch (span.context) {
+            case TokenContext.JSON: return returnForJSONContext(resolved);
+            default: return resolved;
+        }
     }
 }
 
@@ -287,12 +345,15 @@ interface StringSpan {
 interface TokenSpan {
     type: 'token';
     key: string;
+    context: TokenContext;
 }
 
 type Span = StringSpan | TokenSpan;
 
-const BEGIN_TOKEN_MARKER = '${Token[';
-const END_TOKEN_MARKER = ']}';
+const BEGIN_SCALAR_TOKEN_MARKER = '${Token[';
+const END_SCALAR_TOKEN_MARKER = ']}';
+const BEGIN_JSON_TOKEN_MARKER = '#{Token[';
+const END_JSON_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
@@ -302,4 +363,49 @@ const TOKEN_STRING_MAP = new TokenStringMap();
 
 function regexQuote(s: string) {
     return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}
+
+/**
+ * Escape the resolved value for use in a JSON context.
+ *
+ * Only allowed if it's a string; otherwise the Token result
+ * gets combined with other values in a
+ *
+ * Only if it's a primitive or array (not an intrinsic).
+ */
+function returnForJSONContext(x: any): any {
+    if (typeof(x) === 'string') {
+        return JSON.stringify(x);
+    }
+
+    // Nonscalar values
+
+    if (Array.isArray(x)) {
+        return x.map(returnForJSONContext);
+    }
+
+    if (typeof(x) === 'object') {
+        const result: any = {};
+        for (const key of Object.keys(x)) {
+          result[key] = returnForJSONContext(x[key]);
+        }
+        return result;
+    }
+
+    return x;
+}
+
+/**
+ * The context that a stringified Token is used in
+ */
+enum TokenContext {
+    /**
+     * Scalar string embedding
+     */
+    Scalar = 'Simple',
+
+    /**
+     * String value embedded into a JSON document
+     */
+    JSON = 'JSON'
 }
