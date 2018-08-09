@@ -40,7 +40,7 @@ export class PipelineSource extends codepipeline.Source {
             configuration: {
                 RepositoryName: props.repository.repositoryName,
                 BranchName: props.branch || 'master',
-                PollForSourceChanges: props.pollForSourceChanges || true
+                PollForSourceChanges: props.pollForSourceChanges !== undefined ? props.pollForSourceChanges : true
             },
             artifactName: props.artifactName
         });
