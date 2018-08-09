@@ -18,7 +18,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1RouteTableFEE4B781": {
@@ -80,7 +86,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2RouteTable6F1A15F1": {
@@ -142,7 +154,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3RouteTable98AE0E14": {
@@ -204,7 +222,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet1"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet1RouteTableBE8A6027": {
@@ -246,7 +270,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet2"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet2RouteTable0A19E10E": {
@@ -288,7 +318,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet3"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet3RouteTable192186F8": {
