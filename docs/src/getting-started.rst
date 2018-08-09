@@ -838,7 +838,7 @@ The output should look like the following:
 
 .. code-block:: sh
 
-    [~] ?? Updating MyFirstBucketB8884501 (type: AWS::S3::Bucket)
+    [~] 🛠 Updating MyFirstBucketB8884501 (type: AWS::S3::Bucket)
     +- [+] .BucketEncryption:
         +- New value: {"ServerSideEncryptionConfiguration":[{"ServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}
 
@@ -860,12 +860,12 @@ encryption for the bucket:
 
 .. code-block:: sh
 
-    ?  Starting deployment of stack hello-cdk...
+    ⏳  Starting deployment of stack hello-cdk...
     [0/2] UPDATE_IN_PROGRESS  [AWS::S3::Bucket] MyFirstBucketB8884501
     [1/2] UPDATE_COMPLETE     [AWS::S3::Bucket] MyFirstBucketB8884501
     [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
-    ?  Deployment of stack hello-cdk completed successfully
+    ✅  Deployment of stack hello-cdk completed successfully
     
 What Next?
 ==========
