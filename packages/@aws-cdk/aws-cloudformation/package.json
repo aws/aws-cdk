@@ -55,12 +55,7 @@
   "dependencies": {
     "@aws-cdk/cdk": "^0.8.1",
     "@aws-cdk/aws-lambda": "^0.8.1",
-    "@aws-cdk/aws-sns": "^0.8.1",
-    "cfn2ts": "^0.8.1",
-    "pkglint": "^0.8.1"
-  },
-  "dependencies": {
-    "@aws-cdk/cdk": "^0.8.1"
+    "@aws-cdk/aws-sns": "^0.8.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
