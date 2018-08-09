@@ -159,7 +159,7 @@ The ``AWS::CDK::Metadata`` resource looks like the following:
 .. _version-reporting-opt-out:
 
 Opting-out from Version Reporting
-
+---------------------------------
 
 To out-out, use one of the following methods:
 
