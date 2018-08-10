@@ -6,6 +6,7 @@
  */
 
 import AWS = require('aws-sdk');
+import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 
@@ -44,9 +45,9 @@ export class SharedIniFile {
 
   private ensureFileLoaded() {
     if (!this.parsedContents) {
-      this.parsedContents = (AWS as any).util.ini.parse(
-        (AWS as any).util.readFileSync(this.filename)
-      );
+      this.parsedContents = fs.pathExistsSync(this.filename)
+                          ? (AWS as any).util.ini.parse((AWS as any).util.readFileSync(this.filename))
+                          : {};
     }
   }
 }

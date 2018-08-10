@@ -1,5 +1,6 @@
 import { Environment} from '@aws-cdk/cx-api';
 import AWS = require('aws-sdk');
+import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import { debug } from '../../logging';
@@ -157,7 +158,7 @@ function makeCLICompatibleCredentialProvider(profile: string | undefined) {
     return new AWS.CredentialProviderChain([
         () => new AWS.EnvironmentCredentials('AWS'),
         () => new AWS.EnvironmentCredentials('AMAZON'),
-        () => new AWS.SharedIniFileCredentials({ profile, filename }),
+        ...(fs.pathExistsSync(filename) ? [() => new AWS.SharedIniFileCredentials({ profile, filename })] : []),
         () => {
             // Calling private API
             if ((AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials()) {
