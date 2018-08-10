@@ -16,6 +16,11 @@ Hello, |cdk|!
 
 This topic walks you through creating and deploying your first |cdk| app.
 
+.. note::
+
+    Unless otherwise indicated,
+    the code examples in this guide are in TypeScript.
+
 Setup
 =====
 
