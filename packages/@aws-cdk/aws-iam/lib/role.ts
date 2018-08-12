@@ -41,6 +41,27 @@ export interface RoleProps {
      * Acknowledging IAM Resources in AWS CloudFormation Templates.
      */
     roleName?: string;
+
+    /**
+     * The maximum session duration (in seconds) that you want to set for the
+     * specified role. If you do not specify a value for this setting, the
+     * default maximum of one hour is applied. This setting can have a value
+     * from 1 hour (3600sec) to 12 (43200sec) hours.
+     *
+     * Anyone who assumes the role from the AWS CLI or API can use the
+     * DurationSeconds API parameter or the duration-seconds CLI parameter to
+     * request a longer session. The MaxSessionDuration setting determines the
+     * maximum duration that can be requested using the DurationSeconds
+     * parameter.
+     *
+     * If users don't specify a value for the DurationSeconds parameter, their
+     * security credentials are valid for one hour by default. This applies when
+     * you use the AssumeRole* API operations or the assume-role* CLI operations
+     * but does not apply when you use those operations to create a console URL.
+     *
+     * @link https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html
+     */
+    maxSessionDurationSec?: number;
 }
 
 /**
@@ -85,11 +106,16 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
         this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
         this.managedPolicies = props.managedPolicyArns || [ ];
 
+        if (props.maxSessionDurationSec !== undefined) {
+            validateMaxSessionDuration(props.maxSessionDurationSec);
+        }
+
         const role = new cloudformation.RoleResource(this, 'Resource', {
             assumeRolePolicyDocument: this.assumeRolePolicy as any,
             managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
             path: props.path,
             roleName: props.roleName,
+            maxSessionDuration: props.maxSessionDurationSec
         });
 
         this.roleArn = role.roleArn;
@@ -139,4 +165,14 @@ function createAssumeRolePolicy(principal: PolicyPrincipal) {
         .addStatement(new PolicyStatement()
             .addPrincipal(principal)
             .addAction(principal.assumeRoleAction));
+}
+
+function validateMaxSessionDuration(duration?: number) {
+    if (duration === undefined) {
+        return;
+    }
+
+    if (duration < 3600 || duration > 43200) {
+        throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+    }
 }
