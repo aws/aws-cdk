@@ -8,7 +8,7 @@ class SnsToSqs extends cdk.Stack {
 
         const topic = new sns.Topic(this, 'MyTopic');
 
-        const fction = new lambda.InlineJavaScriptLambda(this, 'Echo', {
+        const fction = new lambda.InlineJavaScriptFunction(this, 'Echo', {
             handler: {
                 fn: (event, _context, callback) => {
                     // tslint:disable:no-console

@@ -1,6 +1,6 @@
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { InlineJavaScriptLambda } from '../lib/inline';
+import lambda = require('../lib');
 
 const app = new cdk.App(process.argv);
 
@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-lambda-2');
 
 const bucket = new s3.Bucket(stack, 'MyBucket');
 
-const lambda = new InlineJavaScriptLambda(stack, 'MyLambda', {
+const fn = new lambda.InlineJavaScriptFunction(stack, 'MyLambda', {
     environment: {
         BUCKET_NAME: bucket.bucketName
     },
@@ -34,6 +34,6 @@ const lambda = new InlineJavaScriptLambda(stack, 'MyLambda', {
     }
 });
 
-bucket.grantReadWrite(lambda.role);
+bucket.grantReadWrite(fn.role);
 
 process.stdout.write(app.run());
