@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
-import { INotificationDestination } from './notification-dest';
+import { IBucketNotificationDestination } from './notification-dest';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
@@ -341,7 +341,7 @@ export class Bucket extends BucketRef {
     }
 
     /**
-     * Adds a bucket notification event target.
+     * Adds a bucket notification event destination.
      * @param event The event to trigger the notification
      * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
      *
@@ -357,27 +357,31 @@ export class Bucket extends BucketRef {
      * @see
      * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
      */
-    public onEvent(event: EventType, dest: INotificationDestination, ...s3KeyFilters: string[]) {
+    public onEvent(event: EventType, dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
         this.notifications.addNotification(event, dest, ...s3KeyFilters);
     }
 
     /**
-     * Subscribes a target to receive notificatins when an object is created in the bucket.
-     * This is identical to calling `onEvent(EventType.ObjectCreated)`.
+     * Subscribes a destination to receive notificatins when an object is
+     * created in the bucket. This is identical to calling
+     * `onEvent(EventType.ObjectCreated)`.
+     *
      * @param dest The notification destination (see onEvent)
      * @param s3KeyFilters Filters (see onEvent)
      */
-    public onObjectCreated(dest: INotificationDestination, ...s3KeyFilters: string[]) {
+    public onObjectCreated(dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
         return this.onEvent(EventType.ObjectCreated, dest, ...s3KeyFilters);
     }
 
     /**
-     * Subscribes a target to receive notificatins when an object is removed from the bucket.
-     * This is identical to calling `onEvent(EventType.ObjectRemoved)`.
+     * Subscribes a destination to receive notificatins when an object is
+     * removed from the bucket. This is identical to calling
+     * `onEvent(EventType.ObjectRemoved)`.
+     *
      * @param dest The notification destination (see onEvent)
      * @param s3KeyFilters Filters (see onEvent)
      */
-    public onObjectRemoved(dest: INotificationDestination, ...s3KeyFilters: string[]) {
+    public onObjectRemoved(dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
         return this.onEvent(EventType.ObjectRemoved, dest, ...s3KeyFilters);
     }
 

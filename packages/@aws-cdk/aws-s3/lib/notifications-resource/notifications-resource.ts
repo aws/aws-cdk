@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Bucket, EventType } from '../bucket';
-import { INotificationDestination, NotificationDestinationType } from '../notification-dest';
+import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../notification-dest';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
 interface NotificationsProps {
@@ -48,12 +48,12 @@ export class BucketNotifications extends cdk.Construct {
      * @param target The target construct
      * @param s3KeyFilters A set of S3 key filters
      */
-    public addNotification(event: EventType, target: INotificationDestination, ...s3KeyFilters: string[]) {
+    public addNotification(event: EventType, target: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
         this.createResourceOnce();
 
         // resolve target. this also provides an opportunity for the target to e.g. update
         // policies to allow this notification to happen.
-        const targetProps = target.bucketNotificationDestination(this.bucket);
+        const targetProps = target.asBucketNotificationDestination(this.bucket);
         const commonConfig: CommonConfiguration = {
             Events: [ event ],
             Filter: renderFilter(s3KeyFilters),
@@ -61,20 +61,20 @@ export class BucketNotifications extends cdk.Construct {
 
         // based on the target type, add the the correct configurations array
         switch (targetProps.type) {
-            case NotificationDestinationType.Lambda:
+            case BucketNotificationDestinationType.Lambda:
                 this.lambdaNotifications.push({ ...commonConfig, LambdaFunctionArn: targetProps.arn });
                 break;
 
-            case NotificationDestinationType.Queue:
+            case BucketNotificationDestinationType.Queue:
                 this.queueNotifications.push({ ...commonConfig, QueueArn: targetProps.arn });
                 break;
 
-            case NotificationDestinationType.Topic:
+            case BucketNotificationDestinationType.Topic:
                 this.topicNotifications.push({ ...commonConfig, TopicArn: targetProps.arn });
                 break;
 
             default:
-                throw new Error('Unsupported notification target type:' + NotificationDestinationType[targetProps.type]);
+                throw new Error('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type]);
         }
     }
 
@@ -92,18 +92,21 @@ export class BucketNotifications extends cdk.Construct {
      * there is no notifications resource.
      */
     private createResourceOnce() {
-        if (!this.customResourceCreated) {
-            const handlerArn = NotificationsResourceHandler.singleton(this);
-            new cdk.Resource(this, 'Resource', {
-                type: 'Custom::S3BucketNotifications',
-                properties: {
-                    ServiceToken: handlerArn,
-                    BucketName: this.bucket.bucketName,
-                    NotificationConfiguration: new cdk.Token(() => this.renderNotificationConfiguration())
-                }
-            });
-            this.customResourceCreated = true;
+        if (this.customResourceCreated) {
+            return;
         }
+
+        const handlerArn = NotificationsResourceHandler.singleton(this);
+        new cdk.Resource(this, 'Resource', {
+            type: 'Custom::S3BucketNotifications',
+            properties: {
+                ServiceToken: handlerArn,
+                BucketName: this.bucket.bucketName,
+                NotificationConfiguration: new cdk.Token(() => this.renderNotificationConfiguration())
+            }
+        });
+
+        this.customResourceCreated = true;
     }
 }
 

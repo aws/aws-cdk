@@ -3,9 +3,9 @@ import s3 = require('../lib');
 
 /**
  * Since we can't take a dependency on @aws-cdk/sns, this is a simple wrapper
- * for AWS::SNS::Topic which implements IBucketNotificationTarget.
+ * for AWS::SNS::Topic which implements IBucketNotificationDestination.
  */
-export class Topic extends cdk.Construct implements s3.INotificationDestination {
+export class Topic extends cdk.Construct implements s3.IBucketNotificationDestination {
     public readonly topicArn: cdk.Arn;
     private readonly policy = new cdk.PolicyDocument();
     private readonly notifyingBucketPaths = new Set<string>();
@@ -26,7 +26,8 @@ export class Topic extends cdk.Construct implements s3.INotificationDestination 
         this.topicArn = resource.ref;
     }
 
-    public bucketNotificationDestination(bucket: s3.Bucket): s3.NotificationDestinationProps {
+    public asBucketNotificationDestination(bucket: s3.Bucket): s3.BucketNotificationDestinationProps {
+
         // add permission to each source bucket
         if (!this.notifyingBucketPaths.has(bucket.path)) {
             this.policy.addStatement(new cdk.PolicyStatement()
@@ -40,7 +41,7 @@ export class Topic extends cdk.Construct implements s3.INotificationDestination 
 
         return {
             arn: this.topicArn,
-            type: s3.NotificationDestinationType.Topic
+            type: s3.BucketNotificationDestinationType.Topic
         };
     }
 }

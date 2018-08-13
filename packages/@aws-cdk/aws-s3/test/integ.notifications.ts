@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { Stack } from '@aws-cdk/cdk';
 import s3 = require('../lib');
-import { Topic } from './notification-targets';
+import { Topic } from './notification-dests';
 
 const app = new cdk.App(process.argv);
 
