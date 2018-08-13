@@ -2,6 +2,8 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
+import { IBucketNotificationDestination } from './notification-dest';
+import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
 import { BucketArn, BucketDomainName, BucketDualStackDomainName, cloudformation } from './s3.generated';
@@ -289,6 +291,7 @@ export class Bucket extends BucketRef {
     protected autoCreatePolicy = true;
     private readonly lifecycleRules: LifecycleRule[] = [];
     private readonly versioned?: boolean;
+    private readonly notifications: BucketNotifications;
 
     constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
@@ -316,6 +319,10 @@ export class Bucket extends BucketRef {
 
         // Add all lifecycle rules
         (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
+
+        // defines a BucketNotifications construct. Notice that an actual resource will only
+        // be added if there are notifications added, so we don't need to condition this.
+        this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
     }
 
     /**
@@ -331,6 +338,53 @@ export class Bucket extends BucketRef {
         }
 
         this.lifecycleRules.push(rule);
+    }
+
+    /**
+     * Adds a bucket notification event destination.
+     * @param event The event to trigger the notification
+     * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
+     *
+     * @param filters S3 object key filter rules to determine which objects
+     * trigger this event. Each filter must include a `prefix` and/or `suffix`
+     * that will be matched against the s3 object key. Refer to the S3 Developer Guide
+     * for details about allowed filter rules.
+     *
+     * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+     *
+     * @example
+     *
+     *      bucket.onEvent(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+     *
+     * @see
+     * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+     */
+    public onEvent(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        this.notifications.addNotification(event, dest, ...filters);
+    }
+
+    /**
+     * Subscribes a destination to receive notificatins when an object is
+     * created in the bucket. This is identical to calling
+     * `onEvent(EventType.ObjectCreated)`.
+     *
+     * @param dest The notification destination (see onEvent)
+     * @param filters Filters (see onEvent)
+     */
+    public onObjectCreated(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        return this.onEvent(EventType.ObjectCreated, dest, ...filters);
+    }
+
+    /**
+     * Subscribes a destination to receive notificatins when an object is
+     * removed from the bucket. This is identical to calling
+     * `onEvent(EventType.ObjectRemoved)`.
+     *
+     * @param dest The notification destination (see onEvent)
+     * @param filters Filters (see onEvent)
+     */
+    public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
     }
 
     /**
@@ -483,6 +537,126 @@ export class ObjectKey extends cdk.Token {
  */
 export class S3Url extends cdk.Token {
 
+}
+
+/**
+ * Notification event types.
+ */
+export enum EventType {
+    /**
+     * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
+     * these event types, you can enable notification when an object is created
+     * using a specific API, or you can use the s3:ObjectCreated:* event type to
+     * request notification regardless of the API that was used to create an
+     * object.
+     */
+    ObjectCreated = 's3:ObjectCreated:*',
+
+    /**
+     * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
+     * these event types, you can enable notification when an object is created
+     * using a specific API, or you can use the s3:ObjectCreated:* event type to
+     * request notification regardless of the API that was used to create an
+     * object.
+     */
+    ObjectCreatedPut = 's3:ObjectCreated:Put',
+
+    /**
+     * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
+     * these event types, you can enable notification when an object is created
+     * using a specific API, or you can use the s3:ObjectCreated:* event type to
+     * request notification regardless of the API that was used to create an
+     * object.
+     */
+    ObjectCreatedPost = 's3:ObjectCreated:Post',
+
+    /**
+     * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
+     * these event types, you can enable notification when an object is created
+     * using a specific API, or you can use the s3:ObjectCreated:* event type to
+     * request notification regardless of the API that was used to create an
+     * object.
+     */
+    ObjectCreatedCopy = 's3:ObjectCreated:Copy',
+
+    /**
+     * Amazon S3 APIs such as PUT, POST, and COPY can create an object. Using
+     * these event types, you can enable notification when an object is created
+     * using a specific API, or you can use the s3:ObjectCreated:* event type to
+     * request notification regardless of the API that was used to create an
+     * object.
+     */
+    ObjectCreatedCompleteMultipartUpload = 's3:ObjectCreated:CompleteMultipartUpload',
+
+    /**
+     * By using the ObjectRemoved event types, you can enable notification when
+     * an object or a batch of objects is removed from a bucket.
+     *
+     * You can request notification when an object is deleted or a versioned
+     * object is permanently deleted by using the s3:ObjectRemoved:Delete event
+     * type. Or you can request notification when a delete marker is created for
+     * a versioned object by using s3:ObjectRemoved:DeleteMarkerCreated. For
+     * information about deleting versioned objects, see Deleting Object
+     * Versions. You can also use a wildcard s3:ObjectRemoved:* to request
+     * notification anytime an object is deleted.
+     *
+     * You will not receive event notifications from automatic deletes from
+     * lifecycle policies or from failed operations.
+     */
+    ObjectRemoved = 's3:ObjectRemoved:*',
+
+    /**
+     * By using the ObjectRemoved event types, you can enable notification when
+     * an object or a batch of objects is removed from a bucket.
+     *
+     * You can request notification when an object is deleted or a versioned
+     * object is permanently deleted by using the s3:ObjectRemoved:Delete event
+     * type. Or you can request notification when a delete marker is created for
+     * a versioned object by using s3:ObjectRemoved:DeleteMarkerCreated. For
+     * information about deleting versioned objects, see Deleting Object
+     * Versions. You can also use a wildcard s3:ObjectRemoved:* to request
+     * notification anytime an object is deleted.
+     *
+     * You will not receive event notifications from automatic deletes from
+     * lifecycle policies or from failed operations.
+     */
+    ObjectRemovedDelete = 's3:ObjectRemoved:Delete',
+
+    /**
+     * By using the ObjectRemoved event types, you can enable notification when
+     * an object or a batch of objects is removed from a bucket.
+     *
+     * You can request notification when an object is deleted or a versioned
+     * object is permanently deleted by using the s3:ObjectRemoved:Delete event
+     * type. Or you can request notification when a delete marker is created for
+     * a versioned object by using s3:ObjectRemoved:DeleteMarkerCreated. For
+     * information about deleting versioned objects, see Deleting Object
+     * Versions. You can also use a wildcard s3:ObjectRemoved:* to request
+     * notification anytime an object is deleted.
+     *
+     * You will not receive event notifications from automatic deletes from
+     * lifecycle policies or from failed operations.
+     */
+    ObjectRemovedDeleteMarkerCreated = 's3:ObjectRemoved:DeleteMarkerCreated',
+
+    /**
+     * You can use this event type to request Amazon S3 to send a notification
+     * message when Amazon S3 detects that an object of the RRS storage class is
+     * lost.
+     */
+    ReducedRedundancyLostObject = 's3:ReducedRedundancyLostObject',
+}
+
+export interface NotificationKeyFilter {
+    /**
+     * S3 keys must have the specified prefix.
+     */
+    prefix?: string;
+
+    /**
+     * S3 keys must have the specified suffix.
+     */
+    suffix?: string;
 }
 
 class ImportedBucketRef extends BucketRef {
