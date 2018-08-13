@@ -26,6 +26,13 @@ Developers can use one of the supported programming languages to define reusable
 cloud components called :doc:`constructs`, which are composed together into
 :doc:`stacks` and :doc:`apps`.
 
+.. note::
+    Unless otherwise indicated,
+    the code examples in this guide are in TypeScript.
+
+    To aid you in porting a TypeScript example to a supported programming language,
+    take a look at the example code for your language in the reference section for the service.
+
 The :ref:`AWS CDK Toolkit <toolkit>` is a command-line tool for interacting with CDK
 apps. It allows developers to synthesize artifacts such as AWS CloudFormation
 Templates, deploy stacks to development AWS accounts and "diff" against a
