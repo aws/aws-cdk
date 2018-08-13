@@ -153,7 +153,7 @@ export = {
         const resolved = resolve(stringified);
 
         // THEN
-        test.deepEqual(resolved, {'Fn::Join': ['', ['The dog says: ', 'woof woof']]});
+        test.deepEqual(evaluateCFN(resolved), 'The dog says: woof woof');
         test.done();
     },
 

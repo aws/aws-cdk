@@ -1,4 +1,4 @@
-import { intrinsicEngine } from './engine-intrinsics';
+import { intrinsicEngine, isIntrinsic } from './engine-intrinsics';
 import { FragmentSource, StringFragment } from './engine-strings';
 import { resolve } from './tokens';
 
@@ -101,7 +101,11 @@ export function resolveMarkerSpans(spans: MarkerSpan[], lookup: (id: string) => 
                 return { source: FragmentSource.Literal, value: span.value };
             case 'marker':
                 const value = lookup(span.id);
-                return { source: FragmentSource.Token, value, intrinsicEngine: intrinsicEngine(value) };
+                if (isIntrinsic(value)) {
+                    return { source: FragmentSource.Intrinsic, value, intrinsicEngine: intrinsicEngine(value) };
+                } else {
+                    return { source: FragmentSource.Literal, value: `${value}` };
+                }
         }
     });
 }

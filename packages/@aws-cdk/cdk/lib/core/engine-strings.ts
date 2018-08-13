@@ -17,15 +17,20 @@ export class ProvisioningEngine {
      * Resolves the result.
      */
     public static combineStringFragments(fragments: StringFragment[]): any {
+        simplifyFragments(fragments);
+
         if (fragments.length === 0) { return ''; }
         if (fragments.length === 1) { return fragments[0].value; }
 
         const engines = Array.from(new Set<string>(fragments.filter(f => f.intrinsicEngine !== undefined).map(f => f.intrinsicEngine!)));
+        if (engines.length === 0) {
+            throw new Error('Should not happen; no intrinsics found in StringFragment list.');
+        }
         if (engines.length > 1) {
             throw new Error(`Combining different engines in one string fragment: ${engines.join(', ')}`);
         }
 
-        const engine = engines.length > 0 ? engines[0] : DEFAULT_ENGINE_NAME;
+        const engine = engines[0];
         if (!(engine in HANDLERS)) {
             throw new Error(`No Token handler registered for engine: ${engine}`);
         }
@@ -63,7 +68,7 @@ export interface StringFragment {
  */
 export enum FragmentSource {
     Literal = 'Literal',
-    Token = 'Token'
+    Intrinsic = 'Intrinsic'
 }
 
 /**
@@ -77,11 +82,23 @@ export interface IProvisioningEngine {
 }
 
 /**
- * The engine that will be used if no Tokens are found
- */
-export const DEFAULT_ENGINE_NAME = 'default';
-
-/**
  * Global handler map
  */
 const HANDLERS: {[engine: string]: IProvisioningEngine} = {};
+
+/**
+ * Combine adjacent string literals in the fragment list
+ *
+ * List is modified in-place.
+ */
+function simplifyFragments(fragments: StringFragment[]) {
+    let i = 0;
+    while (i < fragments.length - 1) {
+        if (fragments[i].source === FragmentSource.Literal && fragments[i + 1].source === FragmentSource.Literal) {
+            fragments[i].value += fragments[i + 1].value;
+            fragments.splice(i + 1, 1);
+        } else {
+            i++;
+        }
+    }
+}

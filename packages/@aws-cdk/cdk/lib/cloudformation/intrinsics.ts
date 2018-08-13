@@ -1,4 +1,4 @@
-import { DEFAULT_ENGINE_NAME, ProvisioningEngine, StringFragment } from "../core/engine-strings";
+import { ProvisioningEngine, StringFragment } from "../core/engine-strings";
 import { IntrinsicToken  } from "../core/tokens";
 
 /**
@@ -25,4 +25,3 @@ const cloudFormationEngine = {
 };
 
 ProvisioningEngine.register(CLOUDFORMATION_ENGINE, cloudFormationEngine);
-ProvisioningEngine.register(DEFAULT_ENGINE_NAME, cloudFormationEngine);
