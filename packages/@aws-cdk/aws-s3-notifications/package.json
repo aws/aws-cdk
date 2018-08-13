@@ -1,17 +1,17 @@
 {
-  "name": "@aws-cdk/aws-sns",
+  "name": "@aws-cdk/aws-s3-notifications",
   "version": "0.8.1",
-  "description": "CDK Constructs for AWS SNS",
+  "description": "Bucket Notifications API for AWS S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.sns",
+        "package": "software.amazon.awscdk.services.s3.notifications",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "sns"
+          "artifactId": "s3-notifications"
         }
       },
       "sphinx": {}
@@ -30,14 +30,11 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::SNS"
-  },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "sns"
+    "s3",
+    "notifications"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -46,20 +43,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.1",
-    "@aws-cdk/aws-s3": "^0.8.1",
     "cdk-build-tools": "^0.8.1",
-    "cdk-integ-tools": "^0.8.1",
-    "cfn2ts": "^0.8.1",
     "pkglint": "^0.8.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.8.1",
-    "@aws-cdk/aws-events": "^0.8.1",
-    "@aws-cdk/aws-iam": "^0.8.1",
-    "@aws-cdk/aws-lambda": "^0.8.1",
-    "@aws-cdk/aws-sqs": "^0.8.1",
-    "@aws-cdk/aws-s3-notifications": "^0.8.1",
     "@aws-cdk/cdk": "^0.8.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"

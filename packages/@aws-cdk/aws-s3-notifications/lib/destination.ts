@@ -1,15 +1,18 @@
 import cdk = require('@aws-cdk/cdk');
-import { Bucket } from './bucket';
 
 /**
  * Implemented by constructs that can be used as bucket notification destinations.
  */
 export interface IBucketNotificationDestination {
     /**
-     * Registers this resource to receive notifications for the specified bucket.
-     * @param bucket The bucket. Use the `path` of the bucket as a unique ID.
+     * Registers this resource to receive notifications for the specified
+     * bucket. This method will only be called once for each destination/bucket
+     * pair and the result will be cached, so there is no need to implement
+     * idempotency in each destination.
+     * @param bucketArn The ARN of the bucket
+     * @param bucketId A unique ID of this bucket in the stack
      */
-    asBucketNotificationDestination(bucket: Bucket): BucketNotificationDestinationProps;
+    asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): BucketNotificationDestinationProps;
 }
 
 /**
