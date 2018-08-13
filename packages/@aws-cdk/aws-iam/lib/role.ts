@@ -106,9 +106,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
         this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
         this.managedPolicies = props.managedPolicyArns || [ ];
 
-        if (props.maxSessionDurationSec !== undefined) {
-            validateMaxSessionDuration(props.maxSessionDurationSec);
-        }
+        validateMaxSessionDuration(props.maxSessionDurationSec);
 
         const role = new cloudformation.RoleResource(this, 'Resource', {
             assumeRolePolicyDocument: this.assumeRolePolicy as any,
