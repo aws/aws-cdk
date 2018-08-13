@@ -1,4 +1,7 @@
 import { Construct } from "./construct";
+import { isIntrinsic, markAsIntrinsic } from "./engine-intrinsics";
+import { ProvisioningEngine } from "./engine-strings";
+import { resolveMarkerSpans, splitOnMarkers } from './util';
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -58,63 +61,42 @@ export class Token {
      */
     public toString(): string {
         const valueType = typeof this.valueOrFunction;
+        // Optimization: if we can immediately resolve this, don't bother
+        // registering a Token.
         if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
             return this.valueOrFunction.toString();
         }
-        // In particular: 'undefined' is not stringified here, since it should
-        // probably evaluate to a proper "undefined" during resolve() later.
 
-        return this.stringMarker();
-    }
-
-    /**
-     * Return the JSON representation of this Token
-     *
-     * Implements JSON.stringify()-compatibility for this Token. Note that it
-     * returns a string representation for the Token pre-resolution, NOT the
-     * resolved value of the Token.
-     *
-     * If the Token evaluates to a string literal, the string literal will
-     * undergo an additional level of escaping to make sure quotes and newlines
-     * embed properly into a larger JSON context.
-     *
-     * In case the Token represents a value that is intrinsic to the deployment
-     * engine (e.g. CloudFormation), the value is unavailable at synthesis time
-     * and we cannot do this escaping. Typically the values returned by those
-     * intrinsics are alphanumeric identifiers that don't need escaping, so
-     * this is not an issue.
-     *
-     * This feature is only supported for Tokens that resolve to strings, or
-     * to intrinsics that will produce strings.
-     * In case the Token represents a value that is intrinsic to the deployment
-     * engine (e.g. CloudFormation), the value is unavailable at synthesis time
-     * and we cannot do this escaping. Typically the values returned by those
-     * intrinsics are alphanumeric identifiers that don't need escaping, so
-     * this is not an issue.
-     *
-     * This feature is only supported for Tokens that resolve to strings, or
-     * to intrinsics that will produce strings.
-     */
-    public toJSON(): any {
-        // Return immediately if it doesn't look like this value is ever going to change.
-        if (!isIntrinsic(this.valueOrFunction) && typeof this.valueOrFunction !== 'function' && typeof this.valueOrFunction !== 'object') {
-            return this.valueOrFunction;
-        }
-
-        // Otherwise return a marker for lazy evaluation.
-        return this.stringMarker();
-    }
-
-    /**
-     * Allocate and encode the appropriate string marker for this Token
-     *
-     * Implements caching of the key.
-     */
-    private stringMarker() {
         if (this.tokenKey === undefined) {
             this.tokenKey = TOKEN_STRING_MAP.register(this);
         }
         return this.tokenKey;
+    }
+
+    /**
+     * Turn this Token into JSON
+     *
+     * This gets called by JSON.stringify(). We want to prohibit this, because
+     * it's not possible to do this properly, so we just throw an error here.
+     */
+    public toJSON(): any {
+        throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use TokenJSON.stringify() instead.');
+    }
+}
+
+/**
+ * Class that tags the Token's return value as an Intrinsic.
+ *
+ */
+export abstract class IntrinsicToken extends Token {
+    protected abstract readonly engine: string;
+
+    public resolve(): any {
+        // Get the inner value, and deep-resolve it to resolve further Tokens.
+        // Necessary to do this now since an intrinsic will never be resolved
+        // any deeper.
+        const resolved = resolve(super.resolve());
+        return markAsIntrinsic(resolved, this.engine);
     }
 }
 
@@ -124,11 +106,6 @@ export class Token {
  */
 export function isToken(obj: any): obj is Token {
     return typeof(obj[RESOLVE_METHOD]) === 'function';
-}
-
-export function istoken(obj: any): obj is Token {
-    process.emitWarning('Deprecated; use isToken() instead');
-    return isToken(obj);
 }
 
 /**
@@ -286,44 +263,15 @@ class TokenStringMap {
      * Replace any Token markers in this string with their resolved values
      */
     public resolveMarkers(s: string): any {
-        const unresolved = this.splitMarkers(s);
-        const resolved = resolveFragments(unresolved);
-        return combineStringFragments(resolved);
-    }
+        const unresolved = splitOnMarkers(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+        const fragments = resolveMarkerSpans(unresolved, (id) => {
+            const resolved = resolve(this.lookupToken(id));
 
-    /**
-     * Split a string up into string and Token Spans
-     */
-    public splitMarkers(s: string): UnresolvedFragment[] {
-        // tslint:disable-next-line:max-line-length
-        const re = new RegExp(`${regexQuote(BEGIN_TOKEN_MARKER)}([${VALID_KEY_CHARS}]+)${regexQuote(END_TOKEN_MARKER)}`, 'g');
-        const ret = new Array<UnresolvedFragment>();
+            // Convert to string unless intrinsic
+            return isIntrinsic(resolved) ? resolved : `${resolved}`;
+        });
 
-        let rest = 0;
-        let m = re.exec(s);
-        while (m) {
-            if (m.index > rest) {
-                ret.push({ type: 'string', value: s.substring(rest, m.index) });
-            }
-
-            ret.push({
-                type: 'token',
-                token: this.lookupToken(m[1])
-            });
-
-            rest = re.lastIndex;
-            m = re.exec(s);
-        }
-
-        if (rest < s.length) {
-            ret.push({ type: 'string', value: s.substring(rest) });
-        }
-
-        if (ret.length === 0) {
-            ret.push({ type: 'string', value: '' });
-        }
-
-        return ret;
+        return ProvisioningEngine.combineStringFragments(fragments);
     }
 
     /**
@@ -338,36 +286,6 @@ class TokenStringMap {
     }
 }
 
-/**
- * Result of the split of a string with Tokens
- *
- * Either a literal part of the string, or an unresolved Token.
- */
-type UnresolvedFragment = { type: 'string'; value: string } | { type: 'token'; token: Token };
-
-/**
- * Resolves string fragments
- */
-function resolveFragments(spans: UnresolvedFragment[]): StringFragment[] {
-    return spans.map(span => {
-        if (span.type === 'string') {
-            return { source: FragmentSource.Literal, value: span.value };
-        }
-
-        // If not, then it's a Token that needs resolving
-        const resolved = resolve(span.token);
-
-        // This must resolve to a string or an intrinsic to make any sense. Let's see
-        // what errors crop up if we're strict and then see if we want to loosen up the
-        // rules later.
-        if (!isIntrinsic(resolved) && typeof resolved !== 'string') {
-            throw new Error(`Result of Token evaluation must be a string, got: ${resolved}`);
-        }
-
-        return { source: FragmentSource.Token, value: resolved, intrinsicEngine: intrinsicEngine(resolved) };
-    });
-}
-
 const BEGIN_TOKEN_MARKER = '${Token[';
 const END_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
@@ -376,195 +294,3 @@ const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
  * Singleton instance of the token string map
  */
 const TOKEN_STRING_MAP = new TokenStringMap();
-
-function regexQuote(s: string) {
-    return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
-}
-
-/**
- * The hidden marker property that marks an object as an engine-intrinsic value.
- */
-const INTRINSIC_VALUE_PROPERTY = '__intrinsicValue__';
-
-/**
- * Mark a given object as an engine-intrinsic value.
- *
- * This will avoid it from being resolved by resolve(). Note that if the value
- * returns any Tokens, they should be resolved before marking the object
- * as an intrinsic.
- *
- * This could have been a wrapper class, but that breaks all test.deepEqual()s.
- * So instead, it's implemented as a hidden property on the object (which is
- * hidden from JSON.stringify() and test.deepEqual().
- */
-export function markAsIntrinsic(x: any, engine: string): any {
-    Object.defineProperty(x, INTRINSIC_VALUE_PROPERTY, {
-        value: engine,
-        enumerable: false,
-        writable: false,
-    });
-    return x;
-}
-
-/**
- * Return whether the given value is an intrinsic
- */
-export function isIntrinsic(x: any): boolean {
-    return x[INTRINSIC_VALUE_PROPERTY] !== undefined;
-}
-
-/**
- * Return the intrinsic engine for the given intrinsic value
- */
-export function intrinsicEngine(x: any): string | undefined {
-    return x[INTRINSIC_VALUE_PROPERTY];
-}
-
-/**
- * A (resolved) fragment of a string to be combined.
- *
- * The values may be string literals or intrinsics.
- */
-export interface StringFragment {
-    /**
-     * Source of the fragment
-     */
-    source: FragmentSource;
-
-    /**
-     * String value
-     *
-     * Either a string literal or an intrinsic.
-     */
-    value: any;
-
-    /**
-     * The intrinsic engine
-     */
-    intrinsicEngine?: string;
-}
-
-/**
- * Where the resolved fragment came from (a string literal or a Token)
- */
-export enum FragmentSource {
-    Literal = 'Literal',
-    Token = 'Token'
-}
-
-/**
- * Interface for engine-specific Token marker handlers
- */
-export interface IEngineTokenHandler {
-    /**
-     * Return the language intrinsic that will combine the strings in the given engine
-     */
-    combineStringFragments(fragments: StringFragment[]): any;
-}
-
-/**
- * The engine that will be used if no Tokens are found
- */
-export const DEFAULT_ENGINE_NAME = 'default';
-
-/**
- * Global handler map
- */
-const HANDLERS: {[engine: string]: IEngineTokenHandler} = {};
-
-/**
- * Register a handler for all intrinsics for the given engine
- */
-export function registerEngineTokenHandler(engineName: string, handler: IEngineTokenHandler) {
-    HANDLERS[engineName] = handler;
-}
-
-/**
- * Combine resolved fragments using the appropriate engine.
- *
- * Resolves the result.
- */
-function combineStringFragments(fragments: StringFragment[]): any {
-    if (fragments.length === 0) { return ''; }
-    if (fragments.length === 1) { return fragments[0].value; }
-
-    const engines = Array.from(new Set<string>(fragments.filter(f => f.intrinsicEngine !== undefined).map(f => f.intrinsicEngine!)));
-    if (engines.length > 1) {
-        throw new Error(`Combining different engines in one string fragment: ${engines.join(', ')}`);
-    }
-
-    const engine = engines.length > 0 ? engines[0] : DEFAULT_ENGINE_NAME;
-    if (!(engine in HANDLERS)) {
-        throw new Error(`No Token handler registered for engine: ${engine}`);
-    }
-
-    return resolve(HANDLERS[engine].combineStringFragments(fragments));
-}
-
-/**
- * Turn an arbitrary structure potentially containing Tokens into JSON.
- */
-export function tokenAwareJsonify(obj: any): any {
-    // This function must exist because even if we changed token.toJSON()
-    // to return a special marker, we couldn't handle both of the following
-    // cases correctly:
-    //
-    // [a] Embed into JSON structure directly, result:
-    //
-    //     {"key":"#{Token[0]}"}
-    //
-    // [b] First toString() to embed into string literal, then embed in JSON
-    // structure, result:
-    //
-    //     {"key":"larger string with ${Token[0]}"}
-    //
-    // In [a], we could detect from '#' vs the '$' that the value of Token[0]
-    // needs to undergo additional JSON-escaping, but we couldn't do the same in
-    // case [b], even though the resultant string needs to undergo JSON-escaping
-    // all the same.
-    //
-    // The correct way to handle this is to resolve scalars as usual, and do
-    // an additional layer of JSON-postprocessing afterwards.
-    return new Token(() => {
-        const unresolved = TOKEN_STRING_MAP.splitMarkers(JSON.stringify(obj));
-        const fragments = resolveFragments(unresolved);
-
-        // Here's the magic sauce: everything that used to be a string before
-        // has already been escaped, so we leave alone. Everything that came
-        // rolling fresh out of a Token could _theoretically_ be everything
-        // but in practice is either a string literal (escape!) or an intrinsic,
-        // which in this RARE case we also recurse over and escape the strings
-        // we find in it. This is technically cheating since we don't know which
-        // strings in the intrinsics are instructions and which will be rendered
-        // into the output, but in practice the instruction strings will not
-        // contain escapable characters anyway.
-        for (const fragment of fragments) {
-            if (fragment.source === FragmentSource.Token) {
-                fragment.value = deepEscape(fragment.value);
-            }
-        }
-
-        return combineStringFragments(fragments);
-    });
-
-    function deepEscape(x: any): any {
-        if (typeof x === 'string') {
-            // Whenever we escape a string we strip off the outermost quotes
-            // since we're already in a quoted context.
-            const stringified = JSON.stringify(x);
-            return stringified.substring(1, stringified.length - 1);
-        }
-
-        if (Array.isArray(x)) {
-            return x.map(deepEscape);
-        }
-
-        if (typeof x === 'object') {
-            for (const key of Object.keys(x)) {
-                x[key] = deepEscape(x[key]);
-            }
-        }
-
-        return x;
-    }
-}

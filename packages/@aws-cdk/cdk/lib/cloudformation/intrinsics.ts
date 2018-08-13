@@ -1,5 +1,5 @@
-import { markAsIntrinsic } from "../core/intrinsic";
-import { DEFAULT_ENGINE_NAME, registerEngineTokenHandler, resolve, StringFragment, Token } from "../core/tokens";
+import { DEFAULT_ENGINE_NAME, ProvisioningEngine, StringFragment } from "../core/engine-strings";
+import { IntrinsicToken  } from "../core/tokens";
 
 /**
  * The default intrinsics Token engine for CloudFormation
@@ -7,17 +7,10 @@ import { DEFAULT_ENGINE_NAME, registerEngineTokenHandler, resolve, StringFragmen
 export const CLOUDFORMATION_ENGINE = 'cloudformation';
 
 /**
- * Class that tags the Token's return value as an Intrinsic.
- *
- * It also automatically resolves inner Token values. Simple base class so
- * existing Tokens don't need to change too much.
+ * Base class for CloudFormation built-ins
  */
-export class CloudFormationIntrinsicToken extends Token {
-    public resolve(): any {
-        // Get the inner value, and deep-resolve it to resolve further Tokens.
-        const resolved = resolve(super.resolve());
-        return markAsIntrinsic(resolved, CLOUDFORMATION_ENGINE);
-    }
+export class CloudFormationIntrinsicToken extends IntrinsicToken {
+    protected readonly engine: string = CLOUDFORMATION_ENGINE;
 }
 
 import { FnConcat } from "./fn";
@@ -31,5 +24,5 @@ const cloudFormationEngine = {
     }
 };
 
-registerEngineTokenHandler(CLOUDFORMATION_ENGINE, cloudFormationEngine);
-registerEngineTokenHandler(DEFAULT_ENGINE_NAME, cloudFormationEngine);
+ProvisioningEngine.register(CLOUDFORMATION_ENGINE, cloudFormationEngine);
+ProvisioningEngine.register(DEFAULT_ENGINE_NAME, cloudFormationEngine);

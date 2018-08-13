@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { CloudFormationIntrinsicToken, FnConcat, isToken, resolve, Token, tokenAwareJsonify } from '../../lib';
-import { evaluateIntrinsics } from './cfn-intrinsics';
+import { CloudFormationIntrinsicToken, isToken, resolve, Token } from '../../lib';
+import { evaluateCFN } from './evaluate-cfn';
 
 export = {
     'resolve a plain old object should just return the object'(test: Test) {
@@ -144,7 +144,7 @@ export = {
         test.done();
     },
 
-    'tokens can be stringified and stringification can be reversed'(test: Test) {
+    'tokens can be stringified and evaluated to conceptual value'(test: Test) {
         // GIVEN
         const token = new Token(() => 'woof woof');
 
@@ -154,64 +154,6 @@ export = {
 
         // THEN
         test.deepEqual(resolved, {'Fn::Join': ['', ['The dog says: ', 'woof woof']]});
-        test.done();
-    },
-
-    'tokens can be JSONified and JSONification can be reversed'(test: Test) {
-        // GIVEN
-        const fido = {
-            name: 'Fido',
-            speaks: new Token(() => 'woof woof')
-        };
-
-        // WHEN
-        const resolved = resolve(tokenAwareJsonify(fido));
-
-        // THEN
-        test.deepEqual(resolved, {'Fn::Join': ['',
-                ['{"name":"Fido","speaks":"', 'woof woof', '"}']]});
-        test.done();
-    },
-
-    'During tokenAwareJsonify, its an error for a Token to not resolve to a string'(test: Test) {
-        // GIVEN
-        const fido1 = { name: "Fido", age: new Token(() => 1) };
-
-        // THEN
-        test.throws(() => {
-            resolve(tokenAwareJsonify(fido1));
-        });
-
-        test.done();
-    },
-
-    'Non-lazy integers are allowed in tokenAwareJsonify()'(test: Test) {
-        // GIVEN
-        const fido = { name: "Fido", age: new Token(1) };
-
-        // WHEN
-        const resolved = evaluateIntrinsics(resolve(tokenAwareJsonify(fido)));
-
-        // THEN
-        test.deepEqual('{"name":"Fido","age":1}', resolved);
-
-        test.done();
-    },
-
-    'lazy string literals in evaluated tokens are escaped when calling tokenAwareJsonify()'(test: Test) {
-        // WHEN
-        const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
-
-        // WHEN
-        const resolved = resolve(tokenAwareJsonify({
-            literal: 'I can also "contain" quotes',
-            token
-        }));
-
-        // THEN
-        const expected = '{"literal":"I can also \\"contain\\" quotes","token":"HelloThis\\nIsVery \\"cool\\""}';
-        test.equal(evaluateIntrinsics(resolved), expected);
-
         test.done();
     },
 
@@ -225,53 +167,35 @@ export = {
         const resolved2 = resolve(token2);
 
         // THEN
-        test.deepEqual(evaluateIntrinsics(resolved1), "hello world");
-        test.deepEqual(evaluateIntrinsics(resolved2), "hello world");
+        test.deepEqual(evaluateCFN(resolved1), "hello world");
+        test.deepEqual(evaluateCFN(resolved2), "hello world");
 
         test.done();
     },
 
-    'Doubly nested strings evaluate correctly in JSON context'(test: Test) {
-        // WHEN
-        const fidoSays = new Token(() => 'woof');
+    'integer Tokens can be stringified and evaluate to conceptual value'(test: Test) {
+        // GIVEN
+        for (const token of tokensThatResolveTo(1)) {
+            // WHEN
+            const stringified = `the number is ${token}`;
+            const resolved = resolve(stringified);
 
-        // WHEN
-        const resolved = resolve(tokenAwareJsonify({
-            information: `Did you know that Fido says: ${fidoSays}`
-        }));
-
-        // THEN
-        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: woof"}');
-
+            // THEN
+            test.deepEqual(evaluateCFN(resolved), 'the number is 1');
+        }
         test.done();
     },
 
-    'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
-        // WHEN
-        const fidoSays = new CloudFormationIntrinsicToken(() => ({ Ref: 'Something' }));
+    'intrinsic Tokens can be stringified and evaluate to conceptual value'(test: Test) {
+        // GIVEN
+        const bucketName = new CloudFormationIntrinsicToken({ Ref: 'MyBucket' });
 
         // WHEN
-        const resolved = resolve(tokenAwareJsonify({
-            information: `Did you know that Fido says: ${fidoSays}`
-        }));
+        const resolved = resolve(`my bucket is named ${bucketName}`);
 
         // THEN
-        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: <<Ref:Something>>"}');
-
-        test.done();
-    },
-
-    'Quoted strings in embedded JSON context are escaped'(test: Test) {
-        // WHEN
-        const fidoSays = new Token(() => '"woof"');
-
-        // WHEN
-        const resolved = resolve(tokenAwareJsonify({
-            information: `Did you know that Fido says: ${fidoSays}`
-        }));
-
-        // THEN
-        test.deepEqual(evaluateIntrinsics(resolved), '{"information":"Did you know that Fido says: \\"woof\\""}');
+        const context = {MyBucket: 'TheName'};
+        test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
 
         test.done();
     },
@@ -308,4 +232,14 @@ class DataType extends BaseDataType {
     constructor() {
         super(12);
     }
+}
+
+/**
+ * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily
+ */
+function tokensThatResolveTo(value: any): Token[] {
+    return [
+        new Token(value),
+        new Token(() => value)
+    ];
 }

@@ -1,4 +1,6 @@
 export * from './core/construct';
+export * from './core/engine-intrinsics';
+export * from './core/token-json';
 export * from './core/tokens';
 export * from './core/jsx';
 
