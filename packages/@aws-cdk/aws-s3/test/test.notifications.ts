@@ -116,7 +116,7 @@ export = {
 
         bucket.onEvent(s3.EventType.ObjectCreated, queueTarget);
         bucket.onEvent(s3.EventType.ObjectCreated, lambdaTarget);
-        bucket.onObjectRemoved(topicTarget, 'prefix*');
+        bucket.onObjectRemoved(topicTarget, { prefix: 'prefix' });
 
         expect(stack).to(haveResource('Custom::S3BucketNotifications', {
           "ServiceToken": {
@@ -229,7 +229,7 @@ export = {
             arn: new cdk.Arn('arn:aws:sqs:...')
         };
 
-        bucket.onEvent(s3.EventType.ObjectRemovedDelete, { asBucketNotificationDestination: _ => bucketNotificationTarget }, 'images/*', '*.jpg');
+        bucket.onEvent(s3.EventType.ObjectRemovedDelete, { asBucketNotificationDestination: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
 
         expect(stack).to(haveResource('Custom::S3BucketNotifications', {
           "ServiceToken": {
@@ -251,12 +251,12 @@ export = {
                   "Key": {
                     "FilterRules": [
                       {
-                        "Name": "prefix",
-                        "Value": "images/"
-                      },
-                      {
                         "Name": "suffix",
                         "Value": ".jpg"
+                      },
+                      {
+                        "Name": "prefix",
+                        "Value": "images/"
                       }
                     ]
                   }

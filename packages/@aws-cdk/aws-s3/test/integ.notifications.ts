@@ -12,9 +12,9 @@ const topic = new Topic(stack, 'Topic');
 const topic3 = new Topic(stack, 'Topic3');
 
 bucket.onEvent(s3.EventType.ObjectCreatedPut, topic);
-bucket.onEvent(s3.EventType.ObjectRemoved, topic3, 'home/myusername/*');
+bucket.onEvent(s3.EventType.ObjectRemoved, topic3, { prefix: 'home/myusername/' });
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2');
-bucket2.onObjectRemoved(topic3, 'foo*', '*foo/bar');
+bucket2.onObjectRemoved(topic3, { prefix: 'foo' }, { suffix: 'foo/bar' });
 
 process.stdout.write(app.run());

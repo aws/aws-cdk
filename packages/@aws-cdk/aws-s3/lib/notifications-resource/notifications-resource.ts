@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Bucket, EventType } from '../bucket';
+import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../notification-dest';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
@@ -46,9 +46,9 @@ export class BucketNotifications extends cdk.Construct {
      *
      * @param event The type of event
      * @param target The target construct
-     * @param s3KeyFilters A set of S3 key filters
+     * @param filters A set of S3 key filters
      */
-    public addNotification(event: EventType, target: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
+    public addNotification(event: EventType, target: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
         this.createResourceOnce();
 
         // resolve target. this also provides an opportunity for the target to e.g. update
@@ -56,7 +56,7 @@ export class BucketNotifications extends cdk.Construct {
         const targetProps = target.asBucketNotificationDestination(this.bucket);
         const commonConfig: CommonConfiguration = {
             Events: [ event ],
-            Filter: renderFilter(s3KeyFilters),
+            Filter: renderFilters(filters),
         };
 
         // based on the target type, add the the correct configurations array
@@ -110,20 +110,24 @@ export class BucketNotifications extends cdk.Construct {
     }
 }
 
-function renderFilter(rules?: string[]): Filter | undefined {
-    if (!rules || rules.length === 0) {
+function renderFilters(filters?: NotificationKeyFilter[]): Filter | undefined {
+    if (!filters || filters.length === 0) {
         return undefined;
     }
 
     const renderedRules = new Array<FilterRule>();
 
-    for (const rule of rules) {
-        if (rule.startsWith('*')) {
-            renderedRules.push({ Name: 'suffix', Value: rule.substr(1) });
-        } else if (rule.endsWith('*')) {
-            renderedRules.push({ Name: 'prefix', Value: rule.substr(0, rule.length - 1) });
-        } else {
-            throw new Error('Rule must either have a "*" prefix or suffix to indicate the rule type: ' + rule);
+    for (const rule of filters) {
+        if (!rule.suffix && !rule.prefix) {
+            throw new Error('NotificationKeyFilter must specify `prefix` and/or `suffix`');
+        }
+
+        if (rule.suffix) {
+            renderedRules.push({ Name: 'suffix', Value: rule.suffix });
+        }
+
+        if (rule.prefix) {
+            renderedRules.push({ Name: 'prefix', Value: rule.prefix });
         }
     }
 

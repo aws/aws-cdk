@@ -345,10 +345,12 @@ export class Bucket extends BucketRef {
      * @param event The event to trigger the notification
      * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
      *
-     * @param s3KeyFilters S3 filter rules to determine which objects trigger
-     * this event. Rules must include either a prefix asterisk ("*foo/bar") or
-     * suffix asterisk ("foo/bar*") to indicate if this is a prefix or a suffix
-     * rule.
+     * @param filters S3 object key filter rules to determine which objects
+     * trigger this event. Each filter must include a `prefix` and/or `suffix`
+     * that will be matched against the s3 object key. Refer to the S3 Developer Guide
+     * for details about allowed filter rules.
+     *
+     * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
      *
      * @example
      *
@@ -357,8 +359,8 @@ export class Bucket extends BucketRef {
      * @see
      * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
      */
-    public onEvent(event: EventType, dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
-        this.notifications.addNotification(event, dest, ...s3KeyFilters);
+    public onEvent(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        this.notifications.addNotification(event, dest, ...filters);
     }
 
     /**
@@ -367,10 +369,10 @@ export class Bucket extends BucketRef {
      * `onEvent(EventType.ObjectCreated)`.
      *
      * @param dest The notification destination (see onEvent)
-     * @param s3KeyFilters Filters (see onEvent)
+     * @param filters Filters (see onEvent)
      */
-    public onObjectCreated(dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
-        return this.onEvent(EventType.ObjectCreated, dest, ...s3KeyFilters);
+    public onObjectCreated(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        return this.onEvent(EventType.ObjectCreated, dest, ...filters);
     }
 
     /**
@@ -379,10 +381,10 @@ export class Bucket extends BucketRef {
      * `onEvent(EventType.ObjectRemoved)`.
      *
      * @param dest The notification destination (see onEvent)
-     * @param s3KeyFilters Filters (see onEvent)
+     * @param filters Filters (see onEvent)
      */
-    public onObjectRemoved(dest: IBucketNotificationDestination, ...s3KeyFilters: string[]) {
-        return this.onEvent(EventType.ObjectRemoved, dest, ...s3KeyFilters);
+    public onObjectRemoved(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+        return this.onEvent(EventType.ObjectRemoved, dest, ...filters);
     }
 
     /**
@@ -643,6 +645,18 @@ export enum EventType {
      * lost.
      */
     ReducedRedundancyLostObject = 's3:ReducedRedundancyLostObject',
+}
+
+export interface NotificationKeyFilter {
+    /**
+     * S3 keys must have the specified prefix.
+     */
+    prefix?: string;
+
+    /**
+     * S3 keys must have the specified suffix.
+     */
+    suffix?: string;
 }
 
 class ImportedBucketRef extends BucketRef {

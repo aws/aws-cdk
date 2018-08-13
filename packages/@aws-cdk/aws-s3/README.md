@@ -172,11 +172,11 @@ The following destinations are currently supported:
  * `lambda.Function`
 
 It is also possible to specify S3 object key filters when subscribing. The
-following example will notify `myQueue` when objects prefixed with `foo/` are
-deleted from the bucket.
+following example will notify `myQueue` when objects prefixed with `foo/` and
+have the `.jpg` suffix are removed from the bucket.
 
 ```ts
-bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, 'foo/*')
+bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.jpg' });
 ```
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
