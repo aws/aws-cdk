@@ -1,9 +1,9 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { FunctionName, LambdaRef } from './lambda-ref';
-import { LambdaVersion } from './lambda-version';
+import { FunctionName, FunctionRef } from './lambda-ref';
+import { FunctionVersion } from './lambda-version';
 import { cloudformation, FunctionArn } from './lambda.generated';
-import { LambdaPermission } from './permission';
+import { Permission } from './permission';
 
 /**
  * Properties for a new Lambda alias
@@ -21,7 +21,7 @@ export interface AliasProps {
      *
      * Use lambda.addVersion() to obtain a new lambda version to refer to.
      */
-    version: LambdaVersion;
+    version: FunctionVersion;
 
     /**
      * Name of this alias
@@ -51,7 +51,7 @@ export interface AliasProps {
 /**
  * A new alias to a particular version of a Lambda function.
  */
-export class Alias extends LambdaRef {
+export class Alias extends FunctionRef {
     /**
      * ARN of this alias
      *
@@ -78,7 +78,7 @@ export class Alias extends LambdaRef {
     /**
      * The actual Lambda function object that this Alias is pointing to
      */
-    private readonly underlyingLambda: LambdaRef;
+    private readonly underlyingLambda: FunctionRef;
 
     constructor(parent: cdk.Construct, name: string, props: AliasProps) {
         super(parent, name);
@@ -97,7 +97,7 @@ export class Alias extends LambdaRef {
         this.functionArn = alias.ref;
     }
 
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(name: string, permission: Permission) {
         // Forward addPermission() to the underlying Lambda object
         this.underlyingLambda.addPermission(name, permission);
     }
@@ -146,7 +146,7 @@ export interface VersionWeight {
     /**
      * The version to route traffic to
      */
-    readonly version: LambdaVersion;
+    readonly version: FunctionVersion;
 
     /**
      * How much weight to assign to this version (0..1)

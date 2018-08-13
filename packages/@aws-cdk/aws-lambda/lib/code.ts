@@ -1,9 +1,9 @@
 import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
-import { Lambda } from './lambda';
+import { Function as Func } from './lambda';
 import { cloudformation } from './lambda.generated';
 
-export abstract class LambdaCode {
+export abstract class Code {
     /**
      * @returns `LambdaS3Code` associated with the specified S3 object.
      * @param bucket The S3 bucket
@@ -11,7 +11,7 @@ export abstract class LambdaCode {
      * @param objectVersion Optional S3 object version
      */
     public static bucket(bucket: s3.BucketRef, key: string, objectVersion?: string) {
-        return new LambdaS3Code(bucket, key, objectVersion);
+        return new S3Code(bucket, key, objectVersion);
     }
 
     /**
@@ -19,7 +19,7 @@ export abstract class LambdaCode {
      * @param code The actual handler code (limited to 4KiB)
      */
     public static inline(code: string) {
-        return new LambdaInlineCode(code);
+        return new InlineCode(code);
     }
 
     /**
@@ -28,7 +28,7 @@ export abstract class LambdaCode {
      * @param directoryToZip The directory to zip
      */
     public static directory(directoryToZip: string) {
-        return new LambdaAssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
+        return new AssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
     }
 
     /**
@@ -36,7 +36,7 @@ export abstract class LambdaCode {
      * @param filePath The file path
      */
     public static file(filePath: string) {
-        return new LambdaAssetCode(filePath, assets.AssetPackaging.File);
+        return new AssetCode(filePath, assets.AssetPackaging.File);
     }
 
     /**
@@ -49,7 +49,7 @@ export abstract class LambdaCode {
      * Called when the lambda is initialized to allow this object to
      * bind to the stack, add resources and have fun.
      */
-    public bind(_lambda: Lambda) {
+    public bind(_lambda: Func) {
         return;
     }
 }
@@ -57,7 +57,7 @@ export abstract class LambdaCode {
 /**
  * Lambda code from an S3 archive.
  */
-export class LambdaS3Code extends LambdaCode {
+export class S3Code extends Code {
     private bucketName: s3.BucketName;
 
     constructor(bucket: s3.BucketRef, private key: string, private objectVersion?: string) {
@@ -82,7 +82,7 @@ export class LambdaS3Code extends LambdaCode {
 /**
  * Lambda code from an inline string (limited to 4KiB).
  */
-export class LambdaInlineCode extends LambdaCode {
+export class InlineCode extends Code {
     constructor(private code: string) {
         super();
 
@@ -91,7 +91,7 @@ export class LambdaInlineCode extends LambdaCode {
         }
     }
 
-    public bind(lambda: Lambda) {
+    public bind(lambda: Func) {
         if (!lambda.runtime.supportsInlineCode) {
             throw new Error(`Inline source not allowed for ${lambda.runtime.name}`);
         }
@@ -107,7 +107,7 @@ export class LambdaInlineCode extends LambdaCode {
 /**
  * Lambda code from a local directory.
  */
-export class LambdaAssetCode extends LambdaCode {
+export class AssetCode extends Code {
     private asset?: assets.Asset;
 
     /**
@@ -120,7 +120,7 @@ export class LambdaAssetCode extends LambdaCode {
         super();
     }
 
-    public bind(lambda: Lambda) {
+    public bind(lambda: Func) {
         this.asset = new assets.Asset(lambda, 'Code', {
             path: this.path,
             packaging: this.packaging

@@ -109,7 +109,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param name A name for the subscription
      * @param lambdaFunction The Lambda function to invoke
      */
-    public subscribeLambda(lambdaFunction: lambda.LambdaRef) {
+    public subscribeLambda(lambdaFunction: lambda.FunctionRef) {
         const subscriptionName = lambdaFunction.name + 'Subscription';
 
         if (this.tryFindChild(subscriptionName)) {

@@ -12,7 +12,7 @@ class TestStack extends cdk.Stack {
         super(parent, name);
 
         const queue = new sqs.Queue(this, 'MyQueue');
-        const fn = new lambda.InlineJavaScriptLambda(this, 'MyFunction', {
+        const fn = new lambda.InlineJavaScriptFunction(this, 'MyFunction', {
             handler: { fn: runtimeCode },
         });
 
