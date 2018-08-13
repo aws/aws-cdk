@@ -80,7 +80,7 @@ export class Token {
      * it's not possible to do this properly, so we just throw an error here.
      */
     public toJSON(): any {
-        throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use TokenJSON.stringify() instead.');
+        throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use TokenJSON.stringify() instead.');
     }
 }
 
