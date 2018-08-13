@@ -50,7 +50,7 @@ export = {
         new codepipeline.GitHubSource(new codepipeline.Stage(p, 'Source'), 'GH', {
             artifactName: 'A',
             branch: 'branch',
-            oauthToken: secret,
+            oauthToken: secret.value,
             owner: 'foo',
             repo: 'bar'
         });
