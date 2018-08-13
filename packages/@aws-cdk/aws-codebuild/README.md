@@ -52,5 +52,5 @@ To define CloudWatch event rules for build projects, use one of the `onXxx` meth
 
 ```ts
 const rule = project.onStateChange('BuildStateChange');
-rule.addTarget(lambda);
+rule.addTarget(lambdaFunction);
 ```

@@ -36,12 +36,12 @@ Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:
 
 ```ts
-const lambda = new Lambda(this, 'Lambda', { ... });
+const fn = new lambda.Function(this, 'Lambda', { ... });
 const logGroup = new LogGroup(this, 'LogGroup', { ... });
 
 new SubscriptionFilter(this, 'Subscription', {
     logGroup,
-    destination: lambda,
+    destination: fn,
     filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
 });
 ```

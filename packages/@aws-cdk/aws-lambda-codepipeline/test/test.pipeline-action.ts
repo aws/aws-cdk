@@ -11,10 +11,10 @@ export = {
     'PipelineInvokeAction can be used to invoke lambda functions from a CodePipeline'(test: Test) {
         const stack = new cdk.Stack();
 
-        const lambdaFun = new lambda.Lambda(stack, 'Function', {
-            code: new lambda.LambdaInlineCode('bla'),
+        const lambdaFun = new lambda.Function(stack, 'Function', {
+            code: new lambda.InlineCode('bla'),
             handler: 'index.handler',
-            runtime: lambda.LambdaRuntime.NodeJS43,
+            runtime: lambda.Runtime.NodeJS43,
         });
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');

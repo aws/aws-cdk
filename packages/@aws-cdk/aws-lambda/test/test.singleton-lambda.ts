@@ -10,10 +10,10 @@ export = {
 
     // WHEN
     for (let i = 0; i < 5; i++) {
-      new lambda.SingletonLambda(stack, `Singleton${i}`, {
+      new lambda.SingletonFunction(stack, `Singleton${i}`, {
         uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-        code: new lambda.LambdaInlineCode('def hello(): pass'),
-        runtime: lambda.LambdaRuntime.Python27,
+        code: new lambda.InlineCode('def hello(): pass'),
+        runtime: lambda.Runtime.Python27,
         handler: 'index.hello',
         timeout: 300,
       });

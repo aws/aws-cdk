@@ -4,7 +4,7 @@ import { Arn, PolicyPrincipal } from '@aws-cdk/cdk';
  * Represents a permission statement that can be added to a Lambda's resource policy
  * via the `addToResourcePolicy` method.
  */
-export interface LambdaPermission {
+export interface Permission {
     /**
      * The Lambda actions that you want to allow in this statement. For example,
      * you can specify lambda:CreateFunction to specify a certain action, or use

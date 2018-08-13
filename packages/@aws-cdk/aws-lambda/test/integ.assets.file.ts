@@ -1,16 +1,16 @@
 import cdk = require('@aws-cdk/cdk');
 import path = require('path');
-import { Lambda, LambdaCode, LambdaRuntime } from '../lib';
+import lambda = require('../lib');
 
 class TestStack extends cdk.Stack {
     constructor(parent: cdk.App, id: string) {
         super(parent, id);
 
         /// !show
-        new Lambda(this, 'MyLambda', {
-            code: LambdaCode.file(path.join(__dirname, 'handler.zip')),
+        new lambda.Function(this, 'MyLambda', {
+            code: lambda.Code.file(path.join(__dirname, 'handler.zip')),
             handler: 'index.main',
-            runtime: LambdaRuntime.Python36
+            runtime: lambda.Runtime.Python36
         });
         /// !hide
     }

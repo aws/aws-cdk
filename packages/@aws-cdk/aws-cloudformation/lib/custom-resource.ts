@@ -15,11 +15,11 @@ export interface CustomResourceProps {
     /**
      * The Lambda provider that implements this custom resource.
      *
-     * We recommend using a SingletonLambda for this.
+     * We recommend using a lambda.SingletonFunction for this.
      *
      * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    lambdaProvider?: lambda.LambdaRef;
+    lambdaProvider?: lambda.FunctionRef;
 
     /**
      * The SNS Topic for the provider that implements this custom resource.

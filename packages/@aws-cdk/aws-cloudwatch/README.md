@@ -8,11 +8,11 @@ attributes. Resources that expose metrics will have functions that look
 like `metricXxx()` which will return a Metric object, initialized with defaults
 that make sense.
 
-For example, `Lambda` objects have the `lambda.metricErrors()` method, which
+For example, `lambda.Function` objects have the `fn.metricErrors()` method, which
 represents the amount of errors reported by that Lambda function:
 
 ```ts
-const errors = lambda.metricErrors();
+const errors = fn.metricErrors();
 ```
 
 ### Aggregation
@@ -30,7 +30,7 @@ the function or the period), you can do so by passing additional parameters
 to the metric function call:
 
 ```ts
-const minuteErrorRate = lambda.metricErrors({
+const minuteErrorRate = fn.metricErrors({
     statistic: 'avg',
     periodSec: 60,
     label: 'Lambda failure rate'
@@ -66,7 +66,7 @@ object, passing the `Metric` object to set the alarm on:
 
 ```ts
 new Alarm(this, 'Alarm', {
-    metric: lambda.metricErrors(),
+    metric: fn.metricErrors(),
     threshold: 100,
     evaluationPeriods: 2,
 });
@@ -75,7 +75,7 @@ new Alarm(this, 'Alarm', {
 Alternatively, you can call `metric.newAlarm()`:
 
 ```ts
-lambda.metricErrors().newAlarm(this, 'Alarm', {
+fn.metricErrors().newAlarm(this, 'Alarm', {
     threshold: 100,
     evaluationPeriods: 2,
 });

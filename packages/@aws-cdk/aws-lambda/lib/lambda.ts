@@ -1,18 +1,18 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LambdaCode } from './code';
-import { FunctionName, LambdaRef } from './lambda-ref';
-import { LambdaVersion } from './lambda-version';
+import { Code } from './code';
+import { FunctionName, FunctionRef } from './lambda-ref';
+import { FunctionVersion } from './lambda-version';
 import { cloudformation, FunctionArn } from './lambda.generated';
-import { LambdaRuntime } from './runtime';
+import { Runtime } from './runtime';
 
-export interface LambdaProps {
+export interface FunctionProps {
     /**
      * The source code of your Lambda function. You can point to a file in an
      * Amazon Simple Storage Service (Amazon S3) bucket or specify your source
      * code as inline text.
      */
-    code: LambdaCode;
+    code: Code;
 
     /**
      * A description of the function.
@@ -52,7 +52,7 @@ export interface LambdaProps {
      * For valid values, see the Runtime property in the AWS Lambda Developer
      * Guide.
      */
-    runtime: LambdaRuntime;
+    runtime: Runtime;
 
     /**
      * A name for the function. If you don't specify a name, AWS CloudFormation
@@ -102,7 +102,7 @@ export interface LambdaProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Lambda extends LambdaRef {
+export class Function extends FunctionRef {
     /**
      * Name of this function
      */
@@ -121,7 +121,7 @@ export class Lambda extends LambdaRef {
     /**
      * The runtime configured for this lambda.
      */
-    public readonly runtime: LambdaRuntime;
+    public readonly runtime: Runtime;
 
     /**
      * The name of the handler configured for this lambda.
@@ -135,7 +135,7 @@ export class Lambda extends LambdaRef {
      */
     private readonly environment?: { [key: string]: any };
 
-    constructor(parent: cdk.Construct, name: string, props: LambdaProps) {
+    constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
         super(parent, name);
 
         this.environment = props.environment || { };
@@ -209,8 +209,8 @@ export class Lambda extends LambdaRef {
      * @param description A description for this version.
      * @returns A new Version object.
      */
-    public addVersion(name: string, codeSha256?: string, description?: string): LambdaVersion {
-        return new LambdaVersion(this, 'Version' + name, {
+    public addVersion(name: string, codeSha256?: string, description?: string): FunctionVersion {
+        return new FunctionVersion(this, 'Version' + name, {
             lambda: this,
             codeSha256,
             description,

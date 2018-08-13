@@ -92,10 +92,10 @@ class TestCustomResource extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string) {
     super(parent, name);
 
-    const singletonLambda = new lambda.SingletonLambda(this, 'Lambda', {
+    const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
-      code: new lambda.LambdaInlineCode('def hello(): pass'),
-      runtime: lambda.LambdaRuntime.Python27,
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.Python27,
       handler: 'index.hello',
       timeout: 300,
     });

@@ -215,7 +215,7 @@ export = {
                 displayName: 'displayName'
             });
 
-            const fction = new lambda.InlineJavaScriptLambda(stack, 'MyFunc', {
+            const fction = new lambda.InlineJavaScriptFunction(stack, 'MyFunc', {
                 handler: {
                     fn: (_event, _context, callback) => callback()
                 }
@@ -351,7 +351,7 @@ export = {
             });
 
             const queue = new sqs.Queue(stack, 'MyQueue');
-            const func = new lambda.InlineJavaScriptLambda(stack, 'MyLambda', {
+            const func = new lambda.InlineJavaScriptFunction(stack, 'MyLambda', {
                 handler: {
                     fn: (_event, _context, callback: any) => callback()
                 }

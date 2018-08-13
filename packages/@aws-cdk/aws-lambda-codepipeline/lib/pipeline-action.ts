@@ -9,7 +9,7 @@ export interface PipelineInvokeActionProps {
     /**
      * The lambda function to invoke.
      */
-    lambda: lambda.LambdaRef;
+    lambda: lambda.FunctionRef;
 
     /**
      * String to be used in the event data parameter passed to the Lambda
