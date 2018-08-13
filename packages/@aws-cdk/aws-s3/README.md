@@ -143,3 +143,40 @@ new Consumer(app, 'consume', {
 
 process.stdout.write(app.run());
 ```
+
+### Bucket Notifications
+
+The Amazon S3 notification feature enables you to receive notifications when
+certain events happen in your bucket as described under [S3 Bucket
+Notifications] of the S3 Developer Guide.
+
+To subscribe for bucket notifications, use the `bucket.onEvent` method. The
+`bucket.onObjectCreated` and `bucket.onObjectRemoved` can also be used for these
+common use cases.
+
+The following example will subscribe an SNS topic to be notified of all
+``s3:ObjectCreated:*` events:
+
+```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
+bucket.onEvent(s3.EventType.ObjectCreated, myTopic);
+```
+
+This call will also ensure that the topic policy can accept notifications for
+this specific bucket.
+
+The following destinations are currently supported:
+
+ * `sns.Topic`
+ * `sqs.Queue`
+ * `lambda.Function`
+
+It is also possible to specify S3 object key filters when subscribing. The
+following example will notify `myQueue` when objects prefixed with `foo/` and
+have the `.jpg` suffix are removed from the bucket.
+
+```ts
+bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.jpg' });
+```
+
+[S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
