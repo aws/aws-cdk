@@ -26,7 +26,9 @@ Prerequisites
 command-line toolkit and language bindings.
 
 `AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
-used to setup the :ref:`credentials <credentials>` for your AWS account.
+used to setup the credentials and region for your AWS account,
+which must be specified to use the toolkit.
+See :ref:`credentials <credentials>` for information on using the AWS CLI to set your credentials.
 
 Install the command-line toolkit
 --------------------------------
@@ -795,7 +797,7 @@ Configure the bucket to use KMS managed encryption:
 
             new Bucket(this, "MyFirstBucket", BucketProps.builder()
                     .withVersioned(true)
-                    .withEncryption("MANAGED")
+                    .withEncryption(BucketEncryption.KmsManaged)
                     .build());
 
 Compile the program:

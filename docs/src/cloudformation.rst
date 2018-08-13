@@ -28,7 +28,7 @@ other resources, depending on what bucket APIs are used).
 
 .. important::
 
-  Generally, when building CDK apps, you shouldn't need to interact
+  Generally, when building CDK apps, you shouldn't need to interact with
   CloudFormation directly. However, there might be advanced use cases and
   migration scenarios where this might be required. We are also aware that
   there might be gaps in capabilities in the AWS Construct Library over time.

@@ -1,8 +1,7 @@
 import { expect, matchTemplate } from '@aws-cdk/assert';
-import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { SingletonLambda } from '../lib';
+import lambda = require('../lib');
 
 export = {
   'can add same singleton Lambda multiple times, only instantiated once in template'(test: Test) {
@@ -11,10 +10,10 @@ export = {
 
     // WHEN
     for (let i = 0; i < 5; i++) {
-      new SingletonLambda(stack, `Singleton${i}`, {
+      new lambda.SingletonFunction(stack, `Singleton${i}`, {
         uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-        code: new lambda.LambdaInlineCode('def hello(): pass'),
-        runtime: lambda.LambdaRuntime.Python27,
+        code: new lambda.InlineCode('def hello(): pass'),
+        runtime: lambda.Runtime.Python27,
         handler: 'index.hello',
         timeout: 300,
       });

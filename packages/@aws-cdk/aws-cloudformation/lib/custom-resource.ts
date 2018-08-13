@@ -1,7 +1,7 @@
-import { cloudformation } from '@aws-cdk/aws-cloudformation';
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
+import { cloudformation } from './cloudformation.generated';
 
 /**
  * Collection of arbitrary properties
@@ -15,11 +15,11 @@ export interface CustomResourceProps {
     /**
      * The Lambda provider that implements this custom resource.
      *
-     * We recommend using a SingletonLambda for this.
+     * We recommend using a lambda.SingletonFunction for this.
      *
      * Optional, exactly one of lamdaProvider or topicProvider must be set.
      */
-    lambdaProvider?: lambda.LambdaRef;
+    lambdaProvider?: lambda.FunctionRef;
 
     /**
      * The SNS Topic for the provider that implements this custom resource.
