@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import s3 = require('../lib');
@@ -93,23 +94,23 @@ export = {
 
         const bucket = new s3.Bucket(stack, 'TestBucket');
 
-        const queueTarget: s3.IBucketNotificationDestination = {
+        const queueTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
-                type: s3.BucketNotificationDestinationType.Queue,
+                type: s3n.BucketNotificationDestinationType.Queue,
                 arn: new cdk.Arn('arn:aws:sqs:...')
             })
         };
 
-        const lambdaTarget: s3.IBucketNotificationDestination = {
+        const lambdaTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
-                type: s3.BucketNotificationDestinationType.Lambda,
+                type: s3n.BucketNotificationDestinationType.Lambda,
                 arn: new cdk.Arn('arn:aws:lambda:...')
             })
         };
 
-        const topicTarget: s3.IBucketNotificationDestination = {
+        const topicTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
-                type: s3.BucketNotificationDestinationType.Topic,
+                type: s3n.BucketNotificationDestinationType.Topic,
                 arn: new cdk.Arn('arn:aws:sns:...')
             })
         };
@@ -176,14 +177,14 @@ export = {
 
         bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
             asBucketNotificationDestination: _ => ({
-                type: s3.BucketNotificationDestinationType.Queue,
+                type: s3n.BucketNotificationDestinationType.Queue,
                 arn: new cdk.Arn('arn:aws:sqs:...:queue1')
             })
         });
 
         bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
             asBucketNotificationDestination: _ => ({
-                type: s3.BucketNotificationDestinationType.Queue,
+                type: s3n.BucketNotificationDestinationType.Queue,
                 arn: new cdk.Arn('arn:aws:sqs:...:queue2')
             })
         });
@@ -225,7 +226,7 @@ export = {
         const bucket = new s3.Bucket(stack, 'TestBucket');
 
         const bucketNotificationTarget = {
-            type: s3.BucketNotificationDestinationType.Queue,
+            type: s3n.BucketNotificationDestinationType.Queue,
             arn: new cdk.Arn('arn:aws:sqs:...')
         };
 

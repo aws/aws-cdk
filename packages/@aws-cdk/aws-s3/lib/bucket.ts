@@ -1,8 +1,8 @@
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
+import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
 import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './notification-dest';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
