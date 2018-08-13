@@ -20,14 +20,14 @@ new codepipeline.AmazonS3Source(sourceStage, 'Source', {
     bucketKey: 'key',
 });
 
-const lambdaFun = new lambda.Lambda(stack, 'LambdaFun', {
-    code: new lambda.LambdaInlineCode(`
+const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
+    code: new lambda.InlineCode(`
         exports.handler = function () {
             console.log("Hello, world!");
         };
     `),
     handler: 'index.handler',
-    runtime: lambda.LambdaRuntime.NodeJS610,
+    runtime: lambda.Runtime.NodeJS610,
 });
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
 new lambda_codepipeline.PipelineInvokeAction(lambdaStage, 'Lambda', {

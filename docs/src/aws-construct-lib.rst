@@ -31,7 +31,7 @@ Least-Privilege IAM policies
 
 IAM policies are automatically defined based on intent. For example, when
 subscribing an AWS SNS :py:class:`Topic <@aws-cdk/aws-sns.Topic>` to a AWS Lambda
-:py:class:`Function <@aws-cdk/aws-lambda.Lambda>`, the function's IAM permission
+:py:class:`Function <@aws-cdk/aws-lambda.Function>`, the function's IAM permission
 policy will automatically be modified to allow the specific topic to invoke the
 function.
 
@@ -76,7 +76,7 @@ Many AWS resources emit AWS CloudWatch metrics as part of their normal operation
 be used to setup :py:mod:`Alarms <@aws-cdk/aws-cloudwatch.Alarm>` or included in :py:mod:`Dashboards <@aws-cdk/aws-cloudwatch.Dashboard>`.
 
 :py:mod:`Metric <@aws-cdk/aws-cloudwatch.Metric>` objects for AWS Constructs can be obtained
-via ``metricXxx()`` methods. For example, the :py:meth:`metricDuration() <@aws-cdk/aws-lambda.LambdaRef.metricDuration>`
+via ``metricXxx()`` methods. For example, the :py:meth:`metricDuration() <@aws-cdk/aws-lambda.FunctionRef.metricDuration>`
 method reports the execution time of an AWS Lambda function.
 
 For more information see the :doc:`refs/_aws-cdk_aws-cloudwatch` documentation.

@@ -22,13 +22,13 @@ class DemoResource extends cdk.Construct {
         super(parent, name);
 
         const resource = new cloudformation.CustomResource(this, 'Resource', {
-            lambdaProvider: new lambda.SingletonLambda(this, 'Singleton', {
+            lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
                 uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 // This makes the demo only work as top-level TypeScript program, but that's fine for now
-                code: new lambda.LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
+                code: new lambda.InlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
                 handler: 'index.main',
                 timeout: 300,
-                runtime: lambda.LambdaRuntime.Python27,
+                runtime: lambda.Runtime.Python27,
             }),
             properties: props
         });

@@ -1,21 +1,21 @@
-import { App, PolicyStatement, Stack } from '@aws-cdk/cdk';
-import { Alias, Lambda, LambdaInlineCode, LambdaRuntime } from '../lib';
+import cdk = require('@aws-cdk/cdk');
+import lambda = require('../lib');
 
-const app = new App(process.argv);
+const app = new cdk.App(process.argv);
 
-const stack = new Stack(app, 'aws-cdk-lambda-1');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 
-const fn = new Lambda(stack, 'MyLambda', {
-    code: new LambdaInlineCode('foo'),
+const fn = new lambda.Function(stack, 'MyLambda', {
+    code: new lambda.InlineCode('foo'),
     handler: 'index.handler',
-    runtime: LambdaRuntime.NodeJS610,
+    runtime: lambda.Runtime.NodeJS610,
 });
 
-fn.addToRolePolicy(new PolicyStatement().addResource('*').addAction('*'));
+fn.addToRolePolicy(new cdk.PolicyStatement().addResource('*').addAction('*'));
 
 const version = fn.addVersion('1');
 
-new Alias(stack, 'Alias', {
+new lambda.Alias(stack, 'Alias', {
     aliasName: 'prod',
     version,
 });

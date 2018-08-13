@@ -1,14 +1,14 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Lambda, LambdaProps } from './lambda';
-import { FunctionName, LambdaRef } from './lambda-ref';
+import { Function, FunctionProps } from './lambda';
+import { FunctionName, FunctionRef } from './lambda-ref';
 import { FunctionArn } from './lambda.generated';
-import { LambdaPermission } from './permission';
+import { Permission } from './permission';
 
 /**
  * Properties for a newly created singleton Lambda
  */
-export interface SingletonLambdaProps extends LambdaProps {
+export interface SingletonFunctionProps extends FunctionProps {
     /**
      * A unique identifier to identify this lambda
      *
@@ -35,14 +35,14 @@ export interface SingletonLambdaProps extends LambdaProps {
  * The lambda is identified using the value of 'uuid'. Run 'uuidgen'
  * for every SingletonLambda you create.
  */
-export class SingletonLambda extends LambdaRef {
+export class SingletonFunction extends FunctionRef {
     public readonly functionName: FunctionName;
     public readonly functionArn: FunctionArn;
     public readonly role?: iam.Role | undefined;
     protected readonly canCreatePermissions: boolean;
-    private lambdaFunction: LambdaRef;
+    private lambdaFunction: FunctionRef;
 
-    constructor(parent: cdk.Construct, name: string, props: SingletonLambdaProps) {
+    constructor(parent: cdk.Construct, name: string, props: SingletonFunctionProps) {
         super(parent, name);
 
         this.lambdaFunction = this.ensureLambda(props);
@@ -54,20 +54,20 @@ export class SingletonLambda extends LambdaRef {
         this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
     }
 
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(name: string, permission: Permission) {
         return this.lambdaFunction.addPermission(name, permission);
     }
 
-    private ensureLambda(props: SingletonLambdaProps): LambdaRef {
+    private ensureLambda(props: SingletonFunctionProps): FunctionRef {
         const constructName = (props.lambdaPurpose || 'SingletonLambda') + slugify(props.uuid);
         const stack = cdk.Stack.find(this);
         const existing = stack.tryFindChild(constructName);
         if (existing) {
             // Just assume this is true
-            return existing as LambdaRef;
+            return existing as FunctionRef;
         }
 
-        return new Lambda(stack, constructName, props);
+        return new Function(stack, constructName, props);
     }
 }
 
