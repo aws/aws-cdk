@@ -195,6 +195,11 @@ export class Queue extends QueueRef {
      */
     public readonly queueUrl: QueueUrl;
 
+    /**
+     * If this queue is encrypted, this is the KMS key.
+     */
+    public encryptionMasterKey?: kms.EncryptionKeyRef;
+
     protected readonly autoCreatePolicy = true;
 
     constructor(parent: cdk.Construct, name: string, props: QueueProps = {}) {
@@ -255,10 +260,10 @@ export class Queue extends QueueRef {
     }
 
     private determineEncryptionProps(props: QueueProps): EncryptionProps {
-        const encryption = props.encryption || QueueEncryption.Unencrypted;
+        let encryption = props.encryption || QueueEncryption.Unencrypted;
 
         if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
-            throw new Error("Encryption key is specified, so 'encryption' must be set to 'Kms'.");
+            encryption = QueueEncryption.Kms; // KMS is implied by specifying an encryption key
         }
 
         if (encryption === QueueEncryption.Unencrypted) {
@@ -266,19 +271,23 @@ export class Queue extends QueueRef {
         }
 
         if (encryption === QueueEncryption.KmsManaged) {
+            this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
+                keyArn: new kms.KeyArn('alias/aws/sqs')
+            });
+
             return {
                 kmsMasterKeyId: 'alias/aws/sqs',
                 kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
             };
         }
 
-        if (props.encryption === QueueEncryption.Kms) {
-            const encryptionKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
+        if (encryption === QueueEncryption.Kms) {
+            this.encryptionMasterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
                 description: `Created by ${this.path}`
             });
 
             return {
-                kmsMasterKeyId: encryptionKey.keyArn,
+                kmsMasterKeyId: this.encryptionMasterKey.keyArn,
                 kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
             };
         }
