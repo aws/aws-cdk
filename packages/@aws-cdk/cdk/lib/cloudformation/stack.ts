@@ -3,7 +3,7 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, Token } from '../core/tokens';
 import { Environment } from '../environment';
-import { CloudFormationIntrinsicToken } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './engine';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 

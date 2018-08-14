@@ -1,5 +1,4 @@
-import { isIntrinsic } from "./engine-intrinsics";
-import { ProvisioningEngine } from "./engine-strings";
+import { combineStringFragments, isIntrinsic } from "./engine";
 import { resolve, Token } from "./tokens";
 import { resolveMarkerSpans, splitOnMarkers } from "./util";
 
@@ -24,7 +23,7 @@ export class TokenJSON {
             const fragments = resolveMarkerSpans(spans, (id) => {
                 return allocatedIntrinsics[id].quotedIntrinsic();
             });
-            return ProvisioningEngine.combineStringFragments(fragments);
+            return combineStringFragments(fragments);
         });
 
         /**

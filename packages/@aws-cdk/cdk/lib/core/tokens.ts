@@ -1,6 +1,5 @@
 import { Construct } from "./construct";
-import { isIntrinsic, markAsIntrinsic } from "./engine-intrinsics";
-import { ProvisioningEngine } from "./engine-strings";
+import { combineStringFragments, IProvisioningEngine, isIntrinsic, markAsIntrinsic } from "./engine";
 import { resolveMarkerSpans, splitOnMarkers } from './util';
 
 /**
@@ -89,7 +88,7 @@ export class Token {
  *
  */
 export abstract class IntrinsicToken extends Token {
-    protected abstract readonly engine: string;
+    protected abstract readonly engine: IProvisioningEngine;
 
     public resolve(): any {
         // Get the inner value, and deep-resolve it to resolve further Tokens.
@@ -271,7 +270,7 @@ class TokenStringMap {
             return isIntrinsic(resolved) ? resolved : `${resolved}`;
         });
 
-        return ProvisioningEngine.combineStringFragments(fragments);
+        return combineStringFragments(fragments);
     }
 
     /**

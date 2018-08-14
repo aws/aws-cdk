@@ -1,5 +1,4 @@
-import { intrinsicEngine, isIntrinsic } from './engine-intrinsics';
-import { FragmentSource, StringFragment } from './engine-strings';
+import { FragmentSource, intrinsicEngine, isIntrinsic, StringFragment } from './engine';
 import { resolve } from './tokens';
 
 /**

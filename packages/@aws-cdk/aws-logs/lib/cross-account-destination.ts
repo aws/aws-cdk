@@ -64,7 +64,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
 
         this.resource = new cloudformation.DestinationResource(this, 'Resource', {
             destinationName,
-            destinationPolicy: new cdk.Token(() => !this.policyDocument.isEmpty ? JSON.stringify(cdk.resolve(this.policyDocument)) : ""),
+            destinationPolicy: this.policyDocument,
             roleArn: props.role.roleArn,
             targetArn: props.targetArn
         });

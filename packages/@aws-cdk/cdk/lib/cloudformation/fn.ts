@@ -1,4 +1,4 @@
-import { CloudFormationIntrinsicToken } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './engine';
 // tslint:disable:max-line-length
 
 /**

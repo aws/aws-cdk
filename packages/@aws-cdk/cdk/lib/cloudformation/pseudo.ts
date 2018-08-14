@@ -1,4 +1,4 @@
-import { CloudFormationIntrinsicToken } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './engine';
 
 export class PseudoParameter extends CloudFormationIntrinsicToken {
     constructor(name: string) {

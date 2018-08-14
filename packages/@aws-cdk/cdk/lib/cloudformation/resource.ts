@@ -2,7 +2,7 @@ import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { Condition } from './condition';
-import { CloudFormationIntrinsicToken } from './intrinsics';
+import { CloudFormationIntrinsicToken } from './engine';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, StackElement } from './stack';
 
