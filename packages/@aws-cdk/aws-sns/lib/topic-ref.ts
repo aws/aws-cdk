@@ -76,9 +76,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param queue The target queue
      */
     public subscribeQueue(queue: sqs.QueueRef) {
-        const subscriptionName = queue.name + 'Subscription';
+        const subscriptionName = queue.id + 'Subscription';
         if (this.tryFindChild(subscriptionName)) {
-            throw new Error(`A subscription between the topic ${this.name} and the queue ${queue.name} already exists`);
+            throw new Error(`A subscription between the topic ${this.id} and the queue ${queue.id} already exists`);
         }
 
         // we use the queue name as the subscription's. there's no meaning to subscribing
@@ -110,10 +110,10 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param lambdaFunction The Lambda function to invoke
      */
     public subscribeLambda(lambdaFunction: lambda.FunctionRef) {
-        const subscriptionName = lambdaFunction.name + 'Subscription';
+        const subscriptionName = lambdaFunction.id + 'Subscription';
 
         if (this.tryFindChild(subscriptionName)) {
-            throw new Error(`A subscription between the topic ${this.name} and the lambda ${lambdaFunction.name} already exists`);
+            throw new Error(`A subscription between the topic ${this.id} and the lambda ${lambdaFunction.id} already exists`);
         }
 
         const sub = new Subscription(this, subscriptionName, {
@@ -122,7 +122,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
             protocol: SubscriptionProtocol.Lambda
         });
 
-        lambdaFunction.addPermission(this.name, {
+        lambdaFunction.addPermission(this.id, {
             sourceArn: this.topicArn,
             principal: new cdk.ServicePrincipal('sns.amazonaws.com'),
         });
@@ -217,7 +217,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.topicArn,
         };
     }

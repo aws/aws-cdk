@@ -188,7 +188,7 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.functionArn,
         };
     }
