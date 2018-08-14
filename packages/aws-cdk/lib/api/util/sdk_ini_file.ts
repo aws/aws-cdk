@@ -44,10 +44,16 @@ export class SharedIniFile {
   }
 
   private async ensureFileLoaded() {
-    if (!this.parsedContents) {
-      this.parsedContents = await fs.pathExists(this.filename)
-                          ? (AWS as any).util.ini.parse(await fs.readFile(this.filename))
-                          : {};
+    if (this.parsedContents) {
+      return;
     }
+
+    if (!await fs.pathExists(this.filename)) {
+      this.parsedContents = {};
+      return;
+    }
+
+    const contents: string = (await fs.readFile(this.filename)).toString();
+    this.parsedContents = (AWS as any).util.ini.parse(contents);
   }
 }
