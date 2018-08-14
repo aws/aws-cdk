@@ -53,7 +53,7 @@ export class BucketNotifications extends cdk.Construct {
 
         // resolve target. this also provides an opportunity for the target to e.g. update
         // policies to allow this notification to happen.
-        const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.path);
+        const targetProps = target.asBucketNotificationDestination(this.bucket.bucketArn, this.bucket.uniqueId);
         const commonConfig: CommonConfiguration = {
             Events: [ event ],
             Filter: renderFilters(filters),

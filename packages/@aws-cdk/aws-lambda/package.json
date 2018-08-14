@@ -59,6 +59,7 @@
     "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/aws-logs": "^0.8.1",
     "@aws-cdk/aws-s3": "^0.8.1",
+    "@aws-cdk/aws-s3-notifications": "^0.8.1",
     "@aws-cdk/cdk": "^0.8.1",
     "@aws-cdk/cx-api": "^0.8.1"
   },
