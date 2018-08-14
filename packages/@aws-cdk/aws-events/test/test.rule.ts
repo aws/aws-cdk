@@ -1,8 +1,9 @@
 import { expect } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IEventRuleTarget } from '../lib';
+import { IEventRuleTarget, RuleArn } from '../lib';
 import { EventRule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -137,19 +138,19 @@ export = {
     'targets can be added via props or addTarget with input transformer'(test: Test) {
         const stack = new cdk.Stack();
         const t1: IEventRuleTarget = {
-            eventRuleTarget: {
+            asEventRuleTarget: () => ({
                 id: 'T1',
                 arn: new cdk.Arn('ARN1'),
                 kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
-            }
+            })
         };
 
         const t2: IEventRuleTarget = {
-            eventRuleTarget: {
+            asEventRuleTarget: () => ({
                 id: 'T2',
                 arn: new cdk.Arn('ARN2'),
                 roleArn: new iam.RoleArn('IAM-ROLE-ARN')
-            }
+            })
         };
 
         const rule = new EventRule(stack, 'EventRule', {
@@ -201,12 +202,14 @@ export = {
     'input template can contain tokens'(test: Test) {
         const stack = new cdk.Stack();
         const t1: IEventRuleTarget = {
-            eventRuleTarget: { id: 'T1', arn: new cdk.Arn('ARN1'), kinesisParameters: { partitionKeyPath: 'partitionKeyPath' } }
+            asEventRuleTarget: () => ({
+                id: 'T1', arn: new cdk.Arn('ARN1'), kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+            })
         };
 
-        const t2: IEventRuleTarget = { eventRuleTarget: { id: 'T2', arn: new cdk.Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') } };
-        const t3: IEventRuleTarget = { eventRuleTarget: { id: 'T3', arn: new cdk.Arn('ARN3') } };
-        const t4: IEventRuleTarget = { eventRuleTarget: { id: 'T4', arn: new cdk.Arn('ARN4') } };
+        const t2: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T2', arn: new cdk.Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') }) };
+        const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: new cdk.Arn('ARN3') }) };
+        const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: new cdk.Arn('ARN4') }) };
 
         const rule = new EventRule(stack, 'EventRule');
 
@@ -310,6 +313,33 @@ export = {
             }
         });
 
+        test.done();
+    },
+
+    'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
+        const stack = new cdk.Stack();
+
+        let receivedRuleArn = new RuleArn('FAIL');
+        let receivedRuleId = 'FAIL';
+
+        const t1: IEventRuleTarget = {
+            asEventRuleTarget: (ruleArn: RuleArn, ruleId: string) => {
+                receivedRuleArn = ruleArn;
+                receivedRuleId = ruleId;
+
+                return {
+                    id: 'T1',
+                    arn: new cdk.Arn('ARN1'),
+                    kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+                };
+            }
+        };
+
+        const rule = new EventRule(stack, 'EventRule');
+        rule.addTarget(t1);
+
+        test.deepEqual(resolve(receivedRuleArn), resolve(rule.ruleArn));
+        test.deepEqual(receivedRuleId, rule.uniqueId);
         test.done();
     }
 };
