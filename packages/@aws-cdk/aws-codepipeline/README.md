@@ -3,7 +3,9 @@
 Construct an empty pipeline:
 
 ```ts
-const pipeline = new Pipeline(this, 'MyFirstPipeline');
+const pipeline = new Pipeline(this, 'MyFirstPipeline', {
+    pipelineName: 'MyFirstPipeline',
+});
 ```
 
 All of the components of a pipeline are modeled as constructs.
@@ -17,7 +19,8 @@ const sourceStage = new Stage(pipeline, 'Source');
 Add an action to a stage:
 
 ```ts
-new codecommit.PipelineSource(sourceStage, 'source', {
+new codecommit.PipelineSource(this, 'Source', {
+    stage: sourceStage,
     artifactName: 'MyPackageSourceArtifact',
     repository: codecommit.RepositoryRef.import(this, 'MyExistingRepository', {
         repositoryName: new codecommit.RepositoryName('MyExistingRepository'),

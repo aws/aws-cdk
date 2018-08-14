@@ -1,17 +1,17 @@
 {
-  "name": "@aws-cdk/aws-codecommit",
+  "name": "@aws-cdk/aws-codepipeline-api",
   "version": "0.8.1",
-  "description": "CDK Constructs for AWS CodeCommit",
+  "description": "Actions API for AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.codecommit",
+        "package": "software.amazon.awscdk.services.codepipeline.api",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codecommit"
+          "artifactId": "codepipeline-api"
         }
       },
       "sphinx": {}
@@ -30,18 +30,14 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::CodeCommit"
-  },
-  "nyc": {
-    "lines": 30,
-    "branches": 48
-  },
   "keywords": [
     "aws",
+    "aws-clib",
+    "aws-cloudlib",
     "cdk",
-    "constructs",
-    "codecommit"
+    "cloudlib",
+    "codepipeline",
+    "pipeline"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -51,18 +47,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.8.1",
-    "@aws-cdk/aws-sns": "^0.8.1",
-    "aws-sdk": "^2.259.1",
     "cdk-build-tools": "^0.8.1",
     "cdk-integ-tools": "^0.8.1",
-    "cfn2ts": "^0.8.1",
     "pkglint": "^0.8.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.8.1",
     "@aws-cdk/aws-events": "^0.8.1",
     "@aws-cdk/aws-iam": "^0.8.1",
-    "@aws-cdk/cdk": "^0.8.1"
+    "@aws-cdk/cdk": "^0.8.1",
+    "@aws-cdk/util": "^0.8.1"
   },
+  "bundledDependencies": [
+    "@aws-cdk/util"
+  ],
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

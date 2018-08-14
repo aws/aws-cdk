@@ -33,6 +33,10 @@
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation"
   },
+  "nyc": {
+    "lines": 50,
+    "branches": 20
+  },
   "keywords": [
     "aws",
     "cdk",
@@ -54,6 +58,8 @@
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.8.1",
+    "@aws-cdk/aws-codepipeline-api": "^0.8.1",
+    "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/aws-lambda": "^0.8.1",
     "@aws-cdk/aws-sns": "^0.8.1"
   },

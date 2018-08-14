@@ -38,10 +38,12 @@
   },
   "keywords": [
     "aws",
+    "aws-clib",
+    "aws-cloudlib",
     "cdk",
     "cloudlib",
-    "aws-cloudlib",
-    "aws-clib"
+    "codepipeline",
+    "pipeline"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -51,6 +53,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.8.1",
+    "@aws-cdk/aws-cloudformation": "^0.8.1",
+    "@aws-cdk/aws-codebuild": "^0.8.1",
+    "@aws-cdk/aws-codecommit": "^0.8.1",
+    "@aws-cdk/aws-lambda": "^0.8.1",
     "@aws-cdk/aws-sns": "^0.8.1",
     "cdk-build-tools": "^0.8.1",
     "cdk-integ-tools": "^0.8.1",
@@ -58,6 +64,7 @@
     "pkglint": "^0.8.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-codepipeline-api": "^0.8.1",
     "@aws-cdk/aws-events": "^0.8.1",
     "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/aws-s3": "^0.8.1",
