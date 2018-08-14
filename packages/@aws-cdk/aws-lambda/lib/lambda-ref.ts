@@ -132,12 +132,6 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
     protected abstract readonly canCreatePermissions: boolean;
 
     /**
-     * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this lambda have been added.
-     */
-    private eventRuleTargetPolicyAdded = false;
-
-    /**
      * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
     private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
@@ -177,14 +171,14 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
-        if (!this.eventRuleTargetPolicyAdded) {
-            this.addPermission('InvokedByCloudWatch', {
+    public asEventRuleTarget(ruleArn: events.RuleArn, ruleId: string): events.EventRuleTargetProps {
+        const permissionId = `AllowEventRule${ruleId}`;
+        if (!this.tryFindChild(permissionId)) {
+            this.addPermission(permissionId, {
                 action: 'lambda:InvokeFunction',
-                principal: new cdk.ServicePrincipal('events.amazonaws.com')
+                principal: new cdk.ServicePrincipal('events.amazonaws.com'),
+                sourceArn: ruleArn
             });
-
-            this.eventRuleTargetPolicyAdded = true;
         }
 
         return {
