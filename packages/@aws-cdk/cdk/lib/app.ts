@@ -47,7 +47,7 @@ export class App extends Root {
                 throw new Error(`The child ${child.toString()} of Program must be a Stack`);
             }
 
-            out[child.name] = child as Stack;
+            out[child.id] = child as Stack;
         }
         return out;
     }
@@ -113,7 +113,7 @@ export class App extends Root {
         }
 
         return {
-            name: stack.name,
+            name: stack.id,
             environment,
             missing: Object.keys(stack.missingContext).length ? stack.missingContext : undefined,
             template: stack.toCloudFormation(),

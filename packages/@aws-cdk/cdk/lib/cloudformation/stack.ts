@@ -332,7 +332,7 @@ export abstract class StackElement extends Construct implements IDependable {
      * Return the path with respect to the stack
      */
     public get stackPath(): string {
-        return this.ancestors(this.stack).map(c => c.name).join(PATH_SEP);
+        return this.ancestors(this.stack).map(c => c.id).join(PATH_SEP);
     }
 
     public get dependencyElements(): IDependable[] {
