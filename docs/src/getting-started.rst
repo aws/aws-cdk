@@ -10,9 +10,9 @@
 
 .. _getting_started:
 
-##############################
-Getting Started with the |cdk|
-##############################
+#############
+Hello, |cdk|!
+#############
 
 This topic walks you through creating and deploying your first |cdk| app.
 
@@ -26,7 +26,9 @@ Prerequisites
 command-line toolkit and language bindings.
 
 `AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
-used to setup the :ref:`credentials <credentials>` for your AWS account.
+used to setup the credentials and region for your AWS account,
+which must be specified to use the toolkit.
+See :ref:`credentials <credentials>` for information on using the AWS CLI to set your credentials.
 
 Install the command-line toolkit
 --------------------------------
@@ -38,7 +40,7 @@ Install the toolkit using the following `npm <https://www.npmjs.org>`_ command.
     npm install -g aws-cdk
 
 After you've installed the toolkit,
-you can run the following command to see the currently installed version of the toolkit.
+run the following command to see the version of the installed toolkit.
 
 .. code-block:: sh
 
@@ -46,16 +48,17 @@ you can run the following command to see the currently installed version of the 
 
 You should see |cdk-version|.
 
-.. _creating_project
+.. _initializing:
 
-Creating a Project
-==================
+Initializing the Project
+========================
 
 .. note::
 
-    This guide walks you through manually creating a |cdk| project. 
-    See :ref:`using_cdk_init` for instructions on using the 
-    :code:`cdk init` command to create a project from a 
+    This topic is a step-by-step guide to creating a |cdk| project.
+    It explains some of the reasoning and details
+    behind the project structure and tools. You can also use the
+    :code:`cdk init` command to get started quickly from a project
     template in any of the supported languages.
 
 Create an empty project structure for the |cdk| app.
@@ -240,10 +243,10 @@ class. Let's create our first, empty **App**:
 .. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
     currently needed in order to allow the |cdk| Toolkit to interact with your app.
 
-.. _compiling_code:
+.. _complie_code:
 
-Compiling the Code
-==================
+Compile the Code
+================
 
 If needed, compile the code:
 
@@ -255,16 +258,14 @@ If needed, compile the code:
 
     .. group-tab:: TypeScript
 
-        Use the **npm run build** command to compile your program from **.ts** to **.js**.
+        To compile your program from **.ts** to **.js**:
 
         .. code-block:: sh
 
             npm run build
 
-        We recommend that you use the **npm run watch** command, 
-        which compiles your code whenever you save it.
-        Run this command from a command window
-        separate from the one you use to run **cdk** commands.
+        You can also use the **watch** command to continuously compile your code
+        as it changes, so you don't have to invoke the compiler explicitly:
 
         .. code-block:: sh
 
@@ -272,7 +273,7 @@ If needed, compile the code:
 
     .. group-tab:: Java
 
-        Compile your code using your IDE or use the following **mvn** command.
+        Compile your code using your IDE or via the command line via **mvn**:
 
         .. code-block:: sh
 
@@ -797,7 +798,7 @@ Configure the bucket to use KMS managed encryption:
 
             new Bucket(this, "MyFirstBucket", BucketProps.builder()
                     .withVersioned(true)
-                    .withEncryption("MANAGED")
+                    .withEncryption(BucketEncryption.KmsManaged)
                     .build());
 
 Compile the program:
@@ -839,8 +840,8 @@ The output should look like the following:
 .. code-block:: sh
 
     [~] 🛠 Updating MyFirstBucketB8884501 (type: AWS::S3::Bucket)
-    +- [+] .BucketEncryption:
-        +- New value: {"ServerSideEncryptionConfiguration":[{"ServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}
+    └─ [+] .BucketEncryption:
+        └─ New value: {"ServerSideEncryptionConfiguration":[{"ServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}
 
 As you can see, the diff indicates that the
 **ServerSideEncryptionConfiguration** property of the bucket is now set to
@@ -866,7 +867,7 @@ encryption for the bucket:
     [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
     ✅  Deployment of stack hello-cdk completed successfully
-    
+
 What Next?
 ==========
 
