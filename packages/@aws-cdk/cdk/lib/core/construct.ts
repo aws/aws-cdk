@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { makeUniqueId } from '../util/uniqueid';
 export const PATH_SEP = '/';
 
 /**
@@ -6,17 +7,33 @@ export const PATH_SEP = '/';
  * When a construct is created, it is always added as a child
  */
 export class Construct {
-    private static readonly VALID_NAME_REGEX = /^[A-Za-z][A-Za-z0-9]*$/;
-
     /**
      * Returns the parent of this node or undefined if this is a root node.
      */
     public readonly parent?: Construct;
 
     /**
-     * The name of this construct
+     * @deprecated use `id`
      */
     public readonly name: string;
+
+    /**
+     * The subtree-local id of the construct.
+     * This id is unique within the subtree. To obtain a tree-unique id, use `uniqueId`.
+     */
+    public readonly id: string;
+
+    /**
+     * The full path of this construct in the tree.
+     * Components are separated by '/'.
+     */
+    public readonly path: string;
+
+    /**
+     * A tree-unique alpha-numeric identifier for this construct.
+     * Includes all components of the tree.
+     */
+    public readonly uniqueId: string;
 
     /**
      * List of children and their names
@@ -37,28 +54,33 @@ export class Construct {
      * @param parent The parent construct
      * @param props  Properties for this construct
      */
-    constructor(parent: Construct, name: string) {
-        this.name = name;
+    constructor(parent: Construct, id: string) {
+        this.id = id;
+        this.name = id; // legacy
         this.parent = parent;
 
         // We say that parent is required, but some root constructs bypass the type checks and
         // actually pass in 'undefined'.
         if (parent != null) {
-            if (name === '') {
+            if (id === '') {
                 throw new Error('Only root constructs may have an empty name');
             }
 
             // Has side effect so must be very last thing in constructor
-            parent.addChild(this, this.name);
+            parent.addChild(this, this.id);
         } else {
             // This is a root construct.
-            this.name = name;
+            this.id = id;
         }
 
         // Validate the name we ended up with
-        if (this.name !== '') {
-            this._validateName(this.name);
+        if (this.id !== '') {
+            this._validateName(this.id);
         }
+
+        const components = this.rootPath().map(c => c.id);
+        this.path = components.join(PATH_SEP);
+        this.uniqueId = components.length > 0 ? makeUniqueId(components) : '';
     }
 
     /**
@@ -77,7 +99,7 @@ export class Construct {
         for (let i = 0; i < depth; ++i) {
             out += '  ';
         }
-        const name = this.name || '';
+        const name = this.id || '';
         out += `${this.typename}${name.length > 0 ? ' [' + name + ']' : ''}\n`;
         for (const child of this.children) {
             out += child.toTreeString(depth + 1);
@@ -137,7 +159,7 @@ export class Construct {
      */
     public setContext(key: string, value: any) {
         if (this.children.length > 0) {
-            const names = this.children.map(c => c.name);
+            const names = this.children.map(c => c.id);
             throw new Error('Cannot set context after children have been added: ' + names.join(','));
         }
         this.context[key] = value;
@@ -171,15 +193,6 @@ export class Construct {
         }
 
         return value;
-    }
-
-    /**
-     * Returns the path of all constructs from root to this construct, in string form.
-     *
-     * @returns /-separated path of this Construct.
-     */
-    public get path(): string {
-        return this.rootPath().map(c => c.name).join(PATH_SEP);
     }
 
     /**
@@ -281,17 +294,12 @@ export class Construct {
     }
 
     /**
-     * Validate that the name of the construct is a legal identifier
-     *
-     * At the moment, we restrict these to valid CloudFormation identifiers.
-     *
-     * Protected so it can be overridden by subclasses. Starts with _ to hide the virtual function from JSII,
-     * because we don't want this validation to involve asynchrony. This restricts it to only
-     * be overridable in (Type|Java)Script, but that suffices for now.
+     * Validate that the name of the construct is a legal identifier.
+     * Construct names can be any characters besides the path separator.
      */
     protected _validateName(name: string) {
-        if (!Construct.VALID_NAME_REGEX.test(name)) {
-            throw new Error(`Name must adhere to the regular expression: ${Construct.VALID_NAME_REGEX.toString()}, got '${name}'`);
+        if (name.indexOf(PATH_SEP) !== -1) {
+            throw new Error(`Construct names cannot include '${PATH_SEP}': ${name}`);
         }
     }
 

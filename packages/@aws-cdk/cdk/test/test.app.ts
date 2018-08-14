@@ -222,7 +222,7 @@ export = {
 
         class Child extends Construct {
             public validate() {
-                return [ `Error from ${this.name}` ];
+                return [ `Error from ${this.id}` ];
             }
         }
 

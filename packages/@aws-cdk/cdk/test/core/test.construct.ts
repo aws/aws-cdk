@@ -8,7 +8,7 @@ import { Construct, Root } from '../../lib';
 export = {
     'the "Root" construct is a special construct which can be used as the root of the tree'(test: Test) {
         const root = new Root();
-        test.equal(root.name, '', 'if not specified, name of a root construct is an empty string');
+        test.equal(root.id, '', 'if not specified, name of a root construct is an empty string');
         test.ok(!root.parent, 'no parent');
         test.equal(root.children.length, 0, 'a construct is created without children'); // no children
         test.done();
@@ -23,32 +23,47 @@ export = {
     'construct.name returns the name of the construct'(test: Test) {
         const t = createTree();
 
-        test.equal(t.child1.name, 'Child1');
-        test.equal(t.child2.name, 'Child2');
-        test.equal(t.child1_1.name, 'Child11');
-        test.equal(t.child1_2.name, 'Child12');
-        test.equal(t.child1_1_1.name, 'Child111');
-        test.equal(t.child2_1.name, 'Child21');
+        test.equal(t.child1.id, 'Child1');
+        test.equal(t.child2.id, 'Child2');
+        test.equal(t.child1_1.id, 'Child11');
+        test.equal(t.child1_2.id, 'Child12');
+        test.equal(t.child1_1_1.id, 'Child111');
+        test.equal(t.child2_1.id, 'Child21');
 
         test.done();
     },
 
-    'construct name can only be alpha-numeric at least one character long'(test: Test) {
+    'construct id can use any character except the path separator'(test: Test) {
         const root = new Root();
         new Construct(root, 'valid');
         new Construct(root, 'ValiD');
         new Construct(root, 'Va123lid');
         new Construct(root, 'v');
-        test.throws(() => new Construct(root, '  invalid' ), Error, 'no spaces before');
-        test.throws(() => new Construct(root, 'invalid   ' ), Error, 'no spaces after');
-        test.throws(() => new Construct(root, '123invalid' ), Error, 'name can\'t begin with a number');
-        test.throws(() => new Construct(root, 'in valid' ), Error, 'spaces are not allowed');
-        test.throws(() => new Construct(root, 'in_Valid' ), Error, 'underscores are not allowed');
-        test.throws(() => new Construct(root, 'in-Valid' ), Error, 'hyphens are not allowed');
-        test.throws(() => new Construct(root, 'in/Valid' ), Error, 'backslashes are not allowed');
-        test.throws(() => new Construct(root, 'in\\Valid' ), Error, 'slashes are not allowed');
-        test.throws(() => new Construct(root, 'in.Valid' ), Error, 'periods are not allowed');
+        new Construct(root, '  invalid' );
+        new Construct(root, 'invalid   ' );
+        new Construct(root, '123invalid' );
+        new Construct(root, 'in valid' );
+        new Construct(root, 'in_Valid' );
+        new Construct(root, 'in-Valid' );
+        new Construct(root, 'in\\Valid' );
+        new Construct(root, 'in.Valid' );
 
+        test.throws(() => new Construct(root, 'in/Valid' ), Error, 'backslashes are not allowed');
+        test.done();
+    },
+
+    'construct.uniqueId returns a tree-unique alphanumeric id of this construct'(test: Test) {
+        const root = new Root();
+
+        const child1 = new Construct(root, 'This is the first child');
+        const child2 = new Construct(child1, 'Second level');
+        const c1 = new Construct(child2, 'My construct');
+        const c2 = new Construct(child1, 'My construct');
+
+        test.deepEqual(c1.path, 'This is the first child/Second level/My construct');
+        test.deepEqual(c2.path, 'This is the first child/My construct');
+        test.deepEqual(c1.uniqueId, 'ThisisthefirstchildSecondlevelMyconstruct202131E0');
+        test.deepEqual(c2.uniqueId, 'ThisisthefirstchildMyconstruct8C288DF9');
         test.done();
     },
 
@@ -64,7 +79,7 @@ export = {
     'construct.findChild(name) can be used to retrieve a child from a parent'(test: Test) {
         const root = new Root();
         const child = new Construct(root, 'Contruct');
-        test.strictEqual(root.tryFindChild(child.name), child, 'findChild(name) can be used to retrieve the child from a parent');
+        test.strictEqual(root.tryFindChild(child.id), child, 'findChild(name) can be used to retrieve the child from a parent');
         test.ok(!root.tryFindChild('NotFound'), 'findChild(name) returns undefined if the child is not found');
         test.done();
     },
@@ -72,7 +87,7 @@ export = {
     'construct.getChild(name) can be used to retrieve a child from a parent'(test: Test) {
         const root = new Root();
         const child = new Construct(root, 'Contruct');
-        test.strictEqual(root.findChild(child.name), child, 'getChild(name) can be used to retrieve the child from a parent');
+        test.strictEqual(root.findChild(child.id), child, 'getChild(name) can be used to retrieve the child from a parent');
         test.throws(() => {
             root.findChild('NotFound');
         }, '', 'getChild(name) returns undefined if the child is not found');
