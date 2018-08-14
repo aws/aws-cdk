@@ -91,7 +91,7 @@ export class Output extends StackElement {
             this.export = props.export;
         } else if (!props.disableExport) {
             // prefix export name with stack name since exports are global within account + region.
-            const stackName = Stack.find(this).name;
+            const stackName = Stack.find(this).id;
             this.export = stackName ? stackName + ':' : '';
             this.export += this.logicalId;
         }

@@ -37,16 +37,16 @@ export namespace jsx {
      * @returns A Construct object
      */
     export function construct(tree: any, parent?: Construct): Construct {
-        const name = (tree.props && tree.props.name) || '';
-        const root = new tree.type(parent, name, tree.props); // create root
+        const id = (tree.props && tree.props.id) || '';
+        const root = new tree.type(parent, id, tree.props); // create root
         createChildren(root, tree.children);
         return root;
     }
 
     function createChildren(parent: Construct, children: any[]) {
         for (const child of children) {
-            const name = (child.props && child.props.name) || '';
-            const childObj = new child.type(parent, name, child.props);
+            const id = (child.props && child.props.id) || '';
+            const childObj = new child.type(parent, id, child.props);
             createChildren(childObj, child.children);
         }
     }

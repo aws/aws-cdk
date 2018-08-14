@@ -62,7 +62,7 @@ export = {
         test.deepEqual(new AvailabilityZoneProvider(stack).availabilityZones, [ 'dummy1a', 'dummy1b', 'dummy1c' ]);
         test.deepEqual(new SSMParameterProvider(child).getString('foo'), 'dummy');
 
-        const output = app.synthesizeStack(stack.name);
+        const output = app.synthesizeStack(stack.id);
 
         const azError: MetadataEntry | undefined = output.metadata['/test-stack'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
         const ssmError: MetadataEntry | undefined = output.metadata['/test-stack/ChildConstruct'].find(x => x.type === cxapi.ERROR_METADATA_KEY);
