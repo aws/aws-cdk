@@ -205,8 +205,10 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     /**
      * Returns a RuleTarget that can be used to trigger this SNS topic as a
      * result from a CloudWatch event.
+     *
+     * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addAction('sns:Publish')

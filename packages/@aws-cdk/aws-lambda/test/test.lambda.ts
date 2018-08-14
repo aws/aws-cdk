@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -255,10 +255,12 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = newTestLambda(stack);
-        const rule = new events.EventRule(stack, 'Rule');
+        const rule1 = new events.EventRule(stack, 'Rule');
+        const rule2 = new events.EventRule(stack, 'Rule2');
 
         // WHEN
-        rule.addTarget(fn);
+        rule1.addTarget(fn);
+        rule2.addTarget(fn);
 
         // THEN
         const lambdaId = "MyLambdaCCE802FB";
@@ -266,9 +268,18 @@ export = {
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
             "Action": "lambda:InvokeFunction",
             "FunctionName": { "Ref": lambdaId },
-            "Principal": "events.amazonaws.com"
+            "Principal": "events.amazonaws.com",
+            "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
         }));
 
+        expect(stack).to(haveResource('AWS::Lambda::Permission', {
+            "Action": "lambda:InvokeFunction",
+            "FunctionName": { "Ref": "MyLambdaCCE802FB" },
+            "Principal": "events.amazonaws.com",
+            "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
+        }));
+
+        expect(stack).to(countResources('AWS::Events::Rule', 2));
         expect(stack).to(haveResource('AWS::Events::Rule', {
             "Targets": [
               {

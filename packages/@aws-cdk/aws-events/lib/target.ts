@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './events.generated';
+import { cloudformation, RuleArn } from './events.generated';
 
 export interface EventRuleTargetProps {
     /**
@@ -50,6 +50,9 @@ export interface IEventRuleTarget {
     /**
      * Returns the rule target specification.
      * NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.
+     *
+     * @param ruleArn The ARN of the CloudWatch Event Rule that would trigger this target.
+     * @param ruleUniqueId A unique ID for this rule. Can be used to implement idempotency.
      */
-    readonly eventRuleTarget: EventRuleTargetProps;
+    asEventRuleTarget(ruleArn: RuleArn, ruleUniqueId: string): EventRuleTargetProps;
 }
