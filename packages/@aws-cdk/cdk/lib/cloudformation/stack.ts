@@ -87,9 +87,15 @@ export class Stack extends Construct {
     public readonly templateOptions: TemplateOptions = {};
 
     /**
+     * The CloudFormation stack name.
+     */
+    public readonly name: string;
+
+    /**
      * Creates a new stack.
      *
      * @param parent Parent of this stack, usually a Program instance.
+     * @param name The name of the CloudFormation stack. Defaults to "Stack".
      * @param props Stack properties.
      */
     public constructor(parent?: App, name?: string, props?: StackProps) {
@@ -98,6 +104,7 @@ export class Stack extends Construct {
         this.env = this.parseEnvironment(props);
 
         this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
+        this.name = name || 'Stack';
     }
 
     /**
@@ -195,7 +202,7 @@ export class Stack extends Construct {
      * CloudFormation stack names can include dashes in addition to the regular identifier
      * character classes, and we don't allow one of the magic markers.
      */
-    protected _validateName(name: string) {
+    protected _validateId(name: string) {
         if (!Stack.VALID_STACK_NAME_REGEX.test(name)) {
             throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
         }

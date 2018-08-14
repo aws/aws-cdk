@@ -185,7 +185,7 @@ export abstract class FunctionRef extends cdk.Construct
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.functionArn,
         };
     }

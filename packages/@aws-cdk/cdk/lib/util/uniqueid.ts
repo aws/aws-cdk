@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-var-requires
-const md5 = require('./md5');
+import crypto = require('crypto');
 
 /**
  * Resources with this ID are hidden from humans
@@ -20,17 +20,19 @@ const HASH_LEN = 8;
 const MAX_HUMAN_LEN = 240; // max ID len is 255
 
 /**
- * Given a set of named path components, returns a unique alpha-numeric identifier
- * with a maximum length of 255. This is done by calculating a hash on the full path
- * and using it as a suffix of a length-limited "human" rendition of the path components.
+ * Calculates a unique ID for a set of textual components.
+ *
+ * This is done by calculating a hash on the full path and using it as a suffix
+ * of a length-limited "human" rendition of the path components.
  *
  * @param components The path components
+ * @returns a unique alpha-numeric identifier with a maximum length of 255
  */
 export function makeUniqueId(components: string[]) {
     components = components.filter(x => x !== HIDDEN_ID);
 
     if (components.length === 0) {
-        throw new Error('Unable to calculate a unique ID for an empty path');
+        throw new Error('Unable to calculate a unique id for an empty set of components');
     }
 
     // top-level resources will simply use the `name` as-is in order to support
@@ -42,8 +44,8 @@ export function makeUniqueId(components: string[]) {
 
     const hash = pathHash(components);
     const human = removeDupes(components)
-        .map(removeNonAlpha)
         .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
+        .map(removeNonAlphanumeric)
         .join('')
         .slice(0, MAX_HUMAN_LEN);
 
@@ -56,21 +58,22 @@ export function makeUniqueId(components: string[]) {
  * The hash is limited in size.
  */
 function pathHash(path: string[]): string {
-    return md5(path.join(PATH_SEP)).slice(0, HASH_LEN).toUpperCase();
+    const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest("hex");
+    return md5.slice(0, HASH_LEN).toUpperCase();
 }
 
 /**
  * Removes all non-alphanumeric characters in a string.
  */
-function removeNonAlpha(s: string) {
+function removeNonAlphanumeric(s: string) {
     return s.replace(/[^A-Za-z0-9]/g, '');
 }
 
 /**
  * Remove duplicate "terms" from the path list
  *
- * If a component name is completely the same as the suffix of
- * the previous component name, we get rid of it.
+ * If the previous path component name ends with this component name, skip the
+ * current component.
  */
 function removeDupes(path: string[]): string[] {
     const ret = new Array<string>();

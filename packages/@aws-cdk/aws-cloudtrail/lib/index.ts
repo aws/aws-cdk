@@ -174,7 +174,7 @@ export class CloudTrail extends cdk.Construct {
             includeGlobalServiceEvents: props.includeGlobalServiceEvents == null ? true : props.includeGlobalServiceEvents,
             trailName: props.trailName,
             kmsKeyId:  props.kmsKey && props.kmsKey.keyArn,
-            s3BucketName: s3bucket.name,
+            s3BucketName: s3bucket.bucketName,
             s3KeyPrefix: props.s3KeyPrefix,
             cloudWatchLogsLogGroupArn: this.cloudWatchLogsGroupArn,
             cloudWatchLogsRoleArn: this.cloudWatchLogsRoleArn,
