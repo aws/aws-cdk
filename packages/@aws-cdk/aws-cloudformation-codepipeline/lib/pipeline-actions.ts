@@ -53,7 +53,7 @@ export abstract class CloudFormationAction extends codepipeline.DeployAction {
         });
 
         if (props.outputFileName) {
-            this.artifact = this.addOutputArtifact(props.outputArtifactName || (parent.name + this.name + 'Artifact'));
+            this.artifact = this.addOutputArtifact(props.outputArtifactName || (parent.id + this.id + 'Artifact'));
         }
     }
 }
