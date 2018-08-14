@@ -13,7 +13,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 const repo = new codecommit.Repository(stack, 'TemplateRepo', {
     repositoryName: 'template-repo'
 });
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const source = new codecommit.PipelineSource(stack, 'Source', {
     stage: sourceStage,
     repository: repo,
@@ -21,7 +21,7 @@ const source = new codecommit.PipelineSource(stack, 'Source', {
 });
 
 // Deployment stage: create and deploy changeset with manual approval
-const prodStage = new codepipeline.Stage(pipeline, 'Deploy');
+const prodStage = new codepipeline.Stage(pipeline, 'Deploy', { pipeline });
 const stackName = 'OurStack';
 const changeSetName = 'StagedChangeSet';
 

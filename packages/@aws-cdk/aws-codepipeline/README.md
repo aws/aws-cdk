@@ -1,6 +1,6 @@
 ## AWS CodePipeline construct library
 
-Construct an empty pipeline:
+Construct an empty Pipeline:
 
 ```ts
 const pipeline = new Pipeline(this, 'MyFirstPipeline', {
@@ -8,15 +8,15 @@ const pipeline = new Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
-All of the components of a pipeline are modeled as constructs.
-
-Append a stage to the pipeline:
+Append a Stage to the Pipeline:
 
 ```ts
-const sourceStage = new Stage(pipeline, 'Source');
+const sourceStage = new Stage(this, 'Source', {
+    pipeline,
+});
 ```
 
-Add an action to a stage:
+Add an Action to a Stage:
 
 ```ts
 new codecommit.PipelineSource(this, 'Source', {
