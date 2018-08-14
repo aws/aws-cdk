@@ -148,7 +148,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      *      rule.addTarget(pipeline);
      *
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one
