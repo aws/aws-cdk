@@ -1,7 +1,7 @@
 import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
 import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EncryptionKey } from '../lib';
+import { EncryptionKey, KeyArn } from '../lib';
 
 export = {
     'default key'(test: Test) {
@@ -349,5 +349,31 @@ export = {
         });
 
         test.done();
+    },
+
+    'addToResourcePolicy allowNoOp and there is no policy': {
+        'succeed if set to true (default)'(test: Test) {
+            const stack = new Stack();
+
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+
+            key.addToResourcePolicy(new PolicyStatement().addResource('*').addAction('*'));
+
+            test.done();
+        },
+
+        'fails if set to false'(test: Test) {
+
+            const stack = new Stack();
+
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+
+            test.throws(() =>
+              key.addToResourcePolicy(new PolicyStatement().addResource('*').addAction('*'), /* allowNoOp */ false),
+              'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
+
+            test.done();
+
+        }
     }
 };

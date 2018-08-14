@@ -1,4 +1,4 @@
-import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement } from '@aws-cdk/cdk';
+import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { cloudformation, KeyArn } from './kms.generated';
 
@@ -54,10 +54,15 @@ export abstract class EncryptionKeyRef extends Construct {
 
     /**
      * Adds a statement to the KMS key resource policy.
+     * @param statement The policy statement to add
+     * @param allowNoOp If this is set to `false` and there is no policy
+     * defined (i.e. external key), the operation will fail. Otherwise, it will
+     * no-op.
      */
-    public addToResourcePolicy(statement: PolicyStatement) {
+    public addToResourcePolicy(statement: PolicyStatement, allowNoOp = true) {
         if (!this.policy) {
-            return;
+            if (allowNoOp) { return; }
+            throw new Error(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(resolve(this.keyArn))}`);
         }
 
         this.policy.addStatement(statement);
