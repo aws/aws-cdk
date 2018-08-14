@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
@@ -16,7 +17,7 @@ export class TopicArn extends cdk.Arn { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction {
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination {
     /**
      * Import a Topic defined elsewhere
      */
@@ -36,6 +37,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     protected abstract readonly autoCreatePolicy: boolean;
 
     private policy?: TopicPolicy;
+
+    /** Buckets permitted to send notifications to this topic */
+    private readonly notifyingBuckets = new Set<string>();
 
     /**
      * Indicates if the resource policy that allows CloudWatch events to publish
@@ -274,6 +278,32 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      */
     public metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Implements the IBucketNotificationDestination interface, allowing topics to be used
+     * as bucket notification destinations.
+     *
+     * @param bucketArn The ARN of the bucket sending the notifications
+     * @param bucketId A unique ID of the bucket
+     */
+    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+        // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
+        if (!this.notifyingBuckets.has(bucketId)) {
+
+            this.addToResourcePolicy(new cdk.PolicyStatement()
+                .addServicePrincipal('s3.amazonaws.com')
+                .addAction('sns:Publish')
+                .addResource(this.topicArn)
+                .addCondition('ArnLike', { "aws:SourceArn": bucketArn }));
+
+            this.notifyingBuckets.add(bucketId);
+        }
+
+        return {
+            arn: this.topicArn,
+            type: s3n.BucketNotificationDestinationType.Topic
+        };
     }
 }
 

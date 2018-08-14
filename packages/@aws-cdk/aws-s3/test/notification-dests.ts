@@ -1,11 +1,11 @@
+import s3notifications = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
-import s3 = require('../lib');
 
 /**
  * Since we can't take a dependency on @aws-cdk/sns, this is a simple wrapper
  * for AWS::SNS::Topic which implements IBucketNotificationDestination.
  */
-export class Topic extends cdk.Construct implements s3.IBucketNotificationDestination {
+export class Topic extends cdk.Construct implements s3notifications.IBucketNotificationDestination {
     public readonly topicArn: cdk.Arn;
     private readonly policy = new cdk.PolicyDocument();
     private readonly notifyingBucketPaths = new Set<string>();
@@ -26,22 +26,22 @@ export class Topic extends cdk.Construct implements s3.IBucketNotificationDestin
         this.topicArn = resource.ref;
     }
 
-    public asBucketNotificationDestination(bucket: s3.Bucket): s3.BucketNotificationDestinationProps {
+    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3notifications.BucketNotificationDestinationProps {
 
         // add permission to each source bucket
-        if (!this.notifyingBucketPaths.has(bucket.path)) {
+        if (!this.notifyingBucketPaths.has(bucketId)) {
             this.policy.addStatement(new cdk.PolicyStatement()
                 .describe(`sid${this.policy.statementCount}`)
                 .addServicePrincipal('s3.amazonaws.com')
                 .addAction('sns:Publish')
                 .addResource(this.topicArn)
-                .addCondition('ArnLike', { "aws:SourceArn": bucket.bucketArn }));
-            this.notifyingBucketPaths.add(bucket.path);
+                .addCondition('ArnLike', { "aws:SourceArn": bucketArn }));
+            this.notifyingBucketPaths.add(bucketId);
         }
 
         return {
             arn: this.topicArn,
-            type: s3.BucketNotificationDestinationType.Topic
+            type: s3notifications.BucketNotificationDestinationType.Topic
         };
     }
 }
