@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
-import { CloudFormationIntrinsicToken, isToken, resolve, Token } from '../../lib';
-import { evaluateCFN } from './evaluate-cfn';
+import { CloudFormationToken, isToken, resolve, Token } from '../../lib';
+import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
     'resolve a plain old object should just return the object'(test: Test) {
@@ -188,7 +188,7 @@ export = {
 
     'intrinsic Tokens can be stringified and evaluate to conceptual value'(test: Test) {
         // GIVEN
-        const bucketName = new CloudFormationIntrinsicToken({ Ref: 'MyBucket' });
+        const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
 
         // WHEN
         const resolved = resolve(`my bucket is named ${bucketName}`);

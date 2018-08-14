@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationIntrinsicToken, FnConcat, resolve, Token, TokenJSON } from '../../lib';
+import { CloudFormationJSON, CloudFormationToken, FnConcat, resolve, Token } from '../../lib';
 import { evaluateCFN } from './evaluate-cfn';
 
 export = {
@@ -21,7 +21,7 @@ export = {
             const fido = { name: 'Fido', speaks: token };
 
             // WHEN
-            const resolved = resolve(TokenJSON.stringify(fido));
+            const resolved = resolve(CloudFormationJSON.stringify(fido));
 
             // THEN
             test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"woof woof"}');
@@ -36,7 +36,7 @@ export = {
             const fido = { name: 'Fido', speaks: `deep ${token}` };
 
             // WHEN
-            const resolved = resolve(TokenJSON.stringify(fido));
+            const resolved = resolve(CloudFormationJSON.stringify(fido));
 
             // THEN
             test.deepEqual(evaluateCFN(resolved), '{"name":"Fido","speaks":"deep woof woof"}');
@@ -52,8 +52,8 @@ export = {
 
         // WHEN
         test.equal(evaluateCFN(resolve(embedded)), "the number is 1");
-        test.equal(evaluateCFN(resolve(TokenJSON.stringify({ embedded }))), "{\"embedded\":\"the number is 1\"}");
-        test.equal(evaluateCFN(resolve(TokenJSON.stringify({ num }))), "{\"num\":1}");
+        test.equal(evaluateCFN(resolve(CloudFormationJSON.stringify({ embedded }))), "{\"embedded\":\"the number is 1\"}");
+        test.equal(evaluateCFN(resolve(CloudFormationJSON.stringify({ num }))), "{\"num\":1}");
 
         test.done();
     },
@@ -62,7 +62,7 @@ export = {
         // GIVEN
         for (const token of tokensThatResolveTo('pong!')) {
             // WHEN
-            const stringified = TokenJSON.stringify(`ping? ${token}`);
+            const stringified = CloudFormationJSON.stringify(`ping? ${token}`);
 
             // THEN
             test.equal(evaluateCFN(resolve(stringified)), '"ping? pong!"');
@@ -73,10 +73,10 @@ export = {
 
     'intrinsic Tokens embed correctly in JSONification'(test: Test) {
         // GIVEN
-        const bucketName = new CloudFormationIntrinsicToken({ Ref: 'MyBucket' });
+        const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({ theBucket: bucketName }));
+        const resolved = resolve(CloudFormationJSON.stringify({ theBucket: bucketName }));
 
         // THEN
         const context = {MyBucket: 'TheName'};
@@ -90,7 +90,7 @@ export = {
         const token = new FnConcat('Hello', 'This\nIs', 'Very "cool"');
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({
+        const resolved = resolve(CloudFormationJSON.stringify({
             literal: 'I can also "contain" quotes',
             token
         }));
@@ -104,11 +104,11 @@ export = {
 
     'Tokens in Tokens are handled correctly'(test: Test) {
         // GIVEN
-        const bucketName = new CloudFormationIntrinsicToken({ Ref: 'MyBucket' });
+        const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
         const combinedName = new FnConcat('The bucket name is ', bucketName);
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({ theBucket: combinedName }));
+        const resolved = resolve(CloudFormationJSON.stringify({ theBucket: combinedName }));
 
         // THEN
         const context = {MyBucket: 'TheName'};
@@ -122,7 +122,7 @@ export = {
         const fidoSays = new Token(() => 'woof');
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({
+        const resolved = resolve(CloudFormationJSON.stringify({
             information: `Did you know that Fido says: ${fidoSays}`
         }));
 
@@ -134,10 +134,10 @@ export = {
 
     'Doubly nested intrinsics evaluate correctly in JSON context'(test: Test) {
         // WHEN
-        const fidoSays = new CloudFormationIntrinsicToken(() => ({ Ref: 'Something' }));
+        const fidoSays = new CloudFormationToken(() => ({ Ref: 'Something' }));
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({
+        const resolved = resolve(CloudFormationJSON.stringify({
             information: `Did you know that Fido says: ${fidoSays}`
         }));
 
@@ -153,7 +153,7 @@ export = {
         const fidoSays = new Token(() => '"woof"');
 
         // WHEN
-        const resolved = resolve(TokenJSON.stringify({
+        const resolved = resolve(CloudFormationJSON.stringify({
             information: `Did you know that Fido says: ${fidoSays}`
         }));
 

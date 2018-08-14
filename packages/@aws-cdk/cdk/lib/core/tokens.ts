@@ -1,6 +1,4 @@
 import { Construct } from "./construct";
-import { combineStringFragments, IProvisioningEngine, isIntrinsic, markAsIntrinsic } from "./engine";
-import { resolveMarkerSpans, splitOnMarkers } from './util';
 
 /**
  * If objects has a function property by this name, they will be considered tokens, and this
@@ -9,13 +7,40 @@ import { resolveMarkerSpans, splitOnMarkers } from './util';
 export const RESOLVE_METHOD = 'resolve';
 
 /**
+ * Properties for Token customization
+ */
+export interface TokenProps {
+    /**
+     * A human-readable representation hint for this Token
+     *
+     * stringRepresentationHint is used in the placeholder string of stringified
+     * Tokens, so that if humans look at the string its purpose makes sense to
+     * them. Must contain only alphanumeric and simple separator characters
+     * (_.:-).
+     *
+     * @default No string representation
+     */
+    stringRepresentationHint?: string;
+
+    /**
+     * Function used to concatenate strings and Token results together
+     *
+     * @default No joining
+     */
+    joiner?: ITokenJoiner;
+}
+
+/**
  * Represents a lazy-evaluated value.
  *
  * Can be used to delay evaluation of a certain value in case, for example,
  * that it requires some context or late-bound data.
  */
 export class Token {
+    public readonly joiner?: ITokenJoiner;
+
     private tokenKey?: string;
+    private readonly stringRepresentationHint?: string;
 
     /**
      * Creates a token that resolves to `value`.
@@ -23,16 +48,12 @@ export class Token {
      * If value is a function, the function is evaluated upon resolution and
      * the value it returns will be used as the token's value.
      *
-     * stringRepresentation is used in the placeholder string of stringified
-     * Tokens, so that if humans look at the string its purpose makes sense to
-     * them. Must contain only alphanumeric and simple separator characters
-     * (_.:-).
-     *
      * @param valueOrFunction What this token will evaluate to, literal or function.
-     * @param stringRepresentation A human-readable string describing the token's value.
      *
      */
-    constructor(private readonly valueOrFunction?: any, public readonly stringRepresentation?: string) {
+    constructor(private readonly valueOrFunction?: any, props: TokenProps = {}) {
+        this.stringRepresentationHint = props && props.stringRepresentationHint;
+        this.joiner = props && props.joiner;
     }
 
     /**
@@ -67,7 +88,7 @@ export class Token {
         }
 
         if (this.tokenKey === undefined) {
-            this.tokenKey = TOKEN_STRING_MAP.register(this);
+            this.tokenKey = TOKEN_STRING_MAP.register(this, this.stringRepresentationHint);
         }
         return this.tokenKey;
     }
@@ -80,22 +101,6 @@ export class Token {
      */
     public toJSON(): any {
         throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use TokenJSON.stringify() instead.');
-    }
-}
-
-/**
- * Class that tags the Token's return value as an Intrinsic.
- *
- */
-export abstract class IntrinsicToken extends Token {
-    protected abstract readonly engine: IProvisioningEngine;
-
-    public resolve(): any {
-        // Get the inner value, and deep-resolve it to resolve further Tokens.
-        // Necessary to do this now since an intrinsic will never be resolved
-        // any deeper.
-        const resolved = resolve(super.resolve());
-        return markAsIntrinsic(resolved, this.engine);
     }
 }
 
@@ -159,14 +164,6 @@ export function resolve(obj: any, prefix?: string[]): any {
     //
 
     if (typeof(obj) !== 'object' || obj instanceof Date) {
-        return obj;
-    }
-
-    //
-    // intrinsics - return intrinsic without further resolution
-    //
-
-    if (isIntrinsic(obj)) {
         return obj;
     }
 
@@ -245,9 +242,9 @@ class TokenStringMap {
      * hint. This may be used to produce aesthetically pleasing and
      * recognizable token representations for humans.
      */
-    public register(token: Token): string {
+    public register(token: Token, representationHint?: string): string {
         const counter = Object.keys(this.tokenMap).length;
-        const representation = token.stringRepresentation || `TOKEN`;
+        const representation = representationHint || `TOKEN`;
 
         const key = `${representation}.${counter}`;
         if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
@@ -262,21 +259,15 @@ class TokenStringMap {
      * Replace any Token markers in this string with their resolved values
      */
     public resolveMarkers(s: string): any {
-        const unresolved = splitOnMarkers(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
-        const fragments = resolveMarkerSpans(unresolved, (id) => {
-            const resolved = resolve(this.lookupToken(id));
-
-            // Convert to string unless intrinsic
-            return isIntrinsic(resolved) ? resolved : `${resolved}`;
-        });
-
-        return combineStringFragments(fragments);
+        const str = new TokenString(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+        const fragments = str.split(this.lookupToken.bind(this));
+        return fragments.join();
     }
 
     /**
      * Find a Token by key
      */
-    private lookupToken(key: string): Token {
+    public lookupToken(key: string): Token {
         if (!(key in this.tokenMap)) {
             throw new Error(`Unrecognized token key: ${key}`);
         }
@@ -293,3 +284,123 @@ const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
  * Singleton instance of the token string map
  */
 const TOKEN_STRING_MAP = new TokenStringMap();
+
+/**
+ * Interface that provisioning engines implement
+ */
+export interface ITokenJoiner {
+    /**
+     * The name of the joiner.
+     *
+     * Must be unique per joiner, because it will be used.
+     */
+    joinerName: string;
+
+    /**
+     * Return the language intrinsic that will combine the strings in the given engine
+     */
+    joinStringFragments(fragments: any[]): any;
+}
+
+/**
+ * A string with markers in it that can be resolved to external values
+ */
+class TokenString {
+    constructor(
+        private readonly str: string,
+        private readonly beginMarker: string,
+        private readonly idPattern: string,
+        private readonly endMarker: string) {
+    }
+
+    /**
+     * Split string on markers, substituting markers with Tokens
+     */
+    public split(lookup: (id: string) => Token): TokenStringFragments {
+        const re = new RegExp(`${regexQuote(this.beginMarker)}(${this.idPattern})${regexQuote(this.endMarker)}`, 'g');
+        const ret = new TokenStringFragments();
+
+        let rest = 0;
+        let m = re.exec(this.str);
+        while (m) {
+            if (m.index > rest) {
+                ret.addString(this.str.substring(rest, m.index));
+            }
+
+            ret.addToken(lookup(m[1]));
+
+            rest = re.lastIndex;
+            m = re.exec(this.str);
+        }
+
+        if (rest < this.str.length) {
+            ret.addString(this.str.substring(rest));
+        }
+
+        return ret;
+    }
+}
+
+/**
+ * Result of the split of a string with Tokens
+ *
+ * Either a literal part of the string, or an unresolved Token.
+ */
+type Fragment = { type: 'string'; str: string } | { type: 'token'; token: Token };
+
+/**
+ * Fragments of a string with markers
+ */
+class TokenStringFragments {
+    private readonly fragments = new Array<Fragment>();
+
+    public values(): any[] {
+        return this.fragments.map(f => f.type === 'token' ? resolve(f.token) : f.str);
+    }
+
+    public addString(str: string) {
+        this.fragments.push({ type: 'string', str });
+    }
+
+    public addToken(token: Token) {
+        this.fragments.push({ type: 'token', token });
+    }
+
+    /**
+     * Combine resolved fragments using the appropriate engine.
+     *
+     * Resolves the result.
+     */
+    public join(): any {
+        if (this.fragments.length === 0) { return ''; }
+        if (this.fragments.length === 1) { return this.values()[0]; }
+
+        const joiners = this.fragments.map(f => f.type === 'token' ? f.token.joiner : undefined).filter(x => x !== undefined) as ITokenJoiner[];
+        // Two reasons to look at joiner names here instead of object identity:
+        // 1) So we can display a better error message
+        // 2) If the library gets loaded multiple times, the same engine will be instantiated
+        // multiple times and so the objects will compare as different, even though they all
+        // do the same, and any one of them would be fine.
+        const joinerNames = Array.from(new Set<string>(joiners.map(e => e.joinerName)));
+
+        if (joiners.length === 0) {
+            // No joiners. This can happen if we only have non language-specific Tokens. Stay
+            // in literal-land, convert all to string and combine.
+            return this.values().map(x => `${x}`).join('');
+        }
+
+        if (joinerNames.length > 1) {
+            throw new Error(`Combining different joiners in one string fragment: ${joinerNames.join(', ')}`);
+        }
+
+        // This might return another Token, so resolve again
+        return resolve(joiners[0].joinStringFragments(this.values()));
+    }
+}
+
+/**
+ * Quote a string for use in a regex
+ */
+function regexQuote(s: string) {
+    return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}

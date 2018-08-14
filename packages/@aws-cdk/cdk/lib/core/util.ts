@@ -1,4 +1,3 @@
-import { FragmentSource, intrinsicEngine, isIntrinsic, StringFragment } from './engine';
 import { resolve } from './tokens';
 
 /**
@@ -48,70 +47,4 @@ export function ignoreEmpty(o: any): any {
     }
 
     return o;
-}
-
-/**
- * Result of the split of a string with Tokens
- *
- * Either a literal part of the string, or an unresolved Token.
- */
-export type MarkerSpan = { type: 'string'; value: string } | { type: 'marker'; id: string };
-
-/**
- * Split a string up into String Spans and Marker Spans
- */
-export function splitOnMarkers(s: string, beginMarker: string, idPattern: string, endMarker: string): MarkerSpan[] {
-    // tslint:disable-next-line:max-line-length
-    const re = new RegExp(`${regexQuote(beginMarker)}(${idPattern})${regexQuote(endMarker)}`, 'g');
-    const ret = new Array<MarkerSpan>();
-
-    let rest = 0;
-    let m = re.exec(s);
-    while (m) {
-        if (m.index > rest) {
-            ret.push({ type: 'string', value: s.substring(rest, m.index) });
-        }
-
-        ret.push({ type: 'marker', id: m[1] });
-
-        rest = re.lastIndex;
-        m = re.exec(s);
-    }
-
-    if (rest < s.length) {
-        ret.push({ type: 'string', value: s.substring(rest) });
-    }
-
-    if (ret.length === 0) {
-        ret.push({ type: 'string', value: '' });
-    }
-
-    return ret;
-}
-
-/**
- * Resolves marker spans to string fragments
- */
-export function resolveMarkerSpans(spans: MarkerSpan[], lookup: (id: string) => any): StringFragment[] {
-    return spans.map(span => {
-
-        switch (span.type) {
-            case 'string':
-                return { source: FragmentSource.Literal, value: span.value };
-            case 'marker':
-                const value = lookup(span.id);
-                if (isIntrinsic(value)) {
-                    return { source: FragmentSource.Intrinsic, value, intrinsicEngine: intrinsicEngine(value) };
-                } else {
-                    return { source: FragmentSource.Literal, value: `${value}` };
-                }
-        }
-    });
-}
-
-/**
- * Quote a string for use in a regex
- */
-function regexQuote(s: string) {
-    return s.replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
 }

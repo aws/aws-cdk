@@ -1,8 +1,8 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
+import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
-import { CloudFormationIntrinsicToken } from './engine';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
 import { IDependable, Referenceable, StackElement } from './stack';
 
@@ -83,7 +83,7 @@ export class Resource extends Referenceable {
      * @param attributeName The name of the attribute.
      */
     public getAtt(attributeName: string): Token {
-        return new CloudFormationIntrinsicToken(() => ({ 'Fn::GetAtt': [this.logicalId, attributeName] }), `${this.logicalId}.${attributeName}`);
+        return new CloudFormationToken(() => ({ 'Fn::GetAtt': [this.logicalId, attributeName] }), `${this.logicalId}.${attributeName}`);
     }
 
     /**

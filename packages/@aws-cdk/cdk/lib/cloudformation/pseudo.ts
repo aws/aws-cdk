@@ -1,6 +1,6 @@
-import { CloudFormationIntrinsicToken } from './engine';
+import { CloudFormationToken } from './cloudformation-token';
 
-export class PseudoParameter extends CloudFormationIntrinsicToken {
+export class PseudoParameter extends CloudFormationToken {
     constructor(name: string) {
         super(() => ({ Ref: name }), name);
     }

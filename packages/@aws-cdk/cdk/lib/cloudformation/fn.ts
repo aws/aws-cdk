@@ -1,11 +1,11 @@
-import { CloudFormationIntrinsicToken } from './engine';
+import { CloudFormationToken } from './cloudformation-token';
 // tslint:disable:max-line-length
 
 /**
  * CloudFormation intrinsic functions.
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
-export class Fn extends CloudFormationIntrinsicToken {
+export class Fn extends CloudFormationToken {
     constructor(name: string, value: any) {
         super(() => ({ [name]: value }));
     }
