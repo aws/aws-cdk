@@ -132,6 +132,17 @@ const uniqueTests = {
         test.equal(theId1, theId2);
 
         test.done();
+    },
+
+    'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
+        const scheme = new HashedAddressingScheme();
+        const val1 = scheme.allocateAddress([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
+        const val2 = scheme.allocateAddress([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
+
+        // same human part, different hash
+        test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
+        test.deepEqual(val2, 'FoobarB00mHelloWorldHorrayHorray744334FD');
+        test.done();
     }
 };
 
