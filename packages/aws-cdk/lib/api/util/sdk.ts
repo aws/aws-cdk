@@ -23,13 +23,12 @@ export class SDK {
     private defaultAccountId?: string = undefined;
     private readonly userAgent: string;
     private readonly accountCache = new AccountAccessKeyCache();
-    private readonly defaultCredentialProvider: AWS.CredentialProviderChain;
+    private defaultCredentialProvider?: AWS.CredentialProviderChain;
 
     constructor(private readonly profile: string | undefined) {
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.userAgent = `${pkg.name}/${pkg.version}`;
-        this.defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
@@ -64,8 +63,8 @@ export class SDK {
         });
     }
 
-    public defaultRegion(): string | undefined {
-        return getCLICompatibleDefaultRegion(this.profile);
+    public async defaultRegion(): Promise<string | undefined> {
+        return await getCLICompatibleDefaultRegion(this.profile);
     }
 
     public async defaultAccount(): Promise<string | undefined> {
@@ -79,6 +78,9 @@ export class SDK {
     private async lookupDefaultAccount() {
         try {
             debug('Resolving default credentials');
+            if (!this.defaultCredentialProvider) {
+                this.defaultCredentialProvider = await makeCLICompatibleCredentialProvider(this.profile);
+            }
             const creds = await this.defaultCredentialProvider.resolvePromise();
             const accessKeyId = creds.accessKeyId;
             if (!accessKeyId) {
@@ -148,7 +150,7 @@ export class SDK {
  * file location is not given (SDK expects explicit environment variable with name).
  * - AWS_DEFAULT_PROFILE is also inspected for profile name (not just AWS_PROFILE).
  */
-function makeCLICompatibleCredentialProvider(profile: string | undefined) {
+async function makeCLICompatibleCredentialProvider(profile: string | undefined) {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Need to construct filename ourselves, without appropriate environment variables
@@ -158,7 +160,7 @@ function makeCLICompatibleCredentialProvider(profile: string | undefined) {
     return new AWS.CredentialProviderChain([
         () => new AWS.EnvironmentCredentials('AWS'),
         () => new AWS.EnvironmentCredentials('AMAZON'),
-        ...(fs.pathExistsSync(filename) ? [() => new AWS.SharedIniFileCredentials({ profile, filename })] : []),
+        ...(await fs.pathExists(filename) ? [() => new AWS.SharedIniFileCredentials({ profile, filename })] : []),
         () => {
             // Calling private API
             if ((AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials()) {
@@ -182,7 +184,7 @@ function makeCLICompatibleCredentialProvider(profile: string | undefined) {
  * - AWS_DEFAULT_PROFILE and AWS_DEFAULT_REGION are also used as environment
  *   variables to be used to determine the region.
  */
-function getCLICompatibleDefaultRegion(profile: string | undefined): string | undefined {
+async function getCLICompatibleDefaultRegion(profile: string | undefined): Promise<string | undefined> {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Defaults inside constructor
@@ -196,7 +198,7 @@ function getCLICompatibleDefaultRegion(profile: string | undefined): string | un
 
     while (!region && toCheck.length > 0) {
         const configFile = new SharedIniFile(toCheck.shift());
-        const section = configFile.getProfile(profile);
+        const section = await configFile.getProfile(profile);
         region = section && section.region;
     }
 
