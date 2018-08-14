@@ -35,3 +35,26 @@ local directory `my-lambda-handler` to it:
 When deploying a stack that contains this code, the directory will be zip
 archived and then uploaded to an S3 bucket, then the exact location of the S3
 objects will be passed when the stack is deployed.
+
+### Lambda in CodePipeline
+
+This module also contains an Action that allows you to invoke a Lambda function from CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import lambda = require('@aws-cdk/aws-lambda');
+
+const lambdaFun = new lambda.Function(this, 'MyLambda', {
+    // some lambda parameters here...
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
+new lambda.PipelineInvokeAction(this, 'Lambda', {
+    stage: lambdaStage,
+    lambda: lambdaFun,
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
+on how to write a Lambda function invoked from CodePipeline.

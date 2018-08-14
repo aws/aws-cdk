@@ -1,3 +1,4 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -5,7 +6,6 @@ import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
 import { cloudformation } from './codepipeline.generated';
 import { Stage } from './stage';
-import validation = require('./validation');
 
 /**
  * The ARN of a pipeline
@@ -93,7 +93,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         super(parent, name);
         props = props || {};
 
-        validation.validateName('Pipeline', props.pipelineName);
+        actions.validateName('Pipeline', props.pipelineName);
 
         // If a bucket has been provided, use it - otherwise, create a bucket.
         let propsBucket = props.artifactBucket;
@@ -235,7 +235,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         return util.flatMap(this.stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
             return util.flatMap(stage.actions, (action, _) =>
-                validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
+                actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
             );
         });
     }

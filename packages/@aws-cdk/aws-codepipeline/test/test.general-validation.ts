@@ -1,10 +1,10 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AmazonS3Source } from '../lib/actions';
 import { Pipeline } from '../lib/pipeline';
+import { AmazonS3Source } from '../lib/s3-source-action';
 import { Stage } from '../lib/stage';
-import { validateName } from '../lib/validation';
 
 interface NameValidationTestCase {
     name: string;
@@ -23,7 +23,7 @@ export = {
 
         cases.forEach(testCase => {
             const name = testCase.name;
-            const validationBlock = () => { validateName('test thing', name); };
+            const validationBlock = () => { actions.validateName('test thing', name); };
             if (testCase.shouldPassValidation) {
                 test.doesNotThrow(validationBlock, Error, `${name} failed validation but ${testCase.explanation}`);
             } else {
@@ -61,12 +61,14 @@ export = {
             const secondStage = new Stage(pipeline, 'SecondStage');
 
             const bucket = new s3.Bucket(stack, 'PipelineBucket');
-            new AmazonS3Source(firstStage, 'FirstAction', {
+            new AmazonS3Source(stack, 'FirstAction', {
+                stage: firstStage,
                 artifactName: 'FirstArtifact',
                 bucket,
                 bucketKey: 'key',
             });
-            new AmazonS3Source(secondStage, 'SecondAction', {
+            new AmazonS3Source(stack, 'SecondAction', {
+                stage: secondStage,
                 artifactName: 'SecondAction',
                 bucket,
                 bucketKey: 'key',
