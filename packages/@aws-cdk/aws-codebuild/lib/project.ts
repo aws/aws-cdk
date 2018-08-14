@@ -266,7 +266,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.projectArn,
             roleArn: this.eventsRole.roleArn,
         };

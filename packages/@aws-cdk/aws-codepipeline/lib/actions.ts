@@ -152,7 +152,7 @@ export abstract class Action extends cdk.Construct {
      */
     public render(): cloudformation.PipelineResource.ActionDeclarationProperty {
         return {
-            name: this.name,
+            name: this.id,
             inputArtifacts: this.inputArtifacts.map(a => ({ name: a.name })),
             actionTypeId: {
                 category: this.category.toString(),
@@ -174,8 +174,8 @@ export abstract class Action extends cdk.Construct {
             source: [ 'aws.codepipeline' ],
             resources: [ this.stage.pipeline.pipelineArn ],
             detail: {
-                stage: [ this.stage.name ],
-                action: [ this.name ],
+                stage: [ this.stage.id ],
+                action: [ this.id ],
             },
         });
         return rule;

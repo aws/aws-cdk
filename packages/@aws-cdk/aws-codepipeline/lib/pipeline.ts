@@ -164,7 +164,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.pipelineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -224,8 +224,8 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private appendStage(stage: Stage) {
-        if (this.stages.find(x => x.name === stage.name)) {
-            throw new Error(`A stage with name '${stage.name}' already exists`);
+        if (this.stages.find(x => x.id === stage.id)) {
+            throw new Error(`A stage with name '${stage.id}' already exists`);
         }
 
         this.stages.push(stage);
@@ -235,7 +235,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         return util.flatMap(this.stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
             return util.flatMap(stage.actions, (action, _) =>
-                validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.name, stage.name)
+                validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
             );
         });
     }

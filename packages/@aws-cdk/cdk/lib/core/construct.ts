@@ -13,13 +13,9 @@ export class Construct {
     public readonly parent?: Construct;
 
     /**
-     * @deprecated use `id`
-     */
-    public readonly name: string;
-
-    /**
-     * The subtree-local id of the construct.
-     * This id is unique within the subtree. To obtain a tree-unique id, use `uniqueId`.
+     * The local id of the construct.
+     * This id is unique amongst its siblings.
+     * To obtain a tree-global unique id for this construct, use `uniqueId`.
      */
     public readonly id: string;
 
@@ -30,7 +26,7 @@ export class Construct {
     public readonly path: string;
 
     /**
-     * A tree-unique alpha-numeric identifier for this construct.
+     * A tree-global unique alphanumeric identifier for this construct.
      * Includes all components of the tree.
      */
     public readonly uniqueId: string;
@@ -56,7 +52,6 @@ export class Construct {
      */
     constructor(parent: Construct, id: string) {
         this.id = id;
-        this.name = id; // legacy
         this.parent = parent;
 
         // We say that parent is required, but some root constructs bypass the type checks and
@@ -75,7 +70,7 @@ export class Construct {
 
         // Validate the name we ended up with
         if (this.id !== '') {
-            this._validateName(this.id);
+            this._validateId(this.id);
         }
 
         const components = this.rootPath().map(c => c.id);
@@ -294,12 +289,12 @@ export class Construct {
     }
 
     /**
-     * Validate that the name of the construct is a legal identifier.
-     * Construct names can be any characters besides the path separator.
+     * Validate that the id of the construct legal.
+     * Construct IDs can be any characters besides the path separator.
      */
-    protected _validateName(name: string) {
-        if (name.indexOf(PATH_SEP) !== -1) {
-            throw new Error(`Construct names cannot include '${PATH_SEP}': ${name}`);
+    protected _validateId(id: string) {
+        if (id.indexOf(PATH_SEP) !== -1) {
+            throw new Error(`Construct names cannot include '${PATH_SEP}': ${id}`);
         }
     }
 

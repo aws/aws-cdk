@@ -67,6 +67,12 @@ export = {
         test.done();
     },
 
+    'cannot calculate uniqueId if the construct path is ["Default"]'(test: Test) {
+        const root = new Root();
+        test.throws(() => new Construct(root, 'Default'), /Unable to calculate a unique id for an empty set of components/);
+        test.done();
+    },
+
     'construct.getChildren() returns an array of all children'(test: Test) {
         const root = new Root();
         const child = new Construct(root, 'Child1');
@@ -424,7 +430,7 @@ class ConstructWithRequired extends Construct {
  * Construct that *must* be named "Spartacus"
  */
 class IAmSpartacusConstruct extends Construct {
-    protected _validateName(name: string) {
+    protected _validateId(name: string) {
         if (name !== "Spartacus") {
             throw new Error("Construct name must be 'Spartacus'");
         }

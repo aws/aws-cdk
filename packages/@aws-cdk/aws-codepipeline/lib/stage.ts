@@ -46,7 +46,7 @@ export class Stage extends cdk.Construct {
 
     public render(): cloudformation.PipelineResource.StageDeclarationProperty {
         return {
-            name: this.name,
+            name: this.id,
             actions: this._actions.map(action => action.render())
         };
     }
@@ -59,7 +59,7 @@ export class Stage extends cdk.Construct {
             source: [ 'aws.codepipeline' ],
             resources: [ this.pipeline.pipelineArn ],
             detail: {
-                stage: [ this.name ],
+                stage: [ this.id ],
             },
         });
         return rule;
@@ -84,7 +84,7 @@ export class Stage extends cdk.Construct {
 
     private validateHasActions(): string[] {
         if (this._actions.length === 0) {
-            return [`Stage '${this.name}' must have at least one action`];
+            return [`Stage '${this.id}' must have at least one action`];
         }
         return [];
     }
