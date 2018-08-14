@@ -729,7 +729,7 @@ async function initCommandLine() {
      */
     async function populateDefaultEnvironmentIfNeeded(context: any) {
         if (!(cxapi.DEFAULT_REGION_CONTEXT_KEY in context)) {
-            context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = aws.defaultRegion();
+            context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = await aws.defaultRegion();
             debug(`Setting "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_REGION_CONTEXT_KEY]);
         }
 
