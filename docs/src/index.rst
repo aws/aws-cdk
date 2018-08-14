@@ -31,7 +31,7 @@ cloud components called :doc:`constructs`, which are composed together into
     the code examples in this guide are in TypeScript.
 
     To aid you in porting a TypeScript example to a supported programming language,
-    take a look at the example code for your language in the reference section for the service.
+    take a look at the example code for your language in the :doc:`Reference section <reference>`.
 
 The :ref:`AWS CDK Toolkit <toolkit>` is a command-line tool for interacting with CDK
 apps. It allows developers to synthesize artifacts such as AWS CloudFormation
