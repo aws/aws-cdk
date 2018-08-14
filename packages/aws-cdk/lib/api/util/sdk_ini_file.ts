@@ -6,6 +6,7 @@
  */
 
 import AWS = require('aws-sdk');
+import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 
@@ -25,8 +26,8 @@ export class SharedIniFile {
     this.filename = options.filename || this.getDefaultFilepath();
   }
 
-  public getProfile(profile: string) {
-    this.ensureFileLoaded();
+  public async getProfile(profile: string) {
+    await this.ensureFileLoaded();
 
     const profileIndex = profile !== (AWS as any).util.defaultProfile && this.isConfig ?
       'profile ' + profile : profile;
@@ -42,11 +43,11 @@ export class SharedIniFile {
     );
   }
 
-  private ensureFileLoaded() {
+  private async ensureFileLoaded() {
     if (!this.parsedContents) {
-      this.parsedContents = (AWS as any).util.ini.parse(
-        (AWS as any).util.readFileSync(this.filename)
-      );
+      this.parsedContents = await fs.pathExists(this.filename)
+                          ? (AWS as any).util.ini.parse(await fs.readFile(this.filename))
+                          : {};
     }
   }
 }
