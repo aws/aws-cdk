@@ -35,7 +35,7 @@ export class Token {
  * Returns true if obj is a token (i.e. has the resolve() method)
  * @param obj The object to test.
  */
-export function istoken(obj: any) {
+export function istoken(obj: any): obj is Token {
     return typeof(obj[RESOLVE_METHOD]) === 'function';
 }
 
