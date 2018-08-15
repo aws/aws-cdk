@@ -4,10 +4,10 @@ import { Token  } from "../core/tokens";
  * Base class for CloudFormation built-ins
  */
 export class CloudFormationToken extends Token {
-    constructor(valueOrFunction: any, stringRepresentationHint?: string) {
+    constructor(valueOrFunction: any, displayName?: string) {
         super(valueOrFunction, {
             joiner: CLOUDFORMATION_JOINER,
-            stringRepresentationHint
+            displayName
         });
     }
 }
@@ -18,9 +18,9 @@ import { FnConcat } from "./fn";
  * The default intrinsics Token engine for CloudFormation
  */
 export const CLOUDFORMATION_JOINER = {
-    joinerName: 'CloudFormation',
+    id: 'CloudFormation',
 
-    joinStringFragments(fragments: any[]): any {
+    join(fragments: any[]): any {
         return new FnConcat(...fragments.map(x => isIntrinsic(x) ? x : `${x}`));
     }
 };

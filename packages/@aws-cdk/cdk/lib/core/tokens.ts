@@ -11,21 +11,30 @@ export const RESOLVE_METHOD = 'resolve';
  */
 export interface TokenProps {
     /**
-     * A human-readable representation hint for this Token
+     * A human-readable display hint for this Token
      *
-     * stringRepresentationHint is used in the placeholder string of stringified
-     * Tokens, so that if humans look at the string its purpose makes sense to
-     * them. Must contain only alphanumeric and simple separator characters
-     * (_.:-).
+     * This is used to represent the Token when it's embedded into a string; it
+     * will look something like this:
      *
-     * @default No string representation
+     *      "embedded in a larger string is ${Token[DISPLAY_NAME.123]}"
+     *
+     * This value is used as a hint to humans what the meaning of the Token is,
+     * and does not have any effect on the evaluation.
+     *
+     * Must contain only alphanumeric and simple separator characters (_.:-).
+     *
+     * @default TOKEN
      */
-    stringRepresentationHint?: string;
+    displayName?: string;
 
     /**
-     * Function used to concatenate strings and Token results together
+     * Function used to concatenate strings and Token results together.
      *
-     * @default No joining
+     * After resolve() is called to restore Token values that have been
+     * encoded into string literals, the fragments will be combined using
+     * this combinator.
+     *
+     * @default Literal string joining
      */
     joiner?: ITokenJoiner;
 }
@@ -40,7 +49,7 @@ export class Token {
     public readonly joiner?: ITokenJoiner;
 
     private tokenKey?: string;
-    private readonly stringRepresentationHint?: string;
+    private readonly displayName?: string;
 
     /**
      * Creates a token that resolves to `value`.
@@ -52,7 +61,7 @@ export class Token {
      *
      */
     constructor(private readonly valueOrFunction?: any, props: TokenProps = {}) {
-        this.stringRepresentationHint = props && props.stringRepresentationHint;
+        this.displayName = props && props.displayName;
         this.joiner = props && props.joiner;
     }
 
@@ -88,7 +97,7 @@ export class Token {
         }
 
         if (this.tokenKey === undefined) {
-            this.tokenKey = TOKEN_STRING_MAP.register(this, this.stringRepresentationHint);
+            this.tokenKey = TOKEN_STRING_MAP.register(this, this.displayName);
         }
         return this.tokenKey;
     }
@@ -100,7 +109,7 @@ export class Token {
      * it's not possible to do this properly, so we just throw an error here.
      */
     public toJSON(): any {
-        throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use TokenJSON.stringify() instead.');
+        throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use CloudFormationJSON.stringify() instead.');
     }
 }
 
@@ -286,20 +295,21 @@ const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 const TOKEN_STRING_MAP = new TokenStringMap();
 
 /**
- * Interface that provisioning engines implement
+ * Interface that Token joiners implement
  */
 export interface ITokenJoiner {
     /**
      * The name of the joiner.
      *
-     * Must be unique per joiner, because it will be used.
+     * Must be unique per joiner: this value will be used to assert that there
+     * is exactly only type of joiner in a join operation.
      */
-    joinerName: string;
+    id: string;
 
     /**
      * Return the language intrinsic that will combine the strings in the given engine
      */
-    joinStringFragments(fragments: any[]): any;
+    join(fragments: any[]): any;
 }
 
 /**
@@ -381,7 +391,7 @@ class TokenStringFragments {
         // 2) If the library gets loaded multiple times, the same engine will be instantiated
         // multiple times and so the objects will compare as different, even though they all
         // do the same, and any one of them would be fine.
-        const joinerNames = Array.from(new Set<string>(joiners.map(e => e.joinerName)));
+        const joinerNames = Array.from(new Set<string>(joiners.map(e => e.id)));
 
         if (joiners.length === 0) {
             // No joiners. This can happen if we only have non language-specific Tokens. Stay
@@ -394,7 +404,7 @@ class TokenStringFragments {
         }
 
         // This might return another Token, so resolve again
-        return resolve(joiners[0].joinStringFragments(this.values()));
+        return resolve(joiners[0].join(this.values()));
     }
 }
 

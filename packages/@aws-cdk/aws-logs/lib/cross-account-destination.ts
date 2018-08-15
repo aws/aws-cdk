@@ -64,7 +64,8 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
 
         this.resource = new cloudformation.DestinationResource(this, 'Resource', {
             destinationName,
-            destinationPolicy: this.policyDocument,
+            // Must be stringified policy
+            destinationPolicy: new cdk.Token(() => this.stringifiedPolicyDocument()),
             roleArn: props.role.roleArn,
             targetArn: props.targetArn
         });
@@ -88,6 +89,13 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
         // Combination of stack name and LogicalID, which are guaranteed to be unique.
         const stack = cdk.Stack.find(this);
         return stack.name + '-' + this.resource.logicalId;
+    }
+
+    /**
+     * Return a stringified JSON version of the PolicyDocument
+     */
+    private stringifiedPolicyDocument() {
+        return this.policyDocument.isEmpty ? '' : cdk.CloudFormationJSON.stringify(cdk.resolve(this.policyDocument));
     }
 }
 

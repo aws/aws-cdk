@@ -6,15 +6,26 @@ import { CloudFormationToken, isIntrinsic } from "./cloudformation-token";
  */
 export class CloudFormationJSON {
     /**
-     * Turn an arbitrary structure potentially containing Tokens into JSON.
+     * Turn an arbitrary structure potentially containing Tokens into a JSON string.
+     *
+     * Returns a Token which will evaluate to CloudFormation expression that
+     * will be evaluated by CloudFormation to the JSON representation of the
+     * input structure.
+     *
+     * All Tokens substituted in this way must return strings, or the evaluation
+     * in CloudFormation will fail.
      */
-    public static stringify(obj: any): any {
+    public static stringify(obj: any): Token {
         return new Token(() => {
-            // Resolve inner value so that if they evaluate to literals, we maintain the type.
+            // Resolve inner value first so that if they evaluate to literals, we
+            // maintain the type (and discard 'undefined's).
             //
-            // Then replace intrinsics with a special sublcass of Token that overrides toJSON() to
-            // and deep-escapes the intrinsic, so if we resolve() the strings again it evaluates
-            // to the right string.
+            // Then replace intrinsics with a special subclass of Token that
+            // overrides toJSON() to the marker string, so if we resolve() the
+            // strings again it evaluates to the right string. It also
+            // deep-escapes any strings inside the intrinsic, so that if literal
+            // strings are used in {Fn::Join} or something, they will end up
+            // escaped in the final JSON output.
             const resolved = resolve(obj);
 
             // We can just directly return this value, since resolve() will be called
@@ -23,7 +34,7 @@ export class CloudFormationJSON {
         });
 
         /**
-         * Recurse into a structure, replace all intrinsics with
+         * Recurse into a structure, replace all intrinsics with IntrinsicTokens.
          */
         function deepReplaceIntrinsics(x: any): any {
             if (isIntrinsic(x)) {
@@ -49,6 +60,9 @@ export class CloudFormationJSON {
     }
 }
 
+/**
+ * Token that also stringifies in the toJSON() operation.
+ */
 class IntrinsicToken extends CloudFormationToken {
     /**
      * Special handler that gets called when JSON.stringify() is used.
