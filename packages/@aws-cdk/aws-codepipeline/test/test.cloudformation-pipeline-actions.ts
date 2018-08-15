@@ -311,6 +311,45 @@ export = {
 
     test.done();
   },
+
+  'parameterOverrides are serialized as a string'(test: Test) {
+    // GIVEN
+    const stack = new TestFixture();
+
+    // WHEN
+    new CreateUpdateStack(stack, 'CreateUpdate', {
+      stage: stack.deployStage,
+      stackName: 'MyStack',
+      templatePath: stack.source.artifact.subartifact('template.yaml'),
+      parameterOverrides: {
+        RepoName: stack.repo.repositoryName
+      }
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        { "Name": "Source" /* don't care about the rest */ },
+        {
+          "Name": "Deploy",
+          "Actions": [
+            {
+              "Configuration": {
+                "ParameterOverrides": { "Fn::Join": [ "", [
+                  "{\"RepoName\":\"",
+                  { "Fn::GetAtt": [ "MyVeryImportantRepo11BC3EBD", "Name" ] },
+                  "\"}"
+                ]]}
+              },
+              "Name": "CreateUpdate",
+            },
+          ],
+        }
+      ]
+    }));
+
+    test.done();
+  }
 };
 
 /**
