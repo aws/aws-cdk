@@ -63,6 +63,7 @@ export = {
       changeSetName,
       role: changeSetExecRole,
       templatePath: new ArtifactPath(buildAction.artifact!, 'template.yaml'),
+      templateConfiguration: new ArtifactPath(buildAction.artifact!, 'templateConfig.json')
     });
 
     new ExecuteChangeSet(stack, 'ExecuteChangeSetProd', {
@@ -160,7 +161,8 @@ export = {
                 ]
               },
               "StackName": "BrelandsStack",
-              "TemplatePath": "OutputYo::template.yaml"
+              "TemplatePath": "OutputYo::template.yaml",
+              "TemplateConfiguration": "OutputYo::templateConfig.json"
             },
             "InputArtifacts": [{"Name": "OutputYo"}],
             "Name": "BuildChangeSetProd",
