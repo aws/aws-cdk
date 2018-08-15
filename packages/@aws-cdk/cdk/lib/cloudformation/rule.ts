@@ -1,5 +1,4 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { capitalizePropertyNames } from '../core/util';
 import { FnCondition } from './fn';
 import { Referenceable } from './stack';
@@ -30,7 +29,7 @@ export interface RuleProps {
      * If the rule condition evaluates to false, the rule doesn't take effect.
      * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
      */
-    ruleCondition?: Token;
+    ruleCondition?: FnCondition;
 
     /**
      * Assertions which define the rule.

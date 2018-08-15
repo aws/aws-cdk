@@ -44,7 +44,6 @@ export = {
 
         // value resolves to a "Ref"
         test.deepEqual(resolve(mySecret.value), { Ref: 'MySecretParameterBB81DE58' });
-        test.deepEqual(resolve(mySecret), { Ref: 'MySecretParameterBB81DE58' });
 
         test.done();
     }

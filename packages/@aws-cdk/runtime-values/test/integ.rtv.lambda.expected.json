@@ -78,21 +78,14 @@
                     ":",
                     "parameter",
                     "/",
+                    "/rtv/",
                     {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/rtv/",
-                          {
-                            "Ref": "AWS::StackName"
-                          },
-                          "/",
-                          "com.myorg",
-                          "/",
-                          "MyQueueURL"
-                        ]
-                      ]
-                    }
+                      "Ref": "AWS::StackName"
+                    },
+                    "/",
+                    "com.myorg",
+                    "/",
+                    "MyQueueURL"
                   ]
                 ]
               }
@@ -114,13 +107,6 @@
         "Code": {
           "ZipFile": "exports.handler = function runtimeCode(_event, _context, callback) {\n    return callback();\n}"
         },
-        "Environment": {
-          "Variables": {
-            "RTV_STACK_NAME": {
-              "Ref": "AWS::StackName"
-            }
-          }
-        },
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
@@ -129,6 +115,13 @@
           ]
         },
         "Runtime": "nodejs6.10",
+        "Environment": {
+          "Variables": {
+            "RTV_STACK_NAME": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        },
         "Timeout": 30
       },
       "DependsOn": [

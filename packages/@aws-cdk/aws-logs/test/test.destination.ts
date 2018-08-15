@@ -48,10 +48,9 @@ export = {
 
         // THEN
         expect(stack).to(haveResource('AWS::Logs::Destination', (props: any) => {
-            // tslint:disable-next-line:no-console
             const pol = JSON.parse(props.DestinationPolicy);
 
-            return pol.Statement[0].action[0] === 'logs:TalkToMe';
+            return pol.Statement[0].Action === 'logs:TalkToMe';
         }));
 
         test.done();

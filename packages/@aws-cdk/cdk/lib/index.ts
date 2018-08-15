@@ -2,6 +2,8 @@ export * from './core/construct';
 export * from './core/tokens';
 export * from './core/jsx';
 
+export * from './cloudformation/cloudformation-json';
+export * from './cloudformation/cloudformation-token';
 export * from './cloudformation/condition';
 export * from './cloudformation/fn';
 export * from './cloudformation/include';
@@ -19,7 +21,6 @@ export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
 export * from './cloudformation/arn';
 export * from './cloudformation/secret';
-export * from './cloudformation/token-aware-jsonify';
 
 export * from './app';
 export * from './context';

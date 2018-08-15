@@ -71,16 +71,9 @@ export = {
                                   ":",
                                   "log-group",
                                   ":",
+                                  "/aws/codebuild/",
                                   {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "/aws/codebuild/",
-                                        {
-                                          "Ref": "MyProject39F7B0AE"
-                                        }
-                                      ]
-                                    ]
+                                    "Ref": "MyProject39F7B0AE"
                                   }
                                 ]
                               ]
@@ -111,16 +104,9 @@ export = {
                                         ":",
                                         "log-group",
                                         ":",
+                                        "/aws/codebuild/",
                                         {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "/aws/codebuild/",
-                                              {
-                                                "Ref": "MyProject39F7B0AE"
-                                              }
-                                            ]
-                                          ]
+                                          "Ref": "MyProject39F7B0AE"
                                         }
                                       ]
                                     ]
@@ -252,16 +238,9 @@ export = {
                                   ":",
                                   "log-group",
                                   ":",
+                                  "/aws/codebuild/",
                                   {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "/aws/codebuild/",
-                                        {
-                                          "Ref": "MyProject39F7B0AE"
-                                        }
-                                      ]
-                                    ]
+                                    "Ref": "MyProject39F7B0AE"
                                   }
                                 ]
                               ]
@@ -292,16 +271,9 @@ export = {
                                         ":",
                                         "log-group",
                                         ":",
+                                        "/aws/codebuild/",
                                         {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "/aws/codebuild/",
-                                              {
-                                                "Ref": "MyProject39F7B0AE"
-                                              }
-                                            ]
-                                          ]
+                                          "Ref": "MyProject39F7B0AE"
                                         }
                                       ]
                                     ]
@@ -455,16 +427,9 @@ export = {
                                   ":",
                                   "log-group",
                                   ":",
+                                  "/aws/codebuild/",
                                   {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "/aws/codebuild/",
-                                        {
-                                          "Ref": "MyProject39F7B0AE"
-                                        }
-                                      ]
-                                    ]
+                                    "Ref": "MyProject39F7B0AE"
                                   }
                                 ]
                               ]
@@ -495,16 +460,9 @@ export = {
                                         ":",
                                         "log-group",
                                         ":",
+                                        "/aws/codebuild/",
                                         {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              "/aws/codebuild/",
-                                              {
-                                                "Ref": "MyProject39F7B0AE"
-                                              }
-                                            ]
-                                          ]
+                                          "Ref": "MyProject39F7B0AE"
                                         }
                                       ]
                                     ]

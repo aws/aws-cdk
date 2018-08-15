@@ -26,7 +26,7 @@ export = {
                     [ 'arn:',
                       { Ref: 'AWS::Partition' },
                       ':iam::',
-                      { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
+                      'my', 'account', 'name',
                       ':root' ] ] } },
            Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
