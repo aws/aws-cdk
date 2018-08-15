@@ -87,8 +87,4 @@ export class ArtifactPath {
     get location() {
         return `${this.artifact.name}::${this.fileName}`;
     }
-
-    public resolve() {
-        return this.location;
-    }
 }
