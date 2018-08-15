@@ -1,11 +1,7 @@
-import { StackElement } from "./stack";
-
-// tslint:disable-next-line:no-var-requires
-const md5 = require('../util/md5');
+import { makeUniqueId } from '../util/uniqueid';
+import { StackElement } from './stack';
 
 const PATH_SEP = '/';
-const HASH_LEN = 8;
-const MAX_HUMAN_LEN = 240; // max ID len is 255
 
 /**
  * Interface for classes that implementation logical ID assignment strategies
@@ -55,41 +51,9 @@ export interface IAddressingScheme {
  */
 export class HashedAddressingScheme implements IAddressingScheme {
     public allocateAddress(addressComponents: string[]): string {
-        addressComponents = addressComponents.filter(x => x !== HIDDEN_ID);
-
-        if (addressComponents.length === 0) {
-            throw new Error('Construct has empty Logical ID');
-        }
-
-        // top-level resources will simply use the `name` as-is in order to support
-        // transparent migration of cloudformation templates to the CDK without the
-        // need to rename all resources.
-        if (addressComponents.length === 1) {
-            return addressComponents[0];
-        }
-
-        const hash = pathHash(addressComponents);
-        const human = removeDupes(addressComponents)
-            .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
-            .join('')
-            .slice(0, MAX_HUMAN_LEN);
-
-        return human + hash;
+        return makeUniqueId(addressComponents);
     }
 }
-
-/**
- * Resources with this ID are hidden from humans
- *
- * They do not appear in the human-readable part of the logical ID,
- * but they are included in the hash calculation.
- */
-const HIDDEN_FROM_HUMAN_ID = 'Resource';
-
-/**
- * Resources with this ID are complete hidden from the logical ID calculation.
- */
-const HIDDEN_ID = 'Default';
 
 /**
  * Class that keeps track of the logical IDs that are assigned to resources
@@ -176,15 +140,6 @@ export class LogicalIDs {
     }
 }
 
-/**
- * Take a hash of the given path.
- *
- * The hash is limited in size.
- */
-function pathHash(path: string[]): string {
-    return md5(path.join(PATH_SEP)).slice(0, HASH_LEN).toUpperCase();
-}
-
 const VALID_LOGICALID_REGEX = /^[A-Za-z][A-Za-z0-9]{1,254}$/;
 
 /**
@@ -194,22 +149,4 @@ function validateLogicalId(logicalId: string) {
     if (!VALID_LOGICALID_REGEX.test(logicalId)) {
         throw new Error(`Logical ID must adhere to the regular expression: ${VALID_LOGICALID_REGEX.toString()}, got '${logicalId}'`);
     }
-}
-
-/**
- * Remove duplicate "terms" from the path list
- *
- * If a component name is completely the same as the suffix of
- * the previous component name, we get rid of it.
- */
-function removeDupes(path: string[]): string[] {
-    const ret = new Array<string>();
-
-    for (const component of path) {
-        if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
-            ret.push(component);
-        }
-    }
-
-    return ret;
 }

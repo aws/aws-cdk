@@ -59,6 +59,7 @@
     "pkglint": "^0.8.1"
   },
   "dependencies": {
+    "@aws-cdk/aws-codepipeline-api": "^0.8.1",
     "@aws-cdk/aws-events": "^0.8.1",
     "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/cdk": "^0.8.1"

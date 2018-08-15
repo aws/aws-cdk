@@ -1,9 +1,9 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Action } from './actions';
 import { cloudformation } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
-import validation = require('./validation');
 
 /**
  * A stage in a pipeline. Stages are added to a pipeline by constructing a Stage with
@@ -13,12 +13,14 @@ import validation = require('./validation');
  * // add a stage to a pipeline
  * new Stage(pipeline, 'MyStage');
  */
-export class Stage extends cdk.Construct {
+export class Stage extends cdk.Construct implements actions.IStage {
     /**
      * The Pipeline this stage is a member of
      */
     public readonly pipeline: Pipeline;
-    private readonly _actions = new Array<Action>();
+    public readonly name: string;
+
+    private readonly _actions = new Array<actions.Action>();
 
     /**
      * Append a new stage to the pipeline
@@ -29,14 +31,15 @@ export class Stage extends cdk.Construct {
      */
     constructor(parent: Pipeline, name: string) {
         super(parent, name);
+        this.name = name;
         this.pipeline = parent;
-        validation.validateName('Stage', name);
+        actions.validateName('Stage', name);
     }
 
     /**
      * Get a duplicate of this stage's list of actions.
      */
-    public get actions(): Action[] {
+    public get actions(): actions.Action[] {
         return this._actions.slice();
     }
 
@@ -44,10 +47,14 @@ export class Stage extends cdk.Construct {
         return this.validateHasActions();
     }
 
+    public grantPipelineBucketReadWrite(identity: iam.IPrincipal): void {
+        this.pipeline.artifactBucket.grantReadWrite(identity);
+    }
+
     public render(): cloudformation.PipelineResource.StageDeclarationProperty {
         return {
-            name: this.name,
-            actions: this._actions.map(action => action.render())
+            name: this.id,
+            actions: this._actions.map(action => this.renderAction(action)),
         };
     }
 
@@ -59,32 +66,46 @@ export class Stage extends cdk.Construct {
             source: [ 'aws.codepipeline' ],
             resources: [ this.pipeline.pipelineArn ],
             detail: {
-                stage: [ this.name ],
+                stage: [ this.id ],
             },
         });
         return rule;
     }
 
-    /**
-     * If an action is added as a child, add it to the list of actions.
-     * TODO: This is a hack that should be removed once the CDK has an
-     *       onChildAdded type hook.
-     * @override
-     * @param child
-     * @param name
-     */
-    protected addChild(child: cdk.Construct, name: string) {
-        super.addChild(child, name);
-        if (child instanceof Action) {
-            this._actions.push(child);
-        } else {
-            throw new Error('Only Actions can be added as children to a Stage');
+    public get pipelineArn(): cdk.Arn {
+        return this.pipeline.pipelineArn;
+    }
+
+    public get pipelineRole(): iam.Role {
+        return this.pipeline.role;
+    }
+
+    public _addAction(action: actions.Action): void {
+        // _addAction should be idempotent in case a customer ever calls it directly
+        if (!this._actions.includes(action)) {
+            this._actions.push(action);
         }
+    }
+
+    private renderAction(action: actions.Action): cloudformation.PipelineResource.ActionDeclarationProperty {
+        return {
+            name: action.id,
+            inputArtifacts: action.inputArtifacts.map(a => ({ name: a.name })),
+            actionTypeId: {
+                category: action.category.toString(),
+                version: action.version,
+                owner: action.owner,
+                provider: action.provider,
+            },
+            configuration: action.configuration,
+            outputArtifacts: action.outputArtifacts.map(a => ({ name: a.name })),
+            runOrder: action.runOrder,
+        };
     }
 
     private validateHasActions(): string[] {
         if (this._actions.length === 0) {
-            return [`Stage '${this.name}' must have at least one action`];
+            return [`Stage '${this.id}' must have at least one action`];
         }
         return [];
     }

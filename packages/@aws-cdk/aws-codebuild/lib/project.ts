@@ -254,7 +254,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     /**
      * Allows using build projects as event rule targets.
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
@@ -266,7 +266,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.projectArn,
             roleArn: this.eventsRole.roleArn,
         };

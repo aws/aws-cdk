@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
+import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, FunctionArn } from './lambda.generated';
 import { Permission } from './permission';
@@ -23,7 +24,9 @@ export interface FunctionRefProps {
     role?: iam.Role;
 }
 
-export abstract class FunctionRef extends cdk.Construct implements events.IEventRuleTarget, logs.ILogSubscriptionDestination {
+export abstract class FunctionRef extends cdk.Construct
+    implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination {
+
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -132,21 +135,15 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
     protected abstract readonly canCreatePermissions: boolean;
 
     /**
-     * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this lambda have been added.
-     */
-    private eventRuleTargetPolicyAdded = false;
-
-    /**
      * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
     private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
-     * @param name A name for the permission construct
+     * @param id The id ƒor the permission construct
      */
-    public addPermission(name: string, permission: Permission) {
+    public addPermission(id: string, permission: Permission) {
         if (!this.canCreatePermissions) {
             // FIXME: Report metadata
             return;
@@ -155,7 +152,7 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
         const principal = this.parsePermissionPrincipal(permission.principal);
         const action = permission.action || 'lambda:InvokeFunction';
 
-        new cloudformation.PermissionResource(this, name, {
+        new cloudformation.PermissionResource(this, id, {
             action,
             principal,
             functionName: this.functionName,
@@ -177,18 +174,18 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
-        if (!this.eventRuleTargetPolicyAdded) {
-            this.addPermission('InvokedByCloudWatch', {
+    public asEventRuleTarget(ruleArn: events.RuleArn, ruleId: string): events.EventRuleTargetProps {
+        const permissionId = `AllowEventRule${ruleId}`;
+        if (!this.tryFindChild(permissionId)) {
+            this.addPermission(permissionId, {
                 action: 'lambda:InvokeFunction',
-                principal: new cdk.ServicePrincipal('events.amazonaws.com')
+                principal: new cdk.ServicePrincipal('events.amazonaws.com'),
+                sourceArn: ruleArn
             });
-
-            this.eventRuleTargetPolicyAdded = true;
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.functionArn,
         };
     }
@@ -264,6 +261,26 @@ export abstract class FunctionRef extends cdk.Construct implements events.IEvent
     public export(): FunctionRefProps {
         return {
             functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+        };
+    }
+
+    /**
+     * Allows this Lambda to be used as a destination for bucket notifications.
+     * Use `bucket.onEvent(lambda)` to subscribe.
+     */
+    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+        const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
+        if (!this.tryFindChild(permissionId)) {
+            this.addPermission(permissionId, {
+                sourceAccount: new cdk.AwsAccountId(),
+                principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
+                sourceArn: bucketArn,
+            });
+        }
+
+        return {
+            type: s3n.BucketNotificationDestinationType.Lambda,
+            arn: this.functionArn
         };
     }
 

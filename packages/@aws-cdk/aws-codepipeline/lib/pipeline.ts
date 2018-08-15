@@ -1,3 +1,4 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -5,7 +6,6 @@ import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
 import { cloudformation } from './codepipeline.generated';
 import { Stage } from './stage';
-import validation = require('./validation');
 
 /**
  * The ARN of a pipeline
@@ -93,7 +93,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         super(parent, name);
         props = props || {};
 
-        validation.validateName('Pipeline', props.pipelineName);
+        actions.validateName('Pipeline', props.pipelineName);
 
         // If a bucket has been provided, use it - otherwise, create a bucket.
         let propsBucket = props.artifactBucket;
@@ -148,7 +148,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      *      rule.addTarget(pipeline);
      *
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one
@@ -164,7 +164,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.pipelineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -224,8 +224,8 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private appendStage(stage: Stage) {
-        if (this.stages.find(x => x.name === stage.name)) {
-            throw new Error(`A stage with name '${stage.name}' already exists`);
+        if (this.stages.find(x => x.id === stage.id)) {
+            throw new Error(`A stage with name '${stage.id}' already exists`);
         }
 
         this.stages.push(stage);
@@ -235,7 +235,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         return util.flatMap(this.stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
             return util.flatMap(stage.actions, (action, _) =>
-                validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.name, stage.name)
+                actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
             );
         });
     }

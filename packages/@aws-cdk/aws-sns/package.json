@@ -47,6 +47,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.8.1",
+    "@aws-cdk/aws-s3": "^0.8.1",
     "cdk-build-tools": "^0.8.1",
     "cdk-integ-tools": "^0.8.1",
     "cfn2ts": "^0.8.1",
@@ -58,6 +59,7 @@
     "@aws-cdk/aws-iam": "^0.8.1",
     "@aws-cdk/aws-lambda": "^0.8.1",
     "@aws-cdk/aws-sqs": "^0.8.1",
+    "@aws-cdk/aws-s3-notifications": "^0.8.1",
     "@aws-cdk/cdk": "^0.8.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
