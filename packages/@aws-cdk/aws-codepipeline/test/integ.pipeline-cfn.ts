@@ -16,7 +16,7 @@ const sourceStage = new codepipeline.Stage(pipeline, 'Source');
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
     versioned: true,
 });
-const source = new codepipeline.AmazonS3Source(stack, 'Source', {
+const source = new s3.PipelineSource(stack, 'Source', {
     stage: sourceStage,
     artifactName: 'SourceArtifact',
     bucket,
