@@ -11,8 +11,8 @@ const app = new cdk.App(process.argv);
 const stack = new cdk.Stack(app, 'aws-cdk-pipeline-event-target');
 
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
-const buildStage = new codepipeline.Stage(pipeline, 'Build');
+const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
+const buildStage = new codepipeline.Stage(stack, 'Build', { pipeline });
 
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
     repositoryName: 'foo'

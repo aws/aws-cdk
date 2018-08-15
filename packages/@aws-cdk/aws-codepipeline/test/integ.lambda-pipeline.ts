@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-lambda');
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
     versioned: true,
 });
@@ -29,7 +29,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
     handler: 'index.handler',
     runtime: lambda.Runtime.NodeJS610,
 });
-const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
+const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda', { pipeline });
 new lambda.PipelineInvokeAction(stack, 'Lambda', {
     stage: lambdaStage,
     lambda: lambdaFun,

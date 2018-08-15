@@ -10,14 +10,14 @@ const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-re
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-const sourceStage = new codepipeline.Stage(pipeline, 'source');
+const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
 new codecommit.PipelineSource(stack, 'source', {
     stage: sourceStage,
     artifactName: 'SourceArtifact',
     repository: repo,
 });
 
-const buildStage = new codepipeline.Stage(pipeline, 'build');
+const buildStage = new codepipeline.Stage(stack, 'build', { pipeline });
 new codepipeline.ManualApprovalAction(stack, 'manual', {
     stage: buildStage,
 });

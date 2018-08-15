@@ -6,16 +6,29 @@ import { cloudformation } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
 
 /**
- * A stage in a pipeline. Stages are added to a pipeline by constructing a Stage with
- * the pipeline as the first argument to the constructor.
+ * The construction properties for {@link Stage}.
+ */
+export interface StageProps {
+    /**
+     * The Pipeline to add the newly created Stage to.
+     */
+    pipeline: Pipeline;
+}
+
+/**
+ * A Stage in a Pipeline.
+ * Stages are added to a Pipeline by constructing a new Stage,
+ * and passing the Pipeline it belongs to through the {@link StageProps#pipeline} attribute.
  *
  * @example
- * // add a stage to a pipeline
- * new Stage(pipeline, 'MyStage');
+ *   // add a Stage to a Pipeline
+ *   new Stage(this, 'MyStage', {
+ *       pipeline: myPipeline,
+ *   });
  */
 export class Stage extends cdk.Construct implements actions.IStage {
     /**
-     * The Pipeline this stage is a member of
+     * The Pipeline this Stage is a part of.
      */
     public readonly pipeline: Pipeline;
     public readonly name: string;
@@ -23,17 +36,15 @@ export class Stage extends cdk.Construct implements actions.IStage {
     private readonly _actions = new Array<actions.Action>();
 
     /**
-     * Append a new stage to the pipeline
-     *
-     * Only a Pipeline can be passed in as a parent because stages should
-     * always be attached to a pipeline. It's illogical to construct a Stage
-     * with any other parent.
+     * Create a new Stage.
      */
-    constructor(parent: Pipeline, name: string) {
+    constructor(parent: cdk.Construct, name: string, props: StageProps) {
         super(parent, name);
         this.name = name;
-        this.pipeline = parent;
+        this.pipeline = props.pipeline;
         actions.validateName('Stage', name);
+
+        this.pipeline._addStage(this);
     }
 
     /**

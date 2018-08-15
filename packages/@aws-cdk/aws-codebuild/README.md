@@ -50,14 +50,18 @@ const project = new codebuild.PipelineProject(this, 'MyProject');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceStage = new codepipeline.Stage(this, 'Source', {
+    pipeline,
+});
 const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
     stage: sourceStage,
     artifactName: 'SourceOutput',
     repository,
 });
 
-const buildStage = new codepipeline.Stage(pipeline, 'Build');
+const buildStage = new codepipeline.Stage(this, 'Build', {
+    pipeline,
+});
 new codebuild.PipelineBuildAction(this, 'CodeBuild', {
     stage: buildStage,
     inputArtifact: sourceAction.artifact,

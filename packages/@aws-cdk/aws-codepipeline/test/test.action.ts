@@ -64,7 +64,7 @@ export = {
     'standard action with artifacts'(test: Test) {
         const stack = new cdk.Stack();
         const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-        const stage = new codepipeline.Stage(pipeline, 'stage');
+        const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
         const action = new TestAction(stack, 'TestAction', {
             stage,
             artifactBounds: actions.defaultBounds(),
@@ -95,7 +95,7 @@ export = {
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
     const stack = new cdk.Stack();
     const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-    const stage = new codepipeline.Stage(pipeline, 'stage');
+    const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
     const action = new TestAction(stack, 'TestAction', {
         stage,
         artifactBounds: actions.defaultBounds(),

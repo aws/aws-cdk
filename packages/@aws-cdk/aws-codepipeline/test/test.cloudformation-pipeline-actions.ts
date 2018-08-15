@@ -24,7 +24,7 @@ export = {
     /** Source! */
     const repo = new Repository(stack, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
 
-    const sourceStage = new Stage(pipeline, 'source');
+    const sourceStage = new Stage(pipeline, 'source', { pipeline });
 
     const source = new PipelineSource(stack, 'source', {
       stage: sourceStage,
@@ -34,7 +34,7 @@ export = {
 
     /** Build! */
 
-    const buildStage = new Stage(pipeline, 'build');
+    const buildStage = new Stage(pipeline, 'build', { pipeline });
     const buildArtifacts = new CodePipelineBuildArtifacts();
     const project = new Project(stack, 'MyBuildProject', {
       source: new CodePipelineSource(),
@@ -53,7 +53,7 @@ export = {
     // To execute a change set - yes, you probably do need *:* 🤷‍♀️
     changeSetExecRole.addToPolicy(new PolicyStatement().addAllResources().addAction("*"));
 
-    const prodStage = new Stage(pipeline, 'prod');
+    const prodStage = new Stage(stack, 'prod', { pipeline });
     const stackName = 'BrelandsStack';
     const changeSetName = 'MyMagicalChangeSet';
 
@@ -366,8 +366,8 @@ class TestFixture extends cdk.Stack {
     super();
 
     this.pipeline = new Pipeline(this, 'Pipeline');
-    this.sourceStage = new Stage(this.pipeline, 'Source');
-    this.deployStage = new Stage(this.pipeline, 'Deploy');
+    this.sourceStage = new Stage(this.pipeline, 'Source', { pipeline: this.pipeline });
+    this.deployStage = new Stage(this.pipeline, 'Deploy', { pipeline: this.pipeline });
     this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
     this.source = new PipelineSource(this, 'Source', {
       stage: this.sourceStage,

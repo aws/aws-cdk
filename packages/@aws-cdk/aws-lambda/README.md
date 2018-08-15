@@ -49,7 +49,9 @@ const lambdaFun = new lambda.Function(this, 'MyLambda', {
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda');
+const lambdaStage = new codepipeline.Stage(this, 'Lambda', {
+    pipeline,
+});
 new lambda.PipelineInvokeAction(this, 'Lambda', {
     stage: lambdaStage,
     lambda: lambdaFun,

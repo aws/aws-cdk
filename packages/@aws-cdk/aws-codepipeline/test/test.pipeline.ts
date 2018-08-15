@@ -19,14 +19,14 @@ export = {
         });
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-        const sourceStage = new codepipeline.Stage(pipeline, 'source');
+        const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
         const source = new codecommit.PipelineSource(stack, 'source', {
             stage: sourceStage,
             artifactName: 'SourceArtifact',
             repository,
         });
 
-        const buildStage = new codepipeline.Stage(pipeline, 'build');
+        const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
         const project = new codebuild.Project(stack, 'MyBuildProject', {
            source: new codebuild.CodePipelineSource()
         });
@@ -48,7 +48,7 @@ export = {
 
         const p = new codepipeline.Pipeline(stack, 'P');
 
-        const s1 = new codepipeline.Stage(p, 'Source');
+        const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
         new codepipeline.GitHubSource(stack, 'GH', {
             stage: s1,
             artifactName: 'A',
@@ -58,7 +58,7 @@ export = {
             repo: 'bar'
         });
 
-        const s2 = new codepipeline.Stage(p, 'Two');
+        const s2 = new codepipeline.Stage(stack, 'Two', { pipeline: p });
         new codepipeline.ManualApprovalAction(stack, 'Boo', { stage: s2 });
 
         expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
@@ -136,7 +136,7 @@ export = {
 
         const pipeline = new codepipeline.Pipeline(stack, 'PL');
 
-        const stage1 = new codepipeline.Stage(pipeline, 'S1');
+        const stage1 = new codepipeline.Stage(stack, 'S1', { pipeline });
         new s3.PipelineSource(stack, 'A1', {
           stage: stage1,
           artifactName: 'Artifact',
@@ -144,7 +144,7 @@ export = {
           bucketKey: 'Key'
         });
 
-        const stage2 = new codepipeline.Stage(pipeline, 'S2');
+        const stage2 = new codepipeline.Stage(stack, 'S2', { pipeline });
         new codepipeline.ManualApprovalAction(stack, 'A2', { stage: stage2 });
 
         pipeline.onStateChange('OnStateChange', topic, {
@@ -262,7 +262,7 @@ export = {
         });
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
-        const stage = new codepipeline.Stage(pipeline, 'Stage');
+        const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
         new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
             stage,
             lambda: lambdaFun,
@@ -365,7 +365,7 @@ export = {
 
 function stageForTesting(stack: cdk.Stack): codepipeline.Stage {
     const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-    return new codepipeline.Stage(pipeline, 'stage');
+    return new codepipeline.Stage(pipeline, 'stage', { pipeline });
 }
 
 function repositoryForTesting(stack: cdk.Stack): codecommit.Repository {

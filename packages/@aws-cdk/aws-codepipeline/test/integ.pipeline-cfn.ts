@@ -12,7 +12,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
     versioned: true,
 });
@@ -23,7 +23,7 @@ const source = new s3.PipelineSource(stack, 'Source', {
     bucketKey: 'key',
 });
 
-const cfnStage = new codepipeline.Stage(pipeline, 'CFN');
+const cfnStage = new codepipeline.Stage(stack, 'CFN', { pipeline });
 
 const changeSetName = "ChangeSetIntegTest";
 const stackName = "IntegTest-TestActionStack";
