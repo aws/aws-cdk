@@ -87,7 +87,9 @@ const sourceBucket = new s3.Bucket(this, 'MyBucket', {
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceStage = new codepipeline.Stage(this, 'Source', {
+    pipeline,
+});
 const sourceAction = new s3.PipelineSource(this, 'S3Source', {
     stage: sourceStage,
     bucket: sourceBucket,
