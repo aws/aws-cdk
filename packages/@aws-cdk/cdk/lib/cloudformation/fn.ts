@@ -1,11 +1,11 @@
-import { Token } from '../core/tokens';
+import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
 // tslint:disable:max-line-length
 
 /**
  * CloudFormation intrinsic functions.
  * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
-export class Fn extends Token {
+export class Fn extends CloudFormationToken {
     constructor(name: string, value: any) {
         super(() => ({ [name]: value }));
     }
@@ -100,13 +100,52 @@ export class FnJoin extends Fn {
  * Alias for ``FnJoin('', listOfValues)``.
  */
 export class FnConcat extends FnJoin {
+    private readonly listOfValues: any[];
+
     /**
      * Creates an ``Fn::Join`` function with an empty delimiter.
      * @param listOfValues The list of values to concatenate.
      */
     constructor(...listOfValues: any[]) {
+        // Optimization: if any of the input arguments is also a FnConcat,
+        // splice their list of values into the current FnConcat. 'instanceof'
+        // can fail, but we do not depend depend on this for correctness.
+        //
+        // Do the same for resolved intrinsics, so we can detect this
+        // happening both at Token as well as at CloudFormation level.
+
+        let i = 0;
+        while (i < listOfValues.length) {
+            const el = listOfValues[i];
+            if (el instanceof FnConcat) {
+                listOfValues.splice(i, 1, ...el.listOfValues);
+                i += el.listOfValues.length;
+            } else if (isConcatIntrinsic(el)) {
+                const values = concatIntrinsicValues(el);
+                listOfValues.splice(i, 1, ...values);
+                i += values;
+            } else {
+                i++;
+            }
+        }
+
         super('', listOfValues);
+        this.listOfValues = listOfValues;
     }
+}
+
+/**
+ * Return whether the given object represents a CloudFormation intrinsic that is the result of a FnConcat resolution
+ */
+function isConcatIntrinsic(x: any) {
+    return isIntrinsic(x) && Object.keys(x)[0] === 'Fn::Join' && x['Fn::Join'][0] === '';
+}
+
+/**
+ * Return the concatted values of the concat intrinsic
+ */
+function concatIntrinsicValues(x: any) {
+    return x['Fn::Join'][1];
 }
 
 /**
