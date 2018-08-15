@@ -44,7 +44,7 @@ export interface SourceActionProps extends CommonActionProps {
 /**
  * Low-level class for source actions.
  * It is recommended that concrete types are used instead,
- * such as {@link codepipeline.AmazonS3Source} or
+ * such as {@link s3.PipelineSource} or
  * {@link codecommit.PipelineSource}.
  */
 export abstract class SourceAction extends Action {

@@ -53,6 +53,7 @@
     "pkglint": "^0.8.2"
   },
   "dependencies": {
+    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
     "@aws-cdk/aws-iam": "^0.8.2",
     "@aws-cdk/aws-kms": "^0.8.2",
     "@aws-cdk/aws-s3-notifications": "^0.8.2",
