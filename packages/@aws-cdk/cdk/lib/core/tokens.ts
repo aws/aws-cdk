@@ -7,10 +7,14 @@ import { Construct } from "./construct";
 export const RESOLVE_METHOD = 'resolve';
 
 /**
- * Represents a lazy-evaluated value.
+ * Represents a special or lazily-evaluated value.
  *
  * Can be used to delay evaluation of a certain value in case, for example,
- * that it requires some context or late-bound data.
+ * that it requires some context or late-bound data. Can also be used to
+ * mark values that need special processing at document rendering time.
+ *
+ * Tokens can be embedded into strings while retaining their original
+ * semantics.
  */
 export class Token {
     private tokenKey?: string;
@@ -81,7 +85,8 @@ export class Token {
      * it's not possible to do this properly, so we just throw an error here.
      */
     public toJSON(): any {
-        throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use CloudFormationJSON.stringify() instead.');
+        // tslint:disable-next-line:max-line-length
+        throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use a document-specific stringification method instead.');
     }
 
     /**
@@ -92,7 +97,7 @@ export class Token {
      */
     public concat(left: any | undefined, right: any | undefined): Token {
         const parts = [left, resolve(this), right].filter(x => x !== undefined);
-        return new Token(() => parts.map(x => `${x}`).join(''));
+        return new Token(parts.map(x => `${x}`).join(''));
     }
 }
 

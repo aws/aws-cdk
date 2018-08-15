@@ -83,7 +83,7 @@ export class Resource extends Referenceable {
      * @param attributeName The name of the attribute.
      */
     public getAtt(attributeName: string): Token {
-        return new CloudFormationToken(() => ({ 'Fn::GetAtt': [this.logicalId, attributeName] }), `${this.logicalId}.${attributeName}`);
+        return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
     }
 
     /**

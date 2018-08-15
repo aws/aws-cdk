@@ -4,10 +4,6 @@ import { resolve, Token } from "../core/tokens";
  * Base class for CloudFormation built-ins
  */
 export class CloudFormationToken extends Token {
-    constructor(valueOrFunction: any, displayName?: string) {
-        super(valueOrFunction, displayName);
-    }
-
     public concat(left: any | undefined, right: any | undefined): Token {
         const parts = new Array<any>();
         if (left !== undefined) { parts.push(left); }

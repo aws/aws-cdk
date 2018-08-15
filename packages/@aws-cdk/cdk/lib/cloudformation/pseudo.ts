@@ -2,7 +2,7 @@ import { CloudFormationToken } from './cloudformation-token';
 
 export class PseudoParameter extends CloudFormationToken {
     constructor(name: string) {
-        super(() => ({ Ref: name }), name);
+        super({ Ref: name }, name);
     }
 }
 
