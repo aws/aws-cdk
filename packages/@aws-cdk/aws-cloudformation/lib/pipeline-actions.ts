@@ -188,7 +188,7 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
             Capabilities: (capabilities && capabilities.join(',')) || undefined,
             RoleArn: new cdk.Token(() => this.role.roleArn),
             ParameterOverrides: props.parameterOverrides,
-            TemplateConfiguration: props.templateConfiguration,
+            TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
             StackName: props.stackName,
         });
 
