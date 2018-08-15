@@ -157,6 +157,21 @@ export = {
         test.done();
     },
 
+    'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
+        // GIVEN
+        const token = new CloudFormationToken(() => 'woof woof');
+
+        // WHEN
+        const stringified = `The dog says: ${token}`;
+        const resolved = resolve(stringified);
+
+        // THEN
+        test.deepEqual(resolved, {
+            'Fn::Join': ['', ['The dog says: ', 'woof woof']]
+        });
+        test.done();
+    },
+
     'Doubly nested strings evaluate correctly in scalar context'(test: Test) {
         // GIVEN
         const token1 = new Token(() => "world");
@@ -175,7 +190,7 @@ export = {
 
     'integer Tokens can be stringified and evaluate to conceptual value'(test: Test) {
         // GIVEN
-        for (const token of tokensThatResolveTo(1)) {
+        for (const token of literalTokensThatResolveTo(1)) {
             // WHEN
             const stringified = `the number is ${token}`;
             const resolved = resolve(stringified);
@@ -188,14 +203,42 @@ export = {
 
     'intrinsic Tokens can be stringified and evaluate to conceptual value'(test: Test) {
         // GIVEN
-        const bucketName = new CloudFormationToken({ Ref: 'MyBucket' });
+        for (const bucketName of cloudFormationTokensThatResolveTo({ Ref: 'MyBucket' })) {
+            // WHEN
+            const resolved = resolve(`my bucket is named ${bucketName}`);
 
-        // WHEN
-        const resolved = resolve(`my bucket is named ${bucketName}`);
+            // THEN
+            const context = {MyBucket: 'TheName'};
+            test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
+        }
 
-        // THEN
-        const context = {MyBucket: 'TheName'};
-        test.equal(evaluateCFN(resolved, context), 'my bucket is named TheName');
+        test.done();
+    },
+
+    'tokens resolve properly in initial position'(test: Test) {
+        // GIVEN
+        for (const token of tokensThatResolveTo('Hello')) {
+            // WHEN
+            const resolved = resolve(`${token} world`);
+
+            // THEN
+            test.equal(evaluateCFN(resolved), 'Hello world');
+        }
+
+        test.done();
+    },
+
+    'side-by-side Tokens resolve correctly'(test: Test) {
+        // GIVEN
+        for (const token1 of tokensThatResolveTo('Hello ')) {
+            for (const token2 of tokensThatResolveTo('world')) {
+                // WHEN
+                const resolved = resolve(`${token1}${token2}`);
+
+                // THEN
+                test.equal(evaluateCFN(resolved), 'Hello world');
+            }
+        }
 
         test.done();
     },
@@ -235,11 +278,28 @@ class DataType extends BaseDataType {
 }
 
 /**
- * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily
+ * Return various flavors of Tokens that resolve to the given value
  */
-function tokensThatResolveTo(value: any): Token[] {
+function literalTokensThatResolveTo(value: any): Token[] {
     return [
         new Token(value),
         new Token(() => value)
     ];
+}
+
+/**
+ * Return various flavors of Tokens that resolve to the given value
+ */
+function cloudFormationTokensThatResolveTo(value: any): Token[] {
+    return [
+        new CloudFormationToken(value),
+        new CloudFormationToken(() => value)
+    ];
+}
+
+/**
+ * Return Tokens in both flavors that resolve to the given string
+ */
+function tokensThatResolveTo(value: string): Token[] {
+    return literalTokensThatResolveTo(value).concat(cloudFormationTokensThatResolveTo(value));
 }

@@ -1,29 +1,23 @@
-import { Token  } from "../core/tokens";
+import { resolve, Token } from "../core/tokens";
 
 /**
  * Base class for CloudFormation built-ins
  */
 export class CloudFormationToken extends Token {
     constructor(valueOrFunction: any, displayName?: string) {
-        super(valueOrFunction, {
-            joiner: CLOUDFORMATION_JOINER,
-            displayName
-        });
+        super(valueOrFunction, displayName);
+    }
+
+    public concat(left: any | undefined, right: any | undefined): Token {
+        const parts = new Array<any>();
+        if (left !== undefined) { parts.push(left); }
+        parts.push(resolve(this));
+        if (right !== undefined) { parts.push(right); }
+        return new FnConcat(...parts);
     }
 }
 
 import { FnConcat } from "./fn";
-
-/**
- * The default intrinsics Token engine for CloudFormation
- */
-export const CLOUDFORMATION_JOINER = {
-    id: 'CloudFormation',
-
-    join(fragments: any[]): any {
-        return new FnConcat(...fragments.map(x => isIntrinsic(x) ? x : `${x}`));
-    }
-};
 
 /**
  * Return whether the given value represents a CloudFormation intrinsic

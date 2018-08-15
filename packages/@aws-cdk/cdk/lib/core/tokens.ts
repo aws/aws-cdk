@@ -7,13 +7,21 @@ import { Construct } from "./construct";
 export const RESOLVE_METHOD = 'resolve';
 
 /**
- * Properties for Token customization
+ * Represents a lazy-evaluated value.
+ *
+ * Can be used to delay evaluation of a certain value in case, for example,
+ * that it requires some context or late-bound data.
  */
-export interface TokenProps {
+export class Token {
+    private tokenKey?: string;
+
     /**
-     * A human-readable display hint for this Token
+     * Creates a token that resolves to `value`.
      *
-     * This is used to represent the Token when it's embedded into a string; it
+     * If value is a function, the function is evaluated upon resolution and
+     * the value it returns will be used as the token's value.
+     *
+     * displayName is used to represent the Token when it's embedded into a string; it
      * will look something like this:
      *
      *      "embedded in a larger string is ${Token[DISPLAY_NAME.123]}"
@@ -23,46 +31,10 @@ export interface TokenProps {
      *
      * Must contain only alphanumeric and simple separator characters (_.:-).
      *
-     * @default TOKEN
-     */
-    displayName?: string;
-
-    /**
-     * Function used to concatenate strings and Token results together.
-     *
-     * After resolve() is called to restore Token values that have been
-     * encoded into string literals, the fragments will be combined using
-     * this combinator.
-     *
-     * @default Literal string joining
-     */
-    joiner?: ITokenJoiner;
-}
-
-/**
- * Represents a lazy-evaluated value.
- *
- * Can be used to delay evaluation of a certain value in case, for example,
- * that it requires some context or late-bound data.
- */
-export class Token {
-    public readonly joiner?: ITokenJoiner;
-
-    private tokenKey?: string;
-    private readonly displayName?: string;
-
-    /**
-     * Creates a token that resolves to `value`.
-     *
-     * If value is a function, the function is evaluated upon resolution and
-     * the value it returns will be used as the token's value.
-     *
      * @param valueOrFunction What this token will evaluate to, literal or function.
-     *
+     * @param displayName A human-readable display hint for this Token
      */
-    constructor(private readonly valueOrFunction?: any, props: TokenProps = {}) {
-        this.displayName = props && props.displayName;
-        this.joiner = props && props.joiner;
+    constructor(private readonly valueOrFunction?: any, private readonly displayName?: string) {
     }
 
     /**
@@ -110,6 +82,17 @@ export class Token {
      */
     public toJSON(): any {
         throw new Error('JSON.stringify() cannot be applied to structure with a deferred Token in it. Use CloudFormationJSON.stringify() instead.');
+    }
+
+    /**
+     * Return a concated version of this Token in a string context
+     *
+     * The default implementation of this combines strings, but specialized
+     * implements of Token can return a more appropriate value.
+     */
+    public concat(left: any | undefined, right: any | undefined): Token {
+        const parts = [left, resolve(this), right].filter(x => x !== undefined);
+        return new Token(() => parts.map(x => `${x}`).join(''));
     }
 }
 
@@ -356,7 +339,9 @@ class TokenString {
  *
  * Either a literal part of the string, or an unresolved Token.
  */
-type Fragment = { type: 'string'; str: string } | { type: 'token'; token: Token };
+type StringFragment = { type: 'string'; str: string };
+type TokenFragment = { type: 'token'; token: Token };
+type Fragment =  StringFragment | TokenFragment;
 
 /**
  * Fragments of a string with markers
@@ -377,35 +362,42 @@ class TokenStringFragments {
     }
 
     /**
-     * Combine resolved fragments using the appropriate engine.
+     * Combine the resolved string fragments using the Tokens to join.
      *
      * Resolves the result.
      */
     public join(): any {
         if (this.fragments.length === 0) { return ''; }
-        if (this.fragments.length === 1) { return this.values()[0]; }
+        if (this.fragments.length === 1) { return resolveFragment(this.fragments[0]); }
 
-        const joiners = this.fragments.map(f => f.type === 'token' ? f.token.joiner : undefined).filter(x => x !== undefined) as ITokenJoiner[];
-        // Two reasons to look at joiner names here instead of object identity:
-        // 1) So we can display a better error message
-        // 2) If the library gets loaded multiple times, the same engine will be instantiated
-        // multiple times and so the objects will compare as different, even though they all
-        // do the same, and any one of them would be fine.
-        const joinerNames = Array.from(new Set<string>(joiners.map(e => e.id)));
+        const first = this.fragments[0];
 
-        if (joiners.length === 0) {
-            // No joiners. This can happen if we only have non language-specific Tokens. Stay
-            // in literal-land, convert all to string and combine.
-            return this.values().map(x => `${x}`).join('');
+        let i;
+        let token: Token;
+
+        if (first.type === 'token') {
+            token = first.token;
+            i = 1;
+        } else {
+            // We never have two strings in a row
+            token = (this.fragments[1] as TokenFragment).token.concat(first.str, undefined);
+            i = 2;
         }
 
-        if (joinerNames.length > 1) {
-            throw new Error(`Combining different joiners in one string fragment: ${joinerNames.join(', ')}`);
+        while (i < this.fragments.length) {
+            token = token.concat(undefined, resolveFragment(this.fragments[i]));
+            i++;
         }
 
-        // This might return another Token, so resolve again
-        return resolve(joiners[0].join(this.values()));
+        return resolve(token);
     }
+}
+
+/**
+ * Resolve the value from a single fragment
+ */
+function resolveFragment(fragment: Fragment): any {
+    return fragment.type === 'string' ? fragment.str : resolve(fragment.token);
 }
 
 /**
