@@ -86,16 +86,9 @@
                       ":",
                       "log-group",
                       ":",
+                      "/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyProject39F7B0AE"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyProject39F7B0AE"
                       }
                     ]
                   ]
@@ -126,16 +119,9 @@
                             ":",
                             "log-group",
                             ":",
+                            "/aws/codebuild/",
                             {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "/aws/codebuild/",
-                                  {
-                                    "Ref": "MyProject39F7B0AE"
-                                  }
-                                ]
-                              ]
+                              "Ref": "MyProject39F7B0AE"
                             }
                           ]
                         ]
@@ -160,8 +146,22 @@
     "MyProject39F7B0AE": {
       "Type": "AWS::CodeBuild::Project",
       "Properties": {
+        "Artifacts": {
+          "Type": "NO_ARTIFACTS"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_LARGE",
+          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
+        },
+        "ServiceRole": {
+          "Fn::GetAtt": [
+            "MyProjectRole9BBE5233",
+            "Arn"
+          ]
+        },
         "Source": {
-          "Type": "S3",
           "Location": {
             "Fn::Join": [
               "",
@@ -173,22 +173,8 @@
                 "path/to/my/source.zip"
               ]
             ]
-          }
-        },
-        "Artifacts": {
-          "Type": "NO_ARTIFACTS"
-        },
-        "ServiceRole": {
-          "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
-            "Arn"
-          ]
-        },
-        "Environment": {
-          "Type": "LINUX_CONTAINER",
-          "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
-          "ComputeType": "BUILD_GENERAL1_LARGE"
+          },
+          "Type": "S3"
         }
       }
     }

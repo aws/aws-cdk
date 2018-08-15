@@ -70,7 +70,7 @@ export = {
         test.done();
     },
 
-    'tokens in widgets are retained through FnSub'(test: Test) {
+    'tokens in widgets are retained'(test: Test) {
         // GIVEN
         const stack = new Stack();
         const dashboard = new Dashboard(stack, 'Dash');
@@ -82,14 +82,11 @@ export = {
 
         // THEN
         expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-            DashboardBody: { "Fn::Sub": [
-                // tslint:disable-next-line:max-line-length
-                "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"${ref0}\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{\"left\":{\"min\":0},\"right\":{\"min\":0}}}}]}",
-                {
-                  ref0: { Ref: "AWS::Region" }
-                }
-              ]
-            }
+            DashboardBody: { "Fn::Join": [ "", [
+                "{\"widgets\":[{\"type\":\"metric\",\"width\":1,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"region\":\"",
+                { Ref: "AWS::Region" },
+                "\",\"metrics\":[],\"annotations\":{\"horizontal\":[]},\"yAxis\":{\"left\":{\"min\":0},\"right\":{\"min\":0}}}}]}"
+            ]]}
         }));
 
         test.done();

@@ -240,16 +240,9 @@
                       ":",
                       "log-group",
                       ":",
+                      "/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyBuildProject30DB9D6E"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyBuildProject30DB9D6E"
                       }
                     ]
                   ]
@@ -280,16 +273,9 @@
                             ":",
                             "log-group",
                             ":",
+                            "/aws/codebuild/",
                             {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "/aws/codebuild/",
-                                  {
-                                    "Ref": "MyBuildProject30DB9D6E"
-                                  }
-                                ]
-                              ]
+                              "Ref": "MyBuildProject30DB9D6E"
                             }
                           ]
                         ]
@@ -348,11 +334,14 @@
     "MyBuildProject30DB9D6E": {
       "Type": "AWS::CodeBuild::Project",
       "Properties": {
-        "Source": {
-          "Type": "CODEPIPELINE"
-        },
         "Artifacts": {
           "Type": "CODEPIPELINE"
+        },
+        "Environment": {
+          "ComputeType": "BUILD_GENERAL1_SMALL",
+          "Image": "aws/codebuild/ubuntu-base:14.04",
+          "PrivilegedMode": false,
+          "Type": "LINUX_CONTAINER"
         },
         "ServiceRole": {
           "Fn::GetAtt": [
@@ -360,11 +349,8 @@
             "Arn"
           ]
         },
-        "Environment": {
-          "Type": "LINUX_CONTAINER",
-          "PrivilegedMode": false,
-          "Image": "aws/codebuild/ubuntu-base:14.04",
-          "ComputeType": "BUILD_GENERAL1_SMALL"
+        "Source": {
+          "Type": "CODEPIPELINE"
         }
       }
     }
