@@ -20,7 +20,7 @@
   "devDependencies": {
     "aws-cdk": "^0.8.2",
     "cdk-build-tools": "^0.8.2",
-    "pkglint": "^0.8.1"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "^0.8.2",

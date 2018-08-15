@@ -50,7 +50,7 @@
     "cdk-build-tools": "^0.8.2",
     "cdk-integ-tools": "^0.8.2",
     "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.1"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "^0.8.2",

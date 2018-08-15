@@ -41,7 +41,7 @@
     "@types/yargs": "^8.0.3",
     "cdk-build-tools": "^0.8.2",
     "mockery": "^2.1.0",
-    "pkglint": "^0.8.1"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^0.8.2",

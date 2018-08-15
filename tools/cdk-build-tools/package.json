@@ -28,13 +28,13 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
     "@types/yargs": "^8.0.3",
-    "pkglint": "^0.8.1"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
     "jsii": "^0.6.4",
     "jsii-pacmak": "^0.6.4",
-    "merkle-build": "^0.8.1",
+    "merkle-build": "^0.8.2",
     "typescript": "^3.0.1",
     "yargs": "^9.0.1"
   },

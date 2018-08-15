@@ -25,7 +25,7 @@
     "fast-json-patch": "^2.0.6",
     "fs-extra": "^4.0.2",
     "json-diff": "^0.3.1",
-    "pkglint": "^0.8.1",
+    "pkglint": "^0.8.2",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
