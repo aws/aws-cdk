@@ -137,7 +137,7 @@ export = {
         const pipeline = new codepipeline.Pipeline(stack, 'PL');
 
         const stage1 = new codepipeline.Stage(pipeline, 'S1');
-        new codepipeline.AmazonS3Source(stack, 'A1', {
+        new s3.PipelineSource(stack, 'A1', {
           stage: stage1,
           artifactName: 'Artifact',
           bucket: new s3.Bucket(stack, 'Bucket'),

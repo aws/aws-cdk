@@ -73,6 +73,30 @@ const policy = new BucketPolicy(this, 'MyBucketPolicy');
 const bucket = new Bucket(this, 'MyBucket', { policy });
 ```
 
+### Buckets as sources in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a source in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const sourceBucket = new s3.Bucket(this, 'MyBucket', {
+    versioned: true, // a Bucket used as a source in CodePipeline must be versioned
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const sourceStage = new codepipeline.Stage(pipeline, 'Source');
+const sourceAction = new s3.PipelineSource(this, 'S3Source', {
+    stage: sourceStage,
+    bucket: sourceBucket,
+    bucketKey: 'path/to/file.zip',
+    artifactName: 'SourceOuptut', //name can be arbitrary
+});
+// use sourceAction.artifact as the inputArtifact to later Actions...
+```
+
 ### Importing and Exporting Buckets
 
 You can create a `Bucket` construct that represents an external/existing/unowned bucket by using the `Bucket.import` factory method.
