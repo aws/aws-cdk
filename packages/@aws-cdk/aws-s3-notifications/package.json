@@ -1,0 +1,53 @@
+{
+  "name": "@aws-cdk/aws-s3-notifications",
+  "version": "0.8.2",
+  "description": "Bucket Notifications API for AWS S3",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.s3.notifications",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "s3-notifications"
+        }
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "s3",
+    "notifications"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cdk-build-tools": "^0.8.2",
+    "pkglint": "^0.8.2"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.8.2"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
+}

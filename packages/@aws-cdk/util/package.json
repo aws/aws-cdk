@@ -1,12 +1,12 @@
 {
   "name": "@aws-cdk/util",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Utility routines used for implementing CDK libraries",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "scripts": {
     "build": "cdk-build",
@@ -24,12 +24,13 @@
   ],
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.8.0",
-    "pkglint": "^0.8.0"
+    "cdk-build-tools": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

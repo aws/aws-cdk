@@ -11,6 +11,8 @@
     "exclude": [
         "coverage/**",
         "test/**",
-        "lib/*.generated.js"
+        "examples/**",
+        "lib/*.generated.js",
+        "build-tools/**"
     ]
 }

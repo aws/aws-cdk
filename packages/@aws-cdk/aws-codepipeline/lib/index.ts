@@ -1,5 +1,5 @@
-export * from './actions';
-export * from './artifact';
+export * from './github-source-action';
+export * from './manual-approval-action';
 export * from './pipeline';
 export * from './stage';
 

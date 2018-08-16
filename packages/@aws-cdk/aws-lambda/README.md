@@ -1,28 +1,30 @@
 ## AWS Lambda Construct Library
 
-This construct library allows you to define AWS Lambda functions.
+This construct library allows you to define AWS Lambda Functions.
 
 ```ts
-const fn = new Lambda(this, 'MyFunction', {
-    runtime: LambdaRuntime.NodeJS810,
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
     handler: 'index.handler'
-    code: LambdaCode.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
 });
 ```
 
 ### Handler Code
 
-The `LambdaCode` class includes static convenience methods for various types of
+The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `LambdaCode.bucket(bucket, key[, objectVersion])` - specify an S3 object that
+ * `lambda.Code.bucket(bucket, key[, objectVersion])` - specify an S3 object that
    contains the archive of your runtime code.
- * `LambdaCode.inline(code)` - inline the handle code as a string. This is
+ * `lambda.Code.inline(code)` - inline the handle code as a string. This is
    limited to 4KB. The class `InlineJavaScriptLambda` can be used to simplify
    inlining JavaScript functions.
- * `LambdaCode.directory(directory)` - specify a directory in the local filesystem
+ * `lambda.Code.directory(directory)` - specify a directory in the local filesystem
    which will be zipped and uploaded to S3 before deployment.
- * `LambdaCode.file(path)` - specify a file to be used for Lambda code. This can
+ * `lambda.Code.file(path)` - specify a file to be used for Lambda code. This can
    be, for example a JAR or a ZIP file, based on the runtime used.
 
 The following example shows how to define a Python function and deploy the code from the
@@ -33,3 +35,28 @@ local directory `my-lambda-handler` to it:
 When deploying a stack that contains this code, the directory will be zip
 archived and then uploaded to an S3 bucket, then the exact location of the S3
 objects will be passed when the stack is deployed.
+
+### Lambda in CodePipeline
+
+This module also contains an Action that allows you to invoke a Lambda function from CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import lambda = require('@aws-cdk/aws-lambda');
+
+const lambdaFun = new lambda.Function(this, 'MyLambda', {
+    // some lambda parameters here...
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const lambdaStage = new codepipeline.Stage(this, 'Lambda', {
+    pipeline,
+});
+new lambda.PipelineInvokeAction(this, 'Lambda', {
+    stage: lambdaStage,
+    lambda: lambdaFun,
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
+on how to write a Lambda function invoked from CodePipeline.

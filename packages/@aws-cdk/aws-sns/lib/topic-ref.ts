@@ -2,6 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
+import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
@@ -16,7 +17,7 @@ export class TopicArn extends cdk.Arn { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction {
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination {
     /**
      * Import a Topic defined elsewhere
      */
@@ -36,6 +37,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     protected abstract readonly autoCreatePolicy: boolean;
 
     private policy?: TopicPolicy;
+
+    /** Buckets permitted to send notifications to this topic */
+    private readonly notifyingBuckets = new Set<string>();
 
     /**
      * Indicates if the resource policy that allows CloudWatch events to publish
@@ -76,9 +80,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param queue The target queue
      */
     public subscribeQueue(queue: sqs.QueueRef) {
-        const subscriptionName = queue.name + 'Subscription';
+        const subscriptionName = queue.id + 'Subscription';
         if (this.tryFindChild(subscriptionName)) {
-            throw new Error(`A subscription between the topic ${this.name} and the queue ${queue.name} already exists`);
+            throw new Error(`A subscription between the topic ${this.id} and the queue ${queue.id} already exists`);
         }
 
         // we use the queue name as the subscription's. there's no meaning to subscribing
@@ -109,11 +113,11 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param name A name for the subscription
      * @param lambdaFunction The Lambda function to invoke
      */
-    public subscribeLambda(lambdaFunction: lambda.LambdaRef) {
-        const subscriptionName = lambdaFunction.name + 'Subscription';
+    public subscribeLambda(lambdaFunction: lambda.FunctionRef) {
+        const subscriptionName = lambdaFunction.id + 'Subscription';
 
         if (this.tryFindChild(subscriptionName)) {
-            throw new Error(`A subscription between the topic ${this.name} and the lambda ${lambdaFunction.name} already exists`);
+            throw new Error(`A subscription between the topic ${this.id} and the lambda ${lambdaFunction.id} already exists`);
         }
 
         const sub = new Subscription(this, subscriptionName, {
@@ -122,7 +126,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
             protocol: SubscriptionProtocol.Lambda
         });
 
-        lambdaFunction.addPermission(this.name, {
+        lambdaFunction.addPermission(this.id, {
             sourceArn: this.topicArn,
             principal: new cdk.ServicePrincipal('sns.amazonaws.com'),
         });
@@ -205,8 +209,10 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     /**
      * Returns a RuleTarget that can be used to trigger this SNS topic as a
      * result from a CloudWatch event.
+     *
+     * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addAction('sns:Publish')
@@ -217,7 +223,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.topicArn,
         };
     }
@@ -272,6 +278,32 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      */
     public metricNumberOfMessagesDelivered(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('NumberOfMessagesDelivered', { statistic: 'sum', ...props });
+    }
+
+    /**
+     * Implements the IBucketNotificationDestination interface, allowing topics to be used
+     * as bucket notification destinations.
+     *
+     * @param bucketArn The ARN of the bucket sending the notifications
+     * @param bucketId A unique ID of the bucket
+     */
+    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+        // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
+        if (!this.notifyingBuckets.has(bucketId)) {
+
+            this.addToResourcePolicy(new cdk.PolicyStatement()
+                .addServicePrincipal('s3.amazonaws.com')
+                .addAction('sns:Publish')
+                .addResource(this.topicArn)
+                .addCondition('ArnLike', { "aws:SourceArn": bucketArn }));
+
+            this.notifyingBuckets.add(bucketId);
+        }
+
+        return {
+            arn: this.topicArn,
+            type: s3n.BucketNotificationDestinationType.Topic
+        };
     }
 }
 

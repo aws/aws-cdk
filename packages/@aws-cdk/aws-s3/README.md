@@ -73,6 +73,32 @@ const policy = new BucketPolicy(this, 'MyBucketPolicy');
 const bucket = new Bucket(this, 'MyBucket', { policy });
 ```
 
+### Buckets as sources in CodePipeline
+
+This package also defines an Action that allows you to use a
+Bucket as a source in CodePipeline:
+
+```ts
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import s3 = require('@aws-cdk/aws-s3');
+
+const sourceBucket = new s3.Bucket(this, 'MyBucket', {
+    versioned: true, // a Bucket used as a source in CodePipeline must be versioned
+});
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const sourceStage = new codepipeline.Stage(this, 'Source', {
+    pipeline,
+});
+const sourceAction = new s3.PipelineSource(this, 'S3Source', {
+    stage: sourceStage,
+    bucket: sourceBucket,
+    bucketKey: 'path/to/file.zip',
+    artifactName: 'SourceOuptut', //name can be arbitrary
+});
+// use sourceAction.artifact as the inputArtifact to later Actions...
+```
+
 ### Importing and Exporting Buckets
 
 You can create a `Bucket` construct that represents an external/existing/unowned bucket by using the `Bucket.import` factory method.
@@ -143,3 +169,40 @@ new Consumer(app, 'consume', {
 
 process.stdout.write(app.run());
 ```
+
+### Bucket Notifications
+
+The Amazon S3 notification feature enables you to receive notifications when
+certain events happen in your bucket as described under [S3 Bucket
+Notifications] of the S3 Developer Guide.
+
+To subscribe for bucket notifications, use the `bucket.onEvent` method. The
+`bucket.onObjectCreated` and `bucket.onObjectRemoved` can also be used for these
+common use cases.
+
+The following example will subscribe an SNS topic to be notified of all
+``s3:ObjectCreated:*` events:
+
+```ts
+const myTopic = new sns.Topic(this, 'MyTopic');
+bucket.onEvent(s3.EventType.ObjectCreated, myTopic);
+```
+
+This call will also ensure that the topic policy can accept notifications for
+this specific bucket.
+
+The following destinations are currently supported:
+
+ * `sns.Topic`
+ * `sqs.Queue`
+ * `lambda.Function`
+
+It is also possible to specify S3 object key filters when subscribing. The
+following example will notify `myQueue` when objects prefixed with `foo/` and
+have the `.jpg` suffix are removed from the bucket.
+
+```ts
+bucket.onEvent(s3.EventType.ObjectRemoved, myQueue, { prefix: 'foo/', suffix: '.jpg' });
+```
+
+[S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html

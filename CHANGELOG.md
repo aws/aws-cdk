@@ -1,11 +1,80 @@
-[@rix0rrr]:      https://github.com/rix0rrr
-[@sam-goodwin]:  https://github.com/sam-goodwin
-[@RomainMuller]: https://github.com/RomainMuller
-[@eladb]:        https://github.com/eladb
-[@skinny85]:     https://github.com/skinny85
-[@moofish32]:    https://github.com/moofish32
-[@mpiroc]:       https://github.com/mpiroc
-[@Doug-AWS]:     https://github.com/Doug-AWS
+[@rix0rrr]:         https://github.com/rix0rrr
+[@sam-goodwin]:     https://github.com/sam-goodwin
+[@RomainMuller]:    https://github.com/RomainMuller
+[@eladb]:           https://github.com/eladb
+[@skinny85]:        https://github.com/skinny85
+[@moofish32]:       https://github.com/moofish32
+[@mpiroc]:          https://github.com/mpiroc
+[@Doug-AWS]:        https://github.com/Doug-AWS
+[@mindstorms6]:     https://github.com/mindstorms6
+[@Mortifera]:       https://github.com/Mortifera
+[@maciejwalkowiak]: https://github.com/maciejwalkowiak
+
+## 0.8.2 - 2018-08-15
+
+### Features
+
+* __@aws-cdk/cdk__: Tokens can now be transparently embedded into strings and encoded into JSON without losing their
+  semantics. This makes it possible to treat late-bound (deploy-time) values as if they were regular strings ([@rix0rrr]
+  in [#518](https://github.com/awslabs/aws-cdk/pull/518)).
+* __@aws-cdk/aws-s3__: add support for bucket notifications to Lambda, SNS, and SQS targets ([@eladb] in
+  [#201](https://github.com/awslabs/aws-cdk/pull/201), [#560](https://github.com/awslabs/aws-cdk/pull/560),
+  [#561](https://github.com/awslabs/aws-cdk/pull/561), [#564](https://github.com/awslabs/aws-cdk/pull/564))
+* __@aws-cdk/cdk__: non-alphanumeric characters can now be used as construct identifiers ([@eladb] in
+  [#556](https://github.com/awslabs/aws-cdk/pull/556))
+* __@aws-cdk/aws-iam__: add support for `maxSessionDuration` for Roles ([@eladb] in
+  [#545](https://github.com/awslabs/aws-cdk/pull/545)).
+
+### Changes
+
+* __@aws-cdk/aws-lambda__ (_**BREAKING**_): most classes renamed to be shorter and more in line with official service
+  naming (`Lambda` renamed to `Function` or ommitted) ([@eladb] in [#550](https://github.com/awslabs/aws-cdk/pull/550))
+* __@aws-cdk/aws-codepipeline__ (_**BREAKING**_): move all CodePipeline actions from `@aws-cdk/aws-xxx-codepipeline` packages
+  into the regular `@aws-cdk/aws-xxx` service packages ([@skinny85] in [#459](https://github.com/awslabs/aws-cdk/pull/459)).
+* __@aws-cdk/aws-custom-resources__ (_**BREAKING**_): package was removed, and the Custom Resource construct added to
+  the __@aws-cdk/aws-cloudformation__ package ([@rix0rrr] in [#513](https://github.com/awslabs/aws-cdk/pull/513))
+
+### Fixes
+
+* __@aws-cdk/aws-lambda__: Lambdas that are triggered by CloudWatch Events now show up in the console, and can only be
+  triggered the indicated Event Rule. _**BREAKING**_ for middleware writers (as this introduces an API change), but
+  transparent to regular consumers ([@eladb] in [#558](https://github.com/awslabs/aws-cdk/pull/558))
+* __@aws-cdk/aws-codecommit__: fix a bug where `pollForSourceChanges` could not be set to `false` ([@maciejwalkowiak] in
+  [#534](https://github.com/awslabs/aws-cdk/pull/534))
+* __aws-cdk__: don't fail if the `~/.aws/credentials` file is missing ([@RomainMuller] in
+  [#541](https://github.com/awslabs/aws-cdk/pull/541))
+* __@aws-cdk/aws-cloudformation__: fix a bug in the CodePipeline actions to correctly support TemplateConfiguration
+  ([@mindstorms6] in [#571](https://github.com/awslabs/aws-cdk/pull/571)).
+* __@aws-cdk/aws-cloudformation__: fix a bug in the CodePipeline actions to correctly support ParameterOverrides
+  ([@mindstorms6] in [#574](https://github.com/awslabs/aws-cdk/pull/574)).
+
+### Known Issues
+
+* `cdk init` will try to init a `git` repository and fail if no global `user.name` and `user.email` have been
+  configured.
+
+## 0.8.1 - 2018-08-08
+
+### Features
+
+* __aws-cdk__: Support `--profile` in command-line toolkit ([@rix0rrr] in [#517](https://github.com/awslabs/aws-cdk/issues/517))
+* __@aws-cdk/cdk__: Introduce `Default` construct id ([@rix0rrr] in [#496](https://github.com/awslabs/aws-cdk/issues/496))
+* __@aws-cdk/aws-lambda__: Add `LambdaRuntime.DotNetCore21` ([@Mortifera] in [#507](https://github.com/awslabs/aws-cdk/issues/507))
+* __@aws-cdk/runtime-values__ (_**BREAKING**_): rename 'rtv' to 'runtime-values' ([@rix0rrr] in [#494](https://github.com/awslabs/aws-cdk/issues/494))
+* __@aws-cdk/aws-ec2__: Combine `Connections` and `DefaultConnections` classes ([@rix0rrr] in [#453](https://github.com/awslabs/aws-cdk/issues/453))
+* __@aws-cdk/aws-codebuild__: allow `buildSpec` parameter to take a filename ([@rix0rrr] in [#470](https://github.com/awslabs/aws-cdk/issues/470))
+* __@aws-cdk/aws-cloudformation-codepipeline__: add support for CloudFormation CodePipeline actions ([@mindstorms6] and [@rix0rrr] in [#525](https://github.com/awslabs/aws-cdk/pull/525)).
+* __docs__: Improvements to Getting Started ([@eladb] in [#462](https://github.com/awslabs/aws-cdk/issues/462))
+* __docs__: Updates to README ([@Doug-AWS] in [#456](https://github.com/awslabs/aws-cdk/issues/456))
+* __docs__: Upgraded `jsii-pacmak` to `0.6.4`, which includes "language-native" type names and package coordinates ([@RomainMuller] in [awslabs/jsii#130](https://github.com/awslabs/jsii/pull/130))
+
+### Bug fixes
+
+* __aws-cdk__ (toolkit): Fix java `cdk init` template ([@RomainMuller] in [#490](https://github.com/awslabs/aws-cdk/issues/490))
+* __@aws-cdk/cdk__ (_**BREAKING**_): Align `FnJoin` signature to CloudFormation ([@RomainMuller] in [#516](https://github.com/awslabs/aws-cdk/issues/516))
+* __@aws-cdk/aws-cloudfront__: Fix origin error ([@mindstorms6] in [#514](https://github.com/awslabs/aws-cdk/issues/514))
+* __@aws-cdk/aws-lambda__: Invalid cast for inline LambdaRuntime members in Java ([@eladb] in [#505](https://github.com/awslabs/aws-cdk/issues/505))
+* __examples__: Fixed java examples ([@RomainMuller] in [#498](https://github.com/awslabs/aws-cdk/issues/498))
 
 ## 0.8.0 - 2018-07-31
 

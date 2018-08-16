@@ -76,11 +76,11 @@ interface ChatAppFuncProps {
 /*
  * Extend Function as all of the Chat app functions have these common props.
  */
-class ChatAppFunction extends lambda.Lambda {
+class ChatAppFunction extends lambda.Function {
     constructor(parent: cdk.Construct, name: string, props: ChatAppFuncProps) {
         super(parent, name, {
-            code: new lambda.LambdaS3Code(props.bucket, props.zipFile),
-            runtime: lambda.LambdaRuntime.NodeJS610,
+            code: new lambda.S3Code(props.bucket, props.zipFile),
+            runtime: lambda.Runtime.NodeJS610,
             handler: 'index.handler'
         });
     }

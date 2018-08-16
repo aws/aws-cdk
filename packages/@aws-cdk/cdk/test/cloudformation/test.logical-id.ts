@@ -105,6 +105,44 @@ const uniqueTests = {
         });
 
         test.done();
+    },
+
+    'can transparently wrap constructs using "Default" id'(test: Test) {
+        // GIVEN
+        const stack1 = new Stack();
+        const parent1 = new Construct(stack1, 'Parent');
+        new Resource(parent1, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+        const template1 = stack1.toCloudFormation();
+
+        // AND
+        const theId1 = Object.keys(template1.Resources)[0];
+        test.equal('AWS::TAAS::Thing', template1.Resources[theId1].Type);
+
+        // WHEN
+        const stack2 = new Stack();
+        const parent2 = new Construct(stack2, 'Parent');
+        const invisibleWrapper = new Construct(parent2, 'Default');
+        new Resource(invisibleWrapper, 'HeyThere', { type: 'AWS::TAAS::Thing' });
+        const template2 = stack1.toCloudFormation();
+
+        const theId2 = Object.keys(template2.Resources)[0];
+        test.equal('AWS::TAAS::Thing', template2.Resources[theId2].Type);
+
+        // THEN: same ID, same object
+        test.equal(theId1, theId2);
+
+        test.done();
+    },
+
+    'non-alphanumeric characters are removed from the human part of the logical ID'(test: Test) {
+        const scheme = new HashedAddressingScheme();
+        const val1 = scheme.allocateAddress([ 'Foo-bar', 'B00m', 'Hello_World', '&&Horray Horray.' ]);
+        const val2 = scheme.allocateAddress([ 'Foobar', 'B00m', 'HelloWorld', 'HorrayHorray' ]);
+
+        // same human part, different hash
+        test.deepEqual(val1, 'FoobarB00mHelloWorldHorrayHorray640E99FB');
+        test.deepEqual(val2, 'FoobarB00mHelloWorldHorrayHorray744334FD');
+        test.done();
     }
 };
 

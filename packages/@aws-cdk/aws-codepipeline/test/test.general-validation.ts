@@ -1,10 +1,9 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AmazonS3Source } from '../lib/actions';
 import { Pipeline } from '../lib/pipeline';
 import { Stage } from '../lib/stage';
-import { validateName } from '../lib/validation';
 
 interface NameValidationTestCase {
     name: string;
@@ -23,7 +22,7 @@ export = {
 
         cases.forEach(testCase => {
             const name = testCase.name;
-            const validationBlock = () => { validateName('test thing', name); };
+            const validationBlock = () => { actions.validateName('test thing', name); };
             if (testCase.shouldPassValidation) {
                 test.doesNotThrow(validationBlock, Error, `${name} failed validation but ${testCase.explanation}`);
             } else {
@@ -57,16 +56,18 @@ export = {
         'should fail if Pipeline has a Source Action in a non-first Stage'(test: Test) {
             const stack = new cdk.Stack();
             const pipeline = new Pipeline(stack, 'Pipeline');
-            const firstStage = new Stage(pipeline, 'FirstStage');
-            const secondStage = new Stage(pipeline, 'SecondStage');
+            const firstStage = new Stage(stack, 'FirstStage', { pipeline });
+            const secondStage = new Stage(stack, 'SecondStage', { pipeline });
 
             const bucket = new s3.Bucket(stack, 'PipelineBucket');
-            new AmazonS3Source(firstStage, 'FirstAction', {
+            new s3.PipelineSource(stack, 'FirstAction', {
+                stage: firstStage,
                 artifactName: 'FirstArtifact',
                 bucket,
                 bucketKey: 'key',
             });
-            new AmazonS3Source(secondStage, 'SecondAction', {
+            new s3.PipelineSource(stack, 'SecondAction', {
+                stage: secondStage,
                 artifactName: 'SecondAction',
                 bucket,
                 bucketKey: 'key',
@@ -82,5 +83,5 @@ export = {
 function stageForTesting(): Stage {
     const stack = new cdk.Stack();
     const pipeline = new Pipeline(stack, 'pipeline');
-    return new Stage(pipeline, 'stage');
+    return new Stage(stack, 'stage', { pipeline });
 }

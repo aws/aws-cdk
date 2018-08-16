@@ -100,13 +100,15 @@ export class EventRule extends EventRuleRef {
     public addTarget(target?: IEventRuleTarget, inputOptions?: TargetInputTemplate) {
         if (!target) { return; }
 
+        const targetProps = target.asEventRuleTarget(this.ruleArn, this.uniqueId);
+
         // check if a target with this ID already exists
-        if (this.targets.find(t => t.id === target.eventRuleTarget.id)) {
-            throw new Error('Duplicate event rule target with ID: ' + target.eventRuleTarget.id);
+        if (this.targets.find(t => t.id === targetProps.id)) {
+            throw new Error('Duplicate event rule target with ID: ' + targetProps.id);
         }
 
         this.targets.push({
-            ...target.eventRuleTarget,
+            ...targetProps,
             inputTransformer: renderTransformer(),
         });
 

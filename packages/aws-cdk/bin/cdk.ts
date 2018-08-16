@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-// Ensure the AWS SDK is properly initialized before anything else.
-import '../lib/api/util/sdk-load-aws-config';
-
 import cxapi = require('@aws-cdk/cx-api');
 import cdkUtil = require('@aws-cdk/util');
 import childProcess = require('child_process');
@@ -49,6 +46,7 @@ async function parseCommandLineArguments() {
         .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
+        .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
         // tslint:disable-next-line:max-line-length
         .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
         .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
@@ -110,7 +108,7 @@ async function initCommandLine() {
 
     debug('Command line arguments:', argv);
 
-    const aws = new SDK();
+    const aws = new SDK(argv.profile);
 
     const availableContextProviders: contextplugins.ProviderMap = {
         'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
@@ -731,7 +729,7 @@ async function initCommandLine() {
      */
     async function populateDefaultEnvironmentIfNeeded(context: any) {
         if (!(cxapi.DEFAULT_REGION_CONTEXT_KEY in context)) {
-            context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = aws.defaultRegion();
+            context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = await aws.defaultRegion();
             debug(`Setting "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_REGION_CONTEXT_KEY]);
         }
 

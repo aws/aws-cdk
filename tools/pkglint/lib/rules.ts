@@ -1,4 +1,3 @@
-import caseUtils = require('case');
 import fs = require('fs');
 import path = require('path');
 import { LICENSE, NOTICE } from './licensing';
@@ -37,7 +36,7 @@ export class DescriptionIsRequired extends ValidationRule {
 export class RepositoryCorrect extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'repository.type', 'git');
-        expectJSON(pkg, 'repository.url', 'git://github.com/awslabs/aws-cdk');
+        expectJSON(pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
     }
 }
 
@@ -78,12 +77,13 @@ export class NoticeFile extends ValidationRule {
 }
 
 /**
- * Author must be AWS
+ * Author must be AWS (as an Organization)
  */
 export class AuthorAWS extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'author.name', 'Amazon Web Services');
         expectJSON(pkg, 'author.url', 'https://aws.amazon.com');
+        expectJSON(pkg, 'author.organization', true);
     }
 }
 
@@ -162,6 +162,13 @@ export class JSIIJavaPackageIsRequired extends ValidationRule {
     }
 }
 
+export class JSIISphinxTarget extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+        expectJSON(pkg, 'jsii.targets.sphinx', { });
+    }
+}
+
 export class CDKPackage extends ValidationRule {
     public validate(pkg: PackageJson): void {
         // skip private packages
@@ -211,39 +218,12 @@ function cdkModuleName(name: string) {
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
 
-    const dotnetSuffix = name.split('-').map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s)).join('.');
-
     return {
         javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
         mavenArtifactId: isCdkPkg ? 'cdk'
                                   : name.startsWith('aws-') ? name.replace(/^aws-/, '')
-                                                            : `cdk-${name}`,
-        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
+                                                            : `cdk-${name}`
     };
-}
-
-/**
- * JSII .NET namespace is required and must look sane
- */
-export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        if (!isJSII(pkg)) { return; }
-
-        const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
-        const moduleName = cdkModuleName(pkg.json.name);
-        expectJSON(pkg, 'jsii.targets.dotnet.namespace', moduleName.dotnetNamespace, /\./g, /*case insensitive*/ true);
-
-        if (dotnet) {
-            const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
-            const expectedPrefix = moduleName.dotnetNamespace.split('.').slice(0, 2).join('.');
-            if (actualPrefix !== expectedPrefix) {
-                pkg.report({
-                    message: `.NET namespace must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
-                    fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace'], moduleName.dotnetNamespace)
-                });
-            }
-        }
-    }
 }
 
 /**

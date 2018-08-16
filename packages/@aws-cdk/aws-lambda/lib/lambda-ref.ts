@@ -2,14 +2,15 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
+import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, FunctionArn } from './lambda.generated';
-import { LambdaPermission } from './permission';
+import { Permission } from './permission';
 
 /**
  * Represents a Lambda function defined outside of this stack.
  */
-export interface LambdaRefProps {
+export interface FunctionRefProps {
     /**
      * The ARN of the Lambda function.
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
@@ -23,7 +24,9 @@ export interface LambdaRefProps {
     role?: iam.Role;
 }
 
-export abstract class LambdaRef extends cdk.Construct implements events.IEventRuleTarget, logs.ILogSubscriptionDestination {
+export abstract class FunctionRef extends cdk.Construct
+    implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination {
+
     /**
      * Creates a Lambda function object which represents a function not defined
      * within this stack.
@@ -35,7 +38,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @param ref A reference to a Lambda function. Can be created manually (see
      * example above) or obtained through a call to `lambda.export()`.
      */
-    public static import(parent: cdk.Construct, name: string, ref: LambdaRefProps): LambdaRef {
+    public static import(parent: cdk.Construct, name: string, ref: FunctionRefProps): FunctionRef {
         return new LambdaRefImport(parent, name, ref);
     }
 
@@ -55,7 +58,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @default sum over 5 minutes
      */
     public static metricAllErrors(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return LambdaRef.metricAll('Errors', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Errors', { statistic: 'sum', ...props });
     }
 
     /**
@@ -64,7 +67,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @default average over 5 minutes
      */
     public static metricAllDuration(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return LambdaRef.metricAll('Duration', props);
+        return FunctionRef.metricAll('Duration', props);
     }
 
     /**
@@ -73,7 +76,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @default sum over 5 minutes
      */
     public static metricAllInvocations(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return LambdaRef.metricAll('Invocations', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Invocations', { statistic: 'sum', ...props });
     }
 
     /**
@@ -82,7 +85,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @default sum over 5 minutes
      */
     public static metricAllThrottles(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return LambdaRef.metricAll('Throttles', { statistic: 'sum', ...props });
+        return FunctionRef.metricAll('Throttles', { statistic: 'sum', ...props });
     }
 
     /**
@@ -97,7 +100,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
         // probably what you're interested in if you're looking at this metric
         // (Load spikes may lead to concurrent execution errors that would
         // otherwise not be visible in the avg)
-        return LambdaRef.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
+        return FunctionRef.metricAll('ConcurrentExecutions', { statistic: 'max', ...props });
     }
 
     /**
@@ -106,7 +109,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * @default max over 5 minutes
      */
     public static metricAllUnreservedConcurrentExecutions(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return LambdaRef.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
+        return FunctionRef.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
     }
 
     /**
@@ -132,21 +135,15 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
     protected abstract readonly canCreatePermissions: boolean;
 
     /**
-     * Indicates if the resource policy that allows CloudWatch events to publish
-     * notifications to this lambda have been added.
-     */
-    private eventRuleTargetPolicyAdded = false;
-
-    /**
      * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
     private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
-     * @param name A name for the permission construct
+     * @param id The id ƒor the permission construct
      */
-    public addPermission(name: string, permission: LambdaPermission) {
+    public addPermission(id: string, permission: Permission) {
         if (!this.canCreatePermissions) {
             // FIXME: Report metadata
             return;
@@ -155,7 +152,7 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
         const principal = this.parsePermissionPrincipal(permission.principal);
         const action = permission.action || 'lambda:InvokeFunction';
 
-        new cloudformation.PermissionResource(this, name, {
+        new cloudformation.PermissionResource(this, id, {
             action,
             principal,
             functionName: this.functionName,
@@ -177,18 +174,18 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public get eventRuleTarget(): events.EventRuleTargetProps {
-        if (!this.eventRuleTargetPolicyAdded) {
-            this.addPermission('InvokedByCloudWatch', {
+    public asEventRuleTarget(ruleArn: events.RuleArn, ruleId: string): events.EventRuleTargetProps {
+        const permissionId = `AllowEventRule${ruleId}`;
+        if (!this.tryFindChild(permissionId)) {
+            this.addPermission(permissionId, {
                 action: 'lambda:InvokeFunction',
-                principal: new cdk.ServicePrincipal('events.amazonaws.com')
+                principal: new cdk.ServicePrincipal('events.amazonaws.com'),
+                sourceArn: ruleArn
             });
-
-            this.eventRuleTargetPolicyAdded = true;
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.functionArn,
         };
     }
@@ -261,9 +258,29 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
     /**
      * Export this Function (without the role)
      */
-    public export(): LambdaRefProps {
+    public export(): FunctionRefProps {
         return {
             functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+        };
+    }
+
+    /**
+     * Allows this Lambda to be used as a destination for bucket notifications.
+     * Use `bucket.onEvent(lambda)` to subscribe.
+     */
+    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+        const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
+        if (!this.tryFindChild(permissionId)) {
+            this.addPermission(permissionId, {
+                sourceAccount: new cdk.AwsAccountId(),
+                principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
+                sourceArn: bucketArn,
+            });
+        }
+
+        return {
+            type: s3n.BucketNotificationDestinationType.Lambda,
+            arn: this.functionArn
         };
     }
 
@@ -287,14 +304,14 @@ export abstract class LambdaRef extends cdk.Construct implements events.IEventRu
     }
 }
 
-class LambdaRefImport extends LambdaRef {
+class LambdaRefImport extends FunctionRef {
     public readonly functionName: FunctionName;
     public readonly functionArn: FunctionArn;
     public readonly role?: iam.Role;
 
     protected readonly canCreatePermissions = false;
 
-    constructor(parent: cdk.Construct, name: string, props: LambdaRefProps) {
+    constructor(parent: cdk.Construct, name: string, props: FunctionRefProps) {
         super(parent, name);
 
         this.functionArn = props.functionArn;

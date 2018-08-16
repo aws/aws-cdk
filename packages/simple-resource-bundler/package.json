@@ -1,6 +1,6 @@
 {
   "name": "simple-resource-bundler",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Command-line tool to embed resources into JS libraries",
   "main": "bundler.js",
   "types": "bundler.d.ts",
@@ -17,14 +17,15 @@
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.8.0",
-    "pkglint": "^0.8.0"
+    "cdk-build-tools": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "fs-extra": "^4.0.2",
@@ -32,7 +33,7 @@
     "yargs": "^9.0.1"
   },
   "repository": {
-    "url": "git://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
   },
   "keywords": [

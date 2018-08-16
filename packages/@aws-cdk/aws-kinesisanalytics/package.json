@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kinesisanalytics",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "The CDK Construct Library for AWS::KinesisAnalytics",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,14 +14,12 @@
           "artifactId": "kinesisanalytics"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisAnalytics"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "scripts": {
     "build": "cdk-build",
@@ -43,17 +41,18 @@
   ],
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.0",
-    "cdk-build-tools": "^0.8.0",
-    "cfn2ts": "^0.8.0",
-    "pkglint": "^0.8.0"
+    "@aws-cdk/assert": "^0.8.2",
+    "cdk-build-tools": "^0.8.2",
+    "cfn2ts": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.8.0"
+    "@aws-cdk/cdk": "^0.8.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
