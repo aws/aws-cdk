@@ -51,6 +51,8 @@ on AWS.
           `AWS Simple Monthly Calculator <http://calculator.s3.amazonaws.com/index.html>`_
           to estimate charges for the use of various AWS resources.
 
+.. _additional_docs:
+	  
 Additional Documentation and Resources
 ======================================
 
@@ -66,6 +68,8 @@ In addition to this guide, the following are other resources available to |cdk| 
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
 
+.. _about_aws:
+    
 About Amazon Web Services
 =========================
 

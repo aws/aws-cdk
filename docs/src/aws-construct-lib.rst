@@ -26,8 +26,10 @@ are designed to allow developers to focus on their application-specific
 architectures and reduces the boilerplate and glue logic needed when working
 with AWS.
 
-Least-Privilege IAM policies
-----------------------------
+.. _least_privilege:
+
+Least-Privilege IAM Policies
+============================
 
 IAM policies are automatically defined based on intent. For example, when
 subscribing an AWS SNS :py:class:`Topic <@aws-cdk/aws-sns.Topic>` to a AWS Lambda
@@ -42,8 +44,10 @@ method which accepts an AWS IAM :py:class:`Principal <@aws-cdk/aws-iam.IPrincipa
 such as a :py:class:`User <@aws-cdk/aws-iam.User>` or a :py:class:`Role <@aws-cdk/aws-iam.Role>`,
 and will modify their policy to allow the principal to read objects from the bucket.
 
-Event-driven APIs
-------------------
+.. _event_driven_apis:
+
+Event-Driven APIs
+=================
 
 Many of the AWS constructs include ``on*`` methods which can be used to react
 to events emitted by the construct. For example, the AWS CodeCommit
@@ -59,8 +63,10 @@ interfaces such as :py:mod:`IEventRuleTarget <@aws-cdk/aws-events.IEventRuleTarg
 For more information see the :doc:`refs/_aws-cdk_aws-cloudwatch` and :doc:`refs/_aws-cdk_aws-events`
 documentation.
 
+.. _security_groups:
+
 Security Groups
----------------
+===============
 
 EC2 network entities such as the :py:mod:`Elastic Load Balancer <@aws-cdk/aws-ec2.ElasticLoadBalancer`
 and :py:mod:`AutoScalingGroup <@aws-cdk/aws-ec2.AutoScalingGroup>` instances can connect to each other
@@ -69,8 +75,10 @@ based on definitions of security groups.
 The AWS CDK provides a rich API for defining security group connections. For more information,
 see **Allowing Connections** in the :doc:`@aws-cdk/aws-ec2 <refs/_aws-cdk_aws-ec2>` documentation.
 
+.. _metrics:
+
 Metrics
--------
+=======
 
 Many AWS resources emit AWS CloudWatch metrics as part of their normal operation. Metrics can
 be used to setup :py:mod:`Alarms <@aws-cdk/aws-cloudwatch.Alarm>` or included in :py:mod:`Dashboards <@aws-cdk/aws-cloudwatch.Dashboard>`.
@@ -81,8 +89,10 @@ method reports the execution time of an AWS Lambda function.
 
 For more information see the :doc:`refs/_aws-cdk_aws-cloudwatch` documentation.
 
+.. _import:
+
 Imports
--------
+=======
 
 If you need to reference a resource which is defined outside of your CDK app (e.g. a bucket, a VPC, etc),
 you can use the ``Xxxx.import(...)`` static methods which are available on AWS Constructs. For example,
@@ -91,8 +101,10 @@ a :py:mod:`BucketRef <@aws-cdk/aws-s3.BucketRef>` object which can be used in mo
 a bucket is required. This patterns allows treating resources defined outside your app as if they
 were part of your app.
 
+.. _cloudformation_layer:
+
 AWS CloudFormation Layer
-------------------------
+========================
 
 Every module in the AWS Construct Library includes a ``cloudformation`` namespace which contains
 low-level constructs which represent the low-level AWS CloudFormation semantics of this service.
