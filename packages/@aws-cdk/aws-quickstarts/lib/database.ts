@@ -20,13 +20,11 @@ export interface SqlServerProps {
 export class SqlServer extends cdk.Construct implements ec2.IConnectable {
     private static readonly PORT = 1433;
     public readonly connections: ec2.Connections;
-    public readonly defaultPortRange: ec2.IPortRange;
-    private readonly securityGroup: ec2.SecurityGroup;
 
     constructor(parent: cdk.Construct, name: string, props: SqlServerProps) {
         super(parent, name);
 
-        this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
             vpc: props.vpc,
             description: 'Database security group',
         });
@@ -54,10 +52,10 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
             masterUserPassword: p.masterPassword,
             port: SqlServer.PORT.toString(),
             dbSubnetGroupName: subnetGroup.ref,
-            vpcSecurityGroups: [ this.securityGroup.securityGroupId ]
+            vpcSecurityGroups: [ securityGroup.securityGroupId ]
         });
 
-        this.defaultPortRange = new ec2.TcpPort(SqlServer.PORT);
-        this.connections = new ec2.Connections(this.securityGroup, this.defaultPortRange);
+        const defaultPortRange = new ec2.TcpPort(SqlServer.PORT);
+        this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
     }
 }
