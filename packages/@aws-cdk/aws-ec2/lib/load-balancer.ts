@@ -320,11 +320,17 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
 }
 
 /**
- * Reference to a listener's port just created
+ * Reference to a listener's port just created.
  *
- * This class exists to make it convenient to add port ranges to the load
- * balancer's security group just for the port ranges that are involved in the
- * listener.
+ * This implements IConnectable with a default port (the port that an ELB
+ * listener was just created on) for a given security group so that it can be
+ * conveniently used just like any Connectable. E.g:
+ *
+ *      const listener = elb.addListener(...);
+ *
+ *      listener.connections.allowDefaultPortFromAnyIPv4();
+ *      // or
+ *      instance.connections.allowToDefaultPort(listener);
  */
 export class ClassicListenerPort implements IConnectable {
     public readonly connections: Connections;

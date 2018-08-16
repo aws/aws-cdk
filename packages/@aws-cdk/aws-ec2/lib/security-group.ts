@@ -124,10 +124,8 @@ export class SecurityGroup extends SecurityGroupRef {
 
     constructor(parent: Construct, name: string, props: SecurityGroupProps) {
         super(parent, name);
-        this.securityGroupId = new Token(() => this.securityGroup.securityGroupId);
 
         const groupDescription = props.description || this.path;
-
         this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
             groupName: props.groupName,
             groupDescription,
@@ -136,6 +134,7 @@ export class SecurityGroup extends SecurityGroupRef {
             vpcId: props.vpc.vpcId,
         });
 
+        this.securityGroupId = this.securityGroup.securityGroupId;
         this.groupName = this.securityGroup.ref;
         this.vpcId = this.securityGroup.securityGroupVpcId;
     }
