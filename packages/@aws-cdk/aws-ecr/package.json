@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ECR"
+        "namespace": "Amazon.CDK.AWS.ECR",
+        "packageId": "Amazon.CDK.AWS.ECR"
       },
       "sphinx": {}
     }

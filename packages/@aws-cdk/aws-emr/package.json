@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EMR"
+        "namespace": "Amazon.CDK.AWS.EMR",
+        "packageId": "Amazon.CDK.AWS.EMR"
       },
       "sphinx": {}
     }

@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.QuickStarts"
+        "namespace": "Amazon.CDK.AWS.QuickStarts",
+        "packageId": "Amazon.CDK.AWS.QuickStarts"
       },
       "sphinx": {}
     }

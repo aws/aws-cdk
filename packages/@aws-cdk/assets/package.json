@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.Assets"
+        "namespace": "Amazon.CDK.Assets",
+        "packageId": "Amazon.CDK.Assets"
       },
       "sphinx": {}
     }

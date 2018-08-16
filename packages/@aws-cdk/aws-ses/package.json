@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SES"
+        "namespace": "Amazon.CDK.AWS.SES",
+        "packageId": "Amazon.CDK.AWS.SES"
       },
       "sphinx": {}
     }

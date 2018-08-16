@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2"
+        "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
+        "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2"
       },
       "sphinx": {}
     }

@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Events"
+        "namespace": "Amazon.CDK.AWS.Events",
+        "packageId": "Amazon.CDK.AWS.Events"
       },
       "sphinx": {}
     }

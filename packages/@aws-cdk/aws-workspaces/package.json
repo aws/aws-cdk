@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.WorkSpaces"
+        "namespace": "Amazon.CDK.AWS.WorkSpaces",
+        "packageId": "Amazon.CDK.AWS.WorkSpaces"
       },
       "sphinx": {}
     }

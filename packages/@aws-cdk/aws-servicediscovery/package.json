@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceDiscovery"
+        "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
+        "packageId": "Amazon.CDK.AWS.ServiceDiscovery"
       },
       "sphinx": {}
     }

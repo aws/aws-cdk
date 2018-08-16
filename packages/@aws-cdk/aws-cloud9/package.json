@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cloud9"
+        "namespace": "Amazon.CDK.AWS.Cloud9",
+        "packageId": "Amazon.CDK.AWS.Cloud9"
       },
       "sphinx": {}
     }

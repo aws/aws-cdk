@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Batch"
+        "namespace": "Amazon.CDK.AWS.Batch",
+        "packageId": "Amazon.CDK.AWS.Batch"
       },
       "sphinx": {}
     }

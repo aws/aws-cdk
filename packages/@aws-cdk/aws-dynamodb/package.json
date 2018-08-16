@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DynamoDB"
+        "namespace": "Amazon.CDK.AWS.DynamoDB",
+        "packageId": "Amazon.CDK.AWS.DynamoDB"
       },
       "sphinx": {}
     }

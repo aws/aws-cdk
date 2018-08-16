@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DataPipeline"
+        "namespace": "Amazon.CDK.AWS.DataPipeline",
+        "packageId": "Amazon.CDK.AWS.DataPipeline"
       },
       "sphinx": {}
     }

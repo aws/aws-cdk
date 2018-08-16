@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.CXAPI"
+        "namespace": "Amazon.CDK.CXAPI",
+        "packageId": "Amazon.CDK.CXAPI"
       },
       "sphinx": {}
     }

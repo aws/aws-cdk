@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ServiceCatalog"
+        "namespace": "Amazon.CDK.AWS.ServiceCatalog",
+        "packageId": "Amazon.CDK.AWS.ServiceCatalog"
       },
       "sphinx": {}
     }

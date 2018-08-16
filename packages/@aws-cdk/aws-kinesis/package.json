@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Kinesis"
+        "namespace": "Amazon.CDK.AWS.Kinesis",
+        "packageId": "Amazon.CDK.AWS.Kinesis"
       },
       "sphinx": {}
     }

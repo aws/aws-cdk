@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeBuild"
+        "namespace": "Amazon.CDK.AWS.CodeBuild",
+        "packageId": "Amazon.CDK.AWS.CodeBuild"
       },
       "sphinx": {}
     }

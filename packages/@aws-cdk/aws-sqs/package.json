@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SQS"
+        "namespace": "Amazon.CDK.AWS.SQS",
+        "packageId": "Amazon.CDK.AWS.SQS"
       },
       "sphinx": {}
     }

@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.RDS"
+        "namespace": "Amazon.CDK.AWS.RDS",
+        "packageId": "Amazon.CDK.AWS.RDS"
       },
       "sphinx": {}
     }

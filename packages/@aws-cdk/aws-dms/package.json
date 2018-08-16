@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DMS"
+        "namespace": "Amazon.CDK.AWS.DMS",
+        "packageId": "Amazon.CDK.AWS.DMS"
       },
       "sphinx": {}
     }

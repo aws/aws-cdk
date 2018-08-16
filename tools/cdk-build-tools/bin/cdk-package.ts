@@ -36,8 +36,9 @@ async function main() {
     }
 
     if (pkg.jsii) {
-        const pacmak = require.resolve('jsii-pacmak/bin/jsii-pacmak');
-        await shell([ pacmak, args.verbose ? '-vvv' : '-v', '-o', outdir ], timers);
+        // const pacmak = require.resolve('jsii-pacmak/bin/jsii-pacmak');
+        const pacmak = '/mnt/c/repos/jsii/packages/jsii-pacmak/bin/jsii-pacmak';
+        await shell([ pacmak, args.verbose ? '-vvv' : '-v', '-o', outdir, '-t', 'dotnet' ], timers);
     } else {
         // just "npm pack" and deploy to "outdir"
         const tarball = (await shell([ 'npm', 'pack' ], timers)).trim();

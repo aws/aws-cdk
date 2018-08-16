@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EFS"
+        "namespace": "Amazon.CDK.AWS.EFS",
+        "packageId": "Amazon.CDK.AWS.EFS"
       },
       "sphinx": {}
     }

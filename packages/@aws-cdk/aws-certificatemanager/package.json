@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CertificateManager"
+        "namespace": "Amazon.CDK.AWS.CertificateManager",
+        "packageId": "Amazon.CDK.AWS.CertificateManager"
       },
       "sphinx": {}
     }

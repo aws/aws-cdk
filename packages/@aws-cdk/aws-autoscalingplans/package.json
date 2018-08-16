@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.AutoScalingPlans"
+        "namespace": "Amazon.CDK.AWS.AutoScalingPlans",
+        "packageId": "Amazon.CDK.AWS.AutoScalingPlans"
       },
       "sphinx": {}
     }

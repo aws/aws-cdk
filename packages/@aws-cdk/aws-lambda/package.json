@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda"
+        "namespace": "Amazon.CDK.AWS.Lambda",
+        "packageId": "Amazon.CDK.AWS.Lambda"
       },
       "sphinx": {}
     }

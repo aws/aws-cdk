@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Neptune"
+        "namespace": "Amazon.CDK.AWS.Neptune",
+        "packageId": "Amazon.CDK.AWS.Neptune"
       },
       "sphinx": {}
     }

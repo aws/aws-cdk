@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda.Codepipeline"
+        "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+        "packageId": "Amazon.CDK.AWS.Codepipeline.Api"
       },
       "sphinx": {}
     }

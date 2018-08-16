@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EC2"
+        "namespace": "Amazon.CDK.AWS.EC2",
+        "packageId": "Amazon.CDK.AWS.EC2"
       },
       "sphinx": {}
     }

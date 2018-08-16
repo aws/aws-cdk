@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudFront"
+        "namespace": "Amazon.CDK.AWS.CloudFront",
+        "packageId": "Amazon.CDK.AWS.CloudFront"
       },
       "sphinx": {}
     }

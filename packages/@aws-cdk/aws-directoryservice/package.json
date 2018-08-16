@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.DirectoryService"
+        "namespace": "Amazon.CDK.AWS.DirectoryService",
+        "packageId": "Amazon.CDK.AWS.DirectoryService"
       },
       "sphinx": {}
     }

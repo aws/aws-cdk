@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CustomResources"
+        "namespace": "Amazon.CDK.AWS.S3.Notifications",
+        "packageId": "Amazon.CDK.AWS.S3.Notifications"
       },
       "sphinx": {}
     }

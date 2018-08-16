@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.S3"
+        "namespace": "Amazon.CDK.AWS.S3",
+        "packageId": "Amazon.CDK.AWS.S3"
       },
       "sphinx": {}
     }

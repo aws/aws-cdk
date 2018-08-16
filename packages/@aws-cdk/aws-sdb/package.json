@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SDB"
+        "namespace": "Amazon.CDK.AWS.SDB",
+        "packageId": "Amazon.CDK.AWS.SDB"
       },
       "sphinx": {}
     }

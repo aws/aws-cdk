@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.WAF"
+        "namespace": "Amazon.CDK.AWS.WAF",
+        "packageId": "Amazon.CDK.AWS.WAF"
       },
       "sphinx": {}
     }

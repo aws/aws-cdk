@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.GameLift"
+        "namespace": "Amazon.CDK.AWS.GameLift",
+        "packageId": "Amazon.CDK.AWS.GameLift"
       },
       "sphinx": {}
     }

@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Glue"
+        "namespace": "Amazon.CDK.AWS.Glue",
+        "packageId": "Amazon.CDK.AWS.Glue"
       },
       "sphinx": {}
     }

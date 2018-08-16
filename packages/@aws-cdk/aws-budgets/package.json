@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Budgets"
+        "namespace": "Amazon.CDK.AWS.Budgets",
+        "packageId": "Amazon.CDK.AWS.Budgets"
       },
       "sphinx": {}
     }

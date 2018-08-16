@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoT"
+        "namespace": "Amazon.CDK.AWS.IoT",
+        "packageId": "Amazon.CDK.AWS.IoT"
       },
       "sphinx": {}
     }

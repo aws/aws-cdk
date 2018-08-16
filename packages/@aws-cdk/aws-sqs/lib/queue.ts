@@ -198,9 +198,13 @@ export class Queue extends QueueRef {
     /**
      * If this queue is encrypted, this is the KMS key.
      */
-    public encryptionMasterKey?: kms.EncryptionKeyRef;
+    public get encryptionMasterKey(): kms.EncryptionKeyRef | undefined {
+        return this._encryptionMasterKey;
+    }
 
     protected readonly autoCreatePolicy = true;
+
+    private _encryptionMasterKey?: kms.EncryptionKeyRef;
 
     constructor(parent: cdk.Construct, name: string, props: QueueProps = {}) {
         super(parent, name);
@@ -271,7 +275,7 @@ export class Queue extends QueueRef {
         }
 
         if (encryption === QueueEncryption.KmsManaged) {
-            this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
+            this._encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
                 keyArn: new kms.KeyArn('alias/aws/sqs')
             });
 
@@ -282,12 +286,12 @@ export class Queue extends QueueRef {
         }
 
         if (encryption === QueueEncryption.Kms) {
-            this.encryptionMasterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
+            this._encryptionMasterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
                 description: `Created by ${this.path}`
             });
 
             return {
-                kmsMasterKeyId: this.encryptionMasterKey.keyArn,
+                kmsMasterKeyId: this._encryptionMasterKey.keyArn,
                 kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
             };
         }

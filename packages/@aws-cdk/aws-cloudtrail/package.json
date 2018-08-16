@@ -15,7 +15,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CloudTrail"
+        "namespace": "Amazon.CDK.AWS.CloudTrail",
+        "packageId": "Amazon.CDK.AWS.CloudTrail"
       },
       "sphinx": {}
     }
