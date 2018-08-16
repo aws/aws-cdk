@@ -41,7 +41,11 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "MyQueuePolicy6BBEDDAC",
+        "EncryptedQueuePolicy8AEB1708"
+      ]
     },
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue"
@@ -227,7 +231,10 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "MyQueuePolicy6BBEDDAC"
+      ]
     },
     "EncryptedQueueKey6F4FD304": {
       "Type": "AWS::KMS::Key",

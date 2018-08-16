@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import s3 = require('../lib');
 import { Topic } from './notification-dests';
@@ -267,6 +268,34 @@ export = {
             ]
           }
         }));
+
+        test.done();
+    },
+
+    'a notification destination can specify a set of dependencies that must be resolved before the notifications resource is created'(test: Test) {
+        const stack = new Stack();
+
+        const bucket = new s3.Bucket(stack, 'Bucket');
+        const dependent = new cdk.Resource(stack, 'Dependent', { type: 'DependOnMe' });
+        const dest: s3n.IBucketNotificationDestination = {
+            asBucketNotificationDestination: () => ({
+                arn: new cdk.Arn('arn'),
+                type: s3n.BucketNotificationDestinationType.Queue,
+                dependencies: [ dependent ]
+            })
+        };
+
+        bucket.onObjectCreated(dest);
+
+        test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D, {
+            Type: 'Custom::S3BucketNotifications',
+            Properties: {
+                ServiceToken: { 'Fn::GetAtt': [ 'BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn' ] },
+                BucketName: { Ref: 'Bucket83908E77' },
+                NotificationConfiguration: { QueueConfigurations: [ { Events: [ 's3:ObjectCreated:*' ], QueueArn: 'arn' } ] }
+            },
+            DependsOn: [ 'Dependent' ]
+        });
 
         test.done();
     }
