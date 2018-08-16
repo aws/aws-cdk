@@ -14,7 +14,9 @@
 AWS CloudFormation Library
 ##########################
 
-The AWS Construct Library includes constructs with rich APIs
+The
+:doc:`AWS Construct Library <aws-construct-lib>`
+includes constructs with rich APIs
 for defining AWS infrastructure. For example, the
 :py:class:`@aws-cdk/aws-s3.Bucket` construct can be used to define S3 Buckets,
 the :py:class:`@aws-cdk/aws-sns.Topic` construct can be used to define SNS
