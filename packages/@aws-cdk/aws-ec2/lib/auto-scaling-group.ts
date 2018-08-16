@@ -2,12 +2,12 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { AllConnections, AnyIPv4, IConnectionPeer } from './connection';
-import { Connections } from './connections';
+import { Connections, IConnectable } from './connections';
 import { InstanceType } from './instance-types';
 import { ClassicLoadBalancer, IClassicLoadBalancerTarget } from './load-balancer';
 import { IMachineImageSource, OperatingSystemType } from './machine-image';
 import { SecurityGroup } from './security-group';
+import { AllConnections, AnyIPv4 } from './security-group-rule';
 import { VpcNetworkRef, VpcPlacementStrategy } from './vpc-ref';
 
 /**
@@ -83,9 +83,7 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalancerTarget {
-    public readonly connectionPeer: IConnectionPeer;
-
+export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalancerTarget, IConnectable {
     /**
      * The type of OS instances of this fleet are running.
      */
@@ -110,8 +108,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         super(parent, name);
 
         this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
-        this.connections = new Connections(this.securityGroup);
-        this.connectionPeer = this.securityGroup;
+        this.connections = new Connections({ securityGroup: this.securityGroup });
 
         if (props.allowAllOutbound !== false) {
             this.connections.allowTo(new AnyIPv4(), new AllConnections(), 'Outbound traffic allowed by default');

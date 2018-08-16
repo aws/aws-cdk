@@ -1,6 +1,7 @@
-import { Construct, Token } from '@aws-cdk/cdk';
-import { IConnectionPeer, IPortRange } from './connection';
+import { Construct, Output, Token } from '@aws-cdk/cdk';
+import { Connections, IConnectable } from './connections';
 import { cloudformation, SecurityGroupId, SecurityGroupVpcId } from './ec2.generated';
+import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { slugify } from './util';
 import { VpcNetworkRef } from './vpc-ref';
 
@@ -12,29 +13,26 @@ export interface SecurityGroupRefProps {
 }
 
 /**
- * Basic interface for security groups
- */
-export interface ISecurityGroup extends IConnectionPeer {
-    readonly securityGroupId: SecurityGroupId;
-
-    addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string): void;
-    addEgressRule(peer: IConnectionPeer, connection: IPortRange, description: string): void;
-}
-
-/**
  * A SecurityGroup that is not created in this template
  */
-export class SecurityGroupRef extends Construct implements ISecurityGroup {
-    public readonly securityGroupId: SecurityGroupId;
-    public readonly canInlineRule = false;
-
-    constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
-        super(parent, name);
-
-        this.securityGroupId = props.securityGroupId;
+export abstract class SecurityGroupRef extends Construct implements ISecurityGroupRule, IConnectable {
+    /**
+     * Import an existing SecurityGroup
+     */
+    public static import(parent: Construct, id: string, props: SecurityGroupRefProps): SecurityGroupRef {
+        return new ImportedSecurityGroup(parent, id, props);
     }
 
-    public addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
+    public abstract readonly securityGroupId: SecurityGroupId;
+    public readonly canInlineRule = false;
+    public readonly connections = new Connections({ securityGroup: this });
+
+    /**
+     * FIXME: Where to place this??
+     */
+    public readonly defaultPortRange?: IPortRange;
+
+    public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description: string) {
         new cloudformation.SecurityGroupIngressResource(this, slugify(description), {
             groupId: this.securityGroupId,
             ...peer.toIngressRuleJSON(),
@@ -43,7 +41,7 @@ export class SecurityGroupRef extends Construct implements ISecurityGroup {
         });
     }
 
-    public addEgressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
+    public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description: string) {
         new cloudformation.SecurityGroupEgressResource(this, slugify(description), {
             groupId: this.securityGroupId,
             ...peer.toEgressRuleJSON(),
@@ -59,6 +57,16 @@ export class SecurityGroupRef extends Construct implements ISecurityGroup {
     public toEgressRuleJSON(): any {
         return { destinationSecurityGroupId: this.securityGroupId };
     }
+
+    /**
+     * Export this SecurityGroup for use in a different Stack
+     */
+    public export(): SecurityGroupRefProps {
+        return {
+            securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue()
+        };
+    }
+
 }
 
 export interface SecurityGroupProps {
@@ -105,12 +113,18 @@ export class SecurityGroup extends SecurityGroupRef {
      */
     public readonly vpcId: SecurityGroupVpcId;
 
+    /**
+     * The ID of the security group
+     */
+    public readonly securityGroupId: SecurityGroupId;
+
     private readonly securityGroup: cloudformation.SecurityGroupResource;
     private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
     private readonly directEgressRules: cloudformation.SecurityGroupResource.EgressProperty[] = [];
 
     constructor(parent: Construct, name: string, props: SecurityGroupProps) {
-        super(parent, name, { securityGroupId: new Token(() => this.securityGroup.securityGroupId) });
+        super(parent, name);
+        this.securityGroupId = new Token(() => this.securityGroup.securityGroupId);
 
         const groupDescription = props.description || this.path;
 
@@ -126,7 +140,7 @@ export class SecurityGroup extends SecurityGroupRef {
         this.vpcId = this.securityGroup.securityGroupVpcId;
     }
 
-    public addIngressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
+    public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description: string) {
         if (!peer.canInlineRule || !connection.canInlineRule) {
             super.addIngressRule(peer, connection, description);
             return;
@@ -139,7 +153,7 @@ export class SecurityGroup extends SecurityGroupRef {
         });
     }
 
-    public addEgressRule(peer: IConnectionPeer, connection: IPortRange, description: string) {
+    public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description: string) {
         if (!peer.canInlineRule || !connection.canInlineRule) {
             super.addEgressRule(peer, connection, description);
             return;
@@ -226,6 +240,19 @@ export interface ConnectionRule {
      * @default No description
      */
     description?: string;
+}
+
+/**
+ * A SecurityGroup that hasn't been created here
+ */
+class ImportedSecurityGroup extends SecurityGroupRef {
+    public readonly securityGroupId: SecurityGroupId;
+
+    constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
+        super(parent, name);
+
+        this.securityGroupId = props.securityGroupId;
+    }
 }
 
 /**
