@@ -1,10 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import s3 = require('../lib');
 import { Topic } from './notification-dests';
-import { Stack } from '@aws-cdk/cdk';
 
 // tslint:disable:object-literal-key-quotes
 // tslint:disable:max-line-length
