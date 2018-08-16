@@ -33,7 +33,7 @@ export class ToolkitInfo {
         s3KeyPrefix?: string,
         s3KeySuffix?: string,
         contentType?: string,
-    }): Promise<{ key: string, changed: boolean }> {
+    }): Promise<{ filename: string, key: string, changed: boolean }> {
         const s3 = await this.props.sdk.s3(this.props.environment, Mode.ForWriting);
 
         const s3KeyPrefix = props.s3KeyPrefix || '';
@@ -42,13 +42,14 @@ export class ToolkitInfo {
         const bucket = this.props.bucketName;
 
         const hash = md5hash(data);
-        const key = `${s3KeyPrefix}${hash}${s3KeySuffix}`;
+        const filename = `${hash}${s3KeySuffix}`;
+        const key = `${s3KeyPrefix}${filename}`;
         const url = `s3://${bucket}/${key}`;
 
         debug(`${url}: checking if already exists`);
         if (await objectExists(s3, bucket, key)) {
             debug(`${url}: found (skipping upload)`);
-            return { key, changed: false };
+            return { filename, key, changed: false };
         }
 
         debug(`${url}: uploading`);
@@ -61,7 +62,7 @@ export class ToolkitInfo {
 
         debug(`${url}: upload complete`);
 
-        return { key, changed: true };
+        return { filename, key, changed: true };
     }
 
 }

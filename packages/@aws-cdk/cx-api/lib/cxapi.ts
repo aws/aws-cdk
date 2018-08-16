@@ -133,11 +133,6 @@ export interface AssetMetadataEntry {
      * Name of parameter where S3 key should be passed in
      */
     s3KeyParameter: string;
-
-    /**
-     * Name of parameter where S3 folder should be passed in
-     */
-    s3PrefixParameter: string;
 }
 
 /**
@@ -154,3 +149,15 @@ export const WARNING_METADATA_KEY = 'aws:cdk:warning';
  * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
  */
 export const ERROR_METADATA_KEY = 'aws:cdk:error';
+
+/**
+ * Separator string that separates the prefix separator from the object key separator.
+ *
+ * Asset keys will look like:
+ *
+ *      /assets/MyConstruct12345678/||abcdef12345.zip
+ *
+ * This allows us to encode both the prefix and the full location in a single
+ * CloudFormation Template Parameter.
+ */
+export const ASSET_PREFIX_SEPARATOR = '||';

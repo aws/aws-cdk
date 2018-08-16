@@ -1,4 +1,4 @@
-import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import fs = require('fs-extra');
 import path = require('path');
@@ -71,7 +71,7 @@ async function prepareFileAsset(
 
     const s3KeyPrefix = `assets/${asset.id}/`;
 
-    const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
+    const { filename, key, changed } = await toolkitInfo.uploadIfChanged(data, {
         s3KeyPrefix,
         s3KeySuffix: path.extname(filePath),
         contentType
@@ -86,8 +86,7 @@ async function prepareFileAsset(
 
     return [
         { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-        { ParameterKey: asset.s3KeyParameter, ParameterValue: key },
-        { ParameterKey: asset.s3PrefixParameter, ParameterValue: s3KeyPrefix },
+        { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
     ];
 }
 

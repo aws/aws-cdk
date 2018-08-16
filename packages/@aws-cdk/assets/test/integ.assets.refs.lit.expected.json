@@ -4,10 +4,6 @@
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-asset-refs/SampleAsset\""
     },
-    "SampleAssetS3Prefix6E89595F": {
-      "Type": "String",
-      "Description": "S3 prefix for asset \"aws-cdk-asset-refs/SampleAsset\""
-    },
     "SampleAssetS3VersionKey3E106D34": {
       "Type": "String",
       "Description": "S3 key for asset version \"aws-cdk-asset-refs/SampleAsset\""
@@ -24,7 +20,37 @@
     },
     "S3ObjectKey": {
       "Value": {
-        "Ref": "SampleAssetS3VersionKey3E106D34"
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
       },
       "Export": {
         "Name": "aws-cdk-asset-refs:S3ObjectKey"
@@ -50,7 +76,30 @@
             },
             "/",
             {
-              "Ref": "SampleAssetS3VersionKey3E106D34"
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    "||",
+                    {
+                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         ]
@@ -131,7 +180,17 @@
                           "",
                           [
                             {
-                              "Ref": "SampleAssetS3Prefix6E89595F"
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                                    }
+                                  ]
+                                }
+                              ]
                             },
                             "*"
                           ]

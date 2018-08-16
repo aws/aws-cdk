@@ -31,6 +31,7 @@ export class SDK {
         const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
 
         this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
+        this.credentialProviderCache = new CredentialProviderCache(this.defaultAwsAccount, defaultCredentialProvider);
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {

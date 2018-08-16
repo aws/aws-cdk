@@ -23,14 +23,12 @@ export = {
             packaging: 'zip',
             s3BucketParameter: 'MyAssetS3Bucket68C9B344',
             s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
-            s3PrefixParameter: 'MyAssetS3Prefix5E79A15D',
         });
 
         // verify that now the template contains parameters for this asset
         const template = stack.toCloudFormation();
         test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
         test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
-        test.equal(template.Parameters.MyAssetS3Prefix5E79A15D.Type, 'String');
 
         test.done();
     },
@@ -47,14 +45,12 @@ export = {
             id: 'MyAsset',
             s3BucketParameter: 'MyAssetS3Bucket68C9B344',
             s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
-            s3PrefixParameter: 'MyAssetS3Prefix5E79A15D',
         });
 
         // verify that now the template contains parameters for this asset
         const template = stack.toCloudFormation();
         test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
         test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
-        test.equal(template.Parameters.MyAssetS3Prefix5E79A15D.Type, 'String');
 
         test.done();
     },
@@ -82,8 +78,11 @@ export = {
                     {"Fn::Join": ["", [ "arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
                     "/",
                     {"Fn::Join": ["", [
-                      {Ref: "MyAssetS3Prefix5E79A15D"},
-                      "*"
+                        {"Fn::Select": [
+                            0,
+                            {"Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D"}]}
+                        ]},
+                        "*"
                     ]]}
                   ]]}
                 ]

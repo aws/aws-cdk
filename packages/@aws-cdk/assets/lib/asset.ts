@@ -67,7 +67,10 @@ export class Asset extends cdk.Construct {
 
     private readonly bucket: s3.BucketRef;
 
-    private readonly s3PrefixParam: cdk.Parameter;
+    /**
+     * The S3 prefix where all different versions of this asset are stored
+     */
+    private readonly s3Prefix: cdk.Token;
 
     constructor(parent: cdk.Construct, id: string, props: GenericAssetProps) {
         super(parent, id);
@@ -86,18 +89,15 @@ export class Asset extends cdk.Construct {
             description: `S3 bucket for asset "${this.path}"`,
         });
 
-        this.s3PrefixParam = new cdk.Parameter(this, 'S3Prefix', {
-            type: 'String',
-            description: `S3 prefix for asset "${this.path}"`
-        });
-
         const keyParam = new cdk.Parameter(this, 'S3VersionKey', {
             type: 'String',
             description: `S3 key for asset version "${this.path}"`
         });
 
         this.s3BucketName = bucketParam.value;
-        this.s3ObjectKey = keyParam.value;
+        this.s3Prefix = new cdk.FnSelect(0, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value));
+        const s3Filename = new cdk.FnSelect(1, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value));
+        this.s3ObjectKey = new cdk.FnConcat(this.s3Prefix, s3Filename);
 
         this.bucket = s3.BucketRef.import(parent, 'AssetBucket', {
             bucketName: this.s3BucketName
@@ -106,25 +106,16 @@ export class Asset extends cdk.Construct {
         // form the s3 URL of the object key
         this.s3Url = this.bucket.urlForObject(this.s3ObjectKey);
 
-        // Get a unique identifier for this asset, which will be used
-        // as a folder to group different versions of the same asset together.
-        //
-        // Even though this code looks horrible, this is actually not a terrible thing
-        // to do. The generated ID will contain the *stack name* as well, which is a
-        // perfectly nice thing to do to disambiguate similarly named assets in different stacks.
-        const uniqueId = new cdk.HashedAddressingScheme().allocateAddress(this.path.split('/'));
-
         // attach metadata to the lambda function which includes information
         // for tooling to be able to package and upload a directory to the
         // s3 bucket and plug in the bucket name and key in the correct
         // parameters.
         const asset: cxapi.AssetMetadataEntry = {
             path: this.assetPath,
-            id: uniqueId,
+            id: this.uniqueId,
             packaging: props.packaging,
             s3BucketParameter: bucketParam.logicalId,
             s3KeyParameter: keyParam.logicalId,
-            s3PrefixParameter: this.s3PrefixParam.logicalId
         };
 
         this.addMetadata(cxapi.ASSET_METADATA, asset);
@@ -142,7 +133,7 @@ export class Asset extends cdk.Construct {
         // different versions of the same file will have the same prefix
         // and we don't want to accidentally revoke permission on old versions
         // when deploying a new version.
-        this.bucket.grantRead(principal, new cdk.FnConcat(this.s3PrefixParam.value, "*"));
+        this.bucket.grantRead(principal, `${this.s3Prefix}*`);
     }
 }
 
