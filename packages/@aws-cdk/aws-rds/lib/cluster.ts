@@ -118,11 +118,6 @@ export class DatabaseCluster extends DatabaseClusterRef {
     public readonly instanceEndpoints: Endpoint[] = [];
 
     /**
-     * Default port to connect to this database
-     */
-    public readonly defaultPortRange: ec2.IPortRange;
-
-    /**
      * Access to the network connections
      */
     public readonly connections: ec2.Connections;
@@ -214,8 +209,8 @@ export class DatabaseCluster extends DatabaseClusterRef {
             this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
         }
 
-        this.defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
-        this.connections = new ec2.Connections(securityGroup, this.defaultPortRange);
+        const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
+        this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
     }
 }
 

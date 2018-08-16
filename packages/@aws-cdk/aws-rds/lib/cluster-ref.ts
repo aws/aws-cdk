@@ -5,18 +5,13 @@ import { DBClusterEndpointAddress } from './rds.generated';
 /**
  * Create a clustered database with a given number of instances.
  */
-export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IDefaultConnectable {
+export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IConnectable {
     /**
      * Import an existing DatabaseCluster from properties
      */
     public static import(parent: cdk.Construct, name: string, props: DatabaseClusterRefProps): DatabaseClusterRef {
         return new ImportedDatabaseCluster(parent, name, props);
     }
-
-    /**
-     * Default port to connect to this database
-     */
-    public abstract readonly defaultPortRange: ec2.IPortRange;
 
     /**
      * Access to the network connections
@@ -159,7 +154,10 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
 
         this.securityGroupId = props.securityGroupId;
         this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
-        this.connections = new ec2.Connections(new ec2.SecurityGroupRef(this, 'SecurityGroup', props), this.defaultPortRange);
+        this.connections = new ec2.Connections({
+            securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', props),
+            defaultPortRange: this.defaultPortRange
+        });
         this.clusterIdentifier = props.clusterIdentifier;
         this.clusterEndpoint = new Endpoint(props.clusterEndpointAddress, props.port);
         this.readerEndpoint = new Endpoint(props.readerEndpointAddress, props.port);

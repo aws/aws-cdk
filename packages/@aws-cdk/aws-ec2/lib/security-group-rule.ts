@@ -1,10 +1,10 @@
 import { Token } from "@aws-cdk/cdk";
-import { Connections, IConnectable, SecurityGrouplessConnections } from "./connections";
+import { Connections, IConnectable } from "./connections";
 
 /**
  * Interface for classes that provide the peer-specification parts of a security group rule
  */
-export interface IConnectionPeer {
+export interface ISecurityGroupRule {
     /**
      * Whether the rule can be inlined into a SecurityGroup or not
      */
@@ -24,12 +24,11 @@ export interface IConnectionPeer {
 /**
  * A connection to and from a given IP range
  */
-export class CidrIp implements IConnectionPeer, IConnectable {
+export class CidrIPv4 implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: Connections;
+    public readonly connections: Connections = new Connections({ securityGroupRule: this });
 
     constructor(private readonly cidrIp: string) {
-        this.connections = new SecurityGrouplessConnections(this);
     }
 
     /**
@@ -49,7 +48,7 @@ export class CidrIp implements IConnectionPeer, IConnectable {
 /**
  * Any IPv4 address
  */
-export class AnyIPv4 extends CidrIp {
+export class AnyIPv4 extends CidrIPv4 {
     constructor() {
         super("0.0.0.0/0");
     }
@@ -58,12 +57,11 @@ export class AnyIPv4 extends CidrIp {
 /**
  * A connection to a from a given IPv6 range
  */
-export class CidrIpv6 implements IConnectionPeer, IConnectable {
+export class CidrIPv6 implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: Connections;
+    public readonly connections: Connections = new Connections({ securityGroupRule: this });
 
     constructor(private readonly cidrIpv6: string) {
-        this.connections = new SecurityGrouplessConnections(this);
     }
 
     /**
@@ -83,7 +81,7 @@ export class CidrIpv6 implements IConnectionPeer, IConnectable {
 /**
  * Any IPv6 address
  */
-export class AnyIPv6 extends CidrIpv6 {
+export class AnyIPv6 extends CidrIPv6 {
     constructor() {
         super("::0/0");
     }
@@ -98,12 +96,11 @@ export class AnyIPv6 extends CidrIpv6 {
  *
  * https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-endpoints.html
  */
-export class PrefixList implements IConnectionPeer, IConnectable {
+export class PrefixList implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
-    public readonly connections: Connections;
+    public readonly connections: Connections = new Connections({ securityGroupRule: this });
 
     constructor(private readonly prefixListId: string) {
-        this.connections = new SecurityGrouplessConnections(this);
     }
 
     public toIngressRuleJSON(): any {
@@ -119,6 +116,9 @@ export class PrefixList implements IConnectionPeer, IConnectable {
  * Interface for classes that provide the connection-specification parts of a security group rule
  */
 export interface IPortRange {
+    /**
+     * Whether the rule containing this port range can be inlined into a securitygroup or not.
+     */
     readonly canInlineRule: boolean;
 
     /**
