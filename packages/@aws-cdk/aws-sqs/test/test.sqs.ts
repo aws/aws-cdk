@@ -315,6 +315,10 @@ export = {
               }
             }));
 
+            // make sure the queue policy is added as a dependency to the bucket
+            // notifications resource so it will be created first.
+            test.deepEqual(stack.toCloudFormation().Resources.BucketNotifications8F2E257D.DependsOn, [ 'QueuePolicy25439813' ]);
+
             test.done();
         },
 

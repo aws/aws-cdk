@@ -278,9 +278,14 @@ export abstract class FunctionRef extends cdk.Construct
             });
         }
 
+        // if we have a permission resource for this relationship, add it as a dependency
+        // to the bucket notifications resource, so it will be created first.
+        const permission = this.tryFindChild(permissionId) as cdk.Resource;
+
         return {
             type: s3n.BucketNotificationDestinationType.Lambda,
-            arn: this.functionArn
+            arn: this.functionArn,
+            dependencies: permission ? [ permission ] : undefined
         };
     }
 

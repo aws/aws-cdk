@@ -302,7 +302,8 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
 
         return {
             arn: this.topicArn,
-            type: s3n.BucketNotificationDestinationType.Topic
+            type: s3n.BucketNotificationDestinationType.Topic,
+            dependencies: [ this.policy! ] // make sure the topic policy resource is created before the notification config
         };
     }
 }
