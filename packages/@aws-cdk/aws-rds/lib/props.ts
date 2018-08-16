@@ -6,6 +6,8 @@ import cdk = require('@aws-cdk/cdk');
  */
 export enum DatabaseClusterEngine {
     Aurora = 'aurora',
+    AuroraMysql = 'aurora-mysql',
+    AuroraPostgresql = 'aurora-postgresql',
     Neptune = 'neptune'
 }
 
