@@ -106,7 +106,8 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
 
         return {
             arn: this.queueArn,
-            type: s3n.BucketNotificationDestinationType.Queue
+            type: s3n.BucketNotificationDestinationType.Queue,
+            dependencies: [ this.policy! ]
         };
     }
 }

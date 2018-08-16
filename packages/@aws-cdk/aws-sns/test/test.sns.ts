@@ -703,6 +703,9 @@ export = {
         test.deepEqual(resolve(dest1.arn), resolve(topic.topicArn));
         test.deepEqual(dest1.type, s3n.BucketNotificationDestinationType.Topic);
 
+        const dep: cdk.Construct = dest1.dependencies![0] as any;
+        test.deepEqual((dep.children[0] as any).logicalId, 'MyTopicPolicy12A5EC17', 'verify topic policy is added as dependency');
+
         // calling again on the same bucket yields is idempotent
         const dest2 = topic.asBucketNotificationDestination(bucketArn, bucketId);
         test.deepEqual(resolve(dest2.arn), resolve(topic.topicArn));

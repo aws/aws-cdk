@@ -40,7 +40,10 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsMyBucket0F0FC402189522F6"
+      ]
     },
     "MyFunctionServiceRole3C357FF2": {
       "Type": "AWS::IAM::Role",
@@ -170,7 +173,10 @@
             }
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "MyFunctionAllowBucketNotificationsFromlambdabucketnotificationsYourBucket307F72F245F2C5AE"
+      ]
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
       "Type": "AWS::IAM::Role",
