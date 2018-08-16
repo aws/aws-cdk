@@ -162,14 +162,10 @@ export async function printAvailableTemplates(language?: string) {
 
 async function initializeProject(template: InitTemplate, language: string) {
     await assertIsEmptyDirectory();
-    const useGit = await initializeGitRepository();
     print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
     await template.install(language, process.cwd());
+    await initializeGitRepository();
     await postInstall(language);
-    if (useGit) {
-        await execute('git', 'add', '.');
-        await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
-    }
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
     } else {
@@ -187,8 +183,15 @@ async function assertIsEmptyDirectory() {
 async function initializeGitRepository() {
     if (await isInGitRepository(process.cwd())) { return false; }
     print('Initializing a new git repository...');
-    await execute('git', 'init');
-    return true;
+    try {
+        await execute('git', 'init');
+        await execute('git', 'add', '.');
+        await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
+        return true;
+    } catch (e) {
+        error('Error initializing git repository; you will have to do this by hand.');
+        return false;
+    }
 }
 
 async function postInstall(language: string) {
