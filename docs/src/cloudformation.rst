@@ -14,7 +14,7 @@
 AWS CloudFormation Library
 ##########################
 
-The :doc:`AWS Construct Library <aws-construct-lib>` includes constructs with rich APIs
+The AWS Construct Library includes constructs with rich APIs
 for defining AWS infrastructure. For example, the
 :py:class:`@aws-cdk/aws-s3.Bucket` construct can be used to define S3 Buckets,
 the :py:class:`@aws-cdk/aws-sns.Topic` construct can be used to define SNS
@@ -33,8 +33,10 @@ other resources, depending on what bucket APIs are used).
   migration scenarios where this might be required. We are also aware that
   there might be gaps in capabilities in the AWS Construct Library over time.
 
+.. _cfn_resources:
+
 Resources
----------
+=========
 
 CloudFormation resource classes are automatically generated from the `AWS
 CloudFormation Resource Specification
@@ -189,3 +191,56 @@ Pseudo Parameters
 .. Add a new topic in "Advanced Topics" about integrating
    cdk synch > mytemplate
    into a CI/CD pipeline
+
+.. _create_l2_resource:
+
+Creating a Higher-Level Resource
+================================
+
+There may be times when the only |cdk| resource available is a basic |l1| resource.
+In this section we describe how to create your own, higher-level resource from a basic resource.
+This resource needs a role ARN so that it can perform actions in your behalf,
+so we'll create one.
+
+The following example uses placeholders for some values:
+
+- **MyResource** is the name of the class that represents a higher-level resource
+- *RESOURCE_Name* is the name you give the resource
+- *RESOURCE_Role* is the name you give the role
+- *NAMESPACE* is the namespace for service principal for the resource,
+  which you can find from 
+  `AWS Service Namespaces  <https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces>`_
+- *RESOURCE-TYPE* is the type of the resource, which you can find from 
+  `AWS Resource Types Reference <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_
+- *ARN-PROPERTY* is the property representing the ARN for the resource.
+
+Each *RESOURCE-TYPE* has different properties.
+You must set all required properties, otherwise deployments will fail.
+For resources that need an ARN to perform actions on your behalf,
+you must set the *ARN-ROLE-PROPERTY* property, otherwise you will get run-time errors.
+
+Set other properties to customize the higher-level resource for your use case.
+
+.. code-block:: js
+
+    import cdk = require('@aws-cdk/cdk');
+    import iam = require('@aws-cdk/aws-iam');
+ 
+    class MyResource extends cdk.Construct {
+        constructor(parent: cdk.Construct, id: string) {
+            super(parent, id);
+ 
+            const role = new iam.Role(this, 'RESOURCE_Role', {
+                assumeBy: new cdk.ServicePrincipal('NAMESPACE.amazonaws.com')
+            });
+ 
+            new cdk.Resource(this, 'RESOURCE_Name', {
+                type: 'RESOURCE-TYPE',
+                properties: {
+                    ARN-PROPERTY: role.roleArn,
+                    // ...
+                }
+            });
+        }
+    }
+
