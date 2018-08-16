@@ -207,7 +207,7 @@ export abstract class BucketRef extends cdk.Construct {
     /**
      * Grants s3:DeleteObject* permission to an IAM pricipal for objects
      * in this bucket.
-
+     *
      * @param identity The principal
      * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
      */
