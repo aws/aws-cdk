@@ -177,7 +177,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
         this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
 
         const instanceCount = props.instances != null ? props.instances : 2;
-        if (instanceCount <= 1) {
+        if (instanceCount < 1) {
             throw new Error('At least one instance is required');
         }
 
