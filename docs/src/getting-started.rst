@@ -16,8 +16,12 @@ Hello, |cdk|!
 
 This topic walks you through creating and deploying your first |cdk| app.
 
+.. _setup:
+
 Setup
 =====
+
+.. _setup_prerequisites:
 
 Prerequisites
 -------------
@@ -29,6 +33,8 @@ command-line toolkit and language bindings.
 used to setup the credentials and region for your AWS account,
 which must be specified to use the toolkit.
 See :ref:`credentials <credentials>` for information on using the AWS CLI to set your credentials.
+
+.. _setup_install:
 
 Install the command-line toolkit
 --------------------------------
@@ -866,6 +872,8 @@ encryption for the bucket:
     [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
     [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
     ✅  Deployment of stack hello-cdk completed successfully
+
+.. _whats_next:
 
 What Next?
 ==========
