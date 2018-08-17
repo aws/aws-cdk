@@ -182,6 +182,10 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         const maxSize = props.maxSize || 1;
         const desiredCapacity = props.desiredCapacity || 1;
 
+        if (desiredCapacity < minSize || desiredCapacity > maxSize) {
+            throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
+        }
+
         const asgProps: autoscaling.cloudformation.AutoScalingGroupResourceProps = {
             minSize: minSize.toString(),
             maxSize: maxSize.toString(),
