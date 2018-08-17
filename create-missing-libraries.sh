@@ -124,7 +124,7 @@ EOM
 export * from './${PB/aws-/}.generated';
 EOM
 
-        cat <<EOM > packages/${P}/test/test.${PB}.ts
+        cat <<EOM > packages/${P}/test/test.${PB/aws-/}.ts
 import { Test, testCase } from 'nodeunit';
 import {} from '../lib';
 
