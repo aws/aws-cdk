@@ -8,6 +8,18 @@ import { BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT  } from './bootstrap-envi
 import { waitForStack } from './util/cloudformation';
 import { SDK } from './util/sdk';
 
+export interface UploadProps {
+    s3KeyPrefix?: string,
+    s3KeySuffix?: string,
+    contentType?: string,
+}
+
+export interface Uploaded {
+    filename: string;
+    key: string;
+    changed: boolean;
+}
+
 export class ToolkitInfo {
     constructor(private readonly props: {
         sdk: SDK,
@@ -29,11 +41,7 @@ export class ToolkitInfo {
      * Uses md5 hash to render the full key and skips upload if an object
      * already exists by this key.
      */
-    public async uploadIfChanged(data: any, props: {
-        s3KeyPrefix?: string,
-        s3KeySuffix?: string,
-        contentType?: string,
-    }): Promise<{ filename: string, key: string, changed: boolean }> {
+    public async uploadIfChanged(data: any, props: UploadProps): Promise<Uploaded> {
         const s3 = await this.props.sdk.s3(this.props.environment, Mode.ForWriting);
 
         const s3KeyPrefix = props.s3KeyPrefix || '';
