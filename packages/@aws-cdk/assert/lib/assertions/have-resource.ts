@@ -9,16 +9,24 @@ import { StackInspector } from "../inspector";
  * - An object, in which case its properties will be compared to those of the actual resource found
  * - A callable, in which case it will be treated as a predicate that is applied to the Properties of the found resources.
  */
-export function haveResource(resourceType: string, properties?: any): Assertion<StackInspector> {
-    return new HaveResourceAssertion(resourceType, properties);
+export function haveResource(resourceType: string, properties?: any, comparison?: ResourcePart): Assertion<StackInspector> {
+    return new HaveResourceAssertion(resourceType, properties, comparison);
 }
+
+type PropertyPredicate = (props: any) => boolean;
 
 class HaveResourceAssertion extends Assertion<StackInspector> {
     private inspected: any[] = [];
+    private readonly part: ResourcePart;
+    private readonly predicate: PropertyPredicate;
 
     constructor(private readonly resourceType: string,
-                private readonly properties?: any) {
+                private readonly properties?: any,
+                part?: ResourcePart) {
         super();
+
+        this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties);
+        this.part = part !== undefined ? part : ResourcePart.Properties;
     }
 
     public assertUsing(inspector: StackInspector): boolean {
@@ -27,16 +35,9 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
             if (resource.Type === this.resourceType) {
                 this.inspected.push(resource);
 
-                let matches: boolean;
-                if (typeof this.properties === 'function') {
-                    // If 'properties' is a callable, invoke it
-                    matches = this.properties(resource.Properties);
-                } else {
-                    // Otherwise treat as property bag that we check superset of
-                    matches = isSuperObject(resource.Properties, this.properties);
-                }
+                const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
 
-                if (matches) {
+                if (this.predicate(propsToCheck)) {
                     return true;
                 }
             }
@@ -55,6 +56,15 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
         // tslint:disable-next-line:max-line-length
         return `resource '${this.resourceType}' with properties ${JSON.stringify(this.properties, undefined, 2)}`;
     }
+}
+
+/**
+ * Make a predicate that checks property superset
+ */
+function makeSuperObjectPredicate(obj: any) {
+    return (resourceProps: any) => {
+        return isSuperObject(resourceProps, obj);
+    };
 }
 
 /**
@@ -88,4 +98,21 @@ export function isSuperObject(superObj: any, obj: any): boolean {
         return true;
     }
     return superObj === obj;
+}
+
+/**
+ * What part of the resource to compare
+ */
+export enum ResourcePart {
+    /**
+     * Only compare the resource's properties
+     */
+    Properties,
+
+    /**
+     * Check the entire CloudFormation config
+     *
+     * (including UpdateConfig, DependsOn, etc.)
+     */
+    CompleteDefinition
 }

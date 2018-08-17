@@ -1,7 +1,8 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { AmazonLinuxImage, AutoScalingGroup, InstanceClass, InstanceSize, InstanceTypePair, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
+import { AmazonLinuxImage, AutoScalingGroup, InstanceClass, InstanceSize, InstanceTypePair,
+  UpdateType, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -88,6 +89,11 @@ export = {
               },
               "MyFleetASG88E55886": {
                 "Type": "AWS::AutoScaling::AutoScalingGroup",
+                "UpdatePolicy": {
+                  "AutoScalingScheduledAction": {
+                    "IgnoreUnmodifiedGroupSizeProperties": true
+                  }
+                },
                 "Properties": {
                   "DesiredCapacity": "1",
                   "LaunchConfigurationName": {
@@ -215,6 +221,9 @@ export = {
               },
               MyFleetASG88E55886: {
                 Type: "AWS::AutoScaling::AutoScalingGroup",
+                UpdatePolicy: {
+                  AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true }
+                },
                 Properties: {
                   DesiredCapacity: "1",
                   LaunchConfigurationName: {
@@ -233,6 +242,69 @@ export = {
 
         test.done();
     },
+
+    'can configure replacing update'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
+          machineImage: new AmazonLinuxImage(),
+          vpc,
+          updateType: UpdateType.ReplacingUpdate,
+          replacingUpdateMinSuccessfulInstancesPercent: 50
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        UpdatePolicy: {
+          AutoScalingReplacingUpdate: {
+            WillReplace: true
+          }
+        },
+        CreationPolicy: {
+          AutoScalingCreationPolicy: {
+            MinSuccessfulInstancesPercent: 50
+          }
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+
+    'can configure rolling update'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
+          machineImage: new AmazonLinuxImage(),
+          vpc,
+          updateType: UpdateType.RollingUpdate,
+          rollingUpdateConfiguration: {
+            minSuccessfulInstancesPercent: 50,
+            pauseTimeSec: 345
+          }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        UpdatePolicy: {
+          "AutoScalingRollingUpdate": {
+            "MinSuccessfulInstancesPercent": 50,
+            "WaitOnResourceSignals": true,
+            "PauseTime": "PT5M45S",
+            "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
+          },
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    }
 };
 
 function mockVpc(stack: Stack) {
