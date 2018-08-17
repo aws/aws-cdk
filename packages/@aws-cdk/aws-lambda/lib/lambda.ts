@@ -1,3 +1,4 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
@@ -89,6 +90,31 @@ export interface FunctionProps {
      * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
      */
     role?: iam.Role;
+
+    /**
+     * VPC network to place Lambda network interfaces
+     *
+     * Specify this if the Lambda function needs to access resources in a VPC.
+     */
+    vpc?: ec2.VpcNetworkRef;
+
+    /**
+     * Where to place the network interfaces within the VPC.
+     *
+     * Only used if 'vpc' is supplied.
+     *
+     * @default Private subnets
+     */
+    vpcPlacement?: ec2.VpcPlacementStrategy;
+
+    /**
+     * What security group to associate with the Lambda's network interfaces.
+     *
+     * Only used if 'vpc' is supplied.
+     *
+     * @default A unique security group is created for this Lambda function.
+     */
+    securityGroup?: ec2.SecurityGroupRef;
 }
 
 /**
@@ -102,7 +128,7 @@ export interface FunctionProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Function extends FunctionRef {
+export class Function extends FunctionRef implements ec2.IConnectable {
     /**
      * Name of this function
      */
@@ -128,6 +154,13 @@ export class Function extends FunctionRef {
      */
     public readonly handler: string;
 
+    /**
+     * The security group associated with this function
+     *
+     * (Only set if associated with a VPC).
+     */
+    public securityGroup?: ec2.SecurityGroupRef;
+
     protected readonly canCreatePermissions = true;
 
     /**
@@ -135,21 +168,38 @@ export class Function extends FunctionRef {
      */
     private readonly environment?: { [key: string]: any };
 
+    private _connections?: ec2.Connections;
+
     constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
         super(parent, name);
 
         this.environment = props.environment || { };
 
-        this.role = props.role || new iam.Role(this, 'ServiceRole', {
-            assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
-            // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-            managedPolicyArns: [  cdk.Arn.fromComponents({
+        const managedPolicyArns = new Array<cdk.Arn>();
+
+        // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        managedPolicyArns.push(cdk.Arn.fromComponents({
+            service: "iam",
+            region: "", // no region for managed policy
+            account: "aws", // the account for a managed policy is 'aws'
+            resource: "policy",
+            resourceName: "service-role/AWSLambdaBasicExecutionRole"
+        }));
+
+        if (props.vpc) {
+            // Policy that will have ENI creation permissions
+            managedPolicyArns.push(cdk.Arn.fromComponents({
                 service: "iam",
                 region: "", // no region for managed policy
                 account: "aws", // the account for a managed policy is 'aws'
                 resource: "policy",
-                resourceName: "service-role/AWSLambdaBasicExecutionRole",
-            })],
+                resourceName: "service-role/AWSLambdaVPCAccessExecutionRole"
+            }));
+        }
+
+        this.role = props.role || new iam.Role(this, 'ServiceRole', {
+            assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+            managedPolicyArns,
         });
 
         for (const statement of (props.initialPolicy || [])) {
@@ -166,6 +216,7 @@ export class Function extends FunctionRef {
             role: this.role.roleArn,
             environment: new cdk.Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
+            vpcConfig: this.addToVpc(props),
         });
 
         resource.addDependency(this.role);
@@ -217,6 +268,18 @@ export class Function extends FunctionRef {
         });
     }
 
+    /**
+     * Access the Connections object
+     *
+     * Will fail if not a VPC-enabled Lambda Function
+     */
+    public get connections(): ec2.Connections {
+        if (!this._connections) {
+            throw new Error('Only VPC-associated Lambda Functions can have their security groups managed.');
+        }
+        return this.connections;
+    }
+
     private renderEnvironment() {
         if (!this.environment || Object.keys(this.environment).length === 0) {
             return undefined;
@@ -224,6 +287,31 @@ export class Function extends FunctionRef {
 
         return {
             variables: this.environment
+        };
+    }
+
+    /**
+     * If configured, set up the VPC-related properties
+     *
+     * Returns the VpcConfig that should be added to the
+     * Lambda creation properties.
+     */
+    private addToVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
+        if (!props.vpc) { return undefined; }
+
+        this.securityGroup = props.securityGroup;
+        if (!this.securityGroup) {
+            this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+                vpc: props.vpc,
+                description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+            });
+        }
+
+        this._connections = new ec2.Connections({ securityGroup: this.securityGroup });
+
+        return {
+            subnetIds: props.vpc.subnets(props.vpcPlacement).map(s => s.subnetId),
+            securityGroupIds: [this.securityGroup.securityGroupId]
         };
     }
 }
