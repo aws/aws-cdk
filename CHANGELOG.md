@@ -10,6 +10,76 @@
 [@Mortifera]:       https://github.com/Mortifera
 [@maciejwalkowiak]: https://github.com/maciejwalkowiak
 
+## [UNRELEASED]
+
+* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.6.0`
+  + **New Resource Types**
+    - AWS::AmazonMQ::Broker
+    - AWS::AmazonMQ::Configuration
+    - AWS::CodePipeline::Webhook
+    - AWS::Config::AggregationAuthorization
+    - AWS::Config::ConfigurationAggregator
+    - AWS::EC2::VPCEndpointConnectionNotification
+    - AWS::EC2::VPCEndpointServicePermissions
+    - AWS::IAM::ServiceLinkedRole
+    - AWS::SSM::ResourceDataSync
+    - AWS::SageMaker::Endpoint
+    - AWS::SageMaker::EndpointConfig
+    - AWS::SageMaker::Model
+    - AWS::SageMaker::NotebookInstance
+    - AWS::SageMaker::NotebookInstanceLifecycleConfig
+  + **Attribute Changes**
+    - AWS::CodePipeline::Pipeline Version (__added__)
+  + **Property Changes**
+    - AWS::AppSync::DataSource HttpConfig (__added__)
+    - AWS::DAX::Cluster SSESpecification (__added__)
+    - AWS::EC2::VPCEndpoint IsPrivateDnsEnabled (__added__)
+    - AWS::EC2::VPCEndpoint SecurityGroupIds (__added__)
+    - AWS::EC2::VPCEndpoint SubnetIds (__added__)
+    - AWS::EC2::VPCEndpoint VPCEndpointType (__added__)
+    - AWS::EC2::VPCEndpoint RouteTableIds.DuplicatesAllowed (__deleted__)
+    - AWS::EC2::VPCPeeringConnection PeerRegion (__added__)
+    - AWS::EFS::FileSystem ProvisionedThroughputInMibps (__added__)
+    - AWS::EFS::FileSystem ThroughputMode (__added__)
+    - AWS::EMR::Cluster KerberosAttributes (__added__)
+    - AWS::Glue::Classifier JsonClassifier (__added__)
+    - AWS::Glue::Classifier XMLClassifier (__added__)
+    - AWS::Glue::Crawler Configuration (__added__)
+    - AWS::Neptune::DBInstance DBSubnetGroupName.UpdateType (__changed__)
+      - Old: Mutable
+      - New: Immutable
+    - AWS::SNS::Subscription DeliveryPolicy (__added__)
+    - AWS::SNS::Subscription FilterPolicy (__added__)
+    - AWS::SNS::Subscription RawMessageDelivery (__added__)
+    - AWS::SNS::Subscription Region (__added__)
+    - AWS::SQS::Queue Tags (__added__)
+    - AWS::ServiceDiscovery::Service HealthCheckCustomConfig (__added__)
+  + **Property Type Changes**
+    - AWS::AppSync::DataSource.HttpConfig (__added__)
+    - AWS::DAX::Cluster.SSESpecification (__added__)
+    - AWS::EMR::Cluster.KerberosAttributes (__added__)
+    - AWS::Glue::Classifier.JsonClassifier (__added__)
+    - AWS::Glue::Classifier.XMLClassifier (__added__)
+    - AWS::ServiceDiscovery::Service.HealthCheckCustomConfig (__added__)
+    - AWS::CloudFront::Distribution.CacheBehavior FieldLevelEncryptionId (__added__)
+    - AWS::CloudFront::Distribution.DefaultCacheBehavior FieldLevelEncryptionId (__added__)
+    - AWS::CodeBuild::Project.Artifacts EncryptionDisabled (__added__)
+    - AWS::CodeBuild::Project.Artifacts OverrideArtifactName (__added__)
+    - AWS::CodeBuild::Project.Environment Certificate (__added__)
+    - AWS::CodeBuild::Project.Source ReportBuildStatus (__added__)
+    - AWS::ServiceDiscovery::Service.DnsConfig RoutingPolicy (__added__)
+    - AWS::WAF::WebACL.ActivatedRule Action.Required (__changed__)
+      - Old: true
+      - New: false
+
+* __@aws-cdk/cfnspec__: Updated Serverless Application Model (SAM) Resource Specification
+  + **Property Changes**
+    - AWS::Serverless::Api MethodSettings (__added__)
+  + **Property Type Changes**
+    - AWS::Serverless::Function.SQSEvent (__added__)
+    - AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+      - Added SQSEvent
+
 ## 0.8.2 - 2018-08-15
 
 ### Features
