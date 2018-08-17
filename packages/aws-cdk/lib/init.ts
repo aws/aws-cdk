@@ -16,7 +16,7 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type: string, language: string | undefined) {
+export async function cliInit(type: string, language: string | undefined, canUseNetwork?: boolean) {
     const template = (await availableInitTemplates).find(t => t.hasName(type));
     if (!template) {
         await printAvailableTemplates(language);
@@ -30,7 +30,7 @@ export async function cliInit(type: string, language: string | undefined) {
         print(`Available languages for ${colors.green(type)}: ${template.languages.map(l => colors.blue(l)).join(', ')}`);
         throw new Error('No language was selected');
     }
-    await initializeProject(template, language);
+    await initializeProject(template, language, canUseNetwork !== undefined ? canUseNetwork : true);
 }
 
 const INFO_DOT_JSON = 'info.json';
@@ -160,12 +160,12 @@ export async function printAvailableTemplates(language?: string) {
     }
 }
 
-async function initializeProject(template: InitTemplate, language: string) {
+async function initializeProject(template: InitTemplate, language: string, canUseNetwork: boolean) {
     await assertIsEmptyDirectory();
     print(`Applying project template ${colors.green(template.name)} for ${colors.blue(language)}`);
     await template.install(language, process.cwd());
     await initializeGitRepository();
-    await postInstall(language);
+    await postInstall(language, canUseNetwork);
     if (await fs.pathExists('README.md')) {
         print(colors.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
     } else {
@@ -194,17 +194,23 @@ async function initializeGitRepository() {
     }
 }
 
-async function postInstall(language: string) {
+async function postInstall(language: string, canUseNetwork: boolean) {
     switch (language) {
     case 'typescript':
-        return await postInstallTypescript();
+        return await postInstallTypescript(canUseNetwork);
     case 'java':
-        return await postInstallJava();
+        return await postInstallJava(canUseNetwork);
     }
 }
 
-async function postInstallTypescript() {
+async function postInstallTypescript(canUseNetwork: boolean) {
     const command = 'npm';
+
+    if (!canUseNetwork) {
+        print(`Please run ${colors.green(`${command} install`)}!`);
+        return;
+    }
+
     print(`Executing ${colors.green(`${command} install`)}...`);
     try {
         await execute(command, 'install');
@@ -213,7 +219,12 @@ async function postInstallTypescript() {
     }
 }
 
-async function postInstallJava() {
+async function postInstallJava(canUseNetwork: boolean) {
+    if (!canUseNetwork) {
+        print(`Please run ${colors.green(`mvn package`)}!`);
+        return;
+    }
+
     print(`Executing ${colors.green('mvn package')}...`);
     await execute('mvn', 'package');
 }
