@@ -130,6 +130,7 @@
                     "Types": [
                         "S3Event",
                         "SNSEvent",
+                        "SQSEvent",
                         "KinesisEvent",
                         "DynamoDBEvent",
                         "ApiEvent",
@@ -283,6 +284,23 @@
                 }
             }
         },
+        "AWS::Serverless::Function.SQSEvent": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
+            "Properties": {
+                "BatchSize": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
+                    "UpdateType": "Immutable"
+                },
+                "Queue": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#sqs",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.ScheduleEvent": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule",
             "Properties": {
@@ -387,6 +405,12 @@
                     "Types": [
                         "S3Location"
                     ],
+                    "UpdateType": "Immutable"
+                },
+                "MethodSettings": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapi",
+                    "PrimitiveType": "Json",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 },
                 "Name": {

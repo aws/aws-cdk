@@ -1,0 +1,58 @@
+{
+  "name": "@aws-cdk/aws-sagemaker",
+  "version": "0.8.2",
+  "description": "The CDK Construct Library for AWS::SageMaker",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.sagemaker",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "sagemaker"
+        }
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::SageMaker"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-sagemaker"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.8.2",
+    "cdk-build-tools": "^0.8.2",
+    "cfn2ts": "^0.8.2",
+    "pkglint": "^0.8.2"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.8.2"
+  }
+}

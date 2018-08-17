@@ -24,6 +24,7 @@ async function main() {
     }
 
     const resourceTypeAdditions = new Set<string>();
+    const attributeChanges = new Array<string>();
     const propertyChanges = new Array<string>();
     const propertyTypeChanges = new Array<string>();
 
@@ -41,6 +42,11 @@ async function main() {
     line('## New Resource Types');
     line();
     resourceTypeAdditions.forEach(type => line(`* ${type}`));
+    line();
+
+    line('## Attribute Changes');
+    line();
+    attributeChanges.forEach(x => line(x));
     line();
 
     line('## Property Changes');
@@ -64,14 +70,26 @@ async function main() {
             throw new Error('Something really bad happened. Resource types should never be deleted: ' + deleted);
         }
 
-        if (Object.keys(update).length !== 1 && Object.keys(update)[0] === 'Properties') {
-            throw new Error('Unexpected update to a resource type. Expecting only "Properties" to change: ' + resourceType);
-        }
-
-        for (const prop of Object.keys(update.Properties)) {
-            describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
-                propertyChanges.push(change);
-            });
+        pushDownFirstAdditions(update);
+        for (const key of Object.keys(update)) {
+            switch (key) {
+            case 'Properties':
+                for (const prop of Object.keys(update.Properties)) {
+                    describeChanges(resourceType, prop, update.Properties[prop]).forEach(change => {
+                        propertyChanges.push(change);
+                    });
+                }
+                break;
+            case 'Attributes':
+                for (const attr of Object.keys(update.Attributes)) {
+                    describeChanges(resourceType, attr, update.Attributes[attr]).forEach(change => {
+                        attributeChanges.push(change);
+                    });
+                }
+                break;
+            default:
+                throw new Error(`Unexpected update to ${resourceType}: ${key}`);
+            }
         }
     }
 
@@ -95,6 +113,19 @@ async function main() {
             describeChanges(propertyType, prop, update.Properties[prop]).forEach(change => {
                 propertyTypeChanges.push(change);
             });
+        }
+    }
+
+    function pushDownFirstAdditions(update: any) {
+        for (const key of Object.keys(update)) {
+            const added = isAdded(key);
+            if (!added) { continue; }
+            const data = update[key];
+            delete update[key];
+            update[added] = {};
+            for (const subKey of Object.keys(data)) {
+                update[added][`${subKey}__added`] = data[subKey];
+            }
         }
     }
 
@@ -137,9 +168,30 @@ async function main() {
             return changes;
         }
 
-        for (const key of Object.keys(update)) {
-            for (const change of describeChanges(namespace, `${prefix}.${key}`, update[key])) {
-                changes.push(change);
+        if (Array.isArray(update)) {
+            changes.push(`* ${namespace} ${prefix} (__changed__)`);
+            for (const entry of update) {
+                if (entry.length !== 2) {
+                    throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
+                }
+                switch (entry[0]) {
+                case '+':
+                    changes.push(`  * Added ${entry[1]}`);
+                    break;
+                case '-':
+                    throw new Error(`Something awkward happened: ${entry[1]} was deleted from ${namespace} ${prefix}!`);
+                case ' ':
+                    // This entry is "context"
+                    break;
+                default:
+                    throw new Error(`Unexpected array diff entry: ${JSON.stringify(entry)}`);
+                }
+            }
+        } else {
+            for (const key of Object.keys(update)) {
+                for (const change of describeChanges(namespace, `${prefix}.${key}`, update[key])) {
+                    changes.push(change);
+                }
             }
         }
 
@@ -148,7 +200,7 @@ async function main() {
 }
 
 main().catch(e => {
-    process.stderr.write(e.toString());
+    process.stderr.write(e.stack);
     process.stderr.write('\n');
     process.exit(1);
 });
