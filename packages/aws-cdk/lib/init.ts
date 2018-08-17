@@ -181,16 +181,14 @@ async function assertIsEmptyDirectory() {
 }
 
 async function initializeGitRepository() {
-    if (await isInGitRepository(process.cwd())) { return false; }
+    if (await isInGitRepository(process.cwd())) { return; }
     print('Initializing a new git repository...');
     try {
         await execute('git', 'init');
         await execute('git', 'add', '.');
         await execute('git', 'commit', '--message="Initial commit"', '--no-gpg-sign');
-        return true;
     } catch (e) {
-        error('Error initializing git repository; you will have to do this by hand.');
-        return false;
+        warning('Unable to initialize git repository for your project.');
     }
 }
 
