@@ -12,7 +12,7 @@
 
 ## [UNRELEASED]
 
-* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.6.0`
+* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.6.0` ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/594))
   + **New Resource Types**
     - AWS::AmazonMQ::Broker
     - AWS::AmazonMQ::Configuration
@@ -72,7 +72,7 @@
       - Old: true
       - New: false
 
-* __@aws-cdk/cfnspec__: Updated Serverless Application Model (SAM) Resource Specification
+* __@aws-cdk/cfnspec__: Updated Serverless Application Model (SAM) Resource Specification ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/594))
   + **Property Changes**
     - AWS::Serverless::Api MethodSettings (__added__)
   + **Property Type Changes**
