@@ -13,6 +13,8 @@
 ## [UNRELEASED]
 
 * __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.6.0` ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/594))
+  + **New AWS Construct Library**
+    - `@aws-cdk/aws-sagemaker` supports AWS::SageMaker resources
   + **New Resource Types**
     - AWS::AmazonMQ::Broker
     - AWS::AmazonMQ::Configuration
