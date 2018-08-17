@@ -118,7 +118,7 @@ A useful shell alias would use the directory name as a scope:
 
 ```bash
 # add to your ~/.zshrc or ~/.bashrc
-alias lr='lerna run --stream --scope $(basename $PWD)'
+alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name")'
 
 # more sugar
 alias lw='lr watch &'
