@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
+import { SubnetType, VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
  */
@@ -118,44 +118,6 @@ export enum DefaultInstanceTenancy {
 }
 
 /**
- * The type of Subnet
- */
-export enum SubnetType {
-
-    /**
-     * Isolated Subnets do not route Outbound traffic
-     *
-     * This can be good for subnets with RDS or
-     * Elasticache endpoints
-     */
-    Isolated = 1,
-
-    /**
-     * Subnet that routes to the internet, but not vice versa.
-     *
-     * Instances in a private subnet can connect to the Internet, but will not
-     * allow connections to be initiated from the Internet.
-     *
-     * Outbound traffic will be routed via a NAT Gateway. Preference being in
-     * the same AZ, but if not available will use another AZ. This is common for
-     * experimental cost conscious accounts or accounts where HA outbound
-     * traffic is not needed.
-     */
-    Private = 2,
-
-    /**
-     * Subnet connected to the Internet
-     *
-     * Instances in a Public subnet can connect to the Internet and can be
-     * connected to from the Internet as long as they are launched with public IPs.
-     *
-     * Public subnets route outbound traffic via an Internet Gateway.
-     */
-    Public = 3
-
-}
-
-/**
  * Specify configuration parameters for a VPC to be built
  */
 export interface SubnetConfiguration {
@@ -249,6 +211,11 @@ export class VpcNetwork extends VpcNetworkRef {
     public readonly isolatedSubnets: VpcSubnetRef[] = [];
 
     /**
+     * AZs for this VPC
+     */
+    public readonly availabilityZones: string[];
+
+    /**
      * Maximum Number of NAT Gateways used to control cost
      *
      * @default {VpcNetworkProps.maxAZs}
@@ -274,13 +241,6 @@ export class VpcNetwork extends VpcNetworkRef {
      * Subnet configurations for this VPC
      */
     private subnetConfiguration: SubnetConfiguration[] = [];
-
-    /**
-     * Maximum AZs to Uses for this VPC
-     *
-     * @default All
-     */
-    private availabilityZones: string[];
 
     /**
      * VpcNetwork creates a VPC that spans a whole region.

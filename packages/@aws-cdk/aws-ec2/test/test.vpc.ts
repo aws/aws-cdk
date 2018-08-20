@@ -255,7 +255,62 @@ export = {
             }));
             test.done();
         }
+    },
 
+    'can select public subnets'(test: Test) {
+        // GIVEN
+        const stack = getTestStack();
+        const vpc = new VpcNetwork(stack, 'VPC');
+
+        // WHEN
+        const nets = vpc.subnets({ subnetsToUse: SubnetType.Public });
+
+        // THEN
+        test.deepEqual(nets, vpc.publicSubnets);
+
+        test.done();
+    },
+
+    'can select isolated subnets'(test: Test) {
+        // GIVEN
+        const stack = getTestStack();
+        const vpc = new VpcNetwork(stack, 'VPC', {
+            subnetConfiguration: [
+                { subnetType: SubnetType.Private, name: 'Private' },
+                { subnetType: SubnetType.Isolated, name: 'Isolated' },
+            ]
+        });
+
+        // WHEN
+        const nets = vpc.subnets({ subnetsToUse: SubnetType.Isolated });
+
+        // THEN
+        test.deepEqual(nets, vpc.isolatedSubnets);
+
+        test.done();
+    },
+
+    'can select isolated subnets after exporting and importing'(test: Test) {
+        // GIVEN
+        const stack1 = getTestStack();
+        const stack2 = getTestStack();
+        const vpc1 = new VpcNetwork(stack1, 'VPC', {
+            subnetConfiguration: [
+                { subnetType: SubnetType.Private, name: 'Private' },
+                { subnetType: SubnetType.Isolated, name: 'Isolated' },
+            ]
+        });
+
+        const importedVpc = VpcNetwork.import(stack2, 'VPC', vpc1.export());
+
+        // WHEN
+        const nets = importedVpc.subnets({ subnetsToUse: SubnetType.Isolated });
+
+        // THEN
+        test.equal(3, importedVpc.isolatedSubnets.length);
+        test.deepEqual(nets, importedVpc.isolatedSubnets);
+
+        test.done();
     },
 };
 

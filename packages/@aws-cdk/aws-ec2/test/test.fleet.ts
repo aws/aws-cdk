@@ -241,5 +241,6 @@ function mockVpc(stack: Stack) {
         availabilityZones: [ 'az1' ],
         publicSubnetIds: [ new VpcSubnetId('pub1') ],
         privateSubnetIds: [ new VpcSubnetId('pri1') ],
+        isolatedSubnetIds: [],
     });
 }
