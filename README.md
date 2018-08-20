@@ -45,7 +45,7 @@ on AWS.
 * For a detailed walkthrough, see [Getting Started] in the AWS CDK [User Guide]
 * See [Manual Installation](./MANUAL_INSTALLATION.md) for installing the CDK from a signed .zip file
 
-Install the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
+Install or update the [AWS CDK Toolkit] from npm (requires [Node.js ≥ 8.11.x](https://nodejs.org/en/download)):
 
 ```bash
 $ npm i -g aws-cdk
