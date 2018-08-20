@@ -31,8 +31,8 @@
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*",
                 "s3:DeleteObject*",
+                "s3:PutObject*",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -156,6 +156,7 @@
                   "Version": "1"
                 },
                 "Configuration": {
+                  "StackName": "IntegTest-TestActionStack",
                   "ActionMode": "CHANGE_SET_REPLACE",
                   "ChangeSetName": "ChangeSetIntegTest",
                   "TemplatePath": "SourceArtifact::test.yaml",
@@ -164,8 +165,7 @@
                       "CfnChangeSetRole6F05F6FC",
                       "Arn"
                     ]
-                  },
-                  "StackName": "IntegTest-TestActionStack"
+                  }
                 },
                 "InputArtifacts": [
                   {
