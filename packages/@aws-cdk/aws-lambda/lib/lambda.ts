@@ -128,7 +128,7 @@ export interface FunctionProps {
  * This construct does not yet reproduce all features from the underlying resource
  * library.
  */
-export class Function extends FunctionRef implements ec2.IConnectable {
+export class Function extends FunctionRef {
     /**
      * Name of this function
      */
@@ -154,21 +154,12 @@ export class Function extends FunctionRef implements ec2.IConnectable {
      */
     public readonly handler: string;
 
-    /**
-     * The security group associated with this function
-     *
-     * (Only set if associated with a VPC).
-     */
-    public securityGroup?: ec2.SecurityGroupRef;
-
     protected readonly canCreatePermissions = true;
 
     /**
      * Environment variables for this function
      */
     private readonly environment?: { [key: string]: any };
-
-    private _connections?: ec2.Connections;
 
     constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
         super(parent, name);
@@ -268,18 +259,6 @@ export class Function extends FunctionRef implements ec2.IConnectable {
         });
     }
 
-    /**
-     * Access the Connections object
-     *
-     * Will fail if not a VPC-enabled Lambda Function
-     */
-    public get connections(): ec2.Connections {
-        if (!this._connections) {
-            throw new Error('Only VPC-associated Lambda Functions can have their security groups managed.');
-        }
-        return this.connections;
-    }
-
     private renderEnvironment() {
         if (!this.environment || Object.keys(this.environment).length === 0) {
             return undefined;
@@ -299,19 +278,19 @@ export class Function extends FunctionRef implements ec2.IConnectable {
     private addToVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
         if (!props.vpc) { return undefined; }
 
-        this.securityGroup = props.securityGroup;
-        if (!this.securityGroup) {
-            this.securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+        let securityGroup = props.securityGroup;
+        if (!securityGroup) {
+            securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
                 vpc: props.vpc,
                 description: 'Automatic security group for Lambda Function ' + this.uniqueId,
             });
         }
 
-        this._connections = new ec2.Connections({ securityGroup: this.securityGroup });
+        this._connections = new ec2.Connections({ securityGroup });
 
         return {
             subnetIds: props.vpc.subnets(props.vpcPlacement).map(s => s.subnetId),
-            securityGroupIds: [this.securityGroup.securityGroupId]
+            securityGroupIds: [securityGroup.securityGroupId]
         };
     }
 }
