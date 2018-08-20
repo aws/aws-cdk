@@ -1,6 +1,7 @@
 import { exec as _exec } from 'child_process';
 import fs = require('fs-extra');
 import { Test } from 'nodeunit';
+import os = require('os');
 import path = require('path');
 import { promisify } from 'util';
 import { md5hash, zipDirectory } from '../lib/archive';
@@ -8,10 +9,10 @@ const exec = promisify(_exec);
 
 export = {
     async 'zipDirectory can take a directory and produce a zip from it'(test: Test) {
-        const stagingDir = await fs.mkdtemp('/tmp/test.archive');
+        const stagingDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive'));
         const zipFile = path.join(stagingDir, 'output.zip');
         const originalDir = path.join(__dirname, 'test-archive');
-        const extractDir = await fs.mkdtemp('/tmp/test.archive.extract');
+        const extractDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive.extract'));
         await zipDirectory(originalDir, zipFile);
 
         // unzip and verify that the resulting tree is the same
@@ -29,7 +30,7 @@ export = {
     },
 
     async 'md5 hash of a zip stays consistent across invocations'(test: Test) {
-        const stagingDir = await fs.mkdtemp('/tmp/test.archive');
+        const stagingDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive'));
         const zipFile1 = path.join(stagingDir, 'output.zip');
         const zipFile2 = path.join(stagingDir, 'output.zip');
         const originalDir = path.join(__dirname, 'test-archive');

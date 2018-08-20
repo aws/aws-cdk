@@ -307,9 +307,10 @@ export = {
               "S3Bucket": {
                 "Ref": "MyLambdaCodeS3BucketC82A5870"
               },
-              "S3Key": {
-                "Ref": "MyLambdaCodeS3ObjectKeyA7272AC7"
-              }
+              "S3Key": { "Fn::Join": [ "", [
+                {"Fn::Select": [0, {"Fn::Split": ["||", {"Ref": "MyLambdaCodeS3VersionKey47762537"}]}]},
+                {"Fn::Select": [1, {"Fn::Split": ["||", {"Ref": "MyLambdaCodeS3VersionKey47762537"}]}]},
+              ]]}
             },
             "Handler": "index.handler",
             "Role": {

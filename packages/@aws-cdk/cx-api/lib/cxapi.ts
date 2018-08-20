@@ -109,9 +109,29 @@ export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
 
 export const ASSET_METADATA = 'aws:cdk:asset';
 export interface AssetMetadataEntry {
+    /**
+     * Path on disk to the asset
+     */
     path: string;
+
+    /**
+     * Logical identifier for the asset
+     */
+    id: string;
+
+    /**
+     * Requested packaging style
+     */
     packaging: 'zip' | 'file';
+
+    /**
+     * Name of parameter where S3 bucket should be passed in
+     */
     s3BucketParameter: string;
+
+    /**
+     * Name of parameter where S3 key should be passed in
+     */
     s3KeyParameter: string;
 }
 
@@ -129,3 +149,15 @@ export const WARNING_METADATA_KEY = 'aws:cdk:warning';
  * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
  */
 export const ERROR_METADATA_KEY = 'aws:cdk:error';
+
+/**
+ * Separator string that separates the prefix separator from the object key separator.
+ *
+ * Asset keys will look like:
+ *
+ *      /assets/MyConstruct12345678/||abcdef12345.zip
+ *
+ * This allows us to encode both the prefix and the full location in a single
+ * CloudFormation Template Parameter.
+ */
+export const ASSET_PREFIX_SEPARATOR = '||';
