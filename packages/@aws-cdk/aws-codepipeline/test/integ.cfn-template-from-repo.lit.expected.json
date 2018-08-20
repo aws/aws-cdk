@@ -31,8 +31,8 @@
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*",
                 "s3:DeleteObject*",
+                "s3:PutObject*",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -144,6 +144,7 @@
                   "Version": "1"
                 },
                 "Configuration": {
+                  "StackName": "OurStack",
                   "ActionMode": "CHANGE_SET_REPLACE",
                   "ChangeSetName": "StagedChangeSet",
                   "TemplatePath": "SourceArtifact::template.yaml",
@@ -153,8 +154,7 @@
                       "PipelineDeployPrepareChangesRoleD28C853C",
                       "Arn"
                     ]
-                  },
-                  "StackName": "OurStack"
+                  }
                 },
                 "InputArtifacts": [
                   {
@@ -185,9 +185,9 @@
                   "Version": "1"
                 },
                 "Configuration": {
+                  "StackName": "OurStack",
                   "ActionMode": "CHANGE_SET_EXECUTE",
-                  "ChangeSetName": "StagedChangeSet",
-                  "StackName": "OurStack"
+                  "ChangeSetName": "StagedChangeSet"
                 },
                 "InputArtifacts": [],
                 "Name": "ExecuteChanges",
