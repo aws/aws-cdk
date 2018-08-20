@@ -52,6 +52,7 @@
     "pkglint": "^0.8.2"
   },
   "dependencies": {
+    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
     "@aws-cdk/cdk": "^0.8.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
