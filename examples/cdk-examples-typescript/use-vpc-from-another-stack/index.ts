@@ -3,9 +3,9 @@
 // support multi-stack deployments since we have no good way of
 // ordering stack deployments. So run this test by hand for now
 // until we have that.
-import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import cdk = require('@aws-cdk/cdk');
 
 const app = new cdk.App(process.argv);
 const vpcStack = new cdk.Stack(app, 'VPCStack');
