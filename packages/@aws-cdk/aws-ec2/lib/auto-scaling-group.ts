@@ -1,6 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import iam = require('@aws-cdk/aws-iam');
-import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { Connections, IConnectable } from './connections';
 import { InstanceType } from './instance-types';
@@ -62,7 +61,7 @@ export interface AutoScalingGroupProps {
      * SNS topic to send notifications about fleet changes
      * @default No fleet change notifications will be sent.
      */
-    notificationsTopic?: sns.cloudformation.TopicResource;
+    notificationsTopic?: IAutoScalingNotificationTarget;
 
     /**
      * Whether the instances can initiate connections to anywhere by default
@@ -152,7 +151,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         if (props.notificationsTopic) {
             asgProps.notificationConfigurations = [];
             asgProps.notificationConfigurations.push({
-                topicArn: props.notificationsTopic.ref,
+                topicArn: props.notificationsTopic.asAutoScalingNotificationTarget(),
                 notificationTypes: [
                     "autoscaling:EC2_INSTANCE_LAUNCH",
                     "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
@@ -191,4 +190,20 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
     public addToRolePolicy(statement: cdk.PolicyStatement) {
         this.role.addToPolicy(statement);
     }
+}
+
+/**
+ * Interface for subscribing an SNS topic to AutoScalingGroup notifications
+ *
+ * (This interface exists to reverse the dependency between the aws-sns
+ * and aws-ec2 packages.)
+ */
+export interface IAutoScalingNotificationTarget {
+    /**
+     * ARN of the topic to send notifications to.
+     */
+    asAutoScalingNotificationTarget(): cdk.Arn;
+
+    // NOTE: this cannot just be "topicArn: Arn" because of lack of return type
+    // covariance in jsii.
 }
