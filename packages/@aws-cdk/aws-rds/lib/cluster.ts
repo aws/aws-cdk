@@ -183,7 +183,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
                                        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                                        undefined;
 
-            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.usePublicSubnets;
+            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
 
             const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
                 // Link to cluster
