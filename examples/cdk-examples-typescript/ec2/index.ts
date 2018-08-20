@@ -1,3 +1,4 @@
+import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 
@@ -7,7 +8,7 @@ class AppWithVpc extends cdk.Stack {
 
         const vpc = new ec2.VpcNetwork(this, 'MyVpc');
 
-        const asg = new ec2.AutoScalingGroup(this, 'MyASG', {
+        const asg = new autoscaling.AutoScalingGroup(this, 'MyASG', {
             vpc,
             instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
             machineImage: new ec2.AmazonLinuxImage()
@@ -33,7 +34,7 @@ class MyApp extends cdk.Stack {
 
         const vpc = ec2.VpcNetwork.import(this, 'VPC', props.infra.vpc);
 
-        const fleet = new ec2.AutoScalingGroup(this, 'MyASG', {
+        const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
             vpc,
             instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
             machineImage: new ec2.AmazonLinuxImage()

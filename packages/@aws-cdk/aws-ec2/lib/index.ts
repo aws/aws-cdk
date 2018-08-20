@@ -1,4 +1,3 @@
-export * from './auto-scaling-group';
 export * from './connections';
 export * from './instance-types';
 export * from './load-balancer';

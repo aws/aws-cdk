@@ -23,6 +23,7 @@
     "pkglint": "^0.8.2"
   },
   "dependencies": {
+    "@aws-cdk/aws-autoscaling": "^0.8.2",
     "@aws-cdk/aws-cloudformation": "^0.8.2",
     "@aws-cdk/aws-cognito": "^0.8.2",
     "@aws-cdk/aws-dynamodb": "^0.8.2",
