@@ -4,7 +4,8 @@
 // ordering stack deployments. So run this test by hand for now
 // until we have that.
 import cdk = require('@aws-cdk/cdk');
-import ec2 = require('../lib');
+import autoscaling = require('@aws-cdk/aws-autoscaling');
+import ec2 = require('@aws-cdk/aws-ec2');
 
 const app = new cdk.App(process.argv);
 const vpcStack = new cdk.Stack(app, 'VPCStack');
@@ -17,7 +18,7 @@ const appStack = new cdk.Stack(app, 'AppStack');
 
 const importedVpc = ec2.VpcNetworkRef.import(appStack, 'VPC', exportedVpc.export());
 
-const asg = new ec2.AutoScalingGroup(appStack, 'ASG', {
+const asg = new autoscaling.AutoScalingGroup(appStack, 'ASG', {
     vpc: importedVpc,
     instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Micro),
     machineImage: new ec2.AmazonLinuxImage()
