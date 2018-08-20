@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, Stack } from '@aws-cdk/cdk';
+import { AvailabilityZoneProvider, resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { DefaultInstanceTenancy, SubnetType, VpcNetwork } from '../lib';
 
@@ -257,6 +257,24 @@ export = {
         }
 
     },
+
+    'export/import'(test: Test) {
+        // GIVEN
+        const stack1 = getTestStack();
+        const stack2 = getTestStack();
+
+        const vpc1 = new VpcNetwork(stack1, 'TheVPC', { cidr: '192.168.0.0/16' });
+
+        // WHEN
+        const vpc2 = VpcNetwork.import(stack2, 'VPC2', vpc1.export());
+
+        // THEN
+        test.deepEqual(resolve(vpc2.vpcId), {
+            'Fn::ImportValue': 'TestStack:TheVPCVpcIdD346CDBA'
+        });
+
+        test.done();
+    }
 };
 
 function getTestStack(): Stack {
