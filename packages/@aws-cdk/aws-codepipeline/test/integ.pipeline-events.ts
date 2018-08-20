@@ -31,7 +31,6 @@ new codebuild.PipelineBuildAction(stack, 'CodeBuildAction', {
 });
 
 const topic = new sns.Topic(stack, 'MyTopic');
-topic.subscribeEmail('benisrae', 'benisrae@amazon.com');
 
 pipeline.onStateChange('OnPipelineStateChange').addTarget(topic, {
     textTemplate: 'Pipeline <pipeline> changed state to <state>',
