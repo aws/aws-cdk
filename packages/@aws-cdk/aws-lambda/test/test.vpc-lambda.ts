@@ -44,29 +44,29 @@ export = {
 
         public 'participates in Connections objects'(test: Test) {
             // GIVEN
-            const securityGroup = new ec2.SecurityGroup(this.stack, 'SomeSecurityGroup');
+            const securityGroup = new ec2.SecurityGroup(this.stack, 'SomeSecurityGroup', { vpc: this.vpc });
             const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
 
             // WHEN
-            this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call ASG');
+            this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
-            // THEN: rule to generated security group to connect to imported
+            // THEN: SomeSecurityGroup accepts connections from Lambda
             expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
-                GroupId: { "Fn::GetAtt": [ "ASGInstanceSecurityGroup0525485D", "GroupId" ] },
+                GroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId"]},
                 IpProtocol: "tcp",
-                Description: "Connect there",
-                DestinationSecurityGroupId: "sg-12345",
+                Description: "Lambda can call connectable",
+                DestinationSecurityGroupId: {"Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ]},
                 FromPort: 0,
                 ToPort: 65535
             }));
 
-            // THEN: rule to imported security group to allow connections from generated
+            // THEN: Lambda can connect to SomeSecurityGroup
             expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
                 IpProtocol: "tcp",
-                Description: "Connect there",
+                Description: "Lambda can call connectable",
                 FromPort: 0,
-                GroupId: "sg-12345",
-                SourceSecurityGroupId: { "Fn::GetAtt": [ "ASGInstanceSecurityGroup0525485D", "GroupId" ] },
+                GroupId: { "Fn::GetAtt": ["SomeSecurityGroupEF219AD6", "GroupId"] },
+                SourceSecurityGroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId" ]},
                 ToPort: 65535
             }));
 
@@ -74,9 +74,55 @@ export = {
         }
 
         public 'can still make Connections after export/import'(test: Test) {
+            // GIVEN
+            const stack2 = new cdk.Stack();
+            const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc: this.vpc });
+            const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
+
+            // WHEN
+            const importedLambda = lambda.FunctionRef.import(stack2, 'Lambda', this.lambda.export());
+            importedLambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
+
+            // THEN: SomeSecurityGroup accepts connections from Lambda
+            expect(stack2).to(haveResource("AWS::EC2::SecurityGroupEgress", {
+                GroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+                IpProtocol: "tcp",
+                Description: "Lambda can call connectable",
+                DestinationSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+                FromPort: 0,
+                ToPort: 65535
+            }));
+
+            // THEN: Lambda can connect to SomeSecurityGroup
+            expect(stack2).to(haveResource("AWS::EC2::SecurityGroupIngress", {
+                IpProtocol: "tcp",
+                Description: "Lambda can call connectable",
+                FromPort: 0,
+                GroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
+                SourceSecurityGroupId: { "Fn::ImportValue": "LambdaSecurityGroupId9A2717B3" },
+                ToPort: 65535
+            }));
+
             test.done();
         }
     }),
+
+    'lambda without VPC throws Error upon accessing connections'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const lambdaFn = new lambda.Function(stack, 'Lambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NodeJS610,
+        });
+
+        // WHEN
+        test.throws(() => {
+            lambdaFn.connections.allowToAnyIPv4(new ec2.TcpAllPorts(), 'Reach for the world Lambda!');
+        });
+
+        test.done();
+    }
 };
 
 /**
