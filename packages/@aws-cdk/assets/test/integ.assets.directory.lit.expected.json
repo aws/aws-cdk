@@ -4,9 +4,9 @@
       "Type": "String",
       "Description": "S3 bucket for asset \"aws-cdk-asset-test/SampleAsset\""
     },
-    "SampleAssetS3ObjectKey6F5D200B": {
+    "SampleAssetS3VersionKey3E106D34": {
       "Type": "String",
-      "Description": "S3 object for asset \"aws-cdk-asset-test/SampleAsset\""
+      "Description": "S3 key for asset version \"aws-cdk-asset-test/SampleAsset\""
     }
   },
   "Resources": {
@@ -76,7 +76,25 @@
                       },
                       "/",
                       {
-                        "Ref": "SampleAssetS3ObjectKey6F5D200B"
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "SampleAssetS3VersionKey3E106D34"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            "*"
+                          ]
+                        ]
                       }
                     ]
                   ]
