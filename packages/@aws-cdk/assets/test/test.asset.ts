@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -19,24 +19,16 @@ export = {
         test.ok(entry, 'found metadata entry');
         test.deepEqual(entry!.data, {
             path: dirPath,
+            id: 'MyAsset',
             packaging: 'zip',
             s3BucketParameter: 'MyAssetS3Bucket68C9B344',
-            s3KeyParameter: 'MyAssetS3ObjectKeyC07605E4'
+            s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
         });
 
-        // verify that now the template contains two parameters for this asset
-        expect(stack).toMatch({
-          Parameters: {
-            MyAssetS3Bucket68C9B344: {
-              Type: "String",
-              Description: 'S3 bucket for asset "MyAsset"'
-            },
-            MyAssetS3ObjectKeyC07605E4: {
-              Type: "String",
-              Description: 'S3 object for asset "MyAsset"'
-            }
-          }
-        });
+        // verify that now the template contains parameters for this asset
+        const template = stack.toCloudFormation();
+        test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
+        test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
         test.done();
     },
@@ -50,22 +42,15 @@ export = {
         test.deepEqual(entry!.data, {
             path: filePath,
             packaging: 'file',
+            id: 'MyAsset',
             s3BucketParameter: 'MyAssetS3Bucket68C9B344',
-            s3KeyParameter: 'MyAssetS3ObjectKeyC07605E4'
+            s3KeyParameter: 'MyAssetS3VersionKey68E1A45D',
         });
 
-        expect(stack).toMatch({
-          Parameters: {
-            MyAssetS3Bucket68C9B344: {
-              Type: "String",
-              Description: 'S3 bucket for asset "MyAsset"'
-            },
-            MyAssetS3ObjectKeyC07605E4: {
-              Type: "String",
-              Description: 'S3 object for asset "MyAsset"'
-            }
-          }
-        });
+        // verify that now the template contains parameters for this asset
+        const template = stack.toCloudFormation();
+        test.equal(template.Parameters.MyAssetS3Bucket68C9B344.Type, 'String');
+        test.equal(template.Parameters.MyAssetS3VersionKey68E1A45D.Type, 'String');
 
         test.done();
     },
@@ -82,188 +67,28 @@ export = {
 
         asset.grantRead(group);
 
-        expect(stack).toMatch({
-          Resources: {
-            MyUserDC45028B: {
-              Type: "AWS::IAM::User"
-            },
-            MyUserDefaultPolicy7B897426: {
-              Type: "AWS::IAM::Policy",
-              Properties: {
-                PolicyDocument: {
-                  Statement: [
-                    {
-                      Action: [
-                        "s3:GetObject*",
-                        "s3:GetBucket*",
-                        "s3:List*"
-                      ],
-                      Effect: "Allow",
-                      Resource: [
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn",
-                              ":",
-                              {
-                                Ref: "AWS::Partition"
-                              },
-                              ":",
-                              "s3",
-                              ":",
-                              "",
-                              ":",
-                              "",
-                              ":",
-                              {
-                                Ref: "MyAssetS3Bucket68C9B344"
-                              }
-                            ]
-                          ]
-                        },
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn",
-                                    ":",
-                                    {
-                                      Ref: "AWS::Partition"
-                                    },
-                                    ":",
-                                    "s3",
-                                    ":",
-                                    "",
-                                    ":",
-                                    "",
-                                    ":",
-                                    {
-                                      Ref: "MyAssetS3Bucket68C9B344"
-                                    }
-                                  ]
-                                ]
-                              },
-                              "/",
-                              {
-                                Ref: "MyAssetS3ObjectKeyC07605E4"
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    }
-                  ],
-                  Version: "2012-10-17"
-                },
-                PolicyName: "MyUserDefaultPolicy7B897426",
-                Users: [
-                  {
-                    Ref: "MyUserDC45028B"
-                  }
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+                Resource: [
+                  {"Fn::Join": ["", ["arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
+                  {"Fn::Join": [ "", [
+                    {"Fn::Join": ["", [ "arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
+                    "/",
+                    {"Fn::Join": ["", [
+                        {"Fn::Select": [
+                            0,
+                            {"Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D"}]}
+                        ]},
+                        "*"
+                    ]]}
+                  ]]}
                 ]
-              }
-            },
-            MyGroupCBA54B1B: {
-              Type: "AWS::IAM::Group"
-            },
-            MyGroupDefaultPolicy72C41231: {
-              Type: "AWS::IAM::Policy",
-              Properties: {
-                Groups: [
-                  {
-                    Ref: "MyGroupCBA54B1B"
-                  }
-                ],
-                PolicyDocument: {
-                  Statement: [
-                    {
-                      Action: [
-                        "s3:GetObject*",
-                        "s3:GetBucket*",
-                        "s3:List*"
-                      ],
-                      Effect: "Allow",
-                      Resource: [
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "arn",
-                              ":",
-                              {
-                                Ref: "AWS::Partition"
-                              },
-                              ":",
-                              "s3",
-                              ":",
-                              "",
-                              ":",
-                              "",
-                              ":",
-                              {
-                                Ref: "MyAssetS3Bucket68C9B344"
-                              }
-                            ]
-                          ]
-                        },
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn",
-                                    ":",
-                                    {
-                                      Ref: "AWS::Partition"
-                                    },
-                                    ":",
-                                    "s3",
-                                    ":",
-                                    "",
-                                    ":",
-                                    "",
-                                    ":",
-                                    {
-                                      Ref: "MyAssetS3Bucket68C9B344"
-                                    }
-                                  ]
-                                ]
-                              },
-                              "/",
-                              {
-                                Ref: "MyAssetS3ObjectKeyC07605E4"
-                              }
-                            ]
-                          ]
-                        }
-                      ]
-                    }
-                  ],
-                  Version: "2012-10-17"
-                },
-                PolicyName: "MyGroupDefaultPolicy72C41231"
-              }
             }
-          },
-          Parameters: {
-            MyAssetS3Bucket68C9B344: {
-              Type: "String",
-              Description: "S3 bucket for asset \"MyAsset\""
-            },
-            MyAssetS3ObjectKeyC07605E4: {
-              Type: "String",
-              Description: "S3 object for asset \"MyAsset\""
-            }
-          }
-        });
+          ]
+        }}));
 
         test.done();
     },
