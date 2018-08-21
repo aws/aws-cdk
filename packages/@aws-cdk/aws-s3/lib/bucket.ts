@@ -161,17 +161,59 @@ export abstract class BucketRef extends cdk.Construct {
     }
 
     /**
-     * Temporary API for granting read permissions for this bucket and it's
-     * contents to an IAM principal (Role/Group/User).
+     * Grant read permissions for this bucket and it's contents to an IAM
+     * principal (Role/Group/User).
      *
-     * If an encryption key is used, permission to ues the key to decrypt the
-     * contents of the bucket will also be granted.
+     * If encryption is used, permission to use the key to decrypt the contents
+     * of the bucket will also be granted to the same principal.
+     *
+     * @param identity The principal
+     * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
      */
     public grantRead(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
-        if (!identity) {
-            return;
-        }
-        this.grant(identity, objectsKeyPattern, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS);
+        this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
+            this.bucketArn,
+            this.arnForObjects(objectsKeyPattern));
+    }
+
+    /**
+     * Grant write permissions to this bucket to an IAM principal.
+     *
+     * If encryption is used, permission to use the key to encrypt the contents
+     * of written files will also be granted to the same principal.
+     *
+     * @param identity The principal
+     * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+     */
+    public grantWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
+        this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+            this.bucketArn,
+            this.arnForObjects(objectsKeyPattern));
+    }
+
+    /**
+     * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
+     *
+     * If encryption is used, permission to use the key to encrypt the contents
+     * of written files will also be granted to the same principal.
+     * @param identity The principal
+     * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+     */
+    public grantPut(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
+        this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+            this.arnForObjects(objectsKeyPattern));
+    }
+
+    /**
+     * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+     * in this bucket.
+     *
+     * @param identity The principal
+     * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+     */
+    public grantDelete(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
+        this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
+            this.arnForObjects(objectsKeyPattern));
     }
 
     /**
@@ -180,21 +222,31 @@ export abstract class BucketRef extends cdk.Construct {
      *
      * If an encryption key is used, permission to use the key for
      * encrypt/decrypt will also be granted.
+     *
+     * @param identity The principal
+     * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
      */
     public grantReadWrite(identity?: iam.IPrincipal, objectsKeyPattern: any = '*') {
+        const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
+        const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
+
+        this.grant(identity,
+            bucketActions,
+            keyActions,
+            this.bucketArn,
+            this.arnForObjects(objectsKeyPattern));
+    }
+
+    private grant(identity: iam.IPrincipal | undefined,
+                  bucketActions: string[],
+                  keyActions: string[],
+                  resource: cdk.Arn, ...otherResources: cdk.Arn[]) {
+
         if (!identity) {
             return;
         }
-        const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
-        const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
-        this.grant(identity, objectsKeyPattern, bucketActions, keyActions);
-    }
 
-    private grant(identity: iam.IPrincipal, objectsKeyPattern: any, bucketActions: string[], keyActions: string[]) {
-        const resources = [
-            this.bucketArn,
-            this.arnForObjects(objectsKeyPattern)
-        ];
+        const resources = [ resource, ...otherResources ];
 
         identity.addToPolicy(new cdk.PolicyStatement()
             .addResources(...resources)
