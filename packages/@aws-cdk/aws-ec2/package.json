@@ -53,10 +53,8 @@
     "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.8.2",
     "@aws-cdk/aws-elasticloadbalancing": "^0.8.2",
     "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/aws-sns": "^0.8.2",
     "@aws-cdk/cdk": "^0.8.2",
     "@aws-cdk/util": "^0.8.2"
   },

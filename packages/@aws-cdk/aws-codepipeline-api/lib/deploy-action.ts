@@ -1,10 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import { Action, ActionArtifactBounds, ActionCategory, CommonActionProps } from "./action";
+import { Artifact } from './artifact';
 
 export interface DeployActionProps extends CommonActionProps {
     provider: string;
 
     artifactBounds: ActionArtifactBounds;
+
+    inputArtifact?: Artifact;
 
     configuration?: any;
 }
@@ -18,5 +21,9 @@ export abstract class DeployAction extends Action {
             artifactBounds: props.artifactBounds,
             configuration: props.configuration,
         });
+
+        if (props.inputArtifact) {
+            this.addInputArtifact(props.inputArtifact);
+        }
     }
 }
