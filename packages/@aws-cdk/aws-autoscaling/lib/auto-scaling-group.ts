@@ -187,19 +187,3 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         this.role.addToPolicy(statement);
     }
 }
-
-/**
- * Interface for subscribing an SNS topic to AutoScalingGroup notifications
- *
- * (This interface exists to reverse the dependency between the aws-sns
- * and aws-ec2 packages.)
- */
-export interface IAutoScalingNotificationTarget {
-    /**
-     * ARN of the topic to send notifications to.
-     */
-    asAutoScalingNotificationTarget(): cdk.Arn;
-
-    // NOTE: this cannot just be "topicArn: Arn" because of lack of return type
-    // covariance in jsii.
-}

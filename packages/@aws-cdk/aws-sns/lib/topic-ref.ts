@@ -1,5 +1,4 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
-import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
@@ -18,9 +17,7 @@ export class TopicArn extends cdk.Arn { }
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination,
-        ec2.IAutoScalingNotificationTarget {
-
+export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination {
     /**
      * Import a Topic defined elsewhere
      */
@@ -308,10 +305,6 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
             type: s3n.BucketNotificationDestinationType.Topic,
             dependencies: [ this.policy! ] // make sure the topic policy resource is created before the notification config
         };
-    }
-
-    public asAutoScalingNotificationTarget(): cdk.Arn {
-        return this.topicArn;
     }
 }
 
