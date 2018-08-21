@@ -1,4 +1,5 @@
-import { Construct, IDependable, Output, StringListOutput, Token } from "@aws-cdk/cdk";
+import { Construct, IDependable, Output, Token } from "@aws-cdk/cdk";
+import { ExportSubnetGroup, ImportSubnetGroup, subnetName } from './util';
 
 /**
  * The type of Subnet
@@ -41,16 +42,29 @@ export enum SubnetType {
  *
  * Constructs that allow customization of VPC placement use parameters of this
  * type to provide placement settings.
+ *
+ * By default, the instances are placed in the private subnets.
  */
 export interface VpcPlacementStrategy {
     /**
-     * What subnet type to place the instances in
+     * Place the instances in the subnets of the given type
      *
-     * By default, the instances are placed in the private subnets.
+     * At most one of `subnetsToUse` and `subnetName` can be supplied.
      *
      * @default SubnetType.Private
      */
     subnetsToUse?: SubnetType;
+
+    /**
+     * Place the instances in the subnets with the given name
+     *
+     * (This is the name supplied in subnetConfiguration).
+     *
+     * At most one of `subnetsToUse` and `subnetName` can be supplied.
+     *
+     * @default name
+     */
+    subnetName?: string;
 }
 
 /**
@@ -98,7 +112,23 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
      * Return the subnets appropriate for the placement strategy
      */
     public subnets(placement: VpcPlacementStrategy = {}): VpcSubnetRef[] {
+        if (placement.subnetsToUse !== undefined && placement.subnetName !== undefined) {
+            throw new Error('At most one of subnetsToUse and subnetName can be supplied');
+        }
+
+        // Select by name
+        if (placement.subnetName !== undefined) {
+            const allSubnets = this.privateSubnets.concat(this.publicSubnets).concat(this.isolatedSubnets);
+            const selectedSubnets = allSubnets.filter(s => subnetName(s) === placement.subnetName);
+            if (selectedSubnets.length === 0) {
+                throw new Error(`No subnets with name: ${placement.subnetName}`);
+            }
+            return selectedSubnets;
+        }
+
+        // Select by type
         if (placement.subnetsToUse === undefined) { return this.privateSubnets; }
+
         return {
             [SubnetType.Isolated]: this.isolatedSubnets,
             [SubnetType.Private]: this.privateSubnets,
@@ -110,18 +140,20 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
      * Export this VPC from the stack
      */
     public export(): VpcNetworkRefProps {
+        const pub = new ExportSubnetGroup(this, 'PublicSubnetIDs', this.publicSubnets, SubnetType.Public, this.availabilityZones.length);
+        const priv = new ExportSubnetGroup(this, 'PrivateSubnetIDs', this.privateSubnets, SubnetType.Private, this.availabilityZones.length);
+        const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
+
         return {
             vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue(),
             availabilityZones: this.availabilityZones,
-            publicSubnetIds: this.exportSubnetIds('PublicSubnetIDs', this.publicSubnets),
-            privateSubnetIds: this.exportSubnetIds('PrivateSubnetIDs', this.privateSubnets),
-            isolatedSubnetIds: this.exportSubnetIds('IsolatedSubnetIDs', this.isolatedSubnets),
+            publicSubnetIds: pub.ids,
+            publicSubnetNames: pub.names,
+            privateSubnetIds: priv.ids,
+            privateSubnetNames: priv.names,
+            isolatedSubnetIds: iso.ids,
+            isolatedSubnetNames: iso.names,
         };
-    }
-
-    private exportSubnetIds(name: string, subnets: VpcSubnetRef[]): Token[] | undefined {
-        if (subnets.length === 0) { return undefined; }
-        return new StringListOutput(this, name, { values: subnets.map(s => s.subnetId) }).makeImportValues();
     }
 }
 
@@ -160,35 +192,15 @@ class ImportedVpcNetwork extends VpcNetworkRef {
         this.vpcId = props.vpcId;
         this.availabilityZones = props.availabilityZones;
 
-        const privateSubnetIds = props.privateSubnetIds || [];
-        const publicSubnetIds = props.publicSubnetIds || [];
-        const isolatedSubnetIds = props.isolatedSubnetIds || [];
+        // tslint:disable:max-line-length
+        const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, SubnetType.Public, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames');
+        const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, SubnetType.Private, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames');
+        const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, SubnetType.Isolated, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames');
+        // tslint:enable:max-line-length
 
-        if (publicSubnetIds.length > 0 && this.availabilityZones.length !== publicSubnetIds.length) {
-            throw new Error('Must have Public subnet for every AZ');
-        }
-
-        if (privateSubnetIds.length > 0 && this.availabilityZones.length !== privateSubnetIds.length) {
-            throw new Error('Must have Private subnet for every AZ');
-        }
-
-        if (isolatedSubnetIds.length > 0 && this.availabilityZones.length !== isolatedSubnetIds.length) {
-            throw new Error('Must have Isolated subnet for every AZ');
-        }
-
-        const n = props.availabilityZones.length;
-        this.publicSubnets = range(n).map(i => VpcSubnetRef.import(this, `PublicSubnet${i}`, {
-            availabilityZone: this.availabilityZones[i],
-            subnetId: publicSubnetIds[i]
-        }));
-        this.privateSubnets = range(n).map(i => VpcSubnetRef.import(this, `PrivateSubnet${i}`, {
-            availabilityZone: this.availabilityZones[i],
-            subnetId: privateSubnetIds[i]
-        }));
-        this.isolatedSubnets = range(n).map(i => VpcSubnetRef.import(this, `IsolatedSubnet${i}`, {
-            availabilityZone: this.availabilityZones[i],
-            subnetId: isolatedSubnetIds[i]
-        }));
+        this.publicSubnets = pub.import(this);
+        this.privateSubnets = priv.import(this);
+        this.isolatedSubnets = iso.import(this);
     }
 }
 
@@ -202,33 +214,51 @@ export interface VpcNetworkRefProps {
     vpcId: VpcNetworkId;
 
     /**
-     * List of a availability zones, one for every subnet.
-     *
-     * The first half are for the public subnets, the second half are for
-     * the private subnets.
+     * List of availability zones for the subnets in this VPC.
      */
     availabilityZones: string[];
 
     /**
-     * List of public subnet IDs, one for every subnet
+     * List of public subnet IDs
      *
-     * Must match the availability zones and private subnet ids in length and order.
+     * Must be undefined or match the availability zones in length and order.
      */
     publicSubnetIds?: VpcSubnetId[];
 
     /**
-     * List of private subnet IDs, one for every subnet
+     * List of names for the public subnets
      *
-     * Must match the availability zones and public subnet ids in length and order.
+     * Must be undefined or have a name for every public subnet group.
+     */
+    publicSubnetNames?: string[];
+
+    /**
+     * List of private subnet IDs
+     *
+     * Must be undefined or match the availability zones in length and order.
      */
     privateSubnetIds?: VpcSubnetId[];
 
     /**
-     * List of isolated subnet IDs, one for every subnet
+     * List of names for the private subnets
      *
-     * Must match the availability zones and public subnet ids in length and order.
+     * Must be undefined or have a name for every private subnet group.
+     */
+    privateSubnetNames?: string[];
+
+    /**
+     * List of isolated subnet IDs
+     *
+     * Must be undefined or match the availability zones in length and order.
      */
     isolatedSubnetIds?: VpcSubnetId[];
+
+    /**
+     * List of names for the isolated subnets
+     *
+     * Must be undefined or have a name for every isolated subnet group.
+     */
+    isolatedSubnetNames?: string[];
 }
 
 /**
@@ -299,15 +329,4 @@ export interface VpcSubnetRefProps {
  * Id of a VPC Subnet
  */
 export class VpcSubnetId extends Token {
-}
-
-/**
- * Generate the list of numbers of [0..n)
- */
-function range(n: number): number[] {
-    const ret: number[] = [];
-    for (let i = 0; i < n; i++) {
-        ret.push(i);
-    }
-    return ret;
 }

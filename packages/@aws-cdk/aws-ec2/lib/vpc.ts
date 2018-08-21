@@ -2,6 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
+import { DEFAULT_SUBNET_NAME, subnetId } from './util';
 import { SubnetType, VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
@@ -182,11 +183,11 @@ export class VpcNetwork extends VpcNetworkRef {
     public static readonly DEFAULT_SUBNETS: SubnetConfiguration[] = [
         {
             subnetType: SubnetType.Public,
-            name: 'Public',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Public],
         },
         {
             subnetType: SubnetType.Private,
-            name: 'Private',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Private],
         }
     ];
 
@@ -354,7 +355,7 @@ export class VpcNetwork extends VpcNetworkRef {
 
     private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
         this.availabilityZones.forEach((zone, index) => {
-            const name: string = `${subnetConfig.name}Subnet${index + 1}`;
+            const name = subnetId(subnetConfig.name, index);
             const subnetProps = {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
