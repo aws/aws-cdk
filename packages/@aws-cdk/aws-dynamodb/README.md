@@ -1,5 +1,5 @@
 ## AWS DynamoDB Construct Library
-Add a DynamoDB table to you stack like so:
+Add a DynamoDB table to your stack like so:
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
