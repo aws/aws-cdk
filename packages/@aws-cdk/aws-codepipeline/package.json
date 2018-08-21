@@ -56,6 +56,7 @@
     "@aws-cdk/aws-cloudformation": "^0.8.2",
     "@aws-cdk/aws-codebuild": "^0.8.2",
     "@aws-cdk/aws-codecommit": "^0.8.2",
+    "@aws-cdk/aws-codedeploy": "^0.8.2",
     "@aws-cdk/aws-lambda": "^0.8.2",
     "@aws-cdk/aws-sns": "^0.8.2",
     "cdk-build-tools": "^0.8.2",

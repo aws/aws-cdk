@@ -1,19 +1,19 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import { PolicyStatement, Stack } from '@aws-cdk/cdk';
+import ec2 = require('@aws-cdk/aws-ec2');
+import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AmazonLinuxImage, AutoScalingGroup, InstanceClass, InstanceSize, InstanceTypePair,
-  UpdateType, VpcNetwork, VpcNetworkId, VpcSubnetId } from '../lib';
+import autoscaling = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
 
 export = {
     'default fleet'(test: Test) {
-        const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+        const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
         const vpc = mockVpc(stack);
 
-        new AutoScalingGroup(stack, 'MyFleet', {
-            instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
-            machineImage: new AmazonLinuxImage(),
+        new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+            machineImage: new ec2.AmazonLinuxImage(),
             vpc
         });
 
@@ -114,16 +114,16 @@ export = {
     },
 
     'addToRolePolicy can be used to add statements to the role policy'(test: Test) {
-        const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+        const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
         const vpc = mockVpc(stack);
 
-        const fleet = new AutoScalingGroup(stack, 'MyFleet', {
-            instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
-            machineImage: new AmazonLinuxImage(),
+        const fleet = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+            machineImage: new ec2.AmazonLinuxImage(),
             vpc
         });
 
-        fleet.addToRolePolicy(new PolicyStatement()
+        fleet.addToRolePolicy(new cdk.PolicyStatement()
             .addAction('*')
             .addResource('*'));
 
@@ -245,15 +245,15 @@ export = {
 
     'can configure replacing update'(test: Test) {
       // GIVEN
-      const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
       const vpc = mockVpc(stack);
 
       // WHEN
-      new AutoScalingGroup(stack, 'MyFleet', {
-          instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
-          machineImage: new AmazonLinuxImage(),
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
           vpc,
-          updateType: UpdateType.ReplacingUpdate,
+          updateType: autoscaling.UpdateType.ReplacingUpdate,
           replacingUpdateMinSuccessfulInstancesPercent: 50
       });
 
@@ -276,15 +276,15 @@ export = {
 
     'can configure rolling update'(test: Test) {
       // GIVEN
-      const stack = new Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
       const vpc = mockVpc(stack);
 
       // WHEN
-      new AutoScalingGroup(stack, 'MyFleet', {
-          instanceType: new InstanceTypePair(InstanceClass.M4, InstanceSize.Micro),
-          machineImage: new AmazonLinuxImage(),
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
           vpc,
-          updateType: UpdateType.RollingUpdate,
+          updateType: autoscaling.UpdateType.RollingUpdate,
           rollingUpdateConfiguration: {
             minSuccessfulInstancesPercent: 50,
             pauseTimeSec: 345
@@ -307,11 +307,11 @@ export = {
     }
 };
 
-function mockVpc(stack: Stack) {
-    return VpcNetwork.import(stack, 'MyVpc', {
-        vpcId: new VpcNetworkId('my-vpc'),
+function mockVpc(stack: cdk.Stack) {
+    return ec2.VpcNetwork.import(stack, 'MyVpc', {
+        vpcId: new ec2.VpcNetworkId('my-vpc'),
         availabilityZones: [ 'az1' ],
-        publicSubnetIds: [ new VpcSubnetId('pub1') ],
-        privateSubnetIds: [ new VpcSubnetId('pri1') ],
+        publicSubnetIds: [ new ec2.VpcSubnetId('pub1') ],
+        privateSubnetIds: [ new ec2.VpcSubnetId('pri1') ],
     });
 }

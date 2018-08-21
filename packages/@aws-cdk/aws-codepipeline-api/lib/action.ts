@@ -222,15 +222,6 @@ export abstract class Action extends cdk.Construct {
 //     }
 // }
 
-// export class CodeDeploy extends DeployAction {
-//     constructor(parent: Stage, name: string, applicationName: string, deploymentGroupName: string) {
-//         super(parent, name, 'CodeDeploy', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {
-//             ApplicationName: applicationName,
-//             DeploymentGroupName: deploymentGroupName
-//         });
-//     }
-// }
-
 // export class ElasticBeanstalkDeploy extends DeployAction {
 //     constructor(parent: Stage, name: string, applicationName: string, environmentName: string) {
 //         super(parent, name, 'ElasticBeanstalk', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 }, {

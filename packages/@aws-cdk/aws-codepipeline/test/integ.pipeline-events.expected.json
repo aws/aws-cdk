@@ -31,8 +31,8 @@
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*",
                 "s3:DeleteObject*",
+                "s3:PutObject*",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -464,8 +464,8 @@
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*",
                 "s3:DeleteObject*",
+                "s3:PutObject*",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -529,16 +529,6 @@
     },
     "MyTopic86869434": {
       "Type": "AWS::SNS::Topic"
-    },
-    "MyTopicbenisraeBF3B2D80": {
-      "Type": "AWS::SNS::Subscription",
-      "Properties": {
-        "Endpoint": "benisrae@amazon.com",
-        "Protocol": "email",
-        "TopicArn": {
-          "Ref": "MyTopic86869434"
-        }
-      }
     },
     "MyTopicPolicy12A5EC17": {
       "Type": "AWS::SNS::TopicPolicy",

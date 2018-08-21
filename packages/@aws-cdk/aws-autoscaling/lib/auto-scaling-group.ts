@@ -1,14 +1,9 @@
-import autoscaling = require('@aws-cdk/aws-autoscaling');
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
-import { Connections, IConnectable } from './connections';
-import { InstanceType } from './instance-types';
-import { ClassicLoadBalancer, IClassicLoadBalancerTarget } from './load-balancer';
-import { IMachineImageSource, OperatingSystemType } from './machine-image';
-import { SecurityGroup } from './security-group';
-import { AllConnections, AnyIPv4 } from './security-group-rule';
-import { VpcNetworkRef, VpcPlacementStrategy } from './vpc-ref';
+
+import { cloudformation } from './autoscaling.generated';
 
 /**
  * Properties of a Fleet
@@ -17,7 +12,7 @@ export interface AutoScalingGroupProps {
     /**
      * Type of instance to launch
      */
-    instanceType: InstanceType;
+    instanceType: ec2.InstanceType;
 
     /**
      * Minimum number of instances in the fleet
@@ -46,23 +41,23 @@ export interface AutoScalingGroupProps {
     /**
      * AMI to launch
      */
-    machineImage: IMachineImageSource;
+    machineImage: ec2.IMachineImageSource;
 
     /**
      * VPC to launch these instances in.
      */
-    vpc: VpcNetworkRef;
+    vpc: ec2.VpcNetworkRef;
 
     /**
      * Where to place instances within the VPC
      */
-    vpcPlacement?: VpcPlacementStrategy;
+    vpcPlacement?: ec2.VpcPlacementStrategy;
 
     /**
      * SNS topic to send notifications about fleet changes
      * @default No fleet change notifications will be sent.
      */
-    notificationsTopic?: sns.cloudformation.TopicResource;
+    notificationsTopic?: sns.TopicRef;
 
     /**
      * Whether the instances can initiate connections to anywhere by default
@@ -124,16 +119,16 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalancerTarget, IConnectable {
+export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadBalancerTarget, ec2.IConnectable {
     /**
      * The type of OS instances of this fleet are running.
      */
-    public readonly osType: OperatingSystemType;
+    public readonly osType: ec2.OperatingSystemType;
 
     /**
      * Allows specify security group connections for instances of this fleet.
      */
-    public readonly connections: Connections;
+    public readonly connections: ec2.Connections;
 
     /**
      * The IAM role assumed by instances of this fleet.
@@ -141,18 +136,18 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
     public readonly role: iam.Role;
 
     private readonly userDataLines = new Array<string>();
-    private readonly autoScalingGroup: autoscaling.cloudformation.AutoScalingGroupResource;
-    private readonly securityGroup: SecurityGroup;
+    private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
+    private readonly securityGroup: ec2.SecurityGroup;
     private readonly loadBalancerNames: cdk.Token[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
         super(parent, name);
 
-        this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
-        this.connections = new Connections({ securityGroup: this.securityGroup });
+        this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
+        this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
 
         if (props.allowAllOutbound !== false) {
-            this.connections.allowTo(new AnyIPv4(), new AllConnections(), 'Outbound traffic allowed by default');
+            this.connections.allowTo(new ec2.AnyIPv4(), new ec2.AllConnections(), 'Outbound traffic allowed by default');
         }
 
         this.role = new iam.Role(this, 'InstanceRole', {
@@ -167,7 +162,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         const machineImage = props.machineImage.getImage(this);
         const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
 
-        const launchConfig = new autoscaling.cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
+        const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
             imageId: machineImage.imageId,
             keyName: props.keyName,
             instanceType: props.instanceType.toString(),
@@ -186,7 +181,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
             throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
         }
 
-        const asgProps: autoscaling.cloudformation.AutoScalingGroupResourceProps = {
+        const asgProps: cloudformation.AutoScalingGroupResourceProps = {
             minSize: minSize.toString(),
             maxSize: maxSize.toString(),
             desiredCapacity: desiredCapacity.toString(),
@@ -197,7 +192,7 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         if (props.notificationsTopic) {
             asgProps.notificationConfigurations = [];
             asgProps.notificationConfigurations.push({
-                topicArn: props.notificationsTopic.ref,
+                topicArn: props.notificationsTopic.topicArn,
                 notificationTypes: [
                     "autoscaling:EC2_INSTANCE_LAUNCH",
                     "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
@@ -210,13 +205,13 @@ export class AutoScalingGroup extends cdk.Construct implements IClassicLoadBalan
         const subnets = props.vpc.subnets(props.vpcPlacement);
         asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
 
-        this.autoScalingGroup = new autoscaling.cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
+        this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
         this.osType = machineImage.os.type;
 
         this.applyUpdatePolicies(props);
     }
 
-    public attachToClassicLB(loadBalancer: ClassicLoadBalancer): void {
+    public attachToClassicLB(loadBalancer: ec2.ClassicLoadBalancer): void {
         this.loadBalancerNames.push(loadBalancer.loadBalancerName);
     }
 

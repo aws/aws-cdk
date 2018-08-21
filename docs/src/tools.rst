@@ -17,7 +17,7 @@
 .. _toolkit:
 
 Command-line Toolkit (cdk)
---------------------------
+==========================
 
 ``cdk`` (the |toolkit|) is the main tool you use to interact with your |*CDK App*|. It will execute
 the CDK app you have written and compiled, interrogate the application
