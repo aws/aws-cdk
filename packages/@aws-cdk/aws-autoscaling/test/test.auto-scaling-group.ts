@@ -304,7 +304,34 @@ export = {
       }, ResourcePart.CompleteDefinition));
 
       test.done();
-    }
+    },
+
+    'can configure resource signals'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
+          vpc,
+          resourceSignalCount: 5,
+          resourceSignalTimeoutSec: 666
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        CreationPolicy: {
+          ResourceSignal: {
+            Count: 5,
+            Timeout: 'PT11M6S'
+          },
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
 };
 
 function mockVpc(stack: cdk.Stack) {

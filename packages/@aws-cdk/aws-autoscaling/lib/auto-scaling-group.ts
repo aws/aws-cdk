@@ -106,6 +106,22 @@ export interface AutoScalingGroupProps {
      * @default true
      */
     ignoreUnmodifiedSizeProperties?: boolean;
+
+    /**
+     * How many ResourceSignal calls CloudFormation expects before the resource is considered created
+     *
+     * @default 1
+     */
+    resourceSignalCount?: number;
+
+    /**
+     * The length of time to wait for the resourceSignalCount
+     *
+     * The maximum value is 43200 (12 hours).
+     *
+     * @default 300 (5 minutes)
+     */
+    resourceSignalTimeoutSec?: number;
 }
 
 /**
@@ -242,16 +258,12 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
             this.asgUpdatePolicy.autoScalingReplacingUpdate = { willReplace: true };
 
             if (props.replacingUpdateMinSuccessfulInstancesPercent !== undefined) {
-                if (this.autoScalingGroup.options.creationPolicy === undefined) {
-                    this.autoScalingGroup.options.creationPolicy = {};
-                }
-
                 // Yes, this goes on CreationPolicy, not as a process parameter to ReplacingUpdate.
                 // It's a little confusing, but the docs seem to explicitly state it will only be used
                 // during the update?
                 //
                 // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
-                this.autoScalingGroup.options.creationPolicy.autoScalingCreationPolicy = {
+                this.asgCreationPolicy.autoScalingCreationPolicy = {
                     minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent)
                 };
             }
@@ -263,16 +275,33 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         if (props.ignoreUnmodifiedSizeProperties !== false) {
             this.asgUpdatePolicy.autoScalingScheduledAction = { ignoreUnmodifiedGroupSizeProperties: true };
         }
+
+        if (props.resourceSignalCount !== undefined || props.resourceSignalTimeoutSec !== undefined) {
+            this.asgCreationPolicy.resourceSignal = {
+                count: props.resourceSignalCount,
+                timeout: props.resourceSignalTimeoutSec !== undefined ? renderIsoDuration(props.resourceSignalTimeoutSec) : undefined,
+            };
+        }
     }
 
     /**
-     * Create the ASG update policy if not set yet and return a reference to it
+     * Create and return the ASG update policy
      */
     private get asgUpdatePolicy() {
         if (this.autoScalingGroup.options.updatePolicy === undefined) {
             this.autoScalingGroup.options.updatePolicy = {};
         }
         return this.autoScalingGroup.options.updatePolicy;
+    }
+
+    /**
+     * Create and return the ASG creation policy
+     */
+    private get asgCreationPolicy() {
+        if (this.autoScalingGroup.options.creationPolicy === undefined) {
+            this.autoScalingGroup.options.creationPolicy = {};
+        }
+        return this.autoScalingGroup.options.creationPolicy;
     }
 }
 
