@@ -11,7 +11,7 @@ The CDK integrates fully with AWS services and offers a higher level object-orie
 abstraction to define AWS resources imperatively. Using the CDK’s library of
 infrastructure [constructs], you can easily encapsulate AWS best practices in your
 infrastructure definition and share it without worrying about boilerplate logic. The
-CDK improves the end-to-end development experience because you get to use the  power
+CDK improves the end-to-end development experience because you get to use the power
 of modern programming languages to define your AWS infrastructure in a predictable
 and efficient manner. The CDK is currently available for Java, JavaScript, and
 TypeScript. 
