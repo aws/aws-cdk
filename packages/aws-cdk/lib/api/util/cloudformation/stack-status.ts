@@ -1,10 +1,16 @@
+import AWS = require('aws-sdk');
+
 /**
  * A utility class to inspect CloudFormation stack statuses.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-describing-stacks.html
  */
 export class StackStatus {
-    constructor(readonly name: string) {}
+    public static fromStackDescription(description: AWS.CloudFormation.Stack) {
+        return new StackStatus(description.StackStatus, description.StackStatusReason);
+    }
+
+    constructor(public readonly name: string, public readonly reason?: string) {}
 
     get isCreationFailure(): boolean {
         return this.name === 'ROLLBACK_COMPLETE'
@@ -29,5 +35,9 @@ export class StackStatus {
 
     get isSuccess(): boolean {
         return !this.isRollback && !this.isFailure;
+    }
+
+    public toString(): string {
+        return this.name + (this.reason ? ` (${this.reason})` : '');
     }
 }
