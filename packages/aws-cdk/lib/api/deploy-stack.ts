@@ -9,6 +9,7 @@ import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { describeStack, stackExists, waitForChangeSet, waitForStack } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
+import { StackStatus } from './util/cloudformation/stack-status';
 import { SDK } from './util/sdk';
 
 type TemplateBodyParameter = {
@@ -149,7 +150,8 @@ export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK, deployName?
     const destroyedStack = await waitForStack(cfn, deployName, false);
     if (monitor) { monitor.stop(); }
     if (destroyedStack && destroyedStack.StackStatus !== 'DELETE_COMPLETE') {
-        throw new Error(`Failed to destroy ${deployName} (current state: ${destroyedStack.StackStatus})!`);
+        const status = StackStatus.fromStackDescription(destroyedStack);
+        throw new Error(`Failed to destroy ${deployName}: ${status}`);
     }
     return;
 }
