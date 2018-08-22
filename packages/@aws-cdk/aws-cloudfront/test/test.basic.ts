@@ -53,7 +53,7 @@ export = {
                     "QueryString": false
                   },
                   "TargetOriginId": "origin1",
-                  "ViewerProtocolPolicy": "https-only"
+                  "ViewerProtocolPolicy": "redirect-to-https"
                 },
                 "DefaultRootObject": "index.html",
                 "Enabled": true,
@@ -150,7 +150,7 @@ export = {
                         "HEAD"
                       ],
                       "TargetOriginId": "origin1",
-                      "ViewerProtocolPolicy": "https-only",
+                      "ViewerProtocolPolicy": "redirect-to-https",
                       "ForwardedValues": {
                         "QueryString": false,
                         "Cookies" : { "Forward" : "none"}
@@ -224,7 +224,7 @@ export = {
                         "HEAD"
                       ],
                       "TargetOriginId": "origin1",
-                      "ViewerProtocolPolicy": "https-only",
+                      "ViewerProtocolPolicy": "redirect-to-https",
                       "ForwardedValues": {
                         "QueryString": false,
                         "Cookies" : { "Forward" : "none"}
