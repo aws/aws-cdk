@@ -10,4 +10,4 @@ export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
 echo "bootstrapping..."
-lerna --concurrency 1 bootstrap --reject-cycles
+lerna bootstrap --reject-cycles

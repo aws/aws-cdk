@@ -19,10 +19,10 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna --concurrency 1 exec --stream "npm run build"
+time lerna exec --stream "npm run build"
 
 echo "============================================================================================="
 echo "testing..."
-lerna --concurrency 1 run --stream test
+lerna run --stream test
 
 touch $BUILD_INDICATOR

@@ -92,8 +92,7 @@ export async function hasIntegTests(): Promise<boolean> {
  * Return the compiler for this package (either tsc or jsii)
  */
 export function packageCompiler() {
-    const jsiiCompiler = '/mnt/c/repos/jsii/packages/jsii/bin/jsii';
-    return isJsii() ? jsiiCompiler // require.resolve(`jsii/bin/jsii`)
+    return isJsii() ? require.resolve(`jsii/bin/jsii`)
                     : require.resolve(`typescript/bin/tsc`);
 }
 

@@ -4,7 +4,7 @@ set -euo pipefail
 export PATH=node_modules/.bin:$PATH
 
 # Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
-lerna --concurrency 1 exec --scope=cfn2ts                           \
+lerna exec --scope=cfn2ts                           \
            --scope=pkglint                          \
            --scope=@aws-cdk/cdk                     \
            --scope=@aws-cdk/assert              \
@@ -147,8 +147,8 @@ EOM
         cp LICENSE NOTICE packages/${P}/
 
         echo "⌛️ Bootstrapping & building ${P}"
-        lerna --concurrency 1 bootstrap --scope=${P}
-        lerna --concurrency 1 run build --scope=${P}
+        lerna bootstrap --scope=${P}
+        lerna run build --scope=${P}
 
         git add packages/${P}
 
