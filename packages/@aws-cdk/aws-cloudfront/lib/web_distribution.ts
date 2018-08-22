@@ -22,7 +22,7 @@ export enum PriceClass {
  */
 export enum ViewerProtocolPolicy {
     HTTPSOnly = "https-only",
-    RedirectToHTTPS = "https-only",
+    RedirectToHTTPS = "redirect-to-https",
     AllowAll = "allow-all"
 }
 
