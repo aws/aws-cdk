@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -89,6 +89,11 @@ export = {
               },
               "MyFleetASG88E55886": {
                 "Type": "AWS::AutoScaling::AutoScalingGroup",
+                "UpdatePolicy": {
+                  "AutoScalingScheduledAction": {
+                    "IgnoreUnmodifiedGroupSizeProperties": true
+                  }
+                },
                 "Properties": {
                   "DesiredCapacity": "1",
                   "LaunchConfigurationName": {
@@ -216,6 +221,9 @@ export = {
               },
               MyFleetASG88E55886: {
                 Type: "AWS::AutoScaling::AutoScalingGroup",
+                UpdatePolicy: {
+                  AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: true }
+                },
                 Properties: {
                   DesiredCapacity: "1",
                   LaunchConfigurationName: {
@@ -233,6 +241,96 @@ export = {
         });
 
         test.done();
+    },
+
+    'can configure replacing update'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
+          vpc,
+          updateType: autoscaling.UpdateType.ReplacingUpdate,
+          replacingUpdateMinSuccessfulInstancesPercent: 50
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        UpdatePolicy: {
+          AutoScalingReplacingUpdate: {
+            WillReplace: true
+          }
+        },
+        CreationPolicy: {
+          AutoScalingCreationPolicy: {
+            MinSuccessfulInstancesPercent: 50
+          }
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+
+    'can configure rolling update'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
+          vpc,
+          updateType: autoscaling.UpdateType.RollingUpdate,
+          rollingUpdateConfiguration: {
+            minSuccessfulInstancesPercent: 50,
+            pauseTimeSec: 345
+          }
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        UpdatePolicy: {
+          "AutoScalingRollingUpdate": {
+            "MinSuccessfulInstancesPercent": 50,
+            "WaitOnResourceSignals": true,
+            "PauseTime": "PT5M45S",
+            "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
+          },
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+
+    'can configure resource signals'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+      const vpc = mockVpc(stack);
+
+      // WHEN
+      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+          machineImage: new ec2.AmazonLinuxImage(),
+          vpc,
+          resourceSignalCount: 5,
+          resourceSignalTimeoutSec: 666
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        CreationPolicy: {
+          ResourceSignal: {
+            Count: 5,
+            Timeout: 'PT11M6S'
+          },
+        }
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
     },
 };
 
