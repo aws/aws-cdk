@@ -182,6 +182,22 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 }
 
 /**
+ * Return an attribute definition name for the RefType for this class
+ */
+export function refAttributeDefinition(resourceName: CodeName, refType: schema.RefType): Attribute {
+    const suffix = refType; // Already a string
+
+    // If the class name already ends in the suffix, such as "DomainName" + "Name",
+    // don't turn it into "DomainNameName", but use the word "Value" instead.
+    const className = resourceName.className.endsWith(suffix) ? resourceName.className : (resourceName.className + suffix);
+
+    const refTypeName = new CodeName(resourceName.packageName, '', className);
+    const baseClass = refType === schema.RefType.Arn ? `${CORE_NAMESPACE}.Arn` : `${CORE_NAMESPACE}.Token`;
+
+    return new Attribute('ref', refTypeName, baseClass);
+}
+
+/**
  * In the CDK, attribute names will be prefixed with the name of the resource (unless they already
  * have the name of the resource as a prefix). There are a few reasons for that, mainly to avoid name
  * collisions with base class properties, but also to allow certain constructs to expose multiple attributes

@@ -14,6 +14,11 @@ export interface ResourceType extends Documented {
      * The ``Transform`` required by the resource type, if any.
      */
     RequiredTransform?: string;
+
+    /**
+     * What kind of value the 'Ref' operator refers to, if any.
+     */
+    RefType?: RefType;
 }
 
 export type Attribute = PrimitiveAttribute | ListAttribute;
@@ -48,4 +53,21 @@ export function isPrimitiveListAttribute(spec: Attribute): spec is PrimitiveList
 
 export function isComplexListAttribute(spec: Attribute): spec is ComplexListAttribute {
     return isListAttribute(spec) && !!(spec as ComplexListAttribute).ItemType;
+}
+
+/**
+ * Type declaration for special values of the "Ref" attribute represents.
+ *
+ * The attribute can take on more values than these, but these are treated specially.
+ */
+export enum RefType {
+    /**
+     * No '.ref' member is generated for this type, because it doesn't have a meaningful value.
+     */
+    None = 'None',
+
+    /**
+     * The generated class will inherit from the built-in 'Arn' type.
+     */
+    Arn = 'Arn'
 }

@@ -65,11 +65,15 @@ export default class CodeGenerator {
 
     public emitCode() {
         for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
+            const resourceType = this.spec.ResourceTypes[name];
+
+            this.validateRefTypePresence(name, resourceType);
+
             const cfnName = SpecName.parse(name);
             const resourceName = genspec.CodeName.forResource(cfnName);
             this.code.line();
             this.code.openBlock('export namespace cloudformation');
-            const attributeTypes = this.emitResourceType(resourceName, this.spec.ResourceTypes[name]);
+            const attributeTypes = this.emitResourceType(resourceName, resourceType);
 
             this.emitPropertyTypes(name);
 
@@ -230,6 +234,15 @@ export default class CodeGenerator {
                 this.code.line(`public readonly ${attr.propertyName}: ${attr.typeName.className};`);
                 attributeTypes.push(attr);
             }
+        }
+
+        //
+        // Ref attribute
+        //
+        if (spec.RefType !== schema.RefType.None) {
+            const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefType!);
+            this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.typeName.className};`);
+            attributeTypes.push(refAttribute);
         }
 
         //
@@ -569,6 +582,12 @@ export default class CodeGenerator {
         }
         this.code.line(' */');
         return;
+    }
+
+    private validateRefTypePresence(name: string, resourceType: schema.ResourceType): any {
+        if (resourceType.RefType === undefined) {
+            throw new Error(`Resource ${name} does not have a Ref type; please annotate this new resources in @aws-cdk/cfnspec`);
+        }
     }
 }
 
