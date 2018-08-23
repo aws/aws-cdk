@@ -169,23 +169,11 @@ export class Function extends FunctionRef {
         const managedPolicyArns = new Array<cdk.Arn>();
 
         // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        managedPolicyArns.push(cdk.Arn.fromComponents({
-            service: "iam",
-            region: "", // no region for managed policy
-            account: "aws", // the account for a managed policy is 'aws'
-            resource: "policy",
-            resourceName: "service-role/AWSLambdaBasicExecutionRole"
-        }));
+        managedPolicyArns.push(new iam.AWSManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);
 
         if (props.vpc) {
             // Policy that will have ENI creation permissions
-            managedPolicyArns.push(cdk.Arn.fromComponents({
-                service: "iam",
-                region: "", // no region for managed policy
-                account: "aws", // the account for a managed policy is 'aws'
-                resource: "policy",
-                resourceName: "service-role/AWSLambdaVPCAccessExecutionRole"
-            }));
+            managedPolicyArns.push(new iam.AWSManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn);
         }
 
         this.role = props.role || new iam.Role(this, 'ServiceRole', {

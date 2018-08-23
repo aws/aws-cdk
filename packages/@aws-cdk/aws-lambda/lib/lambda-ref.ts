@@ -32,7 +32,7 @@ export interface FunctionRefProps {
 
 export abstract class FunctionRef extends cdk.Construct
     implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination,
-    ec2.IConnectable   {
+               ec2.IConnectable {
 
     /**
      * Creates a Lambda function object which represents a function not defined
@@ -194,6 +194,15 @@ export abstract class FunctionRef extends cdk.Construct
             throw new Error('Only VPC-associated Lambda Functions can have their security groups managed.');
         }
         return this._connections;
+    }
+
+    /**
+     * Whether or not this Lambda function was bound to a VPC
+     *
+     * If this is is `false`, trying to access the `connections` object will fail.
+     */
+    public get isBoundToVpc(): boolean {
+        return !!this._connections;
     }
 
     /**
