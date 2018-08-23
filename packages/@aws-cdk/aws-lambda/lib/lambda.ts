@@ -101,7 +101,8 @@ export interface FunctionProps {
     /**
      * Where to place the network interfaces within the VPC.
      *
-     * Only used if 'vpc' is supplied.
+     * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+     * requires a NAT gateway, so picking Public subnets is not allowed.
      *
      * @default Private subnets
      */
@@ -276,8 +277,17 @@ export class Function extends FunctionRef {
 
         this._connections = new ec2.Connections({ securityGroup });
 
+        // Pick subnets, make sure they're not Public. Routing through an IGW
+        // won't work because the ENIs don't get a Public IP.
+        const subnets = props.vpc.subnets(props.vpcPlacement);
+        for (const subnet of subnets) {
+            if (props.vpc.publicSubnets.indexOf(subnet) > -1) {
+                throw new Error('Not possible to place Lambda Functions in a Public subnet');
+            }
+        }
+
         return {
-            subnetIds: props.vpc.subnets(props.vpcPlacement).map(s => s.subnetId),
+            subnetIds: subnets.map(s => s.subnetId),
             securityGroupIds: [securityGroup.securityGroupId]
         };
     }

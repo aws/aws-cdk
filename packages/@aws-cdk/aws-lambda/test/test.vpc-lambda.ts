@@ -122,6 +122,25 @@ export = {
         });
 
         test.done();
+    },
+
+    'picking public subnets is not allowed'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.VpcNetwork(stack, 'VPC');
+
+        // WHEN
+        test.throws(() => {
+            new lambda.Function(stack, 'Lambda', {
+                code: new lambda.InlineCode('foo'),
+                handler: 'index.handler',
+                runtime: lambda.Runtime.NodeJS610,
+                vpc,
+                vpcPlacement: { usePublicSubnets: true }
+            });
+        });
+
+        test.done();
     }
 };
 
