@@ -26,6 +26,8 @@ export class Cluster extends cdk.Construct {
 
     public readonly clusterName: ClusterName;
 
+    public readonly fleet:  autoscaling.AutoScalingGroup;
+
     constructor(parent: cdk.Construct, name: string, props: ClusterProps = {}) {
         super(parent, name);
 
@@ -42,5 +44,18 @@ export class Cluster extends cdk.Construct {
             taskDefinition: taskDef.taskDefinitionArn,
             desiredCount: 1,
         });
+
+        const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
+            maxAZs: 2
+        });
+
+        const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
+            vpc,
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+            machineImage: new ec2.GenericLinuxImage({'us-west-2':'ami-00d4f478'})
+        });
+
+        this.fleet = fleet;
+
     }
 }

@@ -21,6 +21,11 @@
       "eu-west-1b",
       "eu-west-1c"
     ],
-    "ssm:585695036304:eu-west-1:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-ca0135b3"
+    "ssm:585695036304:eu-west-1:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-ca0135b3",
+    "availability-zones:794715269151:us-west-2": [
+      "us-west-2a",
+      "us-west-2b",
+      "us-west-2c"
+    ]
   }
 }
