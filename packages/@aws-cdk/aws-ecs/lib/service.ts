@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { ClusterName } from './cluster';
-import { TaskDefinitionArn } from './task-definition';
 import { cloudformation } from './ecs.generated';
+import { TaskDefinitionArn } from './task-definition';
 
 export interface ServiceProps {
     cluster: ClusterName;
