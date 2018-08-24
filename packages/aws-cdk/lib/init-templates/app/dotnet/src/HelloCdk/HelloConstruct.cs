@@ -8,14 +8,13 @@ namespace HelloCdk
 {
     public class HelloConstruct : Construct
     {
-        readonly IList<Bucket> _buckets = new List<Bucket>();
+        private readonly IEnumerable<Bucket> _buckets;
 
         public HelloConstruct(Construct parent, string id, HelloConstructProps props) : base(parent, id)
         {
-            foreach (int i in Enumerable.Range(0, props.BucketCount))
-            {
-                _buckets.Add(new Bucket(this, $"Bucket{i}", new BucketProps()));
-            }
+            _buckets = Enumerable.Range(0, props.BucketCount)
+                .Select(i => new Bucket(this, $"Bucket{i}", new BucketProps()))
+                .ToList();
         }
 
         public void GrantRead(IIIdentityResource principal)

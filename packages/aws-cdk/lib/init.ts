@@ -108,7 +108,7 @@ export class InitTemplate {
         files.sort(); // Sorting allows template authors to control the order in which hooks are invoked.
 
         for (const file of files) {
-            if ((file.match(/^.*\.hook\.js$/))) {
+            if (file.match(/^.*\.hook\.js$/)) {
                 const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
                 await invoke(targetDirectory);
             }

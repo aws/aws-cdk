@@ -7,7 +7,7 @@ namespace HelloCdk
     {
         static void Main(string[] args)
         {
-            App app = new App(args);
+            var app = new App(args);
 
             new HelloStack(app, "hello-cdk-1", new StackProps());
             new HelloStack(app, "hello-cdk-2", new StackProps());

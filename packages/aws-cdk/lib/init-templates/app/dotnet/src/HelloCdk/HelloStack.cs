@@ -11,12 +11,12 @@ namespace HelloCdk
     {
         public HelloStack(App parent, string name, IStackProps props) : base(parent, name, props)
         {
-            Queue queue = new Queue(this, "MyFirstQueue", new QueueProps
+            var queue = new Queue(this, "MyFirstQueue", new QueueProps
             {
                 VisibilityTimeoutSec = 300
             });
 
-            Topic topic = new Topic(this, "MyFirstTopic", new TopicProps
+            var topic = new Topic(this, "MyFirstTopic", new TopicProps
             {
                 DisplayName = "My First Topic Yeah"
             });
