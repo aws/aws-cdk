@@ -100,10 +100,17 @@ export class CodeName {
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+export const ARN_NAME = new CodeName('', CORE_NAMESPACE, 'Arn');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
 
 export class Attribute {
-    constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {
+    constructor(
+            readonly propertyName: string,
+            readonly typeName: CodeName,
+            readonly baseClassName: CodeName,
+            readonly constructorArguments: string,
+            readonly docLink?: string,
+        ) {
     }
 }
 
@@ -164,21 +171,16 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The property name we will use to refer to the attribute.
  */
 export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink?: string): Attribute {
-    // Original, unmodified CloudFormation name
-    const specName = new PropertyAttributeName(resourceName.specName!.module, resourceName.specName!.resourceName, attributeName); // "Arn"
-
     const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
     const propertyName = cloudFormationToScriptName(descriptiveName);            // "bucketArn"
 
     // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName, specName); // "BucketArn"
+    const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
+    const  baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
 
-    let baseClass = `${CORE_NAMESPACE}.Token`;
-    if (attributeName.endsWith('Arn')) {
-        baseClass = `${CORE_NAMESPACE}.Arn`;
-    }
+    const constructorArguments = `this.getAtt('${attributeName}')`;
 
-    return new Attribute(propertyName, typeName, baseClass, docLink);
+    return new Attribute(propertyName, typeName, baseClass, constructorArguments, docLink);
 }
 
 /**
@@ -186,15 +188,13 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
  */
 export function refAttributeDefinition(resourceName: CodeName, refType: schema.RefType): Attribute {
     const suffix = refType; // Already a string
+    const descriptiveName = descriptiveAttributeName(resourceName, suffix);
+    const refTypeName = new CodeName(resourceName.packageName, '', descriptiveName);
+    const baseClass = refType === schema.RefType.Arn ? ARN_NAME : TOKEN_NAME;
 
-    // If the class name already ends in the suffix, such as "DomainName" + "Name",
-    // don't turn it into "DomainNameName", but use the word "Value" instead.
-    const className = resourceName.className.endsWith(suffix) ? resourceName.className : (resourceName.className + suffix);
+    const constructorArguments = '{ Ref: this.logicalId }, `${this.logicalId}.Ref`';
 
-    const refTypeName = new CodeName(resourceName.packageName, '', className);
-    const baseClass = refType === schema.RefType.Arn ? `${CORE_NAMESPACE}.Arn` : `${CORE_NAMESPACE}.Token`;
-
-    return new Attribute('ref', refTypeName, baseClass);
+    return new Attribute('ref', refTypeName, baseClass, constructorArguments);
 }
 
 /**

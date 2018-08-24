@@ -283,11 +283,7 @@ export default class CodeGenerator {
 
         // initialize all attribute properties
         for (const at of attributeTypes) {
-            if (!(at.typeName.specName instanceof PropertyAttributeName)) {
-                throw new Error('SpecName must be a PropertyAttributeName');
-            }
-
-            this.code.line(`this.${at.propertyName} = new ${at.typeName.className}(this.getAtt('${at.typeName.specName.propAttrName}'));`);
+            this.code.line(`this.${at.propertyName} = new ${at.typeName.className}(${at.constructorArguments});`);
         }
 
         this.code.closeBlock();
@@ -469,7 +465,7 @@ export default class CodeGenerator {
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
     private emitAttributeType(attr: genspec.Attribute) {
-        this.openClass(attr.typeName, attr.docLink, attr.baseClassName);
+        this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
         this.closeClass(attr.typeName);
     }
 
