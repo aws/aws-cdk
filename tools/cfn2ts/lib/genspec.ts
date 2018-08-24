@@ -12,7 +12,9 @@ const RESOURCE_CLASS_POSTFIX = 'Resource';
 export const CORE_NAMESPACE = 'cdk';
 
 /**
- * The name of corresponding objects in the generated code
+ * The name of a class or method in the generated code.
+ *
+ * Has constructor functions to generate them from the CloudFormation specification.
  *
  * This refers to TypeScript constructs (typically a class)
  */
@@ -99,18 +101,30 @@ export class CodeName {
     }
 }
 
+/**
+ * Class declaration
+ */
+export class TypeDeclaration {
+    constructor(
+            readonly typeName: CodeName,
+            readonly baseClassName: CodeName,
+            readonly docLink?: string
+        ) {
+    }
+}
+
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
 export const ARN_NAME = new CodeName('', CORE_NAMESPACE, 'Arn');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
 
+/**
+ * Resource attribute
+ */
 export class Attribute {
     constructor(
-            readonly propertyName: string,
-            readonly typeName: CodeName,
-            readonly baseClassName: CodeName,
-            readonly constructorArguments: string,
-            readonly docLink?: string,
-        ) {
+        readonly propertyName: string,
+        readonly attributeType: TypeDeclaration,
+        readonly constructorArguments: string) {
     }
 }
 
@@ -180,7 +194,8 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 
     const constructorArguments = `this.getAtt('${attributeName}')`;
 
-    return new Attribute(propertyName, typeName, baseClass, constructorArguments, docLink);
+    const attrType = new TypeDeclaration(typeName, baseClass, docLink);
+    return new Attribute(propertyName, attrType, constructorArguments);
 }
 
 /**
@@ -194,7 +209,8 @@ export function refAttributeDefinition(resourceName: CodeName, refType: schema.R
 
     const constructorArguments = '{ Ref: this.logicalId }, `${this.logicalId}.Ref`';
 
-    return new Attribute('ref', refTypeName, baseClass, constructorArguments);
+    const attrType = new TypeDeclaration(refTypeName, baseClass);
+    return new Attribute('ref', attrType, constructorArguments);
 }
 
 /**

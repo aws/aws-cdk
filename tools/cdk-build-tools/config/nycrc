@@ -12,6 +12,7 @@
         "coverage/**",
         "test/**",
         "examples/**",
+        "example/**",
         "lib/*.generated.js",
         "build-tools/**"
     ]

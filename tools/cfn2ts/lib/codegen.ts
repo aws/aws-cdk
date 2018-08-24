@@ -222,17 +222,21 @@ export default class CodeGenerator {
         // Attributes
         //
 
-        const attributeTypes = new Array<genspec.Attribute>();
+        const attributeTypes = new Array<genspec.TypeDeclaration>();
+        const attributes = new Array<genspec.Attribute>();
 
         if (spec.Attributes) {
-            this.code.line();
             for (const attributeName of Object.keys(spec.Attributes).sort()) {
+                this.code.line();
+
                 this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
 
                 const attr = genspec.attributeDefinition(resourceName, attributeName, undefined);
 
-                this.code.line(`public readonly ${attr.propertyName}: ${attr.typeName.className};`);
-                attributeTypes.push(attr);
+                this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType.typeName.className};`);
+
+                attributes.push(attr);
+                attributeTypes.push(attr.attributeType);
             }
         }
 
@@ -241,8 +245,15 @@ export default class CodeGenerator {
         //
         if (spec.RefType !== schema.RefType.None) {
             const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefType!);
-            this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.typeName.className};`);
-            attributeTypes.push(refAttribute);
+            this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
+
+            // If there's already an attribute with the same declared type, we don't have to duplicate
+            // the type, but we do have to initialize the attribute variable.
+            attributes.push(refAttribute);
+            const alreadyAnAttributeType = attributeTypes.some(t => t.typeName.fqn === refAttribute.attributeType.typeName.fqn);
+            if (!alreadyAnAttributeType) {
+                attributeTypes.push(refAttribute.attributeType);
+            }
         }
 
         //
@@ -282,8 +293,8 @@ export default class CodeGenerator {
         }
 
         // initialize all attribute properties
-        for (const at of attributeTypes) {
-            this.code.line(`this.${at.propertyName} = new ${at.typeName.className}(${at.constructorArguments});`);
+        for (const at of attributes) {
+            this.code.line(`this.${at.propertyName} = new ${at.attributeType.typeName.className}(${at.constructorArguments});`);
         }
 
         this.code.closeBlock();
@@ -464,7 +475,7 @@ export default class CodeGenerator {
     /**
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
-    private emitAttributeType(attr: genspec.Attribute) {
+    private emitAttributeType(attr: genspec.TypeDeclaration) {
         this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
         this.closeClass(attr.typeName);
     }

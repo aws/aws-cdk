@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, FunctionArn } from './lambda.generated';
+import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -342,4 +342,3 @@ class LambdaRefImport extends FunctionRef {
 
     }
 }
-export class FunctionName extends cdk.Token { }
