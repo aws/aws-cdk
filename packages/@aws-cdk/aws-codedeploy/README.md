@@ -16,7 +16,7 @@ To import an already existing Application:
 
 ```ts
 const application = codedeploy.ServerApplicationRef.import(this, 'ExistingCodeDeployApplication', {
-    applicationName: new codedeploy.ApplicationName('MyExistingApplication'),
+    applicationName: 'MyExistingApplication',
 });
 ```
 
@@ -39,7 +39,38 @@ To import an already existing Deployment Group:
 ```ts
 const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'ExistingCodeDeployDeploymentGroup', {
     application,
-    deploymentGroupName: new codedeploy.DeploymentGroupName('MyExistingDeploymentGroup'),
+    deploymentGroupName: 'MyExistingDeploymentGroup',
+});
+```
+
+### Deployment Configurations
+
+You can also pass a Deployment Configuration when creating the Deployment Group:
+
+```ts
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
+    deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
+});
+```
+
+The default Deployment Configuration is `ServerDeploymentConfig.OneAtATime`.
+
+You can also create a custom Deployment Configuration:
+
+```ts
+const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
+    deploymentConfigName: 'MyDeploymentConfiguration', // optional property
+    // one of these is required, but both cannot be specified at the same time
+    minHealthyHostCount: 2,
+    minHealthyHostPercentage: 75,
+});
+```
+
+Or import an existing one:
+
+```ts
+const deploymentConfig = codedeploy.ServerDeploymentConfigRef.import(this, 'ExistingDeploymentConfiguration', {
+    deploymentConfigName: 'MyExistingDeploymentConfiguration',
 });
 ```
 
