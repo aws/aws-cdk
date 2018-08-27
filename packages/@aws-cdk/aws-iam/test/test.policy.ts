@@ -1,4 +1,4 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { App, Arn, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Role } from '../lib';
 import { Group } from '../lib/group';
@@ -21,8 +21,8 @@ export = {
         const stack = new Stack(app, 'MyStack');
 
         const policy = new Policy(stack, 'MyPolicy', { policyName: 'MyPolicyName' });
-        policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-        policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+        policy.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('sqs:SendMessage'));
+        policy.addStatement(new PolicyStatement().addResource(new Arn('arn')).addAction('sns:Subscribe'));
 
         const group = new Group(stack, 'MyGroup');
         group.attachInlinePolicy(policy);
@@ -47,8 +47,8 @@ export = {
         const stack = new Stack(app, 'MyStack');
 
         const policy = new Policy(stack, 'MyPolicy');
-        policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
-        policy.addStatement(new PolicyStatement().addResource('arn').addAction('sns:Subscribe'));
+        policy.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('sqs:SendMessage'));
+        policy.addStatement(new PolicyStatement().addResource(new Arn('arn')).addAction('sns:Subscribe'));
 
         const user = new User(stack, 'MyUser');
         user.attachInlinePolicy(policy);
@@ -84,7 +84,7 @@ export = {
             users: [ user1 ],
             groups: [ group1 ],
             roles: [ role1 ],
-            statements: [ new PolicyStatement().addResource('*').addAction('dynamodb:PutItem') ],
+            statements: [ new PolicyStatement().addResource(new Arn('*')).addAction('dynamodb:PutItem') ],
         });
 
         test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
@@ -118,7 +118,7 @@ export = {
         const app = new App();
         const stack = new Stack(app, 'MyStack');
         const p = new Policy(stack, 'MyPolicy');
-        p.addStatement(new PolicyStatement().addAction('*').addResource('*'));
+        p.addStatement(new PolicyStatement().addAction('*').addResource(new Arn('*')));
 
         const user = new User(stack, 'MyUser');
         p.attachToUser(user);
@@ -150,7 +150,7 @@ export = {
         p.attachToUser(new User(stack, 'User2'));
         p.attachToGroup(new Group(stack, 'Group1'));
         p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') }));
-        p.addStatement(new PolicyStatement().addResource('*').addAction('dynamodb:GetItem'));
+        p.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('dynamodb:GetItem'));
 
         test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
             { MyTestPolicy316BDB50:
@@ -192,7 +192,7 @@ export = {
         group.attachInlinePolicy(policy);
         role.attachInlinePolicy(policy);
 
-        policy.addStatement(new PolicyStatement().addResource('*').addAction('*'));
+        policy.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('*'));
 
         test.deepEqual(app.synthesizeStack(stack.name).template, { Resources:
             { MyPolicy39D66CF6:

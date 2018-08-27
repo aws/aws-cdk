@@ -1,4 +1,4 @@
-import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { Arn, ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
 import { cloudformation, RoleArn, RoleName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -15,7 +15,7 @@ export interface RoleProps {
 
     /**
      * A list of ARNs for managed policies associated with this role.
-     * You can add managed policies later using `addManagedPolicy(arn)`.
+     * You can add managed policies later using `attachManagedPolicy(arn)`.
      * @default No managed policies.
      */
     managedPolicyArns?: any[];
@@ -97,7 +97,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
     public readonly dependencyElements: IDependable[];
 
     private defaultPolicy?: Policy;
-    private readonly managedPolicies: string[];
+    private readonly managedPolicies: Arn[];
     private readonly attachedPolicies = new AttachedPolicies();
 
     constructor(parent: Construct, name: string, props: RoleProps) {
@@ -140,7 +140,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
      * Attaches a managed policy to this role.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: any) {
+    public attachManagedPolicy(arn: Arn) {
         this.managedPolicies.push(arn);
     }
 

@@ -247,7 +247,7 @@ export abstract class FunctionRef extends cdk.Construct
             //
             // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
+                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
                 sourceArn: arn
             });
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);

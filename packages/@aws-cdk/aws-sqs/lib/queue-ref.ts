@@ -98,7 +98,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
                     .addServicePrincipal('s3.amazonaws.com')
                     .addAction('kms:GenerateDataKey')
                     .addAction('kms:Decrypt')
-                    .addResource('*'), /* allowNoOp */ false);
+                    .addAllResources(), /* allowNoOp */ false);
             }
 
             this.notifyingBuckets.add(bucketId);

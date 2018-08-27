@@ -50,7 +50,7 @@ export = {
             code: new lambda.InlineCode('foo'),
             handler: 'index.handler',
             runtime: lambda.Runtime.NodeJS610,
-            initialPolicy: [new cdk.PolicyStatement().addAction("*").addResource("*")]
+            initialPolicy: [new cdk.PolicyStatement().addAction("*").addAllResources()]
         });
         expect(stack).toMatch({ Resources:
             { MyLambdaServiceRole4539ECB6:
@@ -186,7 +186,7 @@ export = {
             const stack = new cdk.Stack();
             const fn = newTestLambda(stack);
 
-            test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal('just:arn') }),
+            test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal(new cdk.Arn('just:arn')) }),
                 /Invalid principal type for Lambda permission statement/);
 
             fn.addPermission('S1', { principal: new cdk.ServicePrincipal('my-service') });
