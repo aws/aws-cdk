@@ -260,7 +260,7 @@ export abstract class BucketRef extends cdk.Construct {
                 .addActions(...keyActions));
 
             this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
-                .addResource('*')
+                .addAllResources()
                 .addPrincipal(identity.principal)
                 .addActions(...keyActions));
         }

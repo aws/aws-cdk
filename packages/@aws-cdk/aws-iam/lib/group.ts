@@ -1,4 +1,4 @@
-import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
 import { cloudformation, GroupArn, GroupName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { User } from './user';
@@ -73,7 +73,7 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
      * Attaches a managed policy to this group.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: any) {
+    public attachManagedPolicy(arn: Arn) {
         this.managedPolicies.push(arn);
     }
 

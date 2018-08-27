@@ -159,7 +159,7 @@ export class EncryptionKey extends EncryptionKeyRef {
         ];
 
         this.addToResourcePolicy(new PolicyStatement()
-            .addResource('*')
+            .addAllResources()
             .addActions(...actions)
             .addAccountRootPrincipal());
     }

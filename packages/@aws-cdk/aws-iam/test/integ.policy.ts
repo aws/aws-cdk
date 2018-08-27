@@ -1,4 +1,4 @@
-import { App, PolicyStatement, Stack } from "@aws-cdk/cdk";
+import { App, Arn, PolicyStatement, Stack } from "@aws-cdk/cdk";
 import { Policy } from "../lib";
 import { User } from "../lib/user";
 
@@ -9,11 +9,11 @@ const stack = new Stack(app, 'aws-cdk-iam-policy');
 const user = new User(stack, 'MyUser');
 
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatement(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
+policy.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('sqs:SendMessage'));
 policy.attachToUser(user);
 
 const policy2 = new Policy(stack, 'GoodbyePolicy');
-policy2.addStatement(new PolicyStatement().addResource('*').addAction('lambda:InvokeFunction'));
+policy2.addStatement(new PolicyStatement().addResource(new Arn('*')).addAction('lambda:InvokeFunction'));
 policy2.attachToUser(user);
 
 process.stdout.write(app.run());
