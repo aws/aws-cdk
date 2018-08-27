@@ -12,7 +12,9 @@ const RESOURCE_CLASS_POSTFIX = 'Resource';
 export const CORE_NAMESPACE = 'cdk';
 
 /**
- * The name of corresponding objects in the generated code
+ * The name of a class or method in the generated code.
+ *
+ * Has constructor functions to generate them from the CloudFormation specification.
  *
  * This refers to TypeScript constructs (typically a class)
  */
@@ -99,11 +101,30 @@ export class CodeName {
     }
 }
 
-export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+/**
+ * Class declaration
+ */
+export class ClassDeclaration {
+    constructor(
+            readonly typeName: CodeName,
+            readonly baseClassName: CodeName,
+            readonly docLink?: string
+        ) {
+    }
+}
 
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const ARN_NAME = new CodeName('', CORE_NAMESPACE, 'Arn');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
+
+/**
+ * Resource attribute
+ */
 export class Attribute {
-    constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {
+    constructor(
+        readonly propertyName: string,
+        readonly attributeType: ClassDeclaration,
+        readonly constructorArguments: string) {
     }
 }
 
@@ -164,21 +185,31 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The property name we will use to refer to the attribute.
  */
 export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink?: string): Attribute {
-    // Original, unmodified CloudFormation name
-    const specName = new PropertyAttributeName(resourceName.specName!.module, resourceName.specName!.resourceName, attributeName); // "Arn"
-
     const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
     const propertyName = cloudFormationToScriptName(descriptiveName);            // "bucketArn"
 
     // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName, specName); // "BucketArn"
+    const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
+    const baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
 
-    let baseClass = `${CORE_NAMESPACE}.Token`;
-    if (attributeName.endsWith('Arn')) {
-        baseClass = `${CORE_NAMESPACE}.Arn`;
-    }
+    const constructorArguments = `this.getAtt('${attributeName}')`;
 
-    return new Attribute(propertyName, typeName, baseClass, docLink);
+    const attrType = new ClassDeclaration(typeName, baseClass, docLink);
+    return new Attribute(propertyName, attrType, constructorArguments);
+}
+
+/**
+ * Return an attribute definition name for the RefKind for this class
+ */
+export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
+    const refClassName = descriptiveAttributeName(resourceName, refKind);
+    const refClass = new CodeName(resourceName.packageName, '', refClassName);
+    const baseClass = refKind === schema.SpecialRefKind.Arn ? ARN_NAME : TOKEN_NAME;
+
+    const constructorArguments = '{ Ref: this.logicalId }, `${this.logicalId}.Ref`';
+
+    const refType = new ClassDeclaration(refClass, baseClass);
+    return new Attribute('ref', refType, constructorArguments);
 }
 
 /**

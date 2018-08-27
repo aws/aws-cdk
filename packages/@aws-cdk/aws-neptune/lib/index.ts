@@ -86,12 +86,12 @@ export class NeptuneDatabase extends cdk.Construct implements ec2.IConnectable {
     /**
      * Identifier of the cluster
      */
-    public readonly clusterIdentifier: rds.ClusterIdentifier;
+    public readonly clusterIdentifier: rds.DBClusterName;
 
     /**
      * Identifiers of the replicas
      */
-    public readonly instanceIdentifiers: rds.InstanceIdentifier[] = [];
+    public readonly instanceIdentifiers: rds.DBInstanceId[] = [];
 
     /**
      * The endpoint to use for read/write operations
