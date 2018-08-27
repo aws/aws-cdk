@@ -1,6 +1,6 @@
-import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
+import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
 import { Group } from './group';
-import { cloudformation, UserArn } from './iam.generated';
+import { cloudformation, UserArn, UserName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -152,8 +152,4 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
 
         return undefined; // no console access
     }
-}
-
-export class UserName extends Token {
-
 }

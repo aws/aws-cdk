@@ -1,5 +1,5 @@
-import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
-import { cloudformation, GroupArn } from './iam.generated';
+import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { cloudformation, GroupArn, GroupName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -104,8 +104,4 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
 
         this.defaultPolicy.addStatement(statement);
     }
-}
-
-export class GroupName extends Token {
-
 }

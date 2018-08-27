@@ -382,7 +382,7 @@ class ImportedStreamRef extends StreamRef {
 
         this.streamArn = props.streamArn;
         // Get the name from the ARN
-        this.streamName = cdk.Arn.parseToken(props.streamArn).resourceName;
+        this.streamName = new StreamName(cdk.Arn.parseToken(props.streamArn).resourceName);
 
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);

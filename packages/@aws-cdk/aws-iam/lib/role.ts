@@ -1,5 +1,5 @@
-import { Arn, ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
-import { cloudformation, RoleArn } from './iam.generated';
+import { Arn, ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { cloudformation, RoleArn, RoleName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -152,10 +152,6 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
         this.attachedPolicies.attach(policy);
         policy.attachToRole(this);
     }
-}
-
-export class RoleName extends Token {
-
 }
 
 function createAssumeRolePolicy(principal: PolicyPrincipal) {
