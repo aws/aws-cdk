@@ -1,7 +1,7 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
-import { QueueRef, QueueUrl } from './queue-ref';
-import { cloudformation, QueueArn, QueueName } from './sqs.generated';
+import { QueueRef } from './queue-ref';
+import { cloudformation, QueueArn, QueueName, QueueUrl } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
