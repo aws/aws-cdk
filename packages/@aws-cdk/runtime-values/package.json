@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.RuntimeValues",
-        "packageId": "Amazon.CDK.RuntimeValues"
+        "packageId": "Amazon.CDK.RuntimeValues",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

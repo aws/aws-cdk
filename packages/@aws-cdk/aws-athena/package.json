@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Athena",
-        "packageId": "Amazon.CDK.AWS.Athena"
+        "packageId": "Amazon.CDK.AWS.Athena",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeBuild",
-        "packageId": "Amazon.CDK.AWS.CodeBuild"
+        "packageId": "Amazon.CDK.AWS.CodeBuild",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

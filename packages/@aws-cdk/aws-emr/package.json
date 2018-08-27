@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EMR",
-        "packageId": "Amazon.CDK.AWS.EMR"
+        "packageId": "Amazon.CDK.AWS.EMR",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

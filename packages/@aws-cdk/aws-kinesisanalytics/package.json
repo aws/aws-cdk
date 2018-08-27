@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.KinesisAnalytics",
-        "packageId": "Amazon.CDK.AWS.KinesisAnalytics"
+        "packageId": "Amazon.CDK.AWS.KinesisAnalytics",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

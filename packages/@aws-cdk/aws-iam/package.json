@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IAM",
-        "packageId": "Amazon.CDK.AWS.IAM"
+        "packageId": "Amazon.CDK.AWS.IAM",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

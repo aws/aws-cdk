@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SQS",
-        "packageId": "Amazon.CDK.AWS.SQS"
+        "packageId": "Amazon.CDK.AWS.SQS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

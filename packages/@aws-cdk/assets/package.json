@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.Assets",
-        "packageId": "Amazon.CDK.Assets"
+        "packageId": "Amazon.CDK.Assets",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

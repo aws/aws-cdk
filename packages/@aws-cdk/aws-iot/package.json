@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.IoT",
-        "packageId": "Amazon.CDK.AWS.IoT"
+        "packageId": "Amazon.CDK.AWS.IoT",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

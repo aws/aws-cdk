@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeDeploy",
-        "packageId": "Amazon.CDK.AWS.CodeDeploy"
+        "packageId": "Amazon.CDK.AWS.CodeDeploy",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

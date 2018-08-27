@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGateway",
-        "packageId": "Amazon.CDK.AWS.APIGateway"
+        "packageId": "Amazon.CDK.AWS.APIGateway",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

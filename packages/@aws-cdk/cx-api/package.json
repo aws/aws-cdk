@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
-        "packageId": "Amazon.CDK.CXAPI"
+        "packageId": "Amazon.CDK.CXAPI",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

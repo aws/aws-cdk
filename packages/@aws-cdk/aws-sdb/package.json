@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SDB",
-        "packageId": "Amazon.CDK.AWS.SDB"
+        "packageId": "Amazon.CDK.AWS.SDB",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SNS",
-        "packageId": "Amazon.CDK.AWS.SNS"
+        "packageId": "Amazon.CDK.AWS.SNS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

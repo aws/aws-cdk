@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ElastiCache",
-        "packageId": "Amazon.CDK.AWS.ElastiCache"
+        "packageId": "Amazon.CDK.AWS.ElastiCache",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

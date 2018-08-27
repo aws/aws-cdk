@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Cloud9",
-        "packageId": "Amazon.CDK.AWS.Cloud9"
+        "packageId": "Amazon.CDK.AWS.Cloud9",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

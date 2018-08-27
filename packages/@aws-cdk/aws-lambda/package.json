@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Lambda",
-        "packageId": "Amazon.CDK.AWS.Lambda"
+        "packageId": "Amazon.CDK.AWS.Lambda",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

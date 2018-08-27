@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Redshift",
-        "packageId": "Amazon.CDK.AWS.Redshift"
+        "packageId": "Amazon.CDK.AWS.Redshift",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

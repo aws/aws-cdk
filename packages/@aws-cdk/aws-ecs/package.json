@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ECS",
-        "packageId": "Amazon.CDK.AWS.ECS"
+        "packageId": "Amazon.CDK.AWS.ECS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

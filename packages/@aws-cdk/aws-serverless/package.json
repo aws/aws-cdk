@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Serverless",
-        "packageId": "Amazon.CDK.AWS.Serverless"
+        "packageId": "Amazon.CDK.AWS.Serverless",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
