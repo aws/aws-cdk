@@ -65,11 +65,15 @@ export default class CodeGenerator {
 
     public emitCode() {
         for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
+            const resourceType = this.spec.ResourceTypes[name];
+
+            this.validateRefKindPresence(name, resourceType);
+
             const cfnName = SpecName.parse(name);
             const resourceName = genspec.CodeName.forResource(cfnName);
             this.code.line();
             this.code.openBlock('export namespace cloudformation');
-            const attributeTypes = this.emitResourceType(resourceName, this.spec.ResourceTypes[name]);
+            const attributeTypes = this.emitResourceType(resourceName, resourceType);
 
             this.emitPropertyTypes(name);
 
@@ -218,17 +222,37 @@ export default class CodeGenerator {
         // Attributes
         //
 
-        const attributeTypes = new Array<genspec.Attribute>();
+        const attributeTypes = new Array<genspec.ClassDeclaration>();
+        const attributes = new Array<genspec.Attribute>();
 
         if (spec.Attributes) {
-            this.code.line();
             for (const attributeName of Object.keys(spec.Attributes).sort()) {
+                this.code.line();
+
                 this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
 
                 const attr = genspec.attributeDefinition(resourceName, attributeName, undefined);
 
-                this.code.line(`public readonly ${attr.propertyName}: ${attr.typeName.className};`);
-                attributeTypes.push(attr);
+                this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType.typeName.className};`);
+
+                attributes.push(attr);
+                attributeTypes.push(attr.attributeType);
+            }
+        }
+
+        //
+        // Ref attribute
+        //
+        if (spec.RefKind !== schema.SpecialRefKind.None) {
+            const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefKind!);
+            this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
+
+            // If there's already an attribute with the same declared type, we don't have to duplicate
+            // the type, but we do have to initialize the attribute variable.
+            attributes.push(refAttribute);
+            const alreadyAnAttributeType = attributeTypes.some(t => t.typeName.fqn === refAttribute.attributeType.typeName.fqn);
+            if (!alreadyAnAttributeType) {
+                attributeTypes.push(refAttribute.attributeType);
             }
         }
 
@@ -269,12 +293,8 @@ export default class CodeGenerator {
         }
 
         // initialize all attribute properties
-        for (const at of attributeTypes) {
-            if (!(at.typeName.specName instanceof PropertyAttributeName)) {
-                throw new Error('SpecName must be a PropertyAttributeName');
-            }
-
-            this.code.line(`this.${at.propertyName} = new ${at.typeName.className}(this.getAtt('${at.typeName.specName.propAttrName}'));`);
+        for (const at of attributes) {
+            this.code.line(`this.${at.propertyName} = new ${at.attributeType.typeName.className}(${at.constructorArguments});`);
         }
 
         this.code.closeBlock();
@@ -455,8 +475,8 @@ export default class CodeGenerator {
     /**
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
-    private emitAttributeType(attr: genspec.Attribute) {
-        this.openClass(attr.typeName, attr.docLink, attr.baseClassName);
+    private emitAttributeType(attr: genspec.ClassDeclaration) {
+        this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
         this.closeClass(attr.typeName);
     }
 
@@ -569,6 +589,12 @@ export default class CodeGenerator {
         }
         this.code.line(' */');
         return;
+    }
+
+    private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
+        if (!resourceType.RefKind) { // Both empty string and undefined
+            throw new Error(`Resource ${name} does not have a RefKind; please annotate this new resources in @aws-cdk/cfnspec`);
+        }
     }
 }
 

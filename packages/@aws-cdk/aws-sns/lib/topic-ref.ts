@@ -6,13 +6,8 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
-import { TopicName } from './sns.generated';
+import { TopicArn, TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
-
-/**
- * ARN of a Topic
- */
-export class TopicArn extends cdk.Arn { }
 
 /**
  * Either a new or imported Topic

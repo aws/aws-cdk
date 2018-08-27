@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
-import { cloudformation, LogGroupArn } from './logs.generated';
+import { cloudformation, LogGroupArn, LogGroupName } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
@@ -117,12 +117,6 @@ export class LogGroup extends cdk.Construct {
             ...props
         });
     }
-}
-
-/**
- * Name of a log group
- */
-export class LogGroupName extends cdk.Token {
 }
 
 /**

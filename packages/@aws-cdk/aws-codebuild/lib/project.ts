@@ -5,7 +5,7 @@ import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { cloudformation, ProjectArn } from './codebuild.generated';
+import { cloudformation, ProjectArn, ProjectName } from './codebuild.generated';
 import { BuildSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -705,5 +705,3 @@ export enum BuildEnvironmentVariableType {
      */
     ParameterStore = 'PARAMETER_STORE'
 }
-
-export class ProjectName extends cdk.Token { }

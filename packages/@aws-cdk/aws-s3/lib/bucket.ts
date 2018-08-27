@@ -6,7 +6,7 @@ import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
-import { BucketArn, BucketDomainName, BucketDualStackDomainName, cloudformation } from './s3.generated';
+import { BucketArn, BucketDomainName, BucketDualStackDomainName, BucketName, cloudformation } from './s3.generated';
 import { parseBucketArn, parseBucketName, validateBucketName } from './util';
 
 /**
@@ -144,7 +144,7 @@ export abstract class BucketRef extends cdk.Construct {
             components.push(key);
         }
 
-        return new cdk.FnConcat(...components);
+        return new S3Url(new cdk.FnConcat(...components));
     }
 
     /**
@@ -568,13 +568,6 @@ export enum BucketEncryption {
      * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
      */
     Kms = 'KMS',
-}
-
-/**
- * The name of the bucket.
- */
-export class BucketName extends cdk.Token {
-
 }
 
 /**

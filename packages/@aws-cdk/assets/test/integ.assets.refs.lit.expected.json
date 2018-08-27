@@ -76,29 +76,36 @@
             },
             "/",
             {
-              "Fn::Select": [
-                0,
-                {
-                  "Fn::Split": [
-                    "||",
-                    {
-                      "Ref": "SampleAssetS3VersionKey3E106D34"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "Fn::Select": [
-                1,
-                {
-                  "Fn::Split": [
-                    "||",
-                    {
-                      "Ref": "SampleAssetS3VersionKey3E106D34"
-                    }
-                  ]
-                }
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "SampleAssetS3VersionKey3E106D34"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "SampleAssetS3VersionKey3E106D34"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               ]
             }
           ]

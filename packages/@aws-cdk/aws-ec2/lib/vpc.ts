@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
-import { cloudformation } from './ec2.generated';
+import { cloudformation, SubnetId, VPCId } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
+import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
  */
@@ -231,7 +231,7 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VpcNetworkId;
+    public readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -466,7 +466,7 @@ export class VpcSubnet extends VpcSubnetRef {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: VpcSubnetId;
+    public readonly subnetId: SubnetId;
 
     /**
      * The routeTableId attached to this subnet.

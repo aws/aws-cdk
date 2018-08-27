@@ -1,20 +1,18 @@
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Arn, Condition, Construct, DeletionPolicy,
-        FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement, Referenceable,
+        FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement,
         RemovalPolicy, Resource, Root, Stack, Token } from '../../lib';
 
 export = {
     'all resources derive from Resource, which derives from Entity'(test: Test) {
         const stack = new Stack();
 
-        const r = new Resource(stack, 'MyResource', {
+        new Resource(stack, 'MyResource', {
             type: 'MyResourceType',
             properties: {
                 Prop1: 'p1', Prop2: 123
             }
         });
-
-        test.ok(r instanceof Referenceable);
 
         test.deepEqual(stack.toCloudFormation(), {
             Resources: {
@@ -48,13 +46,6 @@ export = {
         test.equal(withoutHash(res1.logicalId), 'level1childoflevel1');
         test.equal(withoutHash(res2.logicalId), 'level1level2level3childoflevel3');
 
-        test.done();
-    },
-
-    'entity.ref will return a token for a CloudFormation {Ref} for this entity'(test: Test) {
-        const stack = new Stack();
-        const res = new Resource(stack, 'MyResource', { type: 'ResourceType' });
-        test.deepEqual(res.ref.resolve(), { Ref: 'MyResource' });
         test.done();
     },
 

@@ -4,7 +4,7 @@ import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack';
+import { IDependable, StackElement } from './stack';
 
 export interface ResourceProps {
     /**
@@ -21,7 +21,7 @@ export interface ResourceProps {
 /**
  * Represents a CloudFormation resource.
  */
-export class Resource extends Referenceable {
+export class Resource extends StackElement {
     /**
      * A decoration used to create a CloudFormation attribute property.
      * @param customName Custom name for the attribute (default is the name of the property)

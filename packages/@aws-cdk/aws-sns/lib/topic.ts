@@ -1,6 +1,6 @@
 import { Construct,  } from '@aws-cdk/cdk';
-import { cloudformation, TopicName } from './sns.generated';
-import { TopicArn, TopicRef } from './topic-ref';
+import { cloudformation, TopicArn, TopicName } from './sns.generated';
+import { TopicRef } from './topic-ref';
 
 /**
  * Properties for a new SNS topic
