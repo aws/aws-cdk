@@ -49,10 +49,10 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
      */
     public export(): QueueRefProps {
         return {
-            queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue(),
-            queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue(),
+            queueArn: new QueueArn(new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue()),
+            queueUrl: new QueueUrl(new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue()),
             keyArn: this.encryptionMasterKey
-                ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue()
+                ? new kms.KeyArn(new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue())
                 : undefined
         };
     }

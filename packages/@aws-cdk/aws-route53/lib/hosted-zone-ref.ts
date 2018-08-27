@@ -24,7 +24,7 @@ export abstract class HostedZoneRef extends Construct {
      */
     public export(): HostedZoneRefProps {
         return {
-            hostedZoneId: new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+            hostedZoneId: new HostedZoneId(new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue()),
             zoneName: this.zoneName,
         };
     }

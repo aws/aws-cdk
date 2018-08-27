@@ -94,8 +94,8 @@ export abstract class BucketRef extends cdk.Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
-            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            bucketArn: new BucketArn(new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue()),
+            bucketName: new BucketName(new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue()),
         };
     }
 
@@ -157,7 +157,7 @@ export abstract class BucketRef extends cdk.Construct {
      *
      */
     public arnForObjects(...keyPattern: any[]): cdk.Arn {
-        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern);
+        return new cdk.Arn(new cdk.FnConcat(this.bucketArn, '/', ...keyPattern));
     }
 
     /**

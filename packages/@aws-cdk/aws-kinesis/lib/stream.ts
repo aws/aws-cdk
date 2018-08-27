@@ -75,15 +75,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
      * Exports this stream from the stack.
      */
     public export(): StreamRefProps {
-        const streamArn = new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue();
-        if (this.encryptionKey) {
-            return {
-                streamArn,
-                encryptionKey: this.encryptionKey.export()
-            };
-        } else {
-            return { streamArn };
-        }
+        return {
+            streamArn: new StreamArn(new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue()),
+            encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
+        };
     }
 
     /**

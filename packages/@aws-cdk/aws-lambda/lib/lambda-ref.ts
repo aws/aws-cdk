@@ -260,7 +260,7 @@ export abstract class FunctionRef extends cdk.Construct
      */
     public export(): FunctionRefProps {
         return {
-            functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+            functionArn: new FunctionArn(new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue()),
         };
     }
 

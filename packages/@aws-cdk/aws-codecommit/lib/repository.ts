@@ -49,7 +49,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue(),
+            repositoryName: new RepositoryName(new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue()),
         };
     }
 
