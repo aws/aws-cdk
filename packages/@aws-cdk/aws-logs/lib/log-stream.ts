@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
+import { LogGroupRef } from './log-group';
 import { cloudformation, LogStreamName } from './logs.generated';
 
 /**
@@ -42,7 +42,7 @@ export interface LogStreamProps {
     /**
      * The log group to create a log stream for.
      */
-    logGroup: LogGroup;
+    logGroup: LogGroupRef;
 
     /**
      * The name of the log stream to create.
