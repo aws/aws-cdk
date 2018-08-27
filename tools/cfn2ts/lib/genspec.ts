@@ -104,7 +104,7 @@ export class CodeName {
 /**
  * Class declaration
  */
-export class TypeDeclaration {
+export class ClassDeclaration {
     constructor(
             readonly typeName: CodeName,
             readonly baseClassName: CodeName,
@@ -123,7 +123,7 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken'
 export class Attribute {
     constructor(
         readonly propertyName: string,
-        readonly attributeType: TypeDeclaration,
+        readonly attributeType: ClassDeclaration,
         readonly constructorArguments: string) {
     }
 }
@@ -190,27 +190,26 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 
     // Not in a namespace, base the name on the descriptive name
     const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
-    const  baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
+    const baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
 
     const constructorArguments = `this.getAtt('${attributeName}')`;
 
-    const attrType = new TypeDeclaration(typeName, baseClass, docLink);
+    const attrType = new ClassDeclaration(typeName, baseClass, docLink);
     return new Attribute(propertyName, attrType, constructorArguments);
 }
 
 /**
- * Return an attribute definition name for the RefType for this class
+ * Return an attribute definition name for the RefKind for this class
  */
-export function refAttributeDefinition(resourceName: CodeName, refType: schema.RefType): Attribute {
-    const suffix = refType; // Already a string
-    const descriptiveName = descriptiveAttributeName(resourceName, suffix);
-    const refTypeName = new CodeName(resourceName.packageName, '', descriptiveName);
-    const baseClass = refType === schema.RefType.Arn ? ARN_NAME : TOKEN_NAME;
+export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
+    const refClassName = descriptiveAttributeName(resourceName, refKind);
+    const refClass = new CodeName(resourceName.packageName, '', refClassName);
+    const baseClass = refKind === schema.SpecialRefKind.Arn ? ARN_NAME : TOKEN_NAME;
 
     const constructorArguments = '{ Ref: this.logicalId }, `${this.logicalId}.Ref`';
 
-    const attrType = new TypeDeclaration(refTypeName, baseClass);
-    return new Attribute('ref', attrType, constructorArguments);
+    const refType = new ClassDeclaration(refClass, baseClass);
+    return new Attribute('ref', refType, constructorArguments);
 }
 
 /**

@@ -5,11 +5,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::AmazonMQ::Broker to Id"
+        "description": "Set RefKind of AWS::AmazonMQ::Broker to Id"
       }
     },
     "AWS::AmazonMQ::Configuration": {
@@ -17,11 +17,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::AmazonMQ::Configuration to Id"
+        "description": "Set RefKind of AWS::AmazonMQ::Configuration to Id"
       }
     },
     "AWS::ApiGateway::Account": {
@@ -29,11 +29,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Account to Id"
+        "description": "Set RefKind of AWS::ApiGateway::Account to Id"
       }
     },
     "AWS::ApiGateway::ApiKey": {
@@ -41,11 +41,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::ApiKey to Id"
+        "description": "Set RefKind of AWS::ApiGateway::ApiKey to Id"
       }
     },
     "AWS::ApiGateway::Authorizer": {
@@ -53,11 +53,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Authorizer to Id"
+        "description": "Set RefKind of AWS::ApiGateway::Authorizer to Id"
       }
     },
     "AWS::ApiGateway::BasePathMapping": {
@@ -65,11 +65,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::BasePathMapping to Id"
+        "description": "Set RefKind of AWS::ApiGateway::BasePathMapping to Id"
       }
     },
     "AWS::ApiGateway::ClientCertificate": {
@@ -77,11 +77,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::ClientCertificate to Name"
+        "description": "Set RefKind of AWS::ApiGateway::ClientCertificate to Name"
       }
     },
     "AWS::ApiGateway::Deployment": {
@@ -89,11 +89,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Deployment to Id"
+        "description": "Set RefKind of AWS::ApiGateway::Deployment to Id"
       }
     },
     "AWS::ApiGateway::DocumentationPart": {
@@ -101,11 +101,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::DocumentationPart to Id"
+        "description": "Set RefKind of AWS::ApiGateway::DocumentationPart to Id"
       }
     },
     "AWS::ApiGateway::DocumentationVersion": {
@@ -113,11 +113,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::DocumentationVersion to Id"
+        "description": "Set RefKind of AWS::ApiGateway::DocumentationVersion to Id"
       }
     },
     "AWS::ApiGateway::DomainName": {
@@ -125,11 +125,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::DomainName to Name"
+        "description": "Set RefKind of AWS::ApiGateway::DomainName to Name"
       }
     },
     "AWS::ApiGateway::GatewayResponse": {
@@ -137,11 +137,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::GatewayResponse to Id"
+        "description": "Set RefKind of AWS::ApiGateway::GatewayResponse to Id"
       }
     },
     "AWS::ApiGateway::Method": {
@@ -149,11 +149,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Method to Id"
+        "description": "Set RefKind of AWS::ApiGateway::Method to Id"
       }
     },
     "AWS::ApiGateway::Model": {
@@ -161,11 +161,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Model to Name"
+        "description": "Set RefKind of AWS::ApiGateway::Model to Name"
       }
     },
     "AWS::ApiGateway::RequestValidator": {
@@ -173,11 +173,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::RequestValidator to Id"
+        "description": "Set RefKind of AWS::ApiGateway::RequestValidator to Id"
       }
     },
     "AWS::ApiGateway::Resource": {
@@ -185,11 +185,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Resource to Id"
+        "description": "Set RefKind of AWS::ApiGateway::Resource to Id"
       }
     },
     "AWS::ApiGateway::RestApi": {
@@ -197,11 +197,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::RestApi to Id"
+        "description": "Set RefKind of AWS::ApiGateway::RestApi to Id"
       }
     },
     "AWS::ApiGateway::Stage": {
@@ -209,11 +209,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::Stage to Name"
+        "description": "Set RefKind of AWS::ApiGateway::Stage to Name"
       }
     },
     "AWS::ApiGateway::UsagePlan": {
@@ -221,11 +221,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::UsagePlan to Id"
+        "description": "Set RefKind of AWS::ApiGateway::UsagePlan to Id"
       }
     },
     "AWS::ApiGateway::UsagePlanKey": {
@@ -233,11 +233,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::UsagePlanKey to Id"
+        "description": "Set RefKind of AWS::ApiGateway::UsagePlanKey to Id"
       }
     },
     "AWS::ApiGateway::VpcLink": {
@@ -245,11 +245,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApiGateway::VpcLink to Id"
+        "description": "Set RefKind of AWS::ApiGateway::VpcLink to Id"
       }
     },
     "AWS::AppSync::ApiKey": {
@@ -257,11 +257,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AppSync::ApiKey to Arn"
+        "description": "Set RefKind of AWS::AppSync::ApiKey to Arn"
       }
     },
     "AWS::AppSync::DataSource": {
@@ -269,11 +269,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AppSync::DataSource to Arn"
+        "description": "Set RefKind of AWS::AppSync::DataSource to Arn"
       }
     },
     "AWS::AppSync::GraphQLApi": {
@@ -281,11 +281,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AppSync::GraphQLApi to Arn"
+        "description": "Set RefKind of AWS::AppSync::GraphQLApi to Arn"
       }
     },
     "AWS::AppSync::GraphQLSchema": {
@@ -293,11 +293,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::AppSync::GraphQLSchema to Id"
+        "description": "Set RefKind of AWS::AppSync::GraphQLSchema to Id"
       }
     },
     "AWS::AppSync::Resolver": {
@@ -305,11 +305,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AppSync::Resolver to Arn"
+        "description": "Set RefKind of AWS::AppSync::Resolver to Arn"
       }
     },
     "AWS::ApplicationAutoScaling::ScalableTarget": {
@@ -317,11 +317,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ApplicationAutoScaling::ScalableTarget to Id"
+        "description": "Set RefKind of AWS::ApplicationAutoScaling::ScalableTarget to Id"
       }
     },
     "AWS::ApplicationAutoScaling::ScalingPolicy": {
@@ -329,11 +329,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ApplicationAutoScaling::ScalingPolicy to Arn"
+        "description": "Set RefKind of AWS::ApplicationAutoScaling::ScalingPolicy to Arn"
       }
     },
     "AWS::Athena::NamedQuery": {
@@ -341,11 +341,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Athena::NamedQuery to Name"
+        "description": "Set RefKind of AWS::Athena::NamedQuery to Name"
       }
     },
     "AWS::AutoScaling::AutoScalingGroup": {
@@ -353,11 +353,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::AutoScaling::AutoScalingGroup to Name"
+        "description": "Set RefKind of AWS::AutoScaling::AutoScalingGroup to Name"
       }
     },
     "AWS::AutoScaling::LaunchConfiguration": {
@@ -365,11 +365,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::AutoScaling::LaunchConfiguration to Name"
+        "description": "Set RefKind of AWS::AutoScaling::LaunchConfiguration to Name"
       }
     },
     "AWS::AutoScaling::LifecycleHook": {
@@ -377,11 +377,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::AutoScaling::LifecycleHook to Name"
+        "description": "Set RefKind of AWS::AutoScaling::LifecycleHook to Name"
       }
     },
     "AWS::AutoScaling::ScalingPolicy": {
@@ -389,11 +389,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AutoScaling::ScalingPolicy to Arn"
+        "description": "Set RefKind of AWS::AutoScaling::ScalingPolicy to Arn"
       }
     },
     "AWS::AutoScaling::ScheduledAction": {
@@ -401,11 +401,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::AutoScaling::ScheduledAction to Name"
+        "description": "Set RefKind of AWS::AutoScaling::ScheduledAction to Name"
       }
     },
     "AWS::AutoScalingPlans::ScalingPlan": {
@@ -413,11 +413,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::AutoScalingPlans::ScalingPlan to Arn"
+        "description": "Set RefKind of AWS::AutoScalingPlans::ScalingPlan to Arn"
       }
     },
     "AWS::Batch::ComputeEnvironment": {
@@ -425,11 +425,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Batch::ComputeEnvironment to Arn"
+        "description": "Set RefKind of AWS::Batch::ComputeEnvironment to Arn"
       }
     },
     "AWS::Batch::JobDefinition": {
@@ -437,11 +437,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Batch::JobDefinition to Arn"
+        "description": "Set RefKind of AWS::Batch::JobDefinition to Arn"
       }
     },
     "AWS::Batch::JobQueue": {
@@ -449,11 +449,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Batch::JobQueue to Arn"
+        "description": "Set RefKind of AWS::Batch::JobQueue to Arn"
       }
     },
     "AWS::Budgets::Budget": {
@@ -461,11 +461,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Budgets::Budget to Name"
+        "description": "Set RefKind of AWS::Budgets::Budget to Name"
       }
     },
     "AWS::CertificateManager::Certificate": {
@@ -473,11 +473,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::CertificateManager::Certificate to Arn"
+        "description": "Set RefKind of AWS::CertificateManager::Certificate to Arn"
       }
     },
     "AWS::Cloud9::EnvironmentEC2": {
@@ -485,11 +485,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cloud9::EnvironmentEC2 to Id"
+        "description": "Set RefKind of AWS::Cloud9::EnvironmentEC2 to Id"
       }
     },
     "AWS::CloudFormation::CustomResource": {
@@ -497,11 +497,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::CloudFormation::CustomResource to None"
+        "description": "Set RefKind of AWS::CloudFormation::CustomResource to None"
       }
     },
     "AWS::CloudFormation::Stack": {
@@ -509,11 +509,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CloudFormation::Stack to Id"
+        "description": "Set RefKind of AWS::CloudFormation::Stack to Id"
       }
     },
     "AWS::CloudFormation::WaitCondition": {
@@ -521,11 +521,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CloudFormation::WaitCondition to Name"
+        "description": "Set RefKind of AWS::CloudFormation::WaitCondition to Name"
       }
     },
     "AWS::CloudFormation::WaitConditionHandle": {
@@ -533,11 +533,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Url"
           }
         ],
-        "description": "Set RefType of AWS::CloudFormation::WaitConditionHandle to Url"
+        "description": "Set RefKind of AWS::CloudFormation::WaitConditionHandle to Url"
       }
     },
     "AWS::CloudFront::CloudFrontOriginAccessIdentity": {
@@ -545,11 +545,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CloudFront::CloudFrontOriginAccessIdentity to Id"
+        "description": "Set RefKind of AWS::CloudFront::CloudFrontOriginAccessIdentity to Id"
       }
     },
     "AWS::CloudFront::Distribution": {
@@ -557,11 +557,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CloudFront::Distribution to Id"
+        "description": "Set RefKind of AWS::CloudFront::Distribution to Id"
       }
     },
     "AWS::CloudFront::StreamingDistribution": {
@@ -569,11 +569,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CloudFront::StreamingDistribution to Id"
+        "description": "Set RefKind of AWS::CloudFront::StreamingDistribution to Id"
       }
     },
     "AWS::CloudTrail::Trail": {
@@ -581,11 +581,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CloudTrail::Trail to Name"
+        "description": "Set RefKind of AWS::CloudTrail::Trail to Name"
       }
     },
     "AWS::CloudWatch::Alarm": {
@@ -593,11 +593,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CloudWatch::Alarm to Name"
+        "description": "Set RefKind of AWS::CloudWatch::Alarm to Name"
       }
     },
     "AWS::CloudWatch::Dashboard": {
@@ -605,11 +605,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CloudWatch::Dashboard to Name"
+        "description": "Set RefKind of AWS::CloudWatch::Dashboard to Name"
       }
     },
     "AWS::CodeBuild::Project": {
@@ -617,11 +617,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodeBuild::Project to Name"
+        "description": "Set RefKind of AWS::CodeBuild::Project to Name"
       }
     },
     "AWS::CodeCommit::Repository": {
@@ -629,11 +629,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CodeCommit::Repository to Id"
+        "description": "Set RefKind of AWS::CodeCommit::Repository to Id"
       }
     },
     "AWS::CodeDeploy::Application": {
@@ -641,11 +641,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodeDeploy::Application to Name"
+        "description": "Set RefKind of AWS::CodeDeploy::Application to Name"
       }
     },
     "AWS::CodeDeploy::DeploymentConfig": {
@@ -653,11 +653,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::CodeDeploy::DeploymentConfig to Id"
+        "description": "Set RefKind of AWS::CodeDeploy::DeploymentConfig to Id"
       }
     },
     "AWS::CodeDeploy::DeploymentGroup": {
@@ -665,11 +665,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodeDeploy::DeploymentGroup to Name"
+        "description": "Set RefKind of AWS::CodeDeploy::DeploymentGroup to Name"
       }
     },
     "AWS::CodePipeline::CustomActionType": {
@@ -677,11 +677,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodePipeline::CustomActionType to Name"
+        "description": "Set RefKind of AWS::CodePipeline::CustomActionType to Name"
       }
     },
     "AWS::CodePipeline::Pipeline": {
@@ -689,11 +689,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodePipeline::Pipeline to Name"
+        "description": "Set RefKind of AWS::CodePipeline::Pipeline to Name"
       }
     },
     "AWS::CodePipeline::Webhook": {
@@ -701,11 +701,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::CodePipeline::Webhook to Name"
+        "description": "Set RefKind of AWS::CodePipeline::Webhook to Name"
       }
     },
     "AWS::Cognito::IdentityPool": {
@@ -713,11 +713,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::IdentityPool to Id"
+        "description": "Set RefKind of AWS::Cognito::IdentityPool to Id"
       }
     },
     "AWS::Cognito::IdentityPoolRoleAttachment": {
@@ -725,11 +725,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::IdentityPoolRoleAttachment to Id"
+        "description": "Set RefKind of AWS::Cognito::IdentityPoolRoleAttachment to Id"
       }
     },
     "AWS::Cognito::UserPool": {
@@ -737,11 +737,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::UserPool to Id"
+        "description": "Set RefKind of AWS::Cognito::UserPool to Id"
       }
     },
     "AWS::Cognito::UserPoolClient": {
@@ -749,11 +749,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::UserPoolClient to Id"
+        "description": "Set RefKind of AWS::Cognito::UserPoolClient to Id"
       }
     },
     "AWS::Cognito::UserPoolGroup": {
@@ -761,11 +761,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::UserPoolGroup to Name"
+        "description": "Set RefKind of AWS::Cognito::UserPoolGroup to Name"
       }
     },
     "AWS::Cognito::UserPoolUser": {
@@ -773,11 +773,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::UserPoolUser to Name"
+        "description": "Set RefKind of AWS::Cognito::UserPoolUser to Name"
       }
     },
     "AWS::Cognito::UserPoolUserToGroupAttachment": {
@@ -785,11 +785,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Cognito::UserPoolUserToGroupAttachment to Id"
+        "description": "Set RefKind of AWS::Cognito::UserPoolUserToGroupAttachment to Id"
       }
     },
     "AWS::Config::AggregationAuthorization": {
@@ -797,11 +797,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Config::AggregationAuthorization to Arn"
+        "description": "Set RefKind of AWS::Config::AggregationAuthorization to Arn"
       }
     },
     "AWS::Config::ConfigRule": {
@@ -809,11 +809,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Config::ConfigRule to Name"
+        "description": "Set RefKind of AWS::Config::ConfigRule to Name"
       }
     },
     "AWS::Config::ConfigurationAggregator": {
@@ -821,11 +821,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Config::ConfigurationAggregator to Name"
+        "description": "Set RefKind of AWS::Config::ConfigurationAggregator to Name"
       }
     },
     "AWS::Config::ConfigurationRecorder": {
@@ -833,11 +833,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Config::ConfigurationRecorder to Name"
+        "description": "Set RefKind of AWS::Config::ConfigurationRecorder to Name"
       }
     },
     "AWS::Config::DeliveryChannel": {
@@ -845,11 +845,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Config::DeliveryChannel to Name"
+        "description": "Set RefKind of AWS::Config::DeliveryChannel to Name"
       }
     },
     "AWS::DAX::Cluster": {
@@ -857,11 +857,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::DAX::Cluster to Name"
+        "description": "Set RefKind of AWS::DAX::Cluster to Name"
       }
     },
     "AWS::DAX::ParameterGroup": {
@@ -869,11 +869,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DAX::ParameterGroup to Arn"
+        "description": "Set RefKind of AWS::DAX::ParameterGroup to Arn"
       }
     },
     "AWS::DAX::SubnetGroup": {
@@ -881,11 +881,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DAX::SubnetGroup to Arn"
+        "description": "Set RefKind of AWS::DAX::SubnetGroup to Arn"
       }
     },
     "AWS::DMS::Certificate": {
@@ -893,11 +893,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DMS::Certificate to Arn"
+        "description": "Set RefKind of AWS::DMS::Certificate to Arn"
       }
     },
     "AWS::DMS::Endpoint": {
@@ -905,11 +905,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DMS::Endpoint to Arn"
+        "description": "Set RefKind of AWS::DMS::Endpoint to Arn"
       }
     },
     "AWS::DMS::EventSubscription": {
@@ -917,11 +917,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::DMS::EventSubscription to Name"
+        "description": "Set RefKind of AWS::DMS::EventSubscription to Name"
       }
     },
     "AWS::DMS::ReplicationInstance": {
@@ -929,11 +929,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DMS::ReplicationInstance to Arn"
+        "description": "Set RefKind of AWS::DMS::ReplicationInstance to Arn"
       }
     },
     "AWS::DMS::ReplicationSubnetGroup": {
@@ -941,11 +941,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::DMS::ReplicationSubnetGroup to Name"
+        "description": "Set RefKind of AWS::DMS::ReplicationSubnetGroup to Name"
       }
     },
     "AWS::DMS::ReplicationTask": {
@@ -953,11 +953,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::DMS::ReplicationTask to Arn"
+        "description": "Set RefKind of AWS::DMS::ReplicationTask to Arn"
       }
     },
     "AWS::DataPipeline::Pipeline": {
@@ -965,11 +965,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::DataPipeline::Pipeline to Id"
+        "description": "Set RefKind of AWS::DataPipeline::Pipeline to Id"
       }
     },
     "AWS::DirectoryService::MicrosoftAD": {
@@ -977,11 +977,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::DirectoryService::MicrosoftAD to Id"
+        "description": "Set RefKind of AWS::DirectoryService::MicrosoftAD to Id"
       }
     },
     "AWS::DirectoryService::SimpleAD": {
@@ -989,11 +989,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::DirectoryService::SimpleAD to Id"
+        "description": "Set RefKind of AWS::DirectoryService::SimpleAD to Id"
       }
     },
     "AWS::DynamoDB::Table": {
@@ -1001,11 +1001,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::DynamoDB::Table to Name"
+        "description": "Set RefKind of AWS::DynamoDB::Table to Name"
       }
     },
     "AWS::EC2::CustomerGateway": {
@@ -1013,11 +1013,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::CustomerGateway to Name"
+        "description": "Set RefKind of AWS::EC2::CustomerGateway to Name"
       }
     },
     "AWS::EC2::DHCPOptions": {
@@ -1025,11 +1025,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::DHCPOptions to Name"
+        "description": "Set RefKind of AWS::EC2::DHCPOptions to Name"
       }
     },
     "AWS::EC2::EIP": {
@@ -1037,11 +1037,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Ip"
           }
         ],
-        "description": "Set RefType of AWS::EC2::EIP to Ip"
+        "description": "Set RefKind of AWS::EC2::EIP to Ip"
       }
     },
     "AWS::EC2::EIPAssociation": {
@@ -1049,11 +1049,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::EIPAssociation to Name"
+        "description": "Set RefKind of AWS::EC2::EIPAssociation to Name"
       }
     },
     "AWS::EC2::EgressOnlyInternetGateway": {
@@ -1061,11 +1061,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::EgressOnlyInternetGateway to Id"
+        "description": "Set RefKind of AWS::EC2::EgressOnlyInternetGateway to Id"
       }
     },
     "AWS::EC2::FlowLog": {
@@ -1073,11 +1073,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::FlowLog to Id"
+        "description": "Set RefKind of AWS::EC2::FlowLog to Id"
       }
     },
     "AWS::EC2::Host": {
@@ -1085,11 +1085,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::Host to Id"
+        "description": "Set RefKind of AWS::EC2::Host to Id"
       }
     },
     "AWS::EC2::Instance": {
@@ -1097,11 +1097,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::Instance to Id"
+        "description": "Set RefKind of AWS::EC2::Instance to Id"
       }
     },
     "AWS::EC2::InternetGateway": {
@@ -1109,11 +1109,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::InternetGateway to Name"
+        "description": "Set RefKind of AWS::EC2::InternetGateway to Name"
       }
     },
     "AWS::EC2::LaunchTemplate": {
@@ -1121,11 +1121,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::LaunchTemplate to Id"
+        "description": "Set RefKind of AWS::EC2::LaunchTemplate to Id"
       }
     },
     "AWS::EC2::NatGateway": {
@@ -1133,11 +1133,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NatGateway to Id"
+        "description": "Set RefKind of AWS::EC2::NatGateway to Id"
       }
     },
     "AWS::EC2::NetworkAcl": {
@@ -1145,11 +1145,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NetworkAcl to Name"
+        "description": "Set RefKind of AWS::EC2::NetworkAcl to Name"
       }
     },
     "AWS::EC2::NetworkAclEntry": {
@@ -1157,11 +1157,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NetworkAclEntry to Name"
+        "description": "Set RefKind of AWS::EC2::NetworkAclEntry to Name"
       }
     },
     "AWS::EC2::NetworkInterface": {
@@ -1169,11 +1169,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NetworkInterface to Name"
+        "description": "Set RefKind of AWS::EC2::NetworkInterface to Name"
       }
     },
     "AWS::EC2::NetworkInterfaceAttachment": {
@@ -1181,11 +1181,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NetworkInterfaceAttachment to Name"
+        "description": "Set RefKind of AWS::EC2::NetworkInterfaceAttachment to Name"
       }
     },
     "AWS::EC2::NetworkInterfacePermission": {
@@ -1193,11 +1193,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::NetworkInterfacePermission to Id"
+        "description": "Set RefKind of AWS::EC2::NetworkInterfacePermission to Id"
       }
     },
     "AWS::EC2::PlacementGroup": {
@@ -1205,11 +1205,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::PlacementGroup to Name"
+        "description": "Set RefKind of AWS::EC2::PlacementGroup to Name"
       }
     },
     "AWS::EC2::Route": {
@@ -1217,11 +1217,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::Route to Name"
+        "description": "Set RefKind of AWS::EC2::Route to Name"
       }
     },
     "AWS::EC2::RouteTable": {
@@ -1229,11 +1229,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::RouteTable to Id"
+        "description": "Set RefKind of AWS::EC2::RouteTable to Id"
       }
     },
     "AWS::EC2::SecurityGroup": {
@@ -1241,11 +1241,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SecurityGroup to Name"
+        "description": "Set RefKind of AWS::EC2::SecurityGroup to Name"
       }
     },
     "AWS::EC2::SecurityGroupEgress": {
@@ -1253,11 +1253,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SecurityGroupEgress to Id"
+        "description": "Set RefKind of AWS::EC2::SecurityGroupEgress to Id"
       }
     },
     "AWS::EC2::SecurityGroupIngress": {
@@ -1265,11 +1265,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SecurityGroupIngress to Id"
+        "description": "Set RefKind of AWS::EC2::SecurityGroupIngress to Id"
       }
     },
     "AWS::EC2::SpotFleet": {
@@ -1277,11 +1277,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SpotFleet to Name"
+        "description": "Set RefKind of AWS::EC2::SpotFleet to Name"
       }
     },
     "AWS::EC2::Subnet": {
@@ -1289,11 +1289,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::Subnet to Id"
+        "description": "Set RefKind of AWS::EC2::Subnet to Id"
       }
     },
     "AWS::EC2::SubnetCidrBlock": {
@@ -1301,11 +1301,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SubnetCidrBlock to Id"
+        "description": "Set RefKind of AWS::EC2::SubnetCidrBlock to Id"
       }
     },
     "AWS::EC2::SubnetNetworkAclAssociation": {
@@ -1313,11 +1313,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SubnetNetworkAclAssociation to Name"
+        "description": "Set RefKind of AWS::EC2::SubnetNetworkAclAssociation to Name"
       }
     },
     "AWS::EC2::SubnetRouteTableAssociation": {
@@ -1325,11 +1325,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::SubnetRouteTableAssociation to Name"
+        "description": "Set RefKind of AWS::EC2::SubnetRouteTableAssociation to Name"
       }
     },
     "AWS::EC2::TrunkInterfaceAssociation": {
@@ -1337,11 +1337,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::TrunkInterfaceAssociation to Id"
+        "description": "Set RefKind of AWS::EC2::TrunkInterfaceAssociation to Id"
       }
     },
     "AWS::EC2::VPC": {
@@ -1349,11 +1349,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPC to Id"
+        "description": "Set RefKind of AWS::EC2::VPC to Id"
       }
     },
     "AWS::EC2::VPCCidrBlock": {
@@ -1361,11 +1361,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCCidrBlock to Id"
+        "description": "Set RefKind of AWS::EC2::VPCCidrBlock to Id"
       }
     },
     "AWS::EC2::VPCDHCPOptionsAssociation": {
@@ -1373,11 +1373,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCDHCPOptionsAssociation to Name"
+        "description": "Set RefKind of AWS::EC2::VPCDHCPOptionsAssociation to Name"
       }
     },
     "AWS::EC2::VPCEndpoint": {
@@ -1385,11 +1385,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCEndpoint to Id"
+        "description": "Set RefKind of AWS::EC2::VPCEndpoint to Id"
       }
     },
     "AWS::EC2::VPCEndpointConnectionNotification": {
@@ -1397,11 +1397,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCEndpointConnectionNotification to None"
+        "description": "Set RefKind of AWS::EC2::VPCEndpointConnectionNotification to None"
       }
     },
     "AWS::EC2::VPCEndpointServicePermissions": {
@@ -1409,11 +1409,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCEndpointServicePermissions to None"
+        "description": "Set RefKind of AWS::EC2::VPCEndpointServicePermissions to None"
       }
     },
     "AWS::EC2::VPCGatewayAttachment": {
@@ -1421,11 +1421,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCGatewayAttachment to Name"
+        "description": "Set RefKind of AWS::EC2::VPCGatewayAttachment to Name"
       }
     },
     "AWS::EC2::VPCPeeringConnection": {
@@ -1433,11 +1433,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPCPeeringConnection to Name"
+        "description": "Set RefKind of AWS::EC2::VPCPeeringConnection to Name"
       }
     },
     "AWS::EC2::VPNConnection": {
@@ -1445,11 +1445,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPNConnection to Name"
+        "description": "Set RefKind of AWS::EC2::VPNConnection to Name"
       }
     },
     "AWS::EC2::VPNConnectionRoute": {
@@ -1457,11 +1457,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPNConnectionRoute to Name"
+        "description": "Set RefKind of AWS::EC2::VPNConnectionRoute to Name"
       }
     },
     "AWS::EC2::VPNGateway": {
@@ -1469,11 +1469,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPNGateway to Name"
+        "description": "Set RefKind of AWS::EC2::VPNGateway to Name"
       }
     },
     "AWS::EC2::VPNGatewayRoutePropagation": {
@@ -1481,11 +1481,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VPNGatewayRoutePropagation to Name"
+        "description": "Set RefKind of AWS::EC2::VPNGatewayRoutePropagation to Name"
       }
     },
     "AWS::EC2::Volume": {
@@ -1493,11 +1493,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::Volume to Id"
+        "description": "Set RefKind of AWS::EC2::Volume to Id"
       }
     },
     "AWS::EC2::VolumeAttachment": {
@@ -1505,11 +1505,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EC2::VolumeAttachment to Id"
+        "description": "Set RefKind of AWS::EC2::VolumeAttachment to Id"
       }
     },
     "AWS::ECR::Repository": {
@@ -1517,11 +1517,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ECR::Repository to Name"
+        "description": "Set RefKind of AWS::ECR::Repository to Name"
       }
     },
     "AWS::ECS::Cluster": {
@@ -1529,11 +1529,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ECS::Cluster to Name"
+        "description": "Set RefKind of AWS::ECS::Cluster to Name"
       }
     },
     "AWS::ECS::Service": {
@@ -1541,11 +1541,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ECS::Service to Arn"
+        "description": "Set RefKind of AWS::ECS::Service to Arn"
       }
     },
     "AWS::ECS::TaskDefinition": {
@@ -1553,11 +1553,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ECS::TaskDefinition to Arn"
+        "description": "Set RefKind of AWS::ECS::TaskDefinition to Arn"
       }
     },
     "AWS::EFS::FileSystem": {
@@ -1565,11 +1565,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EFS::FileSystem to Id"
+        "description": "Set RefKind of AWS::EFS::FileSystem to Id"
       }
     },
     "AWS::EFS::MountTarget": {
@@ -1577,11 +1577,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EFS::MountTarget to Id"
+        "description": "Set RefKind of AWS::EFS::MountTarget to Id"
       }
     },
     "AWS::EKS::Cluster": {
@@ -1589,11 +1589,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EKS::Cluster to Name"
+        "description": "Set RefKind of AWS::EKS::Cluster to Name"
       }
     },
     "AWS::EMR::Cluster": {
@@ -1601,11 +1601,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EMR::Cluster to Id"
+        "description": "Set RefKind of AWS::EMR::Cluster to Id"
       }
     },
     "AWS::EMR::InstanceFleetConfig": {
@@ -1613,11 +1613,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EMR::InstanceFleetConfig to Id"
+        "description": "Set RefKind of AWS::EMR::InstanceFleetConfig to Id"
       }
     },
     "AWS::EMR::InstanceGroupConfig": {
@@ -1625,11 +1625,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EMR::InstanceGroupConfig to Id"
+        "description": "Set RefKind of AWS::EMR::InstanceGroupConfig to Id"
       }
     },
     "AWS::EMR::SecurityConfiguration": {
@@ -1637,11 +1637,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::EMR::SecurityConfiguration to Name"
+        "description": "Set RefKind of AWS::EMR::SecurityConfiguration to Name"
       }
     },
     "AWS::EMR::Step": {
@@ -1649,11 +1649,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::EMR::Step to Id"
+        "description": "Set RefKind of AWS::EMR::Step to Id"
       }
     },
     "AWS::ElastiCache::CacheCluster": {
@@ -1661,11 +1661,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::CacheCluster to Name"
+        "description": "Set RefKind of AWS::ElastiCache::CacheCluster to Name"
       }
     },
     "AWS::ElastiCache::ParameterGroup": {
@@ -1673,11 +1673,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::ParameterGroup to Name"
+        "description": "Set RefKind of AWS::ElastiCache::ParameterGroup to Name"
       }
     },
     "AWS::ElastiCache::ReplicationGroup": {
@@ -1685,11 +1685,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::ReplicationGroup to Name"
+        "description": "Set RefKind of AWS::ElastiCache::ReplicationGroup to Name"
       }
     },
     "AWS::ElastiCache::SecurityGroup": {
@@ -1697,11 +1697,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::SecurityGroup to Name"
+        "description": "Set RefKind of AWS::ElastiCache::SecurityGroup to Name"
       }
     },
     "AWS::ElastiCache::SecurityGroupIngress": {
@@ -1709,11 +1709,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::SecurityGroupIngress to Id"
+        "description": "Set RefKind of AWS::ElastiCache::SecurityGroupIngress to Id"
       }
     },
     "AWS::ElastiCache::SubnetGroup": {
@@ -1721,11 +1721,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElastiCache::SubnetGroup to Name"
+        "description": "Set RefKind of AWS::ElastiCache::SubnetGroup to Name"
       }
     },
     "AWS::ElasticBeanstalk::Application": {
@@ -1733,11 +1733,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElasticBeanstalk::Application to Name"
+        "description": "Set RefKind of AWS::ElasticBeanstalk::Application to Name"
       }
     },
     "AWS::ElasticBeanstalk::ApplicationVersion": {
@@ -1745,11 +1745,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElasticBeanstalk::ApplicationVersion to Name"
+        "description": "Set RefKind of AWS::ElasticBeanstalk::ApplicationVersion to Name"
       }
     },
     "AWS::ElasticBeanstalk::ConfigurationTemplate": {
@@ -1757,11 +1757,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElasticBeanstalk::ConfigurationTemplate to Name"
+        "description": "Set RefKind of AWS::ElasticBeanstalk::ConfigurationTemplate to Name"
       }
     },
     "AWS::ElasticBeanstalk::Environment": {
@@ -1769,11 +1769,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElasticBeanstalk::Environment to Name"
+        "description": "Set RefKind of AWS::ElasticBeanstalk::Environment to Name"
       }
     },
     "AWS::ElasticLoadBalancing::LoadBalancer": {
@@ -1781,11 +1781,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancing::LoadBalancer to Name"
+        "description": "Set RefKind of AWS::ElasticLoadBalancing::LoadBalancer to Name"
       }
     },
     "AWS::ElasticLoadBalancingV2::Listener": {
@@ -1793,11 +1793,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancingV2::Listener to Arn"
+        "description": "Set RefKind of AWS::ElasticLoadBalancingV2::Listener to Arn"
       }
     },
     "AWS::ElasticLoadBalancingV2::ListenerCertificate": {
@@ -1805,11 +1805,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancingV2::ListenerCertificate to Arn"
+        "description": "Set RefKind of AWS::ElasticLoadBalancingV2::ListenerCertificate to Arn"
       }
     },
     "AWS::ElasticLoadBalancingV2::ListenerRule": {
@@ -1817,11 +1817,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancingV2::ListenerRule to Arn"
+        "description": "Set RefKind of AWS::ElasticLoadBalancingV2::ListenerRule to Arn"
       }
     },
     "AWS::ElasticLoadBalancingV2::LoadBalancer": {
@@ -1829,11 +1829,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancingV2::LoadBalancer to Arn"
+        "description": "Set RefKind of AWS::ElasticLoadBalancingV2::LoadBalancer to Arn"
       }
     },
     "AWS::ElasticLoadBalancingV2::TargetGroup": {
@@ -1841,11 +1841,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::ElasticLoadBalancingV2::TargetGroup to Arn"
+        "description": "Set RefKind of AWS::ElasticLoadBalancingV2::TargetGroup to Arn"
       }
     },
     "AWS::Elasticsearch::Domain": {
@@ -1853,11 +1853,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Elasticsearch::Domain to Name"
+        "description": "Set RefKind of AWS::Elasticsearch::Domain to Name"
       }
     },
     "AWS::Events::Rule": {
@@ -1865,11 +1865,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Events::Rule to Id"
+        "description": "Set RefKind of AWS::Events::Rule to Id"
       }
     },
     "AWS::GameLift::Alias": {
@@ -1877,11 +1877,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GameLift::Alias to Id"
+        "description": "Set RefKind of AWS::GameLift::Alias to Id"
       }
     },
     "AWS::GameLift::Build": {
@@ -1889,11 +1889,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GameLift::Build to Id"
+        "description": "Set RefKind of AWS::GameLift::Build to Id"
       }
     },
     "AWS::GameLift::Fleet": {
@@ -1901,11 +1901,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GameLift::Fleet to Id"
+        "description": "Set RefKind of AWS::GameLift::Fleet to Id"
       }
     },
     "AWS::Glue::Classifier": {
@@ -1913,11 +1913,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Classifier to Name"
+        "description": "Set RefKind of AWS::Glue::Classifier to Name"
       }
     },
     "AWS::Glue::Connection": {
@@ -1925,11 +1925,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Connection to Name"
+        "description": "Set RefKind of AWS::Glue::Connection to Name"
       }
     },
     "AWS::Glue::Crawler": {
@@ -1937,11 +1937,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Crawler to Name"
+        "description": "Set RefKind of AWS::Glue::Crawler to Name"
       }
     },
     "AWS::Glue::Database": {
@@ -1949,11 +1949,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Database to Name"
+        "description": "Set RefKind of AWS::Glue::Database to Name"
       }
     },
     "AWS::Glue::DevEndpoint": {
@@ -1961,11 +1961,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Glue::DevEndpoint to Id"
+        "description": "Set RefKind of AWS::Glue::DevEndpoint to Id"
       }
     },
     "AWS::Glue::Job": {
@@ -1973,11 +1973,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Job to Name"
+        "description": "Set RefKind of AWS::Glue::Job to Name"
       }
     },
     "AWS::Glue::Partition": {
@@ -1985,11 +1985,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Partition to Id"
+        "description": "Set RefKind of AWS::Glue::Partition to Id"
       }
     },
     "AWS::Glue::Table": {
@@ -1997,11 +1997,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Table to Name"
+        "description": "Set RefKind of AWS::Glue::Table to Name"
       }
     },
     "AWS::Glue::Trigger": {
@@ -2009,11 +2009,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Glue::Trigger to Name"
+        "description": "Set RefKind of AWS::Glue::Trigger to Name"
       }
     },
     "AWS::GuardDuty::Detector": {
@@ -2021,11 +2021,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::Detector to Id"
+        "description": "Set RefKind of AWS::GuardDuty::Detector to Id"
       }
     },
     "AWS::GuardDuty::Filter": {
@@ -2033,11 +2033,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::Filter to Name"
+        "description": "Set RefKind of AWS::GuardDuty::Filter to Name"
       }
     },
     "AWS::GuardDuty::IPSet": {
@@ -2045,11 +2045,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::IPSet to Id"
+        "description": "Set RefKind of AWS::GuardDuty::IPSet to Id"
       }
     },
     "AWS::GuardDuty::Master": {
@@ -2057,11 +2057,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::Master to None"
+        "description": "Set RefKind of AWS::GuardDuty::Master to None"
       }
     },
     "AWS::GuardDuty::Member": {
@@ -2069,11 +2069,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::Member to None"
+        "description": "Set RefKind of AWS::GuardDuty::Member to None"
       }
     },
     "AWS::GuardDuty::ThreatIntelSet": {
@@ -2081,11 +2081,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::GuardDuty::ThreatIntelSet to Id"
+        "description": "Set RefKind of AWS::GuardDuty::ThreatIntelSet to Id"
       }
     },
     "AWS::IAM::AccessKey": {
@@ -2093,11 +2093,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::IAM::AccessKey to Id"
+        "description": "Set RefKind of AWS::IAM::AccessKey to Id"
       }
     },
     "AWS::IAM::Group": {
@@ -2105,11 +2105,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IAM::Group to Name"
+        "description": "Set RefKind of AWS::IAM::Group to Name"
       }
     },
     "AWS::IAM::InstanceProfile": {
@@ -2117,11 +2117,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IAM::InstanceProfile to Name"
+        "description": "Set RefKind of AWS::IAM::InstanceProfile to Name"
       }
     },
     "AWS::IAM::ManagedPolicy": {
@@ -2129,11 +2129,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::IAM::ManagedPolicy to Arn"
+        "description": "Set RefKind of AWS::IAM::ManagedPolicy to Arn"
       }
     },
     "AWS::IAM::Policy": {
@@ -2141,11 +2141,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IAM::Policy to Name"
+        "description": "Set RefKind of AWS::IAM::Policy to Name"
       }
     },
     "AWS::IAM::Role": {
@@ -2153,11 +2153,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IAM::Role to Name"
+        "description": "Set RefKind of AWS::IAM::Role to Name"
       }
     },
     "AWS::IAM::ServiceLinkedRole": {
@@ -2165,11 +2165,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::IAM::ServiceLinkedRole to None"
+        "description": "Set RefKind of AWS::IAM::ServiceLinkedRole to None"
       }
     },
     "AWS::IAM::User": {
@@ -2177,11 +2177,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IAM::User to Name"
+        "description": "Set RefKind of AWS::IAM::User to Name"
       }
     },
     "AWS::IAM::UserToGroupAddition": {
@@ -2189,11 +2189,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::IAM::UserToGroupAddition to None"
+        "description": "Set RefKind of AWS::IAM::UserToGroupAddition to None"
       }
     },
     "AWS::Inspector::AssessmentTarget": {
@@ -2201,11 +2201,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::Inspector::AssessmentTarget to None"
+        "description": "Set RefKind of AWS::Inspector::AssessmentTarget to None"
       }
     },
     "AWS::Inspector::AssessmentTemplate": {
@@ -2213,11 +2213,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::Inspector::AssessmentTemplate to None"
+        "description": "Set RefKind of AWS::Inspector::AssessmentTemplate to None"
       }
     },
     "AWS::Inspector::ResourceGroup": {
@@ -2225,11 +2225,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::Inspector::ResourceGroup to None"
+        "description": "Set RefKind of AWS::Inspector::ResourceGroup to None"
       }
     },
     "AWS::IoT::Certificate": {
@@ -2237,11 +2237,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::IoT::Certificate to Id"
+        "description": "Set RefKind of AWS::IoT::Certificate to Id"
       }
     },
     "AWS::IoT::Policy": {
@@ -2249,11 +2249,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IoT::Policy to Name"
+        "description": "Set RefKind of AWS::IoT::Policy to Name"
       }
     },
     "AWS::IoT::PolicyPrincipalAttachment": {
@@ -2261,11 +2261,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::IoT::PolicyPrincipalAttachment to None"
+        "description": "Set RefKind of AWS::IoT::PolicyPrincipalAttachment to None"
       }
     },
     "AWS::IoT::Thing": {
@@ -2273,11 +2273,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IoT::Thing to Name"
+        "description": "Set RefKind of AWS::IoT::Thing to Name"
       }
     },
     "AWS::IoT::ThingPrincipalAttachment": {
@@ -2285,11 +2285,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::IoT::ThingPrincipalAttachment to None"
+        "description": "Set RefKind of AWS::IoT::ThingPrincipalAttachment to None"
       }
     },
     "AWS::IoT::TopicRule": {
@@ -2297,11 +2297,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::IoT::TopicRule to Name"
+        "description": "Set RefKind of AWS::IoT::TopicRule to Name"
       }
     },
     "AWS::KMS::Alias": {
@@ -2309,11 +2309,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::KMS::Alias to Name"
+        "description": "Set RefKind of AWS::KMS::Alias to Name"
       }
     },
     "AWS::KMS::Key": {
@@ -2321,11 +2321,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::KMS::Key to Id"
+        "description": "Set RefKind of AWS::KMS::Key to Id"
       }
     },
     "AWS::Kinesis::Stream": {
@@ -2333,11 +2333,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Kinesis::Stream to Id"
+        "description": "Set RefKind of AWS::Kinesis::Stream to Id"
       }
     },
     "AWS::KinesisAnalytics::Application": {
@@ -2345,11 +2345,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::KinesisAnalytics::Application to Id"
+        "description": "Set RefKind of AWS::KinesisAnalytics::Application to Id"
       }
     },
     "AWS::KinesisAnalytics::ApplicationOutput": {
@@ -2357,11 +2357,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::KinesisAnalytics::ApplicationOutput to Id"
+        "description": "Set RefKind of AWS::KinesisAnalytics::ApplicationOutput to Id"
       }
     },
     "AWS::KinesisAnalytics::ApplicationReferenceDataSource": {
@@ -2369,11 +2369,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::KinesisAnalytics::ApplicationReferenceDataSource to Id"
+        "description": "Set RefKind of AWS::KinesisAnalytics::ApplicationReferenceDataSource to Id"
       }
     },
     "AWS::KinesisFirehose::DeliveryStream": {
@@ -2381,11 +2381,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::KinesisFirehose::DeliveryStream to Name"
+        "description": "Set RefKind of AWS::KinesisFirehose::DeliveryStream to Name"
       }
     },
     "AWS::Lambda::Alias": {
@@ -2393,11 +2393,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Lambda::Alias to Arn"
+        "description": "Set RefKind of AWS::Lambda::Alias to Arn"
       }
     },
     "AWS::Lambda::EventSourceMapping": {
@@ -2405,11 +2405,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Lambda::EventSourceMapping to Name"
+        "description": "Set RefKind of AWS::Lambda::EventSourceMapping to Name"
       }
     },
     "AWS::Lambda::Function": {
@@ -2417,11 +2417,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Lambda::Function to Name"
+        "description": "Set RefKind of AWS::Lambda::Function to Name"
       }
     },
     "AWS::Lambda::Permission": {
@@ -2429,11 +2429,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::Lambda::Permission to None"
+        "description": "Set RefKind of AWS::Lambda::Permission to None"
       }
     },
     "AWS::Lambda::Version": {
@@ -2441,11 +2441,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::Lambda::Version to Arn"
+        "description": "Set RefKind of AWS::Lambda::Version to Arn"
       }
     },
     "AWS::Logs::Destination": {
@@ -2453,11 +2453,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Logs::Destination to Name"
+        "description": "Set RefKind of AWS::Logs::Destination to Name"
       }
     },
     "AWS::Logs::LogGroup": {
@@ -2465,11 +2465,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Logs::LogGroup to Name"
+        "description": "Set RefKind of AWS::Logs::LogGroup to Name"
       }
     },
     "AWS::Logs::LogStream": {
@@ -2477,11 +2477,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Logs::LogStream to Name"
+        "description": "Set RefKind of AWS::Logs::LogStream to Name"
       }
     },
     "AWS::Logs::MetricFilter": {
@@ -2489,11 +2489,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Logs::MetricFilter to Name"
+        "description": "Set RefKind of AWS::Logs::MetricFilter to Name"
       }
     },
     "AWS::Logs::SubscriptionFilter": {
@@ -2501,11 +2501,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Logs::SubscriptionFilter to Name"
+        "description": "Set RefKind of AWS::Logs::SubscriptionFilter to Name"
       }
     },
     "AWS::Neptune::DBCluster": {
@@ -2513,11 +2513,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Neptune::DBCluster to Name"
+        "description": "Set RefKind of AWS::Neptune::DBCluster to Name"
       }
     },
     "AWS::Neptune::DBClusterParameterGroup": {
@@ -2525,11 +2525,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Neptune::DBClusterParameterGroup to Name"
+        "description": "Set RefKind of AWS::Neptune::DBClusterParameterGroup to Name"
       }
     },
     "AWS::Neptune::DBInstance": {
@@ -2537,11 +2537,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Neptune::DBInstance to Id"
+        "description": "Set RefKind of AWS::Neptune::DBInstance to Id"
       }
     },
     "AWS::Neptune::DBParameterGroup": {
@@ -2549,11 +2549,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Neptune::DBParameterGroup to Name"
+        "description": "Set RefKind of AWS::Neptune::DBParameterGroup to Name"
       }
     },
     "AWS::Neptune::DBSubnetGroup": {
@@ -2561,11 +2561,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Neptune::DBSubnetGroup to Name"
+        "description": "Set RefKind of AWS::Neptune::DBSubnetGroup to Name"
       }
     },
     "AWS::OpsWorks::App": {
@@ -2573,11 +2573,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::App to Id"
+        "description": "Set RefKind of AWS::OpsWorks::App to Id"
       }
     },
     "AWS::OpsWorks::ElasticLoadBalancerAttachment": {
@@ -2585,11 +2585,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::ElasticLoadBalancerAttachment to None"
+        "description": "Set RefKind of AWS::OpsWorks::ElasticLoadBalancerAttachment to None"
       }
     },
     "AWS::OpsWorks::Instance": {
@@ -2597,11 +2597,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::Instance to Id"
+        "description": "Set RefKind of AWS::OpsWorks::Instance to Id"
       }
     },
     "AWS::OpsWorks::Layer": {
@@ -2609,11 +2609,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::Layer to Id"
+        "description": "Set RefKind of AWS::OpsWorks::Layer to Id"
       }
     },
     "AWS::OpsWorks::Stack": {
@@ -2621,11 +2621,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::Stack to Id"
+        "description": "Set RefKind of AWS::OpsWorks::Stack to Id"
       }
     },
     "AWS::OpsWorks::UserProfile": {
@@ -2633,11 +2633,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::UserProfile to Arn"
+        "description": "Set RefKind of AWS::OpsWorks::UserProfile to Arn"
       }
     },
     "AWS::OpsWorks::Volume": {
@@ -2645,11 +2645,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::OpsWorks::Volume to Id"
+        "description": "Set RefKind of AWS::OpsWorks::Volume to Id"
       }
     },
     "AWS::RDS::DBCluster": {
@@ -2657,11 +2657,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBCluster to Name"
+        "description": "Set RefKind of AWS::RDS::DBCluster to Name"
       }
     },
     "AWS::RDS::DBClusterParameterGroup": {
@@ -2669,11 +2669,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBClusterParameterGroup to Name"
+        "description": "Set RefKind of AWS::RDS::DBClusterParameterGroup to Name"
       }
     },
     "AWS::RDS::DBInstance": {
@@ -2681,11 +2681,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBInstance to Id"
+        "description": "Set RefKind of AWS::RDS::DBInstance to Id"
       }
     },
     "AWS::RDS::DBParameterGroup": {
@@ -2693,11 +2693,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBParameterGroup to Name"
+        "description": "Set RefKind of AWS::RDS::DBParameterGroup to Name"
       }
     },
     "AWS::RDS::DBSecurityGroup": {
@@ -2705,11 +2705,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBSecurityGroup to Name"
+        "description": "Set RefKind of AWS::RDS::DBSecurityGroup to Name"
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -2717,11 +2717,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBSecurityGroupIngress to Name"
+        "description": "Set RefKind of AWS::RDS::DBSecurityGroupIngress to Name"
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -2729,11 +2729,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::DBSubnetGroup to Name"
+        "description": "Set RefKind of AWS::RDS::DBSubnetGroup to Name"
       }
     },
     "AWS::RDS::EventSubscription": {
@@ -2741,11 +2741,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::EventSubscription to Name"
+        "description": "Set RefKind of AWS::RDS::EventSubscription to Name"
       }
     },
     "AWS::RDS::OptionGroup": {
@@ -2753,11 +2753,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::RDS::OptionGroup to Name"
+        "description": "Set RefKind of AWS::RDS::OptionGroup to Name"
       }
     },
     "AWS::Redshift::Cluster": {
@@ -2765,11 +2765,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Redshift::Cluster to Name"
+        "description": "Set RefKind of AWS::Redshift::Cluster to Name"
       }
     },
     "AWS::Redshift::ClusterParameterGroup": {
@@ -2777,11 +2777,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Redshift::ClusterParameterGroup to Name"
+        "description": "Set RefKind of AWS::Redshift::ClusterParameterGroup to Name"
       }
     },
     "AWS::Redshift::ClusterSecurityGroup": {
@@ -2789,11 +2789,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Redshift::ClusterSecurityGroup to Name"
+        "description": "Set RefKind of AWS::Redshift::ClusterSecurityGroup to Name"
       }
     },
     "AWS::Redshift::ClusterSecurityGroupIngress": {
@@ -2801,11 +2801,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::Redshift::ClusterSecurityGroupIngress to None"
+        "description": "Set RefKind of AWS::Redshift::ClusterSecurityGroupIngress to None"
       }
     },
     "AWS::Redshift::ClusterSubnetGroup": {
@@ -2813,11 +2813,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Redshift::ClusterSubnetGroup to Name"
+        "description": "Set RefKind of AWS::Redshift::ClusterSubnetGroup to Name"
       }
     },
     "AWS::Route53::HealthCheck": {
@@ -2825,11 +2825,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Route53::HealthCheck to Id"
+        "description": "Set RefKind of AWS::Route53::HealthCheck to Id"
       }
     },
     "AWS::Route53::HostedZone": {
@@ -2837,11 +2837,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::Route53::HostedZone to Id"
+        "description": "Set RefKind of AWS::Route53::HostedZone to Id"
       }
     },
     "AWS::Route53::RecordSet": {
@@ -2849,11 +2849,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "DomainName"
           }
         ],
-        "description": "Set RefType of AWS::Route53::RecordSet to DomainName"
+        "description": "Set RefKind of AWS::Route53::RecordSet to DomainName"
       }
     },
     "AWS::Route53::RecordSetGroup": {
@@ -2861,11 +2861,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Route53::RecordSetGroup to Name"
+        "description": "Set RefKind of AWS::Route53::RecordSetGroup to Name"
       }
     },
     "AWS::S3::Bucket": {
@@ -2873,11 +2873,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::S3::Bucket to Name"
+        "description": "Set RefKind of AWS::S3::Bucket to Name"
       }
     },
     "AWS::S3::BucketPolicy": {
@@ -2885,11 +2885,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::S3::BucketPolicy to None"
+        "description": "Set RefKind of AWS::S3::BucketPolicy to None"
       }
     },
     "AWS::SDB::Domain": {
@@ -2897,11 +2897,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::SDB::Domain to None"
+        "description": "Set RefKind of AWS::SDB::Domain to None"
       }
     },
     "AWS::SES::ConfigurationSet": {
@@ -2909,11 +2909,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SES::ConfigurationSet to Name"
+        "description": "Set RefKind of AWS::SES::ConfigurationSet to Name"
       }
     },
     "AWS::SES::ConfigurationSetEventDestination": {
@@ -2921,11 +2921,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::SES::ConfigurationSetEventDestination to None"
+        "description": "Set RefKind of AWS::SES::ConfigurationSetEventDestination to None"
       }
     },
     "AWS::SES::ReceiptFilter": {
@@ -2933,11 +2933,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SES::ReceiptFilter to Name"
+        "description": "Set RefKind of AWS::SES::ReceiptFilter to Name"
       }
     },
     "AWS::SES::ReceiptRule": {
@@ -2945,11 +2945,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SES::ReceiptRule to Name"
+        "description": "Set RefKind of AWS::SES::ReceiptRule to Name"
       }
     },
     "AWS::SES::ReceiptRuleSet": {
@@ -2957,11 +2957,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SES::ReceiptRuleSet to Name"
+        "description": "Set RefKind of AWS::SES::ReceiptRuleSet to Name"
       }
     },
     "AWS::SES::Template": {
@@ -2969,11 +2969,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::SES::Template to Id"
+        "description": "Set RefKind of AWS::SES::Template to Id"
       }
     },
     "AWS::SNS::Subscription": {
@@ -2981,11 +2981,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SNS::Subscription to Arn"
+        "description": "Set RefKind of AWS::SNS::Subscription to Arn"
       }
     },
     "AWS::SNS::Topic": {
@@ -2993,11 +2993,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SNS::Topic to Arn"
+        "description": "Set RefKind of AWS::SNS::Topic to Arn"
       }
     },
     "AWS::SNS::TopicPolicy": {
@@ -3005,11 +3005,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::SNS::TopicPolicy to None"
+        "description": "Set RefKind of AWS::SNS::TopicPolicy to None"
       }
     },
     "AWS::SQS::Queue": {
@@ -3017,11 +3017,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Url"
           }
         ],
-        "description": "Set RefType of AWS::SQS::Queue to Url"
+        "description": "Set RefKind of AWS::SQS::Queue to Url"
       }
     },
     "AWS::SQS::QueuePolicy": {
@@ -3029,11 +3029,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::SQS::QueuePolicy to None"
+        "description": "Set RefKind of AWS::SQS::QueuePolicy to None"
       }
     },
     "AWS::SSM::Association": {
@@ -3041,11 +3041,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "None"
           }
         ],
-        "description": "Set RefType of AWS::SSM::Association to None"
+        "description": "Set RefKind of AWS::SSM::Association to None"
       }
     },
     "AWS::SSM::Document": {
@@ -3053,11 +3053,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SSM::Document to Name"
+        "description": "Set RefKind of AWS::SSM::Document to Name"
       }
     },
     "AWS::SSM::MaintenanceWindowTask": {
@@ -3065,11 +3065,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::SSM::MaintenanceWindowTask to Id"
+        "description": "Set RefKind of AWS::SSM::MaintenanceWindowTask to Id"
       }
     },
     "AWS::SSM::Parameter": {
@@ -3077,11 +3077,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SSM::Parameter to Name"
+        "description": "Set RefKind of AWS::SSM::Parameter to Name"
       }
     },
     "AWS::SSM::PatchBaseline": {
@@ -3089,11 +3089,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::SSM::PatchBaseline to Id"
+        "description": "Set RefKind of AWS::SSM::PatchBaseline to Id"
       }
     },
     "AWS::SSM::ResourceDataSync": {
@@ -3101,11 +3101,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::SSM::ResourceDataSync to Name"
+        "description": "Set RefKind of AWS::SSM::ResourceDataSync to Name"
       }
     },
     "AWS::SageMaker::Endpoint": {
@@ -3113,11 +3113,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SageMaker::Endpoint to Arn"
+        "description": "Set RefKind of AWS::SageMaker::Endpoint to Arn"
       }
     },
     "AWS::SageMaker::EndpointConfig": {
@@ -3125,11 +3125,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SageMaker::EndpointConfig to Arn"
+        "description": "Set RefKind of AWS::SageMaker::EndpointConfig to Arn"
       }
     },
     "AWS::SageMaker::Model": {
@@ -3137,11 +3137,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SageMaker::Model to Arn"
+        "description": "Set RefKind of AWS::SageMaker::Model to Arn"
       }
     },
     "AWS::SageMaker::NotebookInstance": {
@@ -3149,11 +3149,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SageMaker::NotebookInstance to Arn"
+        "description": "Set RefKind of AWS::SageMaker::NotebookInstance to Arn"
       }
     },
     "AWS::SageMaker::NotebookInstanceLifecycleConfig": {
@@ -3161,11 +3161,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::SageMaker::NotebookInstanceLifecycleConfig to Arn"
+        "description": "Set RefKind of AWS::SageMaker::NotebookInstanceLifecycleConfig to Arn"
       }
     },
     "AWS::Serverless::Api": {
@@ -3173,11 +3173,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Serverless::Api to Name"
+        "description": "Set RefKind of AWS::Serverless::Api to Name"
       }
     },
     "AWS::Serverless::Function": {
@@ -3185,11 +3185,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Serverless::Function to Name"
+        "description": "Set RefKind of AWS::Serverless::Function to Name"
       }
     },
     "AWS::Serverless::SimpleTable": {
@@ -3197,11 +3197,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::Serverless::SimpleTable to Name"
+        "description": "Set RefKind of AWS::Serverless::SimpleTable to Name"
       }
     },
     "AWS::ServiceCatalog::AcceptedPortfolioShare": {
@@ -3209,11 +3209,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::AcceptedPortfolioShare to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::AcceptedPortfolioShare to Id"
       }
     },
     "AWS::ServiceCatalog::CloudFormationProduct": {
@@ -3221,11 +3221,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::CloudFormationProduct to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::CloudFormationProduct to Id"
       }
     },
     "AWS::ServiceCatalog::CloudFormationProvisionedProduct": {
@@ -3233,11 +3233,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::CloudFormationProvisionedProduct to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::CloudFormationProvisionedProduct to Id"
       }
     },
     "AWS::ServiceCatalog::LaunchNotificationConstraint": {
@@ -3245,11 +3245,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::LaunchNotificationConstraint to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::LaunchNotificationConstraint to Id"
       }
     },
     "AWS::ServiceCatalog::LaunchRoleConstraint": {
@@ -3257,11 +3257,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::LaunchRoleConstraint to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::LaunchRoleConstraint to Id"
       }
     },
     "AWS::ServiceCatalog::LaunchTemplateConstraint": {
@@ -3269,11 +3269,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::LaunchTemplateConstraint to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::LaunchTemplateConstraint to Id"
       }
     },
     "AWS::ServiceCatalog::Portfolio": {
@@ -3281,11 +3281,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::Portfolio to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::Portfolio to Id"
       }
     },
     "AWS::ServiceCatalog::PortfolioPrincipalAssociation": {
@@ -3293,11 +3293,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::PortfolioPrincipalAssociation to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::PortfolioPrincipalAssociation to Id"
       }
     },
     "AWS::ServiceCatalog::PortfolioProductAssociation": {
@@ -3305,11 +3305,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::PortfolioProductAssociation to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::PortfolioProductAssociation to Id"
       }
     },
     "AWS::ServiceCatalog::PortfolioShare": {
@@ -3317,11 +3317,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::PortfolioShare to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::PortfolioShare to Id"
       }
     },
     "AWS::ServiceCatalog::TagOption": {
@@ -3329,11 +3329,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::TagOption to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::TagOption to Id"
       }
     },
     "AWS::ServiceCatalog::TagOptionAssociation": {
@@ -3341,11 +3341,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceCatalog::TagOptionAssociation to Id"
+        "description": "Set RefKind of AWS::ServiceCatalog::TagOptionAssociation to Id"
       }
     },
     "AWS::ServiceDiscovery::Instance": {
@@ -3353,11 +3353,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceDiscovery::Instance to Id"
+        "description": "Set RefKind of AWS::ServiceDiscovery::Instance to Id"
       }
     },
     "AWS::ServiceDiscovery::PrivateDnsNamespace": {
@@ -3365,11 +3365,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceDiscovery::PrivateDnsNamespace to Id"
+        "description": "Set RefKind of AWS::ServiceDiscovery::PrivateDnsNamespace to Id"
       }
     },
     "AWS::ServiceDiscovery::PublicDnsNamespace": {
@@ -3377,11 +3377,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceDiscovery::PublicDnsNamespace to Id"
+        "description": "Set RefKind of AWS::ServiceDiscovery::PublicDnsNamespace to Id"
       }
     },
     "AWS::ServiceDiscovery::Service": {
@@ -3389,11 +3389,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::ServiceDiscovery::Service to Id"
+        "description": "Set RefKind of AWS::ServiceDiscovery::Service to Id"
       }
     },
     "AWS::StepFunctions::Activity": {
@@ -3401,11 +3401,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::StepFunctions::Activity to Arn"
+        "description": "Set RefKind of AWS::StepFunctions::Activity to Arn"
       }
     },
     "AWS::StepFunctions::StateMachine": {
@@ -3413,11 +3413,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Arn"
           }
         ],
-        "description": "Set RefType of AWS::StepFunctions::StateMachine to Arn"
+        "description": "Set RefKind of AWS::StepFunctions::StateMachine to Arn"
       }
     },
     "AWS::WAF::ByteMatchSet": {
@@ -3425,11 +3425,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::ByteMatchSet to Id"
+        "description": "Set RefKind of AWS::WAF::ByteMatchSet to Id"
       }
     },
     "AWS::WAF::IPSet": {
@@ -3437,11 +3437,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::IPSet to Id"
+        "description": "Set RefKind of AWS::WAF::IPSet to Id"
       }
     },
     "AWS::WAF::Rule": {
@@ -3449,11 +3449,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::Rule to Id"
+        "description": "Set RefKind of AWS::WAF::Rule to Id"
       }
     },
     "AWS::WAF::SizeConstraintSet": {
@@ -3461,11 +3461,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::SizeConstraintSet to Id"
+        "description": "Set RefKind of AWS::WAF::SizeConstraintSet to Id"
       }
     },
     "AWS::WAF::SqlInjectionMatchSet": {
@@ -3473,11 +3473,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::SqlInjectionMatchSet to Id"
+        "description": "Set RefKind of AWS::WAF::SqlInjectionMatchSet to Id"
       }
     },
     "AWS::WAF::WebACL": {
@@ -3485,11 +3485,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::WebACL to Id"
+        "description": "Set RefKind of AWS::WAF::WebACL to Id"
       }
     },
     "AWS::WAF::XssMatchSet": {
@@ -3497,11 +3497,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAF::XssMatchSet to Id"
+        "description": "Set RefKind of AWS::WAF::XssMatchSet to Id"
       }
     },
     "AWS::WAFRegional::ByteMatchSet": {
@@ -3509,11 +3509,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::ByteMatchSet to Id"
+        "description": "Set RefKind of AWS::WAFRegional::ByteMatchSet to Id"
       }
     },
     "AWS::WAFRegional::IPSet": {
@@ -3521,11 +3521,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::IPSet to Id"
+        "description": "Set RefKind of AWS::WAFRegional::IPSet to Id"
       }
     },
     "AWS::WAFRegional::Rule": {
@@ -3533,11 +3533,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::Rule to Id"
+        "description": "Set RefKind of AWS::WAFRegional::Rule to Id"
       }
     },
     "AWS::WAFRegional::SizeConstraintSet": {
@@ -3545,11 +3545,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::SizeConstraintSet to Id"
+        "description": "Set RefKind of AWS::WAFRegional::SizeConstraintSet to Id"
       }
     },
     "AWS::WAFRegional::SqlInjectionMatchSet": {
@@ -3557,11 +3557,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::SqlInjectionMatchSet to Id"
+        "description": "Set RefKind of AWS::WAFRegional::SqlInjectionMatchSet to Id"
       }
     },
     "AWS::WAFRegional::WebACL": {
@@ -3569,11 +3569,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::WebACL to Id"
+        "description": "Set RefKind of AWS::WAFRegional::WebACL to Id"
       }
     },
     "AWS::WAFRegional::WebACLAssociation": {
@@ -3581,11 +3581,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::WebACLAssociation to Id"
+        "description": "Set RefKind of AWS::WAFRegional::WebACLAssociation to Id"
       }
     },
     "AWS::WAFRegional::XssMatchSet": {
@@ -3593,11 +3593,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Id"
           }
         ],
-        "description": "Set RefType of AWS::WAFRegional::XssMatchSet to Id"
+        "description": "Set RefKind of AWS::WAFRegional::XssMatchSet to Id"
       }
     },
     "AWS::WorkSpaces::Workspace": {
@@ -3605,11 +3605,11 @@
         "operations": [
           {
             "op": "add",
-            "path": "/RefType",
+            "path": "/RefKind",
             "value": "Name"
           }
         ],
-        "description": "Set RefType of AWS::WorkSpaces::Workspace to Name"
+        "description": "Set RefKind of AWS::WorkSpaces::Workspace to Name"
       }
     }
   }

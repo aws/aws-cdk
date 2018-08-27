@@ -18,7 +18,7 @@ export interface ResourceType extends Documented {
     /**
      * What kind of value the 'Ref' operator refers to, if any.
      */
-    RefType?: RefType;
+    RefKind?: string;
 }
 
 export type Attribute = PrimitiveAttribute | ListAttribute;
@@ -60,7 +60,7 @@ export function isComplexListAttribute(spec: Attribute): spec is ComplexListAttr
  *
  * The attribute can take on more values than these, but these are treated specially.
  */
-export enum RefType {
+export enum SpecialRefKind {
     /**
      * No '.ref' member is generated for this type, because it doesn't have a meaningful value.
      */

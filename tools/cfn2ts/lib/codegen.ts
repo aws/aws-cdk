@@ -67,7 +67,7 @@ export default class CodeGenerator {
         for (const name of Object.keys(this.spec.ResourceTypes).sort()) {
             const resourceType = this.spec.ResourceTypes[name];
 
-            this.validateRefTypePresence(name, resourceType);
+            this.validateRefKindPresence(name, resourceType);
 
             const cfnName = SpecName.parse(name);
             const resourceName = genspec.CodeName.forResource(cfnName);
@@ -222,7 +222,7 @@ export default class CodeGenerator {
         // Attributes
         //
 
-        const attributeTypes = new Array<genspec.TypeDeclaration>();
+        const attributeTypes = new Array<genspec.ClassDeclaration>();
         const attributes = new Array<genspec.Attribute>();
 
         if (spec.Attributes) {
@@ -243,8 +243,8 @@ export default class CodeGenerator {
         //
         // Ref attribute
         //
-        if (spec.RefType !== schema.RefType.None) {
-            const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefType!);
+        if (spec.RefKind !== schema.SpecialRefKind.None) {
+            const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefKind!);
             this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
 
             // If there's already an attribute with the same declared type, we don't have to duplicate
@@ -475,7 +475,7 @@ export default class CodeGenerator {
     /**
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
-    private emitAttributeType(attr: genspec.TypeDeclaration) {
+    private emitAttributeType(attr: genspec.ClassDeclaration) {
         this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
         this.closeClass(attr.typeName);
     }
@@ -591,9 +591,9 @@ export default class CodeGenerator {
         return;
     }
 
-    private validateRefTypePresence(name: string, resourceType: schema.ResourceType): any {
-        if (resourceType.RefType === undefined) {
-            throw new Error(`Resource ${name} does not have a Ref type; please annotate this new resources in @aws-cdk/cfnspec`);
+    private validateRefKindPresence(name: string, resourceType: schema.ResourceType): any {
+        if (!resourceType.RefKind) { // Both empty string and undefined
+            throw new Error(`Resource ${name} does not have a RefKind; please annotate this new resources in @aws-cdk/cfnspec`);
         }
     }
 }
