@@ -60,7 +60,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
         // allow pipeline to list functions
         props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
             .addAction('lambda:ListFunctions')
-            .addResource('*'));
+            .addAllResources());
 
         // allow pipeline to invoke this lambda functionn
         props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
@@ -71,7 +71,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
         const addToPolicy = props.addPutJobResultPolicy !== undefined ? props.addPutJobResultPolicy : true;
         if (addToPolicy) {
             props.lambda.addToRolePolicy(new cdk.PolicyStatement()
-                .addResource('*') // to avoid cycles (see docs)
+                .addAllResources() // to avoid cycles (see docs)
                 .addAction('codepipeline:PutJobSuccessResult')
                 .addAction('codepipeline:PutJobFailureResult'));
         }

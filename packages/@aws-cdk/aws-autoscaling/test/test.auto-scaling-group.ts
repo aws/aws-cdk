@@ -125,7 +125,7 @@ export = {
 
         fleet.addToRolePolicy(new cdk.PolicyStatement()
             .addAction('*')
-            .addResource('*'));
+            .addAllResources());
 
         expect(stack).toMatch({
             "Resources": {

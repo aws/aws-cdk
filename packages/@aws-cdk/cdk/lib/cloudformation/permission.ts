@@ -234,7 +234,7 @@ export class PolicyStatement extends Token {
     // Resources
     //
 
-    public addResource(resource: string): PolicyStatement {
+    public addResource(resource: Arn): PolicyStatement {
         this.resource.push(resource);
         return this;
     }
@@ -243,10 +243,10 @@ export class PolicyStatement extends Token {
      * Adds a ``"*"`` resource to this statement.
      */
     public addAllResources(): PolicyStatement {
-        return this.addResource('*');
+        return this.addResource(new Arn('*'));
     }
 
-    public addResources(...resources: string[]): PolicyStatement {
+    public addResources(...resources: Arn[]): PolicyStatement {
         resources.forEach(r => this.addResource(r));
         return this;
     }
@@ -256,13 +256,6 @@ export class PolicyStatement extends Token {
      */
     public get hasResource() {
         return this.resource && this.resource.length > 0;
-    }
-
-    /**
-     * Indicates if this permission has only a ``"*"`` resource associated with it.
-     */
-    public get isOnlyStarResource() {
-        return this.resource && this.resource.length === 1 && this.resource[0] === '*';
     }
 
     public describe(sid: string): PolicyStatement {
@@ -359,6 +352,8 @@ export class PolicyStatement extends Token {
                 if (values.length === 1) {
                     return values[0];
                 }
+
+                return values;
             }
 
             if (typeof(values) === 'object') {
