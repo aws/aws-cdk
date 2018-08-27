@@ -32,16 +32,18 @@ General Design Priciples
   should be enough to set up a reasonable variant of the construct. This does
   not mean that the user should not have the opportunity to customize! Rather,
   it means that the specific parameter should be optional and set to a
-  reasonable value if not supplied. This may involve creating other resources
-  as part of constructing this construct. For example, all resources that
-  require a role allow passing in a **Role** object, but if the user does
-  not supply one an appropriate **Role** object is constructed in-place.
+  reasonable value if not supplied. This may involve creating other resources as
+  part of constructing this construct. For example, all resources that require a
+  role allow passing in a **Role** object (specifically, a **RoleRef** object),
+  but if the user does not supply one an appropriate **Role** object is
+  constructed in-place.
 * Use contextual defaulting between properties; the value of one property may
-  affect sensible defaults for other properties. *Example*: enableDnsHostnames
-  and and enableDnsSupport.  dnsHostnames requires dnsSupport, only yell if the
-  user has *explicitly* disabled dnsSupport, but tried to enable dnsHostnames.
-  A user expects things to just work - make that the case unless they tell us
-  otherwise.
+  affect sensible defaults for other properties. *Example*:
+  **enableDnsHostnames**
+  and and **enableDnsSupport**. **dnsHostnames** requires **dnsSupport**, only
+  yell if the user has *explicitly* disabled DNS Support, but tried to enable
+  DNS Hostnames.  A user expects things to just work - make that the case unless
+  they tell us otherwise.
 * Make the user thinkg about concepts, not implementation detail; for example,
   if establishing an association between two resources (such as a **Topic**
   and a **Queue**) requires multiple steps (in this case, creating a
@@ -63,23 +65,40 @@ General Design Priciples
   programming languages (using jsii), they need to be authored in a language
   that can compile to a jsii assembly. At the moment, the only supported
   language is TypeScript.
+* Be sure to define an abstract **XxxRef** class for your resources and
+  implement **export()** and **import()** functions; these make it possible
+  to interoperate with resources that are not defined in the same CDK app
+  (they may be manually created, created using raw CloudFormation, or created
+  in a completely unrelated CDK app).
 
 Implementation Details
 ======================
 
-* Every construct consist of an exported class (**MyConstruct**) and an exported
-  interface (**MyConstructProps**) that defines the parameters for these
-  classes.
-* Constructs are (mostly) immutable; sometimes we use mutating methods if it
-  makes sense or reads better (for example, for event handlers we will write
-  `builder.onBuild(topic)`), but configuration props are usually passed into
-  the constructor, after which they cannot be changed anymore.
+* Every construct consists of an exported class (**MyConstruct**) and an
+  exported interface (**MyConstructProps**) that defines the parameters for
+  these classes. THe props argument is the 3rd to the construct (after the
+  mandatory **parent** and **id** arguments), and the entire parameter should be
+  optional if all of the properties on the props object are optional.
+* Constructs should be immutable (as much as possible); sometimes we use
+  mutating methods if it makes sense or reads better (for example, for event
+  handlers we will write `builder.onBuild(topic)`), but configuration props are
+  usually passed into the constructor, after which they cannot be changed
+  anymore.
 * Most of the logic happens in the constructor; the constructor will build up
   the state of the construct (what children it has, which ones are always
   there and which ones are optional, etc.).
 * Validate as early as possible; throw an `Error` in the constructor if the
   parameters don't make sense. Only if you want to validate mutations that can
-  occur after construction time, override the `validate()` method.
+  occur after construction time, override the `validate()` method. The hierarchy
+  of validation:
+    * Best: Incorrect code won't compile, because of type safety guarantees.
+    * Good: Runtime check everything the type checker can't enforce and fail early.
+    * Okay: Synth-time validate everything that can't be checked at construction time.
+    * Not great: Fail with an error in CloudFormation (bad because the
+      CloudFormation deploy operation may take a long while, and the error
+      may take several minutes to surface).
+    * Worst: Fail with a timeout during CloudFormation deployment (it may take
+      up to an hour for resource stabilization to timeout!)
 * Avoid unneeded hierarchy in props; try to keep the props interface flat to
   help discoverability.
 * Don't expose **Token** s to your consumers; tokens are an implementation
@@ -93,23 +112,41 @@ Implementation Details
   or by constructing a **BucketName** from a literal).
 * Accept objects instead of ARNs; when accepting other resources as parameters,
   declare your property as **queue: QueueRef** instead of **queueArn: Arn**.
-  This makes snapping objects together work logical, and allows you to
+  This makes snapping objects together feel natural to consumers, and allows you to
   query/modify the incoming resource as well. The latter is particularly
   useful if something about IAM permissions need to be set, for example.
 * Use **XxxRef** instead of **Xxx** to allow imports to work; when accepting
   resource parameters, accept the **XxxRef** variant of the class (if
   available). This makes it possible for users to pass resources that aren't
   defined in the same CDK app.
-* Name wrapped resource constructs **Resource** or **Default**; The "main"
-  resource that an AWS Construct represents should use the ID **Resource**,
-  for higher-level wrapping resources you will generally use **Default**
-  (resources named **Default** will inherit their parent's logical ID,
-  while resources named **Resource** will have a distinct logical ID but
-  the human-readable part of it will not show the "Resource" part).
+* If your construct wraps a single (or most prominent) other construct, give it
+  an id of either **"Resource"** or **"Default"**; The "main" resource that an
+  AWS Construct represents should use the ID **Resource**, for higher-level
+  wrapping resources you will generally use **Default** (resources named
+  **Default** will inherit their parent's logical ID, while resources named
+  **Resource** will have a distinct logical ID but the human-readable part of it
+  will not show the "Resource" part).
 
 
 Code Organization
 =================
+
+Your package will roughly look like this:
+
+```
+your-package
+├── package.json
+├── README.md
+├── lib
+│   ├── index.ts
+│   ├── some-resource.ts
+│   └── some-other-resource.ts
+└── test
+    ├── integ.everything.lit.ts
+    ├── test.some-resource.ts
+    └── test.some-other-resource.ts
+
+```
 
 * Your package is named ``aws-xxx`` if it represents the canonical AWS
   Construct Library for this service; otherwise we recommend starting with
@@ -121,11 +158,12 @@ Code Organization
   reader-friendly organization of your source files.
 * If you want to make package-private utility functions, put them in a file
   that is *not exported* from **index.ts** and use that file as normal.
-* Free-floating functions cannot be accessed through **jsii** (i.e., from
-  languages other than TypeScript and JavaScript). Don't use them for
-  public features of your construct library.
-* Document all public APIs with doc comments. Document defaults using the **@default**
-  marker in doc comments.
+* Free-floating functions (functions that are not part of a class definition)
+  cannot be accessed through **jsii** (i.e., from languages other than
+  TypeScript and JavaScript). Don't use them for public features of your
+  construct library.
+* Document all public APIs with doc comments (JSdoc syntax). Document defaults
+  using the **@default** marker in doc comments.
 
 Testing
 =======
@@ -152,6 +190,7 @@ README
 ======
 
 * Header should include maturity level.
+* Header should start at H2, not H1.
 * Include some example code for the simple use case near the very top.
 * If there are multiple common use cases, provide an example for each one and
   describe what happens under the hood at a high level (e.g. which resources are
