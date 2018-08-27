@@ -7,7 +7,7 @@ import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { LifecycleRule } from './rule';
 import { BucketArn, BucketDomainName, BucketDualStackDomainName, cloudformation } from './s3.generated';
-import { parseBucketArn, parseBucketName, validateBucketName } from './util';
+import { parseBucketArn, parseBucketName } from './util';
 
 /**
  * A reference to a bucket. The easiest way to instantiate is to call
@@ -347,8 +347,6 @@ export class Bucket extends BucketRef {
 
     constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
-
-        validateBucketName(props && props.bucketName);
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
