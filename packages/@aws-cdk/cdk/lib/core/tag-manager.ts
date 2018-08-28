@@ -14,7 +14,7 @@ export interface ITaggable {
 export type Tags = { [key: string]: string };
 
 /**
- * A an object of tags with value and properties
+ * An object of tags with value and properties
  *
  * This is used internally but not exported
  */
@@ -65,7 +65,28 @@ export interface RemoveProps {
  *
  * Each construct that wants to support tags should implement the `ITaggable`
  * interface and properly pass tags to the `Resources` (Cloudformation) elements
- * the `Construct` creates using `toCloudformation()` for lazy evaluations
+ * the `Construct` creates. The `TagManager` extends `Token` the object can be
+ * passed directly to `Resources` that support tag properties.
+ *
+ * There are a few standard use cases the `TagManager` supports for managing
+ * tags across the resources in your stack.
+ *
+ * Propagation: If you tag a resource and it has children, by default those tags
+ * will be propagated to the children. This is controlled by
+ * `TagProps.propagate`.
+ *
+ * Default a tag unless an ancestor has a value: There are situations where a
+ * construct author might want to set a tag value, but choose to take a parents
+ * value. For example, you might default `{Key: "Compliance", Value: "None"}`,
+ * but if a parent has `{Key: "Compliance", Value: "PCI"}` allow that parent to
+ * override your tag. This is can be done by setting `TagProps.sticky` to false.
+ * The default behavior is that child tags have precedence and `TagProps.sticky`
+ * defaults to true to reflect this.
+ *
+ * Overwrite: Construct authors have the need to set a tag, but only if one was
+ * not provided by the conumer. The most common example is the `Name` tag.
+ * Overwrite is for this purpose and is controlled by `TagProps.overwrite`. The
+ * default is `true`.
  */
 export class TagManager extends Token {
 
@@ -88,7 +109,7 @@ export class TagManager extends Token {
     private readonly _tags: FullTags = {};
 
     /*
-     * Tags that will be reomved during `tags` method
+     * Tags that will be removed during `tags` method
      */
     private readonly blockedTags: string[] = [];
 
