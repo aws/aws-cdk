@@ -1,0 +1,59 @@
+{
+  "name": "@aws-cdk/runtime-values",
+  "version": "0.8.2",
+  "description": "Runtime values support for the AWS CDK",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.runtimevalues",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-runtime-values"
+        }
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "integ": "cdk-integ",
+    "package": "cdk-package"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "runtime-values"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.8.2",
+    "@aws-cdk/aws-ec2": "^0.8.2",
+    "@aws-cdk/aws-lambda": "^0.8.2",
+    "@aws-cdk/aws-sqs": "^0.8.2",
+    "cdk-build-tools": "^0.8.2",
+    "cdk-integ-tools": "^0.8.2",
+    "pkglint": "^0.8.2"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "^0.8.2",
+    "@aws-cdk/aws-ssm": "^0.8.2",
+    "@aws-cdk/cdk": "^0.8.2"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
+}

@@ -5,6 +5,8 @@ if [ ! -d node_modules ]; then
     /bin/bash ./install.sh
 fi
 
+/bin/bash ./git-secrets-scan.sh
+
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
 

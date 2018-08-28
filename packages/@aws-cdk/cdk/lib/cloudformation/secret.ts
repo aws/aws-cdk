@@ -72,9 +72,9 @@ export interface SecretProps {
  */
 export class SecretParameter extends Construct {
     /**
-     * A token for the secret value.
+     * The value of the secret parameter.
      */
-    public value: Token;
+    public value: Secret;
 
     constructor(parent: Construct, name: string, props: SecretProps) {
         super(parent, name);
@@ -92,10 +92,5 @@ export class SecretParameter extends Construct {
         });
 
         this.value = param.ref;
-    }
-
-    // implicitly implements Token, and therefore Secret.
-    public resolve(): any {
-        return this.value;
     }
 }

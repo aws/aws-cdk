@@ -22,7 +22,7 @@ export enum PriceClass {
  */
 export enum ViewerProtocolPolicy {
     HTTPSOnly = "https-only",
-    RedirectToHTTPS = "https-only",
+    RedirectToHTTPS = "redirect-to-https",
     AllowAll = "allow-all"
 }
 
@@ -508,7 +508,10 @@ export class CloudFrontWebDistribution extends cdk.Construct {
                         "origin-access-identity/cloudfront/", originConfig.s3OriginSource.originAccessIdentity.ref
                     ),
                 };
+            } else if (originConfig.s3OriginSource) {
+                originProperty.s3OriginConfig = {};
             }
+
             if (originConfig.customOriginSource) {
                 originProperty.customOriginConfig = {
                     httpPort: originConfig.customOriginSource.httpPort || 80,
@@ -525,6 +528,12 @@ export class CloudFrontWebDistribution extends cdk.Construct {
             origins.push(originProperty);
             originIndex++;
         }
+
+        origins.forEach(origin => {
+            if (!origin.s3OriginConfig && !origin.customOriginConfig) {
+                throw new Error(`Origin ${origin.domainName} is missing either S3OriginConfig or CustomOriginConfig. At least 1 must be specified.`);
+            }
+        });
         distributionConfig.origins = origins;
 
         const defaultBehaviors = behaviors.filter(behavior => behavior.isDefaultBehavior);

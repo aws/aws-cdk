@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,15 +8,13 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.cxapi",
+        "package": "software.amazon.awscdk.cxapi",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "cxapi"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cx-api"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.CXAPI"
-      }
+      "sphinx": {}
     }
   },
   "scripts": {
@@ -24,23 +22,26 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.7.4-beta",
-    "pkglint": "^0.7.4-beta"
+    "cdk-build-tools": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "repository": {
-    "url": "git://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
   },
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

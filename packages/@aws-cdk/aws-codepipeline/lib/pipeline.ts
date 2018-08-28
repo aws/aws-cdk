@@ -1,11 +1,11 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
-import { cloudformation } from './codepipeline.generated';
+import { cloudformation, PipelineVersion } from './codepipeline.generated';
 import { Stage } from './stage';
-import validation = require('./validation');
 
 /**
  * The ARN of a pipeline
@@ -16,11 +16,6 @@ export class PipelineArn extends cdk.Arn { }
  * The name of the pipeline.
  */
 export class PipelineName extends cdk.Token { }
-
-/**
- * The pipeline version.
- */
-export class PipelineVersion extends cdk.Token { }
 
 export interface PipelineProps {
     /**
@@ -93,7 +88,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         super(parent, name);
         props = props || {};
 
-        validation.validateName('Pipeline', props.pipelineName);
+        actions.validateName('Pipeline', props.pipelineName);
 
         // If a bucket has been provided, use it - otherwise, create a bucket.
         let propsBucket = props.artifactBucket;
@@ -122,7 +117,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         this.artifactBucket.grantReadWrite(this.role);
 
         this.pipelineName = codePipeline.ref;
-        this.pipelineVersion = codePipeline.getAtt('Version');
+        this.pipelineVersion = codePipeline.pipelineVersion;
 
         // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
         this.pipelineArn = new PipelineArn(cdk.Arn.fromComponents({
@@ -148,7 +143,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      *      rule.addTarget(pipeline);
      *
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one
@@ -164,7 +159,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.pipelineArn,
             roleArn: this.eventsRole.roleArn,
         };
@@ -211,19 +206,20 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     /**
-     * If a stage is added as a child, add it to the list of stages.
-     * TODO: This is a hack that should be removed once the CDK has an
-     *       onChildAdded type hook.
-     * @override
+     * Adds a Stage to this Pipeline.
+     * This is an internal operation -
+     * a Stage is added to a Pipeline when it's constructed
+     * (the Pipeline is passed through the {@link StageProps#pipeline} property),
+     * so there is never a need to call this method explicitly.
+     *
+     * @param stage the newly created Stage to add to this Pipeline
      */
-    protected addChild(child: cdk.Construct, name: string) {
-        super.addChild(child, name);
-        if (child instanceof Stage) {
-            this.appendStage(child);
+    public _addStage(stage: Stage): void {
+        // _addStage should be idempotent, in case a customer ever calls it directly
+        if (this.stages.includes(stage)) {
+            return;
         }
-    }
 
-    private appendStage(stage: Stage) {
         if (this.stages.find(x => x.name === stage.name)) {
             throw new Error(`A stage with name '${stage.name}' already exists`);
         }
@@ -235,7 +231,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         return util.flatMap(this.stages, (stage, i) => {
             const onlySourceActionsPermitted = i === 0;
             return util.flatMap(stage.actions, (action, _) =>
-                validation.validateSourceAction(onlySourceActionsPermitted, action.category, action.name, stage.name)
+                actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
             );
         });
     }

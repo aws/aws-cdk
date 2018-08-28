@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -12,7 +12,8 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test"
+    "test": "cdk-test",
+    "package": "cdk-package"
   },
   "cdk-build": {
     "pre": [
@@ -25,9 +26,10 @@
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^2.1.2",
     "@types/fs-extra": "^4.0.8",
@@ -37,14 +39,14 @@
     "@types/uuid": "^3.4.3",
     "@types/yamljs": "^0.2.0",
     "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.7.4-beta",
+    "cdk-build-tools": "^0.8.2",
     "mockery": "^2.1.0",
-    "pkglint": "^0.7.4-beta"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/cloudformation-diff": "^0.7.4-beta",
-    "@aws-cdk/cx-api": "^0.7.4-beta",
-    "@aws-cdk/util": "^0.7.4-beta",
+    "@aws-cdk/cloudformation-diff": "^0.8.2",
+    "@aws-cdk/cx-api": "^0.8.2",
+    "@aws-cdk/util": "^0.8.2",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
@@ -57,14 +59,15 @@
     "request": "^2.83.0",
     "source-map-support": "^0.5.6",
     "yamljs": "^0.2.0",
-    "yargs": "^12.0.1"
+    "yargs": "^9.0.1"
   },
   "repository": {
-    "url": "git://github.com/awslabs/aws-cdk",
+    "url": "https://github.com/awslabs/aws-cdk.git",
     "type": "git"
   },
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

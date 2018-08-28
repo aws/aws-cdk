@@ -1,10 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import path = require('path');
-import { Lambda, LambdaCode, LambdaInlineCode, LambdaRef, LambdaRuntime } from '../lib';
+import lambda = require('../lib');
 
 // tslint:disable:object-literal-key-quotes
 
@@ -12,10 +12,10 @@ export = {
     'default function'(test: Test) {
         const stack = new cdk.Stack();
 
-        new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
             handler: 'index.handler',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: lambda.Runtime.NodeJS610,
         });
 
         expect(stack).toMatch({ Resources:
@@ -46,10 +46,10 @@ export = {
 
     'adds policy permissions'(test: Test) {
         const stack = new cdk.Stack();
-        new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
             handler: 'index.handler',
-            runtime: LambdaRuntime.NodeJS610,
+            runtime: lambda.Runtime.NodeJS610,
             initialPolicy: [new cdk.PolicyStatement().addAction("*").addResource("*")]
         });
         expect(stack).toMatch({ Resources:
@@ -101,10 +101,10 @@ export = {
 
     'fails if inline code is used for an invalid runtime'(test: Test) {
         const stack = new cdk.Stack();
-        test.throws(() => new Lambda(stack, 'MyLambda', {
-            code: new LambdaInlineCode('foo'),
+        test.throws(() => new lambda.Function(stack, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
             handler: 'bar',
-            runtime: LambdaRuntime.DotNetCore2
+            runtime: lambda.Runtime.DotNetCore2
         }));
         test.done();
     },
@@ -112,9 +112,9 @@ export = {
     'addToResourcePolicy': {
         'can be used to add permissions to the Lambda function'(test: Test) {
             const stack = new cdk.Stack();
-            const lambda = newTestLambda(stack);
+            const fn = newTestLambda(stack);
 
-            lambda.addPermission('S3Permission', {
+            fn.addPermission('S3Permission', {
                 action: 'lambda:*',
                 principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
                 sourceAccount: new cdk.AwsAccountId(),
@@ -184,13 +184,13 @@ export = {
 
         'fails if the principal is not a service or account principals'(test: Test) {
             const stack = new cdk.Stack();
-            const lambda = newTestLambda(stack);
+            const fn = newTestLambda(stack);
 
-            test.throws(() => lambda.addPermission('F1', { principal: new cdk.ArnPrincipal('just:arn') }),
+            test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal('just:arn') }),
                 /Invalid principal type for Lambda permission statement/);
 
-            lambda.addPermission('S1', { principal: new cdk.ServicePrincipal('my-service') });
-            lambda.addPermission('S2', { principal: new cdk.AccountPrincipal('account') });
+            fn.addPermission('S1', { principal: new cdk.ServicePrincipal('my-service') });
+            fn.addPermission('S2', { principal: new cdk.AccountPrincipal('account') });
 
             test.done();
         },
@@ -204,9 +204,9 @@ export = {
             role.addToPolicy(new cdk.PolicyStatement().addAction('confirm:itsthesame'));
 
             // WHEN
-            const fn = new Lambda(stack, 'Function', {
-                code: new LambdaInlineCode('test'),
-                runtime: LambdaRuntime.Python36,
+            const fn = new lambda.Function(stack, 'Function', {
+                code: new lambda.InlineCode('test'),
+                runtime: lambda.Runtime.Python36,
                 handler: 'index.test',
                 role,
                 initialPolicy: [
@@ -236,11 +236,11 @@ export = {
             // GIVEN
             const stack1 = new cdk.Stack();
             const stack2 = new cdk.Stack();
-            const lambda = newTestLambda(stack1);
+            const fn = newTestLambda(stack1);
 
             // WHEN
-            const props = lambda.export();
-            const imported = LambdaRef.import(stack2, 'Imported', props);
+            const props = fn.export();
+            const imported = lambda.FunctionRef.import(stack2, 'Imported', props);
 
             // Can call addPermission() but it won't do anything
             imported.addPermission('Hello', {
@@ -254,11 +254,13 @@ export = {
     'Lambda can serve as EventRule target, permission gets added'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const lambda = newTestLambda(stack);
-        const rule = new events.EventRule(stack, 'Rule');
+        const fn = newTestLambda(stack);
+        const rule1 = new events.EventRule(stack, 'Rule');
+        const rule2 = new events.EventRule(stack, 'Rule2');
 
         // WHEN
-        rule.addTarget(lambda);
+        rule1.addTarget(fn);
+        rule2.addTarget(fn);
 
         // THEN
         const lambdaId = "MyLambdaCCE802FB";
@@ -266,9 +268,18 @@ export = {
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
             "Action": "lambda:InvokeFunction",
             "FunctionName": { "Ref": lambdaId },
-            "Principal": "events.amazonaws.com"
+            "Principal": "events.amazonaws.com",
+            "SourceArn": { "Fn::GetAtt": [ "Rule4C995B7F", "Arn" ] }
         }));
 
+        expect(stack).to(haveResource('AWS::Lambda::Permission', {
+            "Action": "lambda:InvokeFunction",
+            "FunctionName": { "Ref": "MyLambdaCCE802FB" },
+            "Principal": "events.amazonaws.com",
+            "SourceArn": { "Fn::GetAtt": [ "Rule270732244", "Arn" ] }
+        }));
+
+        expect(stack).to(countResources('AWS::Events::Rule', 2));
         expect(stack).to(haveResource('AWS::Events::Rule', {
             "Targets": [
               {
@@ -284,10 +295,10 @@ export = {
     'Lambda code can be read from a local directory via an asset'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        new Lambda(stack, 'MyLambda', {
-            code: LambdaCode.directory(path.join(__dirname, 'my-lambda-handler')),
+        new lambda.Function(stack, 'MyLambda', {
+            code: lambda.Code.directory(path.join(__dirname, 'my-lambda-handler')),
             handler: 'index.handler',
-            runtime: LambdaRuntime.Python36
+            runtime: lambda.Runtime.Python36
         });
 
         // THEN
@@ -296,9 +307,10 @@ export = {
               "S3Bucket": {
                 "Ref": "MyLambdaCodeS3BucketC82A5870"
               },
-              "S3Key": {
-                "Ref": "MyLambdaCodeS3ObjectKeyA7272AC7"
-              }
+              "S3Key": { "Fn::Join": [ "", [
+                {"Fn::Select": [0, {"Fn::Split": ["||", {"Ref": "MyLambdaCodeS3VersionKey47762537"}]}]},
+                {"Fn::Select": [1, {"Fn::Split": ["||", {"Ref": "MyLambdaCodeS3VersionKey47762537"}]}]},
+              ]]}
             },
             "Handler": "index.handler",
             "Role": {
@@ -315,9 +327,9 @@ export = {
 };
 
 function newTestLambda(parent: cdk.Construct) {
-    return new Lambda(parent, 'MyLambda', {
-        code: new LambdaInlineCode('foo'),
+    return new lambda.Function(parent, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
         handler: 'bar',
-        runtime: LambdaRuntime.Python27
+        runtime: lambda.Runtime.Python27
     });
 }

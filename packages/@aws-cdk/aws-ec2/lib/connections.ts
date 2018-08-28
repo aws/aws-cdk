@@ -1,5 +1,5 @@
-import { AnyIPv4, IConnectionPeer, IPortRange } from "./connection";
-import { ISecurityGroup } from "./security-group";
+import { SecurityGroupRef } from "./security-group";
+import { AnyIPv4, IPortRange, ISecurityGroupRule } from "./security-group-rule";
 
 /**
  * The goal of this module is to make possible to write statements like this:
@@ -13,131 +13,114 @@ import { ISecurityGroup } from "./security-group";
  *
  * The insight here is that some connecting peers have information on what ports should
  * be involved in the connection, and some don't.
- *
- * Constructs will make their `connections` property to be equal to an instance of
- * either `Connections` or `ConnectionsWithDefault`.
  */
 
 /**
  * An object that has a Connections object
  */
 export interface IConnectable {
-    readonly connections: IConnections;
+    readonly connections: Connections;
 }
 
 /**
- * An object that has a Connections object as well as a default port range.
+ * Properties to intialize a new Connections object
  */
-export interface IDefaultConnectable extends IConnectable {
-    readonly defaultPortRange: IPortRange;
-}
-
-/**
- * An object that encapsulates connection logic
- *
- * The IConnections object both has knowledge on what peer to use,
- * as well as how to add connection rules.
- */
-export interface IConnections {
+export interface ConnectionsProps {
     /**
-     * Access to the peer that we're connecting to
+     * Class that represents the rule by which others can connect to this connectable
      *
-     * It's convenient to put this on the Connections object since
-     * all participants in this protocol have one anyway, and the Connections
-     * objects have access to it, so they don't need to implement two interfaces.
+     * This object is required, but will be derived from securityGroup if that is passed.
+     *
+     * @default Derived from securityGroup if set.
      */
-    readonly connectionPeer: IConnectionPeer;
+    securityGroupRule?: ISecurityGroupRule;
 
     /**
-     * Allow connections to the peer on the given port
+     * What securityGroup this object is managing connections for
+     *
+     * @default No security
      */
-    allowTo(other: IConnectable, portRange: IPortRange, description: string): void;
+    securityGroup?: SecurityGroupRef;
 
     /**
-     * Allow connections from the peer on the given port
+     * Default port range for initiating connections to and from this object
+     *
+     * @default No default port range
      */
-    allowFrom(other: IConnectable, portRange: IPortRange, description: string): void;
+    defaultPortRange?: IPortRange;
 }
 
 /**
- * Connections for an object that does not have default ports
+ * Manage the allowed network connections for constructs with Security Groups.
+ *
+ * Security Groups can be thought of as a firewall for network-connected
+ * devices. This class makes it easy to allow network connections to and
+ * from security groups, and between security groups individually. When
+ * establishing connectivity between security groups, it will automatically
+ * add rules in both security groups
+ *
  */
-export class Connections implements IConnections {
-    public readonly connectionPeer: IConnectionPeer;
+export class Connections {
+    private readonly securityGroupRule: ISecurityGroupRule;
+    private readonly securityGroup?: SecurityGroupRef;
+    private readonly defaultPortRange?: IPortRange;
 
-    constructor(private readonly securityGroup: ISecurityGroup) {
-        this.connectionPeer = this.securityGroup;
-    }
+    constructor(props: ConnectionsProps) {
+        if (!props.securityGroupRule && !props.securityGroup) {
+            throw new Error('Connections: require one of securityGroupRule or securityGroup');
+        }
 
-    /**
-     * Allow connections to the peer on their default port
-     */
-    public allowToDefaultPort(other: IDefaultConnectable, description: string) {
-        this.allowTo(other, other.defaultPortRange, description);
+        this.securityGroupRule = props.securityGroupRule || props.securityGroup!;
+        this.securityGroup = props.securityGroup;
+        this.defaultPortRange = props.defaultPortRange;
     }
 
     /**
      * Allow connections to the peer on the given port
      */
     public allowTo(other: IConnectable, portRange: IPortRange, description: string) {
-        this.securityGroup.addEgressRule(other.connections.connectionPeer, portRange, description);
-        other.connections.allowFrom(
-            new ConnectionsHolder(new SecurityGrouplessConnections(this.connectionPeer)),
-            portRange,
-            description);
+        if (this.securityGroup) {
+            this.securityGroup.addEgressRule(other.connections.securityGroupRule, portRange, description);
+        }
+        if (other.connections.securityGroup) {
+            other.connections.securityGroup.addIngressRule(this.securityGroupRule, portRange, description);
+
+        }
     }
 
     /**
      * Allow connections from the peer on the given port
      */
     public allowFrom(other: IConnectable, portRange: IPortRange, description: string) {
-        this.securityGroup.addIngressRule(other.connections.connectionPeer, portRange, description);
-        other.connections.allowTo(
-            new ConnectionsHolder(new SecurityGrouplessConnections(this.connectionPeer)),
-            portRange,
-            description);
+        if (this.securityGroup) {
+            this.securityGroup.addIngressRule(other.connections.securityGroupRule, portRange, description);
+        }
+        if (other.connections.securityGroup) {
+            other.connections.securityGroup.addEgressRule(this.securityGroupRule, portRange, description);
+        }
     }
 
     /**
      * Allow hosts inside the security group to connect to each other on the given port
      */
     public allowInternally(portRange: IPortRange, description: string) {
-        this.securityGroup.addIngressRule(this.securityGroup, portRange, description);
+        if (this.securityGroup) {
+            this.securityGroup.addIngressRule(this.securityGroupRule, portRange, description);
+        }
     }
 
     /**
      * Allow to all IPv4 ranges
      */
-    public allowToAnyIpv4(portRange: IPortRange, description: string) {
+    public allowToAnyIPv4(portRange: IPortRange, description: string) {
         this.allowTo(new AnyIPv4(), portRange, description);
     }
 
     /**
      * Allow from any IPv4 ranges
      */
-    public allowFromAnyIpv4(portRange: IPortRange, description: string) {
+    public allowFromAnyIPv4(portRange: IPortRange, description: string) {
         this.allowFrom(new AnyIPv4(), portRange, description);
-    }
-}
-
-/**
- * A class to orchestrate connections that already has default ports
- */
-export class DefaultConnections extends Connections {
-    public readonly defaultPortRange: IPortRange;
-
-    constructor(securityGroup: ISecurityGroup, defaultPortRangeProvider: IDefaultConnectable) {
-        // We take a IDefaultConnectable as an argument instead of the port
-        // range directly so (a) we force the containing construct to implement
-        // IDefaultConnectable and then (b) so they don't have to repeat the information.
-        //
-        // Slightly risky since this requires that the container initializes in the right order.
-        super(securityGroup);
-        this.defaultPortRange = defaultPortRangeProvider.defaultPortRange;
-
-        if (this.defaultPortRange == null) {
-            throw new Error("Ordering problem: create DefaultConnections() after initializing defaultPortRange");
-        }
     }
 
     /**
@@ -146,6 +129,9 @@ export class DefaultConnections extends Connections {
      * Even if the peer has a default port, we will always use our default port.
      */
     public allowDefaultPortFrom(other: IConnectable, description: string) {
+        if (!this.defaultPortRange) {
+            throw new Error('Cannot call allowDefaultPortFrom(): this resource has no default port');
+        }
         this.allowFrom(other, this.defaultPortRange, description);
     }
 
@@ -153,6 +139,9 @@ export class DefaultConnections extends Connections {
      * Allow hosts inside the security group to connect to each other
      */
     public allowDefaultPortInternally(description: string) {
+        if (!this.defaultPortRange) {
+            throw new Error('Cannot call allowDefaultPortInternally(): this resource has no default port');
+        }
         this.allowInternally(this.defaultPortRange, description);
     }
 
@@ -160,36 +149,20 @@ export class DefaultConnections extends Connections {
      * Allow default connections from all IPv4 ranges
      */
     public allowDefaultPortFromAnyIpv4(description: string) {
-        this.allowFromAnyIpv4(this.defaultPortRange, description);
-    }
-}
-
-/**
- * This object is used by peers who don't allow reverse connections
- *
- * It still has an associated connection peer, but that peer does not
- * have any security groups to add connections to.
- */
-export class SecurityGrouplessConnections implements IConnections {
-    constructor(public readonly connectionPeer: IConnectionPeer) {
+        if (!this.defaultPortRange) {
+            throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
+        }
+        this.allowFromAnyIPv4(this.defaultPortRange, description);
     }
 
-    public allowTo(_other: IConnectable, _connection: IPortRange, _description: string): void {
-        // Nothing to do
-    }
+    /**
+     * Allow connections to the security group on their default port
+     */
+    public allowToDefaultPort(other: IConnectable, description: string) {
+        if (other.connections.defaultPortRange === undefined) {
+            throw new Error('Cannot call alloToDefaultPort(): other resource has no default port');
+        }
 
-    public allowFrom(_other: IConnectable, _connection: IPortRange, _description: string): void {
-        // Nothing to do
-    }
-}
-
-/**
- * Class that implements IConnectable that can be constructed
- *
- * This is simply used to implement IConnectable when we need
- * to make reverse connections.
- */
-class ConnectionsHolder implements IConnectable {
-    constructor(public readonly connections: IConnections) {
+        this.allowTo(other, other.connections.defaultPortRange, description);
     }
 }

@@ -5,7 +5,7 @@ import { DBClusterEndpointAddress } from './rds.generated';
 /**
  * Create a clustered database with a given number of instances.
  */
-export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IDefaultConnectable {
+export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IConnectable {
     /**
      * Import an existing DatabaseCluster from properties
      */
@@ -14,14 +14,9 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.ID
     }
 
     /**
-     * Default port to connect to this database
-     */
-    public abstract readonly defaultPortRange: ec2.IPortRange;
-
-    /**
      * Access to the network connections
      */
-    public abstract readonly connections: ec2.DefaultConnections;
+    public abstract readonly connections: ec2.Connections;
 
     /**
      * Identifier of the cluster
@@ -122,7 +117,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Access to the network connections
      */
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.Connections;
 
     /**
      * Identifier of the cluster
@@ -159,7 +154,10 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
 
         this.securityGroupId = props.securityGroupId;
         this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
-        this.connections = new ec2.DefaultConnections(new ec2.SecurityGroupRef(this, 'SecurityGroup', props), this);
+        this.connections = new ec2.Connections({
+            securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', props),
+            defaultPortRange: this.defaultPortRange
+        });
         this.clusterIdentifier = props.clusterIdentifier;
         this.clusterEndpoint = new Endpoint(props.clusterEndpointAddress, props.port);
         this.readerEndpoint = new Endpoint(props.readerEndpointAddress, props.port);
@@ -211,6 +209,6 @@ export class Endpoint {
     constructor(address: DBClusterEndpointAddress, port: Port) {
         this.hostname = address;
         this.port = port;
-        this.socketAddress = new cdk.FnJoin(":", address, port);
+        this.socketAddress = new cdk.FnJoin(":", [address, port]);
     }
 }

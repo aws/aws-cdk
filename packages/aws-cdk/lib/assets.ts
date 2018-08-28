@@ -1,6 +1,7 @@
-import { ASSET_METADATA, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import fs = require('fs-extra');
+import os = require('os');
 import path = require('path');
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
@@ -41,7 +42,7 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo)
 
 async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
     debug('Preparing zip asset from directory:', asset.path);
-    const staging = await fs.mkdtemp('/tmp/cdk-assets');
+    const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
     try {
         const archiveFile = path.join(staging, 'archive.zip');
         await zipDirectory(asset.path, archiveFile);
@@ -69,8 +70,10 @@ async function prepareFileAsset(
 
     const data = await fs.readFile(filePath);
 
-    const { key, changed } = await toolkitInfo.uploadIfChanged(data, {
-        s3KeyPrefix: 'assets/',
+    const s3KeyPrefix = `assets/${asset.id}/`;
+
+    const { filename, key, changed } = await toolkitInfo.uploadIfChanged(data, {
+        s3KeyPrefix,
         s3KeySuffix: path.extname(filePath),
         contentType
     });
@@ -84,7 +87,7 @@ async function prepareFileAsset(
 
     return [
         { ParameterKey: asset.s3BucketParameter, ParameterValue: toolkitInfo.bucketName },
-        { ParameterKey: asset.s3KeyParameter, ParameterValue: key }
+        { ParameterKey: asset.s3KeyParameter, ParameterValue: `${s3KeyPrefix}${ASSET_PREFIX_SEPARATOR}${filename}` },
     ];
 }
 

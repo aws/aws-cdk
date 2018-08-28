@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-efs",
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "description": "The CDK Construct Library for AWS::EFS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,20 +8,18 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.efs",
+        "package": "software.amazon.awscdk.services.efs",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-efs"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "efs"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EFS"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "scripts": {
     "build": "cdk-build",
@@ -29,7 +27,8 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "integ": "cdk-integ",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
   },
   "cdk-build": {
     "cloudformation": "AWS::EFS"
@@ -42,16 +41,18 @@
   ],
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.4-beta",
-    "cdk-build-tools": "^0.7.4-beta",
-    "cfn2ts": "^0.7.4-beta",
-    "pkglint": "^0.7.4-beta"
+    "@aws-cdk/assert": "^0.8.2",
+    "cdk-build-tools": "^0.8.2",
+    "cfn2ts": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.7.4-beta"
-  }
+    "@aws-cdk/cdk": "^0.8.2"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

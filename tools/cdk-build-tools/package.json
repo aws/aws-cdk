@@ -1,17 +1,18 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "bin": {
     "cdk-build": "bin/cdk-build",
     "cdk-watch": "bin/cdk-watch",
-    "cdk-test": "bin/cdk-test"
+    "cdk-test": "bin/cdk-test",
+    "cdk-package": "bin/cdk-package"
   },
   "scripts": {
     "build": "tsc && tslint -p . && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && pkglint",
@@ -20,19 +21,26 @@
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "pkglint": "^0.7.4-beta"
+    "@types/fs-extra": "^5.0.4",
+    "@types/yargs": "^8.0.3",
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@types/yargs": "^8.0.3",
-    "merkle-build": "^0.7.4-beta",
+    "fs-extra": "^7.0.0",
+    "jsii": "^0.6.4",
+    "jsii-pacmak": "^0.6.4",
+    "merkle-build": "^0.8.2",
+    "typescript": "^3.0.1",
     "yargs": "^9.0.1"
   },
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

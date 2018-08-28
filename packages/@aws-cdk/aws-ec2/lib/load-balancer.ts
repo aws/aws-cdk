@@ -1,8 +1,8 @@
 import elasticloadbalancing = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
-import { AnyIPv4, IConnectionPeer, IPortRange, TcpPort } from './connection';
-import { Connections, DefaultConnections, IConnectable, IDefaultConnectable } from './connections';
-import { ISecurityGroup, SecurityGroup } from './security-group';
+import { Connections, IConnectable } from './connections';
+import { SecurityGroup, SecurityGroupRef } from './security-group';
+import { AnyIPv4, IPortRange, TcpPort } from './security-group-rule';
 import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 
 /**
@@ -193,8 +193,6 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
      */
     public readonly connections: Connections;
 
-    public readonly connectionPeer: IConnectionPeer;
-
     /**
      * An object controlling specifically the connections for each listener added to this load balancer
      */
@@ -211,8 +209,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
         super(parent, name);
 
         this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc });
-        this.connections = new Connections(this.securityGroup);
-        this.connectionPeer = this.securityGroup;
+        this.connections = new Connections({ securityGroup: this.securityGroup });
 
         // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
         const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
@@ -323,17 +320,23 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
 }
 
 /**
- * Reference to a listener's port just created
+ * Reference to a listener's port just created.
  *
- * This class exists to make it convenient to add port ranges to the load
- * balancer's security group just for the port ranges that are involved in the
- * listener.
+ * This implements IConnectable with a default port (the port that an ELB
+ * listener was just created on) for a given security group so that it can be
+ * conveniently used just like any Connectable. E.g:
+ *
+ *      const listener = elb.addListener(...);
+ *
+ *      listener.connections.allowDefaultPortFromAnyIPv4();
+ *      // or
+ *      instance.connections.allowToDefaultPort(listener);
  */
-export class ClassicListenerPort implements IDefaultConnectable {
-    public readonly connections: DefaultConnections;
+export class ClassicListenerPort implements IConnectable {
+    public readonly connections: Connections;
 
-    constructor(securityGroup: ISecurityGroup, public readonly defaultPortRange: IPortRange) {
-        this.connections = new DefaultConnections(securityGroup, this);
+    constructor(securityGroup: SecurityGroupRef, defaultPortRange: IPortRange) {
+        this.connections = new Connections({ securityGroup, defaultPortRange });
     }
 }
 

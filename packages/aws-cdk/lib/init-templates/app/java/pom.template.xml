@@ -2,13 +2,6 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
-    <repositories>
-        <repository>
-            <id>cdk</id>
-            <url>file://%cdk-home%/repo/maven</url>
-        </repository>
-    </repositories>
-
     <groupId>com.myorg</groupId>
     <artifactId>%name%</artifactId>
     <version>0.1</version>
@@ -53,9 +46,31 @@
     <dependencies>
         <!-- AWS Cloud Development Kit -->
         <dependency>
-            <groupId>com.amazonaws.cdk</groupId>
-            <artifactId>aws-cdk</artifactId>
-            <version>LATEST</version>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>cdk</artifactId>
+            <version>%cdk-version%</version>
+        </dependency>
+
+        <!-- Respective AWS Construct Libraries -->
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>iam</artifactId>
+            <version>%cdk-version%</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>%cdk-version%</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>sns</artifactId>
+            <version>%cdk-version%</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>%cdk-version%</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->

@@ -1,7 +1,8 @@
 import fs = require('fs');
 import path = require('path');
+import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
-import { deepGet, expectDevDependency, expectJSON, fileShouldContain, monoRepoVersion } from './util';
+import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
 
 /**
  * Verify that the package name matches the directory name
@@ -35,26 +36,72 @@ export class DescriptionIsRequired extends ValidationRule {
 export class RepositoryCorrect extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'repository.type', 'git');
-        expectJSON(pkg, 'repository.url', 'git://github.com/awslabs/aws-cdk');
+        expectJSON(pkg, 'repository.url', 'https://github.com/awslabs/aws-cdk.git');
     }
 }
 
 /**
- * The license must be LicenseRef-LICENSE (beta).
+ * Homepage must point to the GitHub repository page.
+ */
+export class HomepageCorrect extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        expectJSON(pkg, 'homepage', 'https://github.com/awslabs/aws-cdk');
+    }
+}
+
+/**
+ * The license must be Apache-2.0.
  */
 export class License extends ValidationRule {
     public validate(pkg: PackageJson): void {
-        expectJSON(pkg, 'license', 'LicenseRef-LICENSE');
+        expectJSON(pkg, 'license', 'Apache-2.0');
     }
 }
 
 /**
- * Author must be AWS
+ * There must be a license file that corresponds to the Apache-2.0 license.
+ */
+export class LicenseFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        fileShouldBe(pkg, 'LICENSE', LICENSE);
+    }
+}
+
+/**
+ * There must be a NOTICE file.
+ */
+export class NoticeFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        fileShouldBe(pkg, 'NOTICE', NOTICE);
+    }
+}
+
+/**
+ * Author must be AWS (as an Organization)
  */
 export class AuthorAWS extends ValidationRule {
     public validate(pkg: PackageJson): void {
         expectJSON(pkg, 'author.name', 'Amazon Web Services');
         expectJSON(pkg, 'author.url', 'https://aws.amazon.com');
+        expectJSON(pkg, 'author.organization', true);
+    }
+}
+
+/**
+ * There must be a README.md file.
+ */
+export class ReadmeFile extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        const readmeFile = path.join(pkg.packageRoot, 'README.md');
+        if (!fs.existsSync(readmeFile)) {
+            pkg.report({
+                message: 'There must be a README.md file at the root of the package',
+                fix: () => fs.writeFileSync(
+                    readmeFile,
+                    `## ${pkg.json.description}\nThis module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.`
+                )
+            });
+        }
     }
 }
 
@@ -89,40 +136,59 @@ export class CDKKeywords extends ValidationRule {
 }
 
 /**
- * Package.json must have 'jsii' section if and only if it's a JSII package
- */
-export class JSIISectionPresent extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        const hasJSIISection = 'jsii' in pkg.json;
-        if (isJSII(pkg)) {
-            if (!hasJSIISection) {
-                pkg.report({ message: 'JSII package must have "jsii" section in package.json' });
-            }
-        } else {
-            if (hasJSIISection) {
-                pkg.report({ message: 'Non-JSII package must not have "jsii" section in package.json' });
-            }
-        }
-    }
-}
-
-/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {
     public validate(pkg: PackageJson): void {
         if (!isJSII(pkg)) { return; }
 
+        const moduleName = cdkModuleName(pkg.json.name);
+
+        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'software.amazon.awscdk');
+        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId, /-/g);
+
         const java = deepGet(pkg.json, ['jsii', 'targets', 'java', 'package']) as string | undefined;
-        if (!java) {
-            pkg.report({ message: 'JSII package must have a "java" target with "package"' });
-            return;
+        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage, /\./g);
+        if (java) {
+            const expectedPrefix = moduleName.javaPackage.split('.').slice(0, 3).join('.');
+            const actualPrefix = java.split('.').slice(0, 3).join('.');
+            if (expectedPrefix !== actualPrefix) {
+                pkg.report({
+                    message: `JSII "java" package must share the first 3 elements of the expected one: ${expectedPrefix} vs ${actualPrefix}`,
+                    fix: () => deepSet(pkg.json, ['jsii', 'targets', 'java', 'package'], moduleName.javaPackage)
+                });
+            }
+        }
+    }
+}
+
+export class JSIISphinxTarget extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+        expectJSON(pkg, 'jsii.targets.sphinx', { });
+    }
+}
+
+export class CDKPackage extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        // skip private packages
+        if (pkg.json.private) { return; }
+
+        const merkleMarker = '.LAST_PACKAGE';
+
+        expectJSON(pkg, 'scripts.package', 'cdk-package');
+
+        const outdir = 'dist';
+
+        // if this is
+        if (isJSII(pkg)) {
+            expectJSON(pkg, 'jsii.outdir', outdir);
         }
 
-        const moduleName = cdkModuleName(pkg.json.name);
-        expectJSON(pkg, 'jsii.targets.java.package', moduleName.javaPackage);
-        expectJSON(pkg, 'jsii.targets.java.maven.groupId', 'com.amazonaws.cdk');
-        expectJSON(pkg, 'jsii.targets.java.maven.artifactId', moduleName.mavenArtifactId);
+        fileShouldContain(pkg, '.npmignore', outdir);
+        fileShouldContain(pkg, '.gitignore', outdir);
+        fileShouldContain(pkg, '.npmignore', merkleMarker);
+        fileShouldContain(pkg, '.gitignore', merkleMarker);
     }
 }
 
@@ -148,42 +214,16 @@ export class NoJsiiDep extends ValidationRule {
  */
 function cdkModuleName(name: string) {
     const isCdkPkg = name === '@aws-cdk/cdk';
-    const isCorePkg = !name.startsWith('@aws-cdk/aws-');
 
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
-    name = name.replace(/^(?:aws|cdk)-/, '');
-
-    const packageSuffix = `${isCorePkg ? '' : '.aws'}.${name.replace(/-/g, '')}`;
-    const dotnetSuffix = `${isCorePkg ? '' : '.AWS'}.${name.replace(/-/g, '')}`;
 
     return {
-        javaPackage: `com.amazonaws.cdk${isCdkPkg ? '' : packageSuffix}`,
-        mavenArtifactId: isCdkPkg ? 'cdk' : `${isCorePkg ? '' : 'aws-'}${name.replace(/-/g, '')}`,
-        dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : dotnetSuffix}`
+        javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+        mavenArtifactId: isCdkPkg ? 'cdk'
+                                  : name.startsWith('aws-') ? name.replace(/^aws-/, '')
+                                                            : `cdk-${name}`
     };
-}
-
-/**
- * JSII .NET namespace is required and must look sane
- */
-export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
-    public validate(pkg: PackageJson): void {
-        if (!isJSII(pkg)) { return; }
-
-        const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
-        if (!dotnet) {
-            pkg.report({ message: 'JSII package must have a "dotnet" target with "namespace"' });
-            return;
-        }
-
-        const moduleName = cdkModuleName(pkg.json.name);
-        if (dotnet.toLocaleLowerCase() !== moduleName.dotnetNamespace.toLocaleLowerCase()) {
-            pkg.report({
-                message: `.NET namespace must (case-insensitively) match JS package name, '${moduleName.dotnetNamespace}' vs '${dotnet}'`
-            });
-        }
-    }
 }
 
 /**
@@ -207,7 +247,24 @@ export class MustUseCDKBuild extends ValidationRule {
         expectJSON(pkg, 'scripts.build', 'cdk-build');
 
         // cdk-build will write a hash file that we have to ignore.
-        fileShouldContain(pkg, '.gitignore', '.LAST_BUILD');
+        const merkleMarker = '.LAST_BUILD';
+        fileShouldContain(pkg, '.gitignore', merkleMarker);
+        fileShouldContain(pkg, '.npmignore', merkleMarker);
+    }
+}
+
+export class NpmIgnoreForJsiiModules extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+
+        fileShouldContain(pkg, '.npmignore',
+            '*.ts',
+            '!*.d.ts',
+            '!*.js',
+            'coverage',
+            '.nyc_output',
+            '*.tgz',
+        );
     }
 }
 
@@ -284,6 +341,8 @@ export class MustHaveIntegCommand extends ValidationRule {
 export class PkgLintAsScript extends ValidationRule {
     public validate(pkg: PackageJson): void {
         const script = 'pkglint -f';
+
+        expectDevDependency(pkg, 'pkglint', '^' + monoRepoVersion());
 
         if (!pkg.npmScript('pkglint')) {
             pkg.report({

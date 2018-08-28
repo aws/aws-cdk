@@ -1,11 +1,12 @@
+// import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
-import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
 
 // tslint:disable:object-literal-key-quotes
 
-class TestAction extends codepipeline.Action {}
+class TestAction extends actions.Action {}
 
 export = {
     'artifact bounds validation': {
@@ -34,43 +35,46 @@ export = {
     'action type validation': {
 
         'must be source and is source'(test: Test) {
-            const result = validateSourceAction(true, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+            const result = actions.validateSourceAction(true, actions.ActionCategory.Source, 'test action', 'test stage');
             test.deepEqual(result.length, 0);
             test.done();
         },
 
         'must be source and is not source'(test: Test) {
-            const result = validateSourceAction(true, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+            const result = actions.validateSourceAction(true, actions.ActionCategory.Deploy, 'test action', 'test stage');
             test.deepEqual(result.length, 1);
             test.ok(result[0].match(/may only contain Source actions/), 'the validation should have failed');
             test.done();
         },
 
         'cannot be source and is source'(test: Test) {
-            const result = validateSourceAction(false, codepipeline.ActionCategory.Source, 'test action', 'test stage');
+            const result = actions.validateSourceAction(false, actions.ActionCategory.Source, 'test action', 'test stage');
             test.deepEqual(result.length, 1);
             test.ok(result[0].match(/may only occur in first stage/), 'the validation should have failed');
             test.done();
         },
 
         'cannot be source and is not source'(test: Test) {
-            const result = validateSourceAction(false, codepipeline.ActionCategory.Deploy, 'test action', 'test stage');
+            const result = actions.validateSourceAction(false, actions.ActionCategory.Deploy, 'test action', 'test stage');
             test.deepEqual(result.length, 0);
             test.done();
         },
     },
 
     'standard action with artifacts'(test: Test) {
-        const stage = stageForTesting();
-        const action = new TestAction(stage, 'TestAction', {
-            artifactBounds: defaultBounds(),
-            category: codepipeline.ActionCategory.Source,
+        const stack = new cdk.Stack();
+        const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
+        const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
+        const action = new TestAction(stack, 'TestAction', {
+            stage,
+            artifactBounds: actions.defaultBounds(),
+            category: actions.ActionCategory.Source,
             provider: 'test provider',
             configuration: { blah: 'bleep' }
         });
-        new codepipeline.Artifact(action, 'TestOutput');
+        new actions.Artifact(action, 'TestOutput');
 
-        test.deepEqual(action.render(), {
+        test.deepEqual((stage.render().actions as any)[0], {
             name: 'TestAction',
             inputArtifacts: [],
             actionTypeId:
@@ -89,30 +93,18 @@ export = {
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {
-    const stage = stageForTesting();
-    const action = new TestAction(stage, 'TestAction', {
-        artifactBounds: defaultBounds(),
-        category: codepipeline.ActionCategory.Test,
-        provider: 'test provider'
-    });
-    const artifacts: codepipeline.Artifact[] = [];
-    for (let i = 0; i < numberOfArtifacts; i++) {
-        artifacts.push(new codepipeline.Artifact(action, `TestArtifact${i}`));
-    }
-    return validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
-}
-
-function stageForTesting(): codepipeline.Stage {
     const stack = new cdk.Stack();
     const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-    return new codepipeline.Stage(pipeline, 'stage');
-}
-
-function defaultBounds(): codepipeline.ActionArtifactBounds {
-    return {
-        minInputs: 0,
-        maxInputs: 5,
-        minOutputs: 0,
-        maxOutputs: 5
-    };
+    const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
+    const action = new TestAction(stack, 'TestAction', {
+        stage,
+        artifactBounds: actions.defaultBounds(),
+        category: actions.ActionCategory.Test,
+        provider: 'test provider'
+    });
+    const artifacts: actions.Artifact[] = [];
+    for (let i = 0; i < numberOfArtifacts; i++) {
+        artifacts.push(new actions.Artifact(action, `TestArtifact${i}`));
+    }
+    return actions.validateArtifactBounds('output', artifacts, min, max, 'testCategory', 'testProvider');
 }

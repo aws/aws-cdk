@@ -1,13 +1,13 @@
 {
   "name": "merkle-build",
   "private": true,
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "description": "Build tool helper for calculating hashes of a Merkle tree",
   "main": "lib/index.js",
   "types": "lib/index.ts",
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "scripts": {
     "build": "tsc && tslint -p . && pkglint",
@@ -16,12 +16,13 @@
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
-    "pkglint": "^0.7.4-beta"
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
     "fs-extra": "^4.0.2"
@@ -29,5 +30,6 @@
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

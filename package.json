@@ -4,33 +4,22 @@
     "ignore": true
   },
   "scripts": {
-    "preinstall": "rm -fr .local-npm && mkdir -p .local-npm && (cd .local-npm && unzip ../vendor/*.zip)",
     "pkglint": "tools/pkglint/bin/pkglint -f ."
   },
   "devDependencies": {
     "@types/node": "^8.9.4",
     "@types/nodeunit": "^0.0.30",
-    "codemaker": "file:.local-npm/codemaker-0.5.0-beta.tgz",
-    "jsii": "file:.local-npm/jsii-0.5.0-beta.tgz",
-    "jsii-dotnet-generator": "file:.local-npm/jsii-dotnet-generator-0.5.0-beta.tgz",
-    "jsii-dotnet-jsonmodel": "file:.local-npm/jsii-dotnet-jsonmodel-0.5.0-beta.tgz",
-    "jsii-dotnet-runtime": "file:.local-npm/jsii-dotnet-runtime-0.5.0-beta.tgz",
-    "jsii-java-runtime": "file:.local-npm/jsii-java-runtime-0.5.0-beta.tgz",
-    "jsii-kernel": "file:.local-npm/jsii-kernel-0.5.0-beta.tgz",
-    "jsii-pacmak": "file:.local-npm/jsii-pacmak-0.5.0-beta.tgz",
-    "jsii-runtime": "file:.local-npm/jsii-runtime-0.5.0-beta.tgz",
-    "jsii-spec": "file:.local-npm/jsii-spec-0.5.0-beta.tgz",
     "lerna": "^2.11.0",
     "nodeunit": "^0.11.2",
     "nyc": "^11.8.0",
     "tslint": "^5.10.0",
-    "typescript": "^2.8.3"
+    "typescript": "^3.0.1"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/awslabs/aws-cdk"
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"

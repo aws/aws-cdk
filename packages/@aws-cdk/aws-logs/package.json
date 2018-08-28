@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-logs",
-  "version": "0.7.4-beta",
+  "version": "0.8.2",
   "description": "The CDK Construct Library for AWS::Logs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,20 +8,18 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.logs",
+        "package": "software.amazon.awscdk.services.logs",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-logs"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "logs"
         }
       },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Logs"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
   "scripts": {
     "build": "cdk-build",
@@ -29,7 +27,8 @@
     "watch": "cdk-watch",
     "test": "cdk-test",
     "integ": "cdk-integ",
-    "pkglint": "pkglint -f"
+    "pkglint": "pkglint -f",
+    "package": "cdk-package"
   },
   "cdk-build": {
     "cloudformation": "AWS::Logs"
@@ -42,18 +41,20 @@
   ],
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.7.4-beta",
-    "cdk-build-tools": "^0.7.4-beta",
-    "cdk-integ-tools": "^0.7.4-beta",
-    "cfn2ts": "^0.7.4-beta",
-    "pkglint": "^0.7.4-beta"
+    "@aws-cdk/assert": "^0.8.2",
+    "cdk-build-tools": "^0.8.2",
+    "cdk-integ-tools": "^0.8.2",
+    "cfn2ts": "^0.8.2",
+    "pkglint": "^0.8.2"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.7.4-beta",
-    "@aws-cdk/cdk": "^0.7.4-beta"
-  }
+    "@aws-cdk/aws-iam": "^0.8.2",
+    "@aws-cdk/cdk": "^0.8.2"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk"
 }

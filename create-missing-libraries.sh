@@ -24,27 +24,38 @@ for S in $(node -e 'console.log(require("./packages/@aws-cdk/cfnspec").namespace
         mkdir -p packages/${P}/test
         mkdir -p packages/${P}/lib
         cat <<EOM > packages/${P}/.gitignore
-*.js
-*.js.map
 *.d.ts
 *.generated.ts
-tsconfig.json
-tslint.json
-node_modules
-dist
+*.js
+*.js.map
 .jsii
+.LAST_BUILD
+.LAST_PACKAGE
+.nycrc
 .nyc_output
 coverage
-.LAST_BUILD
+dist
+tsconfig.json
+tslint.json
 EOM
 
         cat <<EOM > packages/${P}/.npmignore
-# Don't include original .ts files when doing \`npm pack\`
+# The basics
 *.ts
+*.tgz
 !*.d.ts
+!*.js
+
+# Coverage
 coverage
 .nyc_output
-*.tgz
+.nycrc
+
+# Build gear
+dist
+.LAST_BUILD
+.LAST_PACKAGE
+.jsii
 EOM
 
         cat <<EOM > packages/${P}/package.json
@@ -58,28 +69,28 @@ EOM
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "com.amazonaws.cdk.aws.${PB}",
+        "package": "software.amazon.awscdk.${PB/aws-/services.}",
         "maven": {
-          "groupId": "com.amazonaws.cdk",
-          "artifactId": "aws-${PB}"
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "${PB/aws-/}"
         }
       },
-      "dotnet": {
-        "namespace": "${S/AWS::/Amazon.CDK.AWS.}"
-      }
+      "sphinx": {}
     }
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/awslabs/aws-cdk"
+    "url": "https://github.com/awslabs/aws-cdk.git"
   },
+  "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "watch": "cdk-watch",
-    "lint": "cdk-lint",
-    "test": "cdk-test",
     "integ": "cdk-integ",
-    "pkglint": "pkglint -f"
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
   },
   "cdk-build": {
     "cloudformation": "${S}"
@@ -92,9 +103,10 @@ EOM
   ],
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "LicenseRef-LICENSE",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^${VERSION}",
     "cdk-build-tools": "^${VERSION}",
@@ -109,10 +121,10 @@ EOM
 
         cat <<EOM > packages/${P}/lib/index.ts
 // ${S} CloudFormation Resources:
-export * from './${PB}.generated';
+export * from './${PB/aws-/}.generated';
 EOM
 
-        cat <<EOM > packages/${P}/test/test.${PB}.ts
+        cat <<EOM > packages/${P}/test/test.${PB/aws-/}.ts
 import { Test, testCase } from 'nodeunit';
 import {} from '../lib';
 
@@ -124,12 +136,22 @@ exports = testCase({
 });
 EOM
 
+        cat <<EOM > packages/${P}/README.md
+## ${S/::/ } Construct Library
+
+\`\`\`ts
+const ${PB/aws-/} = require('${P}');
+\`\`\`
+EOM
+
+        cp LICENSE NOTICE packages/${P}/
+
         echo "⌛️ Bootstrapping & building ${P}"
         lerna bootstrap --scope=${P}
         lerna run build --scope=${P}
 
         git add packages/${P}
 
-        echo "✅ Have fun with your new package ${P} (⚠️ don't forget to add it to 'aws-cdk-all')"
+        echo "✅ Have fun with your new package ${P}"
     fi
 done

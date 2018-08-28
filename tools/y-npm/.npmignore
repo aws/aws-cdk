@@ -1,2 +1,4 @@
 *.ts
 !*.d.ts
+
+.LAST_BUILD

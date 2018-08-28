@@ -13,10 +13,10 @@ const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 /**
  * Properties of a reference to a CodeBuild Project.
  *
- * @see BuildProjectRef.import
- * @see BuildProjectRef.export
+ * @see ProjectRef.import
+ * @see ProjectRef.export
  */
-export interface BuildProjectRefProps {
+export interface ProjectRefProps {
     /**
      * The human-readable name of the CodeBuild Project we're referencing.
      * The Project must be in the same account and region as the root Stack.
@@ -28,13 +28,13 @@ export interface BuildProjectRefProps {
  * Represents a reference to a CodeBuild Project.
  *
  * If you're managing the Project alongside the rest of your CDK resources,
- * use the {@link BuildProject} class.
+ * use the {@link Project} class.
  *
  * If you want to reference an already existing Project
  * (or one defined in a different CDK Stack),
  * use the {@link import} method.
  */
-export abstract class BuildProjectRef extends cdk.Construct implements events.IEventRuleTarget {
+export abstract class ProjectRef extends cdk.Construct implements events.IEventRuleTarget {
     /**
      * Import a Project defined either outside the CDK,
      * or in a different CDK Stack
@@ -50,8 +50,8 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
      * @param props the properties of the referenced Project
      * @returns a reference to the existing Project
      */
-    public static import(parent: cdk.Construct, name: string, props: BuildProjectRefProps): BuildProjectRef {
-        return new ImportedBuildProjectRef(parent, name, props);
+    public static import(parent: cdk.Construct, name: string, props: ProjectRefProps): ProjectRef {
+        return new ImportedProjectRef(parent, name, props);
     }
 
     /** The ARN of this Project. */
@@ -69,7 +69,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Export this Project. Allows referencing this Project in a different CDK Stack.
      */
-    public export(): BuildProjectRefProps {
+    public export(): ProjectRefProps {
         return {
             projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue(),
         };
@@ -254,7 +254,7 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
     /**
      * Allows using build projects as event rule targets.
      */
-    public get eventRuleTarget(): events.EventRuleTarget {
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
@@ -266,19 +266,19 @@ export abstract class BuildProjectRef extends cdk.Construct implements events.IE
         }
 
         return {
-            id: this.name,
+            id: this.id,
             arn: this.projectArn,
             roleArn: this.eventsRole.roleArn,
         };
     }
 }
 
-class ImportedBuildProjectRef extends BuildProjectRef {
+class ImportedProjectRef extends ProjectRef {
     public readonly projectArn: ProjectArn;
     public readonly projectName: ProjectName;
     public readonly role?: iam.Role = undefined;
 
-    constructor(parent: cdk.Construct, name: string, props: BuildProjectRefProps) {
+    constructor(parent: cdk.Construct, name: string, props: ProjectRefProps) {
         super(parent, name);
 
         this.projectArn = cdk.Arn.fromComponents({
@@ -290,13 +290,7 @@ class ImportedBuildProjectRef extends BuildProjectRef {
     }
 }
 
-export interface BuildProjectProps {
-
-    /**
-     * The source of the build.
-     */
-    source: BuildSource;
-
+export interface CommonProjectProps {
     /**
      * A description of the project. Use the description to identify the purpose
      * of the project.
@@ -307,7 +301,7 @@ export interface BuildProjectProps {
      * Filename or contents of buildspec in JSON format.
      * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
      */
-    buildSpec?: object;
+    buildSpec?: any;
 
     /**
      * Service Role to assume while running the build.
@@ -352,28 +346,39 @@ export interface BuildProjectProps {
     timeout?: number;
 
     /**
+     * Additional environment variables to add to the build environment.
+     */
+    environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+
+    /**
+     * The physical, human-readable name of the CodeBuild Project.
+     */
+    projectName?: string;
+}
+
+export interface ProjectProps extends CommonProjectProps {
+    /**
+     * The source of the build.
+     */
+    source: BuildSource;
+
+    /**
      * Defines where build artifacts will be stored.
      * Could be: PipelineBuildArtifacts, NoBuildArtifacts and S3BucketBuildArtifacts.
      *
      * @default NoBuildArtifacts
      */
     artifacts?: BuildArtifacts;
-
-    /**
-     * Additional environment variables to add to the build environment.
-     */
-    environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 }
 
 /**
- * A CodeBuild project that is completely driven
- * from CodePipeline (does not hot have its own input or output)
+ * A representation of a CodeBuild Project.
  */
-export class BuildProject extends BuildProjectRef {
+export class Project extends ProjectRef {
     /**
      * The IAM role for this project.
      */
-    public readonly role: iam.Role;
+    public readonly role?: iam.Role;
 
     /**
      * The ARN of the project.
@@ -385,7 +390,7 @@ export class BuildProject extends BuildProjectRef {
      */
     public readonly projectName: ProjectName;
 
-    constructor(parent: cdk.Construct, name: string, props: BuildProjectProps) {
+    constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
         super(parent, name);
 
         this.role = props.role || new iam.Role(this, 'Role', {
@@ -414,7 +419,9 @@ export class BuildProject extends BuildProjectRef {
         artifacts.bind(this);
 
         const sourceJson = source.toSourceJSON();
-        if (props.buildSpec) {
+        if (typeof props.buildSpec === 'string') {
+            sourceJson.buildSpec = props.buildSpec;
+        } else {
             sourceJson.buildSpec = JSON.stringify(props.buildSpec);
         }
 
@@ -429,6 +436,7 @@ export class BuildProject extends BuildProjectRef {
             encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
             badgeEnabled: props.badge,
             cache,
+            projectName: props.projectName,
         });
 
         this.projectArn = resource.projectArn;
@@ -442,7 +450,9 @@ export class BuildProject extends BuildProjectRef {
      * @param statement The permissions statement to add
      */
     public addToRolePolicy(statement: cdk.PolicyStatement) {
-        return this.role.addToPolicy(statement);
+        if (this.role) {
+            this.role.addToPolicy(statement);
+        }
     }
 
     private createLoggingPermission() {
@@ -467,8 +477,8 @@ export class BuildProject extends BuildProjectRef {
     }
 
     private renderEnvironment(env: BuildEnvironment = {},
-                              projectVars: { [name: string]: BuildEnvironmentVariable } = {}): cloudformation.ProjectResource.EnvironmentProperty {
-
+                              projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
+            cloudformation.ProjectResource.EnvironmentProperty {
         const vars: { [name: string]: BuildEnvironmentVariable } = {};
         const containerVars = env.environmentVariables || {};
 
@@ -484,11 +494,17 @@ export class BuildProject extends BuildProjectRef {
 
         const hasEnvironmentVars = Object.keys(vars).length > 0;
 
+        const buildImage = env.buildImage || LinuxBuildImage.UBUNTU_14_04_BASE;
+        const errors = buildImage.validate(env);
+        if (errors.length > 0) {
+            throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
+        }
+
         return {
-            type: env.type || 'LINUX_CONTAINER',
-            image: env.image || 'aws/codebuild/ubuntu-base:14.04',
+            type: buildImage.type,
+            image: buildImage.imageId,
             privilegedMode: env.priviledged || false,
-            computeType: env.computeType || ComputeType.Small,
+            computeType: env.computeType || buildImage.defaultComputeType,
             environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
                 name,
                 type: vars[name].type || BuildEnvironmentVariableType.PlainText,
@@ -497,7 +513,7 @@ export class BuildProject extends BuildProjectRef {
         };
     }
 
-    private parseArtifacts(props: BuildProjectProps) {
+    private parseArtifacts(props: ProjectProps) {
         if (props.artifacts) {
             return props.artifacts;
         }
@@ -519,27 +535,28 @@ export class BuildProject extends BuildProjectRef {
     }
 }
 
+/**
+ * Build machine compute type.
+ */
+export enum ComputeType {
+    Small  = 'BUILD_GENERAL1_SMALL',
+    Medium = 'BUILD_GENERAL1_MEDIUM',
+    Large  = 'BUILD_GENERAL1_LARGE'
+}
+
 export interface BuildEnvironment {
     /**
-     * The type of build environment. The only allowed value is LINUX_CONTAINER.
+     * The image used for the builds.
      *
-     * @default LINUX_CONTAINER
+     * @default LinuxBuildImage.UBUNTU_14_04_BASE
      */
-    type?: string;
+    buildImage?: IBuildImage;
 
     /**
-     * The Docker image identifier that the build environment uses.
+     * The type of compute to use for this build.
+     * See the {@link ComputeType} enum for the possible values.
      *
-     * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
-     * @default aws/codebuild/ubuntu-base:14.04
-     */
-    image?: string;
-
-    /**
-     * The type of compute to use for this build. See the
-     * ComputeType enum for options.
-     *
-     * @default ComputeType.Small
+     * @default taken from {@link #buildImage#defaultComputeType}
      */
     computeType?: ComputeType;
 
@@ -559,6 +576,108 @@ export interface BuildEnvironment {
      * The environment variables that your builds can use.
      */
     environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+}
+
+/**
+ * Represents a Docker image used for the CodeBuild Project builds.
+ * Use the concrete subclasses, either:
+ * {@link LinuxBuildImage} or {@link WindowsBuildImage}.
+ */
+export interface IBuildImage {
+    /**
+     * The type of build environment.
+     */
+    readonly type: string;
+
+    /**
+     * The Docker image identifier that the build environment uses.
+     *
+     * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+     */
+    readonly imageId: string;
+
+    /**
+     * The default {@link ComputeType} to use with this image,
+     * if one was not specified in {@link BuildEnvironment#computeType} explicitly.
+     */
+    readonly defaultComputeType: ComputeType;
+
+    /**
+     * Allows the image a chance to validate whether the passed configuration is correct.
+     *
+     * @param buildEnvironment the current build environment
+     */
+    validate(buildEnvironment: BuildEnvironment): string[];
+}
+
+/**
+ * A CodeBuild image running Linux.
+ * This class has a bunch of public constants that represent the most popular images.
+ * If you need to use with an image that isn't in the named constants,
+ * you can always instantiate it directly.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class LinuxBuildImage implements IBuildImage {
+    public static readonly UBUNTU_14_04_BASE = new LinuxBuildImage('aws/codebuild/ubuntu-base:14.04');
+    public static readonly UBUNTU_14_04_ANDROID_JAVA8_24_4_1 = new LinuxBuildImage('aws/codebuild/android-java-8:24.4.1');
+    public static readonly UBUNTU_14_04_ANDROID_JAVA8_26_1_1 = new LinuxBuildImage('aws/codebuild/android-java-8:26.1.1');
+    public static readonly UBUNTU_14_04_DOCKER_17_09_0 = new LinuxBuildImage('aws/codebuild/docker:17.09.0');
+    public static readonly UBUNTU_14_04_GOLANG_1_10 = new LinuxBuildImage('aws/codebuild/golang:1.10');
+    public static readonly UBUNTU_14_04_OPEN_JDK_8 = new LinuxBuildImage('aws/codebuild/java:openjdk-8');
+    public static readonly UBUNTU_14_04_OPEN_JDK_9 = new LinuxBuildImage('aws/codebuild/java:openjdk-9');
+    public static readonly UBUNTU_14_04_NODEJS_10_1_0 = new LinuxBuildImage('aws/codebuild/nodejs:10.1.0');
+    public static readonly UBUNTU_14_04_NODEJS_8_11_0 = new LinuxBuildImage('aws/codebuild/nodejs:8.11.0');
+    public static readonly UBUNTU_14_04_NODEJS_6_3_1 = new LinuxBuildImage('aws/codebuild/nodejs:6.3.1');
+    public static readonly UBUNTU_14_04_PHP_5_6 = new LinuxBuildImage('aws/codebuild/php:5.6');
+    public static readonly UBUNTU_14_04_PHP_7_0 = new LinuxBuildImage('aws/codebuild/php:7.0');
+    public static readonly UBUNTU_14_04_PYTHON_3_6_5 = new LinuxBuildImage('aws/codebuild/python:3.6.5');
+    public static readonly UBUNTU_14_04_PYTHON_3_5_2 = new LinuxBuildImage('aws/codebuild/python:3.5.2');
+    public static readonly UBUNTU_14_04_PYTHON_3_4_5 = new LinuxBuildImage('aws/codebuild/python:3.4.5');
+    public static readonly UBUNTU_14_04_PYTHON_3_3_6 = new LinuxBuildImage('aws/codebuild/python:3.3.6');
+    public static readonly UBUNTU_14_04_PYTHON_2_7_12 = new LinuxBuildImage('aws/codebuild/python:2.7.12');
+    public static readonly UBUNTU_14_04_RUBY_2_5_1 = new LinuxBuildImage('aws/codebuild/ruby:2.5.1');
+    public static readonly UBUNTU_14_04_RUBY_2_3_1 = new LinuxBuildImage('aws/codebuild/ruby:2.3.1');
+    public static readonly UBUNTU_14_04_RUBY_2_2_5 = new LinuxBuildImage('aws/codebuild/ruby:2.2.5');
+    public static readonly UBUNTU_14_04_DOTNET_CORE_1_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-1');
+    public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.0');
+    public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.1');
+
+    public readonly type = 'LINUX_CONTAINER';
+    public readonly defaultComputeType = ComputeType.Small;
+
+    public constructor(public readonly imageId: string) {
+    }
+
+    public validate(_: BuildEnvironment): string[] {
+        return [];
+    }
+}
+
+/**
+ * A CodeBuild image running Windows.
+ * This class has a bunch of public constants that represent the most popular images.
+ * If you need to use with an image that isn't in the named constants,
+ * you can always instantiate it directly.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+ */
+export class WindowsBuildImage implements IBuildImage {
+    public static readonly WIN_SERVER_CORE_2016_BASE = new WindowsBuildImage('aws/codebuild/windows-base:1.0');
+
+    public readonly type = 'WINDOWS_CONTAINER';
+    public readonly defaultComputeType = ComputeType.Medium;
+
+    public constructor(public readonly imageId: string) {
+    }
+
+    public validate(buildEnvironment: BuildEnvironment): string[] {
+        const ret: string[] = [];
+        if (buildEnvironment.computeType === ComputeType.Small) {
+            ret.push("Windows images do not support the Small ComputeType");
+        }
+        return ret;
+    }
 }
 
 export interface BuildEnvironmentVariable {
@@ -585,15 +704,6 @@ export enum BuildEnvironmentVariableType {
      * An environment variable stored in Systems Manager Parameter Store.
      */
     ParameterStore = 'PARAMETER_STORE'
-}
-
-/**
- * Build machine compute type.
- */
-export enum ComputeType {
-    Small  = 'BUILD_GENERAL1_SMALL',
-    Medium = 'BUILD_GENERAL1_MEDIUM',
-    Large  = 'BUILD_GENERAL1_LARGE'
 }
 
 export class ProjectName extends cdk.Token { }

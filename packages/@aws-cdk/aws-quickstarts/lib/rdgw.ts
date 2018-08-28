@@ -20,10 +20,9 @@ export interface RemoteDesktopGatewayProps {
 /**
  * Embed the Remote Desktop Gateway AWS QuickStart
  */
-export class RemoteDesktopGateway extends cdk.Construct implements ec2.IDefaultConnectable {
+export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnectable {
     private static readonly PORT = 3389;
-    public readonly connections: ec2.DefaultConnections;
-    public readonly defaultPortRange: ec2.IPortRange;
+    public readonly connections: ec2.Connections;
 
     constructor(parent: cdk.Construct, name: string, props: RemoteDesktopGatewayProps) {
         super(parent, name);
@@ -48,11 +47,11 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IDefaultC
             parameters: params
         });
 
-        const securityGroup  = new ec2.SecurityGroupRef(this, 'SecurityGroup', {
+        const securityGroup = ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
             securityGroupId: nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID')
         });
 
-        this.defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
-        this.connections = new ec2.DefaultConnections(securityGroup, this);
+        const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
+        this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
     }
 }

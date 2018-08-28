@@ -609,8 +609,8 @@ export = {
                               "s3:GetObject*",
                               "s3:GetBucket*",
                               "s3:List*",
-                              "s3:PutObject*",
                               "s3:DeleteObject*",
+                              "s3:PutObject*",
                               "s3:Abort*"
                             ],
                             "Effect": "Allow",
@@ -763,8 +763,8 @@ export = {
                               "s3:GetObject*",
                               "s3:GetBucket*",
                               "s3:List*",
-                              "s3:PutObject*",
                               "s3:DeleteObject*",
+                              "s3:PutObject*",
                               "s3:Abort*"
                             ],
                             "Effect": "Allow",
@@ -824,6 +824,26 @@ export = {
 
             test.done();
         },
+    },
+
+    'more grants'(test: Test) {
+        const stack = new cdk.Stack();
+        const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Kms });
+        const putter = new iam.User(stack, 'Putter');
+        const writer = new iam.User(stack, 'Writer');
+        const deleter = new iam.User(stack, 'Deleter');
+
+        bucket.grantPut(putter);
+        bucket.grantWrite(writer);
+        bucket.grantDelete(deleter);
+
+        const resources = stack.toCloudFormation().Resources;
+        const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
+
+        test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*' ]);
+        test.deepEqual(actions('PutterDefaultPolicyAB138DD3'), [ 's3:PutObject*', 's3:Abort*' ]);
+        test.deepEqual(actions('DeleterDefaultPolicyCD33B8A0'), 's3:DeleteObject*');
+        test.done();
     },
 
     'cross-stack permissions'(test: Test) {

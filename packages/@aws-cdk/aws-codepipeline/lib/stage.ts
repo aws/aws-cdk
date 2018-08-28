@@ -1,42 +1,56 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Action } from './actions';
 import { cloudformation } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
-import validation = require('./validation');
 
 /**
- * A stage in a pipeline. Stages are added to a pipeline by constructing a Stage with
- * the pipeline as the first argument to the constructor.
+ * The construction properties for {@link Stage}.
+ */
+export interface StageProps {
+    /**
+     * The Pipeline to add the newly created Stage to.
+     */
+    pipeline: Pipeline;
+}
+
+/**
+ * A Stage in a Pipeline.
+ * Stages are added to a Pipeline by constructing a new Stage,
+ * and passing the Pipeline it belongs to through the {@link StageProps#pipeline} attribute.
  *
  * @example
- * // add a stage to a pipeline
- * new Stage(pipeline, 'MyStage');
+ *   // add a Stage to a Pipeline
+ *   new Stage(this, 'MyStage', {
+ *       pipeline: myPipeline,
+ *   });
  */
-export class Stage extends cdk.Construct {
+export class Stage extends cdk.Construct implements actions.IStage {
     /**
-     * The Pipeline this stage is a member of
+     * The Pipeline this Stage is a part of.
      */
     public readonly pipeline: Pipeline;
-    private readonly _actions = new Array<Action>();
+    public readonly name: string;
+
+    private readonly _actions = new Array<actions.Action>();
 
     /**
-     * Append a new stage to the pipeline
-     *
-     * Only a Pipeline can be passed in as a parent because stages should
-     * always be attached to a pipeline. It's illogical to construct a Stage
-     * with any other parent.
+     * Create a new Stage.
      */
-    constructor(parent: Pipeline, name: string) {
+    constructor(parent: cdk.Construct, name: string, props: StageProps) {
         super(parent, name);
-        this.pipeline = parent;
-        validation.validateName('Stage', name);
+        this.name = name;
+        this.pipeline = props.pipeline;
+        actions.validateName('Stage', name);
+
+        this.pipeline._addStage(this);
     }
 
     /**
      * Get a duplicate of this stage's list of actions.
      */
-    public get actions(): Action[] {
+    public get actions(): actions.Action[] {
         return this._actions.slice();
     }
 
@@ -44,10 +58,14 @@ export class Stage extends cdk.Construct {
         return this.validateHasActions();
     }
 
+    public grantPipelineBucketReadWrite(identity: iam.IPrincipal): void {
+        this.pipeline.artifactBucket.grantReadWrite(identity);
+    }
+
     public render(): cloudformation.PipelineResource.StageDeclarationProperty {
         return {
-            name: this.name,
-            actions: this._actions.map(action => action.render())
+            name: this.id,
+            actions: this._actions.map(action => this.renderAction(action)),
         };
     }
 
@@ -59,32 +77,46 @@ export class Stage extends cdk.Construct {
             source: [ 'aws.codepipeline' ],
             resources: [ this.pipeline.pipelineArn ],
             detail: {
-                stage: [ this.name ],
+                stage: [ this.id ],
             },
         });
         return rule;
     }
 
-    /**
-     * If an action is added as a child, add it to the list of actions.
-     * TODO: This is a hack that should be removed once the CDK has an
-     *       onChildAdded type hook.
-     * @override
-     * @param child
-     * @param name
-     */
-    protected addChild(child: cdk.Construct, name: string) {
-        super.addChild(child, name);
-        if (child instanceof Action) {
-            this._actions.push(child);
-        } else {
-            throw new Error('Only Actions can be added as children to a Stage');
+    public get pipelineArn(): cdk.Arn {
+        return this.pipeline.pipelineArn;
+    }
+
+    public get pipelineRole(): iam.Role {
+        return this.pipeline.role;
+    }
+
+    public _addAction(action: actions.Action): void {
+        // _addAction should be idempotent in case a customer ever calls it directly
+        if (!this._actions.includes(action)) {
+            this._actions.push(action);
         }
+    }
+
+    private renderAction(action: actions.Action): cloudformation.PipelineResource.ActionDeclarationProperty {
+        return {
+            name: action.id,
+            inputArtifacts: action.inputArtifacts.map(a => ({ name: a.name })),
+            actionTypeId: {
+                category: action.category.toString(),
+                version: action.version,
+                owner: action.owner,
+                provider: action.provider,
+            },
+            configuration: action.configuration,
+            outputArtifacts: action.outputArtifacts.map(a => ({ name: a.name })),
+            runOrder: action.runOrder,
+        };
     }
 
     private validateHasActions(): string[] {
         if (this._actions.length === 0) {
-            return [`Stage '${this.name}' must have at least one action`];
+            return [`Stage '${this.id}' must have at least one action`];
         }
         return [];
     }

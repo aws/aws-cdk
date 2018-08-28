@@ -5,26 +5,53 @@ import { PackageJson } from "./packagejson";
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any) {
+export function expectJSON(pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
     const parts = jsonPath.split('.');
     const actual = deepGet(pkg.json, parts);
-    if (actual !== expected) {
+    if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
         pkg.report({
-            message: `${jsonPath} should be ${JSON.stringify(expected)}, is ${JSON.stringify(actual)}`,
+            message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
             fix: () => { deepSet(pkg.json, parts, expected); }
         });
+    }
+
+    function applyIgnore(val: any): string {
+        if (!ignore || val == null) { return JSON.stringify(val); }
+        const str = JSON.stringify(val);
+        return str.replace(ignore, '');
+    }
+
+    function applyCaseInsensitive(val: any): string {
+        if (!caseInsensitive || val == null) { return JSON.stringify(val); }
+        const str = JSON.stringify(val);
+        return str.toLowerCase();
     }
 }
 
 /**
  * Export a package-level file to contain a given line
  */
-export function fileShouldContain(pkg: PackageJson, fileName: string, line: string) {
-    const doesContain = pkg.fileContainsSync(fileName, line);
-    if (!doesContain) {
+export function fileShouldContain(pkg: PackageJson, fileName: string, ...lines: string[]) {
+    for (const line of lines) {
+        const doesContain = pkg.fileContainsSync(fileName, line);
+        if (!doesContain) {
+            pkg.report({
+                message: `${fileName} should contain '${line}'`,
+                fix: () => pkg.addToFileSync(fileName, line)
+            });
+        }
+    }
+}
+
+/**
+ * Export a package-level file to contain specific content
+ */
+export function fileShouldBe(pkg: PackageJson, fileName: string, content: string) {
+    const isContent = pkg.fileIsSync(fileName, content);
+    if (!isContent) {
         pkg.report({
-            message: `${fileName} should contain '${line}'`,
-            fix: () => pkg.addToFileSync(fileName, line)
+            message: `${fileName} should contain exactly '${content}'`,
+            fix: () => pkg.writeFileSync(fileName, content)
         });
     }
 }

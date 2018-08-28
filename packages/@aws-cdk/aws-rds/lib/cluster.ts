@@ -118,19 +118,14 @@ export class DatabaseCluster extends DatabaseClusterRef {
     public readonly instanceEndpoints: Endpoint[] = [];
 
     /**
-     * Default port to connect to this database
-     */
-    public readonly defaultPortRange: ec2.IPortRange;
-
-    /**
      * Access to the network connections
      */
-    public readonly connections: ec2.DefaultConnections;
+    public readonly connections: ec2.Connections;
 
     /**
      * Security group identifier of this database
      */
-    protected securityGroupId: ec2.SecurityGroupId;
+    protected readonly securityGroupId: ec2.SecurityGroupId;
 
     constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
         super(parent, name);
@@ -177,7 +172,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
         this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
 
         const instanceCount = props.instances != null ? props.instances : 2;
-        if (instanceCount <= 1) {
+        if (instanceCount < 1) {
             throw new Error('At least one instance is required');
         }
 
@@ -214,8 +209,8 @@ export class DatabaseCluster extends DatabaseClusterRef {
             this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
         }
 
-        this.defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
-        this.connections = new ec2.DefaultConnections(securityGroup, this);
+        const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
+        this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
     }
 }
 
