@@ -11,7 +11,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
     runtime: lambda.Runtime.NodeJS610,
 });
 
-fn.addToRolePolicy(new cdk.PolicyStatement().addResource('*').addAction('*'));
+fn.addToRolePolicy(new cdk.PolicyStatement().addAllResources().addAction('*'));
 
 const version = fn.addVersion('1');
 

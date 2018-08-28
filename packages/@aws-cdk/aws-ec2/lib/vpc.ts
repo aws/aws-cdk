@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
-import { cloudformation } from './ec2.generated';
+import { cloudformation, SubnetId, VPCId } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
+import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 
 /**
  * Name tag constant
@@ -242,7 +242,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VpcNetworkId;
+    public readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -493,7 +493,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: VpcSubnetId;
+    public readonly subnetId: SubnetId;
 
     /**
      * Manage tags for Construct and propagate to children

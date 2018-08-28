@@ -8,7 +8,7 @@ const stack = new Stack(app, `aws-cdk-kms-1`);
 const key = new EncryptionKey(stack, 'MyKey');
 
 key.addToResourcePolicy(new PolicyStatement()
-    .addResource('*')
+    .addAllResources()
     .addAction('kms:encrypt')
     .addAwsPrincipal(new AwsAccountId()));
 

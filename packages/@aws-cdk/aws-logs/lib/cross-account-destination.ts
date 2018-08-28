@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogGroup } from './log-group';
-import { cloudformation, DestinationArn } from './logs.generated';
+import { cloudformation, DestinationArn, DestinationName } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
 export interface CrossAccountDestinationProps {
@@ -97,10 +97,4 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     private stringifiedPolicyDocument() {
         return this.policyDocument.isEmpty ? '' : cdk.CloudFormationJSON.stringify(cdk.resolve(this.policyDocument));
     }
-}
-
-/**
- * Name of a CloudWatch Destination
- */
-export class DestinationName extends cdk.Token {
 }

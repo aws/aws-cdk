@@ -63,7 +63,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         // handler allows to put bucket notification on s3 buckets.
         role.addToPolicy(new cdk.PolicyStatement()
             .addAction('s3:PutBucketNotification')
-            .addResource('*'));
+            .addAllResources());
 
         const resource = new cdk.Resource(this, 'Resource', {
             type: 'AWS::Lambda::Function',
