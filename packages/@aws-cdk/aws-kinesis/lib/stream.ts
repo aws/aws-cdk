@@ -175,7 +175,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
         if (!this.cloudWatchLogsRole) {
             // Create a role to be assumed by CWL that can write to this stream and pass itself.
             this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-                assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
+                assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
             });
             this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
             this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -382,7 +382,7 @@ class ImportedStreamRef extends StreamRef {
 
         this.streamArn = props.streamArn;
         // Get the name from the ARN
-        this.streamName = cdk.Arn.parseToken(props.streamArn).resourceName;
+        this.streamName = new StreamName(cdk.Arn.parseToken(props.streamArn).resourceName);
 
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);

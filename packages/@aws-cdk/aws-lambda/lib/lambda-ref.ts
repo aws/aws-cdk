@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, FunctionArn } from './lambda.generated';
+import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -247,7 +247,7 @@ export abstract class FunctionRef extends cdk.Construct
             //
             // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
+                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
                 sourceArn: arn
             });
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -342,4 +342,3 @@ class LambdaRefImport extends FunctionRef {
 
     }
 }
-export class FunctionName extends cdk.Token { }

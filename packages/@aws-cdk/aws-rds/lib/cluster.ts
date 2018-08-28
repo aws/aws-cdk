@@ -1,9 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
-import { ClusterIdentifier, DatabaseClusterRef, Endpoint, InstanceIdentifier } from './cluster-ref';
+import { DatabaseClusterRef, Endpoint } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
-import { cloudformation } from './rds.generated';
+import { cloudformation, DBClusterName, DBInstanceId } from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -95,12 +95,12 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Identifier of the cluster
      */
-    public readonly clusterIdentifier: ClusterIdentifier;
+    public readonly clusterIdentifier: DBClusterName;
 
     /**
      * Identifiers of the replicas
      */
-    public readonly instanceIdentifiers: InstanceIdentifier[] = [];
+    public readonly instanceIdentifiers: DBInstanceId[] = [];
 
     /**
      * The endpoint to use for read/write operations
