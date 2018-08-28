@@ -23,6 +23,12 @@ export interface TableProps {
      * @default <generated>
      */
     tableName?: string;
+
+    /**
+     * The Type of Stream to create.
+     * @default ''
+     */
+    streamSpecification?: cloudformation.TableResource.StreamSpecificationProperty;
 }
 
 /**
@@ -43,12 +49,14 @@ export class Table extends Construct {
 
         const readCapacityUnits = props.readCapacity || 5;
         const writeCapacityUnits = props.writeCapacity || 5;
+        const streamViewType = props.streamSpecification;
 
         this.table = new cloudformation.TableResource(this, 'Resource', {
             tableName: props.tableName,
             keySchema: this.keySchema,
             attributeDefinitions: this.attributeDefinitions,
-            provisionedThroughput: { readCapacityUnits, writeCapacityUnits }
+            provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
+            streamSpecification: streamViewType
         });
 
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
