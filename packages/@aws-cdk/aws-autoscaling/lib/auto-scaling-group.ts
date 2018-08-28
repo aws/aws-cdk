@@ -179,7 +179,7 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         // use delayed evaluation
         const machineImage = props.machineImage.getImage(this);
         const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
-        const securityGroupsToken = new cdk.Token(() => this.securityGroups.map((sg) => sg.securityGroupId));
+        const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
         const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
             imageId: machineImage.imageId,
@@ -235,7 +235,7 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
      *
      * @param securityGroup: The SecurityGroupRef to add
      */
-    public attachSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
+    public addSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
         this.securityGroups.push(securityGroup);
     }
 

@@ -343,7 +343,7 @@ export = {
             machineImage: new ec2.AmazonLinuxImage(),
             vpc,
         });
-        asg.attachSecurityGroup(mockSecurityGroup(stack));
+        asg.addSecurityGroup(mockSecurityGroup(stack));
         expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
             SecurityGroups: [
                 {
