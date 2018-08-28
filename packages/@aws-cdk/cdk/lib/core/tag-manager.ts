@@ -84,9 +84,16 @@ export interface RemoveProps {
  * defaults to true to reflect this.
  *
  * Overwrite: Construct authors have the need to set a tag, but only if one was
- * not provided by the conumer. The most common example is the `Name` tag.
+ * not provided by the consumer. The most common example is the `Name` tag.
  * Overwrite is for this purpose and is controlled by `TagProps.overwrite`. The
  * default is `true`.
+ *
+ * Removing Tags: Tags can be removed from the local manager via `removeTag`. If
+ * a parent also has a tag with the same name then it can be propagated to the
+ * child (after removal). The user can control this `RemoveProps.blockPropagate`. By default
+ * this is `true` and prevents a parent tag from propagating to the child after
+ * the `removeTag` is invoked. However, if user wants the parent tag to
+ * propagate, if it is provided by a parent this can be set to `false`.
  */
 export class TagManager extends Token {
 
