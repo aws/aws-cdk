@@ -27,7 +27,7 @@ export interface TableProps {
     /**
      * When an item in the table is modified, StreamViewType determines what information
      * is written to the stream for this table. Valid values for StreamViewType are:
-     * @default undefined
+     * @default undefined, streams are disbaled
      */
     streamSpecification?: StreamViewType;
 }
