@@ -153,7 +153,8 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
 
     private readonly userDataLines = new Array<string>();
     private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
-    private readonly securityGroup: ec2.SecurityGroup;
+    private readonly securityGroup: ec2.SecurityGroupRef;
+    private readonly securityGroups: ec2.SecurityGroupRef[] = [];
     private readonly loadBalancerNames: cdk.Token[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
@@ -161,6 +162,7 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
 
         this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
         this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
+        this.securityGroups.push(this.securityGroup);
 
         if (props.allowAllOutbound !== false) {
             this.connections.allowTo(new ec2.AnyIPv4(), new ec2.AllConnections(), 'Outbound traffic allowed by default');
@@ -177,12 +179,13 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         // use delayed evaluation
         const machineImage = props.machineImage.getImage(this);
         const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
+        const securityGroupsToken = new cdk.Token(() => this.securityGroups.map((sg) => sg.securityGroupId));
 
         const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
             imageId: machineImage.imageId,
             keyName: props.keyName,
             instanceType: props.instanceType.toString(),
-            securityGroups: [this.securityGroup.securityGroupId],
+            securityGroups: securityGroupsToken,
             iamInstanceProfile: iamProfile.ref,
             userData: userDataToken
         });
@@ -225,6 +228,15 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         this.osType = machineImage.os.type;
 
         this.applyUpdatePolicies(props);
+    }
+
+    /**
+     * Attach the security group to all instances in this autoscaling group
+     *
+     * @param securityGroup: The SecurityGroupRef to add
+     */
+    public attachSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
+        this.securityGroups.push(securityGroup);
     }
 
     public attachToClassicLB(loadBalancer: ec2.ClassicLoadBalancer): void {
