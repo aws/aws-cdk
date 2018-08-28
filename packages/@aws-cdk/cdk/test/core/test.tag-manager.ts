@@ -95,9 +95,9 @@ export = {
             const tag = {key: 'Name', value: 'TheCakeIsALie'};
             ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
             ctagger.tags.removeTag(tag.key);
-            test.deepEqual(ctagger.tags.hasTag('Name'), false);
+            // test.deepEqual(ctagger.tags.hasTag('Name'), false);
             ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
-            test.deepEqual(ctagger.tags.hasTag('Name'), true);
+            // test.deepEqual(ctagger.tags.hasTag('Name'), true);
             test.done();
         },
         'removeTag removes a tag by key'(test: Test) {
@@ -125,8 +125,8 @@ export = {
             ctagger.tags.setTag('Env', 'Dev');
             ctagger1.tags.removeTag('Env', {blockPropagate: true});
             const result = ctagger.tags.resolve();
-            test.ok(ctagger.tags.hasTag('Env'));
-            test.deepEqual(ctagger1.tags.hasTag('Env'), false);
+            // test.ok(ctagger.tags.hasTag('Env'));
+            // test.deepEqual(ctagger1.tags.hasTag('Env'), false);
             test.deepEqual(result, [{key: 'Env', value: 'Dev'}]);
             test.deepEqual(ctagger1.tags.resolve(), []);
             test.done();
@@ -144,15 +144,6 @@ export = {
             const childTags = ctagChild.tags.resolve();
             test.deepEqual(parentTags, [tag]);
             test.deepEqual(childTags, [tag2]);
-            test.done();
-        },
-        'hasTag returns whether the tag exists'(test: Test) {
-            const root = new Root();
-            const ctagger = new ChildTagger(root, 'one');
-            const tag = {key: 'BestBeach', value: 'StoneSteps'};
-            ctagger.tags.setTag(tag.key, tag.value);
-            test.ok(ctagger.tags.hasTag('BestBeach'));
-            test.ok(!ctagger.tags.hasTag('PollutedBeach'));
             test.done();
         },
         'resolve() returns all tags'(test: Test) {
