@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { KeyAttributeType, Table } from '../lib';
+import { KeyAttributeType, StreamViewType, Table } from '../lib';
 
 export = {
     'default properties': {
@@ -94,7 +94,7 @@ export = {
                 tableName: 'MyTable',
                 readCapacity: 42,
                 writeCapacity: 1337,
-                streamSpecification: {streamViewType: 'NEW_AND_OLD_IMAGES'}
+                streamSpecification: StreamViewType.NewAndOldImages
             });
             table.addPartitionKey('partitionKey', KeyAttributeType.String);
             table.addSortKey('sortKey', KeyAttributeType.Binary);
@@ -129,7 +129,7 @@ export = {
                 tableName: 'MyTable',
                 readCapacity: 42,
                 writeCapacity: 1337,
-                streamSpecification: {streamViewType: 'NEW_IMAGE'}
+                streamSpecification: StreamViewType.NewImage
             });
             table.addPartitionKey('partitionKey', KeyAttributeType.String);
             table.addSortKey('sortKey', KeyAttributeType.Binary);
@@ -164,7 +164,7 @@ export = {
                 tableName: 'MyTable',
                 readCapacity: 42,
                 writeCapacity: 1337,
-                streamSpecification: {streamViewType: 'OLD_IMAGE'}
+                streamSpecification: StreamViewType.OldImage
             });
             table.addPartitionKey('partitionKey', KeyAttributeType.String);
             table.addSortKey('sortKey', KeyAttributeType.Binary);

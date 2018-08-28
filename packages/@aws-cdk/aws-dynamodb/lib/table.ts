@@ -25,10 +25,11 @@ export interface TableProps {
     tableName?: string;
 
     /**
-     * The Type of Stream to create.
-     * @default ''
+     * When an item in the table is modified, StreamViewType determines what information
+     * is written to the stream for this table. Valid values for StreamViewType are:
+     * @default undefined
      */
-    streamSpecification?: cloudformation.TableResource.StreamSpecificationProperty;
+    streamSpecification?: StreamViewType;
 }
 
 /**
@@ -49,14 +50,13 @@ export class Table extends Construct {
 
         const readCapacityUnits = props.readCapacity || 5;
         const writeCapacityUnits = props.writeCapacity || 5;
-        const streamViewType = props.streamSpecification;
 
         this.table = new cloudformation.TableResource(this, 'Resource', {
             tableName: props.tableName,
             keySchema: this.keySchema,
             attributeDefinitions: this.attributeDefinitions,
             provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
-            streamSpecification: streamViewType
+            streamSpecification: props.streamSpecification ? {streamViewType: props.streamSpecification} : undefined
         });
 
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
@@ -120,3 +120,20 @@ export enum KeyAttributeType {
     Number = 'N',
     String = 'S',
 }
+
+/**
+ * When an item in the table is modified, StreamViewType determines what information
+ * is written to the stream for this table. Valid values for StreamViewType are:
+ * @link https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_StreamSpecification.html
+ * @enum {string}
+ */
+export enum StreamViewType {
+    /** The entire item, as it appears after it was modified, is written to the stream. */
+    NewImage = 'NEW_IMAGE',
+    /** The entire item, as it appeared before it was modified, is written to the stream. */
+    OldImage = 'OLD_IMAGE',
+    /** Both the new and the old item images of the item are written to the stream. */
+    NewAndOldImages = 'NEW_AND_OLD_IMAGES',
+    /** Only the key attributes of the modified item are written to the stream. */
+    KeysOnly = 'KEYS_ONLY'
+  }
