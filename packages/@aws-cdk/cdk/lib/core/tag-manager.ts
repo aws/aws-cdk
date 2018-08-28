@@ -69,18 +69,18 @@ export interface RemoveProps {
  */
 export class TagManager extends Token {
 
-    public static readonly DEFAULT_TAG_PROPS: TagProps = {
-        propagate: true,
-        sticky: true,
-        overwrite: true
-    };
-
     /**
      * Checks if the object implements the `ITaggable` interface
      */
     public static isTaggable(taggable: ITaggable | any): taggable is ITaggable {
         return ((taggable as ITaggable).tags !== undefined);
     }
+
+    private static readonly DEFAULT_TAG_PROPS: TagProps = {
+        propagate: true,
+        sticky: true,
+        overwrite: true
+    };
 
     /*
      * Internally tags will have properties set
@@ -95,8 +95,10 @@ export class TagManager extends Token {
     constructor(private readonly parent: Construct, initialTags: Tags  = {}) {
         super();
         for (const key of Object.keys(initialTags)) {
-            const tag = {value: initialTags[key],
-                props: {propagate: true, sticky: true}};
+            const tag = {
+                value: initialTags[key],
+                props: TagManager.DEFAULT_TAG_PROPS,
+            };
             this._tags[key] = tag;
         }
     }
