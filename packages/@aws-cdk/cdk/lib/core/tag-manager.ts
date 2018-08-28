@@ -127,7 +127,7 @@ export class TagManager extends Token {
             return filteredTags;
         }
 
-        function propagatedTags(tagProviders: Construct[] ): Tags {
+        function propagatedTags(tagProviders: Construct[]): Tags {
             const parentTags: Tags = {};
             for (const ancestor of tagProviders) {
                 if (TagManager.isTaggable(ancestor)) {
@@ -155,9 +155,9 @@ export class TagManager extends Token {
      * @param value The value value of the tag
      * @param props A `TagProps` object for the tag @default `TagManager.DEFAULT_TAG_PROPS`
      */
-    public setTag(key: string, value: string, tagProps: TagProps = {} ): void {
+    public setTag(key: string, value: string, tagProps: TagProps = {}): void {
         const props = {...TagManager.DEFAULT_TAG_PROPS, ...tagProps};
-        if (props.overwrite === false) {
+        if (!props.overwrite) {
             this._tags[key] = this._tags[key] || {value, props};
         } else {
             this._tags[key] = {value, props};
