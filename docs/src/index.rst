@@ -64,7 +64,7 @@ In addition to this guide, the following are other resources available to |cdk| 
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
   * `Examples <https://github.com/awslabs/aws-cdk/tree/master/examples>`_
-  * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
+  * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
 
