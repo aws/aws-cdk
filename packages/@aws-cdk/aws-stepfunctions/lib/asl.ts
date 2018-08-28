@@ -1,13 +1,9 @@
-import { istoken, Token, tokenAwareJsonify } from "@aws-cdk/cdk";
+import { Token, CloudFormationJSON } from "@aws-cdk/cdk";
 import { isString } from "util";
 import { requireNextOrEnd, requireOneOf } from "./util";
 
-/**
- * Models the Amazon States Language
- *
- * {@link https://states-language.net/spec.html}
- */
-export namespace AmazonStatesLanguage {
+export namespace asl {
+
     /**
      * Converts all keys to PascalCase when serializing to JSON.
      */
@@ -41,7 +37,7 @@ export namespace AmazonStatesLanguage {
          *
          * {@link https://states-language.net/spec.html#toplevelfields}
          */
-        version?: string | Token,
+        version?: string,
 
         /**
          * The maximum number of seconds the machine is allowed to run.
@@ -52,7 +48,7 @@ export namespace AmazonStatesLanguage {
          *
          * {@link https://states-language.net/spec.html#toplevelfields}
          */
-        timeoutSeconds?: number | Token
+        timeoutSeconds?: number,
     }
 
     /**
@@ -60,9 +56,6 @@ export namespace AmazonStatesLanguage {
      */
     export class StateMachine extends PascalCaseJson {
         constructor(props: StateMachineProps) {
-            if (props.timeoutSeconds !== undefined && !istoken(props.timeoutSeconds) && !Number.isInteger(props.timeoutSeconds)) {
-                throw new Error("timeoutSeconds must be an integer");
-            }
             if (isString(props.startAt) && !props.states.hasState(props.startAt)) {
                 throw new Error(`Specified startAt state '${props.startAt}' does not exist in states map`);
             }
@@ -81,7 +74,7 @@ export namespace AmazonStatesLanguage {
          */
         // tslint:enable:max-line-length
         public definitionString() {
-            return tokenAwareJsonify(this.toJSON());
+            return CloudFormationJSON.stringify(this.toJSON());
         }
     }
 
@@ -933,5 +926,3 @@ export namespace AmazonStatesLanguage {
         }
     }
 }
-
-export import asl = AmazonStatesLanguage;
