@@ -35,6 +35,7 @@
   + **Property Changes**
     - AWS::AppSync::DataSource HttpConfig (__added__)
     - AWS::DAX::Cluster SSESpecification (__added__)
+    - AWS::DynamoDB::Table Stream (__added__)
     - AWS::EC2::VPCEndpoint IsPrivateDnsEnabled (__added__)
     - AWS::EC2::VPCEndpoint SecurityGroupIds (__added__)
     - AWS::EC2::VPCEndpoint SubnetIds (__added__)

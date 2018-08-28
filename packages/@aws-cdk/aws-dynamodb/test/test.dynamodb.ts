@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { KeyAttributeType, Table } from '../lib';
+import { KeyAttributeType, StreamViewType, Table } from '../lib';
 
 export = {
     'default properties': {
@@ -24,7 +24,7 @@ export = {
                         Properties: {
                             AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'B' }],
                             KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
-                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
                         }
                     }
                 }
@@ -52,7 +52,7 @@ export = {
                                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
                             ],
-                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
                         }
                     }
                 }
@@ -60,6 +60,139 @@ export = {
 
             test.done();
         },
+        'stream is not enabled by default'(test: Test) {
+            const app = new TestApp();
+            new Table(app.stack, 'MyTable')
+                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
+                .addSortKey('sortKey', KeyAttributeType.Number);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                                { AttributeName: 'sortKey', AttributeType: 'N' }
+                            ],
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
+        'can specify new and old images'(test: Test) {
+            const app = new TestApp();
+            const table = new Table(app.stack, 'MyTable', {
+                tableName: 'MyTable',
+                readCapacity: 42,
+                writeCapacity: 1337,
+                streamSpecification: StreamViewType.NewAndOldImages
+            });
+            table.addPartitionKey('partitionKey', KeyAttributeType.String);
+            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'S' },
+                                { AttributeName: 'sortKey', AttributeType: 'B' }
+                            ],
+                            StreamSpecification: { StreamViewType: 'NEW_AND_OLD_IMAGES' },
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+                            TableName: 'MyTable'
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
+        'can specify new images only'(test: Test) {
+            const app = new TestApp();
+            const table = new Table(app.stack, 'MyTable', {
+                tableName: 'MyTable',
+                readCapacity: 42,
+                writeCapacity: 1337,
+                streamSpecification: StreamViewType.NewImage
+            });
+            table.addPartitionKey('partitionKey', KeyAttributeType.String);
+            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'S' },
+                                { AttributeName: 'sortKey', AttributeType: 'B' }
+                            ],
+                            StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
+                            TableName: 'MyTable'
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
+        'can specify old images only'(test: Test) {
+            const app = new TestApp();
+            const table = new Table(app.stack, 'MyTable', {
+                tableName: 'MyTable',
+                readCapacity: 42,
+                writeCapacity: 1337,
+                streamSpecification: StreamViewType.OldImage
+            });
+            table.addPartitionKey('partitionKey', KeyAttributeType.String);
+            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'S' },
+                                { AttributeName: 'sortKey', AttributeType: 'B' }
+                            ],
+                            StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
+                            TableName: 'MyTable'
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        }
     },
 
     'when specifying every property'(test: Test) {
@@ -90,7 +223,7 @@ export = {
                             ReadCapacityUnits: 42,
                             WriteCapacityUnits: 1337
                         },
-                        TableName: 'MyTable'
+                        TableName: 'MyTable',
                     }
                 }
             }
