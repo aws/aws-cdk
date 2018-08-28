@@ -94,10 +94,11 @@ export = {
             const ctagger = new ChildTagger(root, 'one');
             const tag = {key: 'Name', value: 'TheCakeIsALie'};
             ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
+            test.deepEqual(ctagger.tags.resolve(), [tag]);
             ctagger.tags.removeTag(tag.key);
-            // test.deepEqual(ctagger.tags.hasTag('Name'), false);
+            test.deepEqual(ctagger.tags.resolve(), []);
             ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
-            // test.deepEqual(ctagger.tags.hasTag('Name'), true);
+            test.deepEqual(ctagger.tags.resolve(), [tag]);
             test.done();
         },
         'removeTag removes a tag by key'(test: Test) {
@@ -125,8 +126,6 @@ export = {
             ctagger.tags.setTag('Env', 'Dev');
             ctagger1.tags.removeTag('Env', {blockPropagate: true});
             const result = ctagger.tags.resolve();
-            // test.ok(ctagger.tags.hasTag('Env'));
-            // test.deepEqual(ctagger1.tags.hasTag('Env'), false);
             test.deepEqual(result, [{key: 'Env', value: 'Dev'}]);
             test.deepEqual(ctagger1.tags.resolve(), []);
             test.done();
