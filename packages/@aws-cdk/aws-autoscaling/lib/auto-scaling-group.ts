@@ -231,7 +231,8 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
     }
 
     /**
-     * Attach the security group to all instances in this autoscaling group
+     * Add the security group to all instances via the launch configuration
+     * security groups array.
      *
      * @param securityGroup: The SecurityGroupRef to add
      */
