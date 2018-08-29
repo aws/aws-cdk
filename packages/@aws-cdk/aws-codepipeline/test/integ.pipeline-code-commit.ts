@@ -11,10 +11,8 @@ const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'my-re
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
-new codecommit.PipelineSource(stack, 'source', {
-    stage: sourceStage,
+repo.addToPipeline(sourceStage, 'source', {
     artifactName: 'SourceArtifact',
-    repository: repo,
 });
 
 const buildStage = new codepipeline.Stage(stack, 'build', { pipeline });
