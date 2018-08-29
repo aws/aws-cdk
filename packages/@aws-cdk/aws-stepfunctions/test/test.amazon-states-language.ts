@@ -6,6 +6,7 @@ function roundtrip(obj: any) {
 }
 
 export = {
+    /*
     'Hello World example state machine'(test: Test) {
         test.deepEqual(
             JSON.parse(
@@ -34,6 +35,8 @@ export = {
         );
         test.done();
     },
+    */
+
     'Models Complex retry scenarios example'(test: Test) {
         test.deepEqual(
             roundtrip(

@@ -1,8 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-
-import { asl } from './asl';
-import { cloudformation, StateMachineName } from './stepfunctions.generated';
+import { StateMachineDefinition } from './asl-states';
+import { cloudformation, StateMachineArn, StateMachineName } from './stepfunctions.generated';
 
 export interface StateMachineProps {
     /**
@@ -11,11 +10,6 @@ export interface StateMachineProps {
      * @default A name is automatically generated
      */
     stateMachineName?: string;
-
-    /**
-     * The definition of this state machine
-     */
-    definition: asl.StateMachine;
 
     /**
      * The execution role for the state machine service
@@ -28,23 +22,30 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct {
+export class StateMachine extends StateMachineDefinition {
     public readonly role: iam.Role;
     public readonly stateMachineName: StateMachineName;
+    public readonly stateMachineArn: StateMachineArn;
 
-    constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
+    constructor(parent: cdk.Construct, id: string, props: StateMachineProps = {}) {
         super(parent, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new cdk.ServicePrincipal('stepfunctions.amazonaws.com'),
+            assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('states.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
         });
 
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: props.definition.definitionString()
+            // We may have objects added to us after creation
+            definitionString: new cdk.Token(() => cdk.CloudFormationJSON.stringify(this.toStateMachine()))
         });
 
         this.stateMachineName = resource.stateMachineName;
+        this.stateMachineArn = resource.ref;
+    }
+
+    public addToRolePolicy(statement: cdk.PolicyStatement) {
+        this.role.addToPolicy(statement);
     }
 }

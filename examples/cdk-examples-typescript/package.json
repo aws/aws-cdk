@@ -35,6 +35,7 @@
     "@aws-cdk/aws-s3": "^0.8.2",
     "@aws-cdk/aws-sns": "^0.8.2",
     "@aws-cdk/aws-sqs": "^0.8.2",
+    "@aws-cdk/aws-stepfunctions": "^0.8.2",
     "@aws-cdk/cdk": "^0.8.2",
     "@aws-cdk/runtime-values": "^0.8.2"
   },

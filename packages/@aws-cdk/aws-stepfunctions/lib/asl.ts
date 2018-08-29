@@ -1,4 +1,4 @@
-import { Token, CloudFormationJSON } from "@aws-cdk/cdk";
+import { CloudFormationJSON, Token } from "@aws-cdk/cdk";
 import { isString } from "util";
 import { requireNextOrEnd, requireOneOf } from "./util";
 
@@ -59,10 +59,6 @@ export namespace asl {
             if (isString(props.startAt) && !props.states.hasState(props.startAt)) {
                 throw new Error(`Specified startAt state '${props.startAt}' does not exist in states map`);
             }
-            const allStates = props.states.stateNames();
-            if (!allStates.some(istoken) && new Set(allStates).size !== allStates.length) {
-                throw new Error('State names are not unique within the whole state machine');
-            }
             super(props);
         }
 
@@ -82,7 +78,7 @@ export namespace asl {
         /**
          * A comment provided as human-readable description
          */
-        comment?: string | Token
+        comment?: string
     }
 
     export interface BranchProps extends Commentable {
@@ -100,7 +96,7 @@ export namespace asl {
          *
          * {@link https://states-language.net/spec.html#toplevelfields}
          */
-        startAt: string | Token
+        startAt: string
     }
 
     export class Branch extends PascalCaseJson {
@@ -114,7 +110,7 @@ export namespace asl {
             this.states = props.states;
         }
 
-        public stateNames(): Array<string | Token> {
+        public stateNames(): string[] {
             return this.states.stateNames();
         }
     }
@@ -133,16 +129,11 @@ export namespace asl {
             if (longNames.length > 0) {
                 throw new Error(`State names ${JSON.stringify(longNames)} exceed 128 characters in length`);
             }
-            for (const [stateName, state] of Object.entries(states)) {
+            for (const state of Object.values(states)) {
                 const next = state.next();
                 if (!state.isTerminal() && next.length === 0 && !(state instanceof ChoiceState)) {
                     throw new Error(`Non-terminal and non-ChoiceState state '${state}' does not have a 'next' field`);
                 }
-                next.forEach(referencedState => {
-                    if (!istoken(referencedState) && !(referencedState in states)) {
-                        throw new Error(`State '${stateName}' references unknown Next state '${referencedState}'`);
-                    }
-                });
             }
             super(states);
         }
@@ -155,8 +146,8 @@ export namespace asl {
             return this.props.hasOwnProperty(name);
         }
 
-        public stateNames(): Array<string | Token> {
-            const names: Array<string | Token> = Object.keys(this.props);
+        public stateNames(): string[] {
+            const names: string[] = Object.keys(this.props);
             Object.values(this.props).map(
                 state => (state instanceof ParallelState) ? state.stateNames() : []
             ).forEach(branchNames => branchNames.forEach(name => names.push(name)));
@@ -170,7 +161,7 @@ export namespace asl {
          *
          * Must exactly match the name of another state in the state machine.
          */
-        next: string | Token;
+        next: string;
     }
 
     export interface EndField {
@@ -189,7 +180,7 @@ export namespace asl {
          *
          * Must exactly match the name of another state in the state machine.
          */
-        next?: string | Token,
+        next?: string,
 
         /**
          * Marks the state as an End State.
@@ -214,7 +205,7 @@ export namespace asl {
          *
          * {@link https://states-language.net/spec.html#filters}
          */
-        inputPath?: string | Token;
+        inputPath?: string;
 
         /**
          * A {@link https://states-language.net/spec.html#path Path} applied to
@@ -364,12 +355,6 @@ export namespace asl {
     export class Retrier extends PascalCaseJson {
         constructor(props: RetrierProps) {
             validateErrorEquals(props.errorEquals);
-            if (props.intervalSeconds && !istoken(props.intervalSeconds) && (!Number.isInteger(props.intervalSeconds) || props.intervalSeconds < 1)) {
-                throw new Error(`intervalSeconds '${props.intervalSeconds}' is not a positive integer`);
-            }
-            if (props.maxAttempts && !istoken(props.maxAttempts) && (!Number.isInteger(props.maxAttempts) || props.maxAttempts < 0)) {
-                throw new Error(`maxAttempts '${props.maxAttempts}' is not a non-negative integer`);
-            }
             if (props.backoffRate && props.backoffRate < 1.0) {
                 throw new Error(`backoffRate '${props.backoffRate}' is not >= 1.0`);
             }
@@ -532,12 +517,6 @@ export namespace asl {
      */
     export class TaskState extends BaseState {
         constructor(props: TaskStateProps) {
-            if (props.timeoutSeconds !== undefined && !istoken(props.timeoutSeconds) && !Number.isInteger(props.timeoutSeconds)) {
-                throw new Error(`timeoutSeconds '${props.timeoutSeconds}' is not an integer`);
-            }
-            if (props.heartbeatSeconds !== undefined && !istoken(props.heartbeatSeconds) && !Number.isInteger(props.heartbeatSeconds)) {
-                throw new Error(`heartbeatSeconds '${props.heartbeatSeconds}' is not an integer`);
-            }
             if (props.timeoutSeconds !== undefined && props.heartbeatSeconds !== undefined && props.heartbeatSeconds >= props.timeoutSeconds) {
                 throw new Error("heartbeatSeconds is larger than timeoutSeconds");
             }
@@ -586,7 +565,7 @@ export namespace asl {
         /**
          * A Path to the value to be compared.
          */
-        variable: string | Token
+        variable: string
     }
 
     export abstract class VariableComparisonOperation extends ComparisonOperation {
@@ -900,8 +879,8 @@ export namespace asl {
             this.branches = branches;
         }
 
-        public stateNames(): Array<string | Token> {
-            const names: Array<string | Token> = [];
+        public stateNames(): string[] {
+            const names: string[] = [];
             this.branches.forEach(branch => branch.stateNames().forEach(name => names.push(name)));
             return names;
         }
@@ -921,7 +900,7 @@ export namespace asl {
             this.branches = props.branches;
         }
 
-        public stateNames(): Array<string | Token> {
+        public stateNames(): string[] {
             return this.branches.stateNames();
         }
     }
