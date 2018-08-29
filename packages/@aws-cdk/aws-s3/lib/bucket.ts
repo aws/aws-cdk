@@ -1,3 +1,4 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
@@ -5,6 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
+import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 import { LifecycleRule } from './rule';
 import { BucketArn, BucketDomainName, BucketDualStackDomainName, BucketName, cloudformation } from './s3.generated';
 import { parseBucketArn, parseBucketName, validateBucketName } from './util';
@@ -97,6 +99,23 @@ export abstract class BucketRef extends cdk.Construct {
             bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
             bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineSource} Action,
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineSource} Action
+     */
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
+        return new PipelineSource(this.parent!, name, {
+            stage,
+            bucket: this,
+            ...props,
+        });
     }
 
     /**
