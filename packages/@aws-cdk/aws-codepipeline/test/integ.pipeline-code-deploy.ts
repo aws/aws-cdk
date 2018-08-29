@@ -33,9 +33,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 });
 
 const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
-const sourceAction = new s3.PipelineSource(stack, 'S3Source', {
-    stage: sourceStage,
-    bucket,
+const sourceAction = bucket.addToPipeline(sourceStage, 'S3Source', {
     bucketKey: 'application.zip',
     artifactName: 'SourceOutput',
 });

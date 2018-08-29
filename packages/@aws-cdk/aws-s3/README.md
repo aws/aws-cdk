@@ -99,6 +99,16 @@ const sourceAction = new s3.PipelineSource(this, 'S3Source', {
 // use sourceAction.artifact as the inputArtifact to later Actions...
 ```
 
+You can also add the Bucket to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+const sourceAction = sourceBucket.addToPipeline(sourceStage, 'CodeCommit', {
+    bucketKey: 'path/to/file.zip',
+    artifactName: 'SourceOutput',
+});
+```
+
 ### Importing and Exporting Buckets
 
 You can create a `Bucket` construct that represents an external/existing/unowned bucket by using the `Bucket.import` factory method.
