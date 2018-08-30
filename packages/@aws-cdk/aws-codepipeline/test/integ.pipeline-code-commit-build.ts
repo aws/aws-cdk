@@ -25,10 +25,8 @@ const project = new codebuild.Project(stack, 'MyBuildProject', {
 });
 
 const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
-new codebuild.PipelineBuildAction(buildStage, 'build', {
-    stage: buildStage,
+project.addBuildToPipeline(buildStage, 'build', {
     inputArtifact: source.artifact,
-    project,
 });
 
 process.stdout.write(app.run());

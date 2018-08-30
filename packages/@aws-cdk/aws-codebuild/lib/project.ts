@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -6,6 +7,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { cloudformation, ProjectArn, ProjectName } from './codebuild.generated';
+import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
 import { BuildSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -73,6 +75,23 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
         return {
             projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue(),
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineBuildAction} build Action,
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineSource} Action
+     */
+    public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps): PipelineBuildAction {
+        return new PipelineBuildAction(this.parent!, name, {
+            stage,
+            project: this,
+            ...props,
+        });
     }
 
     /**

@@ -80,6 +80,15 @@ const project = new codebuild.Project(this, 'MyProject', {
 }
 ```
 
+You can also add the Project to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+project.addBuildToPipeline(buildStage, 'CodeBuild', {
+    inputArtifact: sourceAction.artifact,
+})
+```
+
 ### Using Project as an event target
 
 The `Project` construct implements the `IEventRuleTarget` interface. This means that it can be
