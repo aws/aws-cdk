@@ -255,6 +255,33 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
+ * Strong-naming all .NET assemblies is required.
+ */
+export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
+    public validate(pkg: PackageJson): void {
+        if (!isJSII(pkg)) { return; }
+
+        const signAssembly = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly']) as boolean | undefined;
+        const signAssemblyExpected = true;
+        if (signAssembly !== signAssemblyExpected) {
+            pkg.report({
+                message: `.NET packages must have strong-name signing enabled.`,
+                fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected)
+            });
+        }
+
+        const assemblyOriginatorKeyFile = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile']) as string | undefined;
+        const assemblyOriginatorKeyFileExpected = "../../key.snk";
+        if (assemblyOriginatorKeyFile !== assemblyOriginatorKeyFileExpected) {
+            pkg.report({
+                message: `.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh`,
+                fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected)
+            });
+        }
+    }
+}
+
+/**
  * The package must depend on cdk-build-tools
  */
 export class MustDependOnBuildTools extends ValidationRule {

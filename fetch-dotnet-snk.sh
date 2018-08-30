@@ -1,12 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-# This script retrieves the .snk file needed
-# to create strong names for .NET assemblies.
-echo "Retrieving SNK..."
+# This script retrieves the .snk file needed to create strong names for .NET assemblies.
 
 sudo apt install jq -y
 
+echo "Retrieving SNK..."
 ROLE=$(aws sts assume-role --region us-east-2 --role-arn ${DOTNET_STRONG_NAME_ROLE_ARN:-} --role-session-name "cdk-dotnet-snk")
 export AWS_ACCESS_KEY_ID=$(echo $ROLE | jq -r .Credentials.AccessKeyId)
 export AWS_SECRET_ACCESS_KEY=$(echo $ROLE | jq -r .Credentials.SecretAccessKey)
