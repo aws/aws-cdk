@@ -21,7 +21,7 @@ import { SharedIniFile } from './sdk_ini_file';
 export class SDK {
     private readonly userAgent: string;
     private readonly defaultAwsAccount: DefaultAWSAccount;
-    private readonly credentialProviderCache: CredentialProviderCache;
+    private readonly credentialsCache: CredentialsCache;
 
     constructor(private readonly profile: string | undefined) {
         // Find the package.json from the main toolkit
@@ -31,13 +31,13 @@ export class SDK {
         const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
 
         this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
-        this.credentialProviderCache = new CredentialProviderCache(this.defaultAwsAccount, defaultCredentialProvider);
+        this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
         return new AWS.CloudFormation({
             region: environment.region,
-            credentialProvider: await this.credentialProviderCache.get(environment.account, mode),
+            credentials: await this.credentialsCache.get(environment.account, mode),
             customUserAgent: this.userAgent
         });
     }
@@ -45,7 +45,7 @@ export class SDK {
     public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
         return new AWS.EC2({
             region,
-            credentialProvider: await this.credentialProviderCache.get(awsAccountId, mode),
+            credentials: await this.credentialsCache.get(awsAccountId, mode),
             customUserAgent: this.userAgent
         });
     }
@@ -53,7 +53,7 @@ export class SDK {
     public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
         return new AWS.SSM({
             region,
-            credentialProvider: await this.credentialProviderCache.get(awsAccountId, mode),
+            credentials: await this.credentialsCache.get(awsAccountId, mode),
             customUserAgent: this.userAgent
         });
     }
@@ -61,7 +61,7 @@ export class SDK {
     public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
         return new AWS.S3({
             region: environment.region,
-            credentialProvider: await this.credentialProviderCache.get(environment.account, mode),
+            credentials: await this.credentialsCache.get(environment.account, mode),
             customUserAgent: this.userAgent
         });
     }
@@ -87,23 +87,23 @@ export class SDK {
  * all loaded credential provider plugins will be tried to obtain credentials
  * for the given account.
  */
-class CredentialProviderCache {
-    private readonly cache: {[key: string]: AWS.CredentialProviderChain} = {};
+class CredentialsCache {
+    private readonly cache: {[key: string]: AWS.Credentials} = {};
 
     public constructor(
             private readonly defaultAwsAccount: DefaultAWSAccount,
             private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
     }
 
-    public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.CredentialProviderChain> {
+    public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
         const key = `${awsAccountId}-${mode}`;
         if (!(key in this.cache)) {
-            this.cache[key] = await this.getCredentialProvider(awsAccountId, mode);
+            this.cache[key] = await this.getCredentials(awsAccountId, mode);
         }
         return this.cache[key];
     }
 
-    private async getCredentialProvider(awsAccountId: string | undefined, mode: Mode): Promise<AWS.CredentialProviderChain> {
+    private async getCredentials(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
         // If requested account is undefined or equal to default account, use default credentials provider.
         // (Note that we ignore the mode in this case, if you preloaded credentials they better be correct!)
         const defaultAccount = await this.defaultAwsAccount.get();
