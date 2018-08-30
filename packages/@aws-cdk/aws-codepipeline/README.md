@@ -11,10 +11,11 @@ const pipeline = new Pipeline(this, 'MyFirstPipeline', {
 Append a Stage to the Pipeline:
 
 ```ts
-const sourceStage = new Stage(this, 'Source', {
-    pipeline,
-});
+const sourceStage = pipeline.addStage('Source');
 ```
+
+You can also instantiate the `Stage` Construct directly,
+which will add it to the Pipeline provided in its construction properties.
 
 Add an Action to a Stage:
 
