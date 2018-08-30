@@ -1,6 +1,4 @@
-import { CredentialProviderChain } from 'aws-sdk';
-
-export { CredentialProviderChain };
+import aws = require('aws-sdk');
 
 export enum Mode {
     ForReading,
@@ -27,5 +25,5 @@ export interface CredentialProviderSource {
      *
      * Guaranteed to be called only if canProvideCredentails() returned true at some point.
      */
-    getProvider(accountId: string, mode: Mode): Promise<CredentialProviderChain>;
+    getProvider(accountId: string, mode: Mode): Promise<aws.Credentials>;
 }
