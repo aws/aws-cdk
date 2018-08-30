@@ -1,0 +1,4 @@
+
+export abstract class MethodIntegration {
+
+}
