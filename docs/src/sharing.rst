@@ -14,49 +14,64 @@
 Adding External Information to Your |cdk| App
 #############################################
 
+.. See https://github.com/awslabs/aws-cdk/issues/603 (includes work from the following PR)
+       https://github.com/awslabs/aws-cdk/pull/183
+
 There are a number of ways you can get information into your app from outside your app.
 
-- Using command-line context
-- Using environment variables
-- Using SSM Parameter Store values
+- Using a command-line context variable
+- Using an environment variable
+- Using an SSM Parameter Store variable
 - Using the built-in export/import functionality
 
 Each of these techniques is described in the following sections.
 
 .. _sharing_from_command_line:
 
-Getting Information from the Command Line
-=========================================
+Getting a Value from a Command-Line Context Variable
+====================================================
 
-You can get information from the command line when you run a |toolkit| command using the **--context** (**-c**) option,
+To pass the value of a command-line context value to your app,
+run a |toolkit| command using the **--context** (**-c**) option,
 as shown in the following example.
 
 .. code-block:: sh
 
     cdk synth -c bucket_name=mygroovybucket
 
-To get and use this value in the constructor of a TypeScript |cdk| app's stack,
-use code like the following.
+To get the value of a command-line context value in your app,
+use code like the following,
+which gets the value of the context variable **bucket_name**.
 
 .. code-block:: ts
 
     const bucket_name string = this.getContext("bucket_name");
 
-    new s3.Bucket(this, "MyFirstBucket", {
-        versioned: true,
-        bucket_name: bucket_name
-    });
+.. _sharing_from_env_vars:
+
+Getting a Value from an Environment Variable
+============================================
+
+To get the value of an environment variable,
+use code like the following,
+which gets the value of the environment variable **MYBUCKET**.
+
+.. code-block:: ts
+
+    const bucket_name = process.env.MYBUCKET;
 
 .. _sharing_from_ssm:
 
-Getting Information from the SSM Store
-======================================
+Getting a Value from an SSM Store Variable
+==========================================
 
-You can get information from SSM Parameter Store values using code like the following.
+To get the value of an SSM parameter store variable,
+use code like the following,
+which uses the value of the SSM variable **my-awesome-value**.
 
 .. code-block:: ts
 		
-    const myvalue string = new SSMParameterProvider(this).getString("my-awesome-value");
+    const myvalue = new SSMParameterProvider(this).getString("my-awesome-value");
 
 See the :doc:`context` topic for information about the :py:class:`SSMParameterProvider <@aws-cdk/cdk.SSMParameterProvider>`.
 
@@ -79,41 +94,120 @@ The following example defines an |S3| bucket in one stack and exports it.
 Getting Information from an |CFN| Template
 ==========================================
 
+.. From https://github.com/awslabs/aws-cdk/pull/183:
+
+   I think this topic should cover other aspects as well:
+
+   * Obtain the {ref} of a resource or an attribute in an included template
+   * Modify the properties of a resource of an included template
+   * Use an Xxx.import() to treat a resource from the included template as first class.
+     (needed when you mix up included resources and L2s)
+
+.. _using_cfn_templates:
+
+Using Existing |CFN| Templates
+==============================
+
+The |cdk| provides a mechanism that you can use to
+incorporate resources from an existing |CFN| template
+into your |cdk| app.
+For example, suppose you have a template,
+*my-template.json*,
+with the following resource,
+where **S3Bucket** is the logical ID of the bucket in your template:
+
+.. code-block:: json
+
+   "S3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+          ...
+      }
+   }   
+   
+You can include this bucket in your |cdk| app,
+as shown in the following example
+(note that you cannot use this method in an |l2| construct):
+
+.. code-block:: ts
+
+   import { FnGetAtt } from '@aws-cdk/core';
+   import { readFileSync } from 'fs'
+   
+   new Include(this, "ExistingInfrastructure", {
+      template: JSON.parse(readFileSync('my-template.json').toString())
+   })
+
+Then to access an attribute of the resource, such as the bucket's ARN:
+
+.. code-block:: ts
+
+   const bucketArn = new FnGetAtt('S3Bucket', 'Arn');
+
+.. _sharing_across_stack:
+
+Sharing Information Across Stacks
+---------------------------------
+
 To share information between stacks,
-you can use Outputs and Parameters, and Exports and Fn::ImportValues.
+use the built-in **export** and **import** functions.
 
-CDK to CloudFormation
----------------------
+First add a property to the class that defines the stack you are exporting from.
+The following example shows a stack with the property **myBucketRefProps**.
 
-If you define a VPC inside a CDK app and want to use it from a CFN template, it actually functions much the same as how you would share the template between plain CFN templates. You would output/export in the one template and parameter/import in the other.
+.. code-block:: ts
 
-The exporting works by calling vpc.export() inside your CDK app. What that does is create Exports for all attributes of your VPC that another CDK stack would need to import it again... but those outputs and exports are available to any CFN stack as well! Deploy a template and pick your favorite method of getting the VPC information into your template.
+    class HelloCdkStack extends cdk.Stack {
+        public readonly myBucketRefProps: s3.BucketRefProps;
 
-If you're unhappy about the default names of the Exports (understandable since they are designed to be consumed transparently), you're free to add some new Output()s to your CDK stack, which translate directly into CloudFormation Outputs and can be made into Exports as well.
+	constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
+            super(parent, name, props);
 
-CloudFormation to CDK
----------------------
+Next create a bucket and export it's *BucketRefProps* to the **myBucketRefProps** property.
 
-So you already have an existing VPC (deployed through CloudFormation or otherwise) that you want to consume in a CDK application. As you figured out, what you want to do is get a VpcNetworkRef instance from VpcNetworkRef.import(), which expects a number of properties (https://awslabs.github.io/aws-cdk/refs/_aws-cdk_aws-ec2.html#@aws-cdk/aws-ec2.VpcNetworkRefProps):
+.. code-block:: ts
 
-vpcId, availabilityZones, publicSubnetIds, privateSubnetIds
+    const mybucket = new s3.Bucket(this, "MyFirstBucket");
 
-Again, use your favorite way of getting those values in there. You now have 3 options:
+    this.myBucketRefProps = mybucket.export();
 
-    CloudFormation Parameters--add a new Parameter() to your Stack and use that as the value (but you're now responsible of specifying the parameter when deploying your synthesized template, which you can no longer do through the CDK toolkit).
-    CloudFormation Imports--use a new FnImportValue() expression with the name of the existing export for your VPC.
-    Synthesis-time parameters: not ideal in all cases, but you can choose to pass in the concrete values when RUNNING the CDK app (either as context values, or as a parameter to your constructs that are hardcoded into main.ts with different values for every account/region, for example) so the CloudFormation template comes out with the identifiers already filled in.
+Create an interface, with one property, an **BucketRefProps** object.
+We'll use this interface to pass the reference to the bucket,
+as a set of bucket properties,
+to another stack.
 
-Of all these, Exports and Imports will give you the most transparent experience.
+.. code-block:: ts
 
-And from your example, I love how you abstract away the importing of the VPC inside a VpcCFNDemoStack class. For consumers, it is totally awesome to be able to write:
+    interface XferBucketProps {
+        theBucketRefProps: s3.BucketRefProps;
+    }
 
-const vpc = OurStandardVPC.obtain(this);
+Now create the class for the other stack.
 
-new ThingThatNeedsAVPC(..., { vpc });
+.. code-block:: ts
 
-Or similar, and not have to worry where the VPC is coming from. It might be constructed on the spot, it might be loaded from another environment.
+    class MyCdkStack extends cdk.Stack {
+        constructor(parent: cdk.App, name: string, props: XferBucketProps) {
+            super(parent, name);
 
+            const myOtherBucket = s3.Bucket.import(this, "MyOtherBucket", props.theBucketRefProps);
+
+	    // Do something with myOtherBucket
+        }
+    }
+
+Finally, connect the dots.
+
+.. code-block:: ts
+
+    const app = new cdk.App(process.argv);
+
+    const myStack = new HelloCdkStack(app, "HelloCdkStack");
+    new MyCdkStack(app, "MyCdkStack", {
+        theBucketRefProps: myStack.myBucketRefProps
+    });
+
+    process.stdout.write(app.run());
 
 Sharing between higher-level and lower-level Constructs
 =======================================================
