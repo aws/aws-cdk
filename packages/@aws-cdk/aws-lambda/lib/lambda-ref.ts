@@ -238,7 +238,7 @@ export abstract class FunctionRef extends cdk.Construct
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         const arn = sourceLogGroup.logGroupArn;
 
         if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
