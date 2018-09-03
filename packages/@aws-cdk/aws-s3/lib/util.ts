@@ -1,16 +1,6 @@
 import { Arn } from '@aws-cdk/cdk';
 import { BucketRefProps } from './bucket';
 
-export function validateBucketName(bucketName?: string) {
-    if (!bucketName) {
-        return;
-    }
-
-    if (bucketName.search(/[^a-z0-9.-]/g) !== -1) {
-        throw new Error('Bucket name contains invalid characters: ' + bucketName);
-    }
-}
-
 export function parseBucketArn(props: BucketRefProps) {
 
     // if we have an explicit bucket ARN, use it.
