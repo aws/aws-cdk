@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { IChainable, IStateChain } from '../asl-external-api';
+import { IChainable, IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
@@ -26,15 +26,19 @@ export class Pass extends State {
             };
         }
 
-        public addNext(targetState: IInternalState): void {
+        public addNext(targetState: IStateChain): void {
             this.pass.addNextTransition(targetState);
         }
 
-        public addCatch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IStateChain, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Pass.");
         }
 
-        public accessibleStates() {
+        public addRetry(_retry?: RetryProps): void {
+            // Nothing
+        }
+
+        public accessibleChains() {
             return this.pass.accessibleStates();
         }
 

@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { IChainable, IStateChain } from "../asl-external-api";
-import { IInternalState, Transitions, TransitionType } from '../asl-internal-api';
+import { Transitions, TransitionType } from '../asl-internal-api';
 import { StateMachineFragment } from './state-machine-fragment';
 
 export abstract class State extends cdk.Construct implements IChainable {
@@ -24,15 +24,15 @@ export abstract class State extends cdk.Construct implements IChainable {
         return parentDefs.map(x => x.id).join('/');
     }
 
-    protected accessibleStates(): IInternalState[] {
-        return this.transitions.all().map(t => t.targetState);
+    protected accessibleStates(): IStateChain[] {
+        return this.transitions.all().map(t => t.targetChain);
     }
 
     protected get hasNextTransition() {
         return this.transitions.has(TransitionType.Next);
     }
 
-    protected addNextTransition(targetState: IInternalState): void {
+    protected addNextTransition(targetState: IStateChain): void {
         if (this.hasNextTransition) {
             throw new Error(`State ${this.stateId} already has a Next transition`);
         }

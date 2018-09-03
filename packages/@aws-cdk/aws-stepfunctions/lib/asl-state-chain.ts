@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Errors, IChainable, IStateChain, RenderedStateMachine } from './asl-external-api';
+import { Errors, IChainable, IStateChain, RenderedStateMachine, RetryProps } from './asl-external-api';
 import { IInternalState } from './asl-internal-api';
 
 export class StateChain implements IStateChain {
@@ -32,11 +32,11 @@ export class StateChain implements IStateChain {
         }
 
         for (const endState of this.activeStates) {
-            endState.addNext(sm.startState);
+            endState.addNext(sm);
         }
 
         ret.absorb(sm);
-        ret.activeStates = new Set(accessMachineInternals(sm).activeStates);
+        ret.activeStates = new Set(accessChainInternals(sm).activeStates);
 
         return ret;
     }
@@ -61,7 +61,7 @@ export class StateChain implements IStateChain {
 
         const ret = this.clone();
         for (const state of this.allStates) {
-            state.addCatch(sm.startState, errors);
+            state.addCatch(sm, errors);
         }
 
         // Those states are now part of the state machine, but we don't include
@@ -79,12 +79,14 @@ export class StateChain implements IStateChain {
     public closure(): IStateChain {
         const ret = new StateChain(this.startState);
 
-        const queue = this.startState.accessibleStates();
+        const queue = this.startState.accessibleChains();
         while (queue.length > 0) {
-            const state = queue.splice(0, 1)[0];
-            if (!ret.allStates.has(state)) {
-                ret.allStates.add(state);
-                queue.push(...state.accessibleStates());
+            const chain = queue.splice(0, 1)[0];
+            for (const state of accessChainInternals(chain).allStates) {
+                if (!ret.allStates.has(state)) {
+                    ret.allStates.add(state);
+                    queue.push(...state.accessibleChains());
+                }
             }
         }
 
@@ -100,7 +102,7 @@ export class StateChain implements IStateChain {
         const policies = new Array<cdk.PolicyStatement>();
 
         const states: any = {};
-        for (const state of accessMachineInternals(closed).allStates) {
+        for (const state of accessChainInternals(closed).allStates) {
             states[state.stateId] = state.renderState();
             policies.push(...state.policyStatements);
         }
@@ -114,8 +116,14 @@ export class StateChain implements IStateChain {
         };
     }
 
-    private absorb(other: IStateChain) {
-        const sdm = accessMachineInternals(other);
+    public defaultRetry(retry: RetryProps = {}): void {
+        for (const state of this.allStates) {
+            state.addRetry(retry);
+        }
+    }
+
+    public absorb(other: IStateChain) {
+        const sdm = accessChainInternals(other);
         for (const state of sdm.allStates) {
             this.allStates.add(state);
         }
@@ -136,6 +144,6 @@ export class StateChain implements IStateChain {
  * only distract, but parts that other states need to achieve their
  * work.
  */
-export function accessMachineInternals(x: IStateChain): StateChain {
+export function accessChainInternals(x: IStateChain): StateChain {
     return x as StateChain;
 }

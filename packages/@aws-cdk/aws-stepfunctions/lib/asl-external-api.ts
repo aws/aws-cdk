@@ -1,18 +1,45 @@
 import cdk = require('@aws-cdk/cdk');
-import { IInternalState } from "./asl-internal-api";
 
 export interface IChainable {
+    /**
+     * Return a chain representing this state object.
+     */
     toStateChain(): IStateChain;
 }
 
 export interface IStateChain extends IChainable {
-    readonly startState: IInternalState;
-
+    /**
+     * Add a state or chain onto the existing chain.
+     *
+     * Returns a new chain with the state/chain added.
+     */
     next(state: IChainable): IStateChain;
-    onError(targetState: IChainable, ...errors: string[]): IStateChain;
 
+    /**
+     * Add a Catch handlers to the states in the chain
+     *
+     * If the chain does not consist completely of states that
+     * can have error handlers applied, it is wrapped in a Parallel
+     * block first.
+     */
+    onError(errorHandler: IChainable, ...errors: string[]): IStateChain;
+
+    /**
+     * Add retries to all states in the chains which can have retries applied
+     */
+    defaultRetry(retry?: RetryProps): void;
+
+    /**
+     * Return a chain with all states reachable from the current chain.
+     *
+     * This includes the states reachable via error handler (Catch)
+     * transitions.
+     */
     closure(): IStateChain;
 
+    /**
+     * Apply the closure, then render the state machine.
+     */
     renderStateMachine(): RenderedStateMachine;
 }
 

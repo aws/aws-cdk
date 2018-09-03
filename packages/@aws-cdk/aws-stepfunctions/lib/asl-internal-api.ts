@@ -1,4 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
+import { IStateChain, RetryProps } from './asl-external-api';
+import { accessChainInternals } from './asl-state-chain';
 
 export interface IInternalState {
     readonly stateId: string;
@@ -6,10 +8,11 @@ export interface IInternalState {
     readonly hasOpenNextTransition: boolean;
     readonly policyStatements: cdk.PolicyStatement[];
 
-    addNext(targetState: IInternalState): void;
-    addCatch(targetState: IInternalState, errors: string[]): void;
+    addNext(target: IStateChain): void;
+    addCatch(target: IStateChain, errors: string[]): void;
+    addRetry(retry?: RetryProps): void;
 
-    accessibleStates(): IInternalState[];
+    accessibleChains(): IStateChain[];
     renderState(): any;
 }
 
@@ -25,7 +28,7 @@ export enum StateType {
 
 export interface Transition {
     transitionType: TransitionType;
-    targetState: IInternalState;
+    targetChain: IStateChain;
     annotation?: any;
 }
 
@@ -39,8 +42,8 @@ export enum TransitionType {
 export class Transitions {
     private readonly transitions = new Array<Transition>();
 
-    public add(transitionType: TransitionType, targetState: IInternalState, annotation?: any) {
-        this.transitions.push({ transitionType, targetState, annotation });
+    public add(transitionType: TransitionType, targetChain: IStateChain, annotation?: any) {
+        this.transitions.push({ transitionType, targetChain, annotation });
     }
 
     public has(type: TransitionType): boolean {
@@ -61,7 +64,7 @@ export class Transitions {
             return otherwise;
         }
         return {
-            [type]: transitions[0].targetState.stateId
+            [type]: accessChainInternals(transitions[0].targetChain).startState.stateId
         };
     }
 
@@ -74,7 +77,7 @@ export class Transitions {
         return {
             [type]: transitions.map(t => ({
                 ...t.annotation,
-                Next: t.targetState.stateId,
+                Next: accessChainInternals(t.targetChain).startState.stateId,
             }))
         };
     }

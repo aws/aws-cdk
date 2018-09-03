@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Condition } from '../asl-condition';
-import { IChainable, IStateChain } from '../asl-external-api';
+import { IChainable, IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
@@ -29,16 +29,20 @@ export class Choice extends State {
             };
         }
 
-        public addNext(_targetState: IInternalState): void {
+        public addNext(_targetState: IStateChain): void {
             throw new Error("Cannot chain onto a Choice state. Use the state's .on() or .otherwise() instead.");
         }
 
-        public addCatch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IStateChain, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Choice.");
         }
 
-        public accessibleStates() {
+        public accessibleChains() {
             return this.choice.accessibleStates();
+        }
+
+        public addRetry(_retry?: RetryProps): void {
+            // Nothing
         }
     };
 
@@ -51,7 +55,7 @@ export class Choice extends State {
     }
 
     public on(condition: Condition, next: IChainable): Choice {
-        this.transitions.add(TransitionType.Choice, next.toStateChain().startState, condition.renderCondition());
+        this.transitions.add(TransitionType.Choice, next.toStateChain(), condition.renderCondition());
         return this;
     }
 
@@ -60,12 +64,17 @@ export class Choice extends State {
         if (this.transitions.has(TransitionType.Default)) {
             throw new Error('Can only have one Default transition');
         }
-        this.transitions.add(TransitionType.Default, next.toStateChain().startState);
+        this.transitions.add(TransitionType.Default, next.toStateChain());
         return this;
     }
 
     public toStateChain(): IStateChain {
-        return new StateChain(new Choice.Internals(this));
+        const chain = new StateChain(new Choice.Internals(this));
+        for (const transition of this.transitions.all()) {
+            chain.absorb(transition.targetChain);
+        }
+
+        return chain;
     }
 
     public closure(): IStateChain {

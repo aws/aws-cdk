@@ -209,3 +209,8 @@ Notes: use a complicated object model to hide ugly parts of the API from users
 Decouple state chainer from states.
 
 Decouple rendering from states to allow elidable states.
+
+'then' is a reserved word in Ruby
+'catch' is a reserved word in many languages
+
+https://halyph.com/blog/2016/11/28/prog-lang-reserved-words.html

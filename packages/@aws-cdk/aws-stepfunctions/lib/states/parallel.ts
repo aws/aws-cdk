@@ -29,15 +29,19 @@ export class Parallel extends State {
             };
         }
 
-        public addNext(targetState: IInternalState): void {
+        public addNext(targetState: IStateChain): void {
             this.parallel.addNextTransition(targetState);
         }
 
-        public addCatch(targetState: IInternalState, errors: string[]): void {
+        public addCatch(targetState: IStateChain, errors: string[]): void {
             this.parallel.transitions.add(TransitionType.Catch, targetState, { ErrorEquals: errors });
         }
 
-        public accessibleStates() {
+        public addRetry(retry?: RetryProps): void {
+            this.parallel.retry(retry);
+        }
+
+        public accessibleChains() {
             return this.parallel.accessibleStates();
         }
 
@@ -69,15 +73,17 @@ export class Parallel extends State {
         });
     }
 
-    public branch(definition: IChainable) {
+    public branch(definition: IChainable): Parallel {
         this.branches.push(definition);
+        return this;
     }
 
-    public retry(props: RetryProps = {}) {
+    public retry(props: RetryProps = {}): Parallel {
         if (!props.errors) {
             props.errors = [Errors.all];
         }
         this.retries.push(props);
+        return this;
     }
 
     public next(sm: IChainable): IStateChain {

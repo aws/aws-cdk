@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { IStateChain } from '../asl-external-api';
+import { IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
@@ -19,15 +19,19 @@ export class Succeed extends State {
             return this.succeed.renderBaseState();
         }
 
-        public addNext(_targetState: IInternalState): void {
+        public addNext(_targetState: IStateChain): void {
             throw new Error("Cannot chain onto a Succeed state; this ends the state machine.");
         }
 
-        public addCatch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IStateChain, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Succeed.");
         }
 
-        public accessibleStates() {
+        public addRetry(_retry?: RetryProps): void {
+            // Nothing
+        }
+
+        public accessibleChains() {
             return this.succeed.accessibleStates();
         }
     };

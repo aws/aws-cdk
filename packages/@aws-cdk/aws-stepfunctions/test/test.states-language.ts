@@ -116,19 +116,27 @@ export = {
         },
 
         'Start state in a StateMachineFragment can be implicit'(test: Test) {
+            // GIVEN
             const stack = new cdk.Stack();
 
+            // WHEN
             const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable');
-            test.equals(sm.toStateChain().startState.stateId, 'Reusable/Choice');
+
+            // THEN
+            test.equals(render(sm).StartAt, 'Reusable/Choice');
 
             test.done();
         },
 
         'Can skip adding names in StateMachineFragment'(test: Test) {
+            // GIVEN
             const stack = new cdk.Stack();
 
+            // WHEN
             const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable', { scopeStateNames: false });
-            test.equals(sm.toStateChain().startState.stateId, 'Choice');
+
+            // THEN
+            test.equals(render(sm).StartAt, 'Choice');
 
             test.done();
         },
@@ -413,6 +421,70 @@ export = {
                         ]
                     },
                     ErrorHandler: { Type: 'Pass', End: true }
+                }
+            });
+
+            test.done();
+        },
+
+        'Add default retries on all tasks in the chain, but not those outside'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task3 = new stepfunctions.Task(stack, 'Task3', { resource: new FakeResource() });
+            const task4 = new stepfunctions.Task(stack, 'Task4', { resource: new FakeResource() });
+            const task5 = new stepfunctions.Task(stack, 'Task5', { resource: new FakeResource() });
+            const choice = new stepfunctions.Choice(stack, 'Choice');
+            const errorHandler1 = new stepfunctions.Task(stack, 'ErrorHandler1', { resource: new FakeResource() });
+            const errorHandler2 = new stepfunctions.Task(stack, 'ErrorHandler2', { resource: new FakeResource() });
+            const para = new stepfunctions.Parallel(stack, 'Para');
+
+            // WHEN
+            task1.next(task2);
+            para.onError(errorHandler2);
+
+            task2.onError(errorHandler1)
+                .next(choice
+                    .on(stepfunctions.Condition.stringEquals('$.var', 'value'),
+                        task3.next(task4))
+                    .otherwise(para
+                        .branch(task5)))
+                .defaultRetry();
+
+            // THEN
+            const theCatch1 = { Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler1' } ] };
+            const theCatch2 = { Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler2' } ] };
+            const theRetry = { Retry: [ { ErrorEquals: ['States.ALL'] } ] };
+
+            test.deepEqual(render(task1), {
+                StartAt: 'Task1',
+                States: {
+                    Task1: { Next: 'Task2', Type: 'Task', Resource: 'resource' },
+                    Task2: { Next: 'Choice', Type: 'Task', Resource: 'resource', ...theCatch1, ...theRetry },
+                    ErrorHandler1: { End: true, Type: 'Task', Resource: 'resource', ...theRetry },
+                    Choice: {
+                        Type: 'Choice',
+                        Choices: [ { Variable: '$.var', StringEquals: 'value', Next: 'Task3' } ],
+                        Default: 'Para',
+                    },
+                    Task3: { Next: 'Task4', Type: 'Task', Resource: 'resource', ...theRetry },
+                    Task4: { End: true, Type: 'Task', Resource: 'resource', ...theRetry },
+                    Para: {
+                        Type: 'Parallel',
+                        End: true,
+                        Branches: [
+                            {
+                                StartAt: 'Task5',
+                                States: {
+                                    Task5: { End: true, Type: 'Task', Resource: 'resource' }
+                                }
+                            }
+                        ],
+                        ...theCatch2,
+                        ...theRetry
+                    },
+                    ErrorHandler2: { End: true, Type: 'Task', Resource: 'resource' },
                 }
             });
 

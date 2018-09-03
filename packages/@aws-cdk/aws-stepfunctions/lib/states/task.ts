@@ -49,15 +49,19 @@ export class Task extends State {
             };
         }
 
-        public addNext(targetState: IInternalState): void {
+        public addNext(targetState: IStateChain): void {
             this.task.addNextTransition(targetState);
         }
 
-        public addCatch(targetState: IInternalState, errors: string[]): void {
+        public addCatch(targetState: IStateChain, errors: string[]): void {
             this.task.transitions.add(TransitionType.Catch, targetState, { ErrorEquals: errors });
         }
 
-        public accessibleStates() {
+        public addRetry(retry?: RetryProps): void {
+            this.task.retry(retry);
+        }
+
+        public accessibleChains() {
             return this.task.accessibleStates();
         }
 
@@ -90,11 +94,12 @@ export class Task extends State {
         return this.toStateChain().onError(handler, ...errors);
     }
 
-    public retry(props: RetryProps = {}) {
+    public retry(props: RetryProps = {}): Task {
         if (!props.errors) {
             props.errors = [Errors.all];
         }
         this.retries.push(props);
+        return this;
     }
 
     public toStateChain(): IStateChain {
