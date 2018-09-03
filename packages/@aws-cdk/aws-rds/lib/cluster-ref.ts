@@ -52,16 +52,17 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IC
      * Export a Database Cluster for importing in another stack
      */
     public export(): DatabaseClusterRefProps {
+        // tslint:disable:max-line-length
         return {
-            port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue(),
-            securityGroupId: new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue(),
-            clusterIdentifier: new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue(),
-            instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues(),
-            clusterEndpointAddress: new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue(),
-            readerEndpointAddress: new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue(),
-            // tslint:disable-next-line:max-line-length
-            instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues(),
+            port: new DBClusterEndpointPort(new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue()),
+            securityGroupId: new ec2.SecurityGroupId(new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue()),
+            clusterIdentifier: new DBClusterName(new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue()),
+            instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => new DBInstanceId(x)),
+            clusterEndpointAddress: new DBClusterEndpointAddress(new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue()),
+            readerEndpointAddress: new DBClusterEndpointAddress(new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue()),
+            instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => new DBClusterEndpointAddress(x)),
         };
+        // tslint:enable:max-line-length
     }
 }
 
@@ -88,6 +89,7 @@ export interface DatabaseClusterRefProps {
      * Identifier for the instances
      */
     instanceIdentifiers: DBInstanceId[];
+    // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
     /**
      * Cluster endpoint address

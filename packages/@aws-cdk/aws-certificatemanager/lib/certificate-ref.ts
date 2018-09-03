@@ -19,7 +19,7 @@ export abstract class CertificateRef extends Construct {
      */
     public export(): CertificateRefProps {
         return {
-            certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue()
+            certificateArn: new CertificateArn(new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue())
         };
     }
 }
