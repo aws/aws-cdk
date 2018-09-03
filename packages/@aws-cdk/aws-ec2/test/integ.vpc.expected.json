@@ -7,7 +7,12 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": []
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1SubnetF6608456": {
@@ -18,7 +23,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1RouteTableC46AB2F4": {
@@ -26,7 +37,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1RouteTableAssociatioin3562612E": {
@@ -57,7 +74,13 @@
         },
         "SubnetId": {
           "Ref": "MyVpcPublicSubnet1SubnetF6608456"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet1DefaultRoute95FDF9EB": {
@@ -80,7 +103,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet2RouteTable1DF17386": {
@@ -88,7 +117,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet2RouteTableAssociatioin8E74FB35": {
@@ -119,7 +154,13 @@
         },
         "SubnetId": {
           "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet2DefaultRoute052936F6": {
@@ -142,7 +183,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet3RouteTable15028F08": {
@@ -150,7 +197,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet3RouteTableAssociatioinA3FD1B71": {
@@ -181,7 +234,13 @@
         },
         "SubnetId": {
           "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPublicSubnet3DefaultRoute3A83AB36": {
@@ -204,7 +263,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet1RouteTable8819E6E2": {
@@ -212,7 +277,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet1"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet1RouteTableAssociatioin90CF6BAB": {
@@ -246,7 +317,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet2RouteTableCEDCEECE": {
@@ -254,7 +331,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet2"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet2RouteTableAssociatioin803693C0": {
@@ -288,7 +371,13 @@
           "Ref": "MyVpcF9F0CA6F"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet3RouteTableB790927C": {
@@ -296,7 +385,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet3"
+          }
+        ]
       }
     },
     "MyVpcPrivateSubnet3RouteTableAssociatioinFB4A6FE6": {
@@ -323,7 +418,15 @@
       }
     },
     "MyVpcIGW5C4A4F63": {
-      "Type": "AWS::EC2::InternetGateway"
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-vpc/MyVpc"
+          }
+        ]
+      }
     },
     "MyVpcVPCGW488ACE0D": {
       "Type": "AWS::EC2::VPCGatewayAttachment",

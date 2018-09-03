@@ -1,10 +1,9 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
-import { AvailabilityZoneProvider, resolve, Stack } from '@aws-cdk/cdk';
+import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { AvailabilityZoneProvider, resolve, Stack, Tags } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { DefaultInstanceTenancy, SubnetType, VpcNetwork } from '../lib';
 
 export = {
-
     "When creating a VPC": {
         "with the default CIDR range": {
 
@@ -16,40 +15,50 @@ export = {
             },
 
             "it uses the correct network range"(test: Test) {
-                const stack =  getTestStack();
+                const stack = getTestStack();
                 new VpcNetwork(stack, 'TheVPC');
                 expect(stack).to(haveResource('AWS::EC2::VPC', {
                     CidrBlock: VpcNetwork.DEFAULT_CIDR_RANGE,
                     EnableDnsHostnames: true,
                     EnableDnsSupport: true,
                     InstanceTenancy: DefaultInstanceTenancy.Default,
-                    Tags: []
                 }));
                 test.done();
-            }
+            },
+            'the Name tag is defaulted to path'(test: Test) {
+                const stack = getTestStack();
+                new VpcNetwork(stack, 'TheVPC');
+                expect(stack).to(haveResource('AWS::EC2::VPC',
+                    hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])));
+                test.done();
+            },
+
         },
 
         "with all of the properties set, it successfully sets the correct VPC properties"(test: Test) {
             const stack = getTestStack();
-            const tag = {
-                key: 'testKey',
-                value: 'testValue'
+            const tags = {
+                first: 'foo',
+                second: 'bar',
+                third: 'barz',
+
             };
             new VpcNetwork(stack, 'TheVPC', {
                 cidr: "192.168.0.0/16",
                 enableDnsHostnames: false,
                 enableDnsSupport: false,
                 defaultInstanceTenancy: DefaultInstanceTenancy.Dedicated,
-                tags: [tag]
+                tags,
             });
 
+            const cfnTags = toCfnTags(tags);
             expect(stack).to(haveResource('AWS::EC2::VPC', {
                 CidrBlock: '192.168.0.0/16',
                 EnableDnsHostnames: false,
                 EnableDnsSupport: false,
                 InstanceTenancy: DefaultInstanceTenancy.Dedicated,
-                Tags: [{ Key: tag.key, Value: tag.value }]
             }));
+            expect(stack).to(haveResource('AWS::EC2::VPC', hasTags(cfnTags)));
             test.done();
         },
 
@@ -148,7 +157,7 @@ export = {
             }
             test.done();
         },
-        "with custom subents and natGateways = 2 there should be only to NATGW"(test: Test) {
+        "with custom subents and natGateways = 2 there should be only two NATGW"(test: Test) {
             const stack = getTestStack();
             new VpcNetwork(stack, 'TheVPC', {
               cidr: '10.0.0.0/21',
@@ -257,7 +266,54 @@ export = {
         }
 
     },
+    'When tagging': {
+        'VPC propagated tags will be on subnet, IGW, routetables, NATGW'(test: Test) {
+            const stack = getTestStack();
+            const tags =  {
+                VpcType: 'Good',
+            };
+            const noPropTags = {
+                BusinessUnit: 'Marketing',
+            };
+            const allTags: Tags = {...tags, ...noPropTags};
 
+            const vpc = new VpcNetwork(stack, 'TheVPC', { tags: allTags });
+            // overwrite to set propagate
+            vpc.tags.setTag('BusinessUnit', 'Marketing', {propagate: false});
+            expect(stack).to(haveResource("AWS::EC2::VPC", hasTags(toCfnTags(allTags))));
+            const taggables = ['Subnet', 'InternetGateway', 'NatGateway', 'RouteTable'];
+            const propTags = toCfnTags(tags);
+            const noProp = toCfnTags(noPropTags);
+            for (const resource of taggables) {
+                expect(stack).to(haveResource(`AWS::EC2::${resource}`, hasTags(propTags)));
+                expect(stack).notTo(haveResource(`AWS::EC2::${resource}`, hasTags(noProp)));
+            }
+            test.done();
+        },
+        'Subnet Name will propagate to route tables and NATGW'(test: Test) {
+            const stack = getTestStack();
+            const vpc = new VpcNetwork(stack, 'TheVPC');
+            for (const subnet of vpc.publicSubnets) {
+                const tag = {Key: 'Name', Value: subnet.path};
+                expect(stack).to(haveResource('AWS::EC2::NatGateway', hasTags([tag])));
+                expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
+            }
+            for (const subnet of vpc.privateSubnets) {
+                const tag = {Key: 'Name', Value: subnet.path};
+                expect(stack).to(haveResource('AWS::EC2::RouteTable', hasTags([tag])));
+            }
+            test.done();
+        },
+        'Tags can be added after the Vpc is created with `vpc.tags.setTag(...)`'(test: Test) {
+            const stack = getTestStack();
+            const vpc = new VpcNetwork(stack, 'TheVPC');
+            const tag = {Key: 'Late', Value: 'Adder'};
+            expect(stack).notTo(haveResource('AWS::EC2::VPC', hasTags([tag])));
+            vpc.tags.setTag(tag.Key, tag.Value);
+            expect(stack).to(haveResource('AWS::EC2::VPC', hasTags([tag])));
+            test.done();
+        },
+    },
     'export/import'(test: Test) {
         // GIVEN
         const stack1 = getTestStack();
@@ -279,4 +335,34 @@ export = {
 
 function getTestStack(): Stack {
     return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+}
+
+function toCfnTags(tags: Tags): Array<{Key: string, Value: string}> {
+    return Object.keys(tags).map( key => {
+        return {Key: key, Value: tags[key]};
+    });
+}
+
+function hasTags(expectedTags: Array<{Key: string, Value: string}>): (props: any) => boolean {
+    return (props: any) => {
+        try {
+            const tags = props.Tags;
+            const actualTags = tags.filter( (tag: {Key: string, Value: string}) => {
+                for (const expectedTag of expectedTags) {
+                    if (isSuperObject(expectedTag, tag)) {
+                        return true;
+                    } else {
+                        continue;
+                    }
+                }
+                // no values in array so expecting empty
+                return false;
+            });
+            return actualTags.length === expectedTags.length;
+        } catch (e) {
+            // tslint:disable-next-line:no-console
+            console.error('Invalid Tags array in ', props);
+            throw e;
+        }
+    };
 }

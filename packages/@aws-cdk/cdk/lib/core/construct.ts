@@ -276,7 +276,7 @@ export class Construct {
      * @param to The construct to return the path components relative to, or
      * the entire list of ancestors (including root) if omitted.
      */
-    protected ancestors(upTo?: Construct): Construct[] {
+    public ancestors(upTo?: Construct): Construct[] {
         const ret = new Array<Construct>();
 
         let curr: Construct | undefined = this;

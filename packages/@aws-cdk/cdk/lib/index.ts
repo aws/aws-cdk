@@ -1,5 +1,6 @@
 export * from './core/construct';
 export * from './core/tokens';
+export * from './core/tag-manager';
 export * from './core/jsx';
 
 export * from './cloudformation/cloudformation-json';
