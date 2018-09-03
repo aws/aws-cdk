@@ -452,6 +452,11 @@
             "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
           }
         ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        }
       }
     },
     "LBSecurityGroup8A41EA2B": {

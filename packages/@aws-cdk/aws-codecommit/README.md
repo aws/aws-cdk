@@ -49,6 +49,15 @@ const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
 // use sourceAction.artifact as the inputArtifact to later Actions...
 ```
 
+You can also add the Repository to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+const sourceAction = repository.addToPipeline(sourceStage, 'CodeCommit', {
+    artifactName: 'SourceOutput',
+});
+```
+
 ### Events
 
 CodeCommit repositories emit CloudWatch events for certain activity.

@@ -4,18 +4,13 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
-import { cloudformation, PipelineVersion } from './codepipeline.generated';
+import { cloudformation, PipelineName, PipelineVersion } from './codepipeline.generated';
 import { Stage } from './stage';
 
 /**
  * The ARN of a pipeline
  */
 export class PipelineArn extends cdk.Arn { }
-
-/**
- * The name of the pipeline.
- */
-export class PipelineName extends cdk.Token { }
 
 export interface PipelineProps {
     /**

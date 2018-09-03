@@ -1,16 +1,16 @@
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
+import { Arn, CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
 
 export = {
     'the Permission class is a programming model for iam'(test: Test) {
         const p = new PolicyStatement();
         p.addAction('sqs:SendMessage');
         p.addActions('dynamodb:CreateTable', 'dynamodb:DeleteTable');
-        p.addResource('myQueue');
-        p.addResource('yourQueue');
+        p.addResource(new Arn('myQueue'));
+        p.addResource(new Arn('yourQueue'));
 
         p.addAllResources();
-        p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name'));
+        p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name').toString());
         p.limitToAccount('12221121221');
 
         test.deepEqual(resolve(p), { Action:
@@ -26,7 +26,7 @@ export = {
                     [ 'arn:',
                       { Ref: 'AWS::Partition' },
                       ':iam::',
-                      'my', 'account', 'name',
+                      { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
                       ':root' ] ] } },
            Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
@@ -37,7 +37,7 @@ export = {
         const doc = new PolicyDocument();
         const p1 = new PolicyStatement();
         p1.addAction('sqs:SendMessage');
-        p1.addResource('*');
+        p1.addResource(new Arn('*'));
 
         const p2 = new PolicyStatement();
         p2.deny();
@@ -65,7 +65,7 @@ export = {
             ]
         };
         const doc = new PolicyDocument(base);
-        doc.addStatement(new PolicyStatement().addResource('resource').addAction('action'));
+        doc.addStatement(new PolicyStatement().addResource(new Arn('resource')).addAction('action'));
 
         test.deepEqual(resolve(doc), { Version: 'Foo',
         Something: 123,
@@ -77,7 +77,7 @@ export = {
     },
 
     'Permission allows specifying multiple actions upon construction'(test: Test) {
-        const perm = new PolicyStatement().addResource('MyResource').addActions('Action1', 'Action2', 'Action3');
+        const perm = new PolicyStatement().addResource(new Arn('MyResource')).addActions('Action1', 'Action2', 'Action3');
         test.deepEqual(resolve(perm), {
             Effect: 'Allow',
             Action: [ 'Action1', 'Action2', 'Action3' ],
@@ -149,14 +149,17 @@ export = {
         },
 
         'true if there is one resource'(test: Test) {
-            test.equal(new PolicyStatement().addResource('one-resource').hasResource, true, 'hasResource is true when there is one resource');
+            test.equal(
+                new PolicyStatement().addResource(new Arn('one-resource')).hasResource,
+                true,
+                'hasResource is true when there is one resource');
             test.done();
         },
 
         'true for multiple resources'(test: Test) {
             const p = new PolicyStatement();
-            p.addResource('r1');
-            p.addResource('r2');
+            p.addResource(new Arn('r1'));
+            p.addResource(new Arn('r2'));
             test.equal(p.hasResource, true, 'hasResource is true when there are multiple resource');
             test.done();
         },
@@ -170,32 +173,10 @@ export = {
 
         'true if there is a principal'(test: Test) {
             const p = new PolicyStatement();
-            p.addAwsPrincipal('bla');
+            p.addAwsPrincipal(new Arn('bla'));
             test.equal(p.hasPrincipal, true);
             test.done();
         }
-    },
-
-    'isOnlyStarResource': {
-        'true if there is a single "*" resource'(test: Test) {
-            test.equal(new PolicyStatement().addAllResources().isOnlyStarResource, true);
-            test.done();
-        },
-
-        'false if there are other resources'(test: Test) {
-            const p = new PolicyStatement();
-            p.addResources('r1', 'r2', 'r3');
-            test.equal(p.isOnlyStarResource, false);
-            test.done();
-        },
-
-        'false if there are other resources and a "*" resource'(test: Test) {
-            const p = new PolicyStatement();
-            p.addResources('r1', 'r2', 'r3');
-            p.addResource('*');
-            test.equal(p.isOnlyStarResource, false);
-            test.done();
-        },
     },
 
     'statementCount returns the number of statement in the policy document'(test: Test) {
