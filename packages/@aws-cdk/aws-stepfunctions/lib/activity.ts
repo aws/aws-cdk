@@ -6,9 +6,9 @@ export interface ActivityProps {
     /**
      * The name for this activity.
      *
-     * The name is required.
+     * @default If not supplied, a name is generated
      */
-    activityName: string;
+    activityName?: string;
 }
 
 /**
@@ -18,11 +18,11 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
     public readonly activityArn: ActivityArn;
     public readonly activityName: ActivityName;
 
-    constructor(parent: cdk.Construct, id: string, props: ActivityProps) {
+    constructor(parent: cdk.Construct, id: string, props: ActivityProps = {}) {
         super(parent, id);
 
         const resource = new cloudformation.ActivityResource(this, 'Resource', {
-            activityName: props.activityName
+            activityName: props.activityName || this.uniqueId
         });
 
         this.activityArn = resource.ref;

@@ -12,20 +12,6 @@ export abstract class State extends cdk.Construct implements IChainable {
 
     public abstract toStateChain(): IStateChain;
 
-    /**
-     * Find the top-level StateMachine we're part of
-     */
-    protected containingStateMachineFragments(): StateMachineFragment {
-        let curr: cdk.Construct | undefined = this;
-        while (curr && !isStateMachineFragment(curr)) {
-            curr = curr.parent;
-        }
-        if (!curr) {
-            throw new Error('Could not find encompassing StateMachine');
-        }
-        return curr;
-    }
-
     protected renderBaseState(): any {
         return this.options;
     }

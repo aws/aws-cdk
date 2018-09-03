@@ -115,6 +115,24 @@ export = {
             test.done();
         },
 
+        'Start state in a StateMachineFragment can be implicit'(test: Test) {
+            const stack = new cdk.Stack();
+
+            const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable');
+            test.equals(sm.toStateChain().startState.stateId, 'Reusable/Choice');
+
+            test.done();
+        },
+
+        'Can skip adding names in StateMachineFragment'(test: Test) {
+            const stack = new cdk.Stack();
+
+            const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable', { scopeStateNames: false });
+            test.equals(sm.toStateChain().startState.stateId, 'Choice');
+
+            test.done();
+        },
+
         'A state machine definition can be instantiated and chained'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
@@ -569,6 +587,16 @@ class ReusableStateMachine extends stepfunctions.StateMachineFragment {
             new stepfunctions.Choice(this, 'Choice')
                 .on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
                 .on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch')));
+    }
+}
+
+class ReusableStateMachineWithImplicitStartState extends stepfunctions.StateMachineFragment {
+    constructor(parent: cdk.Construct, id: string, props: stepfunctions.StateMachineFragmentProps = {}) {
+        super(parent, id, props);
+
+        const choice = new stepfunctions.Choice(this, 'Choice');
+        choice.on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'));
+        choice.on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
     }
 }
 
