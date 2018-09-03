@@ -1,5 +1,4 @@
 export * from './activity';
-export * from './asl';
 export * from './asl-external-api';
 export * from './asl-internal-api';
 export * from './asl-condition';
@@ -9,7 +8,7 @@ export * from './states/choice';
 export * from './states/fail';
 export * from './states/parallel';
 export * from './states/pass';
-export * from './states/state-machine-definition';
+export * from './states/state-machine-fragment';
 export * from './states/state';
 export * from './states/succeed';
 export * from './states/task';

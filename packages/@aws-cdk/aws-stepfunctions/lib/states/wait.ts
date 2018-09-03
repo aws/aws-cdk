@@ -1,9 +1,8 @@
-import { IStateChain } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
+import cdk = require('@aws-cdk/cdk');
+import { IChainable, IStateChain } from '../asl-external-api';
+import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-import { renderNextEnd } from './util';
 
 export interface WaitProps {
     seconds?: number;
@@ -15,44 +14,51 @@ export interface WaitProps {
 
 export class Wait extends State {
     private static Internals = class implements IInternalState {
-        public readonly stateBehavior: StateBehavior = {
-            canHaveCatch: false,
-            canHaveNext: true,
-            elidable: false
-        };
+        public readonly canHaveCatch = false;
+        public readonly stateId: string;
+        public readonly policyStatements = new Array<cdk.PolicyStatement>();
 
         constructor(private readonly wait: Wait) {
-        }
-
-        public get stateId(): string {
-            return this.wait.stateId;
+            this.stateId = wait.stateId;
         }
 
         public renderState() {
             return {
                 ...this.wait.renderBaseState(),
-                ...renderNextEnd(this.wait.transitions),
+                ...this.wait.transitions.renderSingle(TransitionType.Next, { End: true }),
             };
         }
 
-        public next(targetState: IInternalState): void {
-            this.wait.addTransition(targetState);
+        public addNext(targetState: IInternalState): void {
+            this.wait.addNextTransition(targetState);
         }
 
-        public catch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IInternalState, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Wait.");
+        }
+
+        public accessibleStates() {
+            return this.wait.accessibleStates();
+        }
+
+        public get hasOpenNextTransition(): boolean {
+            return !this.wait.hasNextTransition;
         }
     };
 
-    constructor(parent: StateMachineDefinition, id: string, props: WaitProps) {
+    constructor(parent: cdk.Construct, id: string, props: WaitProps) {
         // FIXME: Validate input
         super(parent, id, {
-            Type: StateType.Task,
+            Type: StateType.Wait,
             Seconds: props.seconds,
             Timestamp: props.timestamp,
             SecondsPath: props.secondsPath,
             TimestampPath: props.timestampPath
         });
+    }
+
+    public next(sm: IChainable): IStateChain {
+        return this.toStateChain().next(sm);
     }
 
     public toStateChain(): IStateChain {

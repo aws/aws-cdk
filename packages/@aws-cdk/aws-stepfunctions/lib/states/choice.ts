@@ -1,14 +1,9 @@
+import cdk = require('@aws-cdk/cdk');
 import { Condition } from '../asl-condition';
 import { IChainable, IStateChain } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
+import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-
-interface ChoiceBranch {
-    condition: Condition;
-    next: IChainable;
-}
 
 export interface ChoiceProps {
     inputPath?: string;
@@ -17,54 +12,37 @@ export interface ChoiceProps {
 
 export class Choice extends State {
     private static Internals = class implements IInternalState {
-        public readonly stateBehavior: StateBehavior = {
-            canHaveCatch: false,
-            canHaveNext: false,
-            elidable: false
-        };
+        public readonly canHaveCatch = false;
+        public readonly hasOpenNextTransition = false;
+        public readonly stateId: string;
+        public readonly policyStatements = new Array<cdk.PolicyStatement>();
 
         constructor(private readonly choice: Choice) {
-        }
-
-        public get stateId(): string {
-            return this.choice.stateId;
+            this.stateId = choice.stateId;
         }
 
         public renderState() {
-            const defaultTransitions = this.choice.transitions.filter(t => t.annotation === undefined);
-            if (defaultTransitions.length > 1) {
-                throw new Error('Can only have one default transition');
-            }
-            const choices = this.choice.transitions.filter(t => t.annotation !== undefined);
-
             return {
                 ...this.choice.renderBaseState(),
-                Choices: choices.map(c => ({
-                    ...c.annotation,
-                    Next: c.targetState.stateId
-                })),
-                Default: defaultTransitions.length > 0 ? defaultTransitions[0].targetState.stateId : undefined
+                ...this.choice.transitions.renderList(TransitionType.Choice),
+                ...this.choice.transitions.renderSingle(TransitionType.Default),
             };
         }
 
-        public next(_targetState: IInternalState): void {
+        public addNext(_targetState: IInternalState): void {
             throw new Error("Cannot chain onto a Choice state. Use the state's .on() or .otherwise() instead.");
         }
 
-        public catch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IInternalState, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Choice.");
         }
-    };
-    public readonly stateBehavior: StateBehavior = {
-        canHaveCatch: false,
-        canHaveNext: false,
-        elidable: false
+
+        public accessibleStates() {
+            return this.choice.accessibleStates();
+        }
     };
 
-    private readonly choices: ChoiceBranch[] = [];
-    private hasDefault = false;
-
-    constructor(parent: StateMachineDefinition, id: string, props: ChoiceProps = {}) {
+    constructor(parent: cdk.Construct, id: string, props: ChoiceProps = {}) {
         super(parent, id, {
             Type: StateType.Choice,
             InputPath: props.inputPath,
@@ -73,20 +51,24 @@ export class Choice extends State {
     }
 
     public on(condition: Condition, next: IChainable): Choice {
-        this.choices.push({ condition, next });
+        this.transitions.add(TransitionType.Choice, next.toStateChain().startState, condition.renderCondition());
         return this;
     }
 
     public otherwise(next: IChainable): Choice {
-        if (this.hasDefault) {
-            throw new Error('Can only have one default transition');
+        // We use the "next" transition to store the Default, even though the meaning is different.
+        if (this.transitions.has(TransitionType.Default)) {
+            throw new Error('Can only have one Default transition');
         }
-        this.hasDefault = true;
-        this.addTransition(next.toStateChain().startState, undefined);
+        this.transitions.add(TransitionType.Default, next.toStateChain().startState);
         return this;
     }
 
     public toStateChain(): IStateChain {
         return new StateChain(new Choice.Internals(this));
+    }
+
+    public closure(): IStateChain {
+        return this.toStateChain().closure();
     }
 }

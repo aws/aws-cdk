@@ -1,49 +1,41 @@
+import cdk = require('@aws-cdk/cdk');
 import { IStateChain } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-machine';
+import { IInternalState, StateType } from '../asl-internal-api';
+import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-
-export interface SucceedProps {
-    elidable?: boolean;
-}
 
 export class Succeed extends State {
     private static Internals = class implements IInternalState {
-        constructor(private readonly succeed: Succeed) {
-        }
+        public readonly hasOpenNextTransition = false;
+        public readonly canHaveCatch = false;
+        public readonly stateId: string;
+        public readonly policyStatements = new Array<cdk.PolicyStatement>();
 
-        public get stateId(): string {
-            return this.succeed.stateId;
+        constructor(private readonly succeed: Succeed) {
+            this.stateId = succeed.stateId;
         }
 
         public renderState() {
             return this.succeed.renderBaseState();
         }
 
-        public get stateBehavior(): StateBehavior {
-            return {
-                canHaveCatch: false,
-                canHaveNext: false,
-                elidable: this.succeed.elidable,
-            };
-        }
-
-        public next(_targetState: IInternalState): void {
+        public addNext(_targetState: IInternalState): void {
             throw new Error("Cannot chain onto a Succeed state; this ends the state machine.");
         }
 
-        public catch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IInternalState, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Succeed.");
         }
-    };
-    private readonly elidable: boolean;
 
-    constructor(parent: StateMachineDefinition, id: string, props: SucceedProps = {}) {
+        public accessibleStates() {
+            return this.succeed.accessibleStates();
+        }
+    };
+
+    constructor(parent: cdk.Construct, id: string) {
         super(parent, id, {
             Type: StateType.Succeed
         });
-        this.elidable = props.elidable || false;
     }
 
     public toStateChain(): IStateChain {

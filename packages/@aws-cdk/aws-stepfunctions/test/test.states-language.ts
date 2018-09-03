@@ -1,19 +1,19 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
+import { IChainable } from '../lib';
 
 export = {
     'Basic composition': {
         'A single task is a State Machine'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
             // WHEN
-            new stepfunctions.Pass(sm, 'Some State');
+            const chain = new stepfunctions.Pass(stack, 'Some State');
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Some State',
                 States: {
                     'Some State': { Type: 'Pass', End: true }
@@ -26,16 +26,37 @@ export = {
         'A sequence of two tasks is a State Machine'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
             // WHEN
-            const task1 = new stepfunctions.Pass(sm, 'State One');
-            const task2 = new stepfunctions.Pass(sm, 'State Two');
+            const task1 = new stepfunctions.Pass(stack, 'State One');
+            const task2 = new stepfunctions.Pass(stack, 'State Two');
 
-            task1.then(task2);
+            const chain = task1.next(task2);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
+                StartAt: 'State One',
+                States: {
+                    'State One': { Type: 'Pass', Next: 'State Two' },
+                    'State Two': { Type: 'Pass', End: true },
+                }
+            });
+
+            test.done();
+        },
+
+        'You dont need to hold on to the state to render the entire state machine correctly'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            // WHEN
+            const task1 = new stepfunctions.Pass(stack, 'State One');
+            const task2 = new stepfunctions.Pass(stack, 'State Two');
+
+            task1.next(task2);
+
+            // THEN
+            test.deepEqual(render(task1), {
                 StartAt: 'State One',
                 States: {
                     'State One': { Type: 'Pass', Next: 'State Two' },
@@ -49,17 +70,16 @@ export = {
         'A chain can be appended to'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Pass(sm, 'State One');
-            const task2 = new stepfunctions.Pass(sm, 'State Two');
-            const task3 = new stepfunctions.Pass(sm, 'State Three');
+            const task1 = new stepfunctions.Pass(stack, 'State One');
+            const task2 = new stepfunctions.Pass(stack, 'State Two');
+            const task3 = new stepfunctions.Pass(stack, 'State Three');
 
             // WHEN
-            task1.then(task2).then(task3);
+            const chain = task1.next(task2).next(task3);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'State One',
                 States: {
                     'State One': { Type: 'Pass', Next: 'State Two' },
@@ -74,40 +94,22 @@ export = {
         'A state machine can be appended to another state machine'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Pass(sm, 'State One');
-            const task2 = new stepfunctions.Pass(sm, 'State Two');
-            const task3 = new stepfunctions.Pass(sm, 'State Three');
+            const task1 = new stepfunctions.Pass(stack, 'State One');
+            const task2 = new stepfunctions.Pass(stack, 'State Two');
+            const task3 = new stepfunctions.Wait(stack, 'State Three', { seconds: 10 });
 
             // WHEN
-            task1.then(task2.then(task3));
+            const chain = task1.next(task2.next(task3));
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'State One',
                 States: {
                     'State One': { Type: 'Pass', Next: 'State Two' },
                     'State Two': { Type: 'Pass', Next: 'State Three' },
-                    'State Three': { Type: 'Pass', End: true },
+                    'State Three': { Type: 'Wait', End: true, Seconds: 10 },
                 }
-            });
-
-            test.done();
-        },
-
-        'Two chained states must be in the same state machine definition'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-            const sm1 = new stepfunctions.StateMachineDefinition(stack, 'SM1');
-            const sm2 = new stepfunctions.StateMachineDefinition(stack, 'SM2');
-
-            const pass1 = new stepfunctions.Pass(sm1, 'Pass1');
-            const pass2 = new stepfunctions.Pass(sm2, 'Pass2');
-
-            // THEN
-            test.throws(() => {
-                pass1.then(pass2);
             });
 
             test.done();
@@ -116,15 +118,14 @@ export = {
         'A state machine definition can be instantiated and chained'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
-            const before = new stepfunctions.Pass(sm, 'Before');
-            const after = new stepfunctions.Pass(sm, 'After');
+            const before = new stepfunctions.Pass(stack, 'Before');
+            const after = new stepfunctions.Pass(stack, 'After');
 
             // WHEN
-            before.then(new ReusableStateMachine(stack, 'Reusable')).then(after);
+            const chain = before.next(new ReusableStateMachine(stack, 'Reusable')).next(after);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Before',
                 States: {
                     'Before': { Type: 'Pass', Next: 'Reusable/Choice' },
@@ -147,14 +148,14 @@ export = {
         'A success state cannot be chained onto'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
+            const sm = new stepfunctions.StateMachineFragment(stack, 'SM');
 
             const succeed = new stepfunctions.Succeed(sm, 'Succeed');
             const pass = new stepfunctions.Pass(sm, 'Pass');
 
             // WHEN
             test.throws(() => {
-                succeed.then(pass);
+                succeed.toStateChain().next(pass);
             });
 
             test.done();
@@ -163,39 +164,33 @@ export = {
         'A failure state cannot be chained onto'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
+            const sm = new stepfunctions.StateMachineFragment(stack, 'SM');
             const fail = new stepfunctions.Fail(sm, 'Fail', { error: 'X', cause: 'Y' });
             const pass = new stepfunctions.Pass(sm, 'Pass');
 
             // WHEN
             test.throws(() => {
-                fail.then(pass);
+                fail.toStateChain().next(pass);
             });
 
             test.done();
         },
 
-        'Parallels contains adhoc state machine definitions without scoping names'(test: Test) {
+        'Parallels can contain direct states'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
+
+            const one = new stepfunctions.Pass(stack, 'One');
+            const two = new stepfunctions.Pass(stack, 'Two');
+            const three = new stepfunctions.Pass(stack, 'Three');
 
             // WHEN
-            const para = new stepfunctions.Parallel(sm, 'Parallel');
-
-            // Key: the parent is the same parent as the top-level StateMachineDefinition.
-            const branch1 = new stepfunctions.StateMachineDefinition(stack, 'Branch1');
-            branch1.start(new stepfunctions.Pass(branch1, 'One'))
-                .then(new stepfunctions.Pass(branch1, 'Two'));
-
-            const branch2 = new stepfunctions.StateMachineDefinition(stack, 'Branch1');
-            branch2.start(new stepfunctions.Pass(branch2, 'Three'));
-
-            para.parallel(branch1);
-            para.parallel(branch2);
+            const para = new stepfunctions.Parallel(stack, 'Parallel');
+            para.branch(one.next(two));
+            para.branch(three);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(para), {
                 StartAt: 'Parallel',
                 States: {
                     Parallel: {
@@ -226,15 +221,14 @@ export = {
         'Parallels can contain instantiated reusable definitions'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
             // WHEN
-            const para = new stepfunctions.Parallel(sm, 'Parallel');
-            para.parallel(new ReusableStateMachine(sm, 'Reusable1'));
-            para.parallel(new ReusableStateMachine(sm, 'Reusable2'));
+            const para = new stepfunctions.Parallel(stack, 'Parallel');
+            para.branch(new ReusableStateMachine(stack, 'Reusable1'));
+            para.branch(new ReusableStateMachine(stack, 'Reusable2'));
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(para), {
                 StartAt: 'Parallel',
                 States: {
                     Parallel: {
@@ -280,20 +274,19 @@ export = {
         'Chaining onto branched failure state ignores failure state'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const yes = new stepfunctions.Pass(sm, 'Yes');
-            const no = new stepfunctions.Fail(sm, 'No', { error: 'Failure', cause: 'Wrong branch' });
-            const enfin = new stepfunctions.Pass(sm, 'Finally');
-            const choice = new stepfunctions.Choice(sm, 'Choice')
+            const yes = new stepfunctions.Pass(stack, 'Yes');
+            const no = new stepfunctions.Fail(stack, 'No', { error: 'Failure', cause: 'Wrong branch' });
+            const enfin = new stepfunctions.Pass(stack, 'Finally');
+            const choice = new stepfunctions.Choice(stack, 'Choice')
                 .on(stepfunctions.Condition.stringEquals('$.foo', 'bar'), yes)
                 .otherwise(no);
 
             // WHEN
-            choice.then(enfin);
+            choice.closure().next(enfin);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(choice), {
                 StartAt: 'Choice',
                 States: {
                     Choice: {
@@ -313,88 +306,19 @@ export = {
         },
     },
 
-    'Elision': {
-        'An elidable pass state that is chained onto should disappear'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
-
-            const first = new stepfunctions.Pass(sm, 'First');
-            const success = new stepfunctions.Pass(sm, 'Success', { elidable: true });
-            const second = new stepfunctions.Pass(sm, 'Second');
-
-            // WHEN
-            first.then(success).then(second);
-
-            // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
-                StartAt: 'First',
-                States: {
-                    First: { Type: 'Pass', Next: 'Second' },
-                    Second: { Type: 'Pass', End: true },
-                }
-            });
-
-            test.done();
-        },
-
-        'An elidable pass state at the end of a chain should disappear'(test: Test) {
-            const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
-
-            const first = new stepfunctions.Pass(sm, 'First');
-            const pass = new stepfunctions.Pass(sm, 'Pass', { elidable: true });
-
-            // WHEN
-            first.then(pass);
-
-            // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
-                StartAt: 'First',
-                States: {
-                    First: { Type: 'Pass', End: true },
-                }
-            });
-
-            test.done();
-        },
-
-        'An elidable success state at the end of a chain should disappear'(test: Test) {
-            const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
-
-            const first = new stepfunctions.Pass(sm, 'First');
-            const success = new stepfunctions.Succeed(sm, 'Success', { elidable: true });
-
-            // WHEN
-            first.then(success);
-
-            // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
-                StartAt: 'First',
-                States: {
-                    First: { Type: 'Pass', End: true },
-                }
-            });
-
-            test.done();
-        },
-    },
-
     'Goto support': {
         'State machines can have unconstrainted gotos'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const one = new stepfunctions.Pass(sm, 'One');
-            const two = new stepfunctions.Pass(sm, 'Two');
+            const one = new stepfunctions.Pass(stack, 'One');
+            const two = new stepfunctions.Pass(stack, 'Two');
 
             // WHEN
-            one.then(two).then(one);
+            const chain = one.next(two).next(one);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'One',
                 States: {
                     One: { Type: 'Pass', Next: 'Two' },
@@ -410,16 +334,14 @@ export = {
         'States can have error branches'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
-
-            const task1 = new stepfunctions.Task(sm, 'Task1', { resource: new FakeResource() });
-            const failure = new stepfunctions.Fail(sm, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
-            task1.toStateChain().catch(failure);
+            const chain = task1.onError(failure);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Task1',
                 States: {
                     Task1: {
@@ -444,17 +366,16 @@ export = {
         'Error branch is attached to all tasks in chain'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Task(sm, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(sm, 'Task2', { resource: new FakeResource() });
-            const errorHandler = new stepfunctions.Pass(sm, 'ErrorHandler');
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            task1.then(task2).catch(errorHandler);
+            const chain = task1.next(task2).onError(errorHandler);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Task1',
                 States: {
                     Task1: {
@@ -480,20 +401,23 @@ export = {
             test.done();
         },
 
+        /*
+
+        ** FIXME: Not implemented at the moment, since we need to make a Construct for this and the
+           name and parent aren't obvious.
+
         'Machine is wrapped in parallel if not all tasks can have catch'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Task(sm, 'Task1', { resource: new FakeResource() });
-            const wait = new stepfunctions.Wait(sm, 'Wait', { seconds: 10 });
-            const errorHandler = new stepfunctions.Pass(sm, 'ErrorHandler');
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const wait = new stepfunctions.Wait(stack, 'Wait', { seconds: 10 });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
-            // WHEN
-            task1.then(wait).catch(errorHandler);
+            const chain = task1.next(wait).onError(errorHandler);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Para',
                 States: {
                     Para: {
@@ -526,21 +450,21 @@ export = {
 
             test.done();
         },
+        */
 
-        'Error branch does not count for chaining'(test: Test) {
+        'Chaining does not chain onto error handler state'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Task(sm, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(sm, 'Task2', { resource: new FakeResource() });
-            const errorHandler = new stepfunctions.Pass(sm, 'ErrorHandler');
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            task1.catch(errorHandler).then(task2);
+            const chain = task1.onError(errorHandler).next(task2);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Task1',
                 States: {
                     Task1: {
@@ -559,27 +483,58 @@ export = {
             test.done();
         },
 
-        'Can merge state machines with shared states'(test: Test) {
+        'After calling .closure() do chain onto error state'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineDefinition(stack, 'SM');
 
-            const task1 = new stepfunctions.Task(sm, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(sm, 'Task2', { resource: new FakeResource() });
-            const failure = new stepfunctions.Fail(sm, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            task1.catch(failure);
-            task2.catch(failure);
-
-            task1.then(task2);
+            const chain = task1.onError(errorHandler).closure().next(task2);
 
             // THEN
-            test.deepEqual(cdk.resolve(sm.renderStateMachine()), {
+            test.deepEqual(render(chain), {
                 StartAt: 'Task1',
                 States: {
                     Task1: {
                         Type: 'Task',
+                        Resource: 'resource',
+                        Next: 'Task2',
+                        Catch: [
+                            { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
+                        ]
+                    },
+                    ErrorHandler: { Type: 'Pass', Next: 'Task2' },
+                    Task2: { Type: 'Task', Resource: 'resource', End: true },
+                }
+            });
+
+            test.done();
+        },
+
+        'Can merge state machines with shared states'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
+
+            // WHEN
+            task1.onError(failure);
+            task2.onError(failure);
+
+            task1.next(task2);
+
+            // THEN
+            test.deepEqual(render(task1), {
+                StartAt: 'Task1',
+                States: {
+                    Task1: {
+                        Type: 'Task',
+                        Resource: 'resource',
                         Next: 'Task2',
                         Catch: [
                             { ErrorEquals: ['States.ALL'], Next: 'Failed' },
@@ -587,6 +542,7 @@ export = {
                     },
                     Task2: {
                         Type: 'Task',
+                        Resource: 'resource',
                         End: true,
                         Catch: [
                             { ErrorEquals: ['States.ALL'], Next: 'Failed' },
@@ -605,7 +561,7 @@ export = {
     }
 };
 
-class ReusableStateMachine extends stepfunctions.StateMachineDefinition {
+class ReusableStateMachine extends stepfunctions.StateMachineFragment {
     constructor(parent: cdk.Construct, id: string) {
         super(parent, id);
 
@@ -622,4 +578,8 @@ class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
             resourceArn: new cdk.Arn('resource')
         };
     }
+}
+
+function render(sm: IChainable) {
+    return cdk.resolve(sm.toStateChain().renderStateMachine().stateMachineDefinition);
 }

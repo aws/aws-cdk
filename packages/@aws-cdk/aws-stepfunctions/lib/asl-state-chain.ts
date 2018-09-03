@@ -1,4 +1,5 @@
-import { Errors, IChainable, IStateChain } from './asl-external-api';
+import cdk = require('@aws-cdk/cdk');
+import { Errors, IChainable, IStateChain, RenderedStateMachine } from './asl-external-api';
 import { IInternalState } from './asl-internal-api';
 
 export class StateChain implements IStateChain {
@@ -9,7 +10,11 @@ export class StateChain implements IStateChain {
     constructor(startState: IInternalState) {
         this.allStates.add(startState);
 
+        // Even if the state doesn't allow .next()ing onto it, still set as
+        // active state so we trigger the per-State exception (which is more
+        // informative than the generic "no active states" exception).
         this.activeStates.add(startState);
+
         this._startState = startState;
     }
 
@@ -17,17 +22,17 @@ export class StateChain implements IStateChain {
         return this._startState;
     }
 
-    public then(state: IChainable): IStateChain {
+    public next(state: IChainable): IStateChain {
         const sm = state.toStateChain();
 
         const ret = this.clone();
 
         if (this.activeStates.size === 0) {
-            throw new Error('Cannot chain onto state machine; no end states');
+            throw new Error('Cannot add to chain; there are no chainable states without a "Next" transition.');
         }
 
         for (const endState of this.activeStates) {
-            endState.next(sm.startState);
+            endState.addNext(sm.startState);
         }
 
         ret.absorb(sm);
@@ -40,14 +45,14 @@ export class StateChain implements IStateChain {
         return this;
     }
 
-    public catch(handler: IChainable, ...errors: string[]): IStateChain {
+    public onError(handler: IChainable, ...errors: string[]): IStateChain {
         if (errors.length === 0) {
             errors = [Errors.all];
         }
 
         const sm = handler.toStateChain();
 
-        const canApplyDirectly = Array.from(this.allStates).every(s => s.stateBehavior.canHaveCatch);
+        const canApplyDirectly = Array.from(this.allStates).every(s => s.canHaveCatch);
         if (!canApplyDirectly) {
             // Can't easily create a Parallel here automatically since we need a
             // StateMachineDefinition parent and need to invent a unique name.
@@ -56,7 +61,7 @@ export class StateChain implements IStateChain {
 
         const ret = this.clone();
         for (const state of this.allStates) {
-            state.catch(sm.startState, errors);
+            state.addCatch(sm.startState, errors);
         }
 
         // Those states are now part of the state machine, but we don't include
@@ -66,7 +71,50 @@ export class StateChain implements IStateChain {
         return ret;
     }
 
-    public absorb(other: IStateChain) {
+    /**
+     * Return a closure that contains all accessible states from the given start state
+     *
+     * This sets all active ends to the active ends of all accessible states.
+     */
+    public closure(): IStateChain {
+        const ret = new StateChain(this.startState);
+
+        const queue = this.startState.accessibleStates();
+        while (queue.length > 0) {
+            const state = queue.splice(0, 1)[0];
+            if (!ret.allStates.has(state)) {
+                ret.allStates.add(state);
+                queue.push(...state.accessibleStates());
+            }
+        }
+
+        ret.activeStates = new Set(Array.from(ret.allStates).filter(s => s.hasOpenNextTransition));
+
+        return ret;
+    }
+
+    public renderStateMachine(): RenderedStateMachine {
+        // Rendering always implies rendering the closure
+        const closed = this.closure();
+
+        const policies = new Array<cdk.PolicyStatement>();
+
+        const states: any = {};
+        for (const state of accessMachineInternals(closed).allStates) {
+            states[state.stateId] = state.renderState();
+            policies.push(...state.policyStatements);
+        }
+
+        return {
+            stateMachineDefinition: {
+                StartAt: this.startState.stateId,
+                States: states
+            },
+            policyStatements: policies
+        };
+    }
+
+    private absorb(other: IStateChain) {
         const sdm = accessMachineInternals(other);
         for (const state of sdm.allStates) {
             this.allStates.add(state);

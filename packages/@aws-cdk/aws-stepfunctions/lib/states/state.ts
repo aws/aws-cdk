@@ -1,36 +1,23 @@
 import cdk = require('@aws-cdk/cdk');
 import { IChainable, IStateChain } from "../asl-external-api";
-import { IInternalState, Transition } from '../asl-internal-api';
-import { StateMachineDefinition } from './state-machine-definition';
+import { IInternalState, Transitions, TransitionType } from '../asl-internal-api';
+import { StateMachineFragment } from './state-machine-fragment';
 
 export abstract class State extends cdk.Construct implements IChainable {
-    protected readonly transitions = new Array<Transition>();
+    protected readonly transitions = new Transitions();
 
-    constructor(parent: StateMachineDefinition, id: string, private readonly options: any) {
+    constructor(parent: cdk.Construct, id: string, private readonly options: any) {
         super(parent, id);
-
-        parent._addState(this);
     }
 
     public abstract toStateChain(): IStateChain;
 
     /**
-     * Convenience function to immediately go into State Machine mode
-     */
-    public then(sm: IChainable): IStateChain {
-        return this.toStateChain().then(sm);
-    }
-
-    public catch(handler: IChainable, ...errors: string[]): IStateChain {
-        return this.toStateChain().catch(handler, ...errors);
-    }
-
-    /**
      * Find the top-level StateMachine we're part of
      */
-    protected containingStateMachine(): StateMachineDefinition {
+    protected containingStateMachineFragments(): StateMachineFragment {
         let curr: cdk.Construct | undefined = this;
-        while (curr && !isStateMachine(curr)) {
+        while (curr && !isStateMachineFragment(curr)) {
             curr = curr.parent;
         }
         if (!curr) {
@@ -47,25 +34,26 @@ export abstract class State extends cdk.Construct implements IChainable {
      * Return the name of this state
      */
     protected get stateId(): string {
-        return this.ancestors(this.containingStateMachine()).map(x => x.id).join('/');
+        const parentDefs: cdk.Construct[] = this.ancestors().filter(c => (isStateMachineFragment(c) && c.scopeStateNames) || c === this);
+        return parentDefs.map(x => x.id).join('/');
     }
 
-    protected addTransition(targetState: IInternalState, annotation?: any) {
-        this.transitions.push({ targetState, annotation });
+    protected accessibleStates(): IInternalState[] {
+        return this.transitions.all().map(t => t.targetState);
     }
 
-    protected getTransitions(withAnnotation: boolean): Transition[] {
-        return this.transitions.filter(t => (t.annotation === undefined) === withAnnotation);
+    protected get hasNextTransition() {
+        return this.transitions.has(TransitionType.Next);
     }
 
     protected addNextTransition(targetState: IInternalState): void {
-        if (this.getTransitions(false).length > 0) {
+        if (this.hasNextTransition) {
             throw new Error(`State ${this.stateId} already has a Next transition`);
         }
-        this.addTransition(targetState);
+        this.transitions.add(TransitionType.Next, targetState);
     }
 }
 
-function isStateMachine(construct: cdk.Construct): construct is StateMachineDefinition {
+function isStateMachineFragment(construct: cdk.Construct): construct is StateMachineFragment {
     return (construct as any).isStateMachine;
 }

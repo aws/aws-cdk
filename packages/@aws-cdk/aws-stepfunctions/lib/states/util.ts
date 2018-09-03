@@ -1,16 +1,5 @@
+import cdk = require('@aws-cdk/cdk');
 import { RetryProps } from "../asl-external-api";
-import { Transition } from "../asl-internal-api";
-
-export function renderNextEnd(transitions: Transition[]) {
-    if (transitions.some(t => t.annotation !== undefined)) {
-        throw new Error('renderNextEnd() can only be used on default transitions');
-    }
-
-    return {
-        Next: transitions.length > 0 ? transitions[0].targetState.stateId : undefined,
-        End: transitions.length > 0 ? undefined : true,
-    };
-}
 
 export function renderRetry(retry: RetryProps) {
     return {
@@ -18,5 +7,11 @@ export function renderRetry(retry: RetryProps) {
         IntervalSeconds: retry.intervalSeconds,
         MaxAttempts: retry.maxAttempts,
         BackoffRate: retry.backoffRate
+    };
+}
+
+export function renderRetries(retries: RetryProps[]) {
+    return {
+        Retry: new cdk.Token(() => retries.length === 0 ? undefined : retries.map(renderRetry))
     };
 }

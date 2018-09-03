@@ -200,3 +200,12 @@ class SomeConstruct extends cdk.Construct {
 It's desirable to just have a StateMachineDefinition own and list everything,
 but that kind of requires that for Parallel you need a StateMachineDefinition
 as well (but probably without appending names).
+
+---
+
+Notes: use a complicated object model to hide ugly parts of the API from users
+(by using "internal details" classes as capabilities).
+
+Decouple state chainer from states.
+
+Decouple rendering from states to allow elidable states.

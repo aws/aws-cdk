@@ -1,10 +1,9 @@
 import cdk = require('@aws-cdk/cdk');
-import { Errors, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
+import { Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
+import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-import { renderNextEnd, renderRetry } from './util';
+import { renderRetries } from './util';
 
 export interface ParallelProps {
     inputPath?: string;
@@ -14,61 +13,63 @@ export interface ParallelProps {
 
 export class Parallel extends State {
     private static Internals = class implements IInternalState {
-        public readonly stateBehavior: StateBehavior = {
-            canHaveCatch: true,
-            canHaveNext: true,
-            elidable: false,
-        };
+        public readonly canHaveCatch = true;
+        public readonly stateId: string;
 
         constructor(private readonly parallel: Parallel) {
-        }
-
-        public get stateId(): string {
-            return this.parallel.stateId;
+            this.stateId = parallel.stateId;
         }
 
         public renderState() {
-            const catches = this.parallel.transitions.filter(t => t.annotation !== undefined);
-            const regularTransitions = this.parallel.transitions.filter(t => t.annotation === undefined);
-
-            if (regularTransitions.length > 1) {
-                throw new Error(`State "${this.stateId}" can only have one outgoing transition`);
-            }
-
             return {
                 ...this.parallel.renderBaseState(),
-                ...renderNextEnd(regularTransitions),
-                Catch: catches.length === 0 ? undefined : catches.map(c => c.annotation),
-                Retry: new cdk.Token(() => this.parallel.retries.length === 0 ? undefined : this.parallel.retries.map(renderRetry)),
+                ...renderRetries(this.parallel.retries),
+                ...this.parallel.transitions.renderSingle(TransitionType.Next, { End: true }),
+                ...this.parallel.transitions.renderList(TransitionType.Catch),
             };
         }
 
-        public next(targetState: IInternalState): void {
+        public addNext(targetState: IInternalState): void {
             this.parallel.addNextTransition(targetState);
         }
 
-        public catch(targetState: IInternalState, errors: string[]): void {
-            this.parallel.addTransition(targetState, {
-                ErrorEquals: errors,
-                Next: targetState.stateId
-            });
+        public addCatch(targetState: IInternalState, errors: string[]): void {
+            this.parallel.transitions.add(TransitionType.Catch, targetState, { ErrorEquals: errors });
+        }
+
+        public accessibleStates() {
+            return this.parallel.accessibleStates();
+        }
+
+        public get hasOpenNextTransition(): boolean {
+            return !this.parallel.hasNextTransition;
+        }
+
+        public get policyStatements(): cdk.PolicyStatement[] {
+            const ret = new Array<cdk.PolicyStatement>();
+            for (const branch of this.parallel.branches) {
+                ret.push(...branch.toStateChain().renderStateMachine().policyStatements);
+            }
+            return ret;
         }
     };
 
-    private readonly branches: StateMachineDefinition[] = [];
+    private readonly branches: IChainable[] = [];
     private readonly retries = new Array<RetryProps>();
 
-    constructor(parent: StateMachineDefinition, id: string, props: ParallelProps = {}) {
+    constructor(parent: cdk.Construct, id: string, props: ParallelProps = {}) {
         super(parent, id, {
             Type: StateType.Parallel,
             InputPath: props.inputPath,
             OutputPath: props.outputPath,
             ResultPath: props.resultPath,
-            Branches: new cdk.Token(() => this.branches.map(b => b.renderStateMachine()))
+            // Lazy because the states are mutable and they might get chained onto
+            // (Users shouldn't, but they might)
+            Branches: new cdk.Token(() => this.branches.map(b => b.toStateChain().renderStateMachine().stateMachineDefinition))
         });
     }
 
-    public parallel(definition: StateMachineDefinition) {
+    public branch(definition: IChainable) {
         this.branches.push(definition);
     }
 
@@ -77,6 +78,14 @@ export class Parallel extends State {
             props.errors = [Errors.all];
         }
         this.retries.push(props);
+    }
+
+    public next(sm: IChainable): IStateChain {
+        return this.toStateChain().next(sm);
+    }
+
+    public onError(handler: IChainable, ...errors: string[]): IStateChain {
+        return this.toStateChain().onError(handler, ...errors);
     }
 
     public toStateChain(): IStateChain {

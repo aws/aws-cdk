@@ -1,59 +1,58 @@
-import { IStateChain } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
+import cdk = require('@aws-cdk/cdk');
+import { IChainable, IStateChain } from '../asl-external-api';
+import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-import { renderNextEnd } from './util';
 
 export interface PassProps {
     inputPath?: string;
     outputPath?: string;
-    elidable?: boolean;
 }
 
 export class Pass extends State {
     private static Internals = class implements IInternalState {
+        public readonly canHaveCatch = false;
+        public readonly stateId: string;
+        public readonly policyStatements = new Array<cdk.PolicyStatement>();
+
         constructor(private readonly pass: Pass) {
-        }
-
-        public get stateId(): string {
-            return this.pass.stateId;
-        }
-
-        public get stateBehavior(): StateBehavior {
-            return {
-                canHaveNext: true,
-                canHaveCatch: false,
-                elidable: this.pass.elidable
-            };
+            this.stateId = this.pass.stateId;
         }
 
         public renderState() {
-            const regularTransitions = this.pass.getTransitions(false);
-
             return {
                 ...this.pass.renderBaseState(),
-                ...renderNextEnd(regularTransitions),
+                ...this.pass.transitions.renderSingle(TransitionType.Next, { End: true }),
             };
         }
 
-        public next(targetState: IInternalState): void {
+        public addNext(targetState: IInternalState): void {
             this.pass.addNextTransition(targetState);
         }
 
-        public catch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IInternalState, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Pass.");
         }
-    };
-    private readonly elidable: boolean;
 
-    constructor(parent: StateMachineDefinition, id: string, props: PassProps = {}) {
+        public accessibleStates() {
+            return this.pass.accessibleStates();
+        }
+
+        public get hasOpenNextTransition(): boolean {
+            return !this.pass.hasNextTransition;
+        }
+    };
+
+    constructor(parent: cdk.Construct, id: string, props: PassProps = {}) {
         super(parent, id, {
             Type: StateType.Pass,
             InputPath: props.inputPath,
             OutputPath: props.outputPath
         });
-        this.elidable = (props.elidable || false) && !props.inputPath && !props.outputPath;
+    }
+
+    public next(sm: IChainable): IStateChain {
+        return this.toStateChain().next(sm);
     }
 
     public toStateChain(): IStateChain {

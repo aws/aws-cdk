@@ -1,10 +1,9 @@
 import cdk = require('@aws-cdk/cdk');
-import { Errors, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
+import { Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
+import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
-import { renderNextEnd, renderRetry } from './util';
+import { renderRetries } from './util';
 
 /**
  * Interface for objects that can be invoked in a Task state
@@ -18,6 +17,7 @@ export interface IStepFunctionsTaskResource {
 
 export interface StepFunctionsTaskResourceProps {
     resourceArn: cdk.Arn;
+    policyStatements?: cdk.PolicyStatement[];
 }
 
 export interface TaskProps {
@@ -31,51 +31,45 @@ export interface TaskProps {
 
 export class Task extends State {
     private static Internals = class implements IInternalState {
-        public readonly stateBehavior: StateBehavior = {
-            canHaveCatch: true,
-            canHaveNext: true,
-            elidable: false,
-        };
+        public readonly canHaveCatch = true;
+        public readonly stateId: string;
+        public readonly policyStatements: cdk.PolicyStatement[];
 
         constructor(private readonly task: Task) {
-        }
-
-        public get stateId(): string {
-            return this.task.stateId;
+            this.stateId = task.stateId;
+            this.policyStatements = task.resourceProps.policyStatements || [];
         }
 
         public renderState() {
-            const catches = this.task.transitions.filter(t => t.annotation !== undefined);
-            const regularTransitions = this.task.transitions.filter(t => t.annotation === undefined);
-
-            if (regularTransitions.length > 1) {
-                throw new Error(`State "${this.stateId}" can only have one outgoing transition`);
-            }
-
             return {
                 ...this.task.renderBaseState(),
-                ...renderNextEnd(regularTransitions),
-                Catch: catches.length === 0 ? undefined : catches.map(c => c.annotation),
-                Retry: this.task.retries.length === 0 ? undefined : this.task.retries.map(renderRetry),
+                ...renderRetries(this.task.retries),
+                ...this.task.transitions.renderSingle(TransitionType.Next, { End: true }),
+                ...this.task.transitions.renderList(TransitionType.Catch),
             };
         }
 
-        public next(targetState: IInternalState): void {
+        public addNext(targetState: IInternalState): void {
             this.task.addNextTransition(targetState);
         }
 
-        public catch(targetState: IInternalState, errors: string[]): void {
-            this.task.addTransition(targetState, {
-                ErrorEquals: errors,
-                Next: targetState.stateId
-            });
+        public addCatch(targetState: IInternalState, errors: string[]): void {
+            this.task.transitions.add(TransitionType.Catch, targetState, { ErrorEquals: errors });
+        }
+
+        public accessibleStates() {
+            return this.task.accessibleStates();
+        }
+
+        public get hasOpenNextTransition(): boolean {
+            return !this.task.hasNextTransition;
         }
     };
 
     private readonly resourceProps: StepFunctionsTaskResourceProps;
     private readonly retries = new Array<RetryProps>();
 
-    constructor(parent: StateMachineDefinition, id: string, props: TaskProps) {
+    constructor(parent: cdk.Construct, id: string, props: TaskProps) {
         super(parent, id, {
             Type: StateType.Task,
             InputPath: props.inputPath,
@@ -88,11 +82,12 @@ export class Task extends State {
         this.resourceProps = props.resource.asStepFunctionsTaskResource(this);
     }
 
-    /**
-     * Add a policy statement to the role that ultimately executes this
-     */
-    public addToRolePolicy(statement: cdk.PolicyStatement) {
-        this.containingStateMachine().addToRolePolicy(statement);
+    public next(sm: IChainable): IStateChain {
+        return this.toStateChain().next(sm);
+    }
+
+    public onError(handler: IChainable, ...errors: string[]): IStateChain {
+        return this.toStateChain().onError(handler, ...errors);
     }
 
     public retry(props: RetryProps = {}) {

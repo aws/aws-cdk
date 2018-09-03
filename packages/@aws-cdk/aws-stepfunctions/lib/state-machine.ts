@@ -1,6 +1,7 @@
+import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { StateMachineDefinition } from './asl-states';
+import { IChainable } from './asl-external-api';
 import { cloudformation, StateMachineArn, StateMachineName } from './stepfunctions.generated';
 
 export interface StateMachineProps {
@@ -14,7 +15,7 @@ export interface StateMachineProps {
     /**
      * Definition for this state machine
      */
-    definition: StateMachineDefinition;
+    definition: IChainable;
 
     /**
      * The execution role for the state machine service
@@ -32,6 +33,9 @@ export class StateMachine extends cdk.Construct {
     public readonly stateMachineName: StateMachineName;
     public readonly stateMachineArn: StateMachineArn;
 
+    /** A role used by CloudWatch events to trigger a build */
+    private eventsRole?: iam.Role;
+
     constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
         super(parent, id);
 
@@ -39,13 +43,17 @@ export class StateMachine extends cdk.Construct {
             assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('states.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
         });
 
+        const rendered = props.definition.toStateChain().renderStateMachine();
+
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            // Depending on usage, definition may change after our instantiation
-            // (because we're organized like a mutable object tree)
-            definitionString: new cdk.Token(() => cdk.CloudFormationJSON.stringify(props.definition.toStateMachine()))
+            definitionString: cdk.CloudFormationJSON.stringify(rendered.stateMachineDefinition),
         });
+
+        for (const statement of rendered.policyStatements) {
+            this.addToRolePolicy(statement);
+        }
 
         this.stateMachineName = resource.stateMachineName;
         this.stateMachineArn = resource.ref;
@@ -54,4 +62,26 @@ export class StateMachine extends cdk.Construct {
     public addToRolePolicy(statement: cdk.PolicyStatement) {
         this.role.addToPolicy(statement);
     }
+
+    /**
+     * Allows using state machines as event rule targets.
+     */
+    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+        if (!this.eventsRole) {
+            this.eventsRole = new iam.Role(this, 'EventsRole', {
+                assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+            });
+
+            this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+                .addAction('states:StartExecution')
+                .addResource(this.stateMachineArn));
+        }
+
+        return {
+            id: this.id,
+            arn: this.stateMachineArn,
+            roleArn: this.eventsRole.roleArn,
+        };
+    }
+
 }

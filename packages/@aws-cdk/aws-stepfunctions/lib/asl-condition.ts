@@ -1,4 +1,88 @@
-export enum ComparisonOperator {
+export abstract class Condition {
+    public static parse(_expression: string): Condition {
+        throw new Error('Parsing not implemented yet!');
+    }
+
+    public static booleanEquals(variable: string, value: boolean): Condition {
+        return new VariableComparison(variable, ComparisonOperator.BooleanEquals, value);
+    }
+
+    public static stringEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.StringEquals, value);
+    }
+
+    public static stringLessThan(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.StringLessThan, value);
+    }
+
+    public static stringLessThanEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.StringLessThanEquals, value);
+    }
+
+    public static stringGreaterThan(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.StringGreaterThan, value);
+    }
+
+    public static stringGreaterThanEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.StringGreaterThanEquals, value);
+    }
+
+    public static numericEquals(variable: string, value: number): Condition {
+        return new VariableComparison(variable, ComparisonOperator.NumericEquals, value);
+    }
+
+    public static numericLessThan(variable: string, value: number): Condition {
+        return new VariableComparison(variable, ComparisonOperator.NumericLessThan, value);
+    }
+
+    public static numericLessThanEquals(variable: string, value: number): Condition {
+        return new VariableComparison(variable, ComparisonOperator.NumericLessThanEquals, value);
+    }
+
+    public static numericGreaterThan(variable: string, value: number): Condition {
+        return new VariableComparison(variable, ComparisonOperator.NumericGreaterThan, value);
+    }
+
+    public static numericGreaterThanEquals(variable: string, value: number): Condition {
+        return new VariableComparison(variable, ComparisonOperator.NumericGreaterThanEquals, value);
+    }
+
+    public static timestampEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.TimestampEquals, value);
+    }
+
+    public static timestampLessThan(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.TimestampLessThan, value);
+    }
+
+    public static timestampLessThanEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.TimestampLessThanEquals, value);
+    }
+
+    public static timestampGreaterThan(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.TimestampGreaterThan, value);
+    }
+
+    public static timestampGreaterThanEquals(variable: string, value: string): Condition {
+        return new VariableComparison(variable, ComparisonOperator.TimestampGreaterThanEquals, value);
+    }
+
+    public static and(...conditions: Condition[]): Condition {
+        return new CompoundCondition(CompoundOperator.And, ...conditions);
+    }
+
+    public static or(...conditions: Condition[]): Condition {
+        return new CompoundCondition(CompoundOperator.Or, ...conditions);
+    }
+
+    public static not(condition: Condition): Condition {
+        return new NotCondition(condition);
+    }
+
+    public abstract renderCondition(): any;
+}
+
+enum ComparisonOperator {
     StringEquals,
     StringLessThan,
     StringGreaterThan,
@@ -15,186 +99,52 @@ export enum ComparisonOperator {
     TimestampGreaterThan,
     TimestampLessThanEquals,
     TimestampGreaterThanEquals,
+}
+
+enum CompoundOperator {
     And,
     Or,
-    Not
 }
 
-export abstract class Condition {
-    public static stringEquals(variable: string, value: string): Condition {
-        return new StringEqualsComparisonOperation({ variable, value });
-    }
-
-    public abstract renderCondition(): any;
-}
-
-export interface BaseVariableComparisonOperationProps {
-    comparisonOperator: ComparisonOperator,
-    value: any,
-    variable: string
-}
-
-export interface VariableComparisonOperationProps {
-    /**
-     * The value to be compared against.
-     */
-    value: any,
-
-    /**
-     * A Path to the value to be compared.
-     */
-    variable: string
-}
-
-export abstract class VariableComparisonOperation extends Condition {
-    constructor(private readonly props: BaseVariableComparisonOperationProps) {
+class VariableComparison extends Condition {
+    constructor(private readonly variable: string, private readonly comparisonOperator: ComparisonOperator, private readonly value: any) {
         super();
     }
 
     public renderCondition(): any {
         return {
-            Variable: this.props.variable,
-            [ComparisonOperator[this.props.comparisonOperator]]: this.props.value
+            Variable: this.variable,
+            [ComparisonOperator[this.comparisonOperator]]: this.value
         };
     }
 }
 
-class StringEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringEquals } });
-    }
-}
+class CompoundCondition extends Condition {
+    private readonly conditions: Condition[];
 
-export class StringLessThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringLessThan } });
-    }
-}
-
-export class StringGreaterThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringGreaterThan } });
-    }
-}
-
-export class StringLessThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringLessThanEquals } });
-    }
-}
-
-export class StringGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringGreaterThanEquals } });
-    }
-}
-
-export class NumericEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericEquals } });
-    }
-}
-
-export class NumericLessThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericLessThan } });
-    }
-}
-
-export class NumericGreaterThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericGreaterThan } });
-    }
-}
-
-export class NumericLessThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericLessThanEquals } });
-    }
-}
-
-export class NumericGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.NumericGreaterThanEquals } });
-    }
-}
-
-export class BooleanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.BooleanEquals } });
-    }
-}
-
-export class TimestampEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampEquals } });
-    }
-}
-
-export class TimestampLessThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampLessThan } });
-    }
-}
-
-export class TimestampGreaterThanComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampGreaterThan } });
-    }
-}
-
-export class TimestampLessThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampLessThanEquals } });
-    }
-}
-
-export class TimestampGreaterThanEqualsComparisonOperation extends VariableComparisonOperation {
-    constructor(props: VariableComparisonOperationProps) {
-        super({ ...props, ...{ comparisonOperator: ComparisonOperator.TimestampGreaterThanEquals } });
-    }
-}
-
-export interface ArrayComparisonOperationProps {
-    comparisonOperator: ComparisonOperator,
-    comparisonOperations: Condition[]
-}
-
-export abstract class ArrayComparisonOperation extends Condition {
-    constructor(private readonly props: ArrayComparisonOperationProps) {
+    constructor(private readonly operator: CompoundOperator, ...conditions: Condition[]) {
         super();
-        if (props.comparisonOperations.length === 0) {
-            throw new Error('\'comparisonOperations\' is empty. Must be non-empty array of ChoiceRules');
+        this.conditions = conditions;
+        if (conditions.length === 0) {
+            throw new Error('Must supply at least one inner condition for a logical combination');
         }
     }
 
     public renderCondition(): any {
         return {
-            [ComparisonOperator[this.props.comparisonOperator]]: this.props.comparisonOperations
+            [CompoundOperator[this.operator]]: this.conditions.map(c => c.renderCondition())
         };
     }
 }
 
-export class AndComparisonOperation extends ArrayComparisonOperation {
-    constructor(...comparisonOperations: Condition[]) {
-        super({ comparisonOperator: ComparisonOperator.And, comparisonOperations });
-    }
-}
-
-export class OrComparisonOperation extends ArrayComparisonOperation {
-    constructor(...comparisonOperations: Condition[]) {
-        super({ comparisonOperator: ComparisonOperator.Or, comparisonOperations });
-    }
-}
-
-export class NotComparisonOperation extends Condition {
+class NotCondition extends Condition {
     constructor(private readonly comparisonOperation: Condition) {
         super();
     }
 
     public renderCondition(): any {
         return {
-            [ComparisonOperator[ComparisonOperator.Not]]: this.comparisonOperation
+            Not: this.comparisonOperation
         };
     }
 }

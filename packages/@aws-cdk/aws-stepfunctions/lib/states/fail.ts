@@ -1,8 +1,8 @@
+import cdk = require('@aws-cdk/cdk');
 import { IStateChain } from '../asl-external-api';
-import { IInternalState, StateBehavior, StateType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-machine';
+import { IInternalState, StateType } from '../asl-internal-api';
+import { StateChain } from '../asl-state-chain';
 import { State } from './state';
-import { StateMachineDefinition } from './state-machine-definition';
 
 export interface FailProps {
     error: string;
@@ -11,33 +11,33 @@ export interface FailProps {
 
 export class Fail extends State {
     private static Internals = class implements IInternalState {
-        public readonly stateBehavior: StateBehavior = {
-            canHaveCatch: false,
-            canHaveNext: false,
-            elidable: false
-        };
+        public readonly canHaveCatch = false;
+        public readonly hasOpenNextTransition = false;
+        public readonly stateId: string;
+        public readonly policyStatements = new Array<cdk.PolicyStatement>();
 
         constructor(private readonly fail: Fail) {
-        }
-
-        public get stateId(): string {
-            return this.fail.stateId;
+            this.stateId = fail.stateId;
         }
 
         public renderState() {
             return this.fail.renderBaseState();
         }
 
-        public next(_targetState: IInternalState): void {
+        public addNext(_targetState: IInternalState): void {
             throw new Error("Cannot chain onto a Fail state. This ends the state machine.");
         }
 
-        public catch(_targetState: IInternalState, _errors: string[]): void {
+        public addCatch(_targetState: IInternalState, _errors: string[]): void {
             throw new Error("Cannot catch errors on a Fail.");
+        }
+
+        public accessibleStates() {
+            return this.fail.accessibleStates();
         }
     };
 
-    constructor(parent: StateMachineDefinition, id: string, props: FailProps) {
+    constructor(parent: cdk.Construct, id: string, props: FailProps) {
         super(parent, id, {
             Type: StateType.Fail,
             Error: props.error,

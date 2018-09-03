@@ -53,6 +53,8 @@
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.8.2",
+    "@aws-cdk/aws-cloudwatch": "^0.8.2",
+    "@aws-cdk/aws-events": "^0.8.2",
     "@aws-cdk/aws-iam": "^0.8.2"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"

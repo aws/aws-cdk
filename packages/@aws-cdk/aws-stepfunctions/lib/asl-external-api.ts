@@ -1,3 +1,4 @@
+import cdk = require('@aws-cdk/cdk');
 import { IInternalState } from "./asl-internal-api";
 
 export interface IChainable {
@@ -7,12 +8,17 @@ export interface IChainable {
 export interface IStateChain extends IChainable {
     readonly startState: IInternalState;
 
-    then(state: IChainable): IStateChain;
-    catch(targetState: IChainable, ...errors: string[]): IStateChain;
+    next(state: IChainable): IStateChain;
+    onError(targetState: IChainable, ...errors: string[]): IStateChain;
+
+    closure(): IStateChain;
+
+    renderStateMachine(): RenderedStateMachine;
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface IState extends IChainable {
+export interface RenderedStateMachine {
+    stateMachineDefinition: any;
+    policyStatements: cdk.PolicyStatement[];
 }
 
 /**
