@@ -47,8 +47,8 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      */
     public export(): TopicRefProps {
         return {
-            topicArn: new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue(),
-            topicName: new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue(),
+            topicArn: new TopicArn(new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue()),
+            topicName: new TopicName(new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue()),
         };
     }
 

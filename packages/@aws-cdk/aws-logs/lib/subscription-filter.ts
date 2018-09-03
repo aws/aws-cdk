@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
+import { LogGroupRef } from './log-group';
 import { cloudformation } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
@@ -18,7 +18,7 @@ export interface ILogSubscriptionDestination {
      * The destination may reconfigure its own permissions in response to this
      * function call.
      */
-    logSubscriptionDestination(sourceLogGroup: LogGroup): LogSubscriptionDestination;
+    logSubscriptionDestination(sourceLogGroup: LogGroupRef): LogSubscriptionDestination;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface SubscriptionFilterProps {
     /**
      * The log group to create the subscription on.
      */
-    logGroup: LogGroup;
+    logGroup: LogGroupRef;
 
     /**
      * The destination to send the filtered events to.

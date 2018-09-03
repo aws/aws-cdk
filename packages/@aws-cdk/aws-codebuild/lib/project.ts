@@ -73,7 +73,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
      */
     public export(): ProjectRefProps {
         return {
-            projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue(),
+            projectName: new ProjectName(new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue()),
         };
     }
 
@@ -482,7 +482,7 @@ export class Project extends ProjectRef {
             resourceName: new cdk.FnConcat('/aws/codebuild/', this.projectName),
         });
 
-        const logGroupStarArn = new cdk.FnConcat(logGroupArn, ':*');
+        const logGroupStarArn = new cdk.Arn(new cdk.FnConcat(logGroupArn, ':*'));
 
         const p = new cdk.PolicyStatement();
         p.allow();
