@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
 import { ActivityArn, ActivityName, cloudformation } from './stepfunctions.generated';
 
 export interface ActivityProps {
@@ -13,7 +14,7 @@ export interface ActivityProps {
 /**
  * Define a new StepFunctions activity
  */
-export class Activity extends cdk.Construct {
+export class Activity extends cdk.Construct implements IStepFunctionsTaskResource {
     public readonly activityArn: ActivityArn;
     public readonly activityName: ActivityName;
 
@@ -26,5 +27,12 @@ export class Activity extends cdk.Construct {
 
         this.activityArn = resource.ref;
         this.activityName = resource.activityName;
+    }
+
+    public asStepFunctionsTaskResource(_callingTask: Task): StepFunctionsTaskResourceProps {
+        // No IAM permissions necessary, execution role implicitly has Activity permissions.
+        return {
+            resourceArn: this.activityArn
+        };
     }
 }
