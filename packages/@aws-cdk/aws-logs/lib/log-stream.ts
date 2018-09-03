@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogGroup } from './log-group';
-import { cloudformation } from './logs.generated';
+import { cloudformation, LogStreamName } from './logs.generated';
 
 /**
  * Properties for a new LogStream
@@ -57,10 +57,4 @@ export class LogStream extends cdk.Construct {
 
         this.logStreamName = resource.ref;
     }
-}
-
-/**
- * The name of a log stream
- */
-export class LogStreamName extends cdk.Token {
 }

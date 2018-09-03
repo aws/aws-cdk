@@ -1,13 +1,15 @@
 import { Test } from 'nodeunit';
-import { Construct, Output, resolve, Resource, Stack } from '../../lib';
+import { Construct, Output, Ref, resolve, Resource, Stack } from '../../lib';
 
 export = {
     'outputs can be added to the stack'(test: Test) {
         const stack = new Stack();
         const res = new Resource(stack, 'MyResource', { type: 'R' });
+        const ref = new Ref(res);
+
         new Output(stack, 'MyOutput', {
             export: 'ExportName',
-            value: res.ref,
+            value: ref,
             description: 'Output properties'
         });
         test.deepEqual(stack.toCloudFormation(), { Resources: { MyResource: { Type: 'R' } },
