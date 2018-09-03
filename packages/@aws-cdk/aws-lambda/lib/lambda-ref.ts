@@ -14,18 +14,23 @@ import { Permission } from './permission';
 export interface FunctionRefProps {
     /**
      * The ARN of the Lambda function.
+     *
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
      */
     functionArn: FunctionArn;
 
     /**
      * The IAM execution role associated with this function.
+     *
      * If the role is not specified, any role-related operations will no-op.
      */
     role?: iam.Role;
 
     /**
-     * SecurityGroupId of the securityGroup for this Lambda, if configured.
+     * Id of the securityGroup for this Lambda, if in a VPC.
+     *
+     * This needs to be given in order to support allowing connections
+     * to this Lambda.
      */
     securityGroupId?: ec2.SecurityGroupId;
 }
@@ -191,7 +196,8 @@ export abstract class FunctionRef extends cdk.Construct
      */
     public get connections(): ec2.Connections {
         if (!this._connections) {
-            throw new Error('Only VPC-associated Lambda Functions can have their security groups managed.');
+            // tslint:disable-next-line:max-line-length
+            throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
         }
         return this._connections;
     }

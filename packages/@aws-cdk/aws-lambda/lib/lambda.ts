@@ -104,7 +104,7 @@ export interface FunctionProps {
      * Only used if 'vpc' is supplied. Note: internet access for Lambdas
      * requires a NAT gateway, so picking Public subnets is not allowed.
      *
-     * @default Private subnets
+     * @default All private subnets
      */
     vpcPlacement?: ec2.VpcPlacementStrategy;
 
@@ -113,7 +113,9 @@ export interface FunctionProps {
      *
      * Only used if 'vpc' is supplied.
      *
-     * @default A unique security group is created for this Lambda function.
+     * @default If the function is placed within a VPC and a security group is
+     * not specified, a dedicated security group will be created for this
+     * function.
      */
     securityGroup?: ec2.SecurityGroupRef;
 }
@@ -196,7 +198,7 @@ export class Function extends FunctionRef {
             role: this.role.roleArn,
             environment: new cdk.Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
-            vpcConfig: this.addToVpc(props),
+            vpcConfig: this.configureVpc(props),
         });
 
         resource.addDependency(this.role);
@@ -264,7 +266,7 @@ export class Function extends FunctionRef {
      * Returns the VpcConfig that should be added to the
      * Lambda creation properties.
      */
-    private addToVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
+    private configureVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
         if (!props.vpc) { return undefined; }
 
         let securityGroup = props.securityGroup;
