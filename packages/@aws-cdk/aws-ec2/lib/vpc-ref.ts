@@ -61,12 +61,14 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
      * Export this VPC from the stack
      */
     public export(): VpcNetworkRefProps {
+        // tslint:disable:max-line-length
         return {
-            vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue(),
+            vpcId: new VPCId(new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue()),
             availabilityZones: this.publicSubnets.map(s => s.availabilityZone),
-            publicSubnetIds: new StringListOutput(this, 'PublicSubnetIDs', { values: this.publicSubnets.map(s => s.subnetId) }).makeImportValues(),
-            privateSubnetIds: new StringListOutput(this, 'PrivateSubnetIDs', { values: this.privateSubnets.map(s => s.subnetId) }).makeImportValues(),
+            publicSubnetIds: new StringListOutput(this, 'PublicSubnetIDs', { values: this.publicSubnets.map(s => s.subnetId) }).makeImportValues().map(x => new SubnetId(x)),
+            privateSubnetIds: new StringListOutput(this, 'PrivateSubnetIDs', { values: this.privateSubnets.map(s => s.subnetId) }).makeImportValues().map(x => new SubnetId(x)),
         };
+        // tslint:enable:max-line-length
     }
 }
 

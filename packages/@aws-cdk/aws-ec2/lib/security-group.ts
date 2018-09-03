@@ -63,7 +63,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
      */
     public export(): SecurityGroupRefProps {
         return {
-            securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue()
+            securityGroupId: new SecurityGroupId(new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue())
         };
     }
 

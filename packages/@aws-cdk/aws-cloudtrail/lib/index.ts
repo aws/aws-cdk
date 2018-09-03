@@ -147,11 +147,11 @@ export class CloudTrail extends cdk.Construct {
             const logGroup = new logs.cloudformation.LogGroupResource(this, "LogGroup", {
                 retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
             });
-            this.cloudWatchLogsGroupArn = logGroup.ref;
+            this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
             const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new cdk.ServicePrincipal(cloudTrailPrincipal) });
 
-            const streamArn = new cdk.FnConcat(this.cloudWatchLogsGroupArn, ":log-stream:*");
+            const streamArn = new cdk.Arn(new cdk.FnConcat(this.cloudWatchLogsGroupArn, ":log-stream:*"));
             logsRole.addToPolicy(new cdk.PolicyStatement()
                 .addActions("logs:PutLogEvents", "logs:CreateLogStream")
                 .addResource(streamArn));

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
+import { LogGroupRef } from './log-group';
 import { cloudformation, DestinationArn, DestinationName } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
@@ -78,7 +78,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
         this.policyDocument.addStatement(statement);
     }
 
-    public logSubscriptionDestination(_sourceLogGroup: LogGroup): LogSubscriptionDestination {
+    public logSubscriptionDestination(_sourceLogGroup: LogGroupRef): LogSubscriptionDestination {
         return { arn: this.destinationArn };
     }
 
