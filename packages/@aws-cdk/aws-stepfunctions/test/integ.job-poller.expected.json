@@ -1,0 +1,75 @@
+{
+  "Resources": {
+    "SubmitJobFB773A16": {
+      "Type": "AWS::StepFunctions::Activity",
+      "Properties": {
+        "Name": "awsstepfunctionsintegSubmitJobA2508960"
+      }
+    },
+    "CheckJob5FFC1D6F": {
+      "Type": "AWS::StepFunctions::Activity",
+      "Properties": {
+        "Name": "awsstepfunctionsintegCheckJobC4AC762D"
+      }
+    },
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Submit Job\",\"States\":{\"Submit Job\":{\"Type\":\"Task\",\"Resource\":\"",
+              {
+                "Ref": "SubmitJobFB773A16"
+              },
+              "\",\"ResultPath\":\"$.guid\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"Next\":\"Wait X Seconds\"},\"Wait X Seconds\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.wait_time\",\"Next\":\"Get Job Status\"},\"Get Job Status\":{\"Type\":\"Task\",\"InputPath\":\"$.guid\",\"Resource\":\"",
+              {
+                "Ref": "CheckJob5FFC1D6F"
+              },
+              "\",\"ResultPath\":\"$.status\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"Next\":\"Job Complete?\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Get Final Job Status\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Get Final Job Status\":{\"Type\":\"Task\",\"InputPath\":\"$.guid\",\"Resource\":\"",
+              {
+                "Ref": "CheckJob5FFC1D6F"
+              },
+              "\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"End\":true}}}"
+            ]
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        }
+      }
+    }
+  }
+}

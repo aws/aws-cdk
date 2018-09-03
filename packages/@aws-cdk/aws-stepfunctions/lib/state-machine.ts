@@ -23,6 +23,9 @@ export interface StateMachineProps {
      * @default A role is automatically created
      */
     role?: iam.Role;
+
+    timeoutSeconds?: number;
+
 }
 
 /**
@@ -44,6 +47,9 @@ export class StateMachine extends cdk.Construct {
         });
 
         const rendered = props.definition.toStateChain().renderStateMachine();
+        if (props.timeoutSeconds !== undefined) {
+            rendered.stateMachineDefinition.TimeoutSeconds = props.timeoutSeconds;
+        }
 
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,

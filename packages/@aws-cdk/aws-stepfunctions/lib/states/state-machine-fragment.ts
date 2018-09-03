@@ -2,8 +2,6 @@ import cdk = require('@aws-cdk/cdk');
 import { IChainable, IStateChain } from "../asl-external-api";
 
 export interface StateMachineFragmentProps {
-    timeoutSeconds?: number;
-
     /**
      * Whether to add the fragment name to the states defined within
      *
@@ -20,12 +18,10 @@ export class StateMachineFragment extends cdk.Construct implements IChainable {
 
     public readonly scopeStateNames: boolean;
 
-    private readonly timeoutSeconds?: number;
     private _startState?: IChainable;
 
     constructor(parent: cdk.Construct, id: string, props: StateMachineFragmentProps = {}) {
         super(parent, id);
-        this.timeoutSeconds = props.timeoutSeconds;
         this.scopeStateNames = props.scopeStateNames !== undefined ? props.scopeStateNames : true;
     }
 
@@ -38,9 +34,6 @@ export class StateMachineFragment extends cdk.Construct implements IChainable {
     }
 
     public toStateChain(): IStateChain {
-        // FIXME: Use somewhere
-        Array.isArray(this.timeoutSeconds);
-
         // If we're converting a state machine definition to a state chain, grab the whole of it.
         return this.startState.toStateChain().closure();
     }

@@ -116,10 +116,11 @@ export class StateChain implements IStateChain {
         };
     }
 
-    public defaultRetry(retry: RetryProps = {}): void {
+    public defaultRetry(retry: RetryProps = {}): IStateChain {
         for (const state of this.allStates) {
             state.addRetry(retry);
         }
+        return this;
     }
 
     public absorb(other: IStateChain) {

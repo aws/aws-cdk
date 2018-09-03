@@ -27,7 +27,7 @@ export interface IStateChain extends IChainable {
     /**
      * Add retries to all states in the chains which can have retries applied
      */
-    defaultRetry(retry?: RetryProps): void;
+    defaultRetry(retry?: RetryProps): IStateChain;
 
     /**
      * Return a chain with all states reachable from the current chain.
