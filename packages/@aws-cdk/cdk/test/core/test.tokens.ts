@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, isToken, resolve, Token } from '../../lib';
+import { CloudFormationToken, isToken, resolve, Token, Arn, FnConcat, Ref } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -242,6 +242,27 @@ export = {
 
         test.done();
     },
+
+    'repro'(test: Test) {
+        // GIVEN
+        const token = new CloudFormationToken({ Ref: 'Other' });
+
+        // WHEN
+        const s = {
+            foo: `Hello, ${token}`
+        };
+
+        // const x = Arn.fromComponents({
+        //     service: 'apigateway',
+        //     account: 'lambda',
+        //     resource: 'path',
+        //     resourceName: `2015-03-31/functions/${token}/invocations`
+        // });
+        // console.log(x);
+        console.log(resolve(s));
+
+        test.done();
+    }
 };
 
 class Promise2 extends Token {

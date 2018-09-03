@@ -1,8 +1,8 @@
 import { expect } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import apigateway = require('../lib');
-import { Stack, App } from '@aws-cdk/cdk';
 
 // tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
@@ -91,8 +91,8 @@ export = {
 
         const api = new apigateway.RestApi(stack, 'API');
 
-        api.newResource('foo');
-        api.newResource('bar').newResource('goo');
+        api.addResource('foo');
+        api.addResource('bar').addResource('goo');
 
         test.throws(() => app.synthesizeStack(stack.name), /The REST API doesn't contain any methods/);
         test.done();
@@ -105,10 +105,10 @@ export = {
             name: 'my-rest-api'
         });
 
-        const foo = api.newResource('foo');
-        api.newResource('bar');
+        const foo = api.addResource('foo');
+        api.addResource('bar');
 
-        foo.newResource('{hello}');
+        foo.addResource('{hello}');
 
         expect(stack).toMatch({
           "Resources": {
@@ -166,10 +166,31 @@ export = {
         test.done();
     },
 
+    'resourcePath returns the full path of the resource within the API'(test: Test) {
+        const stack = new cdk.Stack();
+
+        const api = new apigateway.RestApi(stack, 'restapi');
+
+        const r1 = api.addResource('r1');
+        const r11 = r1.addResource('r1_1');
+        const r12 = r1.addResource('r1_2');
+        const r121 = r12.addResource('r1_2_1');
+        const r2 = api.addResource('r2');
+
+        test.deepEqual(api.resourcePath, '/');
+        test.deepEqual(r1.resourcePath, '/r1');
+        test.deepEqual(r11.resourcePath, '/r1/r1_1');
+        test.deepEqual(r12.resourcePath, '/r1/r1_2');
+        test.deepEqual(r121.resourcePath, '/r1/r1_2/r1_2_1');
+        test.deepEqual(r2.resourcePath, '/r2');
+
+        test.done();
+    },
+
     'resource path cannot use "/"'(test: Test) {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'restapi', { name: 'my-rest-api' });
-        test.throws(() => api.newResource('foo/'));
+        test.throws(() => api.addResource('foo/'));
         test.done();
     },
 

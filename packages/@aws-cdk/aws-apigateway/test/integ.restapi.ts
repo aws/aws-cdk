@@ -1,3 +1,4 @@
+import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import apigateway = require('../lib');
 
@@ -8,24 +9,56 @@ class Test extends cdk.Stack {
         const api = new apigateway.RestApi(this, 'my-api', {
             minimumCompressionSize: 0,
             autoDeployStageOptions: {
+                cacheClusterEnabled: true,
                 stageName: 'test',
-                description: 'testing stage'
+                description: 'testing stage',
+                methodOptions: {
+                    loggingLevel: apigateway.MethodLoggingLevel.Info,
+                    dataTraceEnabled: true
+                },
+                customMethodOptions: {
+                    '/api/appliances/GET': {
+                        cachingEnabled: true
+                    }
+                }
             }
         });
 
-        const v1 = api.newResource('api');
+        const handler = new lambda.Function(this, 'MyHandler', {
+            runtime: lambda.Runtime.NodeJS610,
+            code: lambda.Code.inline(`exports.handler = ${handlerCode}`),
+            handler: 'index.handler',
+        });
 
-        const toys = v1.newResource('toys');
-        toys.newMethod('GET');
-        toys.newMethod('POST');
-        toys.newMethod('PUT');
+        const v1 = api.addResource('api');
 
-        const appliances = v1.newResource('appliances');
-        appliances.newMethod('GET');
+        const toys = v1.addResource('toys');
 
-        const books = v1.newResource('books');
-        books.newMethod('GET');
-        books.newMethod('POST');
+        toys.onMethod('GET', {
+            integration: new apigateway.LambdaMethodIntegration(handler)
+        });
+
+        toys.onMethod('POST');
+        toys.onMethod('PUT');
+
+        const appliances = v1.addResource('appliances');
+        appliances.onMethod('GET');
+
+        const books = v1.addResource('books');
+        books.onMethod('GET');
+        books.onMethod('POST');
+
+        function handlerCode(event: any, _: any, callback: any) {
+            // tslint:disable-next-line:no-console
+            console.log(JSON.stringify(event, undefined, 2));
+
+            return callback(undefined, {
+                isBase64Encoded: false,
+                statusCode: 200,
+                headers: { },
+                body: 'hi'
+            });
+        }
     }
 }
 

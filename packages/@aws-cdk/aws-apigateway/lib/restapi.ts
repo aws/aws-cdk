@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, ResourceId, RestApiId } from './apigateway.generated';
 import { RestApiBody } from './body';
@@ -5,7 +6,7 @@ import { CommonDeploymentProps, Deployment } from './deployment';
 import { Method } from './method';
 import { IRestApiResource, Resource } from './resource';
 import { RestApiRef } from './restapi-ref';
-import { CommonStageProps, Stage } from './stage';
+import { Stage, StageOptions } from './stage';
 
 export interface RestApiProps {
     /**
@@ -41,7 +42,7 @@ export interface RestApiProps {
      *
      * @default CommonStageProps defaults
      */
-    autoDeployStageOptions?: CommonStageProps;
+    autoDeployStageOptions?: StageOptions;
 
     /**
      * A name for the API Gateway RestApi resource.
@@ -125,18 +126,23 @@ export class RestApi extends RestApiRef implements IRestApiResource {
     /**
      * The ID of this API Gateway RestApi.
      */
-    public restApiId: RestApiId;
+    public readonly restApiId: RestApiId;
 
     /**
      * The ID of the root resource of this RestApi. To be used as a parent for
      * all top-level resources.
      */
-    public resourceId: ResourceId;
+    public readonly resourceId: ResourceId;
 
     /**
      * Points to /this/ RestApi.
      */
-    public resourceApi: RestApi;
+    public readonly resourceApi: RestApi;
+
+    /**
+     * The full path of this resource.
+     */
+    public readonly resourcePath = '/';
 
     /**
      * API Gateway deployment that represents the latest changes of the API.
@@ -147,7 +153,9 @@ export class RestApi extends RestApiRef implements IRestApiResource {
 
     /**
      * API Gateway stage that points to the latest deployment (if defined).
-     * This will be undefined if `autoDeploy` is false.
+     *
+     * If `autoDeploy` is disabled, you will need to explicitly assign this value in order to
+     * set up integrations.
      */
     public deploymentStage?: Stage;
 
@@ -185,13 +193,15 @@ export class RestApi extends RestApiRef implements IRestApiResource {
 
         // TODO - determine which field of RestApi need to be added to the hash
         // of the Deployment resource - which are part of the model?
+
+        this.configureCloudWatchRole(resource);
     }
 
-    public newResource(pathPart: string): Resource {
+    public addResource(pathPart: string): Resource {
         return new Resource(this, pathPart, { parent: this, pathPart });
     }
 
-    public newMethod(httpMethod: string): Method {
+    public onMethod(httpMethod: string): Method {
         return new Method(this, httpMethod, { resource: this, httpMethod });
     }
 
@@ -227,6 +237,26 @@ export class RestApi extends RestApiRef implements IRestApiResource {
                 throw new Error(`Cannot set 'autoDeployOptions' if 'autoDeploy' is disabled`);
             }
         }
+    }
+
+    private configureCloudWatchRole(apiResource: cloudformation.RestApiResource) {
+        const role = new iam.Role(this, 'CloudWatchRole', {
+            assumedBy: new cdk.ServicePrincipal('apigateway.amazonaws.com'),
+            managedPolicyArns: [ cdk.Arn.fromComponents({
+                service: 'iam',
+                region: '',
+                account: 'aws',
+                resource: 'policy',
+                sep: '/',
+                resourceName: 'service-role/AmazonAPIGatewayPushToCloudWatchLogs'
+            }) ]
+        });
+
+        const resource = new cloudformation.AccountResource(this, 'Account', {
+            cloudWatchRoleArn: role.roleArn
+        });
+
+        resource.addDependency(apiResource);
     }
 
     private renderBody(body?: RestApiBody): { body?: object, bodyS3Location?: cloudformation.RestApiResource.S3LocationProperty } | undefined {

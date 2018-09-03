@@ -1,16 +1,25 @@
 import { AwsAccountId, AwsPartition, AwsRegion, FnConcat, Token } from '..';
 import { FnSelect, FnSplit } from '../cloudformation/fn';
+import { CloudFormationToken } from './cloudformation-token';
 
 /**
  * An Amazon Resource Name (ARN).
  * http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html
  */
-export class Arn extends Token {
+export class Arn extends CloudFormationToken {
     /**
      * Creates an ARN from components.
-     * If any component is the empty string,
-     * an empty string will be inserted into the generated ARN
-     * at the location that component corresponds to.
+     *
+     * If `partition`, `region` or `account` are not specified, the stack's
+     * partition, region and account will be used.
+     *
+     * If any component is the empty string, an empty string will be inserted
+     * into the generated ARN at the location that component corresponds to.
+     *
+     * The ARN will be formatted as follows:
+     *
+     *     arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
+     *
      */
     public static fromComponents(components: ArnComponents) {
         const partition = components.partition == null

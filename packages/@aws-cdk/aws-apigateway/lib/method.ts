@@ -1,21 +1,11 @@
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, MethodId } from './apigateway.generated';
-import { MethodIntegration } from './integrations';
+import { MethodIntegration, MockMethodIntegration } from './integrations';
 import { IRestApiResource } from './resource';
+import { RestApi } from './restapi';
+import { validateHttpMethod } from './util';
 
-const ALLOWED_METHODS = [ 'ANY', 'DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT' ];
-
-export interface MethodProps {
-    /**
-     * The resource this method is associated with. For root resource methods,
-     * specify the `RestApi` object.
-     */
-    resource: IRestApiResource;
-
-    /**
-     * The HTTP method ("GET", "POST", "PUT", ...) that clients use to call this method.
-     */
-    httpMethod: string;
+export interface MethodOptions {
 
     /**
      * The backend system that the method calls when it receives a request.
@@ -30,7 +20,6 @@ export interface MethodProps {
 
     /**
      * Method authorization.
-     * Use `MethodAuthorization.None` or `MethodAuthorization.IAM`
      * @default None
      */
     authorization?: MethodAuthorization;
@@ -49,29 +38,52 @@ export interface MethodProps {
     // - MethodResponses
 }
 
+export interface MethodProps {
+    /**
+     * The resource this method is associated with. For root resource methods,
+     * specify the `RestApi` object.
+     */
+    resource: IRestApiResource;
+
+    /**
+     * The HTTP method ("GET", "POST", "PUT", ...) that clients use to call this method.
+     */
+    httpMethod: string;
+
+    /**
+     * Method options.
+     */
+    options?: MethodOptions;
+}
+
 export class Method extends cdk.Construct {
     public readonly methodId: MethodId;
+
+    private readonly resource: IRestApiResource;
+    private readonly restApi: RestApi;
+    private readonly httpMethod: string;
 
     constructor(parent: cdk.Construct, id: string, props: MethodProps) {
         super(parent, id);
 
-        if (!ALLOWED_METHODS.includes(props.httpMethod.toUpperCase())) {
-            throw new Error(`Invalid HTTP method "${props.httpMethod}". Allowed methods: ${ALLOWED_METHODS.join(',')}`);
-        }
+        this.resource = props.resource;
+        this.restApi = props.resource.resourceApi;
+        this.httpMethod = props.httpMethod;
 
-        const auth = props.authorization || MethodAuthorization.None;
+        validateHttpMethod(this.httpMethod);
+
+        const options = props.options || { };
+        const auth = options.authorization || MethodAuthorization.None;
 
         const resource = new cloudformation.MethodResource(this, 'Resource', {
             resourceId: props.resource.resourceId,
-            restApiId: props.resource.resourceApi.restApiId,
+            restApiId: this.restApi.restApiId,
             httpMethod: props.httpMethod,
-            operationName: props.operationName,
-            apiKeyRequired: props.apiKeyRequired,
+            operationName: options.operationName,
+            apiKeyRequired: options.apiKeyRequired,
             authorizationType: auth.authorizationType,
             authorizerId: auth.authorizerId,
-            integration: {
-                type: 'MOCK'
-            }
+            integration: this.renderIntegration(options.integration),
         });
 
         this.methodId = resource.ref;
@@ -85,13 +97,81 @@ export class Method extends cdk.Construct {
                 method: {
                     resourceId: props.resource.resourceId,
                     httpMethod: props.httpMethod,
-                    operationName: props.operationName,
-                    apiKeyRequired: props.apiKeyRequired,
+                    operationName: options.operationName,
+                    apiKeyRequired: options.apiKeyRequired,
                     authorizationType: auth.authorizationType,
                     authorizerId: auth.authorizerId
                 }
             });
         }
+    }
+
+    /**
+     * Returns an execute-api ARN for this method:
+     *
+     *     arn:aws:execute-api:{region}:{account}:{restApiId}/{stage}/{method}/{path}
+     *
+     * NOTE: {stage} will refer to the `restApi.deploymentStage`, which will
+     * automatically set if auto-deploy is enabled.
+     */
+    public get methodArn(): cdk.Arn {
+        if (!this.restApi.deploymentStage) {
+            throw new Error('There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`');
+        }
+
+        return this.methodArnForStage(this.restApi.deploymentStage.stageName.toString());
+    }
+
+    /**
+     * Returns an execute-api ARN for this method's "test-invoke-stage" stage.
+     * This stage is used by the AWS Console UI when testing the method.
+     */
+    public get testMethodArn(): cdk.Arn {
+        return this.methodArnForStage('test-invoke-stage');
+    }
+
+    private methodArnForStage(stage: string) {
+        return cdk.Arn.fromComponents({
+            service: 'execute-api',
+            resource: this.restApi.restApiId,
+            sep: '/',
+            resourceName: `${stage}/${this.httpMethod}${this.resource.resourcePath}`
+        });
+    }
+
+    private renderIntegration(integration?: MethodIntegration): cloudformation.MethodResource.IntegrationProperty {
+        if (!integration) {
+            return this.renderIntegration(new MockMethodIntegration());
+        }
+
+        integration.attachToMethod(this);
+
+        const options = integration.props.options || { };
+
+        let credentials;
+        if (options.credentialsPassthrough && options.credentialsRole) {
+            throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
+        }
+
+        if (options.credentialsRole) {
+            credentials = options.credentialsRole.roleArn;
+        } else if (options.credentialsPassthrough) {
+            // arn:aws:iam::*:user/*
+            credentials = cdk.Arn.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+        }
+
+        return {
+            type: integration.props.type,
+            uri: integration.props.uri,
+            cacheKeyParameters: options.cacheKeyParameters,
+            cacheNamespace: options.cacheNamespace,
+            contentHandling: options.contentHandling,
+            integrationHttpMethod: integration.props.integrationHttpMethod,
+            requestParameters: options.requestParameters,
+            requestTemplates: options.requestTemplates,
+            passthroughBehavior: options.passthroughBehavior,
+            credentials,
+        };
     }
 }
 

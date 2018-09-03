@@ -8,6 +8,6 @@ const stack = new cdk.Stack(app, 'test-apigateway-restapi-defaults');
 const api = new apigateway.RestApi(stack, 'my-api');
 
 // at least one method is required
-api.newMethod('GET');
+api.onMethod('GET');
 
 process.stdout.write(app.run());
