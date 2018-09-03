@@ -12,6 +12,11 @@ export interface StateMachineProps {
     stateMachineName?: string;
 
     /**
+     * Definition for this state machine
+     */
+    definition: StateMachineDefinition;
+
+    /**
      * The execution role for the state machine service
      *
      * @default A role is automatically created
@@ -22,12 +27,12 @@ export interface StateMachineProps {
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends StateMachineDefinition {
+export class StateMachine extends cdk.Construct {
     public readonly role: iam.Role;
     public readonly stateMachineName: StateMachineName;
     public readonly stateMachineArn: StateMachineArn;
 
-    constructor(parent: cdk.Construct, id: string, props: StateMachineProps = {}) {
+    constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
         super(parent, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
@@ -37,8 +42,9 @@ export class StateMachine extends StateMachineDefinition {
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            // We may have objects added to us after creation
-            definitionString: new cdk.Token(() => cdk.CloudFormationJSON.stringify(this.toStateMachine()))
+            // Depending on usage, definition may change after our instantiation
+            // (because we're organized like a mutable object tree)
+            definitionString: new cdk.Token(() => cdk.CloudFormationJSON.stringify(props.definition.toStateMachine()))
         });
 
         this.stateMachineName = resource.stateMachineName;

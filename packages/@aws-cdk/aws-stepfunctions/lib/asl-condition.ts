@@ -21,7 +21,11 @@ export enum ComparisonOperator {
 }
 
 export abstract class Condition {
-    public abstract toCondition(): any;
+    public static stringEquals(variable: string, value: string): Condition {
+        return new StringEqualsComparisonOperation({ variable, value });
+    }
+
+    public abstract renderCondition(): any;
 }
 
 export interface BaseVariableComparisonOperationProps {
@@ -47,7 +51,7 @@ export abstract class VariableComparisonOperation extends Condition {
         super();
     }
 
-    public toCondition(): any {
+    public renderCondition(): any {
         return {
             Variable: this.props.variable,
             [ComparisonOperator[this.props.comparisonOperator]]: this.props.value
@@ -55,7 +59,7 @@ export abstract class VariableComparisonOperation extends Condition {
     }
 }
 
-export class StringEqualsComparisonOperation extends VariableComparisonOperation {
+class StringEqualsComparisonOperation extends VariableComparisonOperation {
     constructor(props: VariableComparisonOperationProps) {
         super({ ...props, ...{ comparisonOperator: ComparisonOperator.StringEquals } });
     }
@@ -164,7 +168,7 @@ export abstract class ArrayComparisonOperation extends Condition {
         }
     }
 
-    public toCondition(): any {
+    public renderCondition(): any {
         return {
             [ComparisonOperator[this.props.comparisonOperator]]: this.props.comparisonOperations
         };
@@ -188,7 +192,7 @@ export class NotComparisonOperation extends Condition {
         super();
     }
 
-    public toCondition(): any {
+    public renderCondition(): any {
         return {
             [ComparisonOperator[ComparisonOperator.Not]]: this.comparisonOperation
         };
