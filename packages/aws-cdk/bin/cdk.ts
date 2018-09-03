@@ -264,8 +264,8 @@ async function initCommandLine() {
             environmentGlobs = [ '**' ]; // default to ALL
         }
         const stackInfos = await selectStacks();
-        const availableEnvironments = stackInfos.map(stack => stack.environment)
-                                                .filter(env => env !== undefined);
+        const availableEnvironments = distinct(stackInfos.map(stack => stack.environment)
+                                                         .filter(env => env !== undefined) as cxapi.Environment[]);
         const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
         if (environments.length === 0) {
             const globs = JSON.stringify(environmentGlobs);
@@ -284,6 +284,24 @@ async function initCommandLine() {
                 throw e;
             }
         }));
+
+        /**
+         * De-duplicates a list of environments, such that a given account and region is only represented exactly once
+         * in the result.
+         *
+         * @param envs the possibly full-of-duplicates list of environments.
+         *
+         * @return a de-duplicated list of environments.
+         */
+        function distinct(envs: cxapi.Environment[]): cxapi.Environment[] {
+            const unique: { [id: string]: cxapi.Environment } = {};
+            for (const env of envs) {
+                const id = `${env.account || 'default'}/${env.region || 'default'}`;
+                if (id in unique) { continue; }
+                unique[id] = env;
+            }
+            return Object.values(unique);
+        }
     }
 
     /**
