@@ -389,6 +389,38 @@ export = {
             test.done();
         },
 
+        'Retries and errors with a result path'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
+
+            // WHEN
+            const chain = task1.retry({ errors: ['HTTPError'], maxAttempts: 2 }).onError(failure, { resultPath: '$.some_error' }).next(failure);
+
+            // THEN
+            test.deepEqual(render(chain), {
+                StartAt: 'Task1',
+                States: {
+                    Task1: {
+                        Type: 'Task',
+                        Resource: 'resource',
+                        Catch: [ { ErrorEquals: ['States.ALL'], Next: 'Failed', ResultPath: '$.some_error' } ],
+                        Retry: [ { ErrorEquals: ['HTTPError'], MaxAttempts: 2 } ],
+                        Next: 'Failed',
+                    },
+                    Failed: {
+                        Type: 'Fail',
+                        Error: 'DidNotWork',
+                        Cause: 'We got stuck',
+                    }
+                }
+            });
+
+            test.done();
+
+        },
+
         'Error branch is attached to all tasks in chain'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();

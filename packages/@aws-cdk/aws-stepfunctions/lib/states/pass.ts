@@ -7,6 +7,7 @@ import { State } from './state';
 export interface PassProps {
     inputPath?: string;
     outputPath?: string;
+    resultPath?: string;
     comment?: string;
 }
 
@@ -53,6 +54,7 @@ export class Pass extends State {
             Type: StateType.Pass,
             InputPath: props.inputPath,
             OutputPath: props.outputPath,
+            ResultPath: props.resultPath,
             Comment: props.comment,
         });
     }

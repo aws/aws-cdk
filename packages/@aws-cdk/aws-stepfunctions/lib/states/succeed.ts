@@ -5,6 +5,8 @@ import { StateChain } from '../asl-state-chain';
 import { State } from './state';
 
 export interface SucceedProps {
+    inputPath?: string;
+    outputPath?: string;
     comment?: string;
 }
 
@@ -43,6 +45,8 @@ export class Succeed extends State {
     constructor(parent: cdk.Construct, id: string, props: SucceedProps = {}) {
         super(parent, id, {
             Type: StateType.Succeed,
+            InputPath: props.inputPath,
+            OutputPath: props.outputPath,
             Comment: props.comment,
         });
     }
