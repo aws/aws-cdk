@@ -1,11 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
 import { Method } from './method';
-import { parseAwsApiCall } from './util';
 
 export interface IntegrationOptions {
-
     /**
      * A list of request parameters whose values API Gateway caches.
      */
@@ -18,7 +14,8 @@ export interface IntegrationOptions {
 
     /**
      * Specifies how to handle request payload content type conversions.
-     * @default If this property isn't defined, the request payload is passed
+     *
+     * @default none if this property isn't defined, the request payload is passed
      * through from the method request to the integration request without
      * modification, provided that the `passthroughBehaviors` property is
      * configured to support payload pass-through.
@@ -78,9 +75,23 @@ export interface IntegrationOptions {
      */
     requestTemplates?: { [contentType: string]: string };
 
-    // TODO:
-    // - IntegrationResponses
-    //
+    /**
+     * The response that API Gateway provides after a method's backend completes
+     * processing a request. API Gateway intercepts the response from the
+     * backend so that you can control how API Gateway surfaces backend
+     * responses. For example, you can map the backend status codes to codes
+     * that you define.
+     */
+    integrationResponses?: IntegrationResponse[];
+
+    /**
+     * The templates that are used to transform the integration response body.
+     * Specify templates as key-value pairs (string-to-string mappings), with a
+     * content type as the key and a template as the value.
+     *
+     * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+     */
+    selectionPattern?: string;
 }
 
 export interface IntegrationProps {
@@ -96,8 +107,7 @@ export interface IntegrationProps {
      * - If you specify HTTP for the `type` property, specify the API endpoint URL.
      * - If you specify MOCK for the `type` property, don't specify this property.
      * - If you specify AWS for the `type` property, specify an AWS service that
-     *   follows this form:
-     *   `arn:aws:apigateway:region:subdomain.service|service:path|action/service_api.`
+     *   follows this form: `arn:aws:apigateway:region:subdomain.service|service:path|action/service_api.`
      *   For example, a Lambda function URI follows this form:
      *   arn:aws:apigateway:region:lambda:path/path. The path is usually in the
      *   form /2015-03-31/functions/LambdaFunctionARN/invocations.
@@ -118,155 +128,21 @@ export interface IntegrationProps {
     options?: IntegrationOptions;
 }
 
-export abstract class MethodIntegration {
-    constructor(readonly props: IntegrationProps) {
+/**
+ * Base class for backend integrations for an API Gateway method.
+ *
+ * Use one of the concrete classes such as `MockIntegration`, `AwsIntegration`, `LambdaIntegration`
+ * or implement on your own by specifying the set of props.
+ */
+export class Integration {
+    constructor(readonly props: IntegrationProps) { }
 
-    }
-
-    public attachToMethod(_method: Method) {
+    /**
+     * Can be overridden by subclasses to allow the integration to interact with the method
+     * being integrated, access the REST API object, method ARNs, etc.
+     */
+    public bind(_method: Method) {
         return;
-    }
-}
-
-export class MockMethodIntegration extends MethodIntegration {
-    constructor(options?: IntegrationOptions) {
-        super({
-            type: IntegrationType.Mock,
-            options
-        });
-    }
-}
-
-export enum AwsApiType {
-    Path = 'path',
-    Action = 'action'
-}
-
-export interface AwsIntegrationProps {
-    /**
-     * Use AWS_PROXY integration.
-     *
-     * @default false
-     */
-    proxy?: boolean;
-
-    /**
-     * The name of the integrated AWS service (e.g. `s3`)
-     */
-    service: string;
-
-    /**
-     * A designated subdomain supported by certain AWS service for fast
-     * host-name lookup.
-     */
-    subdomain?: string;
-
-    /**
-     * The path to use for path-base APIs.
-     *
-     * For example, for S3 GET, you can set path to `bucket/key`.
-     * For lambda, you can set path to `2015-03-31/functions/${function-arn}/invocations`
-     *
-     * Mutually exclusive with the `action` options.
-     */
-    path?: string;
-
-    /**
-     * The AWS action to perform in the integration.
-     *
-     * Use `actionParams` to specify key-value params for the action.
-     *
-     * Mutually exclusive with `path`.
-     */
-    action?: string;
-
-    /**
-     * Parameters for the action.
-     *
-     * `action` must be set, and `path` must be undefined.
-     * The action params will be URL encoded.
-     */
-    actionParameters?: { [key: string]: string };
-
-    /**
-     * Integration options.
-     */
-    options?: IntegrationOptions
-}
-
-export class AwsIntegration extends MethodIntegration {
-    constructor(props: AwsIntegrationProps) {
-        const backend = props.subdomain ? `${props.subdomain}.${props.service}` : props.service;
-        const type = props.proxy ? IntegrationType.AwsProxy : IntegrationType.Aws;
-        const { apiType, apiValue } = parseAwsApiCall(props.path, props.action, props.actionParameters);
-        super({
-            type,
-            integrationHttpMethod: 'POST',
-            uri: cdk.Arn.fromComponents({
-                service: 'apigateway',
-                account: backend,
-                resource: apiType,
-                sep: '/',
-                resourceName: apiValue,
-            }),
-            options: props.options,
-        });
-    }
-}
-
-export interface LambdaIntegrationOptions extends IntegrationOptions {
-    /**
-     * Use proxy integration or normal (request/response mapping) integration.
-     * @default true
-     */
-    proxy?: boolean;
-
-    /**
-     * Allow invoking method from AWS Console UI (for testing purposes).
-     *
-     * This will add another permission to the AWS Lambda resource policy which
-     * will allow the `test-invoke-stage` stage to invoke this handler. If this
-     * is set to `false`, the function will only be usable from the deployment
-     * endpoint.
-     *
-     * @default true
-     */
-    enableTestInvoke?: boolean;
-}
-
-export class LambdaMethodIntegration extends AwsIntegration {
-    private readonly handler: lambda.FunctionRef;
-    private readonly enableTestInvoke: boolean;
-
-    constructor(handler: lambda.FunctionRef, options: LambdaIntegrationOptions = { }) {
-        const proxy = options.proxy === undefined ? true : options.proxy;
-
-        super({
-            proxy,
-            service: 'lambda',
-            path: `2015-03-31/functions/${handler.functionArn}/invocations`,
-            options
-        });
-
-        this.handler = handler;
-        this.enableTestInvoke = options.enableTestInvoke === undefined ? true : false;
-    }
-
-    public attachToMethod(method: Method) {
-        const principal = new cdk.ServicePrincipal('apigateway.amazonaws.com');
-
-        this.handler.addPermission(method.methodArn.toString(), {
-            principal,
-            sourceArn: method.methodArn
-        });
-
-        // add permission to invoke from the console
-        if (this.enableTestInvoke) {
-            this.handler.addPermission(method.testMethodArn.toString(), {
-                principal,
-                sourceArn: method.testMethodArn
-            });
-        }
     }
 }
 
@@ -339,4 +215,46 @@ export enum PassthroughBehavior {
      * unmapped content types will be rejected with the same 415 response.
      */
     WhenNoTemplates = 'WHEN_NO_TEMPLATES'
+}
+
+export interface IntegrationResponse {
+    /**
+     * The status code that API Gateway uses to map the integration response to
+     * a MethodResponse status code.
+     */
+    statusCode: string;
+
+    /**
+     * Specifies how to handle request payload content type conversions.
+     *
+     * @default none the request payload is passed through from the method
+     * request to the integration request without modification.
+     */
+    contentHandling?: ContentHandling;
+
+    /**
+     * The response parameters from the backend response that API Gateway sends
+     * to the method response.
+     *
+     * Use the destination as the key and the source as the value:
+     *
+     * - The destination must be an existing response parameter in the
+     *   MethodResponse property.
+     * - The source must be an existing method request parameter or a static
+     *   value. You must enclose static values in single quotation marks and
+     *   pre-encode these values based on the destination specified in the
+     *   request.
+     *
+     * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+     */
+    responseParameters?: { [destination: string]: string };
+
+    /**
+     * The templates that are used to transform the integration response body.
+     * Specify templates as key-value pairs, with a content type as the key and
+     * a template as the value.
+     *
+     * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+     */
+    responseTemplates?: { [contentType: string]: string };
 }

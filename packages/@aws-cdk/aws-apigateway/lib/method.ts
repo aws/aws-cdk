@@ -1,17 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, MethodId } from './apigateway.generated';
-import { MethodIntegration, MockMethodIntegration } from './integrations';
+import { AuthorizerId, cloudformation, MethodId } from './apigateway.generated';
+import { Integration } from './integration';
+import { MockIntegration } from './integrations/mock';
 import { IRestApiResource } from './resource';
 import { RestApi } from './restapi';
 import { validateHttpMethod } from './util';
 
 export interface MethodOptions {
-
-    /**
-     * The backend system that the method calls when it receives a request.
-     */
-    integration?: MethodIntegration;
-
     /**
      * A friendly operation name for the method. For example, you can assign the
      * OperationName of ListPets for the GET /pets method.
@@ -20,9 +15,18 @@ export interface MethodOptions {
 
     /**
      * Method authorization.
-     * @default None
+     * @default None open access
      */
-    authorization?: MethodAuthorization;
+    authorizationType?: AuthorizationType;
+
+    /**
+     * If `authorizationType` is `Custom`, this specifies the ID of the method
+     * authorizer resource.
+     *
+     * NOTE: in the future this will be replaced with an `AuthorizerRef`
+     * construct.
+     */
+    authorizerId?: AuthorizerId;
 
     /**
      * Indicates whether the method requires clients to submit a valid API key.
@@ -31,7 +35,6 @@ export interface MethodOptions {
     apiKeyRequired?: boolean;
 
     // TODO:
-    // - Authorization (AuthorizationType, AuthorizerId)
     // - RequestValidatorId
     // - RequestModels
     // - RequestParameters
@@ -51,6 +54,11 @@ export interface MethodProps {
     httpMethod: string;
 
     /**
+     * The backend system that the method calls when it receives a request.
+     */
+    integration?: Integration;
+
+    /**
      * Method options.
      */
     options?: MethodOptions;
@@ -58,10 +66,9 @@ export interface MethodProps {
 
 export class Method extends cdk.Construct {
     public readonly methodId: MethodId;
-
-    private readonly resource: IRestApiResource;
-    private readonly restApi: RestApi;
-    private readonly httpMethod: string;
+    public readonly httpMethod: string;
+    public readonly resource: IRestApiResource;
+    public readonly restApi: RestApi;
 
     constructor(parent: cdk.Construct, id: string, props: MethodProps) {
         super(parent, id);
@@ -73,18 +80,19 @@ export class Method extends cdk.Construct {
         validateHttpMethod(this.httpMethod);
 
         const options = props.options || { };
-        const auth = options.authorization || MethodAuthorization.None;
 
-        const resource = new cloudformation.MethodResource(this, 'Resource', {
+        const methodProps: cloudformation.MethodResourceProps = {
             resourceId: props.resource.resourceId,
             restApiId: this.restApi.restApiId,
             httpMethod: props.httpMethod,
             operationName: options.operationName,
             apiKeyRequired: options.apiKeyRequired,
-            authorizationType: auth.authorizationType,
-            authorizerId: auth.authorizerId,
-            integration: this.renderIntegration(options.integration),
-        });
+            authorizationType: options.authorizationType || AuthorizationType.None,
+            authorizerId: options.authorizerId,
+            integration: this.renderIntegration(props.integration, this.restApi.defaultIntegration)
+        };
+
+        const resource = new cloudformation.MethodResource(this, 'Resource', methodProps);
 
         this.methodId = resource.ref;
 
@@ -93,16 +101,7 @@ export class Method extends cdk.Construct {
         const deployment = props.resource.resourceApi.latestDeployment;
         if (deployment) {
             deployment.addDependency(resource);
-            deployment.addToLogicalId({
-                method: {
-                    resourceId: props.resource.resourceId,
-                    httpMethod: props.httpMethod,
-                    operationName: options.operationName,
-                    apiKeyRequired: options.apiKeyRequired,
-                    authorizationType: auth.authorizationType,
-                    authorizerId: auth.authorizerId
-                }
-            });
+            deployment.addToLogicalId({ method: methodProps });
         }
     }
 
@@ -119,7 +118,8 @@ export class Method extends cdk.Construct {
             throw new Error('There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`');
         }
 
-        return this.methodArnForStage(this.restApi.deploymentStage.stageName.toString());
+        const stage = this.restApi.deploymentStage.stageName.toString();
+        return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, stage);
     }
 
     /**
@@ -127,24 +127,21 @@ export class Method extends cdk.Construct {
      * This stage is used by the AWS Console UI when testing the method.
      */
     public get testMethodArn(): cdk.Arn {
-        return this.methodArnForStage('test-invoke-stage');
+        return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, 'test-invoke-stage');
     }
 
-    private methodArnForStage(stage: string) {
-        return cdk.Arn.fromComponents({
-            service: 'execute-api',
-            resource: this.restApi.restApiId,
-            sep: '/',
-            resourceName: `${stage}/${this.httpMethod}${this.resource.resourcePath}`
-        });
-    }
-
-    private renderIntegration(integration?: MethodIntegration): cloudformation.MethodResource.IntegrationProperty {
+    private renderIntegration(integration?: Integration, defaultIntegration?: Integration): cloudformation.MethodResource.IntegrationProperty {
         if (!integration) {
-            return this.renderIntegration(new MockMethodIntegration());
+            // use defaultIntegration from API if defined
+            if (defaultIntegration) {
+                return this.renderIntegration(defaultIntegration);
+            }
+
+            // fallback to mock
+            return this.renderIntegration(new MockIntegration());
         }
 
-        integration.attachToMethod(this);
+        integration.bind(this);
 
         const options = integration.props.options || { };
 
@@ -170,16 +167,30 @@ export class Method extends cdk.Construct {
             requestParameters: options.requestParameters,
             requestTemplates: options.requestTemplates,
             passthroughBehavior: options.passthroughBehavior,
+            integrationResponses: options.integrationResponses,
             credentials,
         };
     }
 }
 
-export class MethodAuthorization {
-    public static IAM = new MethodAuthorization('AWS_IAM');
-    public static None = new MethodAuthorization('NONE');
+export enum AuthorizationType {
+    /**
+     * Open access.
+     */
+    None = 'NONE',
 
-    constructor(
-        public readonly authorizationType: string,
-        public readonly authorizerId?: string) { }
+    /**
+     * Use AWS IAM permissions.
+     */
+    IAM = 'AWS_IAM',
+
+    /**
+     * Use a custom authorizer.
+     */
+    Custom = 'CUSTOM',
+
+    /**
+     * Use an AWS Cognito user pool.
+     */
+    Cognito = 'COGNITO_USER_POOLS',
 }

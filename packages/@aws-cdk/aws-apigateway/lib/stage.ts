@@ -1,9 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, StageName } from './apigateway.generated';
 import { Deployment } from './deployment';
+import { RestApiRef } from './restapi-ref';
 import { parseMethodOptionsPath } from './util';
 
-export interface StageOptions {
+export interface StageOptions extends MethodDeploymentOptions {
     /**
      * The name of the stage, which API Gateway uses as the first path segment
      * in the invoked Uniform Resource Identifier (URI).
@@ -49,12 +50,6 @@ export interface StageOptions {
     variables?: { [key: string]: string };
 
     /**
-     * Default deployment options for all methods. You can indicate deployment
-     * options for specific resources/methods via `customMethodOptions`.
-     */
-    methodOptions?: MethodDeploymentOptions
-
-    /**
      * Method deployment options for specific resources/methods. These will
      * override common options defined in `StageOptions#methodOptions`.
      *
@@ -63,7 +58,7 @@ export interface StageOptions {
      * to define options for all methods/resources.
      */
 
-    customMethodOptions?: { [path: string]: MethodDeploymentOptions };
+    methodOptions?: { [path: string]: MethodDeploymentOptions };
 }
 
 export interface StageProps extends StageOptions {
@@ -134,6 +129,8 @@ export interface MethodDeploymentOptions {
 export class Stage extends cdk.Construct {
     public readonly stageName: StageName;
 
+    private readonly restApi: RestApiRef;
+
     constructor(parent: cdk.Construct, id: string, props: StageProps) {
         super(parent, id);
 
@@ -160,18 +157,41 @@ export class Stage extends cdk.Construct {
         });
 
         this.stageName = resource.ref;
+        this.restApi = props.deployment.api;
+    }
+
+    /**
+     * Returns the invoke URL for a certain path.
+     * @param path The resource path
+     */
+    public urlForPath(path: string = '/') {
+        return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion()}.amazonaws.com/${this.stageName}${path}`;
     }
 
     private renderMethodSettings(props: StageProps): cloudformation.StageResource.MethodSettingProperty[] | undefined {
         const settings = new Array<cloudformation.StageResource.MethodSettingProperty>();
 
-        if (props.methodOptions) {
-            settings.push(renderEntry('/*/*', props.methodOptions));
+        // extract common method options from the stage props
+        const commonMethodOptions: MethodDeploymentOptions = {
+            metricsEnabled: props.metricsEnabled,
+            loggingLevel: props.loggingLevel,
+            dataTraceEnabled: props.dataTraceEnabled,
+            throttlingBurstLimit: props.throttlingBurstLimit,
+            throttlingRateLimit: props.throttlingRateLimit,
+            cachingEnabled: props.cachingEnabled,
+            cacheTtlSeconds: props.cacheTtlSeconds,
+            cacheDataEncrypted: props.cacheDataEncrypted
+        };
+
+        // if any of them are defined, add an entry for '/*/*'.
+        const hasCommonOptions = Object.keys(commonMethodOptions).map(v => (commonMethodOptions as any)[v]).filter(x => x).length > 0;
+        if (hasCommonOptions) {
+            settings.push(renderEntry('/*/*', commonMethodOptions));
         }
 
-        if (props.customMethodOptions) {
-            for (const path of Object.keys(props.customMethodOptions)) {
-                settings.push(renderEntry(path, props.customMethodOptions[path]));
+        if (props.methodOptions) {
+            for (const path of Object.keys(props.methodOptions)) {
+                settings.push(renderEntry(path, props.methodOptions[path]));
             }
         }
 

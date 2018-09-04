@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -8,44 +8,7 @@ import apigateway = require('../lib');
 // tslint:disable:object-literal-key-quotes
 
 export = {
-    '"name" is defaulted to construct id'(test: Test) {
-        const stack = new cdk.Stack();
-        new apigateway.RestApi(stack, 'my-first-api', { autoDeploy: false });
-        expect(stack).toMatch({
-          "Resources": {
-            "myfirstapi5827A5AA": {
-              "Type": "AWS::ApiGateway::RestApi",
-              "Properties": {
-                "Name": "my-first-api"
-              }
-            }
-          }
-        });
-
-        test.done();
-    },
-
-    '"name" can be undefined if "body" is specified'(test: Test) {
-        const stack = new cdk.Stack();
-        new apigateway.RestApi(stack, 'bla', {
-            autoDeploy: false,
-            body: new apigateway.RestApiBody()
-        });
-        expect(stack).toMatch({
-            "Resources": {
-              "blaBE223B94": {
-                "Type": "AWS::ApiGateway::RestApi",
-                "Properties": {
-                  "Body": {},
-                  "BodyS3Location": {}
-                }
-              }
-            }
-        });
-        test.done();
-    },
-
-    'minimal setup (just a name)'(test: Test) {
+    'minimal setup'(test: Test) {
         const stack = new cdk.Stack();
 
         new apigateway.RestApi(stack, 'my-api');
@@ -58,25 +21,108 @@ export = {
                 "Name": "my-api"
               }
             },
-            "myapiLatestDeployment24E142F7": {
+            "myapiDeployment92F2CB49": {
               "Type": "AWS::ApiGateway::Deployment",
               "Properties": {
                 "RestApiId": {
                   "Ref": "myapi4C7BF186"
-                }
+                },
+                "Description": "Automatically created by the RestApi construct"
               },
               "DeletionPolicy": "Retain"
             },
-            "myapiDeploymentStage252BF8C8": {
+            "myapiDeploymentStageprod298F01AF": {
               "Type": "AWS::ApiGateway::Stage",
               "Properties": {
                 "RestApiId": {
                   "Ref": "myapi4C7BF186"
                 },
                 "DeploymentId": {
-                  "Ref": "myapiLatestDeployment24E142F7"
+                  "Ref": "myapiDeployment92F2CB49"
                 },
                 "StageName": "prod"
+              }
+            },
+            "myapiCloudWatchRole095452E5": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Statement": [
+                    {
+                      "Action": "sts:AssumeRole",
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": "apigateway.amazonaws.com"
+                      }
+                    }
+                  ],
+                  "Version": "2012-10-17"
+                },
+                "ManagedPolicyArns": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn",
+                        ":",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":",
+                        "iam",
+                        ":",
+                        "",
+                        ":",
+                        "aws",
+                        ":",
+                        "policy",
+                        "/",
+                        "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            },
+            "myapiAccountEC421A0A": {
+              "Type": "AWS::ApiGateway::Account",
+              "Properties": {
+                "CloudWatchRoleArn": {
+                  "Fn::GetAtt": [
+                    "myapiCloudWatchRole095452E5",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "myapi4C7BF186"
+              ]
+            }
+          },
+          "Outputs": {
+            "myapiEndpoint3628AFE3": {
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "myapi4C7BF186"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".amazonaws.com/",
+                    {
+                      "Ref": "myapiDeploymentStageprod298F01AF"
+                    },
+                    "/"
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "myapiEndpoint3628AFE3"
               }
             }
           }
@@ -85,7 +131,27 @@ export = {
         test.done();
     },
 
-    'fails in synthesis if there are no methods'(test: Test) {
+    '"name" is defaulted to construct id'(test: Test) {
+      const stack = new cdk.Stack();
+      new apigateway.RestApi(stack, 'my-first-api', {
+          deploy: false,
+          cloudWatchRole: false,
+      });
+      expect(stack).toMatch({
+        "Resources": {
+          "myfirstapi5827A5AA": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "my-first-api"
+            }
+          }
+        }
+      });
+
+      test.done();
+  },
+
+  'fails in synthesis if there are no methods'(test: Test) {
         const app = new App();
         const stack = new Stack(app, 'my-stack');
 
@@ -101,8 +167,9 @@ export = {
     'newChildResource can be used on IRestApiResource to form a tree'(test: Test) {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'restapi', {
-            autoDeploy: false,
-            name: 'my-rest-api'
+            deploy: false,
+            cloudWatchRole: false,
+            restApiName: 'my-rest-api'
         });
 
         const foo = api.addResource('foo');
@@ -115,7 +182,7 @@ export = {
             "restapiC5611D27": {
               "Type": "AWS::ApiGateway::RestApi",
               "Properties": {
-                "Name": "restapi"
+                "Name": "my-rest-api"
               }
             },
             "restapifooF697E056": {
@@ -189,7 +256,7 @@ export = {
 
     'resource path cannot use "/"'(test: Test) {
         const stack = new cdk.Stack();
-        const api = new apigateway.RestApi(stack, 'restapi', { name: 'my-rest-api' });
+        const api = new apigateway.RestApi(stack, 'restapi');
         test.throws(() => api.addResource('foo/'));
         test.done();
     },
@@ -197,7 +264,7 @@ export = {
     'fails if autoDeployStageOptions is set with autoDeploy disabled'(test: Test) {
         const stack = new cdk.Stack();
         test.throws(() => {
-            new apigateway.RestApi(stack, 'myapi', { autoDeploy: false, autoDeployStageOptions: { stageName: 'foo' }});
+            new apigateway.RestApi(stack, 'myapi', { deploy: false, deployOptions: { stageName: 'foo' }});
         }, `Cannot set 'autoDeployStageOptions' if 'autoDeploy' is disabled`);
         test.done();
     },
@@ -205,8 +272,16 @@ export = {
     'fails if autoDeployOptions is set with autoDeploy disabled'(test: Test) {
         const stack = new cdk.Stack();
         test.throws(() => {
-            new apigateway.RestApi(stack, 'myapi', { autoDeploy: false, autoDeployOptions: { retainDeployments: false }});
+            new apigateway.RestApi(stack, 'myapi', { deploy: false, deployOptions: { cachingEnabled: true }});
         }, `Cannot set 'autoDeployOptions' if 'autoDeploy' is disabled`);
         test.done();
-  }
+    },
+
+    'CloudWatch role is created for API Gateway'(test: Test) {
+        const stack = new cdk.Stack();
+        new apigateway.RestApi(stack, 'myapi');
+        expect(stack).to(haveResource('AWS::IAM::Role'));
+        expect(stack).to(haveResource('AWS::ApiGateway::Account'));
+        test.done();
+    }
 };

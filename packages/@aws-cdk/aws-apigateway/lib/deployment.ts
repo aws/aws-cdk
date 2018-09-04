@@ -3,7 +3,12 @@ import crypto = require('crypto');
 import { cloudformation, DeploymentId } from './apigateway.generated';
 import { RestApiRef } from './restapi-ref';
 
-export interface CommonDeploymentProps {
+export interface DeploymentProps  {
+    /**
+     * The Rest API to deploy.
+     */
+    api: RestApiRef;
+
     /**
      * A description of the purpose of the API Gateway deployment.
      */
@@ -17,13 +22,6 @@ export interface CommonDeploymentProps {
      * @default true
      */
     retainDeployments?: boolean;
-}
-
-export interface DeploymentProps extends CommonDeploymentProps {
-    /**
-     * The Rest API to deploy.
-     */
-    api: RestApiRef;
 }
 
 /**
@@ -87,11 +85,12 @@ export class Deployment extends cdk.Construct {
     }
 
     /**
-     * Adds a component to the hash that determines this
-     * AWS::ApiGateway::Deployment resource's logical ID. This should be called
-     * by constructs of the API Gateway model that want to invalidate the
-     * deployment when their settings change. The component will be resolve()ed
-     * during synthesis so tokens are welcome.
+     * Adds a component to the hash that determines this Deployment resource's
+     * logical ID.
+     *
+     * This should be called by constructs of the API Gateway model that want to
+     * invalidate the deployment when their settings change. The component will
+     * be resolve()ed during synthesis so tokens are welcome.
      */
     public addToLogicalId(data: any) {
         this.resource.addToLogicalId(data);

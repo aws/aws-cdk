@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, ResourceId } from './apigateway.generated';
+import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
 
@@ -35,7 +36,10 @@ export interface IRestApiResource {
      * Defines a new method for this resource.
      * @param httpMethod The HTTP method
      */
-    onMethod(httpMethod: string, options?: MethodOptions): Method;
+    addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
+
+    // onHttpGet(resourcePath: string, integration?: Integration): void;
+    // onHttpPost(resourcePath: string, integration?: Integration): void;
 }
 
 export interface ResourceProps {
@@ -61,11 +65,12 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 
         validateResourcePathPart(props.pathPart);
 
-        const resource = new cloudformation.Resource(this, 'Resource', {
+        const resourceProps: cloudformation.ResourceProps = {
             restApiId: props.parent.resourceApi.restApiId,
             parentId: props.parent.resourceId,
             pathPart: props.pathPart
-        });
+        };
+        const resource = new cloudformation.Resource(this, 'Resource', resourceProps);
 
         this.resourceId = resource.ref;
         this.resourceApi = props.parent.resourceApi;
@@ -78,12 +83,7 @@ export class Resource extends cdk.Construct implements IRestApiResource {
         const deployment = props.parent.resourceApi.latestDeployment;
         if (deployment) {
             deployment.addDependency(resource);
-            deployment.addToLogicalId({
-                resource: {
-                    resourceId: props.parent.resourceId,
-                    pathPath: props.pathPart
-                }
-            });
+            deployment.addToLogicalId({ resource: resourceProps });
         }
     }
 
@@ -91,8 +91,8 @@ export class Resource extends cdk.Construct implements IRestApiResource {
         return new Resource(this, pathPart, { parent: this, pathPart });
     }
 
-    public onMethod(httpMethod: string, options?: MethodOptions): Method {
-        return new Method(this, httpMethod, { resource: this, httpMethod, options });
+    public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+        return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
     }
 }
 

@@ -6,7 +6,7 @@ export interface RestApiRefProps {
 }
 
 export abstract class RestApiRef extends cdk.Construct {
-    public static import(parent: cdk.Construct, id: string, props: RestApiRefProps) {
+    public static import(parent: cdk.Construct, id: string, props: RestApiRefProps): RestApiRef {
         return new ImportedRestApi(parent, id, props);
     }
 

@@ -7,16 +7,13 @@ class Test extends cdk.Stack {
         super(parent, id);
 
         const api = new apigateway.RestApi(this, 'my-api', {
-            minimumCompressionSize: 0,
-            autoDeployStageOptions: {
+            deployOptions: {
                 cacheClusterEnabled: true,
-                stageName: 'test',
-                description: 'testing stage',
+                stageName: 'beta',
+                description: 'beta stage',
+                loggingLevel: apigateway.MethodLoggingLevel.Info,
+                dataTraceEnabled: true,
                 methodOptions: {
-                    loggingLevel: apigateway.MethodLoggingLevel.Info,
-                    dataTraceEnabled: true
-                },
-                customMethodOptions: {
                     '/api/appliances/GET': {
                         cachingEnabled: true
                     }
@@ -30,33 +27,28 @@ class Test extends cdk.Stack {
             handler: 'index.handler',
         });
 
-        const v1 = api.addResource('api');
+        const v1 = api.addResource('v1');
+
+        const integration = new apigateway.LambdaIntegration(handler);
 
         const toys = v1.addResource('toys');
-
-        toys.onMethod('GET', {
-            integration: new apigateway.LambdaMethodIntegration(handler)
-        });
-
-        toys.onMethod('POST');
-        toys.onMethod('PUT');
+        toys.addMethod('GET', integration);
+        toys.addMethod('POST');
+        toys.addMethod('PUT');
 
         const appliances = v1.addResource('appliances');
-        appliances.onMethod('GET');
+        appliances.addMethod('GET');
 
         const books = v1.addResource('books');
-        books.onMethod('GET');
-        books.onMethod('POST');
+        books.addMethod('GET', integration);
+        books.addMethod('POST', integration);
 
         function handlerCode(event: any, _: any, callback: any) {
-            // tslint:disable-next-line:no-console
-            console.log(JSON.stringify(event, undefined, 2));
-
             return callback(undefined, {
                 isBase64Encoded: false,
                 statusCode: 200,
-                headers: { },
-                body: 'hi'
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(event)
             });
         }
     }

@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, isToken, resolve, Token, Arn, FnConcat, Ref } from '../../lib';
+import { CloudFormationToken, isToken, resolve, Token } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -243,24 +243,31 @@ export = {
         test.done();
     },
 
-    'repro'(test: Test) {
+    'tokens can be used in hash keys but must resolve to a string'(test: Test) {
+        // GIVEN
+        const token = new Token(() => 'I am a string');
+
+        // WHEN
+        const s = {
+            [token.toString()]: `boom ${token}`
+        };
+
+        // THEN
+        test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+        test.done();
+    },
+
+    'fails if token in a hash key resolves to a non-string'(test: Test) {
         // GIVEN
         const token = new CloudFormationToken({ Ref: 'Other' });
 
         // WHEN
         const s = {
-            foo: `Hello, ${token}`
+            [token.toString()]: `boom ${token}`
         };
 
-        // const x = Arn.fromComponents({
-        //     service: 'apigateway',
-        //     account: 'lambda',
-        //     resource: 'path',
-        //     resourceName: `2015-03-31/functions/${token}/invocations`
-        // });
-        // console.log(x);
-        console.log(resolve(s));
-
+        // THEN
+        test.throws(() => resolve(s), 'The key "${Token[TOKEN.19]}" has been resolved to {"Ref":"Other"} but must be resolvable to a string');
         test.done();
     }
 };

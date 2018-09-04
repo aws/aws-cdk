@@ -1,0 +1,723 @@
+{
+  "Resources": {
+    "myapi4C7BF186": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "my-api"
+      }
+    },
+    "myapiLatestDeployment24E142F7620808ef5f957f2d97015d80d9278fe8": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        }
+      },
+      "DependsOn": [
+        "myapiv113487378",
+        "myapiv1toysA55FCBC4",
+        "myapiv1toysGET7348114D",
+        "myapiv1toysPOST55128058",
+        "myapiv1toysPUT59AFBBC2",
+        "myapiv1appliances507FEFF4",
+        "myapiv1appliancesGET8FE872EC",
+        "myapiv1books1D4BE6C1",
+        "myapiv1booksGETC6B996D0",
+        "myapiv1booksPOST53E2832E"
+      ],
+      "DeletionPolicy": "Retain"
+    },
+    "myapiAutoDeployStagebetaF170BD78": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "CacheClusterEnabled": true,
+        "CacheClusterSize": "0.5",
+        "DeploymentId": {
+          "Ref": "myapiLatestDeployment24E142F7620808ef5f957f2d97015d80d9278fe8"
+        },
+        "Description": "beta stage",
+        "MethodSettings": [
+          {
+            "DataTraceEnabled": true,
+            "HttpMethod": "*",
+            "LoggingLevel": "INFO",
+            "ResourcePath": "/*"
+          },
+          {
+            "CachingEnabled": true,
+            "HttpMethod": "GET",
+            "ResourcePath": "/~1api~1appliances"
+          }
+        ],
+        "StageName": "beta"
+      }
+    },
+    "myapiCloudWatchRole095452E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "iam",
+                ":",
+                "",
+                ":",
+                "aws",
+                ":",
+                "policy",
+                "/",
+                "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "myapiAccountEC421A0A": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "myapiCloudWatchRole095452E5",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "myapi4C7BF186"
+      ]
+    },
+    "myapiv113487378": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "myapi4C7BF186",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "v1",
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        }
+      }
+    },
+    "myapiv1toysA55FCBC4": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "myapiv113487378"
+        },
+        "PathPart": "toys",
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        }
+      }
+    },
+    "myapiv1toysGET7348114D": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "myapiv1toysA55FCBC4"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "apigateway",
+                ":",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                "lambda",
+                ":",
+                "path",
+                "/",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "MyHandler6B74D312",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "myapiv1toysPOST55128058": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "myapiv1toysA55FCBC4"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK"
+        }
+      }
+    },
+    "myapiv1toysPUT59AFBBC2": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "myapiv1toysA55FCBC4"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK"
+        }
+      }
+    },
+    "myapiv1appliances507FEFF4": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "myapiv113487378"
+        },
+        "PathPart": "appliances",
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        }
+      }
+    },
+    "myapiv1appliancesGET8FE872EC": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "myapiv1appliances507FEFF4"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK"
+        }
+      }
+    },
+    "myapiv1books1D4BE6C1": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "myapiv113487378"
+        },
+        "PathPart": "books",
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        }
+      }
+    },
+    "myapiv1booksGETC6B996D0": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "myapiv1books1D4BE6C1"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "apigateway",
+                ":",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                "lambda",
+                ":",
+                "path",
+                "/",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "MyHandler6B74D312",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "myapiv1booksPOST53E2832E": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "ResourceId": {
+          "Ref": "myapiv1books1D4BE6C1"
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "apigateway",
+                ":",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                "lambda",
+                ":",
+                "path",
+                "/",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "MyHandler6B74D312",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "MyHandlerServiceRoleFFA06653": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "iam",
+                ":",
+                "",
+                ":",
+                "aws",
+                ":",
+                "policy",
+                "/",
+                "service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyHandler6B74D312": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event)\n            });\n        }"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "MyHandlerServiceRoleFFA06653",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs6.10"
+      },
+      "DependsOn": [
+        "MyHandlerServiceRoleFFA06653"
+      ]
+    },
+    "MyHandlerTokenTOKEN43F46AF4D": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                    },
+                    "/GET/v1/toys"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyHandlerTokenTOKEN5853A4C5C": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              "test-invoke-stage/GET/v1/toys"
+            ]
+          ]
+        }
+      }
+    },
+    "MyHandlerTokenTOKEN62E0733C0": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                    },
+                    "/GET/v1/books"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyHandlerTokenTOKEN7978BDF6A": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              "test-invoke-stage/GET/v1/books"
+            ]
+          ]
+        }
+      }
+    },
+    "MyHandlerTokenTOKEN8BF01E10D": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                    },
+                    "/POST/v1/books"
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyHandlerTokenTOKEN9636E43E2": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Ref": "MyHandler6B74D312"
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "execute-api",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "myapi4C7BF186"
+              },
+              "/",
+              "test-invoke-stage/POST/v1/books"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "myapiEndpoint3628AFE3": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "myapi4C7BF186"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            {
+              "Ref": "myapiAutoDeployStagebetaF170BD78"
+            },
+            "/"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "test-apigateway-restapi:myapiEndpoint3628AFE3"
+      }
+    }
+  }
+}
