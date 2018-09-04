@@ -9,6 +9,7 @@ export interface PassProps {
     outputPath?: string;
     resultPath?: string;
     comment?: string;
+    result?: any;
 }
 
 export class Pass extends State {
@@ -56,6 +57,7 @@ export class Pass extends State {
             OutputPath: props.outputPath,
             ResultPath: props.resultPath,
             Comment: props.comment,
+            Result: props.result,
         });
     }
 
