@@ -7,6 +7,7 @@ import { State } from './state';
 export interface FailProps {
     error: string;
     cause: string;
+    comment?: string;
 }
 
 export class Fail extends State {
@@ -45,7 +46,8 @@ export class Fail extends State {
         super(parent, id, {
             Type: StateType.Fail,
             Error: props.error,
-            Cause: props.cause
+            Cause: props.cause,
+            Comment: props.comment,
         });
     }
 

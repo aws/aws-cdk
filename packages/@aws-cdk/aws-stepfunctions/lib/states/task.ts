@@ -13,6 +13,7 @@ export interface TaskProps {
     resultPath?: string;
     timeoutSeconds?: number;
     heartbeatSeconds?: number;
+    comment?: string;
 }
 
 export class Task extends State {
@@ -67,7 +68,8 @@ export class Task extends State {
             Resource: new cdk.Token(() => this.resourceProps.resourceArn),
             ResultPath: props.resultPath,
             TimeoutSeconds: props.timeoutSeconds,
-            HeartbeatSeconds: props.heartbeatSeconds
+            HeartbeatSeconds: props.heartbeatSeconds,
+            Comment: props.comment,
         });
         this.resourceProps = props.resource.asStepFunctionsTaskResource(this);
     }

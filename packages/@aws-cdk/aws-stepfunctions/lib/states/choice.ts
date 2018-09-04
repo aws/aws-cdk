@@ -6,6 +6,7 @@ import { StateChain } from '../asl-state-chain';
 import { State } from './state';
 
 export interface ChoiceProps {
+    comment?: string;
     inputPath?: string;
     outputPath?: string;
 }
@@ -51,6 +52,7 @@ export class Choice extends State {
             Type: StateType.Choice,
             InputPath: props.inputPath,
             OutputPath: props.outputPath,
+            Comment: props.comment,
         });
     }
 

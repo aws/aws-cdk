@@ -10,6 +10,8 @@ export interface WaitProps {
 
     secondsPath?: string;
     timestampPath?: string;
+
+    comment?: string;
 }
 
 export class Wait extends State {
@@ -57,7 +59,8 @@ export class Wait extends State {
             Seconds: props.seconds,
             Timestamp: props.timestamp,
             SecondsPath: props.secondsPath,
-            TimestampPath: props.timestampPath
+            TimestampPath: props.timestampPath,
+            Comment: props.comment,
         });
     }
 

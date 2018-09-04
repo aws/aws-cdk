@@ -9,6 +9,7 @@ export interface ParallelProps {
     inputPath?: string;
     outputPath?: string;
     resultPath?: string;
+    comment?: string;
 }
 
 export class Parallel extends State {
@@ -67,6 +68,7 @@ export class Parallel extends State {
             InputPath: props.inputPath,
             OutputPath: props.outputPath,
             ResultPath: props.resultPath,
+            Comment: props.comment,
             // Lazy because the states are mutable and they might get chained onto
             // (Users shouldn't, but they might)
             Branches: new cdk.Token(() => this.branches.map(b => b.toStateChain().renderStateMachine().stateMachineDefinition))

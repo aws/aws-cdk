@@ -4,6 +4,10 @@ import { IInternalState, StateType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
 
+export interface SucceedProps {
+    comment?: string;
+}
+
 export class Succeed extends State {
     private static Internals = class implements IInternalState {
         public readonly hasOpenNextTransition = false;
@@ -36,9 +40,10 @@ export class Succeed extends State {
         }
     };
 
-    constructor(parent: cdk.Construct, id: string) {
+    constructor(parent: cdk.Construct, id: string, props: SucceedProps = {}) {
         super(parent, id, {
-            Type: StateType.Succeed
+            Type: StateType.Succeed,
+            Comment: props.comment,
         });
     }
 

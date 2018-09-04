@@ -7,6 +7,7 @@ import { State } from './state';
 export interface PassProps {
     inputPath?: string;
     outputPath?: string;
+    comment?: string;
 }
 
 export class Pass extends State {
@@ -51,7 +52,8 @@ export class Pass extends State {
         super(parent, id, {
             Type: StateType.Pass,
             InputPath: props.inputPath,
-            OutputPath: props.outputPath
+            OutputPath: props.outputPath,
+            Comment: props.comment,
         });
     }
 
