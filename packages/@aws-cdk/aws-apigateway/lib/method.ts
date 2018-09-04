@@ -146,7 +146,7 @@ export class Method extends cdk.Construct {
         const options = integration.props.options || { };
 
         let credentials;
-        if (options.credentialsPassthrough && options.credentialsRole) {
+        if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
             throw new Error(`'credentialsPassthrough' and 'credentialsRole' are mutually exclusive`);
         }
 

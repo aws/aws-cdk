@@ -6,12 +6,13 @@
         "Name": "my-api"
       }
     },
-    "myapiLatestDeployment24E142F7620808ef5f957f2d97015d80d9278fe8": {
+    "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "myapi4C7BF186"
-        }
+        },
+        "Description": "Automatically created by the RestApi construct"
       },
       "DependsOn": [
         "myapiv113487378",
@@ -27,7 +28,7 @@
       ],
       "DeletionPolicy": "Retain"
     },
-    "myapiAutoDeployStagebetaF170BD78": {
+    "myapiDeploymentStagebeta96434BEB": {
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
@@ -36,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiLatestDeployment24E142F7620808ef5f957f2d97015d80d9278fe8"
+          "Ref": "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -434,7 +435,7 @@
         "MyHandlerServiceRoleFFA06653"
       ]
     },
-    "MyHandlerTokenTOKEN43F46AF4D": {
+    "MyHandlerApiPermissionGETv1toys8E10C024": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -471,7 +472,7 @@
                   "",
                   [
                     {
-                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                      "Ref": "myapiDeploymentStagebeta96434BEB"
                     },
                     "/GET/v1/toys"
                   ]
@@ -482,7 +483,7 @@
         }
       }
     },
-    "MyHandlerTokenTOKEN5853A4C5C": {
+    "MyHandlerApiPermissionTestGETv1toys499738A6": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -520,7 +521,7 @@
         }
       }
     },
-    "MyHandlerTokenTOKEN62E0733C0": {
+    "MyHandlerApiPermissionGETv1books376A9081": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -557,7 +558,7 @@
                   "",
                   [
                     {
-                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                      "Ref": "myapiDeploymentStagebeta96434BEB"
                     },
                     "/GET/v1/books"
                   ]
@@ -568,7 +569,7 @@
         }
       }
     },
-    "MyHandlerTokenTOKEN7978BDF6A": {
+    "MyHandlerApiPermissionTestGETv1booksB64C41EB": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -606,7 +607,7 @@
         }
       }
     },
-    "MyHandlerTokenTOKEN8BF01E10D": {
+    "MyHandlerApiPermissionPOSTv1booksAC487705": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -643,7 +644,7 @@
                   "",
                   [
                     {
-                      "Ref": "myapiAutoDeployStagebetaF170BD78"
+                      "Ref": "myapiDeploymentStagebeta96434BEB"
                     },
                     "/POST/v1/books"
                   ]
@@ -654,7 +655,7 @@
         }
       }
     },
-    "MyHandlerTokenTOKEN9636E43E2": {
+    "MyHandlerApiPermissionTestPOSTv1books6E15773F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -709,7 +710,7 @@
             },
             ".amazonaws.com/",
             {
-              "Ref": "myapiAutoDeployStagebetaF170BD78"
+              "Ref": "myapiDeploymentStagebeta96434BEB"
             },
             "/"
           ]

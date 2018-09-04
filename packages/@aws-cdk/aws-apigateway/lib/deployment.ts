@@ -141,7 +141,7 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
      * Hooks into synthesis to calculate a logical ID that hashes all the components
      * add via `addToLogicalId`.
      */
-    public toCloudFormation() {
+    public validate() {
         // if hash components were added to the deployment, we use them to calculate
         // a logical ID for the deployment resource.
         if (this.hashComponents.length === 0) {
@@ -155,6 +155,6 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
             this.customLogicalId = this.originalLogicalId + md5.digest("hex");
         }
 
-        return super.toCloudFormation();
+        return [];
     }
 }

@@ -21,7 +21,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
      *
      * @default true
      */
-    enableTest?: boolean;
+    allowTestInvoke?: boolean;
 }
 
 /**
@@ -48,7 +48,7 @@ export class LambdaIntegration extends AwsIntegration {
         });
 
         this.handler = handler;
-        this.enableTest = options.enableTest === undefined ? true : false;
+        this.enableTest = options.allowTestInvoke === undefined ? true : false;
     }
 
     public bind(method: Method) {

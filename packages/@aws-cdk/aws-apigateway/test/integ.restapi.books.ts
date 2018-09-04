@@ -19,15 +19,15 @@ class BookStack extends cdk.Stack {
         }));
 
         const api = new apigw.RestApi(this, 'books-api', { defaultIntegration: echo });
-        api.addMethod('GET', hello);
+        api.onMethod('GET', hello);
 
         const books = api.addResource('books');
-        books.addMethod('GET');
-        books.addMethod('POST');
+        books.onMethod('GET');
+        books.onMethod('POST');
 
         const book = books.addResource('{book_id}');
-        book.addMethod('GET');
-        book.addMethod('DELETE');
+        book.onMethod('GET');
+        book.onMethod('DELETE');
     }
 }
 
@@ -35,7 +35,7 @@ class BookApp extends cdk.App {
     constructor(argv: string[]) {
         super(argv);
 
-        new BookStack(this, 'books');
+        new BookStack(this, 'restapi-books-example');
     }
 }
 

@@ -36,7 +36,7 @@ export interface IRestApiResource {
      * Defines a new method for this resource.
      * @param httpMethod The HTTP method
      */
-    addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
+    onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
 
     // onHttpGet(resourcePath: string, integration?: Integration): void;
     // onHttpPost(resourcePath: string, integration?: Integration): void;
@@ -91,7 +91,7 @@ export class Resource extends cdk.Construct implements IRestApiResource {
         return new Resource(this, pathPart, { parent: this, pathPart });
     }
 
-    public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    public onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
         return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
     }
 }

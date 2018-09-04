@@ -6,26 +6,27 @@
         "Name": "my-api"
       }
     },
-    "myapiLatestDeployment24E142F763611a77ac8e9dca00e384f72144a2c9": {
+    "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "myapi4C7BF186"
-        }
+        },
+        "Description": "Automatically created by the RestApi construct"
       },
       "DependsOn": [
         "myapiGETF990CE3C"
       ],
       "DeletionPolicy": "Retain"
     },
-    "myapiAutoDeployStageprod98CECBB1": {
+    "myapiDeploymentStageprod298F01AF": {
       "Type": "AWS::ApiGateway::Stage",
       "Properties": {
         "RestApiId": {
           "Ref": "myapi4C7BF186"
         },
         "DeploymentId": {
-          "Ref": "myapiLatestDeployment24E142F763611a77ac8e9dca00e384f72144a2c9"
+          "Ref": "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029"
         },
         "StageName": "prod"
       }
@@ -121,7 +122,7 @@
             },
             ".amazonaws.com/",
             {
-              "Ref": "myapiAutoDeployStageprod98CECBB1"
+              "Ref": "myapiDeploymentStageprod298F01AF"
             },
             "/"
           ]

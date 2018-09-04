@@ -134,15 +134,18 @@ export class Stage extends cdk.Construct {
     constructor(parent: cdk.Construct, id: string, props: StageProps) {
         super(parent, id);
 
-        let cacheClusterSize;
-        if (props.cacheClusterEnabled) {
-            cacheClusterSize = props.cacheClusterSize || '0.5';
-        } else {
-            if (props.cacheClusterSize) {
-                throw new Error(`Cannot specify cacheClusterSize if cacheCluster is not enabled`);
+        const methodSettings = this.renderMethodSettings(props);
+
+        // enable cache cluster if cacheClusterSize is set
+        if (props.cacheClusterSize !== undefined) {
+            if (props.cacheClusterEnabled === undefined) {
+                props.cacheClusterEnabled = true;
+            } else if (props.cacheClusterEnabled === false) {
+                throw new Error(`Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`);
             }
         }
 
+        const cacheClusterSize = props.cacheClusterEnabled ? (props.cacheClusterSize || '0.5') : undefined;
         const resource = new cloudformation.StageResource(this, 'Resource', {
             stageName: props.stageName || 'prod',
             cacheClusterEnabled: props.cacheClusterEnabled,
@@ -153,7 +156,7 @@ export class Stage extends cdk.Construct {
             description: props.description,
             documentationVersion: props.documentationVersion,
             variables: props.variables,
-            methodSettings: this.renderMethodSettings(props),
+            methodSettings,
         });
 
         this.stageName = resource.ref;
@@ -165,6 +168,9 @@ export class Stage extends cdk.Construct {
      * @param path The resource path
      */
     public urlForPath(path: string = '/') {
+        if (!path.startsWith('/')) {
+            throw new Error(`Path must begin with "/": ${path}`);
+        }
         return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion()}.amazonaws.com/${this.stageName}${path}`;
     }
 
@@ -199,8 +205,10 @@ export class Stage extends cdk.Construct {
 
         function renderEntry(path: string, options: MethodDeploymentOptions): cloudformation.StageResource.MethodSettingProperty {
             if (options.cachingEnabled) {
-                if (!props.cacheClusterEnabled) {
-                    throw new Error(`Cannot enable caching for method ${path} since cache cluster is not enabled on stage`);
+                if (props.cacheClusterEnabled === undefined) {
+                    props.cacheClusterEnabled = true;
+                } else if (props.cacheClusterEnabled === false) {
+                    throw new Error(`Cannot enable caching for method ${path} since cache cluster is disabled on stage`);
                 }
             }
 

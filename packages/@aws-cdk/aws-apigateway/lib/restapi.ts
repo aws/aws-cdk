@@ -251,7 +251,7 @@ export class RestApi extends RestApiRef implements IRestApiResource {
      * @param integration Backend integration
      * @param options Method options
      */
-    public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    public onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
         return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
     }
 
@@ -265,7 +265,7 @@ export class RestApi extends RestApiRef implements IRestApiResource {
      */
     public executeApiArn(method: string = '*', path: string = '/*', stage: string = '*') {
         if (!path.startsWith('/')) {
-            throw new Error(`"path" must begin with a "/": ${path}'`);
+            throw new Error(`"path" must begin with a "/": '${path}'`);
         }
 
         return cdk.Arn.fromComponents({
@@ -316,9 +316,6 @@ export class RestApi extends RestApiRef implements IRestApiResource {
 
             new cdk.Output(this, 'Endpoint', { value: this.urlForPath() });
         } else {
-            if (props.deployOptions) {
-                throw new Error(`Cannot set 'deployStageOptions' if 'deploy' is disabled`);
-            }
             if (props.deployOptions) {
                 throw new Error(`Cannot set 'deployOptions' if 'deploy' is disabled`);
             }
