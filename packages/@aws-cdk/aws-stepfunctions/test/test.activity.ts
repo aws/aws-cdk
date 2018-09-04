@@ -45,4 +45,32 @@ export = {
 
         test.done();
     },
+
+    'Activity exposes metrics'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const activity = new stepfunctions.Activity(stack, 'Activity');
+
+        // THEN
+        const sharedMetric = {
+            periodSec: 300,
+            namespace: 'AWS/States',
+            dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
+        };
+        test.deepEqual(cdk.resolve(activity.metricRunTime()), {
+            ...sharedMetric,
+            metricName: 'ActivityRunTime',
+            statistic: 'avg'
+        });
+
+        test.deepEqual(cdk.resolve(activity.metricFailed()), {
+            ...sharedMetric,
+            metricName: 'ActivitiesFailed',
+            statistic: 'sum'
+        });
+
+        test.done();
+    }
 };
