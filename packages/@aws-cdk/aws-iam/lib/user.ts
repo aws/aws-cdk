@@ -1,6 +1,6 @@
-import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
+import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
 import { Group } from './group';
-import { cloudformation, UserArn } from './iam.generated';
+import { cloudformation, UserArn, UserName } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -79,7 +79,7 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
     public readonly principal: PolicyPrincipal;
 
     private readonly groups = new Array<any>();
-    private readonly managedPolicies = new Array<string>();
+    private readonly managedPolicies = new Array<Arn>();
     private readonly attachedPolicies = new AttachedPolicies();
     private defaultPolicy?: Policy;
 
@@ -114,7 +114,7 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
      * Attaches a managed policy to the user.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: any) {
+    public attachManagedPolicy(arn: Arn) {
         this.managedPolicies.push(arn);
     }
 
@@ -152,8 +152,4 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
 
         return undefined; // no console access
     }
-}
-
-export class UserName extends Token {
-
 }

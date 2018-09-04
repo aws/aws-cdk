@@ -183,6 +183,20 @@ export class Arn extends Token {
             return { partition, service, region, account, resource, resourceName, sep };
         }
     }
+
+    /**
+     * Return a Token that represents the resource component of the ARN
+     */
+    public resourceComponent(sep: string = '/'): Token {
+        return Arn.parseToken(this, sep).resource;
+    }
+
+    /**
+     * Return a Token that represents the resource Name component of the ARN
+     */
+    public resourceNameComponent(sep: string = '/'): Token {
+        return Arn.parseToken(this, sep, true).resourceName!;
+    }
 }
 
 export interface ArnComponents {

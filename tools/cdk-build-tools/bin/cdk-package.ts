@@ -47,7 +47,7 @@ async function main() {
         await fs.move(tarball, path.join(target, path.basename(tarball)));
     }
 
-    detector.markClean();
+    await detector.markClean();
 }
 
 main().then(() => {

@@ -2,7 +2,7 @@ import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { QueuePolicy } from './policy';
-import { QueueArn } from './sqs.generated';
+import { QueueArn, QueueUrl } from './sqs.generated';
 
 /**
  * Reference to a new or existing Amazon SQS queue
@@ -49,10 +49,10 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
      */
     public export(): QueueRefProps {
         return {
-            queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue(),
-            queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue(),
+            queueArn: new QueueArn(new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue()),
+            queueUrl: new QueueUrl(new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue()),
             keyArn: this.encryptionMasterKey
-                ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue()
+                ? new kms.KeyArn(new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue())
                 : undefined
         };
     }
@@ -98,7 +98,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
                     .addServicePrincipal('s3.amazonaws.com')
                     .addAction('kms:GenerateDataKey')
                     .addAction('kms:Decrypt')
-                    .addResource('*'), /* allowNoOp */ false);
+                    .addAllResources(), /* allowNoOp */ false);
             }
 
             this.notifyingBuckets.add(bucketId);
@@ -153,10 +153,4 @@ class ImportedQueue extends QueueRef {
             });
         }
     }
-}
-
-/**
- * URL of a queue
- */
-export class QueueUrl extends cdk.Token {
 }

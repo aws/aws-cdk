@@ -1,6 +1,6 @@
 import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
-import { cloudformation, SecurityGroupId, SecurityGroupVpcId } from './ec2.generated';
+import { cloudformation, SecurityGroupId, SecurityGroupName, SecurityGroupVpcId } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { slugify } from './util';
 import { VpcNetworkRef } from './vpc-ref';
@@ -63,7 +63,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
      */
     public export(): SecurityGroupRefProps {
         return {
-            securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue()
+            securityGroupId: new SecurityGroupId(new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue())
         };
     }
 
@@ -197,8 +197,6 @@ export class SecurityGroup extends SecurityGroupRef {
         return this.directEgressRules.findIndex(r => egressRulesEqual(r, rule)) > -1;
     }
 }
-
-export class SecurityGroupName extends Token { }
 
 export interface ConnectionRule {
     /**

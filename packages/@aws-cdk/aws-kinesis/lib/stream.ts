@@ -75,15 +75,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
      * Exports this stream from the stack.
      */
     public export(): StreamRefProps {
-        const streamArn = new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue();
-        if (this.encryptionKey) {
-            return {
-                streamArn,
-                encryptionKey: this.encryptionKey.export()
-            };
-        } else {
-            return { streamArn };
-        }
+        return {
+            streamArn: new StreamArn(new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue()),
+            encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
+        };
     }
 
     /**
@@ -170,12 +165,12 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
         );
     }
 
-    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
         if (!this.cloudWatchLogsRole) {
             // Create a role to be assumed by CWL that can write to this stream and pass itself.
             this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-                assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
+                assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
             });
             this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
             this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
@@ -200,7 +195,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     /**
      * Generate a CloudWatch Logs Destination and return the properties in the form o a subscription destination
      */
-    private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         const sourceStack = cdk.Stack.find(sourceLogGroup);
         const thisStack = cdk.Stack.find(this);
 
@@ -382,7 +377,7 @@ class ImportedStreamRef extends StreamRef {
 
         this.streamArn = props.streamArn;
         // Get the name from the ARN
-        this.streamName = cdk.Arn.parseToken(props.streamArn).resourceName;
+        this.streamName = new StreamName(cdk.Arn.parseToken(props.streamArn).resourceName);
 
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);

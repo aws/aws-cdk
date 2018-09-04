@@ -74,7 +74,7 @@ export abstract class EncryptionKeyRef extends Construct {
      */
     public export(): EncryptionKeyRefProps {
         return {
-            keyArn: new Output(this, 'KeyArn').makeImportValue()
+            keyArn: new KeyArn(new Output(this, 'KeyArn').makeImportValue())
         };
     }
 }
@@ -159,7 +159,7 @@ export class EncryptionKey extends EncryptionKeyRef {
         ];
 
         this.addToResourcePolicy(new PolicyStatement()
-            .addResource('*')
+            .addAllResources()
             .addActions(...actions)
             .addAccountRootPrincipal());
     }

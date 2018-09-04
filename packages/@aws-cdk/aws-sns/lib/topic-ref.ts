@@ -6,13 +6,8 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
-import { TopicName } from './sns.generated';
+import { TopicArn, TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
-
-/**
- * ARN of a Topic
- */
-export class TopicArn extends cdk.Arn { }
 
 /**
  * Either a new or imported Topic
@@ -52,8 +47,8 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      */
     public export(): TopicRefProps {
         return {
-            topicArn: new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue(),
-            topicName: new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue(),
+            topicArn: new TopicArn(new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue()),
+            topicName: new TopicName(new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue()),
         };
     }
 
