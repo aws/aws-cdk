@@ -23,7 +23,7 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
         super(parent, id);
 
         const resource = new cloudformation.ActivityResource(this, 'Resource', {
-            activityName: props.activityName || this.uniqueId
+            activityName: props.activityName || this.generateName()
         });
 
         this.activityArn = resource.ref;
@@ -134,5 +134,13 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
      */
     public metricHeartbeatTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('ActivitiesHeartbeatTimedOut', props);
+    }
+
+    private generateName(): string {
+        const name = this.uniqueId;
+        if (name.length > 80) {
+            return name.substring(0, 40) + name.substring(name.length - 40);
+        }
+        return name;
     }
 }
