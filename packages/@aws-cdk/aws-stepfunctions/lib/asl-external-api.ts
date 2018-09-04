@@ -22,7 +22,7 @@ export interface IStateChain extends IChainable {
      * can have error handlers applied, it is wrapped in a Parallel
      * block first.
      */
-    onError(errorHandler: IChainable, ...errors: string[]): IStateChain;
+    onError(errorHandler: IChainable, props?: CatchProps): IStateChain;
 
     /**
      * Add retries to all states in the chains which can have retries applied
@@ -92,6 +92,9 @@ export class Errors {
 }
 
 export interface RetryProps {
+    /**
+     * @default All
+     */
     errors?: string[];
 
     /**
@@ -110,4 +113,13 @@ export interface RetryProps {
      * @default 2
      */
     backoffRate?: number;
+}
+
+export interface CatchProps {
+    /**
+     * @default All
+     */
+    errors?: string[];
+
+    resultPath?: string;
 }

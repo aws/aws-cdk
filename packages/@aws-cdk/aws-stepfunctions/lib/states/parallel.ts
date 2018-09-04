@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
+import { CatchProps, Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
@@ -34,8 +34,11 @@ export class Parallel extends State {
             this.parallel.addNextTransition(targetState);
         }
 
-        public addCatch(targetState: IStateChain, errors: string[]): void {
-            this.parallel.transitions.add(TransitionType.Catch, targetState, { ErrorEquals: errors });
+        public addCatch(targetState: IStateChain, props: CatchProps = {}): void {
+            this.parallel.transitions.add(TransitionType.Catch, targetState, {
+                ErrorEquals: props.errors ? props.errors : [Errors.all],
+                ResultPath: props.resultPath
+            });
         }
 
         public addRetry(retry?: RetryProps): void {
@@ -92,8 +95,8 @@ export class Parallel extends State {
         return this.toStateChain().next(sm);
     }
 
-    public onError(handler: IChainable, ...errors: string[]): IStateChain {
-        return this.toStateChain().onError(handler, ...errors);
+    public onError(handler: IChainable, props: CatchProps = {}): IStateChain {
+        return this.toStateChain().onError(handler, props);
     }
 
     public toStateChain(): IStateChain {

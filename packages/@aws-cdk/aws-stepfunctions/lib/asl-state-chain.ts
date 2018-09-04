@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Errors, IChainable, IStateChain, RenderedStateMachine, RetryProps } from './asl-external-api';
+import { CatchProps, Errors, IChainable, IStateChain, RenderedStateMachine, RetryProps } from './asl-external-api';
 import { IInternalState } from './asl-internal-api';
 
 export class StateChain implements IStateChain {
@@ -45,9 +45,9 @@ export class StateChain implements IStateChain {
         return this;
     }
 
-    public onError(handler: IChainable, ...errors: string[]): IStateChain {
-        if (errors.length === 0) {
-            errors = [Errors.all];
+    public onError(handler: IChainable, props: CatchProps = {}): IStateChain {
+        if (!props.errors) {
+            props.errors = [Errors.all];
         }
 
         const sm = handler.toStateChain();
@@ -61,7 +61,7 @@ export class StateChain implements IStateChain {
 
         const ret = this.clone();
         for (const state of this.allStates) {
-            state.addCatch(sm, errors);
+            state.addCatch(sm, props);
         }
 
         // Those states are now part of the state machine, but we don't include

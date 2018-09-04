@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { IChainable, IStateChain, RetryProps } from '../asl-external-api';
+import { CatchProps, IChainable, IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
@@ -35,7 +35,7 @@ export class Wait extends State {
             this.wait.addNextTransition(targetState);
         }
 
-        public addCatch(_targetState: IStateChain, _errors: string[]): void {
+        public addCatch(_targetState: IStateChain, _props?: CatchProps): void {
             throw new Error("Cannot catch errors on a Wait.");
         }
 

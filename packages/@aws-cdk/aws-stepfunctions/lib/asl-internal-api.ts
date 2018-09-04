@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { IStateChain, RetryProps } from './asl-external-api';
+import { CatchProps, IStateChain, RetryProps } from './asl-external-api';
 import { accessChainInternals } from './asl-state-chain';
 
 export interface IInternalState {
@@ -9,7 +9,7 @@ export interface IInternalState {
     readonly policyStatements: cdk.PolicyStatement[];
 
     addNext(target: IStateChain): void;
-    addCatch(target: IStateChain, errors: string[]): void;
+    addCatch(target: IStateChain, props?: CatchProps): void;
     addRetry(retry?: RetryProps): void;
 
     accessibleChains(): IStateChain[];
