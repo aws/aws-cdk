@@ -605,6 +605,51 @@ export = {
             test.done();
         },
 
+        'Chaining does not chain onto error handler, extended'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const task3 = new stepfunctions.Task(stack, 'Task3', { resource: new FakeResource() });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
+
+            // WHEN
+            const chain = task1.onError(errorHandler)
+                .next(task2.onError(errorHandler))
+                .next(task3.onError(errorHandler));
+
+            // THEN
+            const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' } ] };
+            test.deepEqual(render(chain), {
+                StartAt: 'Task1',
+                States: {
+                    Task1: { Next: 'Task2', ...sharedTaskProps },
+                    Task2: { Next: 'Task3', ...sharedTaskProps },
+                    Task3: { End: true, ...sharedTaskProps },
+                    ErrorHandler: { Type: 'Pass', End: true },
+                }
+            });
+
+            test.done();
+        },
+
+        'Error handler with a fragment'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
+            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
+            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
+
+            // WHEN
+            task1.onError(errorHandler)
+                .next(new SimpleChain(stack, 'Chain').onError(errorHandler))
+                .next(task2.onError(errorHandler));
+
+            test.done();
+        },
+
         'After calling .closure() do chain onto error state'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
@@ -701,6 +746,23 @@ class ReusableStateMachineWithImplicitStartState extends stepfunctions.StateMach
         const choice = new stepfunctions.Choice(this, 'Choice');
         choice.on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'));
         choice.on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
+    }
+}
+
+class SimpleChain extends stepfunctions.StateMachineFragment {
+    private readonly task2: stepfunctions.Task;
+    constructor(parent: cdk.Construct, id: string) {
+        super(parent, id);
+
+        const task1 = new stepfunctions.Task(this, 'Task1', { resource: new FakeResource() });
+        this.task2 = new stepfunctions.Task(this, 'Task2', { resource: new FakeResource() });
+
+        task1.next(this.task2);
+    }
+
+    public onError(state: stepfunctions.IChainable, props?: stepfunctions.CatchProps): SimpleChain {
+        this.task2.onError(state, props);
+        return this;
     }
 }
 

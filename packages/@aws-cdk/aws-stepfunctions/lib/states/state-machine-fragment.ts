@@ -19,6 +19,7 @@ export class StateMachineFragment extends cdk.Construct implements IChainable {
     public readonly scopeStateNames: boolean;
 
     private _startState?: IChainable;
+    private chain?: IStateChain;
 
     constructor(parent: cdk.Construct, id: string, props: StateMachineFragmentProps = {}) {
         super(parent, id);
@@ -34,12 +35,21 @@ export class StateMachineFragment extends cdk.Construct implements IChainable {
     }
 
     public toStateChain(): IStateChain {
-        // If we're converting a state machine definition to a state chain, grab the whole of it.
-        return this.startState.toStateChain().closure();
+        this.freeze();
+        return this.chain!;
     }
 
     public next(sm: IChainable): IStateChain {
         return this.toStateChain().next(sm);
+    }
+
+    protected freeze() {
+        if (this.chain === undefined) {
+            // If we're converting a state machine definition to a state chain, grab the whole of it.
+            // We need to cache this value; because of the .closure(), it may change
+            // depending on whether states get chained onto the states in this fragment.
+            this.chain = this.startState.toStateChain().closure();
+        }
     }
 
     private get startState(): IChainable {
