@@ -33,7 +33,8 @@ class JobPollerStack extends cdk.Stack {
             .next(getStatus)
             .next(isComplete
                 .on(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-                .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus))
+                .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+                .otherwise(waitX))
             .defaultRetry({
                 intervalSeconds: 1,
                 maxAttempts: 3,
@@ -41,7 +42,8 @@ class JobPollerStack extends cdk.Stack {
             });
 
         new stepfunctions.StateMachine(this, 'StateMachine', {
-            definition: chain
+            definition: chain,
+            timeoutSeconds: 30
         });
     }
 }

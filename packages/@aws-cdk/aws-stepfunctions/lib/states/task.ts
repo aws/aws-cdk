@@ -1,24 +1,10 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
 import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
 import { StateChain } from '../asl-state-chain';
 import { State } from './state';
 import { renderRetries } from './util';
-
-/**
- * Interface for objects that can be invoked in a Task state
- */
-export interface IStepFunctionsTaskResource {
-    /**
-     * Return the properties required for using this object as a Task resource
-     */
-    asStepFunctionsTaskResource(callingTask: Task): StepFunctionsTaskResourceProps;
-}
-
-export interface StepFunctionsTaskResourceProps {
-    resourceArn: cdk.Arn;
-    policyStatements?: cdk.PolicyStatement[];
-}
 
 export interface TaskProps {
     resource: IStepFunctionsTaskResource;
@@ -105,4 +91,125 @@ export class Task extends State {
     public toStateChain(): IStateChain {
         return new StateChain(new Task.Internals(this));
     }
+
+    /**
+     * Return the given named metric for this Task
+     *
+     * @default sum over 5 minutes
+     */
+    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return new cloudwatch.Metric({
+            namespace: 'AWS/States',
+            metricName,
+            dimensions: this.resourceProps.metricDimensions,
+            statistic: 'sum',
+            ...props
+        });
+    }
+
+    /**
+     * The interval, in milliseconds, between the time the Task starts and the time it closes.
+     *
+     * @default average over 5 minutes
+     */
+    public metricRunTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'RunTime', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * The interval, in milliseconds, for which the activity stays in the schedule state.
+     *
+     * @default average over 5 minutes
+     */
+    public metricScheduleTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'ScheduleTime', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * The interval, in milliseconds, between the time the activity is scheduled and the time it closes.
+     *
+     * @default average over 5 minutes
+     */
+    public metricTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'ActivityTime', { statistic: 'avg', ...props });
+    }
+
+    /**
+     * Metric for the number of times this activity is scheduled
+     *
+     * @default sum over 5 minutes
+     */
+    public metricScheduled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Scheduled', props);
+    }
+
+    /**
+     * Metric for the number of times this activity times out
+     *
+     * @default sum over 5 minutes
+     */
+    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'TimedOut', props);
+    }
+
+    /**
+     * Metric for the number of times this activity is started
+     *
+     * @default sum over 5 minutes
+     */
+    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Started', props);
+    }
+
+    /**
+     * Metric for the number of times this activity succeeds
+     *
+     * @default sum over 5 minutes
+     */
+    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Succeeded', props);
+    }
+
+    /**
+     * Metric for the number of times this activity fails
+     *
+     * @default sum over 5 minutes
+     */
+    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'Failed', props);
+    }
+
+    /**
+     * Metric for the number of times the heartbeat times out for this activity
+     *
+     * @default sum over 5 minutes
+     */
+    public metricHeartbeatTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.taskMetric(this.resourceProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
+    }
+
+    private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        if (prefix === undefined) {
+            throw new Error('This Task Resource does not expose metrics');
+        }
+        return this.metric(prefix + suffix, props);
+    }
+}
+
+/**
+ * Interface for objects that can be invoked in a Task state
+ */
+export interface IStepFunctionsTaskResource {
+    /**
+     * Return the properties required for using this object as a Task resource
+     */
+    asStepFunctionsTaskResource(callingTask: Task): StepFunctionsTaskResourceProps;
+}
+
+export interface StepFunctionsTaskResourceProps {
+    resourceArn: cdk.Arn;
+    policyStatements?: cdk.PolicyStatement[];
+    metricPrefixSingular?: string;
+    metricPrefixPlural?: string;
+    metricDimensions?: cloudwatch.DimensionHash;
 }

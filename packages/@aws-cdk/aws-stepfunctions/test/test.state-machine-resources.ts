@@ -62,6 +62,34 @@ export = {
 
         test.done();
     },
+
+    'Task metrics use values returned from resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const task = new stepfunctions.Task(stack, 'Task', { resource: new FakeResource() });
+
+        // THEN
+        const sharedMetric = {
+            periodSec: 300,
+            namespace: 'AWS/States',
+            dimensions: { ResourceArn: 'resource' },
+        };
+        test.deepEqual(cdk.resolve(task.metricRunTime()), {
+            ...sharedMetric,
+            metricName: 'FakeResourceRunTime',
+            statistic: 'avg'
+        });
+
+        test.deepEqual(cdk.resolve(task.metricFailed()), {
+            ...sharedMetric,
+            metricName: 'FakeResourcesFailed',
+            statistic: 'sum'
+        });
+
+        test.done();
+    }
 };
 
 class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
@@ -73,7 +101,10 @@ class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
             policyStatements: [new cdk.PolicyStatement()
                 .addAction('resource:Everything')
                 .addResource(new cdk.Arn('resource'))
-            ]
+            ],
+            metricPrefixSingular: 'FakeResource',
+            metricPrefixPlural: 'FakeResources',
+            metricDimensions: { ResourceArn: resourceArn },
          };
     }
 }

@@ -191,13 +191,16 @@ export abstract class FunctionRef extends cdk.Construct
         };
     }
 
-    public asStepFunctionsTaskResource(callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-        callingTask.addToRolePolicy(new cdk.PolicyStatement()
-            .addResource(this.functionArn)
-            .addActions("lambda:InvokeFunction"));
-
+    public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
         return {
-            resourceArn: this.functionArn
+            resourceArn: this.functionArn,
+            metricPrefixSingular: 'LambdaFunction',
+            metricPrefixPlural: 'LambdaFunctions',
+            metricDimensions: { LambdaFunctionArn: this.functionArn },
+            policyStatements: [new cdk.PolicyStatement()
+                .addResource(this.functionArn)
+                .addActions("lambda:InvokeFunction")
+            ]
         };
     }
 

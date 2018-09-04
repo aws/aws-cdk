@@ -55,11 +55,11 @@
               {
                 "Ref": "CheckJob5FFC1D6F"
               },
-              "\",\"ResultPath\":\"$.status\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"Next\":\"Job Complete?\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Get Final Job Status\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Get Final Job Status\":{\"Type\":\"Task\",\"InputPath\":\"$.guid\",\"Resource\":\"",
+              "\",\"ResultPath\":\"$.status\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"Next\":\"Job Complete?\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Get Final Job Status\"}],\"Default\":\"Wait X Seconds\"},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Get Final Job Status\":{\"Type\":\"Task\",\"InputPath\":\"$.guid\",\"Resource\":\"",
               {
                 "Ref": "CheckJob5FFC1D6F"
               },
-              "\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"End\":true}}}"
+              "\",\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":1,\"MaxAttempts\":3,\"BackoffRate\":2}],\"End\":true}},\"TimeoutSeconds\":30}"
             ]
           ]
         },

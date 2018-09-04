@@ -675,7 +675,7 @@ class ReusableStateMachineWithImplicitStartState extends stepfunctions.StateMach
 class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
     public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
         return {
-            resourceArn: new cdk.Arn('resource')
+            resourceArn: new cdk.Arn('resource'),
         };
     }
 }

@@ -3,6 +3,7 @@ export * from './asl-external-api';
 export * from './asl-internal-api';
 export * from './asl-condition';
 export * from './state-machine';
+export * from './state-transition-metrics';
 
 export * from './states/choice';
 export * from './states/fail';

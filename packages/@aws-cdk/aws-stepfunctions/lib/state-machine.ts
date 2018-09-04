@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -90,4 +91,72 @@ export class StateMachine extends cdk.Construct {
         };
     }
 
+    /**
+     * Return the given named metric for this State Machine's executions
+     *
+     * @default sum over 5 minutes
+     */
+    public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return new cloudwatch.Metric({
+            namespace: 'AWS/States',
+            metricName,
+            dimensions: { StateMachineArn: this.stateMachineArn },
+            statistic: 'sum',
+            ...props
+        });
+    }
+
+    /**
+     * Metric for the number of executions that failed
+     *
+     * @default sum over 5 minutes
+     */
+    public metricFailed(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionsFailed', props);
+    }
+
+    /**
+     * Metric for the number of executions that were throttled
+     *
+     * @default sum over 5 minutes
+     */
+    public metricThrottled(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionThrottled', props);
+    }
+
+    /**
+     * Metric for the number of executions that were aborted
+     *
+     * @default sum over 5 minutes
+     */
+    public metricAborted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionsAborted', props);
+    }
+
+    /**
+     * Metric for the number of executions that succeeded
+     *
+     * @default sum over 5 minutes
+     */
+    public metricSucceeded(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionsSucceeded', props);
+    }
+
+    /**
+     * Metric for the number of executions that succeeded
+     *
+     * @default sum over 5 minutes
+     */
+    public metricTimedOut(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionsTimedOut', props);
+    }
+
+    /**
+     * Metric for the number of executions that were started
+     *
+     * @default sum over 5 minutes
+     */
+    public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+        return this.metric('ExecutionsStarted', props);
+    }
 }
