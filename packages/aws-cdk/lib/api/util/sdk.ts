@@ -135,7 +135,14 @@ class CredentialsCache {
             triedSources.push(source);
             if (!(await source.canProvideCredentials(awsAccountId))) { continue; }
             debug(`Using ${source.name} credentials for account ${awsAccountId}`);
-            return await source.getProvider(awsAccountId, mode);
+            const providerOrCreds = await source.getProvider(awsAccountId, mode);
+
+            // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
+            // Otherwise it must have returned credentials.
+            if ((providerOrCreds as any).resolvePromise) {
+                return await (providerOrCreds as any).resolvePromise();
+            }
+            return providerOrCreds;
         }
         const sourceNames = ['default credentials'].concat(triedSources.map(s => s.name)).join(', ');
         throw new Error(`Need to perform AWS calls for account ${awsAccountId}, but no credentials found. Tried: ${sourceNames}.`);
