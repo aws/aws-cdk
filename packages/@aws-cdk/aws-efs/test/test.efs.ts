@@ -1,6 +1,6 @@
-import { App, Stack } from '@aws-cdk/cdk';
-import { Test } from 'nodeunit';
-import { FileSystem, PerformanceMode, ThroughputMode } from '../lib/filesystem';
+import {App, Stack} from '@aws-cdk/cdk';
+import {Test} from 'nodeunit';
+import {FileSystem, ImportedFileSystem, PerformanceMode, ThroughputMode} from '../lib/filesystem';
 
 export = {
     'default properties': {
@@ -18,7 +18,7 @@ export = {
                             Encrypted: true,
                             PerformanceMode: 'generalPurpose',
                             ProvisionedThroughputInMibps: 100,
-                            ThroughputMode: 'provisioned'
+                            ThroughputMode: 'bursting'
                         }
                     }
                 }
@@ -29,7 +29,7 @@ export = {
     'when specifying throughput'(test: Test) {
         const app = new TestApp();
         new FileSystem(app.stack, 'MyFileSystem', {
-            throughput: 10,
+            throughputMiB: 10,
         });
         const template = app.synthesizeTemplate();
 
@@ -41,7 +41,7 @@ export = {
                         Encrypted: true,
                         PerformanceMode: 'generalPurpose',
                         ProvisionedThroughputInMibps: 10,
-                        ThroughputMode: 'provisioned'
+                        ThroughputMode: 'bursting'
                     }
                 }
             }
@@ -51,7 +51,7 @@ export = {
     'when specifying throughput mode'(test: Test) {
         const app = new TestApp();
         new FileSystem(app.stack, 'MyFileSystem', {
-            throughputMode: ThroughputMode.Bursting,
+            throughputMode: ThroughputMode.Provisioned,
         });
         const template = app.synthesizeTemplate();
 
@@ -63,7 +63,7 @@ export = {
                         Encrypted: true,
                         PerformanceMode: 'generalPurpose',
                         ProvisionedThroughputInMibps: 100,
-                        ThroughputMode: 'bursting'
+                        ThroughputMode: 'provisioned'
                     }
                 }
             }
@@ -85,7 +85,7 @@ export = {
                         Encrypted: true,
                         PerformanceMode: 'maxIO',
                         ProvisionedThroughputInMibps: 100,
-                        ThroughputMode: 'provisioned'
+                        ThroughputMode: 'bursting'
                     }
                 }
             }
@@ -95,8 +95,8 @@ export = {
     'when specifying every property'(test: Test) {
         const app = new TestApp();
         new FileSystem(app.stack, 'MyFileSystem', {
-            throughput: 10,
-            throughputMode: ThroughputMode.Bursting,
+            throughputMiB: 10,
+            throughputMode: ThroughputMode.Provisioned,
             performanceMode: PerformanceMode.MaxIO,
         });
         const template = app.synthesizeTemplate();
@@ -109,7 +109,7 @@ export = {
                         Encrypted: true,
                         PerformanceMode: 'maxIO',
                         ProvisionedThroughputInMibps: 10,
-                        ThroughputMode: 'bursting'
+                        ThroughputMode: 'provisioned'
                     }
                 }
             }
@@ -120,7 +120,7 @@ export = {
         const app = new TestApp();
 
         test.throws(
-            () => new FileSystem(app.stack, 'MyFileSystem', {throughput: -2}),
+            () => new FileSystem(app.stack, 'MyFileSystem', {throughputMiB: -2}),
             Error,
             'Provisioned throughput can\'t be set to a value less than 1.0 MiB/s');
 
@@ -129,7 +129,7 @@ export = {
     'valid throughput on boundary is accepted'(test: Test) {
         const app = new TestApp();
         new FileSystem(app.stack, 'MyFileSystem', {
-            throughput: 1,
+            throughputMiB: 1,
         });
         const template = app.synthesizeTemplate();
 
@@ -141,11 +141,22 @@ export = {
                         Encrypted: true,
                         PerformanceMode: 'generalPurpose',
                         ProvisionedThroughputInMibps: 1,
-                        ThroughputMode: 'provisioned'
+                        ThroughputMode: 'bursting'
                     }
                 }
             }
         });
+        test.done();
+    },
+    'retrieve FileSystemId'(test: Test) {
+        const app = new TestApp();
+        const fileSystem = new FileSystem(app.stack, 'MyFileSystem', {
+            throughputMiB: 1,
+        });
+
+        const newApp = new TestApp();
+        // const newFS = new ImportedFileSystem(newApp.stack, 'MyFileSystem', {fileSystemId: fileSystem.fileSystemId});
+        ImportedFileSystem.import(newApp.stack, 'MyReferencedFileSystem', {fileSystemId: fileSystem.fileSystemId});
         test.done();
     }
 };
