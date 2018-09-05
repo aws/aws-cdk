@@ -5,7 +5,7 @@ set -euo pipefail
 root=$PWD
 
 # Get version from lerna --concurrency 1
-version="$(cat ${root}/lerna --concurrency 1.json | grep version | cut -d '"' -f4)"
+version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
 
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
 # If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
