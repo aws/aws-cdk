@@ -4,7 +4,7 @@ set -euo pipefail
 export PATH=node_modules/.bin:$PATH
 
 # Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
-lerna exec --scope=cfn2ts                           \
+lerna --concurrency 1 exec --scope=cfn2ts                           \
            --scope=pkglint                          \
            --scope=@aws-cdk/cdk                     \
            --scope=@aws-cdk/assert              \
@@ -14,7 +14,7 @@ lerna exec --scope=cfn2ts                           \
            --stream                                 \
   npm run build
 
-VERSION=$(node -e 'console.log(require("./lerna.json").version);')
+VERSION=$(node -e 'console.log(require("./lerna --concurrency 1.json").version);')
 
 for S in $(node -e 'console.log(require("./packages/@aws-cdk/cfnspec").namespaces.join("\n"));'); do
     P=$(tr 'A-Z' 'a-z' <<< "${S/AWS::/@aws-cdk/aws-}")
@@ -147,8 +147,8 @@ EOM
         cp LICENSE NOTICE packages/${P}/
 
         echo "⌛️ Bootstrapping & building ${P}"
-        lerna bootstrap --scope=${P}
-        lerna run build --scope=${P}
+        lerna --concurrency 1 bootstrap --scope=${P}
+        lerna --concurrency 1 run build --scope=${P}
 
         git add packages/${P}
 

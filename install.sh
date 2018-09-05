@@ -5,9 +5,9 @@ echo "==========================================================================
 echo "installing repo-global dependencies..."
 npm i --no-package-lock --global-style
 
-# Now that we have lerna available...
+# Now that we have lerna --concurrency 1 available...
 export PATH=node_modules/.bin:$PATH
 
 echo "============================================================================================="
 echo "bootstrapping..."
-lerna bootstrap --reject-cycles
+lerna --concurrency 1 bootstrap --reject-cycles

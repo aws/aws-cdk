@@ -103,6 +103,14 @@ export class InitTemplate {
         }
     }
 
+    /**
+     * @summary     Invoke any javascript hooks that exist in the template.
+     * @description Sometimes templates need more complex logic than just replacing tokens. A 'hook' is
+     *              any file that ends in .hook.js. It should export a single function called "invoke"
+     *              that accepts a single string parameter. When the template is installed, each hook
+     *              will be invoked, passing the target directory as the only argument. Hooks are invoked
+     *              in lexical order.
+     */
     private async invokeHooks(sourceDirectory: string, targetDirectory: string) {
         const files = await fs.readdir(sourceDirectory);
         files.sort(); // Sorting allows template authors to control the order in which hooks are invoked.

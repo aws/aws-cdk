@@ -6,9 +6,9 @@ if [ -z "${ver}" ]; then
   exit 1
 fi
 
-lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
-lerna run build
+lerna --concurrency 1 publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
+lerna --concurrency 1 run build
 
 # update test expectations
-UPDATE_DIFF=1 lerna run test
+UPDATE_DIFF=1 lerna --concurrency 1 run test
 
