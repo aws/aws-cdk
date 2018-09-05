@@ -47,6 +47,7 @@ async function parseCommandLineArguments() {
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
+        .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
         // tslint:disable-next-line:max-line-length
         .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
         .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
@@ -108,7 +109,7 @@ async function initCommandLine() {
 
     debug('Command line arguments:', argv);
 
-    const aws = new SDK(argv.profile);
+    const aws = new SDK(argv.profile, argv.proxy);
 
     const availableContextProviders: contextplugins.ProviderMap = {
         'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
