@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.StepFunctions",
-        "packageId": "Amazon.CDK.AWS.StepFunctions"
+        "packageId": "Amazon.CDK.AWS.StepFunctions",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

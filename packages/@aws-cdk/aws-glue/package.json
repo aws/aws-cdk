@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Glue",
-        "packageId": "Amazon.CDK.AWS.Glue"
+        "packageId": "Amazon.CDK.AWS.Glue",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

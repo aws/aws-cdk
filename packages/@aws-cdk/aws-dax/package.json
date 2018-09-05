@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DAX",
-        "packageId": "Amazon.CDK.AWS.DAX"
+        "packageId": "Amazon.CDK.AWS.DAX",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

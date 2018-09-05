@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.WAF",
-        "packageId": "Amazon.CDK.AWS.WAF"
+        "packageId": "Amazon.CDK.AWS.WAF",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

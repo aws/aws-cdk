@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Notifications",
-        "packageId": "Amazon.CDK.AWS.S3.Notifications"
+        "packageId": "Amazon.CDK.AWS.S3.Notifications",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

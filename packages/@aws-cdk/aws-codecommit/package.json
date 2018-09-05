@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodeCommit",
-        "packageId": "Amazon.CDK.AWS.CodeCommit"
+        "packageId": "Amazon.CDK.AWS.CodeCommit",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

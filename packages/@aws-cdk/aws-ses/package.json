@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SES",
-        "packageId": "Amazon.CDK.AWS.SES"
+        "packageId": "Amazon.CDK.AWS.SES",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

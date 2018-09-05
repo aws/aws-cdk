@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.WorkSpaces",
-        "packageId": "Amazon.CDK.AWS.WorkSpaces"
+        "packageId": "Amazon.CDK.AWS.WorkSpaces",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

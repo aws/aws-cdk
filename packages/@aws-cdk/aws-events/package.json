@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Events",
-        "packageId": "Amazon.CDK.AWS.Events"
+        "packageId": "Amazon.CDK.AWS.Events",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

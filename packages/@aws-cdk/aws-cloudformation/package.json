@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudFormation",
-        "packageId": "Amazon.CDK.AWS.CloudFormation"
+        "packageId": "Amazon.CDK.AWS.CloudFormation",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

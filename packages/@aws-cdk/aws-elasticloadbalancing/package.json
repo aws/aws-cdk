@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ElasticLoadBalancing",
-        "packageId": "Amazon.CDK.AWS.ElasticLoadBalancing"
+        "packageId": "Amazon.CDK.AWS.ElasticLoadBalancing",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

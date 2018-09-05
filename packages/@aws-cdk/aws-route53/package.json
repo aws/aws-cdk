@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Route53",
-        "packageId": "Amazon.CDK.AWS.Route53"
+        "packageId": "Amazon.CDK.AWS.Route53",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

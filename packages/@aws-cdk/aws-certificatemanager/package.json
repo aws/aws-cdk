@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CertificateManager",
-        "packageId": "Amazon.CDK.AWS.CertificateManager"
+        "packageId": "Amazon.CDK.AWS.CertificateManager",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

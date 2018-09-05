@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Elasticsearch",
-        "packageId": "Amazon.CDK.AWS.Elasticsearch"
+        "packageId": "Amazon.CDK.AWS.Elasticsearch",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

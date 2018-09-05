@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DMS",
-        "packageId": "Amazon.CDK.AWS.DMS"
+        "packageId": "Amazon.CDK.AWS.DMS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

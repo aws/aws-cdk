@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.DynamoDB",
-        "packageId": "Amazon.CDK.AWS.DynamoDB"
+        "packageId": "Amazon.CDK.AWS.DynamoDB",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

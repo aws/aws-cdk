@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudWatch",
-        "packageId": "Amazon.CDK.AWS.CloudWatch"
+        "packageId": "Amazon.CDK.AWS.CloudWatch",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

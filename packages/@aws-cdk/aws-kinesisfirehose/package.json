@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.KinesisFirehose",
-        "packageId": "Amazon.CDK.AWS.KinesisFirehose"
+        "packageId": "Amazon.CDK.AWS.KinesisFirehose",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

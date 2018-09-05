@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Sagemaker",
-        "packageId": "Amazon.CDK.AWS.Sagemaker"
+        "packageId": "Amazon.CDK.AWS.Sagemaker",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

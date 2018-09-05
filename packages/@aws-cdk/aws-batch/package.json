@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.Batch",
-        "packageId": "Amazon.CDK.AWS.Batch"
+        "packageId": "Amazon.CDK.AWS.Batch",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

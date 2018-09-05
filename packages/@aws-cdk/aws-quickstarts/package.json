@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.QuickStarts",
-        "packageId": "Amazon.CDK.AWS.QuickStarts"
+        "packageId": "Amazon.CDK.AWS.QuickStarts",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EC2",
-        "packageId": "Amazon.CDK.AWS.EC2"
+        "packageId": "Amazon.CDK.AWS.EC2",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }

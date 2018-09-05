@@ -16,7 +16,9 @@
       },
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AutoScaling",
-        "packageId": "Amazon.CDK.AWS.AutoScaling"
+        "packageId": "Amazon.CDK.AWS.AutoScaling",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
