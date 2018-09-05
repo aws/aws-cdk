@@ -1,4 +1,5 @@
-import { Construct, IDependable, Output, StringListOutput, Token } from "@aws-cdk/cdk";
+import { Construct, IDependable, Output, StringListOutput } from "@aws-cdk/cdk";
+import { SubnetId, VPCId } from "./ec2.generated";
 
 /**
  * Customize how instances are placed inside a VPC
@@ -31,7 +32,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
     /**
      * Identifier for this VPC
      */
-    public abstract readonly vpcId: VpcNetworkId;
+    public abstract readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -60,12 +61,14 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
      * Export this VPC from the stack
      */
     public export(): VpcNetworkRefProps {
+        // tslint:disable:max-line-length
         return {
-            vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue(),
+            vpcId: new VPCId(new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue()),
             availabilityZones: this.publicSubnets.map(s => s.availabilityZone),
-            publicSubnetIds: new StringListOutput(this, 'PublicSubnetIDs', { values: this.publicSubnets.map(s => s.subnetId) }).makeImportValues(),
-            privateSubnetIds: new StringListOutput(this, 'PrivateSubnetIDs', { values: this.privateSubnets.map(s => s.subnetId) }).makeImportValues(),
+            publicSubnetIds: new StringListOutput(this, 'PublicSubnetIDs', { values: this.publicSubnets.map(s => s.subnetId) }).makeImportValues().map(x => new SubnetId(x)),
+            privateSubnetIds: new StringListOutput(this, 'PrivateSubnetIDs', { values: this.privateSubnets.map(s => s.subnetId) }).makeImportValues().map(x => new SubnetId(x)),
         };
+        // tslint:enable:max-line-length
     }
 }
 
@@ -76,7 +79,7 @@ class ImportedVpcNetwork extends VpcNetworkRef {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VpcNetworkId;
+    public readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -120,7 +123,7 @@ export interface VpcNetworkRefProps {
     /**
      * VPC's identifier
      */
-    vpcId: VpcNetworkId;
+    vpcId: VPCId;
 
     /**
      * List of a availability zones, one for every subnet.
@@ -135,20 +138,14 @@ export interface VpcNetworkRefProps {
      *
      * Must match the availability zones and private subnet ids in length and order.
      */
-    publicSubnetIds: VpcSubnetId[];
+    publicSubnetIds: SubnetId[];
 
     /**
      * List of private subnet IDs, one for every subnet
      *
      * Must match the availability zones and public subnet ids in length and order.
      */
-    privateSubnetIds: VpcSubnetId[];
-}
-
-/**
- * Identifier for a VPC
- */
-export class VpcNetworkId extends Token {
+    privateSubnetIds: SubnetId[];
 }
 
 /**
@@ -167,7 +164,7 @@ export abstract class VpcSubnetRef extends Construct implements IDependable {
     /**
      * The subnetId for this particular subnet
      */
-    public abstract readonly subnetId: VpcSubnetId;
+    public abstract readonly subnetId: SubnetId;
 
     /**
      * Parts of this VPC subnet
@@ -187,7 +184,7 @@ class ImportedVpcSubnet extends VpcSubnetRef {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: VpcSubnetId;
+    public readonly subnetId: SubnetId;
 
     constructor(parent: Construct, name: string, props: VpcSubnetRefProps) {
         super(parent, name);
@@ -206,13 +203,7 @@ export interface VpcSubnetRefProps {
     /**
      * The subnetId for this particular subnet
      */
-    subnetId: VpcSubnetId;
-}
-
-/**
- * Id of a VPC Subnet
- */
-export class VpcSubnetId extends Token {
+    subnetId: SubnetId;
 }
 
 /**

@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { Arn, FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Role } from '../lib';
 
@@ -33,7 +33,7 @@ export = {
 
         test.ok(!('MyRoleDefaultPolicyA36BE1DD' in stack.toCloudFormation().Resources), 'initially created without a policy');
 
-        role.addToPolicy(new PolicyStatement().addResource('myresource').addAction('myaction'));
+        role.addToPolicy(new PolicyStatement().addResource(new Arn('myresource')).addAction('myaction'));
         test.ok(stack.toCloudFormation().Resources.MyRoleDefaultPolicyA36BE1DD, 'policy resource created');
 
         expect(stack).toMatch({ Resources:
@@ -66,7 +66,7 @@ export = {
             managedPolicyArns: [ 'managed1', 'managed2' ]
         });
 
-        role.attachManagedPolicy('managed3');
+        role.attachManagedPolicy(new Arn('managed3'));
         expect(stack).toMatch({ Resources:
             { MyRoleF48FFE04:
                { Type: 'AWS::IAM::Role',

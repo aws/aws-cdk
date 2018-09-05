@@ -506,7 +506,10 @@ export = {
       const topic = new sns.Topic(stack, 'Topic');
 
       // WHEN
-      topic.addToResourcePolicy(new cdk.PolicyStatement().addResource('*').addActions('sns:*').addPrincipal(new cdk.ArnPrincipal('arn')));
+      topic.addToResourcePolicy(new cdk.PolicyStatement()
+            .addAllResources()
+            .addActions('sns:*')
+            .addPrincipal(new cdk.ArnPrincipal(new cdk.Arn('arn'))));
 
       // THEN
       expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {

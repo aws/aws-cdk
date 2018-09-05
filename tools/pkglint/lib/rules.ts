@@ -219,7 +219,9 @@ function cdkModuleName(name: string) {
     name = name.replace(/^aws-cdk-/, '');
     name = name.replace(/^@aws-cdk\//, '');
 
-    const dotnetSuffix = name.split('-').map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s)).join('.');
+    const dotnetSuffix = name.split('-')
+        .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
+        .join('.');
 
     return {
         javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,

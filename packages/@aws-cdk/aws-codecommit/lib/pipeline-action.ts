@@ -3,19 +3,16 @@ import cdk = require('@aws-cdk/cdk');
 import { RepositoryRef } from './repository';
 
 /**
- * Construction properties of the {@link PipelineSource CodeCommit source CodePipeline Action}.
+ * Common properties for creating {@link PipelineSource} -
+ * either directly, through its constructor,
+ * or through {@link RepositoryRef#addToPipeline}.
  */
-export interface PipelineSourceProps extends codepipeline.CommonActionProps {
+export interface CommonPipelineSourceProps {
     /**
      * The name of the source's output artifact.
      * Output artifacts are used by CodePipeline as inputs into other actions.
      */
     artifactName: string;
-
-    /**
-     * The CodeCommit repository.
-     */
-    repository: RepositoryRef;
 
     /**
      * @default 'master'
@@ -29,6 +26,16 @@ export interface PipelineSourceProps extends codepipeline.CommonActionProps {
      * @default true
      */
     pollForSourceChanges?: boolean;
+}
+
+/**
+ * Construction properties of the {@link PipelineSource CodeCommit source CodePipeline Action}.
+ */
+export interface PipelineSourceProps extends CommonPipelineSourceProps, codepipeline.CommonActionProps {
+    /**
+     * The CodeCommit repository.
+     */
+    repository: RepositoryRef;
 }
 
 /**

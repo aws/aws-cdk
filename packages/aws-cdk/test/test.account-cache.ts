@@ -4,18 +4,18 @@ import path = require('path');
 import { AccountAccessKeyCache } from '../lib/api/util/account-cache';
 
 export = {
-    'setUp'(cb: ICallbackFunction) {
+    async 'setUp'(cb: ICallbackFunction) {
         const self = this as any;
-        fs.mkdtemp('/tmp/account-cache-test').then(dir => {
-            self.file = path.join(dir, 'cache.json');
-            self.cache = new AccountAccessKeyCache(self.file);
-            return cb();
-        });
+        const dir = await fs.mkdtemp('/tmp/account-cache-test');
+        self.file = path.join(dir, 'cache.json');
+        self.cache = new AccountAccessKeyCache(self.file);
+        return cb();
     },
 
-    'tearDown'(cb: ICallbackFunction) {
+    async 'tearDown'(cb: ICallbackFunction) {
         const self = this as any;
-        fs.remove(path.dirname(self.file)).then(cb);
+        await fs.remove(path.dirname(self.file));
+        cb();
     },
 
     async 'get(k) when cache is empty'(test: Test) {

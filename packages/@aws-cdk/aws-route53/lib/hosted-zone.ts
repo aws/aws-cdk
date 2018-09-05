@@ -1,8 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';
-import { cloudformation, HostedZoneNameServers } from './route53.generated';
+import { HostedZoneRef } from './hosted-zone-ref';
+import { cloudformation, HostedZoneId, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
 /**

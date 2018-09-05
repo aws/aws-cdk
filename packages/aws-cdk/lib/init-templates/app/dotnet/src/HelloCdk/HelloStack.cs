@@ -1,9 +1,7 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SQS;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HelloCdk
 {
@@ -11,6 +9,7 @@ namespace HelloCdk
     {
         public HelloStack(App parent, string name, IStackProps props) : base(parent, name, props)
         {
+            // The CDK includes built-in constructs for most resource types, such as Queues and Topics.
             var queue = new Queue(this, "MyFirstQueue", new QueueProps
             {
                 VisibilityTimeoutSec = 300
@@ -22,6 +21,16 @@ namespace HelloCdk
             });
 
             topic.SubscribeQueue(queue);
+
+            // You can also define your own constructs and use them in your stack.
+            HelloConstruct hello = new HelloConstruct(this, "Buckets", new HelloConstructProps()
+            {
+                BucketCount = 5
+            });
+
+            // Create a new user with read access to the HelloConstruct resource.         
+            User user = new User(this, "MyUser", new UserProps());
+            hello.GrantRead(user);
         }
     }
 }

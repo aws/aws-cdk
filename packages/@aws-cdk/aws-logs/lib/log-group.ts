@@ -1,80 +1,37 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
-import { cloudformation, LogGroupArn } from './logs.generated';
+import { cloudformation, LogGroupArn, LogGroupName } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
 /**
- * Properties for a new LogGroup
+ * Properties for importing a LogGroup
  */
-export interface LogGroupProps {
-    /**
-     * Name of the log group.
-     *
-     * @default Automatically generated
-     */
-    logGroupName?: string;
-
-    /**
-     * How long, in days, the log contents will be retained.
-     *
-     * To retain all logs, set this value to Infinity.
-     *
-     * @default 730 days (2 years)
-     */
-    retentionDays?: number;
-
-    /**
-     * Retain the log group if the stack or containing construct ceases to exist
-     *
-     * Normally you want to retain the log group so you can diagnose issues
-     * from logs even after a deployment that no longer includes the log group.
-     * In that case, use the normal date-based retention policy to age out your
-     * logs.
-     *
-     * @default true
-     */
-    retainLogGroup?: boolean;
+export interface LogGroupRefProps {
+    logGroupArn: LogGroupArn;
 }
 
 /**
- * A new CloudWatch Log Group
+ * An CloudWatch Log Group
  */
-export class LogGroup extends cdk.Construct {
+export abstract class LogGroupRef extends cdk.Construct {
+    /**
+     * Import an existing LogGroup
+     */
+    public static import(parent: cdk.Construct, id: string, props: LogGroupRefProps): LogGroupRef {
+        return new ImportedLogGroup(parent, id, props);
+    }
+
     /**
      * The ARN of this log group
      */
-    public readonly logGroupArn: LogGroupArn;
+    public abstract readonly logGroupArn: LogGroupArn;
 
     /**
      * The name of this log group
      */
-    public readonly logGroupName: LogGroupName;
-
-    constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
-        super(parent, id);
-
-        let retentionInDays = props.retentionDays;
-        if (retentionInDays === undefined) { retentionInDays = 730; }
-        if (retentionInDays === Infinity) { retentionInDays = undefined; }
-
-        if (retentionInDays !== undefined && retentionInDays <= 0) {
-            throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
-        }
-
-        const resource = new cloudformation.LogGroupResource(this, 'Resource', {
-            logGroupName: props.logGroupName,
-            retentionInDays,
-        });
-
-        if (props.retainLogGroup !== false) {
-            cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
-        }
-
-        this.logGroupArn = resource.logGroupArn;
-        this.logGroupName = resource.ref;
-    }
+    public abstract readonly logGroupName: LogGroupName;
 
     /**
      * Create a new Log Stream for this Log Group
@@ -117,12 +74,109 @@ export class LogGroup extends cdk.Construct {
             ...props
         });
     }
+
+    /**
+     * Export this LogGroup
+     */
+    public export(): LogGroupRefProps {
+        return {
+            logGroupArn: new LogGroupArn(new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue())
+        };
+    }
 }
 
 /**
- * Name of a log group
+ * Properties for a LogGroup
  */
-export class LogGroupName extends cdk.Token {
+export interface LogGroupProps {
+    /**
+     * Name of the log group.
+     *
+     * @default Automatically generated
+     */
+    logGroupName?: string;
+
+    /**
+     * How long, in days, the log contents will be retained.
+     *
+     * To retain all logs, set this value to Infinity.
+     *
+     * @default 730 days (2 years)
+     */
+    retentionDays?: number;
+
+    /**
+     * Retain the log group if the stack or containing construct ceases to exist
+     *
+     * Normally you want to retain the log group so you can diagnose issues
+     * from logs even after a deployment that no longer includes the log group.
+     * In that case, use the normal date-based retention policy to age out your
+     * logs.
+     *
+     * @default true
+     */
+    retainLogGroup?: boolean;
+}
+
+/**
+ * Define a CloudWatch Log Group
+ */
+export class LogGroup extends LogGroupRef {
+    /**
+     * The ARN of this log group
+     */
+    public readonly logGroupArn: LogGroupArn;
+
+    /**
+     * The name of this log group
+     */
+    public readonly logGroupName: LogGroupName;
+
+    constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
+        super(parent, id);
+
+        let retentionInDays = props.retentionDays;
+        if (retentionInDays === undefined) { retentionInDays = 730; }
+        if (retentionInDays === Infinity) { retentionInDays = undefined; }
+
+        if (retentionInDays !== undefined && retentionInDays <= 0) {
+            throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
+        }
+
+        const resource = new cloudformation.LogGroupResource(this, 'Resource', {
+            logGroupName: props.logGroupName,
+            retentionInDays,
+        });
+
+        if (props.retainLogGroup !== false) {
+            cdk.applyRemovalPolicy(resource, cdk.RemovalPolicy.Orphan);
+        }
+
+        this.logGroupArn = resource.logGroupArn;
+        this.logGroupName = resource.ref;
+    }
+}
+
+/**
+ * An imported CloudWatch Log Group
+ */
+class ImportedLogGroup extends LogGroupRef {
+    /**
+     * The ARN of this log group
+     */
+    public readonly logGroupArn: LogGroupArn;
+
+    /**
+     * The name of this log group
+     */
+    public readonly logGroupName: LogGroupName;
+
+    constructor(parent: cdk.Construct, id: string, props: LogGroupRefProps) {
+        super(parent, id);
+
+        this.logGroupArn = props.logGroupArn;
+        this.logGroupName = new LogGroupName(props.logGroupArn.resourceNameComponent(':'));
+    }
 }
 
 /**

@@ -14,16 +14,17 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
         super(parent, id);
 
         const resource = new cdk.Resource(this, 'Resource', { type: 'AWS::SNS::Topic' });
+        const topicArn = new cdk.Ref(resource);
 
         new cdk.Resource(this, 'Policy', {
             type: 'AWS::SNS::TopicPolicy',
             properties: {
-                Topics: [ resource.ref ],
+                Topics: [ topicArn ],
                 PolicyDocument: this.policy
             }
         });
 
-        this.topicArn = resource.ref;
+        this.topicArn = new cdk.Arn(topicArn);
     }
 
     public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3notifications.BucketNotificationDestinationProps {
