@@ -85,6 +85,33 @@ Below are the actions you can take on your CDK app:
    If one of cdk.json or ~/.cdk.json exists, options specified there will be used
    as defaults. Settings in cdk.json take precedence.
 
+.. _using-a-proxy:
+
+Using a proxy
+~~~~~~~~~~~~~
+
+If you use a proxy to connect to the Internet, configure it by setting either the `HTTPS_PROXY` or
+`https_proxy` environment variable.
+
+On Linux and macOS, you set environment variables like this:
+
+.. code-block:: sh
+
+    export HTTPS_PROXY=http://10.0.0.10:8080/
+
+Put this line in your ``~/.bashrc`` file or similar to make it persistent.
+
+On Windows, you set an environment variable like this:
+
+.. code-block:: sh
+
+    set HTTPS_PROXY=http://10.0.0.10:8080/
+
+To make the setting persistent on Windows, right-click **My Computer** ~> **Properties** > **Advanced System Settings**
+> **Environment Variables** > **New**, fill in the name and value in separate fields, click **OK** and restart your
+command prompt.
+
+
 .. _version-reporting:
 
 Version Reporting
