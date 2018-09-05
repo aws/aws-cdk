@@ -23,7 +23,7 @@ export class SDK {
     private readonly credentialsCache: CredentialsCache;
     private readonly defaultClientArgs: any = {};
 
-    constructor(private readonly profile: string | undefined) {
+    constructor(private readonly profile: string | undefined, proxyAddress: string | undefined) {
         const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
 
         this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
@@ -34,8 +34,10 @@ export class SDK {
         this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
 
         // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-        const proxyAddress = httpsProxyAddress();
-        if (proxyAddress) {
+        if (proxyAddress === undefined) {
+            proxyAddress = httpsProxyFromEnvironment();
+        }
+        if (proxyAddress) { // Ignore empty string on purpose
             debug('Using proxy server: %s', proxyAddress);
             this.defaultClientArgs.httpOptions = {
                 agent: require('proxy-agent')(proxyAddress)
@@ -280,12 +282,12 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
 /**
  * Find and return the configured HTTPS proxy address
  */
-function httpsProxyAddress(): string | undefined {
-    if (process.env.http_proxy) {
-        return process.env.http_proxy;
-    }
+function httpsProxyFromEnvironment(): string | undefined {
     if (process.env.https_proxy) {
         return process.env.https_proxy;
+    }
+    if (process.env.HTTPS_PROXY) {
+        return process.env.HTTPS_PROXY;
     }
     return undefined;
 }

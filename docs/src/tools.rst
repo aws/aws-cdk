@@ -64,53 +64,36 @@ Below are the actions you can take on your CDK app:
      init [TEMPLATE]             Create a new, empty CDK project from a template.
                                  Invoked without TEMPLATE, the app template will be
                                  used.
+     doctor                      Check your set-up for potential problems
 
    Options:
-     --help         Show help                                             [boolean]
-     --app, -a      REQUIRED: Command-line of cloud executable (e.g. "node
-                   bin/my-app.js")                                        [string]
-     --context, -c  Add contextual string parameter.                        [array]
-     --plugin, -p   Name or path of a node package that extend the CDK features.
-                   Can be specified multiple times                         [array]
-     --rename       Rename stack name if different then the one defined in the
-                   cloud executable                                       [string]
-     --trace        Print trace for stack warnings                        [boolean]
-     --strict       Do not construct stacks with warnings                 [boolean]
-     --json, -j     Use JSON output instead of YAML                       [boolean]
-     --verbose, -v  Show debug logs                                       [boolean]
-     --version      Show version number                                   [boolean]
+     --app, -a            REQUIRED: Command-line for executing your CDK app (e.g.
+                          "node bin/my-app.js")                            [string]
+     --context, -c        Add contextual string parameter.                  [array]
+     --plugin, -p         Name or path of a node package that extend the CDK
+                          features. Can be specified multiple times         [array]
+     --rename             Rename stack name if different then the one defined in
+                          the cloud executable                             [string]
+     --trace              Print trace for stack warnings                  [boolean]
+     --strict             Do not construct stacks with warnings           [boolean]
+     --ignore-errors      Ignores synthesis errors, which will likely produce an
+                          invalid output                 [boolean] [default: false]
+     --json, -j           Use JSON output instead of YAML                 [boolean]
+     --verbose, -v        Show debug logs                                 [boolean]
+     --profile            Use the indicated AWS profile as the default environment
+                                                                           [string]
+     --proxy              Use the indicated proxy. Will read from HTTPS_PROXY
+                          environment variable if not specified.           [string]
+     --version-reporting  Disable insersion of the CDKMetadata resource in
+                          synthesized templates                           [boolean]
+     --version            Show version number                             [boolean]
+     --help               Show help                                       [boolean]
+
 
    If your app has a single stack, there is no need to specify the stack name
 
    If one of cdk.json or ~/.cdk.json exists, options specified there will be used
    as defaults. Settings in cdk.json take precedence.
-
-.. _using-a-proxy:
-
-Using a proxy
-~~~~~~~~~~~~~
-
-If you use a proxy to connect to the Internet, configure it by setting either the `HTTPS_PROXY` or
-`https_proxy` environment variable.
-
-On Linux and macOS, you set environment variables like this:
-
-.. code-block:: sh
-
-    export HTTPS_PROXY=http://10.0.0.10:8080/
-
-Put this line in your ``~/.bashrc`` file or similar to make it persistent.
-
-On Windows, you set an environment variable like this:
-
-.. code-block:: sh
-
-    set HTTPS_PROXY=http://10.0.0.10:8080/
-
-To make the setting persistent on Windows, right-click **My Computer** ~> **Properties** > **Advanced System Settings**
-> **Environment Variables** > **New**, fill in the name and value in separate fields, click **OK** and restart your
-command prompt.
-
 
 .. _version-reporting:
 
