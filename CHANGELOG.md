@@ -49,6 +49,7 @@
     - AWS::Glue::Classifier JsonClassifier (__added__)
     - AWS::Glue::Classifier XMLClassifier (__added__)
     - AWS::Glue::Crawler Configuration (__added__)
+    - AWS::Lambda::Lambda DLQConfigurationSupport (__added__)
     - AWS::Neptune::DBInstance DBSubnetGroupName.UpdateType (__changed__)
       - Old: Mutable
       - New: Immutable
