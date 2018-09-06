@@ -26,7 +26,7 @@ export interface ClusterProps {
     containersAccessInstanceRole?: boolean;
 }
 
-// This works for now but how will we keep this list up to date?
+// TODO: replace this with call to SSM, stored as "/aws/service/ecs/optimized-ami/amazon-linux/recommended"
 export const ECS_OPTIMIZED_AMI = new ec2.GenericLinuxImage({
     'us-east-2': 'ami-028a9de0a7e353ed9',
     'us-east-1': 'ami-00129b193dc81bc31',
