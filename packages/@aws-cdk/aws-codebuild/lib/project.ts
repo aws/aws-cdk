@@ -485,7 +485,9 @@ export class Project extends ProjectRef {
         if (typeof buildSpec === 'string') {
             sourceJson.buildSpec = buildSpec; // Filename to buildspec file
         } else if (Object.keys(buildSpec).length > 0) {
-            sourceJson.buildSpec = JSON.stringify(buildSpec); // Literal buildspec
+            // We have to pretty-print the buildspec, otherwise
+            // CodeBuild will not recognize it as an inline buildspec.
+            sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
         }
 
         this.validateCodePipelineSettings(artifacts);
