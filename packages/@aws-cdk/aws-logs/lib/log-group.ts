@@ -2,7 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
 import { cloudformation, LogGroupArn, LogGroupName } from './logs.generated';
 import { MetricFilter } from './metric-filter';
-import { IFilterPattern } from './pattern';
+import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
 /**
@@ -82,6 +82,29 @@ export abstract class LogGroupRef extends cdk.Construct {
         return {
             logGroupArn: new LogGroupArn(new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue())
         };
+    }
+
+    /**
+     * Extract a metric from structured log events in the LogGroup
+     *
+     * Creates a MetricFilter on this LogGroup that will extract the value
+     * of the indicated JSON field in all records where it occurs.
+     *
+     * The metric will be available in CloudWatch Metrics under the
+     * indicated namespace and name.
+     *
+     * @param jsonField JSON field to extract (example: '$.myfield')
+     * @param metricNamespace Namespace to emit the metric under
+     * @param metricName Name to emit the metric under
+     */
+    public extractMetric(jsonField: string, metricNamespace: string, metricName: string) {
+        new MetricFilter(this, `${metricNamespace}_${metricName}`, {
+            logGroup: this,
+            metricNamespace,
+            metricName,
+            filterPattern: FilterPattern.exists(jsonField),
+            metricValue: jsonField
+        });
     }
 }
 
