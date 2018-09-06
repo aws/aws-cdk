@@ -79,7 +79,8 @@ export = {
             },
             Source: {
                 // tslint:disable-next-line:max-line-length
-                BuildSpec: "{\"version\":\"0.2\",\"phases\":{\"pre_build\":[\"echo \\\"Downloading scripts from s3://${SCRIPT_S3_BUCKET}/${SCRIPT_S3_KEY}\\\"\",\"aws s3 cp s3://${SCRIPT_S3_BUCKET}/${SCRIPT_S3_KEY} /tmp\",\"mkdir -p /tmp/scriptdir\",\"unzip /tmp/$(basename $SCRIPT_S3_KEY) -d /tmp/scriptdir\"],\"build\":[\"export SCRIPT_DIR=/tmp/scriptdir\",\"echo \\\"Running hello.sh\\\"\",\"chmod +x /tmp/scriptdir/hello.sh\",\"/tmp/scriptdir/hello.sh\"]}}",
+                BuildSpec: "{\"version\":\"0.2\",\"phases\":{\"pre_build\":{\"commands\":[\"echo \\\"Downloading scripts from s3://${SCRIPT_S3_BUCKET}/${SCRIPT_S3_KEY}\\\"\",\"aws s3 cp s3://${SCRIPT_S3_BUCKET}/${SCRIPT_S3_KEY} /tmp\",\"mkdir -p /tmp/scriptdir\",\"unzip /tmp/$(basename $SCRIPT_S3_KEY) -d /tmp/scriptdir\"]},\"build\":{\"commands\":[\"export SCRIPT_DIR=/tmp/scriptdir\",\"echo \\\"Running hello.sh\\\"\",\"chmod +x /tmp/scriptdir/hello.sh\",\"/tmp/scriptdir/hello.sh\"]}}}",
+                Type: "NO_SOURCE"
             }
         }));
 

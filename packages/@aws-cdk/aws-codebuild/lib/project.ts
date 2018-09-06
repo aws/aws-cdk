@@ -9,7 +9,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { cloudformation, ProjectArn, ProjectName } from './codebuild.generated';
 import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
-import { BuildSource, CodePipelineSource } from './source';
+import { BuildSource, NoSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -402,7 +402,7 @@ export interface ProjectProps extends CommonProjectProps {
     /**
      * The source of the build.
      *
-     * @default CodePipelineSource
+     * @default NoSource
      */
     source?: BuildSource;
 
@@ -463,7 +463,7 @@ export class Project extends ProjectRef {
 
         // let source "bind" to the project. this usually involves granting permissions
         // for the code build role to interact with the source.
-        this.source = props.source || new CodePipelineSource();
+        this.source = props.source || new NoSource();
         this.source.bind(this);
 
         const artifacts = this.parseArtifacts(props);
@@ -724,22 +724,26 @@ export class LinuxBuildImage implements IBuildImage {
         return {
             version: '0.2',
             phases: {
-                pre_build: [
-                    // Better echo the location here; if this fails, the error message only contains
-                    // the unexpanded variables by default. It might fail if you're running an old
-                    // definition of the CodeBuild project--the permissions will have been changed
-                    // to only allow downloading the very latest version.
-                    `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
-                    `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
-                    `mkdir -p /tmp/scriptdir`,
-                    `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
-                ],
-                build: [
-                    'export SCRIPT_DIR=/tmp/scriptdir',
-                    `echo "Running ${entrypoint}"`,
-                    `chmod +x /tmp/scriptdir/${entrypoint}`,
-                    `/tmp/scriptdir/${entrypoint}`,
-                ]
+                pre_build: {
+                    commands: [
+                        // Better echo the location here; if this fails, the error message only contains
+                        // the unexpanded variables by default. It might fail if you're running an old
+                        // definition of the CodeBuild project--the permissions will have been changed
+                        // to only allow downloading the very latest version.
+                        `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
+                        `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
+                        `mkdir -p /tmp/scriptdir`,
+                        `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
+                    ]
+                },
+                build: {
+                    commands: [
+                        'export SCRIPT_DIR=/tmp/scriptdir',
+                        `echo "Running ${entrypoint}"`,
+                        `chmod +x /tmp/scriptdir/${entrypoint}`,
+                        `/tmp/scriptdir/${entrypoint}`,
+                    ]
+                }
             }
         };
     }
@@ -774,20 +778,23 @@ export class WindowsBuildImage implements IBuildImage {
         return {
             version: '0.2',
             phases: {
-                pre_build: [
+                pre_build: {
                     // Would love to do downloading here and executing in the next step,
                     // but I don't know how to propagate the value of $TEMPDIR.
                     //
                     // Punting for someone who knows PowerShell well enough.
-                ],
-                build: [
-                    `Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName`,
-                    `aws s3 cp s3://$env:${S3_BUCKET_ENV}/$env:${S3_KEY_ENV} $TEMPDIR\\scripts.zip`,
-                    'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
-                    'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',
-                    '$env:SCRIPT_DIR = "$TEMPDIR\\scriptdir"',
-                    `& $TEMPDIR\\scriptdir\\${entrypoint}`
-                ]
+                    commands: []
+                },
+                build: {
+                    commands: [
+                        `Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName`,
+                        `aws s3 cp s3://$env:${S3_BUCKET_ENV}/$env:${S3_KEY_ENV} $TEMPDIR\\scripts.zip`,
+                        'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
+                        'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',
+                        '$env:SCRIPT_DIR = "$TEMPDIR\\scriptdir"',
+                        `& $TEMPDIR\\scriptdir\\${entrypoint}`
+                    ]
+                }
             }
         };
     }
@@ -837,10 +844,11 @@ function extendBuildSpec(buildSpec: any, extend: any) {
         buildSpec.phases = {};
     }
 
-    for (const phase of Object.keys(extend.phases)) {
-        if (!(phase in buildSpec.phases)) {
-            buildSpec.phases[phase] = [];
-        }
-        buildSpec.phases[phase].push(...extend.phases[phase]);
+    for (const phaseName of Object.keys(extend.phases)) {
+        if (!(phaseName in buildSpec.phases)) { buildSpec.phases[phaseName] = {}; }
+        const phase = buildSpec.phases[phaseName];
+
+        if (!(phase.commands)) { phase.commands = []; }
+        phase.commands.push(...extend.phases[phaseName].commands);
     }
 }
