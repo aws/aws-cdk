@@ -1,9 +1,10 @@
 import iam = require('@aws-cdk/aws-iam');
+import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionName, FunctionRef } from './lambda-ref';
+import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation, FunctionArn } from './lambda.generated';
+import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
 import { Runtime } from './runtime';
 
 export interface FunctionProps {
@@ -89,6 +90,22 @@ export interface FunctionProps {
      * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
      */
     role?: iam.Role;
+
+    /**
+     * Enabled DLQ. If `deadLetterQueue` is undefined,
+     * an SQS queue with default options will be defined for your Function.
+     *
+     * @default false unless `deadLetterQueue` is set, which implies DLQ is enabled
+     */
+    deadLetterQueueEnabled?: boolean;
+
+    /**
+     * The SQS queue to use if DLQ is enabled.
+     *
+     * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+     */
+    deadLetterQueue?: sqs.QueueRef;
+
 }
 
 /**
@@ -166,6 +183,7 @@ export class Function extends FunctionRef {
             role: this.role.roleArn,
             environment: new cdk.Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
+            deadLetterConfig: this.buildDeadLetterConfig(props),
         });
 
         resource.addDependency(this.role);
@@ -226,4 +244,27 @@ export class Function extends FunctionRef {
             variables: this.environment
         };
     }
+
+    private buildDeadLetterConfig(props: FunctionProps) {
+        if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
+            throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+        }
+
+        if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+            return undefined;
+        }
+
+        const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+            retentionPeriodSec: 1209600
+        });
+
+        this.addToRolePolicy(new cdk.PolicyStatement()
+            .addAction('sqs:SendMessage')
+            .addResource(deadLetterQueue.queueArn));
+
+        return {
+            targetArn: deadLetterQueue.queueArn
+        };
+    }
+
 }

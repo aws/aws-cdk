@@ -7,7 +7,12 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": []
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1SubnetB4246D30": {
@@ -18,7 +23,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1RouteTableFEE4B781": {
@@ -26,7 +37,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1RouteTableAssociatioin249B4093": {
@@ -57,7 +74,13 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1DefaultRoute91CEF279": {
@@ -80,7 +103,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2RouteTable6F1A15F1": {
@@ -88,7 +117,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2RouteTableAssociatioin766225D7": {
@@ -119,7 +154,13 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet2Subnet74179F39"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
@@ -142,7 +183,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3RouteTable98AE0E14": {
@@ -150,7 +197,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3RouteTableAssociatioinF4E24B3B": {
@@ -181,7 +234,13 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet3Subnet631C5E25"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet3"
+          }
+        ]
       }
     },
     "VPCPublicSubnet3DefaultRouteA0D29D46": {
@@ -204,7 +263,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet1RouteTableBE8A6027": {
@@ -212,7 +277,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
@@ -246,7 +317,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet2RouteTable0A19E10E": {
@@ -254,7 +331,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet2RouteTableAssociatioinC31995B4": {
@@ -288,7 +371,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet3"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet3RouteTable192186F8": {
@@ -296,7 +385,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet3"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet3RouteTableAssociatioin3B0B6B38": {
@@ -323,7 +418,15 @@
       }
     },
     "VPCIGWB7E252D3": {
-      "Type": "AWS::EC2::InternetGateway"
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/VPC"
+          }
+        ]
+      }
     },
     "VPCVPCGW99B986DC": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -452,6 +555,11 @@
             "Ref": "VPCPrivateSubnet3Subnet3EDCD457"
           }
         ]
+      },
+      "UpdatePolicy": {
+        "AutoScalingScheduledAction": {
+          "IgnoreUnmodifiedGroupSizeProperties": true
+        }
       }
     },
     "LBSecurityGroup8A41EA2B": {

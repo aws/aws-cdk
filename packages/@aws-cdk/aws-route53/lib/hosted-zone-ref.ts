@@ -1,4 +1,5 @@
-import { Construct, Output, Token } from "@aws-cdk/cdk";
+import { Construct, Output } from "@aws-cdk/cdk";
+import { HostedZoneId } from './route53.generated';
 
 /**
  * Imported or created hosted zone
@@ -23,16 +24,10 @@ export abstract class HostedZoneRef extends Construct {
      */
     public export(): HostedZoneRefProps {
         return {
-            hostedZoneId: new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+            hostedZoneId: new HostedZoneId(new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue()),
             zoneName: this.zoneName,
         };
     }
-}
-
-/**
- * Hosted zone identifier
- */
-export class HostedZoneId extends Token {
 }
 
 /**

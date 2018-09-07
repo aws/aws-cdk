@@ -4,7 +4,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, FunctionArn } from './lambda.generated';
+import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -238,7 +238,7 @@ export abstract class FunctionRef extends cdk.Construct
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         const arn = sourceLogGroup.logGroupArn;
 
         if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
@@ -247,7 +247,7 @@ export abstract class FunctionRef extends cdk.Construct
             //
             // (Wildcards in principals are unfortunately not supported.
             this.addPermission('InvokedByCloudWatchLogs', {
-                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com')),
+                principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
                 sourceArn: arn
             });
             this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -260,7 +260,7 @@ export abstract class FunctionRef extends cdk.Construct
      */
     public export(): FunctionRefProps {
         return {
-            functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+            functionArn: new FunctionArn(new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue()),
         };
     }
 
@@ -342,4 +342,3 @@ class LambdaRefImport extends FunctionRef {
 
     }
 }
-export class FunctionName extends cdk.Token { }

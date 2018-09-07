@@ -64,10 +64,12 @@ In addition to this guide, the following are other resources available to |cdk| 
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
   * `Examples <https://github.com/awslabs/aws-cdk/tree/master/examples>`_
-  * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/packages/aws-cdk-docs/src>`_
+  * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/docs/src>`_
   * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
 
+* `AWS CDK Sample for Cloud9 <https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-cdk.html>`_
+  
 .. _about_aws:
     
 About Amazon Web Services

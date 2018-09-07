@@ -19,50 +19,61 @@ import { SharedIniFile } from './sdk_ini_file';
  * to the requested account.
  */
 export class SDK {
-    private readonly userAgent: string;
     private readonly defaultAwsAccount: DefaultAWSAccount;
-    private readonly credentialProviderCache: CredentialProviderCache;
+    private readonly credentialsCache: CredentialsCache;
+    private readonly defaultClientArgs: any = {};
 
-    constructor(private readonly profile: string | undefined) {
-        // Find the package.json from the main toolkit
-        const pkg = (require.main as any).require('../package.json');
-        this.userAgent = `${pkg.name}/${pkg.version}`;
-
+    constructor(private readonly profile: string | undefined, proxyAddress: string | undefined) {
         const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
 
         this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
-        this.credentialProviderCache = new CredentialProviderCache(this.defaultAwsAccount, defaultCredentialProvider);
+        this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
+
+        // Find the package.json from the main toolkit
+        const pkg = (require.main as any).require('../package.json');
+        this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
+
+        // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
+        if (proxyAddress === undefined) {
+            proxyAddress = httpsProxyFromEnvironment();
+        }
+        if (proxyAddress) { // Ignore empty string on purpose
+            debug('Using proxy server: %s', proxyAddress);
+            this.defaultClientArgs.httpOptions = {
+                agent: require('proxy-agent')(proxyAddress)
+            };
+        }
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
         return new AWS.CloudFormation({
             region: environment.region,
-            credentialProvider: await this.credentialProviderCache.get(environment.account, mode),
-            customUserAgent: this.userAgent
+            credentials: await this.credentialsCache.get(environment.account, mode),
+            ...this.defaultClientArgs
         });
     }
 
     public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
         return new AWS.EC2({
             region,
-            credentialProvider: await this.credentialProviderCache.get(awsAccountId, mode),
-            customUserAgent: this.userAgent
+            credentials: await this.credentialsCache.get(awsAccountId, mode),
+            ...this.defaultClientArgs
         });
     }
 
     public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
         return new AWS.SSM({
             region,
-            credentialProvider: await this.credentialProviderCache.get(awsAccountId, mode),
-            customUserAgent: this.userAgent
+            credentials: await this.credentialsCache.get(awsAccountId, mode),
+            ...this.defaultClientArgs
         });
     }
 
     public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
         return new AWS.S3({
             region: environment.region,
-            credentialProvider: await this.credentialProviderCache.get(environment.account, mode),
-            customUserAgent: this.userAgent
+            credentials: await this.credentialsCache.get(environment.account, mode),
+            ...this.defaultClientArgs
         });
     }
 
@@ -87,29 +98,33 @@ export class SDK {
  * all loaded credential provider plugins will be tried to obtain credentials
  * for the given account.
  */
-class CredentialProviderCache {
-    private readonly cache: {[key: string]: AWS.CredentialProviderChain} = {};
+class CredentialsCache {
+    private readonly cache: {[key: string]: AWS.Credentials} = {};
 
     public constructor(
             private readonly defaultAwsAccount: DefaultAWSAccount,
             private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
     }
 
-    public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.CredentialProviderChain> {
+    public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
         const key = `${awsAccountId}-${mode}`;
         if (!(key in this.cache)) {
-            this.cache[key] = await this.getCredentialProvider(awsAccountId, mode);
+            this.cache[key] = await this.getCredentials(awsAccountId, mode);
         }
         return this.cache[key];
     }
 
-    private async getCredentialProvider(awsAccountId: string | undefined, mode: Mode): Promise<AWS.CredentialProviderChain> {
+    private async getCredentials(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
         // If requested account is undefined or equal to default account, use default credentials provider.
         // (Note that we ignore the mode in this case, if you preloaded credentials they better be correct!)
         const defaultAccount = await this.defaultAwsAccount.get();
         if (!awsAccountId || awsAccountId === defaultAccount) {
             debug(`Using default AWS SDK credentials for account ${awsAccountId}`);
-            return this.defaultCredentialProvider;
+
+            // CredentialProviderChain extends Credentials, but that is a lie.
+            // https://github.com/aws/aws-sdk-js/issues/2235
+            // Call resolve() instead.
+            return (await this.defaultCredentialProvider).resolvePromise();
         }
 
         const triedSources: CredentialProviderSource[] = [];
@@ -122,7 +137,14 @@ class CredentialProviderCache {
             triedSources.push(source);
             if (!(await source.canProvideCredentials(awsAccountId))) { continue; }
             debug(`Using ${source.name} credentials for account ${awsAccountId}`);
-            return await source.getProvider(awsAccountId, mode);
+            const providerOrCreds = await source.getProvider(awsAccountId, mode);
+
+            // Backwards compatibility: if the plugin returns a ProviderChain, resolve that chain.
+            // Otherwise it must have returned credentials.
+            if ((providerOrCreds as any).resolvePromise) {
+                return await (providerOrCreds as any).resolvePromise();
+            }
+            return providerOrCreds;
         }
         const sourceNames = ['default credentials'].concat(triedSources.map(s => s.name)).join(', ');
         throw new Error(`Need to perform AWS calls for account ${awsAccountId}, but no credentials found. Tried: ${sourceNames}.`);
@@ -255,4 +277,17 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
     }
 
     return region;
+}
+
+/**
+ * Find and return the configured HTTPS proxy address
+ */
+function httpsProxyFromEnvironment(): string | undefined {
+    if (process.env.https_proxy) {
+        return process.env.https_proxy;
+    }
+    if (process.env.HTTPS_PROXY) {
+        return process.env.HTTPS_PROXY;
+    }
+    return undefined;
 }

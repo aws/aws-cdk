@@ -1,4 +1,5 @@
-import { Construct, IDependable, Output, Token } from "@aws-cdk/cdk";
+import { Construct, IDependable, Output } from "@aws-cdk/cdk";
+import { SubnetId, VPCId } from "./ec2.generated";
 import { ExportSubnetGroup, ImportSubnetGroup, subnetName } from './util';
 
 /**
@@ -84,7 +85,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
     /**
      * Identifier for this VPC
      */
-    public abstract readonly vpcId: VpcNetworkId;
+    public abstract readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -167,7 +168,7 @@ class ImportedVpcNetwork extends VpcNetworkRef {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VpcNetworkId;
+    public readonly vpcId: VPCId;
 
     /**
      * List of public subnets in this VPC
@@ -214,7 +215,7 @@ export interface VpcNetworkRefProps {
     /**
      * VPC's identifier
      */
-    vpcId: VpcNetworkId;
+    vpcId: VPCId;
 
     /**
      * List of availability zones for the subnets in this VPC.
@@ -226,7 +227,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    publicSubnetIds?: VpcSubnetId[];
+    publicSubnetIds?: SubnetId[];
 
     /**
      * List of names for the public subnets
@@ -240,7 +241,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    privateSubnetIds?: VpcSubnetId[];
+    privateSubnetIds?: SubnetId[];
 
     /**
      * List of names for the private subnets
@@ -254,7 +255,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    isolatedSubnetIds?: VpcSubnetId[];
+    isolatedSubnetIds?: SubnetId[];
 
     /**
      * List of names for the isolated subnets
@@ -264,11 +265,6 @@ export interface VpcNetworkRefProps {
     isolatedSubnetNames?: string[];
 }
 
-/**
- * Identifier for a VPC
- */
-export class VpcNetworkId extends Token {
-}
 
 /**
  * A new or imported VPC Subnet
@@ -286,7 +282,7 @@ export abstract class VpcSubnetRef extends Construct implements IDependable {
     /**
      * The subnetId for this particular subnet
      */
-    public abstract readonly subnetId: VpcSubnetId;
+    public abstract readonly subnetId: SubnetId;
 
     /**
      * Parts of this VPC subnet
@@ -306,7 +302,7 @@ class ImportedVpcSubnet extends VpcSubnetRef {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: VpcSubnetId;
+    public readonly subnetId: SubnetId;
 
     constructor(parent: Construct, name: string, props: VpcSubnetRefProps) {
         super(parent, name);
@@ -325,11 +321,5 @@ export interface VpcSubnetRefProps {
     /**
      * The subnetId for this particular subnet
      */
-    subnetId: VpcSubnetId;
-}
-
-/**
- * Id of a VPC Subnet
- */
-export class VpcSubnetId extends Token {
+    subnetId: SubnetId;
 }

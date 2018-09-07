@@ -1,10 +1,5 @@
-import { Arn, Construct, Output } from "@aws-cdk/cdk";
-
-/**
- * Represents the ARN of a certificate
- */
-export class CertificateArn extends Arn {
-}
+import { Construct, Output } from "@aws-cdk/cdk";
+import { CertificateArn } from './certificatemanager.generated';
 
 /**
  * Interface for certificate-like objects
@@ -24,7 +19,7 @@ export abstract class CertificateRef extends Construct {
      */
     public export(): CertificateRefProps {
         return {
-            certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue()
+            certificateArn: new CertificateArn(new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue())
         };
     }
 }

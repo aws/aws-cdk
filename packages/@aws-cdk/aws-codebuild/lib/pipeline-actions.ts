@@ -3,9 +3,11 @@ import cdk = require('@aws-cdk/cdk');
 import { ProjectRef } from './project';
 
 /**
- * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
+ * Common properties for creating {@link PipelineBuildAction} -
+ * either directly, through its constructor,
+ * or through {@link ProjectRef#addBuildToPipeline}.
  */
-export interface PipelineBuildActionProps extends codepipeline.CommonActionProps {
+export interface CommonPipelineBuildActionProps {
     /**
      * The source to use as input for this build
      */
@@ -15,7 +17,12 @@ export interface PipelineBuildActionProps extends codepipeline.CommonActionProps
      * The name of the build's output artifact
      */
     artifactName?: string;
+}
 
+/**
+ * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
+ */
+export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps, codepipeline.CommonActionProps {
     /**
      * The build project
      */

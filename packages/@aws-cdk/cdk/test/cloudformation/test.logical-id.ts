@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { Construct, HashedAddressingScheme, IAddressingScheme, Resource, Stack } from '../../lib';
+import { Construct, HashedAddressingScheme, IAddressingScheme, Ref, Resource, Stack } from '../../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -195,7 +195,9 @@ const allSchemesTests: {[name: string]: (scheme: IAddressingScheme, test: Test) 
 
         // WHEN
         const c1 = new Resource(stack, 'OriginalName', { type: 'R1' });
-        const c2 = new Resource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: c1.ref } });
+        const ref = new Ref(c1);
+
+        const c2 = new Resource(stack, 'Construct2', { type: 'R2', properties: { ReferenceToR1: ref } });
         c2.addDependency(c1);
 
         // THEN

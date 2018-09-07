@@ -1,15 +1,48 @@
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
-import { cloudformation } from './logs.generated';
+import { LogGroupRef } from './log-group';
+import { cloudformation, LogStreamName } from './logs.generated';
 
 /**
- * Properties for a new LogStream
+ * Properties for importing a LogStream
+ */
+export interface LogStreamRefProps {
+    logStreamName: LogStreamName;
+}
+
+/**
+ * A Log Stream in a Log Group
+ */
+export abstract class LogStreamRef extends cdk.Construct {
+    /**
+     * Import an existing LogGroup
+     */
+    public static import(parent: cdk.Construct, id: string, props: LogStreamRefProps): LogStreamRef {
+        return new ImportedLogStream(parent, id, props);
+    }
+
+    /**
+     * The name of this log stream
+     */
+    public abstract readonly logStreamName: LogStreamName;
+
+    /**
+     * Export this LogStream
+     */
+    public export(): LogStreamRefProps {
+        return {
+            logStreamName: new LogStreamName(new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue())
+        };
+    }
+}
+
+/**
+ * Properties for a LogStream
  */
 export interface LogStreamProps {
     /**
      * The log group to create a log stream for.
      */
-    logGroup: LogGroup;
+    logGroup: LogGroupRef;
 
     /**
      * The name of the log stream to create.
@@ -35,9 +68,9 @@ export interface LogStreamProps {
 }
 
 /**
- * A new Log Stream in a Log Group
+ * Define a Log Stream in a Log Group
  */
-export class LogStream extends cdk.Construct {
+export class LogStream extends LogStreamRef {
     /**
      * The name of this log stream
      */
@@ -60,7 +93,17 @@ export class LogStream extends cdk.Construct {
 }
 
 /**
- * The name of a log stream
+ * An imported LogStream
  */
-export class LogStreamName extends cdk.Token {
+class ImportedLogStream extends LogStreamRef {
+    /**
+     * The name of this log stream
+     */
+    public readonly logStreamName: LogStreamName;
+
+    constructor(parent: cdk.Construct, id: string, props: LogStreamRefProps) {
+        super(parent, id);
+
+        this.logStreamName = props.logStreamName;
+    }
 }

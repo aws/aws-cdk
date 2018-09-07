@@ -119,15 +119,15 @@ export async function waitForStack(cfn: CloudFormation,
             debug('Stack %s does not exist', stackName);
             return null;
         }
-        const status = new StackStatus(description.StackStatus);
+        const status = StackStatus.fromStackDescription(description);
         if (!status.isStable) {
-            debug('Stack %s is still not stable (%s)', stackName, status.name);
+            debug('Stack %s is still not stable (%s)', stackName, status);
             return undefined;
         }
         if (status.isCreationFailure) {
-            throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console.`);
+            throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
         } else if (!status.isSuccess) {
-            throw new Error(`The stack named ${stackName} is in a failed state: ${status.name}`);
+            throw new Error(`The stack named ${stackName} is in a failed state: ${status}`);
         } else if (status.isDeleted) {
             if (failOnDeletedStack) { throw new Error(`The stack named ${stackName} was deleted`); }
             return undefined;

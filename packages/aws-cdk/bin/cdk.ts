@@ -47,6 +47,7 @@ async function parseCommandLineArguments() {
         .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML' })
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
+        .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
         // tslint:disable-next-line:max-line-length
         .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
         .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
@@ -108,7 +109,7 @@ async function initCommandLine() {
 
     debug('Command line arguments:', argv);
 
-    const aws = new SDK(argv.profile);
+    const aws = new SDK(argv.profile, argv.proxy);
 
     const availableContextProviders: contextplugins.ProviderMap = {
         'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
@@ -264,8 +265,8 @@ async function initCommandLine() {
             environmentGlobs = [ '**' ]; // default to ALL
         }
         const stackInfos = await selectStacks();
-        const availableEnvironments = stackInfos.map(stack => stack.environment)
-                                                .filter(env => env !== undefined);
+        const availableEnvironments = distinct(stackInfos.map(stack => stack.environment)
+                                                         .filter(env => env !== undefined) as cxapi.Environment[]);
         const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
         if (environments.length === 0) {
             const globs = JSON.stringify(environmentGlobs);
@@ -284,6 +285,24 @@ async function initCommandLine() {
                 throw e;
             }
         }));
+
+        /**
+         * De-duplicates a list of environments, such that a given account and region is only represented exactly once
+         * in the result.
+         *
+         * @param envs the possibly full-of-duplicates list of environments.
+         *
+         * @return a de-duplicated list of environments.
+         */
+        function distinct(envs: cxapi.Environment[]): cxapi.Environment[] {
+            const unique: { [id: string]: cxapi.Environment } = {};
+            for (const env of envs) {
+                const id = `${env.account || 'default'}/${env.region || 'default'}`;
+                if (id in unique) { continue; }
+                unique[id] = env;
+            }
+            return Object.values(unique);
+        }
     }
 
     /**
