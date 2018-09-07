@@ -1,10 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { AWSManagedPolicy } from '../lib';
+import { AwsManagedPolicy } from '../lib';
 
 export = {
     'simple managed policy'(test: Test) {
-        const mp = new AWSManagedPolicy("service-role/SomePolicy");
+        const mp = new AwsManagedPolicy("service-role/SomePolicy");
 
         test.deepEqual(cdk.resolve(mp.policyArn), {
             "Fn::Join": ['', [

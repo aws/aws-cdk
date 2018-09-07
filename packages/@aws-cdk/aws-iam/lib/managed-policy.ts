@@ -9,7 +9,7 @@ import cdk = require('@aws-cdk/cdk');
  * "job-function/", and some don't start with anything. Do include the
  * prefix when constructing this object.
  */
-export class AWSManagedPolicy {
+export class AwsManagedPolicy {
     constructor(private readonly managedPolicyName: string) {
     }
 
