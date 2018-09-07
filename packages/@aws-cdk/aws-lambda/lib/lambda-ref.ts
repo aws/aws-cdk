@@ -303,8 +303,9 @@ export abstract class FunctionRef extends cdk.Construct
         return {
             functionArn: new FunctionArn(new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue()),
             securityGroupId: this._connections && this._connections.securityGroup
-                    ? new ec2.SecurityGroupId(new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue())
-                    : undefined
+                    ? new ec2.SecurityGroupId(new cdk.Output(this, 'SecurityGroupId', {
+                            value: this._connections.securityGroup.securityGroupId
+                    }).makeImportValue()) : undefined
         };
     }
 
