@@ -456,7 +456,7 @@ export class Project extends ProjectRef {
                 location: new cdk.FnJoin('/', [props.cacheBucket.bucketName, cacheDir]),
             };
 
-            props.cacheBucket.grantReadWrite(this.role, cacheDir);
+            props.cacheBucket.grantReadWrite(this.role);
         }
 
         this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
