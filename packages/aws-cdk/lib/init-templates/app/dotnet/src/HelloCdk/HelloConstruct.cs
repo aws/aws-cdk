@@ -28,7 +28,7 @@ namespace HelloCdk
         {
             foreach (Bucket bucket in _buckets)
             {
-                bucket.GrantRead(principal, null);
+                bucket.GrantRead(principal, "*");
             }
         }
     }
