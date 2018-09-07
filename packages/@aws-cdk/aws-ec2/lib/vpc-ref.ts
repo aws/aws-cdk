@@ -20,7 +20,8 @@ export enum SubnetType {
      * allow connections to be initiated from the Internet.
      *
      * Outbound traffic will be routed via a NAT Gateway. Preference being in
-     * the same AZ, but if not available will use another AZ. This is common for
+     * the same AZ, but if not available will use another AZ (control by
+     * specifing `maxGateways` on VpcNetwork). This might be used for
      * experimental cost conscious accounts or accounts where HA outbound
      * traffic is not needed.
      */
@@ -30,7 +31,9 @@ export enum SubnetType {
      * Subnet connected to the Internet
      *
      * Instances in a Public subnet can connect to the Internet and can be
-     * connected to from the Internet as long as they are launched with public IPs.
+     * connected to from the Internet as long as they are launched with public
+     * IPs (controlled on the AutoScalingGroup or other constructs that launch
+     * instances).
      *
      * Public subnets route outbound traffic via an Internet Gateway.
      */
