@@ -450,13 +450,13 @@ export class Project extends ProjectRef {
 
         let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
         if (props.cacheBucket) {
-            const cacheDir = props.cacheDir != null ? props.cacheDir : '';
+            const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue();
             cache = {
                 type: 'S3',
-                location: props.cacheBucket.arnForObjects(cacheDir)
+                location: new cdk.FnJoin('/', [props.cacheBucket.bucketName, cacheDir]),
             };
 
-            props.cacheBucket.grantReadWrite(this.role);
+            props.cacheBucket.grantReadWrite(this.role, cacheDir);
         }
 
         this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
