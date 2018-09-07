@@ -85,7 +85,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
     constructor(public readonly accountId: any) {
-        super(new FnConcat('arn:', new AwsPartition(), ':iam::', accountId, ':root'));
+        super(new Arn(new FnConcat('arn:', new AwsPartition(), ':iam::', accountId, ':root')));
     }
 }
 

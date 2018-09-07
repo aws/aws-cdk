@@ -29,7 +29,7 @@ export abstract class EventRuleRef extends Construct {
      */
     public export(): EventRuleRefProps {
         return {
-            eventRuleArn: new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue()
+            eventRuleArn: new RuleArn(new Output(this, 'RuleArn', { value: this.ruleArn }).makeImportValue())
         };
     }
 }

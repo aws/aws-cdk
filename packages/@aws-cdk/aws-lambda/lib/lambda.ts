@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
@@ -118,6 +119,21 @@ export interface FunctionProps {
      * function.
      */
     securityGroup?: ec2.SecurityGroupRef;
+
+    /**
+     * Enabled DLQ. If `deadLetterQueue` is undefined,
+     * an SQS queue with default options will be defined for your Function.
+     *
+     * @default false unless `deadLetterQueue` is set, which implies DLQ is enabled
+     */
+    deadLetterQueueEnabled?: boolean;
+
+    /**
+     * The SQS queue to use if DLQ is enabled.
+     *
+     * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+     */
+    deadLetterQueue?: sqs.QueueRef;
 }
 
 /**
@@ -199,6 +215,7 @@ export class Function extends FunctionRef {
             environment: new cdk.Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
             vpcConfig: this.configureVpc(props),
+            deadLetterConfig: this.buildDeadLetterConfig(props),
         });
 
         resource.addDependency(this.role);
@@ -291,6 +308,28 @@ export class Function extends FunctionRef {
         return {
             subnetIds: subnets.map(s => s.subnetId),
             securityGroupIds: [securityGroup.securityGroupId]
+        };
+    }
+
+    private buildDeadLetterConfig(props: FunctionProps) {
+        if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
+            throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+        }
+
+        if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+            return undefined;
+        }
+
+        const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+            retentionPeriodSec: 1209600
+        });
+
+        this.addToRolePolicy(new cdk.PolicyStatement()
+            .addAction('sqs:SendMessage')
+            .addResource(deadLetterQueue.queueArn));
+
+        return {
+            targetArn: deadLetterQueue.queueArn
         };
     }
 }

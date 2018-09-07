@@ -9,7 +9,7 @@ import perms = require('./perms');
 import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 import { LifecycleRule } from './rule';
 import { BucketArn, BucketDomainName, BucketDualStackDomainName, BucketName, cloudformation } from './s3.generated';
-import { parseBucketArn, parseBucketName, validateBucketName } from './util';
+import { parseBucketArn, parseBucketName } from './util';
 
 /**
  * A reference to a bucket. The easiest way to instantiate is to call
@@ -96,8 +96,8 @@ export abstract class BucketRef extends cdk.Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
-            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            bucketArn: new BucketArn(new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue()),
+            bucketName: new BucketName(new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue()),
         };
     }
 
@@ -176,7 +176,7 @@ export abstract class BucketRef extends cdk.Construct {
      *
      */
     public arnForObjects(...keyPattern: any[]): cdk.Arn {
-        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern);
+        return new cdk.Arn(new cdk.FnConcat(this.bucketArn, '/', ...keyPattern));
     }
 
     /**
@@ -366,8 +366,6 @@ export class Bucket extends BucketRef {
 
     constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
-
-        validateBucketName(props && props.bucketName);
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 

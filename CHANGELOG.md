@@ -36,6 +36,7 @@
     - AWS::AppSync::DataSource HttpConfig (__added__)
     - AWS::DAX::Cluster SSESpecification (__added__)
     - AWS::DynamoDB::Table Stream (__added__)
+    - AWS::DynamoDB::Table AutoScalingSupport (__added__)
     - AWS::EC2::VPCEndpoint IsPrivateDnsEnabled (__added__)
     - AWS::EC2::VPCEndpoint SecurityGroupIds (__added__)
     - AWS::EC2::VPCEndpoint SubnetIds (__added__)
@@ -48,6 +49,7 @@
     - AWS::Glue::Classifier JsonClassifier (__added__)
     - AWS::Glue::Classifier XMLClassifier (__added__)
     - AWS::Glue::Crawler Configuration (__added__)
+    - AWS::Lambda::Lambda DLQConfigurationSupport (__added__)
     - AWS::Neptune::DBInstance DBSubnetGroupName.UpdateType (__changed__)
       - Old: Mutable
       - New: Immutable
