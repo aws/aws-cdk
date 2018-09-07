@@ -3,4 +3,4 @@ export * from './service';
 export * from './task-definition';
 
 // AWS::ECS CloudFormation Resources:
-export * from './ecs.generated';
+export {ClusterName, TaskDefinitionArn} from './ecs.generated';
