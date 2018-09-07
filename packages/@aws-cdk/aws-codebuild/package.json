@@ -58,6 +58,7 @@
     "pkglint": "^0.8.2"
   },
   "dependencies": {
+    "@aws-cdk/assets": "^0.8.2",
     "@aws-cdk/aws-cloudwatch": "^0.8.2",
     "@aws-cdk/aws-codecommit": "^0.8.2",
     "@aws-cdk/aws-codepipeline-api": "^0.8.2",
