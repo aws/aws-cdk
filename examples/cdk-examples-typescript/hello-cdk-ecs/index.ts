@@ -14,8 +14,16 @@ class BonjourECS extends cdk.Stack {
             maxAZs: 2
         });
 
-        new ecs.Cluster(this, 'DemoCluster', {
+        const cluster = new ecs.Cluster(this, 'DemoCluster', {
             vpc
+        });
+
+        const taskDef = new ecs.TaskDefinition(this, "MyTD");
+
+        new ecs.Service(this, "Service", {
+            cluster: cluster.clusterName,
+            taskDefinition: taskDef.taskDefinitionArn,
+            desiredCount: 1,
         });
     }
 }

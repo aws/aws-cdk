@@ -2,8 +2,6 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, ClusterArn} from './ecs.generated';
-import { Service } from './service';
-import { TaskDefinition } from './task-definition';
 
 export interface ClusterProps {
     /**
@@ -67,14 +65,6 @@ export class Cluster extends cdk.Construct {
         this.clusterArn = cluster.clusterArn;
 
         this.clusterName = new ClusterName(cluster.ref);
-
-        const taskDef = new TaskDefinition(this, "MyTD");
-
-        new Service(this, "Service", {
-            cluster: this.clusterName,
-            taskDefinition: taskDef.taskDefinitionArn,
-            desiredCount: 1,
-        });
 
         const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
             vpc: props.vpc,
