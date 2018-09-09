@@ -732,8 +732,13 @@ class ImportedBucketRef extends BucketRef {
     constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
         super(parent, name);
 
+        const bucketName = parseBucketName(props);
+        if (!bucketName) {
+            throw new Error('Bucket name is required');
+        }
+
         this.bucketArn = parseBucketArn(props);
-        this.bucketName = parseBucketName(props);
+        this.bucketName = bucketName;
         this.autoCreatePolicy = false;
         this.policy = undefined;
     }

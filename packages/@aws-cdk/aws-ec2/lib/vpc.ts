@@ -2,7 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
 import { cloudformation, SubnetId, VPCId } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
+import { DEFAULT_SUBNET_NAME, subnetId } from './util';
+import { SubnetType, VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 
 /**
  * Name tag constant
@@ -124,44 +125,6 @@ export enum DefaultInstanceTenancy {
 }
 
 /**
- * The type of Subnet
- */
-export enum SubnetType {
-
-    /**
-     * Isolated Subnets do not route Outbound traffic
-     *
-     * This can be good for subnets with RDS or
-     * Elasticache endpoints
-     */
-    Isolated = 1,
-
-    /**
-     * Subnet that routes to the internet, but not vice versa.
-     *
-     * Instances in a private subnet can connect to the Internet, but will not
-     * allow connections to be initiated from the Internet.
-     *
-     * Outbound traffic will be routed via a NAT Gateway. Preference being in
-     * the same AZ, but if not available will use another AZ. This is common for
-     * experimental cost conscious accounts or accounts where HA outbound
-     * traffic is not needed.
-     */
-    Private = 2,
-
-    /**
-     * Subnet connected to the Internet
-     *
-     * Instances in a Public subnet can connect to the Internet and can be
-     * connected to from the Internet as long as they are launched with public IPs.
-     *
-     * Public subnets route outbound traffic via an Internet Gateway.
-     */
-    Public = 3
-
-}
-
-/**
  * Specify configuration parameters for a VPC to be built
  */
 export interface SubnetConfiguration {
@@ -231,11 +194,11 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     public static readonly DEFAULT_SUBNETS: SubnetConfiguration[] = [
         {
             subnetType: SubnetType.Public,
-            name: 'Public',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Public],
         },
         {
             subnetType: SubnetType.Private,
-            name: 'Private',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Private],
         }
     ];
 
@@ -258,6 +221,11 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
      * List of isolated subnets in this VPC
      */
     public readonly isolatedSubnets: VpcSubnetRef[] = [];
+
+    /**
+     * AZs for this VPC
+     */
+    public readonly availabilityZones: string[];
 
     /**
      * Manage tags for this construct and children
@@ -290,13 +258,6 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
      * Subnet configurations for this VPC
      */
     private subnetConfiguration: SubnetConfiguration[] = [];
-
-    /**
-     * Maximum AZs to Uses for this VPC
-     *
-     * @default All
-     */
-    private availabilityZones: string[];
 
     /**
      * VpcNetwork creates a VPC that spans a whole region.
@@ -414,7 +375,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
         this.availabilityZones.forEach((zone, index) => {
-            const name: string = `${subnetConfig.name}Subnet${index + 1}`;
+            const name = subnetId(subnetConfig.name, index);
             const subnetProps: VpcSubnetProps = {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
