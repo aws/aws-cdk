@@ -93,8 +93,10 @@ export class Alias extends FunctionRef {
             routingConfig: this.determineRoutingConfig(props)
         });
 
-        this.functionName = alias.ref;
-        this.functionArn = alias.ref;
+        // Not actually the name, but an ARN can be used in all places
+        // where the name is expected, and an ARN can refer to an Alias.
+        this.functionName = new FunctionName(alias.ref);
+        this.functionArn = new FunctionArn(alias.ref);
     }
 
     public addPermission(name: string, permission: Permission) {

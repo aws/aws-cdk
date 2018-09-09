@@ -364,6 +364,7 @@ function mockVpc(stack: cdk.Stack) {
         availabilityZones: [ 'az1' ],
         publicSubnetIds: [ new ec2.SubnetId('pub1') ],
         privateSubnetIds: [ new ec2.SubnetId('pri1') ],
+        isolatedSubnetIds: [],
     });
 }
 
