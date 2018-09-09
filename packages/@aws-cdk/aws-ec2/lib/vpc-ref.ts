@@ -265,7 +265,6 @@ export interface VpcNetworkRefProps {
     isolatedSubnetNames?: string[];
 }
 
-
 /**
  * A new or imported VPC Subnet
  */

@@ -477,6 +477,12 @@ export default class CodeGenerator {
      */
     private emitAttributeType(attr: genspec.ClassDeclaration) {
         this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
+        // Add a private member that will make the class structurally
+        // different in TypeScript, which prevents assigning returning
+        // incorrectly-typed Tokens. Those will cause ClassCastExceptions
+        // in strictly-typed languages.
+        this.code.line(`private readonly thisIsA = '${attr.typeName}';`);
+
         this.closeClass(attr.typeName);
     }
 
