@@ -92,5 +92,30 @@ export = {
         expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
 
         test.done();
+    },
+
+    'extractMetric'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const lg = new LogGroup(stack, 'LogGroup');
+
+        // WHEN
+        lg.extractMetric('$.myField', 'MyService', 'Field');
+
+        // THEN
+        expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+            FilterPattern: "{ $.myField = \"*\" }",
+            LogGroupName: { Ref: "LogGroupF5B46931" },
+            MetricTransformations: [
+              {
+                MetricName: "Field",
+                MetricNamespace: "MyService",
+                MetricValue: "$.myField"
+              }
+            ]
+        }));
+
+        test.done();
     }
+
 };
