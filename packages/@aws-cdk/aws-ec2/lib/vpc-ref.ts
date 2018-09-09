@@ -149,7 +149,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
         const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
         return {
-            vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue(),
+            vpcId: new VPCId(new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue()),
             availabilityZones: this.availabilityZones,
             publicSubnetIds: pub.ids,
             publicSubnetNames: pub.names,

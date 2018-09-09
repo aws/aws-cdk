@@ -300,11 +300,11 @@ class ImportedProjectRef extends ProjectRef {
     constructor(parent: cdk.Construct, name: string, props: ProjectRefProps) {
         super(parent, name);
 
-        this.projectArn = cdk.Arn.fromComponents({
+        this.projectArn = new ProjectArn(cdk.Arn.fromComponents({
             service: 'codebuild',
             resource: 'project',
             resourceName: props.projectName,
-        });
+        }));
         this.projectName = props.projectName;
     }
 }

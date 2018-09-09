@@ -481,7 +481,8 @@ export default class CodeGenerator {
         // different in TypeScript, which prevents assigning returning
         // incorrectly-typed Tokens. Those will cause ClassCastExceptions
         // in strictly-typed languages.
-        this.code.line(`private readonly thisIsA = '${attr.typeName}';`);
+        this.code.line('// @ts-ignore: private but unused on purpose.');
+        this.code.line(`private readonly thisIsA${attr.typeName.className} = true;`);
 
         this.closeClass(attr.typeName);
     }

@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { SubnetId } from './ec2.generated';
 import { SubnetType, VpcSubnetRef } from "./vpc-ref";
 
 /**
@@ -39,7 +40,7 @@ export function subnetId(name: string, i: number) {
  * Helper class to export/import groups of subnets
  */
 export class ExportSubnetGroup {
-    public readonly ids?: cdk.Token[];
+    public readonly ids?: SubnetId[];
     public readonly names?: string[];
 
     private readonly groups: number;
@@ -62,9 +63,9 @@ export class ExportSubnetGroup {
         this.names = this.exportNames();
     }
 
-    private exportIds(parent: cdk.Construct, name: string): cdk.Token[] | undefined {
+    private exportIds(parent: cdk.Construct, name: string): SubnetId[] | undefined {
         if (this.subnets.length === 0) { return undefined; }
-        return new cdk.StringListOutput(parent, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues();
+        return new cdk.StringListOutput(parent, name, { values: this.subnets.map(s => s.subnetId) }).makeImportValues().map(x => new SubnetId(x));
     }
 
     /**
@@ -93,12 +94,12 @@ export class ExportSubnetGroup {
 }
 
 export class ImportSubnetGroup {
-    private readonly subnetIds: cdk.Token[];
+    private readonly subnetIds: SubnetId[];
     private readonly names: string[];
     private readonly groups: number;
 
     constructor(
-            subnetIds: cdk.Token[] | undefined,
+            subnetIds: SubnetId[] | undefined,
             names: string[] | undefined,
             type: SubnetType,
             private readonly availabilityZones: string[],
