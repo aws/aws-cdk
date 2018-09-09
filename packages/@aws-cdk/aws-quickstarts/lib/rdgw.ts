@@ -48,7 +48,7 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
         });
 
         const securityGroup = ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
-            securityGroupId: nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID')
+            securityGroupId: new ec2.SecurityGroupId(nestedStack.getAtt('Outputs.RemoteDesktopGatewaySGID'))
         });
 
         const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);

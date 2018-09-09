@@ -14,7 +14,7 @@ class NeptuneDemoStack extends cdk.Stack {
             instanceProps: {
                 instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
                 vpc,
-                vpcPlacement: { usePublicSubnets: true },
+                vpcPlacement: { subnetsToUse: ec2.SubnetType.Public },
             },
             masterUser: {
                 // This would normally be imported from SSM parmeter store encrypted string,

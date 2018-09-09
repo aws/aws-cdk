@@ -56,9 +56,9 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
     public export(): ServerDeploymentGroupRefProps {
         return {
             application: this.application,
-            deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+            deploymentGroupName: new DeploymentGroupName(new cdk.Output(this, 'DeploymentGroupName', {
                     value: this.deploymentGroupName
-                }).makeImportValue(),
+                }).makeImportValue()),
         };
     }
 }

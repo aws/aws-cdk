@@ -320,7 +320,7 @@ class LambdaRefImport extends FunctionRef {
         super(parent, name);
 
         this.functionArn = props.functionArn;
-        this.functionName = this.extractNameFromArn(props.functionArn);
+        this.functionName = new FunctionName(this.extractNameFromArn(props.functionArn));
         this.role = props.role;
     }
 

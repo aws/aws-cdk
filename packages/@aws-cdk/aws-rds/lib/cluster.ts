@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { DatabaseClusterRef, Endpoint } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
-import { cloudformation, DBClusterName, DBInstanceId } from './rds.generated';
+import { cloudformation, DBClusterEndpointAddress, DBClusterEndpointPort, DBClusterName, DBInstanceId } from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -169,7 +169,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
 
         this.clusterIdentifier = cluster.ref;
         this.clusterEndpoint = new Endpoint(cluster.dbClusterEndpointAddress, cluster.dbClusterEndpointPort);
-        this.readerEndpoint = new Endpoint(cluster.dbClusterReadEndpointAddress, cluster.dbClusterEndpointPort);
+        this.readerEndpoint = new Endpoint(new DBClusterEndpointAddress(cluster.dbClusterReadEndpointAddress), cluster.dbClusterEndpointPort);
 
         const instanceCount = props.instances != null ? props.instances : 2;
         if (instanceCount < 1) {
@@ -183,7 +183,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
                                        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                                        undefined;
 
-            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.usePublicSubnets;
+            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
 
             const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
                 // Link to cluster
@@ -206,7 +206,9 @@ export class DatabaseCluster extends DatabaseClusterRef {
             }
 
             this.instanceIdentifiers.push(instance.ref);
-            this.instanceEndpoints.push(new Endpoint(instance.dbInstanceEndpointAddress, instance.dbInstanceEndpointPort));
+            this.instanceEndpoints.push(new Endpoint(
+                new DBClusterEndpointAddress(instance.dbInstanceEndpointAddress),
+                new DBClusterEndpointPort(instance.dbInstanceEndpointPort)));
         }
 
         const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
