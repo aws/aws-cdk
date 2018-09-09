@@ -61,8 +61,16 @@ export interface ConnectionsProps {
  *
  */
 export class Connections {
+    /**
+     * Underlying securityGroup for this Connections object, if present
+     *
+     * May be empty if this Connections object is not managing a SecurityGroup,
+     * but simply representing a Connectable peer.
+     */
+    public readonly securityGroup?: SecurityGroupRef;
+
     private readonly securityGroupRule: ISecurityGroupRule;
-    private readonly securityGroup?: SecurityGroupRef;
+
     private readonly defaultPortRange?: IPortRange;
 
     constructor(props: ConnectionsProps) {
