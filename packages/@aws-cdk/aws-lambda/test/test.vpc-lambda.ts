@@ -136,7 +136,7 @@ export = {
                 handler: 'index.handler',
                 runtime: lambda.Runtime.NodeJS610,
                 vpc,
-                vpcPlacement: { usePublicSubnets: true }
+                vpcPlacement: { subnetsToUse: ec2.SubnetType.Public }
             });
         });
 
