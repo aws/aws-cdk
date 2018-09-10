@@ -63,6 +63,17 @@ Example:
 Remember that if you want to use a value from the log event as the metric value,
 you must mention it in your pattern somewhere.
 
+A very simple MetricFilter can be created by using the `logGroup.extractMetric()`
+helper function:
+
+```ts
+logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
+```
+
+Will extract the value of `jsonField` wherever it occurs in JSON-structed
+log records in the LogGroup, and emit them to CloudWatch Metrics under
+the name `Namespace/MetricName`.
+
 ### Patterns
 
 Patterns describe which log events match a subscription or metric filter. There

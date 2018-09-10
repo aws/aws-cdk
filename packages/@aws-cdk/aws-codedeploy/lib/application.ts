@@ -47,7 +47,7 @@ export abstract class ServerApplicationRef extends cdk.Construct {
 
     public export(): ServerApplicationRefProps {
         return {
-            applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue(),
+            applicationName: new ApplicationName(new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue()),
         };
     }
 }

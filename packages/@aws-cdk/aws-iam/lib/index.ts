@@ -1,3 +1,4 @@
+export * from './managed-policy';
 export * from './role';
 export * from './policy';
 export * from './user';
