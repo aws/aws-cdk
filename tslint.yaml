@@ -44,7 +44,8 @@ rules:
     no-unused-expression: [true, "allow-new"]
 
     # Without this rule, _blabla would be disallowed, which is necessary to silence unused variable errors.
-    variable-name: [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+    # Allow Pascal Case for static variables
+    variable-name: [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"]
 
     # Unhandled promises are the source of all kinds of bugs and race conditions...
     no-floating-promises: true
