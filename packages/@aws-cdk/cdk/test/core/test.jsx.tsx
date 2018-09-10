@@ -37,7 +37,7 @@ export = {
 };
 
 class MyRoot extends Root {
-    protected jsx: any;
+    protected jsxProps: any;
 }
 
 interface MyConstructProps {
@@ -46,11 +46,13 @@ interface MyConstructProps {
 }
 
 class MyConstruct extends Construct {
+    public foo: number;
+
     /**
      * This syntax tells TypeScript which properties are required for this construct.
      * Only classes with the "jsx" property can be used in JSX syntax.
      */
-    protected jsx?: MyConstructProps;
+    protected jsxProps?: MyConstructProps;
 
     private str: string;
 
