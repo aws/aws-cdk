@@ -14,6 +14,12 @@
           "artifactId": "cloudfront"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CloudFront",
+        "packageId": "Amazon.CDK.AWS.CloudFront",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

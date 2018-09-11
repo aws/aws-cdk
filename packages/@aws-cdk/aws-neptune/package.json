@@ -14,6 +14,12 @@
           "artifactId": "neptune"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Neptune",
+        "packageId": "Amazon.CDK.AWS.Neptune",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

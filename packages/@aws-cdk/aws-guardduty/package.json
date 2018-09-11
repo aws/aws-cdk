@@ -14,6 +14,12 @@
           "artifactId": "guardduty"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.GuardDuty",
+        "packageId": "Amazon.CDK.AWS.GuardDuty",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

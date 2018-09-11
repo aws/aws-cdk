@@ -14,6 +14,12 @@
           "artifactId": "appsync"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AppSync",
+        "packageId": "Amazon.CDK.AWS.AppSync",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

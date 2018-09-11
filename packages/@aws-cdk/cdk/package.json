@@ -14,6 +14,12 @@
           "artifactId": "cdk"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK",
+        "packageId": "Amazon.CDK",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

@@ -14,6 +14,12 @@
           "artifactId": "kms"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.KMS",
+        "packageId": "Amazon.CDK.AWS.KMS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },
