@@ -14,6 +14,12 @@
           "artifactId": "config"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Config",
+        "packageId": "Amazon.CDK.AWS.Config",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

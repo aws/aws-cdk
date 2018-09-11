@@ -14,6 +14,12 @@
           "artifactId": "servicecatalog"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ServiceCatalog",
+        "packageId": "Amazon.CDK.AWS.ServiceCatalog",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

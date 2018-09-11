@@ -14,6 +14,12 @@
           "artifactId": "efs"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.EFS",
+        "packageId": "Amazon.CDK.AWS.EFS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

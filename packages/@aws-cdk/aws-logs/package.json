@@ -14,6 +14,12 @@
           "artifactId": "logs"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Logs",
+        "packageId": "Amazon.CDK.AWS.Logs",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

@@ -14,6 +14,12 @@
           "artifactId": "kinesis"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Kinesis",
+        "packageId": "Amazon.CDK.AWS.Kinesis",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

@@ -14,6 +14,12 @@
           "artifactId": "cloudtrail"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CloudTrail",
+        "packageId": "Amazon.CDK.AWS.CloudTrail",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

@@ -14,6 +14,12 @@
           "artifactId": "servicediscovery"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
+        "packageId": "Amazon.CDK.AWS.ServiceDiscovery",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

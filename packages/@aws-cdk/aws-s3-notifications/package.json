@@ -14,6 +14,12 @@
           "artifactId": "s3-notifications"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.S3.Notifications",
+        "packageId": "Amazon.CDK.AWS.S3.Notifications",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

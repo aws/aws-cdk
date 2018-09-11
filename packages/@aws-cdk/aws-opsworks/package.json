@@ -14,6 +14,12 @@
           "artifactId": "opsworks"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.OpsWorks",
+        "packageId": "Amazon.CDK.AWS.OpsWorks",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

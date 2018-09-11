@@ -14,6 +14,12 @@
           "artifactId": "directoryservice"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.DirectoryService",
+        "packageId": "Amazon.CDK.AWS.DirectoryService",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

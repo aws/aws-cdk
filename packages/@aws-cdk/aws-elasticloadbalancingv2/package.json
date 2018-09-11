@@ -14,6 +14,12 @@
           "artifactId": "elasticloadbalancingv2"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
+        "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

@@ -14,6 +14,12 @@
           "artifactId": "elasticbeanstalk"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ElasticBeanstalk",
+        "packageId": "Amazon.CDK.AWS.ElasticBeanstalk",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

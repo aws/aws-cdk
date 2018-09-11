@@ -295,7 +295,9 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
         return new SpaceDelimitedTextPattern(columns, {});
     }
 
-    private constructor(private readonly columns: string[], private readonly restrictions: RestrictionMap) {
+    // TODO: Temporarily changed from private to protected to unblock build. We need to think
+    //       about how to handle jsii types with private constructors.
+    protected constructor(private readonly columns: string[], private readonly restrictions: RestrictionMap) {
         // Private constructor so we validate in the .construct() factory function
     }
 

@@ -14,6 +14,12 @@
           "artifactId": "applicationautoscaling"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+        "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

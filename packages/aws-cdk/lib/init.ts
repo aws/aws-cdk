@@ -5,6 +5,8 @@ import os = require('os');
 import path = require('path');
 import { error, print, warning } from './logging';
 
+export type InvokeHook = (targetDirectory: string) => Promise<void>;
+
 // tslint:disable:no-var-requires those libraries don't have up-to-date @types modules
 const camelCase = require('camelcase');
 const decamelize = require('decamelize');
@@ -76,23 +78,47 @@ export class InitTemplate {
                   + `(it supports: ${this.languages.map(l => colors.blue(l)).join(', ')})`);
             throw new Error(`Unsupported language: ${language}`);
         }
-        await this.installFiles(path.join(this.basePath, language), targetDirectory, {
+        const sourceDirectory = path.join(this.basePath, language);
+        await this.installFiles(sourceDirectory, targetDirectory, {
             name: decamelize(path.basename(path.resolve(targetDirectory)))
         });
+        await this.invokeHooks(sourceDirectory, targetDirectory);
     }
 
-    private async installFiles(srcDir: string, tgtDir: string, project: ProjectInfo) {
-        for (const file of await fs.readdir(srcDir)) {
-            const fromFile = path.join(srcDir, file);
-            const toFile = path.join(tgtDir, this.expand(file, project));
+    private async installFiles(sourceDirectory: string, targetDirectory: string, project: ProjectInfo) {
+        for (const file of await fs.readdir(sourceDirectory)) {
+            const fromFile = path.join(sourceDirectory, file);
+            const toFile = path.join(targetDirectory, this.expand(file, project));
             if ((await fs.stat(fromFile)).isDirectory()) {
                 await fs.mkdir(toFile);
                 await this.installFiles(fromFile, toFile, project);
                 continue;
             } else if (file.match(/^.*\.template\.[^.]+$/)) {
                 await this.installProcessed(fromFile, toFile.replace(/\.template(\.[^.]+)$/, '$1'), project);
+            } else if (file.match(/^.*\.hook\.[^.]+$/)) {
+                continue;
             } else {
                 await fs.copy(fromFile, toFile);
+            }
+        }
+    }
+
+    /**
+     * @summary     Invoke any javascript hooks that exist in the template.
+     * @description Sometimes templates need more complex logic than just replacing tokens. A 'hook' is
+     *              any file that ends in .hook.js. It should export a single function called "invoke"
+     *              that accepts a single string parameter. When the template is installed, each hook
+     *              will be invoked, passing the target directory as the only argument. Hooks are invoked
+     *              in lexical order.
+     */
+    private async invokeHooks(sourceDirectory: string, targetDirectory: string) {
+        const files = await fs.readdir(sourceDirectory);
+        files.sort(); // Sorting allows template authors to control the order in which hooks are invoked.
+
+        for (const file of files) {
+            if (file.match(/^.*\.hook\.js$/)) {
+                const invoke: InvokeHook = require(path.join(sourceDirectory, file)).invoke;
+                await invoke(targetDirectory);
             }
         }
     }

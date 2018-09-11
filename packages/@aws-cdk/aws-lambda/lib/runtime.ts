@@ -10,6 +10,7 @@ export interface LambdaRuntimeProps {
  * Lambda function runtime environment.
  */
 export class Runtime implements InlinableRuntime, InlinableJavaScriptRuntime {
+    /* tslint:disable variable-name */
     public static readonly NodeJS = new Runtime('nodejs', { supportsInlineCode: true }) as InlinableJavaScriptRuntime;
     // Using ``as InlinableLambdaRuntime`` because that class cannot be defined just yet
     public static readonly NodeJS43 = new Runtime('nodejs4.3', { supportsInlineCode: true }) as InlinableJavaScriptRuntime;
@@ -26,6 +27,7 @@ export class Runtime implements InlinableRuntime, InlinableJavaScriptRuntime {
     public static readonly DotNetCore2 = new Runtime('dotnetcore2.0');
     public static readonly DotNetCore21 = new Runtime('dotnetcore2.1');
     public static readonly Go1x = new Runtime('go1.x');
+    /* tslint:enable variable-name */
 
     /** The name of this runtime, as expected by the Lambda resource. */
     public readonly name: string;
