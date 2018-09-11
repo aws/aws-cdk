@@ -12,7 +12,7 @@ export = {
             test.done();
         },
 
-        'range key only'(test: Test) {
+        'hash key only'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable').addPartitionKey('hashKey', KeyAttributeType.Binary);
             const template = app.synthesizeTemplate();
@@ -33,7 +33,7 @@ export = {
             test.done();
         },
 
-        'range + hash key'(test: Test) {
+        'hash + range key'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable').addPartitionKey('hashKey', KeyAttributeType.Binary)
                                         .addSortKey('sortKey', KeyAttributeType.Number);
@@ -60,7 +60,35 @@ export = {
 
             test.done();
         },
-        'stream is not enabled by default'(test: Test) {
+        'server-side encryption is not enabled'(test: Test) {
+            const app = new TestApp();
+            new Table(app.stack, 'MyTable')
+                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
+                .addSortKey('sortKey', KeyAttributeType.Number);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                                { AttributeName: 'sortKey', AttributeType: 'N' }
+                            ],
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
+        'stream is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
                 .addPartitionKey('partitionKey', KeyAttributeType.Binary)
@@ -200,7 +228,9 @@ export = {
         const table = new Table(app.stack, 'MyTable', {
             tableName: 'MyTable',
             readCapacity: 42,
-            writeCapacity: 1337
+            writeCapacity: 1337,
+            sseEnabled: true,
+            streamSpecification: StreamViewType.KeysOnly
         });
         table.addPartitionKey('partitionKey', KeyAttributeType.String);
         table.addSortKey('sortKey', KeyAttributeType.Binary);
@@ -223,6 +253,8 @@ export = {
                             ReadCapacityUnits: 42,
                             WriteCapacityUnits: 1337
                         },
+                        SSESpecification: { SSEEnabled: true },
+                        StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
                         TableName: 'MyTable',
                     }
                 }

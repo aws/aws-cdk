@@ -3,16 +3,6 @@
     "TableCD117FA1": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "hashKey",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "rangeKey",
-            "AttributeType": "N"
-          }
-        ],
         "KeySchema": [
           {
             "AttributeName": "hashKey",
@@ -26,6 +16,22 @@
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "hashKey",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "rangeKey",
+            "AttributeType": "N"
+          }
+        ],
+        "SSESpecification": {
+          "SSEEnabled": true
+        },
+        "StreamSpecification": {
+          "StreamViewType": "KEYS_ONLY"
         }
       }
     }
