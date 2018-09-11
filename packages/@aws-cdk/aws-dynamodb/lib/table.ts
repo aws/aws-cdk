@@ -27,21 +27,27 @@ export interface TableProps {
     tableName?: string;
 
     /**
+     * Whether server-side encryption is enabled.
+     * @default undefined, server-side encryption is disabled
+     */
+    sseEnabled?: boolean;
+
+    /**
      * When an item in the table is modified, StreamViewType determines what information
      * is written to the stream for this table. Valid values for StreamViewType are:
-     * @default undefined, streams are disbaled
+     * @default undefined, streams are disabled
      */
     streamSpecification?: StreamViewType;
 
     /**
-     * AutoScalingProps configuration to configure Read AutoScaling for the DyanmoDB table.
+     * AutoScalingProps configuration to configure Read AutoScaling for the DynamoDB table.
      * This field is optional and this can be achieved via addReadAutoScaling.
      * @default undefined, read auto scaling is disabled
      */
     readAutoScaling?: AutoScalingProps;
 
     /**
-     * AutoScalingProps configuration to configure Write AutoScaling for the DyanmoDB table.
+     * AutoScalingProps configuration to configure Write AutoScaling for the DynamoDB table.
      * This field is optional and this can be achieved via addWriteAutoScaling.
      * @default undefined, write auto scaling is disabled
      */
@@ -111,7 +117,8 @@ export class Table extends Construct {
             keySchema: this.keySchema,
             attributeDefinitions: this.attributeDefinitions,
             provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
-            streamSpecification: props.streamSpecification ? {streamViewType: props.streamSpecification} : undefined
+            sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
+            streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined
         });
 
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
@@ -293,4 +300,4 @@ export enum StreamViewType {
     NewAndOldImages = 'NEW_AND_OLD_IMAGES',
     /** Only the key attributes of the modified item are written to the stream. */
     KeysOnly = 'KEYS_ONLY'
-  }
+}
