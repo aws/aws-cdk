@@ -14,6 +14,12 @@
           "artifactId": "gamelift"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.GameLift",
+        "packageId": "Amazon.CDK.AWS.GameLift",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },

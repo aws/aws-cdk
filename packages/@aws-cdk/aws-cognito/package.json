@@ -14,6 +14,12 @@
           "artifactId": "cognito"
         }
       },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Cognito",
+        "packageId": "Amazon.CDK.AWS.Cognito",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "sphinx": {}
     }
   },
