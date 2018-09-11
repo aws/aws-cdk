@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codedeploy",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "The CDK Construct Library for AWS::CodeDeploy",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,14 +52,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "^0.9.0",
+    "cdk-build-tools": "^0.9.0",
+    "cfn2ts": "^0.9.0",
+    "pkglint": "^0.9.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-codepipeline-api": "^0.9.0",
+    "@aws-cdk/cdk": "^0.9.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
