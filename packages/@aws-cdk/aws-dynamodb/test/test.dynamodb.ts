@@ -116,6 +116,34 @@ export = {
 
             test.done();
         },
+        'ttl is not enabled'(test: Test) {
+            const app = new TestApp();
+            new Table(app.stack, 'MyTable')
+                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
+                .addSortKey('sortKey', KeyAttributeType.Number);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                                { AttributeName: 'sortKey', AttributeType: 'N' }
+                            ],
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
         'can specify new and old images'(test: Test) {
             const app = new TestApp();
             const table = new Table(app.stack, 'MyTable', {
@@ -230,7 +258,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337,
             sseEnabled: true,
-            streamSpecification: StreamViewType.KeysOnly
+            streamSpecification: StreamViewType.KeysOnly,
+            ttlAttributeName: 'timeToLive'
         });
         table.addPartitionKey('partitionKey', KeyAttributeType.String);
         table.addSortKey('sortKey', KeyAttributeType.Binary);
@@ -256,6 +285,7 @@ export = {
                         SSESpecification: { SSEEnabled: true },
                         StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
                         TableName: 'MyTable',
+                        TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true }
                     }
                 }
             }

@@ -7,7 +7,8 @@ const stack = new Stack(app, 'aws-cdk-dynamodb');
 
 const table = new Table(stack, 'Table', {
     sseEnabled: true,
-    streamSpecification: StreamViewType.KeysOnly
+    streamSpecification: StreamViewType.KeysOnly,
+    ttlAttributeName: 'timeToLive'
 });
 
 table.addPartitionKey('hashKey', KeyAttributeType.String);
