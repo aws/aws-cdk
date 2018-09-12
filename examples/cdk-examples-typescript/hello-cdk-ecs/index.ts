@@ -18,7 +18,31 @@ class BonjourECS extends cdk.Stack {
             vpc
         });
 
-        const taskDef = new ecs.TaskDefinition(this, "MyTD");
+        // name, image, cpu, memory, port (with default)
+        //
+        // Include in constructs:
+        //   - networking - include SD, ALB
+        //   - logging - cloudwatch logs integration? talk to nathan about 3rd
+        //     party integrations - aggregated logging across the service
+        //     (instead of per task). Probably prometheus or elk?
+        //   - tracing aws-xray-fargate - CNCF opentracing standard - jaeger,
+        //     zipkin.
+        //   - so x-ray is a container that is hooked up to sidecars that come
+        //     with the application container itself
+        //   - autoscaling - application autoscaling (Fargate focused?)
+
+        const taskDef = new ecs.TaskDefinition(this, "MyTD", {
+            family: "ecs-task-definition",
+            containerDefinitions: [
+                {
+                    name: "web",
+                    image: "amazon/amazon-ecs-sample",
+                    cpu: 1024,
+                    memory: 512,
+                    essential: true
+                }
+            ]
+        });
 
         new ecs.Service(this, "Service", {
             cluster: cluster.clusterName,
