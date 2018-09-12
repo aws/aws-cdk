@@ -33,6 +33,9 @@ fi
 
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# Hide all local packages from all package.jsons so nothing is going to touch
+# them while updating. Don't do relative URLs because otherwise transitive
+# dependencies will be cached in every individual package.
 echo ">> Hiding local package.json references."
 $script_dir/swizzle-package-json.py hide
 
