@@ -1,0 +1,86 @@
+{
+  "Resources": {
+    "Repo02AC86CF": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "LifecyclePolicy": {
+          "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "RepositoryURI": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Select": [
+                4,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".dkr.ecr.",
+            {
+              "Fn::Select": [
+                3,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".amazonaws.com/",
+            {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::Split": [
+                    "/",
+                    {
+                      "Fn::Select": [
+                        5,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Fn::GetAtt": [
+                                "Repo02AC86CF",
+                                "Arn"
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "aws-ecr-integ-stack:RepositoryURI"
+      }
+    }
+  }
+}
