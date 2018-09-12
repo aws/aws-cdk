@@ -40,6 +40,12 @@ export interface TableProps {
     streamSpecification?: StreamViewType;
 
     /**
+     * The name of TTL attribute.
+     * @default undefined, TTL is disabled
+     */
+    ttlAttributeName?: string;
+
+    /**
      * AutoScalingProps configuration to configure Read AutoScaling for the DynamoDB table.
      * This field is optional and this can be achieved via addReadAutoScaling.
      * @default undefined, read auto scaling is disabled
@@ -118,7 +124,8 @@ export class Table extends Construct {
             attributeDefinitions: this.attributeDefinitions,
             provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
             sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
-            streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined
+            streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
+            timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
         });
 
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }

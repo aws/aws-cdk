@@ -32,6 +32,10 @@
         },
         "StreamSpecification": {
           "StreamViewType": "KEYS_ONLY"
+        },
+        "TimeToLiveSpecification": {
+          "AttributeName": "timeToLive",
+          "Enabled": true
         }
       }
     }
