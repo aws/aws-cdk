@@ -26,9 +26,6 @@ export class SDK {
     constructor(private readonly profile: string | undefined, proxyAddress: string | undefined) {
         const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
 
-        this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
-        this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
-
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
@@ -43,6 +40,9 @@ export class SDK {
                 agent: require('proxy-agent')(proxyAddress)
             };
         }
+
+        this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, this.defaultClientArgs);
+        this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
     }
 
     public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
@@ -165,7 +165,7 @@ class DefaultAWSAccount {
     private defaultAccountId?: string = undefined;
     private readonly accountCache = new AccountAccessKeyCache();
 
-    constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>) {
+    constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>, private readonly defaultClientArgs: any) {
     }
 
     /**
@@ -193,7 +193,7 @@ class DefaultAWSAccount {
             const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
                 // if we don't have one, resolve from STS and store in cache.
                 debug('Looking up default account ID from STS');
-                const result = await new AWS.STS({ credentials: creds }).getCallerIdentity().promise();
+                const result = await new AWS.STS({ credentials: creds, ...this.defaultClientArgs }).getCallerIdentity().promise();
                 const aid = result.Account;
                 if (!aid) {
                     debug('STS didn\'t return an account ID');
