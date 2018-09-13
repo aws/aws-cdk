@@ -55,7 +55,8 @@
     "@aws-cdk/assert": "^0.9.0",
     "cdk-build-tools": "^0.9.0",
     "cfn2ts": "^0.9.0",
-    "pkglint": "^0.9.0"
+    "pkglint": "^0.9.0",
+    "cdk-integ-tools": "^0.9.0"
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.9.0"
