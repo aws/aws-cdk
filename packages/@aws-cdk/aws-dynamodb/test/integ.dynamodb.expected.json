@@ -27,6 +27,9 @@
             "AttributeType": "N"
           }
         ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
         "SSESpecification": {
           "SSEEnabled": true
         },
