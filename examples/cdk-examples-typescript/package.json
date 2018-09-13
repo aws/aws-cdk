@@ -28,6 +28,7 @@
     "@aws-cdk/aws-cognito": "^0.9.0",
     "@aws-cdk/aws-dynamodb": "^0.9.0",
     "@aws-cdk/aws-ec2": "^0.9.0",
+    "@aws-cdk/aws-elasticloadbalancing": "^0.9.0",
     "@aws-cdk/aws-iam": "^0.9.0",
     "@aws-cdk/aws-lambda": "^0.9.0",
     "@aws-cdk/aws-neptune": "^0.9.0",

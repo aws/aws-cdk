@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
@@ -135,7 +136,7 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadBalancerTarget, ec2.IConnectable {
+export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable {
     /**
      * The type of OS instances of this fleet are running.
      */
@@ -240,7 +241,7 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         this.securityGroups.push(securityGroup);
     }
 
-    public attachToClassicLB(loadBalancer: ec2.ClassicLoadBalancer): void {
+    public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
         this.loadBalancerNames.push(loadBalancer.loadBalancerName);
     }
 

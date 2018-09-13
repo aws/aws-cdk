@@ -1,14 +1,12 @@
-import elasticloadbalancing = require('@aws-cdk/aws-elasticloadbalancing');
+import { AnyIPv4, Connections, IConnectable, IPortRange, SecurityGroup, SecurityGroupRef,
+    TcpPort, VpcNetworkRef, VpcSubnetRef  } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
-import { Connections, IConnectable } from './connections';
-import { SecurityGroup, SecurityGroupRef } from './security-group';
-import { AnyIPv4, IPortRange, TcpPort } from './security-group-rule';
-import { VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
+import { cloudformation } from './elasticloadbalancing.generated';
 
 /**
- * Construction properties for a ClassicLoadBalancer
+ * Construction properties for a LoadBalancer
  */
-export interface ClassicLoadBalancerProps {
+export interface LoadBalancerProps {
     /**
      * VPC network of the fleet instances
      */
@@ -29,14 +27,14 @@ export interface ClassicLoadBalancerProps {
      *
      * Can also be added by .addListener()
      */
-    listeners?: ClassicLoadBalancerListener[];
+    listeners?: LoadBalancerListener[];
 
     /**
      * What targets to load balance to.
      *
      * Can also be added by .addTarget()
      */
-    targets?: IClassicLoadBalancerTarget[];
+    targets?: ILoadBalancerTarget[];
 
     /**
      * Health check settings for the load balancing targets.
@@ -106,17 +104,17 @@ export interface HealthCheck {
 /**
  * Interface that is going to be implemented by constructs that you can load balance to
  */
-export interface IClassicLoadBalancerTarget extends IConnectable {
+export interface ILoadBalancerTarget extends IConnectable {
     /**
      * Attach load-balanced target to a classic ELB
      */
-    attachToClassicLB(loadBalancer: ClassicLoadBalancer): void;
+    attachToClassicLB(loadBalancer: LoadBalancer): void;
 }
 
 /**
  * Add a backend to the load balancer
  */
-export interface ClassicLoadBalancerListener {
+export interface LoadBalancerListener {
     /**
      * External listening port
      */
@@ -187,7 +185,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
+export class LoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * Control all connections from and to this load balancer
      */
@@ -196,16 +194,16 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * An object controlling specifically the connections for each listener added to this load balancer
      */
-    public readonly listenerPorts: ClassicListenerPort[] = [];
+    public readonly listenerPorts: ListenerPort[] = [];
 
-    private readonly elb: elasticloadbalancing.cloudformation.LoadBalancerResource;
+    private readonly elb: cloudformation.LoadBalancerResource;
     private readonly securityGroup: SecurityGroup;
-    private readonly listeners: elasticloadbalancing.cloudformation.LoadBalancerResource.ListenersProperty[] = [];
+    private readonly listeners: cloudformation.LoadBalancerResource.ListenersProperty[] = [];
 
     private readonly instancePorts: number[] = [];
-    private readonly targets: IClassicLoadBalancerTarget[] = [];
+    private readonly targets: ILoadBalancerTarget[] = [];
 
-    constructor(parent: cdk.Construct, name: string, props: ClassicLoadBalancerProps) {
+    constructor(parent: cdk.Construct, name: string, props: LoadBalancerProps) {
         super(parent, name);
 
         this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc });
@@ -214,7 +212,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
         // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
         const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
-        this.elb = new elasticloadbalancing.cloudformation.LoadBalancerResource(this, 'Resource', {
+        this.elb = new cloudformation.LoadBalancerResource(this, 'Resource', {
             securityGroups: [ this.securityGroup.securityGroupId ],
             subnets: subnets.map(s => s.subnetId),
             listeners: new cdk.Token(() => this.listeners),
@@ -229,9 +227,9 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * Add a backend to the load balancer
      *
-     * @returns A ClassicListenerPort object that controls connections to the listener port
+     * @returns A ListenerPort object that controls connections to the listener port
      */
-    public addListener(listener: ClassicLoadBalancerListener): ClassicListenerPort {
+    public addListener(listener: LoadBalancerListener): ListenerPort {
         const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
         const instancePort = listener.internalPort || listener.externalPort;
         const instanceProtocol = ifUndefined(listener.internalProtocol,
@@ -247,7 +245,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
             policyNames: listener.policyNames
         });
 
-        const port = new ClassicListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
+        const port = new ListenerPort(this.securityGroup, new TcpPort(listener.externalPort));
 
         // Allow connections on the public port for all supplied peers (default: everyone)
         ifUndefined(listener.allowConnectionsFrom, [new AnyIPv4()]).forEach(peer => {
@@ -262,7 +260,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
         return port;
     }
 
-    public addTarget(target: IClassicLoadBalancerTarget) {
+    public addTarget(target: ILoadBalancerTarget) {
         target.attachToClassicLB(this);
 
         this.newTarget(target);
@@ -301,7 +299,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * Allow connections to target on all existing instance ports
      */
-    private newTarget(target: IClassicLoadBalancerTarget) {
+    private newTarget(target: ILoadBalancerTarget) {
         this.instancePorts.forEach(p => this.allowTargetConnection(p, target));
 
         // Keep track of target for future listeners.
@@ -311,7 +309,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
     /**
      * Allow connections for a single (port, target) pair
      */
-    private allowTargetConnection(instancePort: number, target: IClassicLoadBalancerTarget) {
+    private allowTargetConnection(instancePort: number, target: ILoadBalancerTarget) {
         this.connections.allowTo(
             target,
             new TcpPort(instancePort),
@@ -332,7 +330,7 @@ export class ClassicLoadBalancer extends cdk.Construct implements IConnectable {
  *      // or
  *      instance.connections.allowToDefaultPort(listener);
  */
-export class ClassicListenerPort implements IConnectable {
+export class ListenerPort implements IConnectable {
     public readonly connections: Connections;
 
     constructor(securityGroup: SecurityGroupRef, defaultPortRange: IPortRange) {
@@ -367,9 +365,9 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 }
 
 /**
- * Turn health check parameters into a parameter blob for the Classic LB
+ * Turn health check parameters into a parameter blob for the LB
  */
-function healthCheckToJSON(healthCheck: HealthCheck): elasticloadbalancing.cloudformation.LoadBalancerResource.HealthCheckProperty {
+function healthCheckToJSON(healthCheck: HealthCheck): cloudformation.LoadBalancerResource.HealthCheckProperty {
     const protocol = ifUndefined(healthCheck.protocol,
                      ifUndefined(tryWellKnownProtocol(healthCheck.port),
                      LoadBalancingProtocol.Tcp));
