@@ -27,6 +27,12 @@ export interface TableProps {
     tableName?: string;
 
     /**
+     * Whether point-in-time recovery is enabled.
+     * @default undefined, point-in-time recovery is disabled
+     */
+    pitrEnabled?: boolean;
+
+    /**
      * Whether server-side encryption is enabled.
      * @default undefined, server-side encryption is disabled
      */
@@ -122,6 +128,7 @@ export class Table extends Construct {
             tableName: props.tableName,
             keySchema: this.keySchema,
             attributeDefinitions: this.attributeDefinitions,
+            pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
             provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
             sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
             streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
