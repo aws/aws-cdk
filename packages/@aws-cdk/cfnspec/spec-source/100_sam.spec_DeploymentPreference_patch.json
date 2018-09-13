@@ -1,0 +1,64 @@
+{
+  "PropertyTypes": {
+    "patch": {
+      "description": "Add DeploymentPreference for SAM",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::Serverless::Function.DeploymentPreference",
+          "value": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/safe_lambda_deployments.rst",
+            "Properties": {
+              "Enabled": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "PrimitiveType": "Boolean",
+                "Required": true,
+                "UpdateType": "Immutable"
+              },
+              "Type": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "Required": true,
+                "PrimitiveType": "String",
+                "UpdateType": "Immutable"
+              },
+              "Alarms": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "PrimitiveItemType": "String",
+                "Type": "List",
+                "Required": false,
+                "UpdateType": "Immutable"
+              },
+              "Hooks": {
+                "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+                "PrimitiveItemType": "String",
+                "Type": "List",
+                "Required": false,
+                "UpdateType": "Immutable"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "ResourceTypes": {
+    "AWS::Serverless::Function": {
+      "patch": {
+        "description": "Add the deployment preference for SAM Resource",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/DeploymentPreference",
+            "value": {
+              "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object",
+              "Type": "DeploymentPreference",
+              "Required": false,
+              "UpdateType": "Immutable"
+            }
+          }
+        ]
+      }
+    }
+  }
+
+}
