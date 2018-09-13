@@ -4,7 +4,7 @@
       "Type": "AWS::ECR::Repository",
       "Properties": {
         "LifecyclePolicy": {
-          "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":10,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
+          "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":5},\"action\":{\"type\":\"expire\"}}]}"
         }
       }
     }

@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, RepositoryArn, RepositoryName } from './ecr.generated';
-import { Action, CountType, CountUnit, LifecycleRule, TagStatus } from './lifecycle';
+import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 import { RepositoryRef } from "./repository-ref";
 
 export interface RepositoryProps {
@@ -21,12 +21,13 @@ export interface RepositoryProps {
     /**
      * The AWS account ID associated with the registry that contains the repository.
      *
+     * @see https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_PutLifecyclePolicy.html
      * @default The default registry is assumed.
      */
     lifecycleRegistryId?: string;
 
     /**
-     * Retain the registry on stack deletion
+     * Retain the repository on stack deletion
      *
      * If you don't set this to true, the registry must be empty, otherwise
      * your stack deletion will fail.
@@ -53,7 +54,7 @@ export class Repository extends RepositoryRef {
             repositoryName: props.repositoryName,
             // It says "Text", but they actually mean "Object".
             repositoryPolicyText: this.policyDocument,
-            lifecyclePolicy: new cdk.Token(() => cdk.resolve(this.renderLifecyclePolicy())),
+            lifecyclePolicy: new cdk.Token(() => this.renderLifecyclePolicy()),
         });
 
         if (props.retain) {
@@ -76,19 +77,45 @@ export class Repository extends RepositoryRef {
         this.policyDocument.addStatement(statement);
     }
 
+    /**
+     * Add a life cycle rule to the repository
+     *
+     * Life cycle rules automatically expire images from the repository that match
+     * certain conditions.
+     */
     public addLifecycleRule(rule: LifecycleRule) {
-        this.lifecycleRules.push(rule);
+        // Validate rule here so users get errors at the expected location
+        if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
+            throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList');
+        }
+        if (rule.tagStatus !== TagStatus.Tagged && rule.tagPrefixList !== undefined) {
+            throw new Error('tagPrefixList can only be specified when tagStatus is set to Tagged');
+        }
+        if ((rule.maxImageAgeDays !== undefined) === (rule.maxImageCount !== undefined)) {
+            throw new Error(`Life cycle rule must contain exactly one of 'maxImageAgeDays' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
+        }
+
+        const tagStatus = rule.tagStatus !== undefined ? rule.tagStatus : TagStatus.Any;
+
+        if (tagStatus === TagStatus.Any && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any).length > 0) {
+            throw new Error('Life cycle can only have one TagStatus.Any rule');
+        }
+
+        this.lifecycleRules.push({ ...rule, tagStatus });
     }
 
+    /**
+     * Render the life cycle policy object
+     */
     private renderLifecyclePolicy(): cloudformation.RepositoryResource.LifecyclePolicyProperty | undefined {
         let lifecyclePolicyText: any;
 
         if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }
 
         if (this.lifecycleRules.length > 0) {
-            lifecyclePolicyText = JSON.stringify({
-                rules: this.lifecycleRules.map(renderLifecycleRule),
-            });
+            lifecyclePolicyText = JSON.stringify(cdk.resolve({
+                rules: this.orderedLifecycleRules().map(renderLifecycleRule),
+            }));
         }
 
         return {
@@ -96,43 +123,66 @@ export class Repository extends RepositoryRef {
             registryId: this.registryId,
         };
     }
+
+    /**
+     * Return life cycle rules with automatic ordering applied.
+     *
+     * Also applies validation of the 'any' rule.
+     */
+    private orderedLifecycleRules(): LifecycleRule[] {
+        if (this.lifecycleRules.length === 0) { return []; }
+
+        const prioritizedRules = this.lifecycleRules.filter(r => r.rulePriority !== undefined && r.tagStatus !== TagStatus.Any);
+        const autoPrioritizedRules = this.lifecycleRules.filter(r => r.rulePriority === undefined && r.tagStatus !== TagStatus.Any);
+        const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any);
+        if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
+            // Supporting this is too complex for very little value. We just prohibit it.
+            throw new Error("Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.");
+        }
+
+        const prios = prioritizedRules.map(r => r.rulePriority!);
+        let autoPrio = (prios.length > 0 ? Math.max(...prios) : 0) + 1;
+
+        const ret = new Array<LifecycleRule>();
+        for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
+            ret.push({
+                ...rule,
+                rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++
+            });
+        }
+
+        // Do validation on the final array--might still be wrong because the user supplied all prios, but incorrectly.
+        validateAnyRuleLast(ret);
+        return ret;
+    }
+}
+
+function validateAnyRuleLast(rules: LifecycleRule[]) {
+    const anyRules = rules.filter(r => r.tagStatus === TagStatus.Any);
+    if (anyRules.length === 1) {
+        const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
+        if (anyRules[0].rulePriority !== maxPrio) {
+            throw new Error(`TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
+        }
+    }
 }
 
 /**
  * Render the lifecycle rule to JSON
  */
 function renderLifecycleRule(rule: LifecycleRule) {
-    if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
-        throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList');
-    }
-    if (rule.tagStatus !== TagStatus.Tagged && rule.tagPrefixList !== undefined) {
-        throw new Error('tagPrefixList can only be specified when tagStatus is set to Tagged');
-    }
-
-    if (rule.countType !== CountType.SinceImagePushed && rule.countUnit !== undefined) {
-        throw new Error('countUnit can only be specified when countType is set to SinceImagePushed');
-    }
-
-    if (rule.countUnit === CountUnit._) {
-        throw new Error('Do not use CountUnit._');
-    }
-
-    if (rule.action === Action._) {
-        throw new Error('Do not use Action._');
-    }
-
     return {
         rulePriority: rule.rulePriority,
         description: rule.description,
         selection: {
             tagStatus: rule.tagStatus || TagStatus.Any,
             tagPrefixList: rule.tagPrefixList,
-            countType: rule.countType,
-            countNumber: rule.countNumber,
-            countUnit: rule.countType === CountType.SinceImagePushed ? (rule.countUnit || CountUnit.Days) : undefined,
+            countType: rule.maxImageAgeDays !== undefined ? CountType.SinceImagePushed : CountType.ImageCountMoreThan,
+            countNumber: rule.maxImageAgeDays !== undefined ? rule.maxImageAgeDays : rule.maxImageCount,
+            countUnit: rule.maxImageAgeDays !== undefined ? 'days' : undefined,
         },
         action: {
-            type: rule.action || Action.Expire
+            type: 'expire'
         }
     };
 }

@@ -5,12 +5,18 @@ export interface LifecycleRule {
     /**
      * Controls the order in which rules are evaluated (low to high)
      *
-     *  When you add rules to a lifecycle policy, you must give them each a
-     *  unique value for rulePriority. Values do not need to be sequential
-     *  across rules in a policy. A rule with a tagStatus value of any must have
-     *  the highest value for rulePriority and be evaluated last.
+     * All rules must have a unique priority, where lower numbers have
+     * higher precedence. The first rule that matches is applied to an image.
+     *
+     * There can only be one rule with a tagStatus of Any, and it must have
+     * the highest rulePriority.
+     *
+     * All rules without a specified priority will have incrementing priorities
+     * automatically assigned to them, higher than any rules that DO have priorities.
+     *
+     * @default Automatically assigned
      */
-    rulePriority: number;
+    rulePriority?: number;
 
     /**
      * Describes the purpose of the rule
@@ -37,30 +43,18 @@ export interface LifecycleRule {
     tagPrefixList?: string[];
 
     /**
-     * Specify limit type to apply to the repository
+     * The maximum number of images to retain
+     *
+     * Specify exactly one of maxImageCount and maxImageAgeDays.
      */
-    countType: CountType;
+    maxImageCount?: number;
 
     /**
-     * The unit of specifying the count
+     * The maximum age of images to retain
      *
-     * Only applies when countType = CountType.SinceImagePushed.
-     *
-     * @default CountUnit.Days
+     * Specify exactly one of maxImageCount and maxImageAgeDays.
      */
-    countUnit?: CountUnit;
-
-    /**
-     * The number of images or days, according to countType
-     */
-    countNumber: number;
-
-    /**
-     * The action to take
-     *
-     * @default Action.expire
-     */
-    action?: Action;
+    maxImageAgeDays?: number;
 }
 
 /**
@@ -96,40 +90,4 @@ export enum CountType {
      * Set an age limit on the images in your repository
      */
     SinceImagePushed = 'sinceImagePushed',
-}
-
-/**
- * The unit to count time in
- */
-export enum CountUnit {
-    /**
-     * countNumber is in days
-     */
-    Days = 'days',
-
-    /**
-     * Do not use this value
-     *
-     * It is here to work around issues with the JSII type checker that
-     * occur when an enum only has one member.
-     */
-    _ = '_',
-}
-
-/**
- * Action to take on the image
- */
-export enum Action {
-    /**
-     * The image is expired
-     */
-    Expire = 'expire',
-
-    /**
-     * Do not use this value
-     *
-     * It is here to work around issues with the JSII type checker that
-     * occur when an enum only has one member.
-     */
-    _ = '_',
 }

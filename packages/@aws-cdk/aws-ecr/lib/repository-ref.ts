@@ -22,6 +22,9 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public abstract readonly repositoryArn: RepositoryArn;
 
+    /**
+     * Add a policy statement to the repository's resource policy
+     */
     public abstract addToResourcePolicy(statement: cdk.PolicyStatement): void;
 
     /**
@@ -29,7 +32,6 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryName: new RepositoryName(new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue()),
             repositoryArn: new RepositoryArn(new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue()),
         };
     }
@@ -40,13 +42,7 @@ export abstract class RepositoryRef extends cdk.Construct {
     public get repositoryUri(): RepositoryUri {
         // Calculate this from the ARN
         const parts = cdk.Arn.parseToken(this.repositoryArn);
-        return new cdk.FnConcat(
-            parts.account,
-            ".dkr.ecr.",
-            parts.region,
-            ".amazonaws.com/",
-            parts.resourceName
-        );
+        return new RepositoryUri(`${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`);
     }
 }
 
@@ -57,7 +53,6 @@ export class RepositoryUri extends cdk.CloudFormationToken {
 }
 
 export interface RepositoryRefProps {
-    repositoryName: RepositoryName;
     repositoryArn: RepositoryArn;
 }
 
@@ -70,8 +65,8 @@ class ImportedRepository extends RepositoryRef {
 
     constructor(parent: cdk.Construct, id: string, props: RepositoryRefProps) {
         super(parent, id);
-        this.repositoryName = props.repositoryName;
         this.repositoryArn = props.repositoryArn;
+        this.repositoryName = new RepositoryName(cdk.Arn.parseToken(props.repositoryArn).resourceName);
     }
 
     public addToResourcePolicy(_statement: cdk.PolicyStatement) {
