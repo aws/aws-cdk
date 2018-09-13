@@ -31,14 +31,14 @@ export interface LifecycleRule {
      * Only one rule is allowed to select untagged images, and it must
      * have the highest rulePriority.
      *
-     * @default TagStatus.Any
+     * @default TagStatus.Tagged if tagPrefixList is given, TagStatus.Any otherwise
      */
     tagStatus?: TagStatus;
 
     /**
      * Select images that have ALL the given prefixes in their tag.
      *
-     * Only if tagStatus == TagStatus.Any
+     * Only if tagStatus == TagStatus.Tagged
      */
     tagPrefixList?: string[];
 

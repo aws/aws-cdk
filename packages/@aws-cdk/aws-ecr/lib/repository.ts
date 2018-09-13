@@ -85,6 +85,10 @@ export class Repository extends RepositoryRef {
      */
     public addLifecycleRule(rule: LifecycleRule) {
         // Validate rule here so users get errors at the expected location
+        if (rule.tagStatus === undefined) {
+            rule.tagStatus = rule.tagPrefixList === undefined ? TagStatus.Any : TagStatus.Tagged;
+        }
+
         if (rule.tagStatus === TagStatus.Tagged && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
             throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList');
         }
@@ -95,13 +99,11 @@ export class Repository extends RepositoryRef {
             throw new Error(`Life cycle rule must contain exactly one of 'maxImageAgeDays' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
         }
 
-        const tagStatus = rule.tagStatus !== undefined ? rule.tagStatus : TagStatus.Any;
-
-        if (tagStatus === TagStatus.Any && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any).length > 0) {
+        if (rule.tagStatus === TagStatus.Any && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.Any).length > 0) {
             throw new Error('Life cycle can only have one TagStatus.Any rule');
         }
 
-        this.lifecycleRules.push({ ...rule, tagStatus });
+        this.lifecycleRules.push({ ...rule });
     }
 
     /**

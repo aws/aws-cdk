@@ -23,6 +23,25 @@ export = {
         test.done();
     },
 
+    'tag-based lifecycle policy'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const repo = new ecr.Repository(stack, 'Repo');
+
+        // WHEN
+        repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 1 });
+
+        // THEN
+        expect(stack).to(haveResource('AWS::ECR::Repository', {
+            LifecyclePolicy: {
+                // tslint:disable-next-line:max-line-length
+                LifecyclePolicyText: "{\"rules\":[{\"rulePriority\":1,\"selection\":{\"tagStatus\":\"tagged\",\"tagPrefixList\":[\"abc\"],\"countType\":\"imageCountMoreThan\",\"countNumber\":1},\"action\":{\"type\":\"expire\"}}]}"
+            }
+        }));
+
+        test.done();
+    },
+
     'add day-based lifecycle policy'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
