@@ -300,7 +300,7 @@ export class Function extends FunctionRef {
         // won't work because the ENIs don't get a Public IP.
         const subnets = props.vpc.subnets(props.vpcPlacement);
         for (const subnet of subnets) {
-            if (props.vpc.publicSubnets.indexOf(subnet) > -1) {
+            if (props.vpc.isPublicSubnet(subnet)) {
                 throw new Error('Not possible to place Lambda Functions in a Public subnet');
             }
         }

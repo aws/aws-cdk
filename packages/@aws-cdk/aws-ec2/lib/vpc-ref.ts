@@ -159,6 +159,13 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
             isolatedSubnetNames: iso.names,
         };
     }
+
+    /**
+     * Return whether the given subnet is one of this VPC's public subnets
+     */
+    public isPublicSubnet(subnet: VpcSubnetRef) {
+        return this.publicSubnets.indexOf(subnet) > -1;
+    }
 }
 
 /**
