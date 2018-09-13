@@ -8,6 +8,26 @@ import { FunctionVersion } from './lambda-version';
 import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
 import { Runtime } from './runtime';
 
+/**
+ * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
+ */
+export enum Tracing {
+    /**
+     * Lambda will respect any tracing header it receives from an upstream service.
+     * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
+     */
+    Active,
+    /**
+     * Lambda will only trace the request from an upstream service
+     * if it contains a tracing header with "sampled=1"
+     */
+    PassThrough,
+    /**
+     * Lambda will not trace any request.
+     */
+    Disabled
+}
+
 export interface FunctionProps {
     /**
      * The source code of your Lambda function. You can point to a file in an
@@ -134,6 +154,13 @@ export interface FunctionProps {
      * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
      */
     deadLetterQueue?: sqs.QueueRef;
+
+    /**
+     * Enable AWS X-Ray Tracing for Lambda Function.
+     *
+     * @default undefined X-Ray tracing disabled
+     */
+    tracing?: Tracing;
 }
 
 /**
@@ -216,6 +243,7 @@ export class Function extends FunctionRef {
             memorySize: props.memorySize,
             vpcConfig: this.configureVpc(props),
             deadLetterConfig: this.buildDeadLetterConfig(props),
+            tracingConfig: this.buildTracingConfig(props)
         });
 
         resource.addDependency(this.role);
@@ -332,4 +360,19 @@ export class Function extends FunctionRef {
             targetArn: deadLetterQueue.queueArn
         };
     }
+
+    private buildTracingConfig(props: FunctionProps) {
+        if (props.tracing === undefined || props.tracing === Tracing.Disabled) {
+            return undefined;
+        }
+
+        this.addToRolePolicy(new cdk.PolicyStatement()
+            .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
+            .addAllResources());
+
+        return {
+            mode: Tracing[props.tracing]
+        };
+    }
+
 }
