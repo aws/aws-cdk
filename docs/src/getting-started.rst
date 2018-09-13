@@ -312,6 +312,8 @@ Use the |cdk| toolkit to view the contents of this app.
     See `Environment Variables <https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html>`_
     in the CLI User Guide for details.
 
+.. include:: region-note.rst    
+
 The |cdk| toolkit needs to know how to execute your |cdk| app. It requires that the
 :code:`--app` command-line option points to an executable program that adheres
 to the toolkit's protocol (this is what the **ARGV/STDOUT** boilerplate
