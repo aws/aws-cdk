@@ -109,7 +109,7 @@ class TestAlarmAction implements IAlarmAction {
     constructor(private readonly arn: string) {
     }
 
-    public get alarmActionArn(): Arn {
-        return new Arn(this.arn);
+    public get alarmActionArn(): string {
+        return this.arn;
     }
 }

@@ -1,4 +1,4 @@
-import { Arn, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
+import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation } from './iam.generated';
 import { Role } from './role';
@@ -31,7 +31,7 @@ export interface IPrincipal {
      * Attaches a managed policy to this principal.
      * @param arn The ARN of the managed policy
      */
-    attachManagedPolicy(arn: Arn): void;
+    attachManagedPolicy(arn: string): void;
 }
 
 /**

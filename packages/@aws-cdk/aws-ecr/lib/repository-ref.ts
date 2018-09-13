@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { RepositoryArn, RepositoryName } from './ecr.generated';
 
 /**
  * An ECR repository
@@ -15,12 +14,12 @@ export abstract class RepositoryRef extends cdk.Construct {
     /**
      * The name of the repository
      */
-    public abstract readonly repositoryName: RepositoryName;
+    public abstract readonly repositoryName: string;
 
     /**
      * The ARN of the repository
      */
-    public abstract readonly repositoryArn: RepositoryArn;
+    public abstract readonly repositoryArn: string;
 
     /**
      * Add a policy statement to the repository's resource policy
@@ -32,7 +31,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryArn: new RepositoryArn(new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue()),
+            repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
         };
     }
 
@@ -41,7 +40,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public get repositoryUri(): RepositoryUri {
         // Calculate this from the ARN
-        const parts = cdk.Arn.parseToken(this.repositoryArn);
+        const parts = cdk.ArnUtils.parse(this.repositoryArn);
         return new RepositoryUri(`${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`);
     }
 }
@@ -53,20 +52,20 @@ export class RepositoryUri extends cdk.CloudFormationToken {
 }
 
 export interface RepositoryRefProps {
-    repositoryArn: RepositoryArn;
+    repositoryArn: string;
 }
 
 /**
  * An already existing repository
  */
 class ImportedRepository extends RepositoryRef {
-    public readonly repositoryName: RepositoryName;
-    public readonly repositoryArn: RepositoryArn;
+    public readonly repositoryName: string;
+    public readonly repositoryArn: string;
 
     constructor(parent: cdk.Construct, id: string, props: RepositoryRefProps) {
         super(parent, id);
         this.repositoryArn = props.repositoryArn;
-        this.repositoryName = new RepositoryName(cdk.Arn.parseToken(props.repositoryArn).resourceName);
+        this.repositoryName = cdk.ArnUtils.parse(props.repositoryArn).resourceName!;
     }
 
     public addToResourcePolicy(_statement: cdk.PolicyStatement) {

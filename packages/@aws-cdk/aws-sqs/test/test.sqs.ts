@@ -55,7 +55,7 @@ export = {
     'addToPolicy will automatically create a policy for this queue'(test: Test) {
         const stack = new Stack();
         const queue = new sqs.Queue(stack, 'MyQueue');
-        queue.addToResourcePolicy(new PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new ArnPrincipal(new Arn('arn'))));
+        queue.addToResourcePolicy(new PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new ArnPrincipal('arn')));
         expect(stack).toMatch({
             "Resources": {
               "MyQueueE6CA6235": {

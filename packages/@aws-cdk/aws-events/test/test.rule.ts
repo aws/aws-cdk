@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IEventRuleTarget, RuleArn } from '../lib';
+import { IEventRuleTarget } from '../lib';
 import { EventRule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -312,11 +312,11 @@ export = {
     'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
         const stack = new cdk.Stack();
 
-        let receivedRuleArn = new RuleArn('FAIL');
+        let receivedRuleArn = 'FAIL';
         let receivedRuleId = 'FAIL';
 
         const t1: IEventRuleTarget = {
-            asEventRuleTarget: (ruleArn: RuleArn, ruleId: string) => {
+            asEventRuleTarget: (ruleArn: string, ruleId: string) => {
                 receivedRuleArn = ruleArn;
                 receivedRuleId = ruleId;
 

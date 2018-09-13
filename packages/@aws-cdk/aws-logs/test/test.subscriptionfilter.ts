@@ -30,7 +30,7 @@ export = {
 class FakeDestination implements ILogSubscriptionDestination {
     public logSubscriptionDestination(_sourceLogGroup: LogGroupRef) {
         return {
-            arn: new Arn('arn:bogus'),
+            arn: 'arn:bogus',
         };
     }
 }

@@ -102,11 +102,16 @@ export class Token {
 }
 
 /**
- * Returns true if obj is a token (i.e. has the resolve() method)
+ * Returns true if obj is a token (i.e. has the resolve() method or is a string
+ * that includes token markers).
  * @param obj The object to test.
  */
 export function isToken(obj: any): obj is Token {
-    return typeof(obj[RESOLVE_METHOD]) === 'function';
+    if (typeof(obj) === 'string') {
+        return TOKEN_STRING_MAP.createTokenString(obj).test();
+    } else {
+        return typeof(obj[RESOLVE_METHOD]) === 'function';
+    }
 }
 
 /**
@@ -253,10 +258,17 @@ class TokenStringMap {
     }
 
     /**
+     * Returns a `TokenString` for this string.
+     */
+    public createTokenString(s: string) {
+        return new TokenString(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+    }
+
+    /**
      * Replace any Token markers in this string with their resolved values
      */
     public resolveMarkers(s: string): any {
-        const str = new TokenString(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+        const str = this.createTokenString(s);
         const fragments = str.split(this.lookupToken.bind(this));
         return fragments.join();
     }
@@ -304,18 +316,21 @@ export interface ITokenJoiner {
  * A string with markers in it that can be resolved to external values
  */
 class TokenString {
+    private pattern: string;
+
     constructor(
         private readonly str: string,
         private readonly beginMarker: string,
         private readonly idPattern: string,
         private readonly endMarker: string) {
+        this.pattern = `${regexQuote(this.beginMarker)}(${this.idPattern})${regexQuote(this.endMarker)}`;
     }
 
     /**
      * Split string on markers, substituting markers with Tokens
      */
     public split(lookup: (id: string) => Token): TokenStringFragments {
-        const re = new RegExp(`${regexQuote(this.beginMarker)}(${this.idPattern})${regexQuote(this.endMarker)}`, 'g');
+        const re = new RegExp(this.pattern, 'g');
         const ret = new TokenStringFragments();
 
         let rest = 0;
@@ -336,6 +351,14 @@ class TokenString {
         }
 
         return ret;
+    }
+
+    /**
+     * Indicates if this string includes tokens.
+     */
+    public test(): boolean {
+        const re = new RegExp(this.pattern, 'g');
+        return re.test(this.str);
     }
 }
 

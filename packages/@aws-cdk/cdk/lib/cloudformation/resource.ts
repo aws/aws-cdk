@@ -87,6 +87,13 @@ export class Resource extends StackElement {
     }
 
     /**
+     * Returns a token that resolves to `{ "Ref": LogicalID }`
+     */
+    public get ref() {
+        return new CloudFormationToken({ Ref: this.logicalId });
+    }
+
+    /**
      * Adds a dependency on another resource.
      * @param other The other resource.
      */
