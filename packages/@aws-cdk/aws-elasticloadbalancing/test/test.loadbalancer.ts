@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import { VpcNetwork } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { ClassicLoadBalancer, LoadBalancingProtocol, VpcNetwork } from '../lib';
+import { LoadBalancer, LoadBalancingProtocol } from '../lib';
 
 export = {
     'test specifying nonstandard port works'(test: Test) {
@@ -9,7 +10,7 @@ export = {
         stack.setContext('availability-zones:1234:test', ['test-1a', 'test-1b']);
         const vpc = new VpcNetwork(stack, 'VCP');
 
-        const lb = new ClassicLoadBalancer(stack, 'LB', { vpc });
+        const lb = new LoadBalancer(stack, 'LB', { vpc });
 
         lb.addListener({
             externalProtocol: LoadBalancingProtocol.Http,

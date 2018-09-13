@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('../lib');
 
@@ -16,7 +17,7 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
     machineImage: new ec2.AmazonLinuxImage(),
 });
 
-new ec2.ClassicLoadBalancer(stack, 'LB', {
+new elb.LoadBalancer(stack, 'LB', {
     vpc,
     internetFacing: true,
     listeners: [{
