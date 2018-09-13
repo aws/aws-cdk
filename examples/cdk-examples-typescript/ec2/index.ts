@@ -1,5 +1,6 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 
 class AppWithVpc extends cdk.Stack {
@@ -14,7 +15,7 @@ class AppWithVpc extends cdk.Stack {
             machineImage: new ec2.AmazonLinuxImage()
         });
 
-        const clb = new ec2.ClassicLoadBalancer(this, 'LB', {
+        const clb = new elb.LoadBalancer(this, 'LB', {
             vpc,
             internetFacing: true
         });
@@ -40,7 +41,7 @@ class MyApp extends cdk.Stack {
             machineImage: new ec2.AmazonLinuxImage()
         });
 
-        const clb = new ec2.ClassicLoadBalancer(this, 'LB', {
+        const clb = new elb.LoadBalancer(this, 'LB', {
             vpc,
             internetFacing: true
         });
