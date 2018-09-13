@@ -17,17 +17,15 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
     machineImage: new ec2.AmazonLinuxImage(),
 });
 
-new elb.LoadBalancer(stack, 'LB', {
+const lb = new elb.LoadBalancer(stack, 'LB', {
     vpc,
     internetFacing: true,
-    listeners: [{
-        externalPort: 80,
-        allowConnectionsFrom: [new ec2.AnyIPv4()]
-    }],
     healthCheck: {
         port: 80
     },
-    targets: [asg]
 });
+
+lb.addTarget(asg);
+lb.addListener({ externalPort: 80 });
 
 process.stdout.write(app.run());
