@@ -60,6 +60,34 @@ export = {
 
             test.done();
         },
+        'point-in-time recovery is not enabled'(test: Test) {
+            const app = new TestApp();
+            new Table(app.stack, 'MyTable')
+                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
+                .addSortKey('sortKey', KeyAttributeType.Number);
+            const template = app.synthesizeTemplate();
+
+            test.deepEqual(template, {
+                Resources: {
+                    MyTable794EDED1: {
+                        Type: 'AWS::DynamoDB::Table',
+                        Properties: {
+                            AttributeDefinitions: [
+                                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                                { AttributeName: 'sortKey', AttributeType: 'N' }
+                            ],
+                            KeySchema: [
+                                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+                            ],
+                            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+                        }
+                    }
+                }
+            });
+
+            test.done();
+        },
         'server-side encryption is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
@@ -257,6 +285,7 @@ export = {
             tableName: 'MyTable',
             readCapacity: 42,
             writeCapacity: 1337,
+            pitrEnabled: true,
             sseEnabled: true,
             streamSpecification: StreamViewType.KeysOnly,
             ttlAttributeName: 'timeToLive'
@@ -282,6 +311,7 @@ export = {
                             ReadCapacityUnits: 42,
                             WriteCapacityUnits: 1337
                         },
+                        PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
                         SSESpecification: { SSEEnabled: true },
                         StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
                         TableName: 'MyTable',
