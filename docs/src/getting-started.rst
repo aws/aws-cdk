@@ -26,10 +26,17 @@ Setup
 Prerequisites
 -------------
 
-`Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ - required for the
+- **TypeScript** (>= 2.7) - required to support ES2018.
+You can get the latest version of TypeScript by running the following command.
+
+.. code-block:: sh
+
+    npm install typescript -g
+
+- `Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ - required for the
 command-line toolkit and language bindings.
 
-`AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
+- `AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
 used to setup the credentials and region for your AWS account,
 which must be specified to use the toolkit.
 See :ref:`credentials <credentials>` for information on using the AWS CLI to set your credentials.
