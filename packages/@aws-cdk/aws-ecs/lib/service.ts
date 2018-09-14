@@ -36,7 +36,9 @@ export interface ServiceProps {
     launchType?: string; // maybe unnecessary if we have different ECS vs FG service
 
     /**
-     * The maximum number of tasks, specified as a percentage of the Amazon ECS service's DesiredCount value, that can run in a service during a deployment.
+     * The maximum number of tasks, specified as a percentage of the Amazon ECS
+     * service's DesiredCount value, that can run in a service during a
+     * deployment.
      *
      * @default 200
      */
@@ -52,7 +54,9 @@ export interface ServiceProps {
     minimumHealthyPercent?: number;
 
     /**
-     * The name or ARN of an AWS Identity and Access Management (IAM) role that allows your Amazon ECS container agent to make calls to your load balancer.
+     * The name or ARN of an AWS Identity and Access Management (IAM) role that
+     * allows your Amazon ECS container agent to make calls to your load
+     * balancer.
      */
     role?: string;
 

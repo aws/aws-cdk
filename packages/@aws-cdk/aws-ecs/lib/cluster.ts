@@ -25,6 +25,7 @@ export interface ClusterProps {
 }
 
 // TODO: replace this with call to SSM, stored as "/aws/service/ecs/optimized-ami/amazon-linux/recommended"
+// https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ECS/EC2LaunchType/clusters/public-vpc.yml
 export const ECS_OPTIMIZED_AMI = new ec2.GenericLinuxImage({
     'us-east-2': 'ami-028a9de0a7e353ed9',
     'us-east-1': 'ami-00129b193dc81bc31',
