@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import sqs = require('@aws-cdk/aws-sqs');
@@ -907,6 +907,176 @@ export = {
         deadLetterQueueEnabled: false,
         deadLetterQueue: dlQueue,
       }), /deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
+
+      test.done();
+    },
+
+    'default function with Active tracing'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NodeJS610,
+          tracing: lambda.Tracing.Active
+      });
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "Roles": [
+          {
+            "Ref": "MyLambdaServiceRole4539ECB6"
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        "Properties": {
+          "Code": {
+            "ZipFile": "foo"
+          },
+          "Handler": "index.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs6.10",
+          "TracingConfig": {
+            "Mode": "Active"
+          }
+        },
+        "DependsOn": [
+          "MyLambdaServiceRole4539ECB6",
+          "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        ]
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+
+    'default function with PassThrough tracing'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NodeJS610,
+          tracing: lambda.Tracing.PassThrough
+      });
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "Roles": [
+          {
+            "Ref": "MyLambdaServiceRole4539ECB6"
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        "Properties": {
+          "Code": {
+            "ZipFile": "foo"
+          },
+          "Handler": "index.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs6.10",
+          "TracingConfig": {
+            "Mode": "PassThrough"
+          }
+        },
+        "DependsOn": [
+          "MyLambdaServiceRole4539ECB6",
+          "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        ]
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+    },
+
+    'default function with Disabled tracing'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NodeJS610,
+          tracing: lambda.Tracing.Disabled
+      });
+
+      expect(stack).notTo(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "Roles": [
+          {
+            "Ref": "MyLambdaServiceRole4539ECB6"
+          }
+        ]
+      }));
+
+      expect(stack).to(haveResource('AWS::Lambda::Function', {
+        "Properties": {
+          "Code": {
+            "ZipFile": "foo"
+          },
+          "Handler": "index.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "MyLambdaServiceRole4539ECB6",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs6.10"
+        },
+        "DependsOn": [
+          "MyLambdaServiceRole4539ECB6"
+        ]
+      }, ResourcePart.CompleteDefinition));
 
       test.done();
     },
