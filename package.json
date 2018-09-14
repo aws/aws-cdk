@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/node": "^10.9.4",
     "@types/nodeunit": "^0.0.30",
+    "conventional-changelog-cli": "^2.0.5",
     "lerna": "^3.3.0",
     "nodeunit": "^0.11.2",
     "nyc": "^13.0.1",

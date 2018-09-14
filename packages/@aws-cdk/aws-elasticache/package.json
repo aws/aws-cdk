@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-elasticache",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "The CDK Construct Library for AWS::ElastiCache",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,13 +52,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.9.0",
-    "cdk-build-tools": "^0.9.0",
-    "cfn2ts": "^0.9.0",
-    "pkglint": "^0.9.0"
+    "@aws-cdk/assert": "^0.9.1",
+    "cdk-build-tools": "^0.9.1",
+    "cfn2ts": "^0.9.1",
+    "pkglint": "^0.9.1"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.9.0"
+    "@aws-cdk/cdk": "^0.9.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
