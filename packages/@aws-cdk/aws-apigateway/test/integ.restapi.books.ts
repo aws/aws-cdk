@@ -6,10 +6,16 @@ class BookStack extends cdk.Stack {
     constructor(parent: cdk.App, name: string) {
         super(parent, name);
 
-        const echo = new apigw.LambdaIntegration(new lambda.Function(this, 'Handler', {
+        const booksHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BooksHandler', {
             runtime: lambda.Runtime.NodeJS610,
             handler: 'index.handler',
-            code: lambda.Code.inline(`exports.handler = ${handlerCode}`)
+            code: lambda.Code.inline(`exports.handler = ${echoHandlerCode}`)
+        }));
+
+        const bookHandler = new apigw.LambdaIntegration(new lambda.Function(this, 'BookHandler', {
+            runtime: lambda.Runtime.NodeJS610,
+            handler: 'index.handler',
+            code: lambda.Code.inline(`exports.handler = ${echoHandlerCode}`)
         }));
 
         const hello = new apigw.LambdaIntegration(new lambda.Function(this, 'Hello', {
@@ -18,14 +24,22 @@ class BookStack extends cdk.Stack {
             code: lambda.Code.inline(`exports.handler = ${helloCode}`)
         }));
 
-        const api = new apigw.RestApi(this, 'books-api', { defaultIntegration: echo });
+        const api = new apigw.RestApi(this, 'books-api');
         api.onMethod('GET', hello);
 
-        const books = api.addResource('books');
+        const books = api.addResource('books', {
+            defaultIntegration: booksHandler,
+            defaultMethodOptions: { authorizationType: apigw.AuthorizationType.IAM }
+        });
+
         books.onMethod('GET');
         books.onMethod('POST');
 
-        const book = books.addResource('{book_id}');
+        const book = books.addResource('{book_id}', {
+            defaultIntegration: bookHandler
+            // note that authorization type is inherited from /books
+        });
+
         book.onMethod('GET');
         book.onMethod('DELETE');
     }
@@ -39,7 +53,7 @@ class BookApp extends cdk.App {
     }
 }
 
-function handlerCode(event: any, _: any, callback: any) {
+function echoHandlerCode(event: any, _: any, callback: any) {
     return callback(undefined, {
         isBase64Encoded: false,
         statusCode: 200,

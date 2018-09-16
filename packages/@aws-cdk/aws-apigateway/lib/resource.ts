@@ -26,11 +26,23 @@ export interface IRestApiResource {
     readonly resourcePath: string;
 
     /**
+     * An integration to use as a default for all methods created within this
+     * API unless an integration is specified.
+     */
+    readonly defaultIntegration?: Integration;
+
+    /**
+     * Method options to use as a default for all methods created within this
+     * API unless custom options are specified.
+     */
+    readonly defaultMethodOptions?: MethodOptions;
+
+    /**
      * Defines a new child resource where this resource is the parent.
      * @param pathPart The path part for the child resource
      * @returns A Resource object
      */
-    addResource(pathPart: string): Resource;
+    addResource(pathPart: string, options?: ResourceOptions): Resource;
 
     /**
      * Defines a new method for this resource.
@@ -39,7 +51,21 @@ export interface IRestApiResource {
     onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
 }
 
-export interface ResourceProps {
+export interface ResourceOptions {
+    /**
+     * An integration to use as a default for all methods created within this
+     * API unless an integration is specified.
+     */
+    readonly defaultIntegration?: Integration;
+
+    /**
+     * Method options to use as a default for all methods created within this
+     * API unless custom options are specified.
+     */
+    readonly defaultMethodOptions?: MethodOptions;
+}
+
+export interface ResourceProps extends ResourceOptions {
     /**
      * The parent resource of this resource. You can either pass another
      * `Resource` object or a `RestApi` object here.
@@ -56,6 +82,8 @@ export class Resource extends cdk.Construct implements IRestApiResource {
     public readonly resourceApi: RestApi;
     public readonly resourceId: ResourceId;
     public readonly resourcePath: string;
+    public readonly defaultIntegration?: Integration;
+    public readonly defaultMethodOptions?: MethodOptions;
 
     constructor(parent: cdk.Construct, id: string, props: ResourceProps) {
         super(parent, id);
@@ -82,10 +110,18 @@ export class Resource extends cdk.Construct implements IRestApiResource {
             deployment.addDependency(resource);
             deployment.addToLogicalId({ resource: resourceProps });
         }
+
+        // setup defaults based on properties and inherit from parent. method defaults
+        // are inherited per property, so children can override piecemeal.
+        this.defaultIntegration = props.defaultIntegration || props.parent.defaultIntegration;
+        this.defaultMethodOptions = {
+            ...props.parent.defaultMethodOptions,
+            ...props.defaultMethodOptions
+        };
     }
 
-    public addResource(pathPart: string): Resource {
-        return new Resource(this, pathPart, { parent: this, pathPart });
+    public addResource(pathPart: string, options?: ResourceOptions): Resource {
+        return new Resource(this, pathPart, { parent: this, pathPart, ...options });
     }
 
     public onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {

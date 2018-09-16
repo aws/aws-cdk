@@ -81,15 +81,17 @@ export class Method extends cdk.Construct {
 
         const options = props.options || { };
 
+        const defaultMethodOptions = props.resource.defaultMethodOptions || {};
+
         const methodProps: cloudformation.MethodResourceProps = {
             resourceId: props.resource.resourceId,
             restApiId: this.restApi.restApiId,
             httpMethod: props.httpMethod,
-            operationName: options.operationName,
-            apiKeyRequired: options.apiKeyRequired,
-            authorizationType: options.authorizationType || AuthorizationType.None,
-            authorizerId: options.authorizerId,
-            integration: this.renderIntegration(props.integration, this.restApi.defaultIntegration)
+            operationName: options.operationName || defaultMethodOptions.operationName,
+            apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
+            authorizationType: options.authorizationType || defaultMethodOptions.authorizationType || AuthorizationType.None,
+            authorizerId: options.authorizerId || defaultMethodOptions.authorizerId,
+            integration: this.renderIntegration(props.integration)
         };
 
         const resource = new cloudformation.MethodResource(this, 'Resource', methodProps);
@@ -130,11 +132,11 @@ export class Method extends cdk.Construct {
         return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, 'test-invoke-stage');
     }
 
-    private renderIntegration(integration?: Integration, defaultIntegration?: Integration): cloudformation.MethodResource.IntegrationProperty {
+    private renderIntegration(integration?: Integration): cloudformation.MethodResource.IntegrationProperty {
         if (!integration) {
             // use defaultIntegration from API if defined
-            if (defaultIntegration) {
-                return this.renderIntegration(defaultIntegration);
+            if (this.resource.defaultIntegration) {
+                return this.renderIntegration(this.resource.defaultIntegration);
             }
 
             // fallback to mock

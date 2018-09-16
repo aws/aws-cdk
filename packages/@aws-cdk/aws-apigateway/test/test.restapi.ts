@@ -521,24 +521,104 @@ export = {
     },
 
     'allow taking a dependency on the rest api (includes deployment and stage)'(test: Test) {
-      const stack = new cdk.Stack();
+        // GIVEN
+        const stack = new cdk.Stack();
+        const api = new apigateway.RestApi(stack, 'myapi');
+        api.onMethod('GET');
+        const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
-      const api = new apigateway.RestApi(stack, 'myapi');
+        // WHEN
+        resource.addDependency(api);
 
-      api.onMethod('GET');
+        // THEN
+        expect(stack).to(haveResource('My::Resource', {
+            DependsOn: [
+                'myapi162F20B8', // api
+                'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9', // deployment
+                'myapiDeploymentStageprod329F21FF' // stage
+            ]
+        }, ResourcePart.CompleteDefinition));
 
-      const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+        test.done();
+    },
 
-      resource.addDependency(api);
+    'defaultIntegration and defaultMethodOptions can be used at any level'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const rootInteg = new apigateway.AwsIntegration({
+            service: 's3',
+            action: 'GetObject'
+        });
 
-      expect(stack).to(haveResource('My::Resource', {
-          DependsOn: [
-              'myapi162F20B8', // api
-              'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9', // deployment
-              'myapiDeploymentStageprod329F21FF' // stage
-          ]
-      }, ResourcePart.CompleteDefinition));
+        // WHEN
+        const api = new apigateway.RestApi(stack, 'myapi', {
+            defaultIntegration: rootInteg,
+            defaultMethodOptions: {
+                authorizerId: new apigateway.AuthorizerId('AUTHID'),
+                authorizationType: apigateway.AuthorizationType.IAM,
+            }
+        });
 
-      test.done();
-  }
+        // CASE #1: should inherit integration and options from root resource
+        api.onMethod('GET');
+
+        const child = api.addResource('child');
+
+        // CASE #2: should inherit integration from root and method options, but
+        // "authorizationType" will be overridden to "None" instead of "IAM"
+        child.onMethod('POST', undefined, {
+            authorizationType: apigateway.AuthorizationType.Cognito
+        });
+
+        const child2 = api.addResource('child2', {
+            defaultIntegration: new apigateway.MockIntegration(),
+            defaultMethodOptions: {
+                authorizerId: new apigateway.AuthorizerId('AUTHID2'),
+            }
+        });
+
+        // CASE #3: integartion and authorizer ID are inherited from child2
+        child2.onMethod('DELETE');
+
+        // CASE #4: same as case #3, but integration is customized
+        child2.onMethod('PUT', new apigateway.AwsIntegration({ action: 'foo', service: 'bar' }));
+
+        // THEN
+
+        // CASE #1
+        expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+            HttpMethod: 'GET',
+            ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
+            Integration: { Type: 'AWS' },
+            AuthorizerId: 'AUTHID',
+            AuthorizationType: 'AWS_IAM',
+        }));
+
+        // CASE #2
+        expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+            HttpMethod: 'POST',
+            ResourceId: { Ref: "myapichildA0A65412" },
+            Integration: { Type: 'AWS' },
+            AuthorizerId: 'AUTHID',
+            AuthorizationType: 'COGNITO_USER_POOLS',
+        }));
+
+        // CASE #3
+        expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+            HttpMethod: 'DELETE',
+            Integration: { Type: 'MOCK' },
+            AuthorizerId: 'AUTHID2',
+            AuthorizationType: 'AWS_IAM'
+        }));
+
+        // CASE #4
+        expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+            HttpMethod: 'PUT',
+            Integration: { Type: 'AWS' },
+            AuthorizerId: 'AUTHID2',
+            AuthorizationType: 'AWS_IAM'
+        }));
+
+        test.done();
+    }
 };

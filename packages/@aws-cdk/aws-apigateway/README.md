@@ -67,12 +67,15 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
-#### Default Integration
+#### Default Integration and Method Options
 
-The `defaultIntegration` can be used to configure a default integration at the
-API level. This integration will be used if an integration was not specified.
+The `defaultIntegration` and `defaultMethodOptions` properties can be used to
+configure a default integration at any resource level. These options will be
+used when defining method under this resource (recursively) with undefined
+integration or options.
 
-> If not defined, the default integration is `MockIntegration`
+> If not defined, the default integration is `MockIntegration`. See reference
+documentation for default method options.
 
 The following example defines the `booksBackend` integration as a default
 integration. This means that all API methods that do not explicitly define an

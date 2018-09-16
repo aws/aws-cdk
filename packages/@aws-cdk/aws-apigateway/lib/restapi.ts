@@ -4,11 +4,11 @@ import { cloudformation, ResourceId, RestApiId } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, Resource } from './resource';
+import { IRestApiResource, Resource, ResourceOptions } from './resource';
 import { RestApiRef } from './restapi-ref';
 import { Stage, StageOptions } from './stage';
 
-export interface RestApiProps {
+export interface RestApiProps extends ResourceOptions {
     /**
      * Indicates if a Deployment should be automatically created for this API,
      * and recreated when the API model (resources, methods) changes.
@@ -165,10 +165,16 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
     public readonly resourcePath = '/';
 
     /**
-     * The integration to use as a default for all methods created within this
+     * An integration to use as a default for all methods created within this
      * API unless an integration is specified.
      */
-    public defaultIntegration?: Integration;
+    public readonly defaultIntegration?: Integration;
+
+    /**
+     * Method options to use as a default for all methods created within this
+     * API unless custom options are specified.
+     */
+    public readonly defaultMethodOptions?: MethodOptions;
 
     /**
      * API Gateway deployment that represents the latest changes of the API.
@@ -209,6 +215,8 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
         });
 
         this.defaultIntegration = props.defaultIntegration;
+        this.defaultMethodOptions = props.defaultMethodOptions;
+
         this.restApiId = resource.ref;
         this.resourceId = new ResourceId(resource.restApiRootResourceId); // they are the same
         this.resourceApi = this;
@@ -253,8 +261,8 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
      * Adds a child resource under the root resource.
      * @param pathPart The resource name (path part)
      */
-    public addResource(pathPart: string): Resource {
-        return new Resource(this, pathPart, { parent: this, pathPart });
+    public addResource(pathPart: string, options?: ResourceOptions): Resource {
+        return new Resource(this, pathPart, { parent: this, pathPart, ...options });
     }
 
     /**
