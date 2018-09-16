@@ -125,13 +125,6 @@ export interface RestApiProps extends ResourceOptions {
      * @default true
      */
     cloudWatchRole?: boolean;
-
-    /**
-     * Default integration for all API methods. If this is set, any method
-     * created within this API that doesn't have an explicit integration will
-     * use this integration.
-     */
-    defaultIntegration?: Integration;
 }
 
 /**
