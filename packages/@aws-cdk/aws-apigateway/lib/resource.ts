@@ -37,9 +37,6 @@ export interface IRestApiResource {
      * @param httpMethod The HTTP method
      */
     onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
-
-    // onHttpGet(resourcePath: string, integration?: Integration): void;
-    // onHttpPost(resourcePath: string, integration?: Integration): void;
 }
 
 export interface ResourceProps {

@@ -146,9 +146,8 @@ changes (i.e. a resource or method are added, configuration is changed), a new
 logical ID will be assigned to the deployment resource. This will cause
 CloudFormation to create a new deployment resource.
 
-By default, old deployments are _retained_, which means users can use the AWS
-API Gateway Web Console to point the stage to an old deployment. To disable
-this behavior, set the `retainDeployments` property to `false`.
+By default, old deployments are _deleted_. You can set `retainDeployments: true`
+to allow users revert the stage to an old deployment.
 
 [Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
 [Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/

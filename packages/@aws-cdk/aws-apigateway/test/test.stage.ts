@@ -48,8 +48,7 @@ export = {
                   RestApiId: {
                     Ref: "testapiD6451F70"
                   }
-                },
-                DeletionPolicy: "Retain"
+                }
               },
               mystage7483BE9A: {
                 Type: "AWS::ApiGateway::Stage",

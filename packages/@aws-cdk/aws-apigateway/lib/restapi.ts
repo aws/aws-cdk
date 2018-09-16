@@ -46,7 +46,7 @@ export interface RestApiProps {
      * manually reverting stages to point to old deployments via the AWS
      * Console.
      *
-     * @default true
+     * @default false
      */
     retainDeployments?: boolean;
 
@@ -142,7 +142,7 @@ export interface RestApiProps {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends RestApiRef implements IRestApiResource {
+export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDependable {
     /**
      * The ID of this API Gateway RestApi.
      */
@@ -176,6 +176,11 @@ export class RestApi extends RestApiRef implements IRestApiResource {
      * This will be undefined if `deploy` is false.
      */
     public latestDeployment?: Deployment;
+
+    /**
+     * Allows taking a dependency on this construct.
+     */
+    public readonly dependencyElements = new Array<cdk.IDependable>();
 
     /**
      * API Gateway stage that points to the latest deployment (if defined).
@@ -213,6 +218,14 @@ export class RestApi extends RestApiRef implements IRestApiResource {
         const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
         if (cloudWatchRole) {
             this.configureCloudWatchRole(resource);
+        }
+
+        this.dependencyElements.push(resource);
+        if (this.latestDeployment) {
+            this.dependencyElements.push(this.latestDeployment);
+        }
+        if (this.deploymentStage) {
+            this.dependencyElements.push(this.deploymentStage);
         }
     }
 

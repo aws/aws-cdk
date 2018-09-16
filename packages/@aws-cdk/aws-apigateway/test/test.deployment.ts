@@ -47,8 +47,7 @@ export = {
                   RestApiId: {
                     Ref: "apiC8550315"
                   }
-                },
-                DeletionPolicy: "Retain"
+                }
               }
             }
         });
@@ -56,14 +55,14 @@ export = {
         test.done();
     },
 
-    '"retainDeployments" can be used to control the deletion policy of the resource (default is "Retain")'(test: Test) {
+    '"retainDeployments" can be used to control the deletion policy of the resource'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
         api.onMethod('GET');
 
         // WHEN
-        new apigateway.Deployment(stack, 'deployment', { api, retainDeployments: false });
+        new apigateway.Deployment(stack, 'deployment', { api, retainDeployments: true });
 
         // THEN
         expect(stack).toMatch({
@@ -99,7 +98,8 @@ export = {
                   RestApiId: {
                     Ref: "apiC8550315"
                   }
-                }
+                },
+                DeletionPolicy: "Retain"
               }
             }
         });

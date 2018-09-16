@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -51,8 +51,7 @@ export = {
                   },
                   Description: "Automatically created by the RestApi construct"
                 },
-                DependsOn: [ "myapiGETF990CE3C" ],
-                DeletionPolicy: "Retain"
+                DependsOn: [ "myapiGETF990CE3C" ]
               },
               myapiDeploymentStageprod298F01AF: {
                 Type: "AWS::ApiGateway::Stage",
@@ -519,5 +518,27 @@ export = {
         }));
 
         test.done();
-    }
+    },
+
+    'allow taking a dependency on the rest api (includes deployment and stage)'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const api = new apigateway.RestApi(stack, 'myapi');
+
+      api.onMethod('GET');
+
+      const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
+
+      resource.addDependency(api);
+
+      expect(stack).to(haveResource('My::Resource', {
+          DependsOn: [
+              'myapi162F20B8', // api
+              'myapiDeploymentB7EF8EB75c091a668064a3f3a1f6d68a3fb22cf9', // deployment
+              'myapiDeploymentStageprod329F21FF' // stage
+          ]
+      }, ResourcePart.CompleteDefinition));
+
+      test.done();
+  }
 };

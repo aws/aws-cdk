@@ -16,8 +16,7 @@
       },
       "DependsOn": [
         "myapiGETF990CE3C"
-      ],
-      "DeletionPolicy": "Retain"
+      ]
     },
     "myapiDeploymentStageprod298F01AF": {
       "Type": "AWS::ApiGateway::Stage",

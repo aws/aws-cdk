@@ -572,8 +572,7 @@
         "booksapibooksbookid5264BCA2",
         "booksapibooksbookidGETCCE21986",
         "booksapibooksbookidDELETE214F4059"
-      ],
-      "DeletionPolicy": "Retain"
+      ]
     },
     "booksapiDeploymentStageprod55D8E03E": {
       "Type": "AWS::ApiGateway::Stage",

@@ -19,7 +19,7 @@ export interface DeploymentProps  {
      * If this is true (default), the old API Gateway Deployment resource will not be deleted.
      * This will allow manually reverting back to a previous deployment in case for example
      *
-     * @default true
+     * @default false
      */
     retainDeployments?: boolean;
 }
@@ -54,9 +54,14 @@ export interface DeploymentProps  {
  * model. Use the `addDependency(dep)` method to circumvent that. This is done
  * automatically for the `restApi.latestDeployment` deployment.
  */
-export class Deployment extends cdk.Construct {
+export class Deployment extends cdk.Construct implements cdk.IDependable {
     public readonly deploymentId: DeploymentId;
     public readonly api: RestApiRef;
+
+    /**
+     * Allows taking a dependency on this construct.
+     */
+    public readonly dependencyElements = new Array<cdk.IDependable>();
 
     private readonly resource: LatestDeploymentResource;
 
@@ -68,12 +73,13 @@ export class Deployment extends cdk.Construct {
             restApiId: props.api.restApiId,
         });
 
-        if (props.retainDeployments === undefined || props.retainDeployments) {
+        if (props.retainDeployments) {
             this.resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
         }
 
         this.api = props.api;
         this.deploymentId = new DeploymentId(() => this.resource.ref);
+        this.dependencyElements.push(this.resource);
     }
 
     /**
@@ -117,7 +123,7 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
                 }
             },
             ref: {
-                get: () => new cdk.Token(() => ({ Ref: this.customLogicalId }))
+                get: () => new cdk.CloudFormationToken(() => ({ Ref: this.customLogicalId }))
             },
         });
     }
