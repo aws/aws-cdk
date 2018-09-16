@@ -524,7 +524,7 @@
         "HelloServiceRole1E55EA16"
       ]
     },
-    "HelloApiPermissionGET36D249D1": {
+    "HelloApiPermissionANY16B11477": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -563,7 +563,7 @@
                     {
                       "Ref": "booksapiDeploymentStageprod55D8E03E"
                     },
-                    "/GET/"
+                    "/*/"
                   ]
                 ]
               }
@@ -572,7 +572,7 @@
         }
       }
     },
-    "HelloApiPermissionTestGETBC2F4D5D": {
+    "HelloApiPermissionTestANY9A757A77": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -604,7 +604,7 @@
                 "Ref": "booksapiE1885304"
               },
               "/",
-              "test-invoke-stage/GET/"
+              "test-invoke-stage/*/"
             ]
           ]
         }
@@ -616,7 +616,7 @@
         "Name": "books-api"
       }
     },
-    "booksapiDeployment308B08F1063edabedab805e320c3e8cc6da5e586": {
+    "booksapiDeployment308B08F19d5655c7356bb9d23943b328416b2f5e": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -625,7 +625,7 @@
         "Description": "Automatically created by the RestApi construct"
       },
       "DependsOn": [
-        "booksapiGETF514386E",
+        "booksapiANYF4F0CDEB",
         "booksapibooks97D84727",
         "booksapibooksGETA776447A",
         "booksapibooksPOSTF6C6559D",
@@ -641,7 +641,7 @@
           "Ref": "booksapiE1885304"
         },
         "DeploymentId": {
-          "Ref": "booksapiDeployment308B08F1063edabedab805e320c3e8cc6da5e586"
+          "Ref": "booksapiDeployment308B08F19d5655c7356bb9d23943b328416b2f5e"
         },
         "StageName": "prod"
       }
@@ -701,10 +701,10 @@
         "booksapiE1885304"
       ]
     },
-    "booksapiGETF514386E": {
+    "booksapiANYF4F0CDEB": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "HttpMethod": "GET",
+        "HttpMethod": "ANY",
         "ResourceId": {
           "Fn::GetAtt": [
             "booksapiE1885304",
