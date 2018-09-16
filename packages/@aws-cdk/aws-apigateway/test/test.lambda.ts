@@ -187,21 +187,40 @@ export = {
                 "Fn::Join": [
                   "",
                   [
-                    "arn", ":",
-                    { Ref: "AWS::Partition" },
+                    "arn",
+                    ":",
+                    {
+                      Ref: "AWS::Partition"
+                    },
                     ":",
                     "execute-api",
                     ":",
-                    { Ref: "AWS::Region" },
+                    {
+                      Ref: "AWS::Region"
+                    },
                     ":",
-                    { Ref: "AWS::AccountId" },
+                    {
+                      Ref: "AWS::AccountId"
+                    },
                     ":",
-                    { Ref: "testapiD6451F70" },
+                    {
+                      Ref: "testapiD6451F70"
+                    },
                     "/",
-                    "prod/*/"
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            Ref: "testapiDeploymentStageprod5C9E92A4"
+                          },
+                          "/*/"
+                        ]
+                      ]
+                    }
                   ]
                 ]
-              }
+            }
         }));
 
         test.done();
