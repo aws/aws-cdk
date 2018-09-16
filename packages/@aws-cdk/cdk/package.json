@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cdk",
-  "version": "0.8.2",
+  "version": "0.9.1",
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,12 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "cdk"
         }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK",
+        "packageId": "Amazon.CDK",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
@@ -47,12 +53,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "cdk-build-tools": "^0.9.1",
+    "cfn2ts": "^0.9.1",
+    "pkglint": "^0.9.1"
   },
   "dependencies": {
-    "@aws-cdk/cx-api": "^0.8.2",
+    "@aws-cdk/cx-api": "^0.9.1",
     "js-base64": "^2.4.5",
     "json-diff": "^0.3.1"
   },

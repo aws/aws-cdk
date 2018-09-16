@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-cloudformation",
-  "version": "0.8.2",
+  "version": "0.9.1",
   "description": "CDK Constructs for AWS CloudFormation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,12 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "cloudformation"
         }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.CloudFormation",
+        "packageId": "Amazon.CDK.AWS.CloudFormation",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
@@ -50,18 +56,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cdk-integ-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "^0.9.1",
+    "cdk-build-tools": "^0.9.1",
+    "cdk-integ-tools": "^0.9.1",
+    "cfn2ts": "^0.9.1",
+    "pkglint": "^0.9.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.8.2",
-    "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/aws-lambda": "^0.8.2",
-    "@aws-cdk/aws-sns": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-codepipeline-api": "^0.9.1",
+    "@aws-cdk/aws-iam": "^0.9.1",
+    "@aws-cdk/aws-lambda": "^0.9.1",
+    "@aws-cdk/aws-sns": "^0.9.1",
+    "@aws-cdk/cdk": "^0.9.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

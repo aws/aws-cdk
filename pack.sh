@@ -4,10 +4,11 @@
 # later read by bundle-beta.sh.
 set -e
 export PATH=$PWD/node_modules/.bin:$PATH
+root=$PWD
 
-packdir="$PWD/pack"
-rm -fr ${packdir}
-mkdir -p ${packdir}
+distdir="$PWD/dist"
+rm -fr ${distdir}
+mkdir -p ${distdir}
 
 scopes=$(lerna ls 2>/dev/null | grep -v "(private)" | cut -d" " -f1 | xargs -n1 -I{} echo "--scope {}" | tr "\n" " ")
 
@@ -16,4 +17,38 @@ scopes=$(lerna ls 2>/dev/null | grep -v "(private)" | cut -d" " -f1 | xargs -n1 
 lerna run ${scopes} --sort --stream package
 
 # Collect dist/ from all modules into the root dist/
-/bin/bash ./pack-collect.sh
+for dir in $(find packages -name dist | grep -v node_modules); do
+  echo "Merging ${dir} into ${distdir}"
+  rsync -av $dir/ ${distdir}/
+done
+
+# Build docs
+/bin/bash ./build-docs.sh
+
+# Get version from lerna
+version="$(cat ${root}/lerna.json | grep version | cut -d '"' -f4)"
+
+# Get commit from CodePipeline (or git, if we are in CodeBuild)
+# If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
+# build or CodePipeline build), use the HEAD commit hash).
+commit="${CODEBUILD_RESOLVED_SOURCE_VERSION:-}"
+if [ -z "${commit}" ]; then
+  commit="$(git rev-parse --verify HEAD)"
+fi
+
+cat > ${distdir}/build.json <<HERE
+{
+  "name": "aws-cdk",
+  "version": "${version}",
+  "commit": "${commit}"
+}
+HERE
+
+# copy CHANGELOG.md to dist/ for github releases
+cp CHANGELOG.md ${distdir}/
+
+# for posterity, print all files in dist
+echo "=============================================================================================="
+echo " dist contents"
+echo "=============================================================================================="
+find dist/

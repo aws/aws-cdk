@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
@@ -13,19 +14,30 @@ import { Permission } from './permission';
 export interface FunctionRefProps {
     /**
      * The ARN of the Lambda function.
+     *
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
      */
     functionArn: FunctionArn;
 
     /**
      * The IAM execution role associated with this function.
+     *
      * If the role is not specified, any role-related operations will no-op.
      */
     role?: iam.Role;
+
+    /**
+     * Id of the securityGroup for this Lambda, if in a VPC.
+     *
+     * This needs to be given in order to support allowing connections
+     * to this Lambda.
+     */
+    securityGroupId?: ec2.SecurityGroupId;
 }
 
 export abstract class FunctionRef extends cdk.Construct
-    implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination {
+    implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination,
+               ec2.IConnectable {
 
     /**
      * Creates a Lambda function object which represents a function not defined
@@ -135,6 +147,13 @@ export abstract class FunctionRef extends cdk.Construct
     protected abstract readonly canCreatePermissions: boolean;
 
     /**
+     * Actual connections object for this Lambda
+     *
+     * May be unset, in which case this Lambda is not configured use in a VPC.
+     */
+    protected _connections?: ec2.Connections;
+
+    /**
      * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
     private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
@@ -168,6 +187,28 @@ export abstract class FunctionRef extends cdk.Construct
         }
 
         this.role.addToPolicy(statement);
+    }
+
+    /**
+     * Access the Connections object
+     *
+     * Will fail if not a VPC-enabled Lambda Function
+     */
+    public get connections(): ec2.Connections {
+        if (!this._connections) {
+            // tslint:disable-next-line:max-line-length
+            throw new Error('Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.');
+        }
+        return this._connections;
+    }
+
+    /**
+     * Whether or not this Lambda function was bound to a VPC
+     *
+     * If this is is `false`, trying to access the `connections` object will fail.
+     */
+    public get isBoundToVpc(): boolean {
+        return !!this._connections;
     }
 
     /**
@@ -238,7 +279,7 @@ export abstract class FunctionRef extends cdk.Construct
         return this.metric('Throttles', { statistic: 'sum', ...props });
     }
 
-    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         const arn = sourceLogGroup.logGroupArn;
 
         if (this.logSubscriptionDestinationPolicyAddedFor.indexOf(arn) === -1) {
@@ -260,7 +301,11 @@ export abstract class FunctionRef extends cdk.Construct
      */
     public export(): FunctionRefProps {
         return {
-            functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue(),
+            functionArn: new FunctionArn(new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue()),
+            securityGroupId: this._connections && this._connections.securityGroup
+                    ? new ec2.SecurityGroupId(new cdk.Output(this, 'SecurityGroupId', {
+                            value: this._connections.securityGroup.securityGroupId
+                    }).makeImportValue()) : undefined
         };
     }
 
@@ -320,8 +365,16 @@ class LambdaRefImport extends FunctionRef {
         super(parent, name);
 
         this.functionArn = props.functionArn;
-        this.functionName = this.extractNameFromArn(props.functionArn);
+        this.functionName = new FunctionName(this.extractNameFromArn(props.functionArn));
         this.role = props.role;
+
+        if (props.securityGroupId) {
+            this._connections = new ec2.Connections({
+                securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
+                    securityGroupId: props.securityGroupId
+                })
+            });
+        }
     }
 
     /**

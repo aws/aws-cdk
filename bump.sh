@@ -7,8 +7,13 @@ if [ -z "${ver}" ]; then
 fi
 
 lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
-lerna run build
 
-# update test expectations
-UPDATE_DIFF=1 lerna run test
+# Update CHANGELOG.md only at the root
+cat > /tmp/context.json <<HERE
+{
+  "version": "${ver}"
+}
+HERE
+
+conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
 

@@ -24,7 +24,7 @@ const books = api.addResource('books');
 books.addMethod('GET');
 books.addMethod('POST');
 
-const book = api.addResource('{book_id}');
+const book = books.addResource('{book_id}');
 book.addMethod('GET');
 book.addMethod('DELETE');
 ```

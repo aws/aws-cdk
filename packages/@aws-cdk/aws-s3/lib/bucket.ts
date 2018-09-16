@@ -1,3 +1,4 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
@@ -5,9 +6,10 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
+import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 import { LifecycleRule } from './rule';
 import { BucketArn, BucketDomainName, BucketDualStackDomainName, BucketName, cloudformation } from './s3.generated';
-import { parseBucketArn, parseBucketName, validateBucketName } from './util';
+import { parseBucketArn, parseBucketName } from './util';
 
 /**
  * A reference to a bucket. The easiest way to instantiate is to call
@@ -94,9 +96,26 @@ export abstract class BucketRef extends cdk.Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
-            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            bucketArn: new BucketArn(new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue()),
+            bucketName: new BucketName(new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue()),
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineSource} Action,
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineSource} Action
+     */
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
+        return new PipelineSource(this.parent!, name, {
+            stage,
+            bucket: this,
+            ...props,
+        });
     }
 
     /**
@@ -157,7 +176,7 @@ export abstract class BucketRef extends cdk.Construct {
      *
      */
     public arnForObjects(...keyPattern: any[]): cdk.Arn {
-        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern);
+        return new cdk.Arn(new cdk.FnConcat(this.bucketArn, '/', ...keyPattern));
     }
 
     /**
@@ -347,8 +366,6 @@ export class Bucket extends BucketRef {
 
     constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
-
-        validateBucketName(props && props.bucketName);
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -715,8 +732,13 @@ class ImportedBucketRef extends BucketRef {
     constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
         super(parent, name);
 
+        const bucketName = parseBucketName(props);
+        if (!bucketName) {
+            throw new Error('Bucket name is required');
+        }
+
         this.bucketArn = parseBucketArn(props);
-        this.bucketName = parseBucketName(props);
+        this.bucketName = bucketName;
         this.autoCreatePolicy = false;
         this.policy = undefined;
     }

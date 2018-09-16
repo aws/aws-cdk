@@ -88,12 +88,17 @@ export async function hasIntegTests(): Promise<boolean> {
     return files.length > 0;
 }
 
+export interface CompilerOverrides {
+    jsii?: string;
+    tsc?: string;
+}
+
 /**
  * Return the compiler for this package (either tsc or jsii)
  */
-export function packageCompiler() {
-    return isJsii() ? require.resolve(`jsii/bin/jsii`)
-                    : require.resolve(`typescript/bin/tsc`);
+export function packageCompiler(compilers: CompilerOverrides) {
+    return isJsii() ? compilers.jsii || require.resolve('jsii/bin/jsii')
+                    : compilers.tsc || require.resolve('typescript/bin/tsc');
 }
 
 export interface CDKBuildOptions {

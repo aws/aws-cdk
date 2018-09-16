@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/cx-api",
-  "version": "0.8.2",
+  "version": "0.9.1",
   "description": "Cloud executable protocol",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,12 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "cdk-cx-api"
         }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.CXAPI",
+        "packageId": "Amazon.CDK.CXAPI",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
@@ -32,8 +38,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "cdk-build-tools": "^0.9.1",
+    "pkglint": "^0.9.1"
   },
   "repository": {
     "url": "https://github.com/awslabs/aws-cdk.git",

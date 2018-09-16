@@ -4,14 +4,15 @@ phases:
   install:
     commands:
       - /bin/bash ./install.sh
+  pre_build:
+    commands:
+      - /bin/bash ./fetch-dotnet-snk.sh
   build:
     commands:
       - /bin/bash ./build.sh
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./build-docs.sh"
-      - "[ -f .BUILD_COMPLETED ] && /bin/bash ./bundle.sh"
 artifacts:
   files:
     - "**/*"

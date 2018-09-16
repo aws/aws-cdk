@@ -1,3 +1,22 @@
+<a name="0.9.1"></a>
+## [0.9.1](https://github.com/awslabs/aws-cdk/compare/v0.9.0...v0.9.1) (2018-09-13)
+
+
+### Bug Fixes
+
+* **aws-cdk:** Fix proxy support for account lookup ([#693](https://github.com/awslabs/aws-cdk/issues/693)) ([5468225](https://github.com/awslabs/aws-cdk/commit/5468225)), closes [#645](https://github.com/awslabs/aws-cdk/issues/645)
+
+
+### Features
+
+* **aws-dynamodb:** Support DynamoDB TTL ([#691](https://github.com/awslabs/aws-cdk/issues/691)) ([35b6206](https://github.com/awslabs/aws-cdk/commit/35b6206))
+* **aws-dynamodb:** Support DynamoDB PITR ([#701](https://github.com/awslabs/aws-cdk/issues/701)) ([7a4d7b7](https://github.com/awslabs/aws-cdk/commit/7a4d7b7))
+* **aws-ecr:** Add support for ECR repositories ([#697](https://github.com/awslabs/aws-cdk/issues/697)) ([c6c09bf](https://github.com/awslabs/aws-cdk/commit/c6c09bf))
+* **aws-lambda:** Add support for XRay Tracing ([#675](https://github.com/awslabs/aws-cdk/issues/675)) ([b4435cc](https://github.com/awslabs/aws-cdk/commit/b4435cc))
+* **cfnspec:** Add DeploymentPreference Patch for SAM Spec ([#681](https://github.com/awslabs/aws-cdk/issues/681)) ([#681](https://github.com/awslabs/aws-cdk/issues/681)) ([f96c487](https://github.com/awslabs/aws-cdk/commit/f96c487))
+
+
+
 [@rix0rrr]:         https://github.com/rix0rrr
 [@sam-goodwin]:     https://github.com/sam-goodwin
 [@RomainMuller]:    https://github.com/RomainMuller
@@ -9,8 +28,63 @@
 [@mindstorms6]:     https://github.com/mindstorms6
 [@Mortifera]:       https://github.com/Mortifera
 [@maciejwalkowiak]: https://github.com/maciejwalkowiak
+[@cookejames]:      https://github.com/cookejames
+[@rhboyd]:          https://github.com/rhboyd
+[@SeekerWing]:      https://github.com/SeekerWing
+[@jungseoklee]:     https://github.com/jungseoklee
 
-## [UNRELEASED]
+## 0.9.0 -- 2018-09-10
+
+The headliners of this release are __.NET support__, and a wealth of commits by external contributors who are stepping
+up to fix the CDK for their use cases! Thanks all for the effort put into this release!
+
+### Features
+
+* Add strongly-named .NET targets, and a `cdk init` template for C# projects ([@mpiroc] in [#617](https://github.com/awslabs/aws-cdk/pull/617), [#643](https://github.com/awslabs/aws-cdk/pull/643)).
+* __@aws-cdk/aws-autoscaling__: Allow attaching additional security groups to Launch Configuration ([@moofish32] in [#636](https://github.com/awslabs/aws-cdk/pull/636)).
+* __@aws-cdk/aws-autoscaling__: Support update and creation policies on AutoScalingGroups ([@rix0rrr] in [#595](https://github.com/awslabs/aws-cdk/pull/595)).
+* __@aws-cdk/aws-codebuild__: Add support for running script from an asset ([@rix0rrr] in [#677](https://github.com/awslabs/aws-cdk/pull/677)).
+* __@aws-cdk/aws-codebuild__: New method `addBuildToPipeline` on Project ([@skinny85] in [783dcb3](https://github.com/awslabs/aws-cdk/commit/783dcb3bd10058a25785d0964b37c181617a203a)).
+* __@aws-cdk/aws-codecommit__: New method `addToPipeline` on Repository ([@skinny85] in [#616](https://github.com/awslabs/aws-cdk/pull/616)).
+* __@aws-cdk/aws-codedeploy__: Add initial support for CodeDeploy ([@skinny85] in [#593](https://github.com/awslabs/aws-cdk/pull/593), [#641](https://github.com/awslabs/aws-cdk/pull/641)).
+* __@aws-cdk/aws-dynamodb__: Add support for DynamoDB autoscaling ([@SeekerWing] in [#637](https://github.com/awslabs/aws-cdk/pull/637)).
+* __@aws-cdk/aws-dynamodb__: Add support for DynamoDB streams ([@rhboyd] in [#633](https://github.com/awslabs/aws-cdk/pull/633)).
+* __@aws-cdk/aws-dynamodb__: Add support for server-side encryption ([@jungseoklee] in [#684](https://github.com/awslabs/aws-cdk/pull/864)).
+* __@aws-cdk/aws-ec2__ (_**BREAKING**_): SecurityGroup can now be used as a Connectable [#582](https://github.com/awslabs/aws-cdk/pull/582)).
+* __@aws-cdk/aws-ec2__: Add VPC tagging ([@moofish] in [#538](https://github.com/awslabs/aws-cdk/pull/538)).
+* __@aws-cdk/aws-ec2__: Add support for `InstanceSize.Nano` ([@rix0rrr] in [#581](https://github.com/awslabs/aws-cdk/pull/581))
+* __@aws-cdk/aws-lambda__: Add support for dead letter queues ([@SeekerWing] in [#663](https://github.com/awslabs/aws-cdk/pull/663)).
+* __@aws-cdk/aws-lambda__: Add support for placing a Lambda in a VPC ([@rix0rrr] in [#598](https://github.com/awslabs/aws-cdk/pull/598)).
+* __@aws-cdk/aws-logs__: Add `extractMetric()` helper function ([@rix0rrr] in [#676](https://github.com/awslabs/aws-cdk/pull/676)).
+* __@aws-cdk/aws-rds__: Add support for Aurora PostreSQL/MySQL engines ([@cookejames] in [#586](https://github.com/awslabs/aws-cdk/pull/586))
+* __@aws-cdk/aws-s3__: Additional grant methods for Buckets ([@eladb] in [#591](https://github.com/awslabs/aws-cdk/pull/591))
+* __@aws-cdk/aws-s3__: New method `addToPipeline` on Bucket ([@skinny85] in [c8b7a49](https://github.com/awslabs/aws-cdk/commit/c8b7a494259ad08bbd722564591e320888e47c48)).
+* __aws-cdk__: Add support for HTTP proxies ([@rix0rrr] in [#666](https://github.com/awslabs/aws-cdk/pull/666)).
+* __aws-cdk__: Toolkit now shows failure reason if stack update fails ([@rix0rrr] in [#609](https://github.com/awslabs/aws-cdk/pull/609)).
+* __cdk-build-tools__: Add support for running experiment JSII versions ([@RomainMuller] in [#649](https://github.com/awslabs/aws-cdk/pull/649)).
+
+### Changes
+
+* _**BREAKING**_: Generate classes and types for the CloudFormation resource `.ref` attributes ([@rix0rrr] in [#627](https://github.com/awslabs/aws-cdk/pull/627)).
+* _**BREAKING**_: Make types accepted in Policy-related classes narrower (from `any` to `Arn`, for example) to reduce typing mistakes ([@rix0rrr] in [#629](https://github.com/awslabs/aws-cdk/pull/629)).
+* __@aws-cdk/aws-codepipeline__ (_**BREAKING**_): Align the CodePipeline APIs ([@skinny85] in [#492](https://github.com/awslabs/aws-cdk/pull/492), [#568](https://github.com/awslabs/aws-cdk/pull/568))
+* __@aws-cdk/aws-ec2__ (_**BREAKING**_): Move Fleet/AutoScalingGroup to its own package ([@rix0rrr] in [#608](https://github.com/awslabs/aws-cdk/pull/608)).
+* __aws-cdk__: Simplify plugin protocol ([@RomainMuller] in [#646](https://github.com/awslabs/aws-cdk/pull/646)).
+
+### Bug Fixes
+
+* __@aws-cdk/aws-cloudfront__: Fix CloudFront behavior for ViewerProtocolPolicy ([@mindstorms6] in [#615](https://github.com/awslabs/aws-cdk/pull/615)).
+* __@aws-cdk/aws-ec2__: VPC Placement now supports picking Isolated subnets ([@rix0rrr] in [#610](https://github.com/awslabs/aws-cdk/pull/610)).
+* __@aws-cdk/aws-logs__: Add `export()/import()` capabilities ([@rix0rrr] in [#630](https://github.com/awslabs/aws-cdk/pull/630)).
+* __@aws-cdk/aws-rds__: Fix a bug where a cluster with 1 instance could not be created ([@cookejames] in [#578](https://github.com/awslabs/aws-cdk/pull/578))
+* __@aws-cdk/aws-s3__: Bucket notifications can now add dependencies, fixing creation order ([@eladb] in [#584](https://github.com/awslabs/aws-cdk/pull/584)).
+* __@aws-cdk/aws-s3__: Remove useless bucket name validation ([@rix0rrr] in [#628](https://github.com/awslabs/aws-cdk/pull/628)).
+* __@aws-cdk/aws-sqs__: Make `QueueRef.encryptionMasterKey` readonly ([@RomainMuller] in [#650](https://github.com/awslabs/aws-cdk/pull/650)).
+* __assets__: S3 read permissions are granted on a prefix to fix lost permissions during asset update ([@rix0rrr] in [#510](https://github.com/awslabs/aws-cdk/pull/510)).
+* __aws-cdk__: Remove bootstrapping error if multiple stacks are in the same environment ([@RomainMuller] in [#625](https://github.com/awslabs/aws-cdk/pull/625)).
+* __aws-cdk__: Report and continue if git throws errors during `cdk init` ([@rix0rrr] in [#587](https://github.com/awslabs/aws-cdk/pull/587)).
+
+### CloudFormation Changes
 
 * __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.6.0` ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/594))
   + **New AWS Construct Library**
@@ -36,6 +110,7 @@
     - AWS::AppSync::DataSource HttpConfig (__added__)
     - AWS::DAX::Cluster SSESpecification (__added__)
     - AWS::DynamoDB::Table Stream (__added__)
+    - AWS::DynamoDB::Table AutoScalingSupport (__added__)
     - AWS::EC2::VPCEndpoint IsPrivateDnsEnabled (__added__)
     - AWS::EC2::VPCEndpoint SecurityGroupIds (__added__)
     - AWS::EC2::VPCEndpoint SubnetIds (__added__)
@@ -48,6 +123,7 @@
     - AWS::Glue::Classifier JsonClassifier (__added__)
     - AWS::Glue::Classifier XMLClassifier (__added__)
     - AWS::Glue::Crawler Configuration (__added__)
+    - AWS::Lambda::Lambda DLQConfigurationSupport (__added__)
     - AWS::Neptune::DBInstance DBSubnetGroupName.UpdateType (__changed__)
       - Old: Mutable
       - New: Immutable

@@ -1,7 +1,7 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { LogGroup } from '../lib';
+import { LogGroup, LogGroupRef } from '../lib';
 
 export = {
     'fixed retention'(test: Test) {
@@ -76,5 +76,46 @@ export = {
         }));
 
         test.done();
+    },
+
+    'export/import'(test: Test) {
+        // GIVEN
+        const stack1 = new Stack();
+        const lg = new LogGroup(stack1, 'LogGroup');
+        const stack2 = new Stack();
+
+        // WHEN
+        const imported = LogGroupRef.import(stack2, 'Import', lg.export());
+        imported.newStream(stack2, 'MakeMeAStream');
+
+        // THEN
+        expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
+
+        test.done();
+    },
+
+    'extractMetric'(test: Test) {
+        // GIVEN
+        const stack = new Stack();
+        const lg = new LogGroup(stack, 'LogGroup');
+
+        // WHEN
+        lg.extractMetric('$.myField', 'MyService', 'Field');
+
+        // THEN
+        expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+            FilterPattern: "{ $.myField = \"*\" }",
+            LogGroupName: { Ref: "LogGroupF5B46931" },
+            MetricTransformations: [
+              {
+                MetricName: "Field",
+                MetricNamespace: "MyService",
+                MetricValue: "$.myField"
+              }
+            ]
+        }));
+
+        test.done();
     }
+
 };

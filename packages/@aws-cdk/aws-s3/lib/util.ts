@@ -1,17 +1,8 @@
 import { Arn } from '@aws-cdk/cdk';
 import { BucketRefProps } from './bucket';
+import { BucketArn, BucketName } from './s3.generated';
 
-export function validateBucketName(bucketName?: string) {
-    if (!bucketName) {
-        return;
-    }
-
-    if (bucketName.search(/[^a-z0-9.-]/g) !== -1) {
-        throw new Error('Bucket name contains invalid characters: ' + bucketName);
-    }
-}
-
-export function parseBucketArn(props: BucketRefProps) {
+export function parseBucketArn(props: BucketRefProps): BucketArn {
 
     // if we have an explicit bucket ARN, use it.
     if (props.bucketArn) {
@@ -19,20 +10,20 @@ export function parseBucketArn(props: BucketRefProps) {
     }
 
     if (props.bucketName) {
-        return Arn.fromComponents({
+        return new BucketArn(Arn.fromComponents({
             // S3 Bucket names are globally unique in a partition,
             // and so their ARNs have empty region and account components
             region: '',
             account: '',
             service: 's3',
             resource: props.bucketName
-        });
+        }));
     }
 
     throw new Error('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed');
 }
 
-export function parseBucketName(props: BucketRefProps) {
+export function parseBucketName(props: BucketRefProps): BucketName | undefined {
 
     // if we have an explicit bucket name, use it.
     if (props.bucketName) {

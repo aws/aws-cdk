@@ -51,7 +51,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue(),
+            repositoryName: new RepositoryName(new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue()),
         };
     }
 
@@ -176,10 +176,10 @@ class ImportedRepositoryRef extends RepositoryRef {
     constructor(parent: cdk.Construct, name: string, props: RepositoryRefProps) {
         super(parent, name);
 
-        this.repositoryArn = cdk.Arn.fromComponents({
+        this.repositoryArn = new RepositoryArn(cdk.Arn.fromComponents({
             service: 'codecommit',
             resource: props.repositoryName,
-        });
+        }));
         this.repositoryName = props.repositoryName;
     }
 }
