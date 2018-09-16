@@ -9,6 +9,8 @@
 
 ### Features
 
+* **aws-ec2** BREAKING: Move LoadBalancer to aws-elasticloadbalancing package ([#705](https://github.com/awslabs/aws-cdk/issues/705)) ([4bd1cf2](https://github.com/awslabs/aws-cdk/commit/4bd1cf2a793c00a2aa3938b0dff6d4147690bd22))
+* **aws-serverless** BREAKING: Rename @aws-cdk/aws-serverless to @aws-cdk/aws-sam ([#704](https://github.com/awslabs/aws-cdk/pull/704)) ([3a67d5d](https://github.com/awslabs/aws-cdk/commit/3a67d5d91673294024c68088ed0e9224b8ebd857))
 * **aws-dynamodb:** Support DynamoDB TTL ([#691](https://github.com/awslabs/aws-cdk/issues/691)) ([35b6206](https://github.com/awslabs/aws-cdk/commit/35b6206))
 * **aws-dynamodb:** Support DynamoDB PITR ([#701](https://github.com/awslabs/aws-cdk/issues/701)) ([7a4d7b7](https://github.com/awslabs/aws-cdk/commit/7a4d7b7))
 * **aws-ecr:** Add support for ECR repositories ([#697](https://github.com/awslabs/aws-cdk/issues/697)) ([c6c09bf](https://github.com/awslabs/aws-cdk/commit/c6c09bf))
