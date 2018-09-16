@@ -17,7 +17,7 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(handler);
-        api.onMethod('GET', integ);
+        api.root.onMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -80,7 +80,7 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(fn, { allowTestInvoke: false });
-        api.onMethod('GET', integ);
+        api.root.onMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -134,13 +134,74 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(fn, { proxy: false });
-        api.onMethod('GET', integ);
+        api.root.onMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
             Integration: {
                 Type: 'AWS'
             }
+        }));
+
+        test.done();
+    },
+
+    'when "ANY" is used, lambda permission will include "*" for method'(test: Test) {
+        const stack = new cdk.Stack();
+        const api = new apigateway.RestApi(stack, 'test-api');
+
+        const handler = new lambda.Function(stack, 'MyFunc', {
+            runtime: lambda.Runtime.NodeJS610,
+            handler: 'index.handler',
+            code: lambda.Code.inline(``)
+        });
+
+        const target = new apigateway.LambdaIntegration(handler);
+
+        api.root.onMethod('ANY', target);
+
+        expect(stack).to(haveResource('AWS::Lambda::Permission', {
+            SourceArn: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn", ":",
+                    { Ref: "AWS::Partition" },
+                    ":",
+                    "execute-api",
+                    ":",
+                    { Ref: "AWS::Region" },
+                    ":",
+                    { Ref: "AWS::AccountId" },
+                    ":",
+                    { Ref: "testapiD6451F70" },
+                    "/",
+                    "test-invoke-stage/*/"
+                  ]
+                ]
+              }
+        }));
+
+        expect(stack).to(haveResource('AWS::Lambda::Permission', {
+            SourceArn: {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn", ":",
+                    { Ref: "AWS::Partition" },
+                    ":",
+                    "execute-api",
+                    ":",
+                    { Ref: "AWS::Region" },
+                    ":",
+                    { Ref: "AWS::AccountId" },
+                    ":",
+                    { Ref: "testapiD6451F70" },
+                    "/",
+                    "prod/*/"
+                  ]
+                ]
+              }
         }));
 
         test.done();

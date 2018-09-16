@@ -25,9 +25,9 @@ class BookStack extends cdk.Stack {
         }));
 
         const api = new apigw.RestApi(this, 'books-api');
-        api.onMethod('GET', hello);
+        api.root.onMethod('ANY', hello);
 
-        const books = api.addResource('books', {
+        const books = api.root.addResource('books', {
             defaultIntegration: booksHandler,
             defaultMethodOptions: { authorizationType: apigw.AuthorizationType.IAM }
         });

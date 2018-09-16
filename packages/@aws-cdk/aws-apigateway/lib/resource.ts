@@ -40,6 +40,7 @@ export interface IRestApiResource {
     /**
      * Defines a new child resource where this resource is the parent.
      * @param pathPart The path part for the child resource
+     * @param options Resource options
      * @returns A Resource object
      */
     addResource(pathPart: string, options?: ResourceOptions): Resource;
@@ -47,8 +48,12 @@ export interface IRestApiResource {
     /**
      * Defines a new method for this resource.
      * @param httpMethod The HTTP method
+     * @param target The target backend integration for this method
+     * @param options Method options, such as authentication.
+     *
+     * @returns The newly created `Method` object.
      */
-    onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method;
+    onMethod(httpMethod: string, target?: Integration, options?: MethodOptions): Method;
 }
 
 export interface ResourceOptions {

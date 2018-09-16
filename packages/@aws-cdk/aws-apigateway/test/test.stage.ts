@@ -9,7 +9,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', { deployment });
@@ -73,7 +73,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', {
@@ -102,7 +102,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', {
@@ -141,7 +141,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', {
@@ -163,7 +163,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', {
@@ -185,7 +185,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // THEN
         test.throws(() => new apigateway.Stage(stack, 'my-stage', {
@@ -202,7 +202,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // WHEN
         new apigateway.Stage(stack, 'my-stage', {
@@ -232,7 +232,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
         const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
-        api.onMethod('GET');
+        api.root.onMethod('GET');
 
         // THEN
         test.throws(() => new apigateway.Stage(stack, 'my-stage', {

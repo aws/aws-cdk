@@ -135,39 +135,11 @@ export interface RestApiProps extends ResourceOptions {
  * By default, the API will automatically be deployed and accessible from a
  * public endpoint.
  */
-export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDependable {
+export class RestApi extends RestApiRef implements cdk.IDependable {
     /**
      * The ID of this API Gateway RestApi.
      */
     public readonly restApiId: RestApiId;
-
-    /**
-     * The ID of the root resource of this RestApi. To be used as a parent for
-     * all top-level resources.
-     */
-    public readonly resourceId: ResourceId;
-
-    /**
-     * Points to /this/ RestApi.
-     */
-    public readonly resourceApi: RestApi;
-
-    /**
-     * The full path of this resource.
-     */
-    public readonly resourcePath = '/';
-
-    /**
-     * An integration to use as a default for all methods created within this
-     * API unless an integration is specified.
-     */
-    public readonly defaultIntegration?: Integration;
-
-    /**
-     * Method options to use as a default for all methods created within this
-     * API unless custom options are specified.
-     */
-    public readonly defaultMethodOptions?: MethodOptions;
 
     /**
      * API Gateway deployment that represents the latest changes of the API.
@@ -189,6 +161,15 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
      */
     public deploymentStage?: Stage;
 
+    /**
+     * Represents the root resource ("/") of this API. Use it to define the API model:
+     *
+     *      api.root.onMethod('ANY', redirectToHomePage); // "ANY /"
+     *      api.root.addResource('friends').onMethod('GET', getFriendsHandler); // "GET /friends"
+     *
+     */
+    public readonly root: IRestApiResource;
+
     private readonly methods = new Array<Method>();
 
     constructor(parent: cdk.Construct, id: string, props: RestApiProps = { }) {
@@ -207,12 +188,7 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
             parameters: props.parameters,
         });
 
-        this.defaultIntegration = props.defaultIntegration;
-        this.defaultMethodOptions = props.defaultMethodOptions;
-
         this.restApiId = resource.ref;
-        this.resourceId = new ResourceId(resource.restApiRootResourceId); // they are the same
-        this.resourceApi = this;
 
         this.configureDeployment(props);
 
@@ -228,6 +204,21 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
         if (this.deploymentStage) {
             this.dependencyElements.push(this.deploymentStage);
         }
+
+        // configure the "root" resource
+        this.root = {
+            addResource: (pathPart: string, options?: ResourceOptions) => {
+                return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
+            },
+            onMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
+                return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
+            },
+            defaultIntegration: props.defaultIntegration,
+            defaultMethodOptions: props.defaultMethodOptions,
+            resourceApi: this,
+            resourceId: new ResourceId(resource.restApiRootResourceId),
+            resourcePath: '/'
+        };
     }
 
     /**
@@ -251,25 +242,6 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
     }
 
     /**
-     * Adds a child resource under the root resource.
-     * @param pathPart The resource name (path part)
-     */
-    public addResource(pathPart: string, options?: ResourceOptions): Resource {
-        return new Resource(this, pathPart, { parent: this, pathPart, ...options });
-    }
-
-    /**
-     * Adds a method to the root resource (i.e. "GET /")
-     *
-     * @param httpMethod The HTTP method (i.e. 'GET', 'POST', etc)
-     * @param integration Backend integration
-     * @param options Method options
-     */
-    public onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
-        return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
-    }
-
-    /**
      * @returns The "execute-api" ARN.
      * @default "*" returns the execute API ARN for all methods/resources in
      * this API.
@@ -280,6 +252,10 @@ export class RestApi extends RestApiRef implements IRestApiResource, cdk.IDepend
     public executeApiArn(method: string = '*', path: string = '/*', stage: string = '*') {
         if (!path.startsWith('/')) {
             throw new Error(`"path" must begin with a "/": '${path}'`);
+        }
+
+        if (method.toUpperCase() === 'ANY') {
+            method = '*';
         }
 
         return cdk.Arn.fromComponents({

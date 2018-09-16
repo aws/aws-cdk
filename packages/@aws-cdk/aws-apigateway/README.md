@@ -9,18 +9,18 @@ running on AWS Lambda, or any web application.
 ### Defining APIs
 
 APIs are defined as a hierarchy of resources and methods. `addResource` and
-`addMethod` can be used to build this hierarchy. The root of this hierarchy is
-the `RestApi` object (which can also be treated as a resource).
+`addMethod` can be used to build this hierarchy. The root resource is
+`api.root`.
 
 For example, the following code defines an API that includes the following HTTP
-endpoints: `GET /books`, `POST /books`, `GET /books/{book_id}`, `DELETE /books/{book_id}`.
+endpoints: `ANY /, GET /books`, `POST /books`, `GET /books/{book_id}`, `DELETE /books/{book_id}`.
 
 ```ts
 const api = new apigateway.RestApi(this, 'books-api');
 
-api.addMethod('GET');
+api.root.addMethod('ANY');
 
-const books = api.addResource('books');
+const books = api.root.addResource('books');
 books.addMethod('GET');
 books.addMethod('POST');
 
@@ -29,13 +29,13 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
-### Backend Integrations
+### Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
 method is called. API Gateway supports the following integrations:
 
- * `MockIntegration` - can be used to test APIs. This is the default integration
-   if one is not specified.
+ * `MockIntegration` - can be used to test APIs. This is the default
+   integration if one is not specified.
  * `LambdaIntegration` - can be used to invoke an AWS Lambda function.
  * `AwsIntegration` - can be used to invoke arbitrary AWS service APIs.
  * `HttpIntegration` - can be used to invoke HTTP endpoints.
@@ -87,7 +87,7 @@ const api = new apigateway.RestApi(this, 'books', {
   defaultIntegration: booksBackend
 });
 
-const books = new api.addResource('books');
+const books = new api.root.addResource('books');
 books.addMethod('GET');  // integrated with `booksBackend`
 books.addMethod('POST'); // integrated with `booksBackend`
 

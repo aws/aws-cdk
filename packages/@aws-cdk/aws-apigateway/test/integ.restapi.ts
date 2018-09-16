@@ -28,7 +28,7 @@ class Test extends cdk.Stack {
             handler: 'index.handler',
         });
 
-        const v1 = api.addResource('v1');
+        const v1 = api.root.addResource('v1');
 
         const integration = new apigateway.LambdaIntegration(handler);
 

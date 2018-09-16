@@ -13,7 +13,7 @@ export = {
         // WHEN
         new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
         });
 
         // THEN
@@ -36,7 +36,7 @@ export = {
         // WHEN
         new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
             options: {
                 apiKeyRequired: true,
                 operationName: 'MyOperation',
@@ -63,7 +63,7 @@ export = {
         // WHEN
         new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
             integration: new apigateway.AwsIntegration({ service: 's3', path: 'bucket/key' })
         });
 
@@ -103,7 +103,7 @@ export = {
         // WHEN
         new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
         });
 
         // THEN
@@ -125,7 +125,7 @@ export = {
         // WHEN
         const method = new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
         });
 
         // THEN
@@ -161,7 +161,7 @@ export = {
         // WHEN
         const method = new apigateway.Method(stack, 'my-method', {
             httpMethod: 'POST',
-            resource: api,
+            resource: api.root,
         });
 
         // THEN
@@ -193,7 +193,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-        const method = new apigateway.Method(stack, 'my-method', { httpMethod: 'POST', resource: api });
+        const method = new apigateway.Method(stack, 'my-method', { httpMethod: 'POST', resource: api.root });
 
         // WHEN + THEN
         test.throws(() => method.methodArn,
@@ -209,7 +209,7 @@ export = {
         const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
 
         // WHEN
-        api.onMethod('GET', new apigateway.Integration({
+        api.root.onMethod('GET', new apigateway.Integration({
             type: apigateway.IntegrationType.AwsProxy,
             options: {
                 credentialsRole: role
@@ -231,7 +231,7 @@ export = {
         const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
 
         // WHEN
-        api.onMethod('GET', new apigateway.Integration({
+        api.root.onMethod('GET', new apigateway.Integration({
             type: apigateway.IntegrationType.AwsProxy,
             options: {
                 credentialsPassthrough: true
@@ -263,7 +263,7 @@ export = {
         });
 
         // THEN
-        test.throws(() => api.onMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
+        test.throws(() => api.root.onMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
         test.done();
-    }
+    },
 };
