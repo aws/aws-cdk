@@ -38,17 +38,11 @@ export abstract class RepositoryRef extends cdk.Construct {
     /**
      * The URI of the repository, for use in Docker/image references
      */
-    public get repositoryUri(): RepositoryUri {
+    public get repositoryUri(): string {
         // Calculate this from the ARN
         const parts = cdk.ArnUtils.parse(this.repositoryArn);
-        return new RepositoryUri(`${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`);
+        return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`;
     }
-}
-
-/**
- * URI of a repository
- */
-export class RepositoryUri extends cdk.CloudFormationToken {
 }
 
 export interface RepositoryRefProps {

@@ -1,5 +1,4 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import cdk = require('@aws-cdk/cdk');
 
 /**
  * The engine for the database cluster
@@ -60,7 +59,7 @@ export interface Login {
     /**
      * Username
      */
-    username: Username;
+    username: string;
 
     /**
      * Password
@@ -68,18 +67,8 @@ export interface Login {
      * Do not put passwords in your CDK code directly. Import it from a Stack
      * Parameter or the SSM Parameter Store instead.
      */
-    password: Password;
+    password: string;
 }
-
-/**
- * An RDS username
- */
-export class Username extends cdk.Token {}
-
-/**
- * An RDS password
- */
-export class Password extends cdk.Token {}
 
 /**
  * Type for database parameters

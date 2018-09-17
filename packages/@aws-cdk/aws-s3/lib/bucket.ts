@@ -152,7 +152,7 @@ export abstract class BucketRef extends cdk.Construct {
      *            bucket is returned.
      * @returns an ObjectS3Url token
      */
-    public urlForObject(key?: any): S3Url {
+    public urlForObject(key?: any): string {
         const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
         if (key) {
             // trim prepending '/'
@@ -163,7 +163,7 @@ export abstract class BucketRef extends cdk.Construct {
             components.push(key);
         }
 
-        return new S3Url(new cdk.FnConcat(...components));
+        return new cdk.FnConcat(...components).toString();
     }
 
     /**
@@ -585,20 +585,6 @@ export enum BucketEncryption {
      * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
      */
     Kms = 'KMS',
-}
-
-/**
- * A key to an S3 object.
- */
-export class ObjectKey extends cdk.Token {
-
-}
-
-/**
- * The web URL (https://s3.us-west-1.amazonaws.com/bucket/key) of an S3 object.
- */
-export class S3Url extends cdk.Token {
-
 }
 
 /**

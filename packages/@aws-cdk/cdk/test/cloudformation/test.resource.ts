@@ -345,7 +345,7 @@ export = {
         const stack = new Stack();
         const r = new Resource(stack, 'MyResource', { type: 'R' });
 
-        test.deepEqual(resolve(r), {});
+        test.deepEqual(resolve(r.ref), { Ref: 'MyResource' });
         test.done();
     }
 };

@@ -1,5 +1,5 @@
-import { Arn, Construct, Token } from '@aws-cdk/cdk';
-import { AlarmArn, cloudformation } from './cloudwatch.generated';
+import { Construct, Token } from '@aws-cdk/cdk';
+import { cloudformation } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
@@ -119,16 +119,16 @@ export class Alarm extends Construct {
     /**
      * ARN of this alarm
      */
-    public readonly alarmArn: AlarmArn;
+    public readonly alarmArn: string;
 
     /**
      * The metric object this alarm was based on
      */
     public readonly metric: Metric;
 
-    private alarmActions?: Arn[];
-    private insufficientDataActions?: Arn[];
-    private okActions?: Arn[];
+    private alarmActionArns?: string[];
+    private insufficientDataActionArns?: string[];
+    private okActionArns?: string[];
 
     /**
      * This metric as an annotation
@@ -154,9 +154,9 @@ export class Alarm extends Construct {
 
             // Actions
             actionsEnabled: props.actionsEnabled,
-            alarmActions: new Token(() => this.alarmActions),
-            insufficientDataActions: new Token(() => this.insufficientDataActions),
-            okActions: new Token(() => this.okActions),
+            alarmActions: new Token(() => this.alarmActionArns),
+            insufficientDataActions: new Token(() => this.insufficientDataActionArns),
+            okActions: new Token(() => this.okActionArns),
 
             // Metric
             ...metricJson(props.metric)
@@ -177,11 +177,11 @@ export class Alarm extends Construct {
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
     public onAlarm(...actions: IAlarmAction[]) {
-        if (this.alarmActions === undefined) {
-            this.alarmActions = [];
+        if (this.alarmActionArns === undefined) {
+            this.alarmActionArns = [];
         }
 
-        this.alarmActions.push(...actions.map(a => a.alarmActionArn));
+        this.alarmActionArns.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -190,11 +190,11 @@ export class Alarm extends Construct {
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
     public onInsufficientData(...actions: IAlarmAction[]) {
-        if (this.insufficientDataActions === undefined) {
-            this.insufficientDataActions = [];
+        if (this.insufficientDataActionArns === undefined) {
+            this.insufficientDataActionArns = [];
         }
 
-        this.insufficientDataActions.push(...actions.map(a => a.alarmActionArn));
+        this.insufficientDataActionArns.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -203,11 +203,11 @@ export class Alarm extends Construct {
      * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
      */
     public onOk(...actions: IAlarmAction[]) {
-        if (this.okActions === undefined) {
-            this.okActions = [];
+        if (this.okActionArns === undefined) {
+            this.okActionArns = [];
         }
 
-        this.okActions.push(...actions.map(a => a.alarmActionArn));
+        this.okActionArns.push(...actions.map(a => a.alarmActionArn));
     }
 
     /**
@@ -250,7 +250,7 @@ export interface IAlarmAction {
     /**
      * Return the ARN that should be used for a CloudWatch Alarm action
      */
-    readonly alarmActionArn: Arn;
+    readonly alarmActionArn: string;
 }
 
 /**

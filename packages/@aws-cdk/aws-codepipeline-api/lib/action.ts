@@ -48,7 +48,7 @@ export interface IStage {
     /**
      * The ARN of the Pipeline.
      */
-    readonly pipelineArn: cdk.Arn;
+    readonly pipelineArn: string;
 
     /**
      * The service Role of the Pipeline.

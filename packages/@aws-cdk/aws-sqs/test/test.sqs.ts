@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { Arn, ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/cdk';
+import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sqs = require('../lib');
 

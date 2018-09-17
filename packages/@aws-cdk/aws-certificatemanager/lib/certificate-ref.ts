@@ -1,5 +1,4 @@
 import { Construct, Output } from "@aws-cdk/cdk";
-import { CertificateArn } from './certificatemanager.generated';
 
 /**
  * Interface for certificate-like objects
@@ -12,14 +11,14 @@ export abstract class CertificateRef extends Construct {
         return new ImportedCertificate(parent, name, props);
     }
 
-    public abstract readonly certificateArn: CertificateArn;
+    public abstract readonly certificateArn: string;
 
     /**
      * Export this certificate from the stack
      */
     public export(): CertificateRefProps {
         return {
-            certificateArn: new CertificateArn(new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue())
+            certificateArn: new Output(this, 'Arn', { value: this.certificateArn }).makeImportValue().toString()
         };
     }
 }
@@ -28,7 +27,7 @@ export abstract class CertificateRef extends Construct {
  * A Certificate that has been imported from another stack
  */
 class ImportedCertificate extends CertificateRef {
-    public readonly certificateArn: CertificateArn;
+    public readonly certificateArn: string;
 
     constructor(parent: Construct, name: string, props: CertificateRefProps) {
         super(parent, name);
@@ -44,5 +43,5 @@ export interface CertificateRefProps {
     /**
      * The certificate's ARN
      */
-    certificateArn: CertificateArn;
+    certificateArn: string;
 }

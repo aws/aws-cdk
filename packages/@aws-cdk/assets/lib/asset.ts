@@ -47,18 +47,18 @@ export class Asset extends cdk.Construct {
     /**
      * Attribute that represents the name of the bucket this asset exists in.
      */
-    public readonly s3BucketName: s3.BucketName;
+    public readonly s3BucketName: string;
 
     /**
      * Attribute which represents the S3 object key of this asset.
      */
-    public readonly s3ObjectKey: s3.ObjectKey;
+    public readonly s3ObjectKey: string;
 
     /**
      * Attribute which represents the S3 URL of this asset.
      * @example https://s3.us-west-1.amazonaws.com/bucket/key
      */
-    public readonly s3Url: s3.S3Url;
+    public readonly s3Url: string;
 
     /**
      * Resolved full-path location of this asset.
@@ -70,7 +70,7 @@ export class Asset extends cdk.Construct {
     /**
      * The S3 prefix where all different versions of this asset are stored
      */
-    private readonly s3Prefix: cdk.Token;
+    private readonly s3Prefix: string;
 
     constructor(parent: cdk.Construct, id: string, props: GenericAssetProps) {
         super(parent, id);
@@ -94,10 +94,10 @@ export class Asset extends cdk.Construct {
             description: `S3 key for asset version "${this.path}"`
         });
 
-        this.s3BucketName = new s3.BucketName(bucketParam.value);
-        this.s3Prefix = new cdk.FnSelect(0, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value));
-        const s3Filename = new cdk.FnSelect(1, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value));
-        this.s3ObjectKey = new s3.ObjectKey(new cdk.FnConcat(this.s3Prefix, s3Filename));
+        this.s3BucketName = bucketParam.value.toString();
+        this.s3Prefix = new cdk.FnSelect(0, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
+        const s3Filename = new cdk.FnSelect(1, new cdk.FnSplit(cxapi.ASSET_PREFIX_SEPARATOR, keyParam.value)).toString();
+        this.s3ObjectKey = `${this.s3Prefix}${s3Filename}`;
 
         this.bucket = s3.BucketRef.import(parent, 'AssetBucket', {
             bucketName: this.s3BucketName

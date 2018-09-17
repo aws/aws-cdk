@@ -1,7 +1,7 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
 import { Role } from '@aws-cdk/aws-iam';
 import { Construct, PolicyStatement, PolicyStatementEffect, ServicePrincipal } from '@aws-cdk/cdk';
-import { cloudformation as dynamodb, TableArn, TableName, TableStreamArn } from './dynamodb.generated';
+import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -106,9 +106,9 @@ export interface AutoScalingProps {
  * Provides a DynamoDB table.
  */
 export class Table extends Construct {
-    public readonly tableArn: TableArn;
-    public readonly tableName: TableName;
-    public readonly tableStreamArn: TableStreamArn;
+    public readonly tableArn: string;
+    public readonly tableName: string;
+    public readonly tableStreamArn: string;
 
     private readonly table: dynamodb.TableResource;
 
@@ -138,7 +138,7 @@ export class Table extends Construct {
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
         this.tableArn = this.table.tableArn;
-        this.tableName = this.table.ref;
+        this.tableName = this.table.tableName;
         this.tableStreamArn = this.table.tableStreamArn;
 
         if (props.readAutoScaling) {

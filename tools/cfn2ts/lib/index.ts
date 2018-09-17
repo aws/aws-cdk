@@ -17,8 +17,6 @@ export default async function(scope: string, outPath: string, force: boolean) {
     const generator = new CodeGenerator(name, spec);
 
     if (!force && await generator.upToDate(outPath)) {
-        // tslint:disable-next-line:no-console
-        console.log('Generated code already up-to-date: %s', colors.green(path.join(outPath, generator.outputFile)));
         return;
     }
     generator.emitCode();

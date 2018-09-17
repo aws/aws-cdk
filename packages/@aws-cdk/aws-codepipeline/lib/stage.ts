@@ -83,7 +83,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
         return rule;
     }
 
-    public get pipelineArn(): cdk.Arn {
+    public get pipelineArn(): string {
         return this.pipeline.pipelineArn;
     }
 

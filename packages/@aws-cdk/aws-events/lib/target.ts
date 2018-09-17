@@ -1,5 +1,3 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './events.generated';
 
 export interface EventRuleTargetProps {
@@ -13,7 +11,7 @@ export interface EventRuleTargetProps {
     /**
      * The Amazon Resource Name (ARN) of the target.
      */
-    arn: cdk.Arn;
+    arn: string;
 
     /**
      * The Amazon Resource Name (ARN) of the AWS Identity and Access Management
@@ -21,7 +19,7 @@ export interface EventRuleTargetProps {
      * triggers multiple targets, you can use a different IAM role for each
      * target.
      */
-    roleArn?: iam.RoleArn;
+    roleArn?: string;
 
     /**
      * The Amazon ECS task definition and task count to use, if the event target

@@ -1,10 +1,9 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement } from './stack';
 
 export interface ResourceProps {
     /**
@@ -21,7 +20,7 @@ export interface ResourceProps {
 /**
  * Represents a CloudFormation resource.
  */
-export class Resource extends StackElement {
+export class Resource extends Referenceable {
     /**
      * A decoration used to create a CloudFormation attribute property.
      * @param customName Custom name for the attribute (default is the name of the property)
@@ -82,15 +81,8 @@ export class Resource extends StackElement {
      * in case there is no generated attribute.
      * @param attributeName The name of the attribute.
      */
-    public getAtt(attributeName: string): Token {
-        return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
-    }
-
-    /**
-     * Returns a token that resolves to `{ "Ref": LogicalID }`
-     */
-    public get ref() {
-        return new CloudFormationToken({ Ref: this.logicalId });
+    public getAtt(attributeName: string): string {
+        return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`).toString();
     }
 
     /**

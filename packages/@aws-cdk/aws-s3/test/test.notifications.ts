@@ -98,21 +98,21 @@ export = {
         const queueTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
                 type: s3n.BucketNotificationDestinationType.Queue,
-                arn: new cdk.Arn('arn:aws:sqs:...')
+                arn: 'arn:aws:sqs:...'
             })
         };
 
         const lambdaTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
                 type: s3n.BucketNotificationDestinationType.Lambda,
-                arn: new cdk.Arn('arn:aws:lambda:...')
+                arn: 'arn:aws:lambda:...'
             })
         };
 
         const topicTarget: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: _ => ({
                 type: s3n.BucketNotificationDestinationType.Topic,
-                arn: new cdk.Arn('arn:aws:sns:...')
+                arn: 'arn:aws:sns:...'
             })
         };
 
@@ -179,14 +179,14 @@ export = {
         bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
             asBucketNotificationDestination: _ => ({
                 type: s3n.BucketNotificationDestinationType.Queue,
-                arn: new cdk.Arn('arn:aws:sqs:...:queue1')
+                arn: 'arn:aws:sqs:...:queue1'
             })
         });
 
         bucket.onEvent(s3.EventType.ObjectRemovedDelete, {
             asBucketNotificationDestination: _ => ({
                 type: s3n.BucketNotificationDestinationType.Queue,
-                arn: new cdk.Arn('arn:aws:sqs:...:queue2')
+                arn: 'arn:aws:sqs:...:queue2'
             })
         });
 
@@ -228,7 +228,7 @@ export = {
 
         const bucketNotificationTarget = {
             type: s3n.BucketNotificationDestinationType.Queue,
-            arn: new cdk.Arn('arn:aws:sqs:...')
+            arn: 'arn:aws:sqs:...'
         };
 
         bucket.onEvent(s3.EventType.ObjectRemovedDelete, { asBucketNotificationDestination: _ => bucketNotificationTarget }, { prefix: 'images/', suffix: '.jpg' });
@@ -279,7 +279,7 @@ export = {
         const dependent = new cdk.Resource(stack, 'Dependent', { type: 'DependOnMe' });
         const dest: s3n.IBucketNotificationDestination = {
             asBucketNotificationDestination: () => ({
-                arn: new cdk.Arn('arn'),
+                arn: 'arn',
                 type: s3n.BucketNotificationDestinationType.Queue,
                 dependencies: [ dependent ]
             })

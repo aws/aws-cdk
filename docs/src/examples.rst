@@ -168,8 +168,8 @@ The following example creates the Aurora database **MyAuroraDatabase**.
        new rds.DatabaseCluster(this, 'MyRdsDb', {
          defaultDatabaseName: 'MyAuroraDatabase',
          masterUser: {
-           username: new cdk.Token('admin'),
-           password: new cdk.Token('123456')
+           username: 'admin',
+           password: '123456'
          },
          engine: rds.DatabaseClusterEngine.Aurora,
          instanceProps: {

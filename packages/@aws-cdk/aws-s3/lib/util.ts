@@ -9,7 +9,7 @@ export function parseBucketArn(props: BucketRefProps): string {
     }
 
     if (props.bucketName) {
-        return cdk.ArnUtils.format({
+        return cdk.ArnUtils.fromComponents({
             // S3 Bucket names are globally unique in a partition,
             // and so their ARNs have empty region and account components
             region: '',
