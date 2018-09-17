@@ -173,7 +173,6 @@ export class LoadBalancer extends LoadBalancerRef implements ec2.IConnectable {
     public setAttribute(key: string, value: string | undefined) {
         this.attributes[key] = value;
     }
-
 }
 
 /**

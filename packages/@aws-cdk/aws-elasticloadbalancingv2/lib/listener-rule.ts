@@ -4,14 +4,9 @@ import { ListenerRef } from './listener-ref';
 import { TargetGroupRef } from './target-group-ref';
 
 /**
- * Properties for defining a listener rule
+ * Properties for defining a rule on a listener
  */
-export interface ListenerRuleProps {
-    /**
-     * The listener to attach the rule to
-     */
-    listener: ListenerRef;
-
+export interface BaseListenerRuleProps {
     /**
      * Priority of the rule
      *
@@ -50,6 +45,16 @@ export interface ListenerRuleProps {
 }
 
 /**
+ * Properties for defining a listener rule
+ */
+export interface ListenerRuleProps extends BaseListenerRuleProps {
+    /**
+     * The listener to attach the rule to
+     */
+    listener: ListenerRef;
+}
+
+/**
  * Define a new listener rule
  */
 export class ListenerRule extends cdk.Construct implements cdk.IDependable {
@@ -65,6 +70,8 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
 
     private readonly conditions: {[key: string]: string[] | undefined} = {};
 
+    private readonly actions: any[] = [];
+
     constructor(parent: cdk.Construct, id: string, props: ListenerRuleProps) {
         super(parent, id);
 
@@ -72,12 +79,7 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
             listenerArn: props.listener.listenerArn,
             priority: props.priority,
             conditions: new cdk.Token(() => this.renderConditions()),
-            actions: props.targets.map(target => ({
-                targetGroupArn: target.targetGroupArn,
-                // The full spectrum of Actions is not supported via CloudFormation;
-                // only 'forward's currently.
-                type: 'forward'
-            }))
+            actions: new cdk.Token(() => this.renderActions()),
         });
 
         if (props.hostHeader) {
@@ -98,6 +100,17 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
         this.conditions[field] = values;
     }
 
+    /**
+     * Add a TargetGroup to load balance to
+     */
+    public addTargetGroup(targetGroup: TargetGroupRef) {
+        this.actions.push({
+            targetGroupArn: targetGroup.targetGroupArn,
+            type: 'forward'
+        });
+        return targetGroup;
+    }
+
     private renderConditions() {
         const ret = [];
         for (const [field, values] of Object.entries(this.conditions)) {
@@ -106,5 +119,12 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
             }
         }
         return ret;
+    }
+
+    private renderActions() {
+        if (this.actions.length === 0) {
+            throw new Error('Listener needs at least one default action');
+        }
+        return this.actions;
     }
 }

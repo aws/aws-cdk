@@ -1,3 +1,4 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation, ListenerArn } from './elasticloadbalancingv2.generated';
 import { ListenerRef } from './listener-ref';
@@ -7,14 +8,9 @@ import { Protocol } from './types';
 import { determineProtocolAndPort } from './util';
 
 /**
- * Properties for defining a listener
+ * Properties for a listener on a load balancer
  */
-export interface ListenerProps {
-    /**
-     * The load balancer to attach this listener to
-     */
-    loadBalancer: LoadBalancerRef;
-
+export interface BaseListenerProps {
     /**
      * The protocol to use
      *
@@ -40,18 +36,25 @@ export interface ListenerProps {
      * @default the current predefined security policy.
      */
     sslPolicy?: SslPolicy;
+}
 
+/**
+ * Properties for defining a listener
+ */
+export interface ListenerProps extends BaseListenerProps {
     /**
-     * Default target groups, which will be automatically 'forward'ed to.
+     * The load balancer to attach this listener to
      */
-    defaultTargets: TargetGroupRef[];
+    loadBalancer: LoadBalancerRef;
 }
 
 /**
  * Define a listener
  */
 export class Listener extends ListenerRef {
+    public readonly connections: ec2.Connections;
     public readonly listenerArn: ListenerArn;
+    private readonly defaultActions: any[] = [];
 
     constructor(parent: cdk.Construct, id: string, props: ListenerProps) {
         super(parent, id);
@@ -64,15 +67,36 @@ export class Listener extends ListenerRef {
             protocol,
             port,
             sslPolicy: props.sslPolicy,
-            defaultActions: props.defaultTargets.map(target => ({
-                targetGroupArn: target.targetGroupArn,
-                // The full spectrum of Actions is not supported via CloudFormation;
-                // only 'forward's currently.
-                type: 'forward'
-            }))
+            defaultActions: new cdk.Token(() => this.renderActions())
+        });
+
+        // This listener edits the securitygroup of the load balancer,
+        // but adds its own default port.
+        this.connections = new ec2.Connections({
+            securityGroup: props.loadBalancer.connections.securityGroup,
+            defaultPortRange: new ec2.TcpPort(port),
         });
 
         this.listenerArn = resource.ref;
+    }
+
+    /**
+     * Add a TargetGroup to load balance to
+     */
+    public addDefaultTargetGroup(targetGroup: TargetGroupRef) {
+        this.defaultActions.push({
+            targetGroupArn: targetGroup.targetGroupArn,
+            type: 'forward'
+        });
+        this.registerTargetGroup(targetGroup);
+        return targetGroup;
+    }
+
+    private renderActions() {
+        if (this.defaultActions.length === 0) {
+            throw new Error('Listener needs at least one default action');
+        }
+        return this.defaultActions;
     }
 }
 

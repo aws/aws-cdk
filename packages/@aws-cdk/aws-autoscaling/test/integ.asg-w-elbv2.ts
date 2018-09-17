@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import ec2 = require('@aws-cdk/aws-ec2');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('../lib');
 
@@ -7,7 +8,7 @@ const app = new cdk.App(process.argv);
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'VPC', {
-    maxAZs: 3
+    maxAZs: 2
 });
 
 const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
@@ -16,18 +17,21 @@ const asg = new autoscaling.AutoScalingGroup(stack, 'Fleet', {
     machineImage: new ec2.AmazonLinuxImage(),
 });
 
-new ec2.ClassicLoadBalancer(stack, 'LB', {
+const lb = new elbv2.LoadBalancer(stack, 'LB', {
     vpc,
-    internetFacing: true,
-    listeners: [{
-        externalPort: 80,
-        allowConnectionsFrom: [new ec2.AnyIPv4()]
-    }],
-    healthCheck: {
-        port: 80
-    },
-    targets: [asg]
+    internetFacing: true
 });
 
-process.stdout.write(app.run());
+const listener = lb.addListener('Listener', {
+    port: 80,
+});
 
+listener.addDefaultTargetGroup(new elbv2.TargetGroup(stack, 'Target', {
+    vpc,
+    port: 80,
+    targets: [asg]
+}));
+
+listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+process.stdout.write(app.run());
