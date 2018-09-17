@@ -74,7 +74,12 @@ export interface NeptuneDatabaseProps {
      */
     preferredMaintenanceWindow?: string;
 
-    // Additional parameters to the database engine go here
+    /**
+     * Parameter group with Neptune settings
+     *
+     * @default No parameter group
+     */
+    parameterGroup?: rds.ClusterParameterGroupRef;
 }
 
 /**
@@ -125,8 +130,8 @@ export class NeptuneDatabase extends cdk.Construct implements ec2.IConnectable {
             instanceIdentifierBase: props.instanceIdentifierBase,
             defaultDatabaseName: props.defaultDatabaseName,
             kmsKeyArn: props.kmsKeyArn,
-            parameters: {}, // Additional parameters go here
             preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+            parameterGroup: props.parameterGroup,
         });
 
         this.clusterIdentifier = this.cluster.clusterIdentifier;

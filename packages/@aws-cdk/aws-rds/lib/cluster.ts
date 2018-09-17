@@ -1,8 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
 import { DatabaseClusterRef, Endpoint } from './cluster-ref';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
+import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
 import { cloudformation, DBClusterEndpointAddress, DBClusterEndpointPort, DBClusterName, DBInstanceId } from './rds.generated';
 
 /**
@@ -84,8 +85,10 @@ export interface DatabaseClusterProps {
 
     /**
      * Additional parameters to pass to the database engine
+     *
+     * @default No parameter group
      */
-    parameters?: Parameters;
+    parameterGroup?: ClusterParameterGroupRef;
 }
 
 /**
@@ -155,6 +158,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
             dbSubnetGroupName: subnetGroup.ref,
             vpcSecurityGroupIds: [this.securityGroupId],
             port: props.port,
+            dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
             // Admin
             masterUsername: props.masterUser.username,
             masterUserPassword: props.masterUser.password,
