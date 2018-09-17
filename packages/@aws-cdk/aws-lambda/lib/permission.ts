@@ -42,7 +42,7 @@ export interface Permission {
      * bucket owner's account ID. You can use this property to ensure that all
      * source principals are owned by a specific account.
      */
-    sourceAccount?: any;
+    sourceAccount?: string;
 
     /**
      * The ARN of a resource that is invoking your function. When granting
