@@ -1,13 +1,40 @@
 import { Environment} from '@aws-cdk/cx-api';
 import AWS = require('aws-sdk');
+import child_process = require('child_process');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
+import util = require('util');
 import { debug } from '../../logging';
 import { PluginHost } from '../../plugin';
 import { CredentialProviderSource, Mode } from '../aws-auth/credentials';
 import { AccountAccessKeyCache } from './account-cache';
 import { SharedIniFile } from './sdk_ini_file';
+
+export interface SDKOptions {
+    /**
+     * Profile name to use
+     *
+     * @default No profile
+     */
+    profile?: string;
+
+    /**
+     * Proxy address to use
+     *
+     * @default No proxy
+     */
+    proxyAddress?: string;
+
+    /**
+     * Whether we should try instance credentials
+     *
+     * True/false to force/disable. Default is to guess.
+     *
+     * @default Automatically determine.
+     */
+    ec2creds?: boolean;
+}
 
 /**
  * Source for SDK client objects
@@ -22,22 +49,25 @@ export class SDK {
     private readonly defaultAwsAccount: DefaultAWSAccount;
     private readonly credentialsCache: CredentialsCache;
     private readonly defaultClientArgs: any = {};
+    private readonly profile?: string;
 
-    constructor(private readonly profile: string | undefined, proxyAddress: string | undefined) {
-        const defaultCredentialProvider = makeCLICompatibleCredentialProvider(profile);
+    constructor(options: SDKOptions) {
+        this.profile = options.profile;
+
+        const defaultCredentialProvider = makeCLICompatibleCredentialProvider(options.profile, options.ec2creds);
 
         // Find the package.json from the main toolkit
         const pkg = (require.main as any).require('../package.json');
         this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
 
         // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-        if (proxyAddress === undefined) {
-            proxyAddress = httpsProxyFromEnvironment();
+        if (options.proxyAddress === undefined) {
+            options.proxyAddress = httpsProxyFromEnvironment();
         }
-        if (proxyAddress) { // Ignore empty string on purpose
-            debug('Using proxy server: %s', proxyAddress);
+        if (options.proxyAddress) { // Ignore empty string on purpose
+            debug('Using proxy server: %s', options.proxyAddress);
             this.defaultClientArgs.httpOptions = {
-                agent: require('proxy-agent')(proxyAddress)
+                agent: require('proxy-agent')(options.proxyAddress)
             };
         }
 
@@ -224,25 +254,36 @@ class DefaultAWSAccount {
  * file location is not given (SDK expects explicit environment variable with name).
  * - AWS_DEFAULT_PROFILE is also inspected for profile name (not just AWS_PROFILE).
  */
-async function makeCLICompatibleCredentialProvider(profile: string | undefined) {
+async function makeCLICompatibleCredentialProvider(profile: string | undefined, ec2creds: boolean | undefined) {
     profile = profile || process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
 
     // Need to construct filename ourselves, without appropriate environment variables
     // no defaults used by JS SDK.
     const filename = process.env.AWS_SHARED_CREDENTIALS_FILE || path.join(os.homedir(), '.aws', 'credentials');
 
-    return new AWS.CredentialProviderChain([
+    const sources = [
         () => new AWS.EnvironmentCredentials('AWS'),
         () => new AWS.EnvironmentCredentials('AMAZON'),
-        ...(await fs.pathExists(filename) ? [() => new AWS.SharedIniFileCredentials({ profile, filename })] : []),
-        () => {
-            // Calling private API
-            if ((AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials()) {
-                return new AWS.ECSCredentials();
-            }
-            return new AWS.EC2MetadataCredentials();
+    ];
+    if (fs.pathExists(filename)) {
+        sources.push(() => new AWS.SharedIniFileCredentials({ profile, filename }));
+    }
+
+    if (hasEcsCredentials()) {
+        sources.push(() => new AWS.ECSCredentials());
+    } else {
+        // else if: don't get EC2 creds if we should have gotten ECS creds--ECS instances also
+        // run on EC2 boxes but the creds represent something different. Same behavior as
+        // upstream code.
+
+        if (ec2creds === undefined) { ec2creds = await hasEc2Credentials(); }
+
+        if (ec2creds) {
+            sources.push(() => new AWS.EC2MetadataCredentials());
         }
-    ]);
+    }
+
+    return new AWS.CredentialProviderChain(sources);
 }
 
 /**
@@ -290,4 +331,63 @@ function httpsProxyFromEnvironment(): string | undefined {
         return process.env.HTTPS_PROXY;
     }
     return undefined;
+}
+
+/**
+ * Return whether it looks like we'll have ECS credentials available
+ */
+function hasEcsCredentials() {
+    return (AWS.ECSCredentials.prototype as any).isConfiguredForEcsCredentials();
+}
+
+/**
+ * Return whether we're on an EC2 instance
+ */
+async function hasEc2Credentials() {
+    debug("Determining whether we're on an EC2 instance.");
+
+    let instance = false;
+    if (process.platform === 'win32') {
+        // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
+        const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
+        // output looks like
+        //    UUID
+        //    EC2AE145-D1DC-13B2-94ED-01234ABCDEF
+        const lines = result.stdout.toString().split('\n');
+        instance = lines.some(x => matchesRegex(/^ec2/i, x));
+    } else {
+        // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+        const files: Array<[string, RegExp]> = [
+            // This recognizes the Xen hypervisor based instances (pre-5th gen)
+            ['/sys/hypervisor/uuid', /^ec2/i],
+
+            // This recognizes the new Hypervisor (5th-gen instances and higher)
+            // Can't use the advertised file '/sys/devices/virtual/dmi/id/product_uuid' because it requires root to read.
+            // Instead, sys_vendor contains something like 'Amazon EC2'.
+            ['/sys/devices/virtual/dmi/id/sys_vendor', /ec2/i],
+        ];
+        for (const [file, re] of files) {
+            if (matchesRegex(re, await readIfPossible(file))) {
+                instance = true;
+                break;
+            }
+        }
+    }
+
+    debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
+    return instance;
+}
+
+async function readIfPossible(filename: string): Promise<string | undefined> {
+    try {
+        if (!await fs.pathExists(filename)) { return undefined; }
+        return fs.readFile(filename, { encoding: 'utf-8' });
+    } catch (e) {
+        debug(e);
+        return undefined;
+    }
+}
+
+function matchesRegex(re: RegExp, s: string | undefined) {
+    return s !== undefined && re.exec(s) !== null;
 }

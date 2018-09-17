@@ -30,16 +30,14 @@ const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 const DEFAULTS = 'cdk.json';
 const PER_USER_DEFAULTS = '~/.cdk.json';
 
-// tslint:disable:no-shadowed-variable
+// tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
     const initTemplateLanuages = await availableInitLanguages;
     return yargs
         .usage('Usage: cdk -a <cdk-app> COMMAND')
         .option('app', { type: 'string', alias: 'a', desc: 'REQUIRED: Command-line for executing your CDK app (e.g. "node bin/my-app.js")' })
         .option('context', { type: 'array', alias: 'c', desc: 'Add contextual string parameter.', nargs: 1, requiresArg: 'KEY=VALUE' })
-        // tslint:disable-next-line:max-line-length
         .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
-        // tslint:disable-next-line:max-line-length
         .option('rename', { type: 'string', desc: 'Rename stack name if different then the one defined in the cloud executable', requiresArg: '[ORIGINAL:]RENAMED' })
         .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
         .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
@@ -48,11 +46,10 @@ async function parseCommandLineArguments() {
         .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs' })
         .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
         .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
-        // tslint:disable-next-line:max-line-length
+        .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
         .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
         .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
             .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
-        // tslint:disable-next-line:max-line-length
         .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
             .option('interactive', { type: 'boolean', alias: 'i', desc: 'interactively watch and show template updates' })
             .option('output', { type: 'string', alias: 'o', desc: 'write CloudFormation template for requested stacks to the given directory' }))
@@ -65,9 +62,7 @@ async function parseCommandLineArguments() {
         .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
             .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' }))
         .command('metadata [STACK]', 'Returns all metadata associated with this stack')
-        // tslint:disable-next-line:max-line-length
         .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
-            // tslint:disable-next-line:max-line-length
             .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
             .option('list', { type: 'boolean', desc: 'list the available templates' }))
         .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
@@ -80,7 +75,7 @@ async function parseCommandLineArguments() {
         ].join('\n\n'))
         .argv;
 }
-// tslint:enable:no-shadowed-variable
+// tslint:enable:no-shadowed-variable max-line-length
 
 /**
  * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
@@ -109,7 +104,11 @@ async function initCommandLine() {
 
     debug('Command line arguments:', argv);
 
-    const aws = new SDK(argv.profile, argv.proxy);
+    const aws = new SDK({
+        profile: argv.profile,
+        proxyAddress: argv.proxy,
+        ec2creds: argv.ec2creds,
+    });
 
     const availableContextProviders: contextplugins.ProviderMap = {
         'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
