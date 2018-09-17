@@ -98,5 +98,18 @@ export = {
             path: '/path/not/found/' + Math.random() * 999999
         }));
         test.done();
-    }
+    },
+
+    'multiple assets under the same parent'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        new ZipDirectoryAsset(stack, 'MyDirectory1', { path: '.' });
+        new ZipDirectoryAsset(stack, 'MyDirectory2', { path: '.' });
+
+        // THEN: no error
+
+        test.done();
+    },
 };
