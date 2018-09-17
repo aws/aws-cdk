@@ -256,8 +256,8 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const fn = newTestLambda(stack);
-        const rule1 = new events.EventRule(stack, 'Rule');
-        const rule2 = new events.EventRule(stack, 'Rule2');
+        const rule1 = new events.EventRule(stack, 'Rule', { scheduleExpression: 'rate(1 minute)' });
+        const rule2 = new events.EventRule(stack, 'Rule2', { scheduleExpression: 'rate(5 minutes)' });
 
         // WHEN
         rule1.addTarget(fn);

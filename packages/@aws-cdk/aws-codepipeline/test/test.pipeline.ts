@@ -262,6 +262,8 @@ export = {
         });
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+
+        // first stage must contain a Source action so we can't use it to test Lambda
         const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
         new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
             stage,
@@ -269,7 +271,7 @@ export = {
             userParameters: 'foo-bar/42'
         });
 
-        expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+        expect(stack, /* skip validation */ true).to(haveResource('AWS::CodePipeline::Pipeline', {
             "ArtifactStore": {
               "Location": {
                 "Ref": "PipelineArtifactsBucket22248F97"
@@ -309,7 +311,7 @@ export = {
             ]
         }));
 
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
             "PolicyDocument": {
               "Statement": [
                 {
