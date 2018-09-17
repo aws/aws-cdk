@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { resolve } from '@aws-cdk/cdk';
@@ -28,6 +28,24 @@ export = {
             }
         });
         test.done();
+    },
+
+    'rule with physical name'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new EventRule(stack, 'MyRule', {
+        ruleName: 'PhysicalName',
+        scheduleExpression: 'rate(10 minutes)'
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Events::Rule', {
+        Name: 'PhysicalName'
+      }));
+
+      test.done();
     },
 
     'eventPattern is rendered properly'(test: Test) {
