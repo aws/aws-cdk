@@ -211,7 +211,7 @@ export = {
         const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: new cdk.Arn('ARN3') }) };
         const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: new cdk.Arn('ARN4') }) };
 
-        const rule = new EventRule(stack, 'EventRule');
+        const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
         // a plain string should just be stringified (i.e. double quotes added and escaped)
         rule.addTarget(t2, {
@@ -244,6 +244,7 @@ export = {
                 "Type": "AWS::Events::Rule",
                 "Properties": {
                     "State": "ENABLED",
+                    "ScheduleExpression": "rate(1 minute)",
                     "Targets": [
                       {
                         "Arn": "ARN2",

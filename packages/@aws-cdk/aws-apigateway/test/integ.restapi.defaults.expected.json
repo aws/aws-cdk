@@ -1,0 +1,135 @@
+{
+  "Resources": {
+    "myapi4C7BF186": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "my-api"
+      }
+    },
+    "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "myapiGETF990CE3C"
+      ]
+    },
+    "myapiDeploymentStageprod298F01AF": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "DeploymentId": {
+          "Ref": "myapiDeployment92F2CB49916eaecf87f818f1e175215b8d086029"
+        },
+        "StageName": "prod"
+      }
+    },
+    "myapiCloudWatchRole095452E5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn",
+                ":",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":",
+                "iam",
+                ":",
+                "",
+                ":",
+                "aws",
+                ":",
+                "policy",
+                "/",
+                "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "myapiAccountEC421A0A": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "myapiCloudWatchRole095452E5",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "myapi4C7BF186"
+      ]
+    },
+    "myapiGETF990CE3C": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "myapi4C7BF186",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "myapi4C7BF186"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "myapiEndpoint3628AFE3": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "myapi4C7BF186"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            {
+              "Ref": "myapiDeploymentStageprod298F01AF"
+            },
+            "/"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "test-apigateway-restapi-defaults:myapiEndpoint3628AFE3"
+      }
+    }
+  }
+}

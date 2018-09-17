@@ -198,6 +198,11 @@ export function resolve(obj: any, prefix?: string[]): any {
 
     const result: any = { };
     for (const key of Object.keys(obj)) {
+        const resolvedKey = resolve(key);
+        if (typeof(resolvedKey) !== 'string') {
+            throw new Error(`The key "${key}" has been resolved to ${JSON.stringify(resolvedKey)} but must be resolvable to a string`);
+        }
+
         const value = resolve(obj[key], path.concat(key));
 
         // skip undefined
@@ -205,7 +210,7 @@ export function resolve(obj: any, prefix?: string[]): any {
             continue;
         }
 
-        result[key] = value;
+        result[resolvedKey] = value;
     }
 
     return result;
@@ -257,7 +262,7 @@ class TokenStringMap {
      */
     public resolveMarkers(s: string): any {
         const str = new TokenString(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
-        const fragments = str.split(this.lookupToken.bind(this));
+        const fragments = str.split(key => this.lookupToken(key));
         return fragments.join();
     }
 

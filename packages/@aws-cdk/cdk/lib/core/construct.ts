@@ -376,7 +376,7 @@ export class Construct {
      * Returns true if this construct or any of it's parent constructs are
      * locked.
      */
-    private get locked() {
+    protected get locked() {
         if (this._locked) {
             return true;
         }
