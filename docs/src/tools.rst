@@ -174,8 +174,8 @@ Plugins can be loaded by providing the Node module name (or path) to the CDK too
 Authoring Plugins
 -----------------
 
-Plugins must be authored in TypeScript, and are defined by implementing a Node module that implements
-the following protocol, and using :js:class:`~aws-cdk.PluginHost` methods:
+Plugins must be authored in TypeScript or Javascript, and are defined by implementing a Node module
+that implements the following protocol, and using :js:class:`~aws-cdk.PluginHost` methods:
 
 .. tabs::
     .. code-tab:: typescript
