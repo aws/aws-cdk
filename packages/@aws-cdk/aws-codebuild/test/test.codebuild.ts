@@ -41,82 +41,89 @@ export = {
                   "Properties": {
                     "PolicyDocument": {
                       "Statement": [
-                        {
-                          "Action": [
-                            "logs:CreateLogGroup",
-                            "logs:CreateLogStream",
-                            "logs:PutLogEvents"
-                          ],
-                          "Effect": "Allow",
-                          "Resource": [
-                            {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn",
-                                  ":",
+                          {
+                              "Action": [
+                                  "logs:CreateLogGroup",
+                                  "logs:CreateLogStream",
+                                  "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
                                   {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":",
-                                  "logs",
-                                  ":",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  },
-                                  ":",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":",
-                                  "log-group",
-                                  ":",
-                                  "/aws/codebuild/",
-                                  {
-                                    "Ref": "MyProject39F7B0AE"
-                                  }
-                                ]
-                              ]
-                            },
-                            {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":",
-                                        "logs",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":",
-                                        "log-group",
-                                        ":",
-                                        "/aws/codebuild/",
-                                        {
-                                          "Ref": "MyProject39F7B0AE"
-                                        }
+                                      "Fn::Join": [
+                                          "",
+                                          [
+                                              "arn",
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::Partition"
+                                              },
+                                              ":",
+                                              "logs",
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::AccountId"
+                                              },
+                                              ":",
+                                              "log-group",
+                                              ":",
+                                              {
+                                                  "Fn::Join": [
+                                                      "",
+                                                      [
+                                                          "/aws/codebuild/",
+                                                          {
+                                                              "Ref": "MyProject39F7B0AE"
+                                                          }
+                                                      ]
+                                                  ]
+                                              }
+                                          ]
                                       ]
-                                    ]
                                   },
-                                  ":*"
-                                ]
+                                  {
+                                      "Fn::Join": [
+                                          "",
+                                          [
+                                              "arn",
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::Partition"
+                                              },
+                                              ":",
+                                              "logs",
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                  "Ref": "AWS::AccountId"
+                                              },
+                                              ":",
+                                              "log-group",
+                                              ":",
+                                              {
+                                                  "Fn::Join": [
+                                                      "",
+                                                      [
+                                                          "/aws/codebuild/",
+                                                          {
+                                                              "Ref": "MyProject39F7B0AE"
+                                                          }
+                                                      ]
+                                                  ]
+                                              },
+                                              ":*"
+                                          ]
+                                      ]
+                                  }
                               ]
-                            }
-                          ]
-                        }
+                          }
                       ],
                       "Version": "2012-10-17"
                     },
@@ -238,9 +245,16 @@ export = {
                                   ":",
                                   "log-group",
                                   ":",
-                                  "/aws/codebuild/",
                                   {
-                                    "Ref": "MyProject39F7B0AE"
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "/aws/codebuild/",
+                                        {
+                                          "Ref": "MyProject39F7B0AE"
+                                        }
+                                      ]
+                                    ]
                                   }
                                 ]
                               ]
@@ -249,28 +263,28 @@ export = {
                               "Fn::Join": [
                                 "",
                                 [
+                                  "arn",
+                                  ":",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":",
+                                  "logs",
+                                  ":",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":",
+                                  "log-group",
+                                  ":",
                                   {
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":",
-                                        "logs",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":",
-                                        "log-group",
-                                        ":",
                                         "/aws/codebuild/",
                                         {
                                           "Ref": "MyProject39F7B0AE"
@@ -298,17 +312,14 @@ export = {
                 "MyProject39F7B0AE": {
                   "Type": "AWS::CodeBuild::Project",
                   "Properties": {
-                    "Source": {
-                      "Type": "CODECOMMIT",
-                      "Location": {
-                        "Fn::GetAtt": [
-                          "MyRepoF4F48043",
-                          "CloneUrlHttp"
-                        ]
-                      }
-                    },
                     "Artifacts": {
                       "Type": "NO_ARTIFACTS"
+                    },
+                    "Environment": {
+                      "ComputeType": "BUILD_GENERAL1_SMALL",
+                      "Image": "aws/codebuild/ubuntu-base:14.04",
+                      "PrivilegedMode": false,
+                      "Type": "LINUX_CONTAINER"
                     },
                     "ServiceRole": {
                       "Fn::GetAtt": [
@@ -316,11 +327,14 @@ export = {
                         "Arn"
                       ]
                     },
-                    "Environment": {
-                      "Type": "LINUX_CONTAINER",
-                      "PrivilegedMode": false,
-                      "Image": "aws/codebuild/ubuntu-base:14.04",
-                      "ComputeType": "BUILD_GENERAL1_SMALL"
+                    "Source": {
+                      "Location": {
+                        "Fn::GetAtt": [
+                          "MyRepoF4F48043",
+                          "CloneUrlHttp"
+                        ]
+                      },
+                      "Type": "CODECOMMIT"
                     }
                   }
                 }
@@ -427,9 +441,16 @@ export = {
                                   ":",
                                   "log-group",
                                   ":",
-                                  "/aws/codebuild/",
                                   {
-                                    "Ref": "MyProject39F7B0AE"
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "/aws/codebuild/",
+                                        {
+                                          "Ref": "MyProject39F7B0AE"
+                                        }
+                                      ]
+                                    ]
                                   }
                                 ]
                               ]
@@ -438,28 +459,28 @@ export = {
                               "Fn::Join": [
                                 "",
                                 [
+                                  "arn",
+                                  ":",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":",
+                                  "logs",
+                                  ":",
+                                  {
+                                    "Ref": "AWS::Region"
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":",
+                                  "log-group",
+                                  ":",
                                   {
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":",
-                                        "logs",
-                                        ":",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":",
-                                        "log-group",
-                                        ":",
                                         "/aws/codebuild/",
                                         {
                                           "Ref": "MyProject39F7B0AE"
@@ -487,8 +508,22 @@ export = {
                 "MyProject39F7B0AE": {
                   "Type": "AWS::CodeBuild::Project",
                   "Properties": {
+                    "Artifacts": {
+                      "Type": "NO_ARTIFACTS"
+                    },
+                    "Environment": {
+                      "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                      "Image": "aws/codebuild/windows-base:1.0",
+                      "PrivilegedMode": false,
+                      "Type": "WINDOWS_CONTAINER"
+                    },
+                    "ServiceRole": {
+                      "Fn::GetAtt": [
+                        "MyProjectRole9BBE5233",
+                        "Arn"
+                      ]
+                    },
                     "Source": {
-                      "Type": "S3",
                       "Location": {
                         "Fn::Join": [
                           "",
@@ -500,22 +535,8 @@ export = {
                             "path/to/source.zip"
                           ]
                         ]
-                      }
-                    },
-                    "Artifacts": {
-                      "Type": "NO_ARTIFACTS"
-                    },
-                    "ServiceRole": {
-                      "Fn::GetAtt": [
-                        "MyProjectRole9BBE5233",
-                        "Arn"
-                      ]
-                    },
-                    "Environment": {
-                      "Type": "WINDOWS_CONTAINER",
-                      "PrivilegedMode": false,
-                      "Image": "aws/codebuild/windows-base:1.0",
-                      "ComputeType": "BUILD_GENERAL1_MEDIUM"
+                      },
+                      "Type": "S3"
                     }
                   }
                 }
