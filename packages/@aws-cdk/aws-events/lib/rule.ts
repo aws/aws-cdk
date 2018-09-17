@@ -74,6 +74,7 @@ export class EventRule extends EventRuleRef {
         super(parent, name);
 
         const resource = new cloudformation.RuleResource(this, 'Resource', {
+            ruleName: props.ruleName,
             description: props.description,
             state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
             scheduleExpression: new Token(() => this.scheduleExpression),
