@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
 import { Parameters } from './props';
-import { cloudformation, DBClusterParameterGroupName } from './rds.generated';
+import { cloudformation } from './rds.generated';
 
 /**
  * Properties for a cluster parameter group
@@ -27,7 +27,7 @@ export interface ClusterParameterGroupProps {
  * Defina a cluster parameter group
  */
 export class ClusterParameterGroup extends ClusterParameterGroupRef {
-    public readonly parameterGroupName: DBClusterParameterGroupName;
+    public readonly parameterGroupName: string;
     private readonly parameters: Parameters = {};
 
     constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupProps) {
