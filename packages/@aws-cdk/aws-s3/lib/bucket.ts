@@ -324,14 +324,6 @@ export interface BucketProps {
     removalPolicy?: cdk.RemovalPolicy;
 
     /**
-     * The bucket policy associated with this bucket.
-     *
-     * @default A bucket policy will be created automatically in the first call
-     * to addToPolicy.
-     */
-    policy?: BucketPolicy;
-
-    /**
      * Whether this bucket should have versioning turned on or not.
      *
      * @default false
@@ -379,7 +371,6 @@ export class Bucket extends BucketRef {
         cdk.applyRemovalPolicy(resource, props.removalPolicy);
 
         this.versioned = props.versioned;
-        this.policy = props.policy;
         this.encryptionKey = encryptionKey;
         this.bucketArn = resource.bucketArn;
         this.bucketName = resource.bucketName;

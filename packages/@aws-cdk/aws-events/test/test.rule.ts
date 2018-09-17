@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -27,6 +27,24 @@ export = {
             }
         });
         test.done();
+    },
+
+    'rule with physical name'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new EventRule(stack, 'MyRule', {
+        ruleName: 'PhysicalName',
+        scheduleExpression: 'rate(10 minutes)'
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Events::Rule', {
+        Name: 'PhysicalName'
+      }));
+
+      test.done();
     },
 
     'eventPattern is rendered properly'(test: Test) {
@@ -210,7 +228,7 @@ export = {
         const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: 'ARN3' }) };
         const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: 'ARN4' }) };
 
-        const rule = new EventRule(stack, 'EventRule');
+        const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
         // a plain string should just be stringified (i.e. double quotes added and escaped)
         rule.addTarget(t2, {
@@ -243,6 +261,7 @@ export = {
                 "Type": "AWS::Events::Rule",
                 "Properties": {
                     "State": "ENABLED",
+                    "ScheduleExpression": "rate(1 minute)",
                     "Targets": [
                       {
                         "Arn": "ARN2",
