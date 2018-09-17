@@ -17,7 +17,7 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(handler);
-        api.root.onMethod('GET', integ);
+        api.root.addMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -80,7 +80,7 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(fn, { allowTestInvoke: false });
-        api.root.onMethod('GET', integ);
+        api.root.addMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
@@ -134,7 +134,7 @@ export = {
 
         // WHEN
         const integ = new apigateway.LambdaIntegration(fn, { proxy: false });
-        api.root.onMethod('GET', integ);
+        api.root.addMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -158,7 +158,7 @@ export = {
 
         const target = new apigateway.LambdaIntegration(handler);
 
-        api.root.onMethod('ANY', target);
+        api.root.addMethod('ANY', target);
 
         expect(stack).to(haveResource('AWS::Lambda::Permission', {
             SourceArn: {

@@ -13,7 +13,7 @@ export = {
 
         // WHEN
         const api = new apigateway.RestApi(stack, 'my-api');
-        api.root.onMethod('GET'); // must have at least one method
+        api.root.addMethod('GET'); // must have at least one method
 
         // THEN
         expect(stack).toMatch({
@@ -163,7 +163,7 @@ export = {
           cloudWatchRole: false,
       });
 
-      api.root.onMethod('GET');
+      api.root.addMethod('GET');
 
       // THEN
       expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
@@ -197,7 +197,7 @@ export = {
             restApiName: 'my-rest-api'
         });
 
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // WHEN
         const foo = api.root.addResource('foo');
@@ -231,8 +231,8 @@ export = {
         const r1 = api.root.addResource('r1');
 
         // WHEN
-        api.root.onMethod('GET');
-        r1.onMethod('POST');
+        api.root.addMethod('GET');
+        r1.addMethod('POST');
 
         // THEN
         expect(stack).toMatch({
@@ -352,7 +352,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'myapi');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         expect(stack).to(haveResource('AWS::IAM::Role'));
@@ -389,7 +389,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         test.deepEqual(cdk.resolve(api.url), { 'Fn::Join':
@@ -417,7 +417,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         test.throws(() => api.url, /Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"/);
@@ -429,7 +429,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         test.throws(() => api.urlForPath('foo'), /Path must begin with \"\/\": foo/);
@@ -440,7 +440,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // WHEN
         const arn = api.executeApiArn('method', '/path', 'stage');
@@ -468,7 +468,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         test.throws(() => api.executeApiArn('method', 'hey-path', 'stage'), /"path" must begin with a "\/": 'hey-path'/);
@@ -480,7 +480,7 @@ export = {
         const stack = new cdk.Stack();
 
         const api = new apigateway.RestApi(stack, 'api');
-        const method = api.root.onMethod('ANY');
+        const method = api.root.addMethod('ANY');
 
         // THEN
         test.deepEqual(cdk.resolve(method.methodArn), { 'Fn::Join':
@@ -510,7 +510,7 @@ export = {
             endpointTypes: [ apigateway.EndpointType.Edge, apigateway.EndpointType.Private ]
         });
 
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
@@ -536,7 +536,7 @@ export = {
             cloneFrom
         });
 
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         expect(stack).to(haveResource('AWS::ApiGateway::RestApi', {
             CloneFrom: "foobar",
@@ -550,7 +550,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'myapi');
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
         const resource = new cdk.Resource(stack, 'DependsOnRestApi', { type: 'My::Resource' });
 
         // WHEN
@@ -586,13 +586,13 @@ export = {
         });
 
         // CASE #1: should inherit integration and options from root resource
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         const child = api.root.addResource('child');
 
         // CASE #2: should inherit integration from root and method options, but
         // "authorizationType" will be overridden to "None" instead of "IAM"
-        child.onMethod('POST', undefined, {
+        child.addMethod('POST', undefined, {
             authorizationType: apigateway.AuthorizationType.Cognito
         });
 
@@ -604,10 +604,10 @@ export = {
         });
 
         // CASE #3: integartion and authorizer ID are inherited from child2
-        child2.onMethod('DELETE');
+        child2.addMethod('DELETE');
 
         // CASE #4: same as case #3, but integration is customized
-        child2.onMethod('PUT', new apigateway.AwsIntegration({ action: 'foo', service: 'bar' }));
+        child2.addMethod('PUT', new apigateway.AwsIntegration({ action: 'foo', service: 'bar' }));
 
         // THEN
 

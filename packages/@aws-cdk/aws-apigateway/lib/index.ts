@@ -5,11 +5,7 @@ export * from './method';
 export * from './integration';
 export * from './deployment';
 export * from './stage';
-
-export * from './integrations/lambda';
-export * from './integrations/aws';
-export * from './integrations/mock';
-export * from './integrations/http';
+export * from './integrations';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

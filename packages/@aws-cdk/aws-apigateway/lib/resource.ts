@@ -53,7 +53,7 @@ export interface IRestApiResource {
      *
      * @returns The newly created `Method` object.
      */
-    onMethod(httpMethod: string, target?: Integration, options?: MethodOptions): Method;
+    addMethod(httpMethod: string, target?: Integration, options?: MethodOptions): Method;
 }
 
 export interface ResourceOptions {
@@ -129,7 +129,7 @@ export class Resource extends cdk.Construct implements IRestApiResource {
         return new Resource(this, pathPart, { parent: this, pathPart, ...options });
     }
 
-    public onMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
         return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
     }
 }

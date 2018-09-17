@@ -8,7 +8,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // WHEN
         new apigateway.Deployment(stack, 'deployment', { api });
@@ -59,7 +59,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // WHEN
         new apigateway.Deployment(stack, 'deployment', { api, retainDeployments: true });
@@ -111,7 +111,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // WHEN
         new apigateway.Deployment(stack, 'deployment', { api, description: 'this is my deployment' });
@@ -129,7 +129,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
         const deployment = new apigateway.Deployment(stack, 'deployment', { api });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         // default logical ID (with no "salt")
         test.ok(synthesize().Resources.deployment33381975);
@@ -162,7 +162,7 @@ export = {
         const stack = new cdk.Stack();
         const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
         const deployment = new apigateway.Deployment(stack, 'deployment', { api });
-        api.root.onMethod('GET');
+        api.root.addMethod('GET');
 
         const dep = new cdk.Resource(stack, 'MyResource', { type: 'foo' });
 

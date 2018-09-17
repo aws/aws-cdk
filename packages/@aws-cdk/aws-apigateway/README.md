@@ -98,9 +98,9 @@ book.addMethod('GET');   // integrated with `booksBackend`
 ### Deployments
 
 By default, the `RestApi` construct will automatically create an API Gateway
-[Deployment] and a "prod" [Stage] which represent the API configuration you defined in
-your CDK app. This means that when you deploy your app, your API can be accessed
-from the public internet via the stage URL.
+[Deployment] and a "prod" [Stage] which represent the API configuration you
+defined in your CDK app. This means that when you deploy your app, your API will
+be have open access from the internet via the stage URL.
 
 The URL of your API can be obtained from the attribute `restApi.url`, and is
 also exported as an `Output` from your stack, so it's printed when you `cdk
@@ -150,27 +150,15 @@ logical ID will be assigned to the deployment resource. This will cause
 CloudFormation to create a new deployment resource.
 
 By default, old deployments are _deleted_. You can set `retainDeployments: true`
-to allow users revert the stage to an old deployment.
+to allow users revert the stage to an old deployment manually.
 
 [Deployment]: https://docs.aws.amazon.com/apigateway/api-reference/resource/deployment/
 [Stage]: https://docs.aws.amazon.com/apigateway/api-reference/resource/stage/
 
-### TODO
+### Missing Features
 
-The following features are not supported yet by this library:
-
-- [ ] Swagger/Open API models
-- [ ] [Authorizers](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-authorizer.html)
-- [ ] Method options: [`RequestValidatorId`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-requestvalidatorid), [`RequestModels`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-requestmodels), [`RequestParameters`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-requestparameters), [`MethodResponses`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-methodresponses)
-- [ ] [Custom domains](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html)
-- [ ] [API keys](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html)
-- [ ] [Base path mapping](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-basepathmapping.html)
-- [ ] [Client certificates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-clientcertificate.html)
-- [ ] Documentation ([part](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-documentationpart.html) and [version](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-documentationversion.html))
-- [ ] [Model](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-model.html)
-- [ ] [Request validators](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-requestvalidator.html)
-- [ ] [Usage plans](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-usageplan.html)
-- [ ] [VPC Links](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-vpclink.html)
+See [awslabs/aws-cdk#723](https://github.com/awslabs/aws-cdk/issues/723) for a
+list of missing features.
 
 ----
 

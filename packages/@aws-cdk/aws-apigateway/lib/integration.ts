@@ -3,7 +3,8 @@ import { Method } from './method';
 
 export interface IntegrationOptions {
     /**
-     * A list of request parameters whose values API Gateway caches.
+     * A list of request parameters whose values are to be cached. It determines
+     * request parameters that will make it into the cache key.
      */
     cacheKeyParameters?: string[];
 
@@ -103,7 +104,6 @@ export interface IntegrationProps {
     /**
      * The Uniform Resource Identifier (URI) for the integration.
      *
-     * - If you specify MOCK for the `type` property, this is not required.
      * - If you specify HTTP for the `type` property, specify the API endpoint URL.
      * - If you specify MOCK for the `type` property, don't specify this property.
      * - If you specify AWS for the `type` property, specify an AWS service that

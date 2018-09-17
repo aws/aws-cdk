@@ -164,8 +164,8 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
     /**
      * Represents the root resource ("/") of this API. Use it to define the API model:
      *
-     *      api.root.onMethod('ANY', redirectToHomePage); // "ANY /"
-     *      api.root.addResource('friends').onMethod('GET', getFriendsHandler); // "GET /friends"
+     *      api.root.addMethod('ANY', redirectToHomePage); // "ANY /"
+     *      api.root.addResource('friends').addMethod('GET', getFriendsHandler); // "GET /friends"
      *
      */
     public readonly root: IRestApiResource;
@@ -210,7 +210,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
             addResource: (pathPart: string, options?: ResourceOptions) => {
                 return new Resource(this, pathPart, { parent: this.root, pathPart, ...options });
             },
-            onMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
+            addMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
                 return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
             },
             defaultIntegration: props.defaultIntegration,

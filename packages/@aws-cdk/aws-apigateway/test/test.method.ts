@@ -209,7 +209,7 @@ export = {
         const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
 
         // WHEN
-        api.root.onMethod('GET', new apigateway.Integration({
+        api.root.addMethod('GET', new apigateway.Integration({
             type: apigateway.IntegrationType.AwsProxy,
             options: {
                 credentialsRole: role
@@ -231,7 +231,7 @@ export = {
         const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
 
         // WHEN
-        api.root.onMethod('GET', new apigateway.Integration({
+        api.root.addMethod('GET', new apigateway.Integration({
             type: apigateway.IntegrationType.AwsProxy,
             options: {
                 credentialsPassthrough: true
@@ -263,7 +263,7 @@ export = {
         });
 
         // THEN
-        test.throws(() => api.root.onMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
+        test.throws(() => api.root.addMethod('GET', integration), /'credentialsPassthrough' and 'credentialsRole' are mutually exclusive/);
         test.done();
     },
 };

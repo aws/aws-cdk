@@ -33,16 +33,16 @@ class Test extends cdk.Stack {
         const integration = new apigateway.LambdaIntegration(handler);
 
         const toys = v1.addResource('toys');
-        toys.onMethod('GET', integration);
-        toys.onMethod('POST');
-        toys.onMethod('PUT');
+        toys.addMethod('GET', integration);
+        toys.addMethod('POST');
+        toys.addMethod('PUT');
 
         const appliances = v1.addResource('appliances');
-        appliances.onMethod('GET');
+        appliances.addMethod('GET');
 
         const books = v1.addResource('books');
-        books.onMethod('GET', integration);
-        books.onMethod('POST', integration);
+        books.addMethod('GET', integration);
+        books.addMethod('POST', integration);
 
         function handlerCode(event: any, _: any, callback: any) {
             return callback(undefined, {

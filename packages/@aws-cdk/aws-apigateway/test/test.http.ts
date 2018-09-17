@@ -12,7 +12,7 @@ export = {
         // WHEN
         const integ = new apigateway.HttpIntegration('http://foo/bar');
 
-        api.root.onMethod('GET', integ);
+        api.root.addMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -40,7 +40,7 @@ export = {
             }
         });
 
-        api.root.onMethod('GET', integ);
+        api.root.addMethod('GET', integ);
 
         // THEN
         expect(stack).to(haveResource('AWS::ApiGateway::Method', {
