@@ -59,6 +59,13 @@ export class ClusterParameterGroup extends ClusterParameterGroupRef {
     }
 
     /**
+     * Remove a previously-set parameter from this parameter group
+     */
+    public removeParameter(key: string) {
+        this.setParameter(key, undefined);
+    }
+
+    /**
      * Validate this construct
      */
     public validate(): string[] {
