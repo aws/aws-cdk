@@ -122,6 +122,19 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     /**
+     * Convenience method for creating a new {@link Stage},
+     * and adding it to this Pipeline.
+     *
+     * @param name the name of the newly created Stage
+     * @returns the newly created Stage
+     */
+    public addStage(name: string): Stage {
+        return new Stage(this, name, {
+            pipeline: this,
+        });
+    }
+
+    /**
      * Adds a statement to the pipeline role.
      */
     public addToRolePolicy(statement: cdk.PolicyStatement) {
