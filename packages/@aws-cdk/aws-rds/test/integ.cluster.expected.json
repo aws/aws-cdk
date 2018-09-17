@@ -305,6 +305,16 @@
         }
       }
     },
+    "ParamsA8366201": {
+      "Type": "AWS::RDS::DBClusterParameterGroup",
+      "Properties": {
+        "Description": "A nice parameter group",
+        "Family": "aurora5.6",
+        "Parameters": {
+          "character_set_database": "utf8mb4"
+        }
+      }
+    },
     "DatabaseSubnets56F17B9A": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
@@ -360,6 +370,9 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "DBClusterParameterGroupName": {
+          "Ref": "ParamsA8366201"
+        },
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },
