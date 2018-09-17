@@ -317,7 +317,7 @@ export abstract class FunctionRef extends cdk.Construct
         const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
         if (!this.tryFindChild(permissionId)) {
             this.addPermission(permissionId, {
-                sourceAccount: new cdk.AwsAccountId(),
+                sourceAccount: new cdk.AwsAccountId().toString(),
                 principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
                 sourceArn: bucketArn,
             });
