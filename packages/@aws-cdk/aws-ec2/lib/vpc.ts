@@ -479,7 +479,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
             mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
             tags: this.tags,
         });
-        this.subnetId = subnet.subnetVpcId;
+        this.subnetId = subnet.subnetId;
         const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
             vpcId: props.vpcId,
             tags: new cdk.TagManager(this),
