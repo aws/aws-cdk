@@ -26,11 +26,6 @@ export abstract class ClusterParameterGroupRef extends cdk.Construct {
                     new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue())
         };
     }
-
-    /**
-     * Set a parameter on this parameter group
-     */
-    public abstract setParameter(key: string, value: string | undefined): void;
 }
 
 /**
@@ -49,12 +44,5 @@ class ImportedClusterParameterGroup extends ClusterParameterGroupRef {
     constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupRefProps) {
         super(parent, id);
         this.parameterGroupName = props.parameterGroupName;
-    }
-
-    /**
-     * Set a parameter on this parameter group
-     */
-    public setParameter(_key: string, _value: string | undefined) {
-        // FIXME: Add annotation that we're dropping this on the floor
     }
 }
