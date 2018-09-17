@@ -104,28 +104,52 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
 }
 
 class LatestDeploymentResource extends cloudformation.DeploymentResource {
-    private originalLogicalId: string;
-    private customLogicalId?: string;
+    private originalLogicalId?: string;
+    private lazyLogicalIdRequired: boolean;
+    private lazyLogicalId?: string;
     private hashComponents = new Array<any>();
 
     constructor(parent: cdk.Construct, id: string, props: cloudformation.DeploymentResourceProps) {
         super(parent, id, props);
 
-        this.originalLogicalId = this.logicalId;
+        // from this point, don't allow accessing logical ID before synthesis
+        this.lazyLogicalIdRequired = true;
+    }
 
-        Object.defineProperties(this, {
-            logicalId: {
-                get: () => {
-                    if (!this.customLogicalId) {
-                        throw new Error('The logical ID of this resource cannot be evaluated eagerly. Use: new cdk.Token(() => foo.logicalId)');
-                    }
-                    return this.customLogicalId;
-                }
-            },
-            ref: {
-                get: () => new cdk.CloudFormationToken(() => ({ Ref: this.customLogicalId }))
-            },
-        });
+    /**
+     * Returns either the original or the custom logical ID of this resource.
+     */
+    public get logicalId() {
+        if (!this.lazyLogicalIdRequired) {
+            return this.originalLogicalId!;
+        }
+
+        if (!this.lazyLogicalId) {
+            throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
+        }
+
+        return this.lazyLogicalId;
+    }
+
+    /**
+     * Sets the logical ID of this resource.
+     */
+    public set logicalId(v: string) {
+        this.originalLogicalId = v;
+    }
+
+    /**
+     * Returns a lazy reference to this resource (evaluated only upon synthesis).
+     */
+    public get ref() {
+        return new DeploymentId(() => ({ Ref: this.lazyLogicalId }));
+    }
+
+    /**
+     * Does nothing.
+     */
+    public set ref(_v: DeploymentId) {
+        return;
     }
 
     /**
@@ -133,7 +157,6 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
      * This can be used to couple the deployment to the API Gateway model.
      */
     public addToLogicalId(data: unknown) {
-
         // if the construct is locked, it means we are already synthesizing and then
         // we can't modify the hash because we might have already calculated it.
         if (this.locked) {
@@ -151,14 +174,14 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
         // if hash components were added to the deployment, we use them to calculate
         // a logical ID for the deployment resource.
         if (this.hashComponents.length === 0) {
-            this.customLogicalId = this.originalLogicalId;
+            this.lazyLogicalId = this.originalLogicalId;
         } else {
             const md5 = crypto.createHash('md5');
             this.hashComponents
                 .map(c => cdk.resolve(c))
                 .forEach(c => md5.update(JSON.stringify(c)));
 
-            this.customLogicalId = this.originalLogicalId + md5.digest("hex");
+            this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
         }
 
         return [];
