@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { KeyAttributeType, StreamViewType, Table } from '../lib';
+import { AttributeType, StreamViewType, Table } from '../lib';
 
 export = {
     'default properties': {
@@ -14,7 +14,7 @@ export = {
 
         'hash key only'(test: Test) {
             const app = new TestApp();
-            new Table(app.stack, 'MyTable').addPartitionKey('hashKey', KeyAttributeType.Binary);
+            new Table(app.stack, 'MyTable').addPartitionKey({ name: 'hashKey', type: AttributeType.Binary });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -35,8 +35,9 @@ export = {
 
         'hash + range key'(test: Test) {
             const app = new TestApp();
-            new Table(app.stack, 'MyTable').addPartitionKey('hashKey', KeyAttributeType.Binary)
-                                        .addSortKey('sortKey', KeyAttributeType.Number);
+            new Table(app.stack, 'MyTable')
+                .addPartitionKey({ name: 'hashKey', type: AttributeType.Binary })
+                .addSortKey({ name: 'sortKey', type: AttributeType.Number });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -60,11 +61,12 @@ export = {
 
             test.done();
         },
+
         'point-in-time recovery is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
-                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
-                .addSortKey('sortKey', KeyAttributeType.Number);
+                .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
+                .addSortKey({ name: 'sortKey', type: AttributeType.Number });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -88,11 +90,12 @@ export = {
 
             test.done();
         },
+
         'server-side encryption is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
-                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
-                .addSortKey('sortKey', KeyAttributeType.Number);
+                .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
+                .addSortKey({ name: 'sortKey', type: AttributeType.Number });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -116,11 +119,12 @@ export = {
 
             test.done();
         },
+
         'stream is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
-                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
-                .addSortKey('sortKey', KeyAttributeType.Number);
+                .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
+                .addSortKey({ name: 'sortKey', type: AttributeType.Number });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -144,11 +148,12 @@ export = {
 
             test.done();
         },
+
         'ttl is not enabled'(test: Test) {
             const app = new TestApp();
             new Table(app.stack, 'MyTable')
-                .addPartitionKey('partitionKey', KeyAttributeType.Binary)
-                .addSortKey('sortKey', KeyAttributeType.Number);
+                .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
+                .addSortKey({ name: 'sortKey', type: AttributeType.Number });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -172,6 +177,7 @@ export = {
 
             test.done();
         },
+
         'can specify new and old images'(test: Test) {
             const app = new TestApp();
             const table = new Table(app.stack, 'MyTable', {
@@ -180,8 +186,8 @@ export = {
                 writeCapacity: 1337,
                 streamSpecification: StreamViewType.NewAndOldImages
             });
-            table.addPartitionKey('partitionKey', KeyAttributeType.String);
-            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+            table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -207,6 +213,7 @@ export = {
 
             test.done();
         },
+
         'can specify new images only'(test: Test) {
             const app = new TestApp();
             const table = new Table(app.stack, 'MyTable', {
@@ -215,8 +222,8 @@ export = {
                 writeCapacity: 1337,
                 streamSpecification: StreamViewType.NewImage
             });
-            table.addPartitionKey('partitionKey', KeyAttributeType.String);
-            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+            table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -242,6 +249,7 @@ export = {
 
             test.done();
         },
+
         'can specify old images only'(test: Test) {
             const app = new TestApp();
             const table = new Table(app.stack, 'MyTable', {
@@ -250,8 +258,8 @@ export = {
                 writeCapacity: 1337,
                 streamSpecification: StreamViewType.OldImage
             });
-            table.addPartitionKey('partitionKey', KeyAttributeType.String);
-            table.addSortKey('sortKey', KeyAttributeType.Binary);
+            table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+            table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
             const template = app.synthesizeTemplate();
 
             test.deepEqual(template, {
@@ -290,8 +298,8 @@ export = {
             streamSpecification: StreamViewType.KeysOnly,
             ttlAttributeName: 'timeToLive'
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         const template = app.synthesizeTemplate();
 
         test.deepEqual(template, {
@@ -331,8 +339,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -419,8 +427,8 @@ export = {
                 scalingPolicyName: 'MyAwesomePolicyName'
             }
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         const template = app.synthesizeTemplate();
 
         test.deepEqual(template, { Resources:
@@ -499,8 +507,8 @@ export = {
                 scalingPolicyName: 'MyAwesomePolicyName'
             }
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 500,
             maxCapacity: 5000,
@@ -520,8 +528,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -599,8 +607,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -678,8 +686,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -699,8 +707,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -720,8 +728,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -740,8 +748,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -760,8 +768,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: 50,
             maxCapacity: -5,
@@ -780,8 +788,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addReadAutoScaling({
             minCapacity: -5,
             maxCapacity: 500,
@@ -800,8 +808,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -888,8 +896,8 @@ export = {
                 scalingPolicyName: 'MyAwesomePolicyName'
             }
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         const template = app.synthesizeTemplate();
 
         test.deepEqual(template, { Resources:
@@ -968,8 +976,8 @@ export = {
                 scalingPolicyName: 'MyAwesomePolicyName'
             }
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 500,
             maxCapacity: 5000,
@@ -989,8 +997,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1068,8 +1076,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1147,8 +1155,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1168,8 +1176,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1189,8 +1197,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1209,8 +1217,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: 500,
@@ -1229,8 +1237,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: 50,
             maxCapacity: -5,
@@ -1249,8 +1257,8 @@ export = {
             readCapacity: 42,
             writeCapacity: 1337
         });
-        table.addPartitionKey('partitionKey', KeyAttributeType.String);
-        table.addSortKey('sortKey', KeyAttributeType.Binary);
+        table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
+        table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
         test.throws(() => table.addWriteAutoScaling({
             minCapacity: -5,
             maxCapacity: 500,
@@ -1261,7 +1269,6 @@ export = {
 
         test.done();
     }
-
 };
 
 class TestApp {
