@@ -5,7 +5,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
 import { cloudformation, PipelineName, PipelineVersion } from './codepipeline.generated';
-import { Stage } from './stage';
+import { CommonStageProps, Stage, StagePlacement } from './stage';
 
 /**
  * The ARN of a pipeline
@@ -126,11 +126,13 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      * and adding it to this Pipeline.
      *
      * @param name the name of the newly created Stage
+     * @param props the optional construction properties of the new Stage
      * @returns the newly created Stage
      */
-    public addStage(name: string): Stage {
+    public addStage(name: string, props?: CommonStageProps): Stage {
         return new Stage(this, name, {
             pipeline: this,
+            ...props,
         });
     }
 
@@ -214,6 +216,13 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     /**
+     * Get the number of Stages in this Pipeline.
+     */
+    public get stageCount(): number {
+        return this.stages.length;
+    }
+
+    /**
      * Adds a Stage to this Pipeline.
      * This is an internal operation -
      * a Stage is added to a Pipeline when it's constructed
@@ -221,9 +230,12 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      * so there is never a need to call this method explicitly.
      *
      * @param stage the newly created Stage to add to this Pipeline
+     * @param placement an optional specification of where to place the newly added Stage in the Pipeline
      */
-    public _addStage(stage: Stage): void {
-        // _addStage should be idempotent, in case a customer ever calls it directly
+    // ignore unused private method (it's actually used in Stage)
+    // @ts-ignore
+    private _attachStage(stage: Stage, placement?: StagePlacement): void {
+        // _attachStage should be idempotent, in case a customer ever calls it directly
         if (this.stages.includes(stage)) {
             return;
         }
@@ -232,7 +244,56 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
             throw new Error(`A stage with name '${stage.name}' already exists`);
         }
 
-        this.stages.push(stage);
+        const index = placement
+            ? this.calculateInsertIndexFromPlacement(placement)
+            : this.stageCount;
+
+        this.stages.splice(index, 0, stage);
+    }
+
+    private calculateInsertIndexFromPlacement(placement: StagePlacement): number {
+        // check if at most one placement property was provided
+        const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
+            .filter((prop) => (placement as any)[prop] !== undefined);
+        if (providedPlacementProps.length > 1) {
+            throw new Error("Error adding Stage to the Pipeline: " +
+                'you can only provide at most one placement property, but ' +
+                `'${providedPlacementProps.join(', ')}' were given`);
+        }
+
+        if (placement.rightBefore !== undefined) {
+            const targetIndex = this.findStageIndex(placement.rightBefore);
+            if (targetIndex === -1) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `the requested Stage to add it before, '${placement.rightBefore.name}', was not found`);
+            }
+            return targetIndex;
+        }
+
+        if (placement.justAfter !== undefined) {
+            const targetIndex = this.findStageIndex(placement.justAfter);
+            if (targetIndex === -1) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `the requested Stage to add it after, '${placement.justAfter.name}', was not found`);
+            }
+            return targetIndex + 1;
+        }
+
+        if (placement.atIndex !== undefined) {
+            const index = placement.atIndex;
+            if (index < 0 || index > this.stageCount) {
+                throw new Error("Error adding Stage to the Pipeline: " +
+                    `{ placed: atIndex } should be between 0 and the number of stages in the Pipeline (${this.stageCount}), ` +
+                    ` got: ${index}`);
+            }
+            return index;
+        }
+
+        return this.stageCount;
+    }
+
+    private findStageIndex(targetStage: Stage) {
+        return this.stages.findIndex((stage: Stage) => stage === targetStage);
     }
 
     private validateSourceActionLocations(): string[] {
@@ -245,7 +306,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private validateHasStages(): string[] {
-        if (this.stages.length < 2) {
+        if (this.stageCount < 2) {
             return ['Pipeline must have at least two stages'];
         }
         return [];
