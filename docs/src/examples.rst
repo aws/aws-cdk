@@ -135,8 +135,8 @@ and sort key **Timestamp**.
          writeCapacity: 5
        });
 
-       table.addPartitionKey('Alias', dynamodb.KeyAttributeType.String);
-       table.addSortKey('Timestamp', dynamodb.KeyAttributeType.String);
+       table.addPartitionKey({ name: 'Alias', type: dynamodb.AttributeType.String });
+       table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.String });
      }
    }
 

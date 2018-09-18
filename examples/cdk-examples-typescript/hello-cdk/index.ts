@@ -10,8 +10,8 @@ class HelloCDK extends cdk.Stack {
             writeCapacity: 1
         });
 
-        table.addPartitionKey('ID', dynamodb.KeyAttributeType.String);
-        table.addSortKey('Timestamp', dynamodb.KeyAttributeType.Number);
+        table.addPartitionKey({ name: 'ID', type: dynamodb.AttributeType.String });
+        table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.Number });
     }
 }
 

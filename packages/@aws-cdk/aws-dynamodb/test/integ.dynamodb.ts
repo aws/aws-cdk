@@ -1,5 +1,5 @@
 import { App, Stack } from '@aws-cdk/cdk';
-import { KeyAttributeType, StreamViewType, Table } from '../lib';
+import { AttributeType, StreamViewType, Table } from '../lib';
 
 const app = new App(process.argv);
 
@@ -12,7 +12,7 @@ const table = new Table(stack, 'Table', {
     ttlAttributeName: 'timeToLive'
 });
 
-table.addPartitionKey('hashKey', KeyAttributeType.String);
-table.addSortKey('rangeKey', KeyAttributeType.Number);
+table.addPartitionKey({ name: 'hashKey', type: AttributeType.String });
+table.addSortKey({ name: 'rangeKey', type: AttributeType.Number });
 
 process.stdout.write(app.run());
