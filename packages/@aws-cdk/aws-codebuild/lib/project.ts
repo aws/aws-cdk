@@ -567,7 +567,7 @@ export class Project extends ProjectRef {
         return {
             type: this.buildImage.type,
             image: this.buildImage.imageId,
-            privilegedMode: env.priviledged || false,
+            privilegedMode: env.privileged || false,
             computeType: env.computeType || this.buildImage.defaultComputeType,
             environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
                 name,
@@ -634,7 +634,7 @@ export interface BuildEnvironment {
      *
      * @default false
      */
-    priviledged?: boolean;
+    privileged?: boolean;
 
     /**
      * The environment variables that your builds can use.
