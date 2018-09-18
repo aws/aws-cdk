@@ -15,7 +15,7 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDep
   minHealthyHostCount: 0,
 });
 
-new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   application,
   deploymentGroupName: 'IntegTestDeploymentGroup',
   deploymentConfig,
@@ -38,8 +38,7 @@ bucket.addToPipeline(sourceStage, 'S3Source', {
 const deployStage = new codepipeline.Stage(stack, 'Deploy', { pipeline });
 new codedeploy.PipelineDeployAction(stack, 'CodeDeploy', {
   stage: deployStage,
-  applicationName: 'IntegTestDeployApp',
-  deploymentGroupName: 'IntegTestDeploymentGroup',
+  deploymentGroup,
 });
 
 app.run();
