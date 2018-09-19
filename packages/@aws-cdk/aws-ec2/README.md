@@ -41,7 +41,6 @@ const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
       cidrMask: 24,
       name: 'Ingress',
       subnetType: SubnetType.Public,
-      natGateway: true,
     },
     {
       cidrMask: 24,
