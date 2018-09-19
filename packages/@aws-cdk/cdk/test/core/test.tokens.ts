@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, unresolved, resolve, Token } from '../../lib';
+import { CloudFormationToken, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
