@@ -106,7 +106,7 @@ export class Token {
  * that includes token markers).
  * @param obj The object to test.
  */
-export function isToken(obj: any): obj is Token {
+export function unresolved(obj: any): obj is Token {
     if (typeof(obj) === 'string') {
         return TOKEN_STRING_MAP.createTokenString(obj).test();
     } else {
@@ -173,7 +173,7 @@ export function resolve(obj: any, prefix?: string[]): any {
     // tokens - invoke 'resolve' and continue to resolve recursively
     //
 
-    if (isToken(obj)) {
+    if (unresolved(obj)) {
         const value = obj[RESOLVE_METHOD]();
         return resolve(value, path);
     }

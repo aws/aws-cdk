@@ -104,7 +104,7 @@ export class CodeName {
 /**
  * Class declaration
  */
-export class ClassDeclaration {
+export class AttributeTypeDeclaration {
     constructor(
             readonly typeName: CodeName,
             readonly baseClassName?: CodeName,
@@ -118,7 +118,6 @@ export class ClassDeclaration {
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const ARN_NAME = new CodeName('', CORE_NAMESPACE, 'Arn');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
 
 /**
@@ -127,7 +126,7 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken'
 export class Attribute {
     constructor(
         readonly propertyName: string,
-        readonly attributeType: ClassDeclaration,
+        readonly attributeType: AttributeTypeDeclaration,
         readonly constructorArguments: string) {
     }
 }
@@ -194,13 +193,11 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
 
     let attrType;
     if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
-        attrType = new ClassDeclaration(CodeName.forPrimitive('string'));
+        attrType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
     } else {
         // Not in a namespace, base the name on the descriptive name
         const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
-        const baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
-
-        attrType = new ClassDeclaration(typeName, baseClass, undefined);
+        attrType = new AttributeTypeDeclaration(typeName, TOKEN_NAME, undefined);
     }
 
     const constructorArguments = `this.getAtt('${attributeName}')`;
@@ -215,7 +212,7 @@ export function refAttributeDefinition(resourceName: CodeName, refKind: string):
 
     const constructorArguments = 'this.ref';
 
-    const refType = new ClassDeclaration(CodeName.forPrimitive('string'));
+    const refType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
     return new Attribute(propertyName, refType, constructorArguments);
 }
 

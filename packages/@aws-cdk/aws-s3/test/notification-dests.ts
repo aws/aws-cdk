@@ -24,7 +24,7 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
             }
         });
 
-        this.topicArn = topicArn.toString();
+        this.topicArn = topicArn;
     }
 
     public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3notifications.BucketNotificationDestinationProps {

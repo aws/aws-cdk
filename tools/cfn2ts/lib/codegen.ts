@@ -220,7 +220,7 @@ export default class CodeGenerator {
         // Attributes
         //
 
-        const attributeTypes = new Array<genspec.ClassDeclaration>();
+        const attributeTypes = new Array<genspec.AttributeTypeDeclaration>();
         const attributes = new Array<genspec.Attribute>();
 
         if (spec.Attributes) {
@@ -480,7 +480,7 @@ export default class CodeGenerator {
     /**
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
-    private emitAttributeType(attr: genspec.ClassDeclaration) {
+    private emitAttributeType(attr: genspec.AttributeTypeDeclaration) {
         if (!attr.baseClassName) {
             return; // primitive, no attribute type generated
         }

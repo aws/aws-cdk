@@ -1,6 +1,6 @@
 import { AwsAccountId, AwsPartition, AwsRegion, FnConcat, Token } from '..';
 import { FnSelect, FnSplit } from '../cloudformation/fn';
-import { isToken } from '../core/tokens';
+import { unresolved } from '../core/tokens';
 import { CloudFormationToken } from './cloudformation-token';
 
 /**
@@ -86,8 +86,8 @@ export class ArnUtils {
      *          components of the ARN.
      */
     public static parse(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
-        if (isToken(arn)) {
-            return this.parseToken(new CloudFormationToken(arn), sepIfToken, hasName);
+        if (unresolved(arn)) {
+            return ArnUtils.parseToken(new CloudFormationToken(arn), sepIfToken, hasName);
         }
 
         const components = arn.split(':') as Array<string | undefined>;
