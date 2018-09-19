@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, subnetId } from './util';
@@ -252,7 +251,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     /**
      * Mapping of NatGateway by AZ
      */
-    private natGatewayByAZ: Obj<string> = {};
+    private natGatewayByAZ: { [az: string]: string } = {};
 
     /**
      * Subnet configurations for this VPC
@@ -530,7 +529,7 @@ export class VpcPublicSubnet extends VpcSubnet {
     /**
      * Creates a new managed NAT gateway attached to this public subnet.
      * Also adds the EIP for the managed NAT.
-     * Returns the NAT Gateway ref
+     * @returns A ref to the the NAT Gateway ID
      */
     public addNatGateway() {
         // Create a NAT Gateway in this public subnet
@@ -541,7 +540,7 @@ export class VpcPublicSubnet extends VpcSubnet {
             }).eipAllocationId,
             tags: new cdk.TagManager(this),
         });
-        return ngw.ref;
+        return ngw.natGatewayId;
     }
 }
 
