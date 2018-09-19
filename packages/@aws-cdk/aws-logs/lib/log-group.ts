@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
-import { cloudformation, LogGroupArn, LogGroupName } from './logs.generated';
+import { cloudformation } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
@@ -9,7 +9,7 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
  * Properties for importing a LogGroup
  */
 export interface LogGroupRefProps {
-    logGroupArn: LogGroupArn;
+    logGroupArn: string;
 }
 
 /**
@@ -26,12 +26,12 @@ export abstract class LogGroupRef extends cdk.Construct {
     /**
      * The ARN of this log group
      */
-    public abstract readonly logGroupArn: LogGroupArn;
+    public abstract readonly logGroupArn: string;
 
     /**
      * The name of this log group
      */
-    public abstract readonly logGroupName: LogGroupName;
+    public abstract readonly logGroupName: string;
 
     /**
      * Create a new Log Stream for this Log Group
@@ -80,7 +80,7 @@ export abstract class LogGroupRef extends cdk.Construct {
      */
     public export(): LogGroupRefProps {
         return {
-            logGroupArn: new LogGroupArn(new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue())
+            logGroupArn: new cdk.Output(this, 'LogGroupArn', { value: this.logGroupArn }).makeImportValue().toString()
         };
     }
 
@@ -148,12 +148,12 @@ export class LogGroup extends LogGroupRef {
     /**
      * The ARN of this log group
      */
-    public readonly logGroupArn: LogGroupArn;
+    public readonly logGroupArn: string;
 
     /**
      * The name of this log group
      */
-    public readonly logGroupName: LogGroupName;
+    public readonly logGroupName: string;
 
     constructor(parent: cdk.Construct, id: string, props: LogGroupProps = {}) {
         super(parent, id);
@@ -176,7 +176,7 @@ export class LogGroup extends LogGroupRef {
         }
 
         this.logGroupArn = resource.logGroupArn;
-        this.logGroupName = resource.ref;
+        this.logGroupName = resource.logGroupName;
     }
 }
 
@@ -187,18 +187,18 @@ class ImportedLogGroup extends LogGroupRef {
     /**
      * The ARN of this log group
      */
-    public readonly logGroupArn: LogGroupArn;
+    public readonly logGroupArn: string;
 
     /**
      * The name of this log group
      */
-    public readonly logGroupName: LogGroupName;
+    public readonly logGroupName: string;
 
     constructor(parent: cdk.Construct, id: string, props: LogGroupRefProps) {
         super(parent, id);
 
         this.logGroupArn = props.logGroupArn;
-        this.logGroupName = new LogGroupName(props.logGroupArn.resourceNameComponent(':'));
+        this.logGroupName = cdk.ArnUtils.resourceNameComponent(props.logGroupArn, ':');
     }
 }
 

@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, TrailArn } from './cloudtrail.generated';
+import { cloudformation } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
 export * from './cloudtrail.generated';
@@ -121,9 +121,9 @@ export enum LogRetention {
  */
 export class CloudTrail extends cdk.Construct {
 
-    public readonly cloudTrailArn: TrailArn;
-    private readonly cloudWatchLogsRoleArn?: cdk.Token;
-    private readonly cloudWatchLogsGroupArn?: cdk.Token;
+    public readonly cloudTrailArn: string;
+    private readonly cloudWatchLogsRoleArn?: string;
+    private readonly cloudWatchLogsGroupArn?: string;
     private eventSelectors: EventSelector[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: CloudTrailProps = {}) {
@@ -151,7 +151,7 @@ export class CloudTrail extends cdk.Construct {
 
             const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new cdk.ServicePrincipal(cloudTrailPrincipal) });
 
-            const streamArn = new cdk.Arn(new cdk.FnConcat(this.cloudWatchLogsGroupArn, ":log-stream:*"));
+            const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
             logsRole.addToPolicy(new cdk.PolicyStatement()
                 .addActions("logs:PutLogEvents", "logs:CreateLogStream")
                 .addResource(streamArn));

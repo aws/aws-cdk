@@ -203,7 +203,7 @@ export = {
             const stack = new cdk.Stack();
             const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-            bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource(new cdk.Arn('foo')).addAction('bar'));
+            bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource('foo').addAction('bar'));
 
             expect(stack).toMatch({
                 "Resources": {
@@ -348,11 +348,11 @@ export = {
         'static import(ref) allows importing an external/existing bucket'(test: Test) {
             const stack = new cdk.Stack();
 
-            const bucketArn = new s3.BucketArn('arn:aws:s3:::my-bucket');
+            const bucketArn = 'arn:aws:s3:::my-bucket';
             const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn });
 
             // this is a no-op since the bucket is external
-            bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource(new cdk.Arn('foo')).addAction('bar'));
+            bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource('foo').addAction('bar'));
 
             const p = new cdk.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
@@ -372,7 +372,7 @@ export = {
 
         'import can also be used to import arbitrary ARNs'(test: Test) {
             const stack = new cdk.Stack();
-            const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: new s3.BucketArn('arn:aws:s3:::my-bucket') });
+            const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
             bucket.addToResourcePolicy(new cdk.PolicyStatement().addAllResources().addAction('*'));
 
             // at this point we technically didn't create any resources in the consuming stack.

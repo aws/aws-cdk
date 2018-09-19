@@ -78,14 +78,18 @@
                     ":",
                     "parameter",
                     "/",
-                    "/rtv/",
                     {
-                      "Ref": "AWS::StackName"
-                    },
-                    "/",
-                    "com.myorg",
-                    "/",
-                    "MyQueueURL"
+                      "Fn::Join": [
+                        "",
+                        [
+                          "/rtv/",
+                          {
+                            "Ref": "AWS::StackName"
+                          },
+                          "/com.myorg/MyQueueURL"
+                        ]
+                      ]
+                    }
                   ]
                 ]
               }
@@ -144,10 +148,7 @@
               {
                 "Ref": "AWS::StackName"
               },
-              "/",
-              "com.myorg",
-              "/",
-              "MyQueueURL"
+              "/com.myorg/MyQueueURL"
             ]
           ]
         }

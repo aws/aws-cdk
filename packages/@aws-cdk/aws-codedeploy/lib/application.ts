@@ -1,7 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { ApplicationName, cloudformation } from './codedeploy.generated';
-
-export class ApplicationArn extends cdk.Arn {}
+import { cloudformation } from './codedeploy.generated';
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Application.
@@ -14,7 +12,7 @@ export interface ServerApplicationRefProps {
      * The physical, human-readable name of the CodeDeploy EC2/on-premise Application we're referencing.
      * The Application must be in the same account and region as the root Stack.
      */
-    applicationName: ApplicationName;
+    applicationName: string;
 }
 
 /**
@@ -41,20 +39,20 @@ export abstract class ServerApplicationRef extends cdk.Construct {
         return new ImportedServerApplicationRef(parent, id, props);
     }
 
-    public abstract readonly applicationArn: ApplicationArn;
+    public abstract readonly applicationArn: string;
 
-    public abstract readonly applicationName: ApplicationName;
+    public abstract readonly applicationName: string;
 
     public export(): ServerApplicationRefProps {
         return {
-            applicationName: new ApplicationName(new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue()),
+            applicationName: new cdk.Output(this, 'ApplicationName', { value: this.applicationName }).makeImportValue().toString()
         };
     }
 }
 
 class ImportedServerApplicationRef extends ServerApplicationRef {
-    public readonly applicationArn: ApplicationArn;
-    public readonly applicationName: ApplicationName;
+    public readonly applicationArn: string;
+    public readonly applicationName: string;
 
     constructor(parent: cdk.Construct, id: string, props: ServerApplicationRefProps) {
         super(parent, id);
@@ -80,8 +78,8 @@ export interface ServerApplicationProps {
  * A CodeDeploy Application that deploys to EC2/on-premise instances.
  */
 export class ServerApplication extends ServerApplicationRef {
-    public readonly applicationArn: ApplicationArn;
-    public readonly applicationName: ApplicationName;
+    public readonly applicationArn: string;
+    public readonly applicationName: string;
 
     constructor(parent: cdk.Construct, id: string, props?: ServerApplicationProps) {
         super(parent, id);
@@ -96,8 +94,8 @@ export class ServerApplication extends ServerApplicationRef {
     }
 }
 
-function applicationName2Arn(applicationName: ApplicationName): ApplicationArn {
-    return cdk.Arn.fromComponents({
+function applicationName2Arn(applicationName: string): string {
+    return cdk.ArnUtils.fromComponents({
         service: 'codedeploy',
         resource: 'application',
         resourceName: applicationName,

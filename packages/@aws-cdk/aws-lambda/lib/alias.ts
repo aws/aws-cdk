@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
+import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -58,7 +58,7 @@ export class Alias extends FunctionRef {
      * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
      * ARNs everywhere it accepts function names.
      */
-    public readonly functionName: FunctionName;
+    public readonly functionName: string;
 
     /**
      * ARN of this alias
@@ -66,7 +66,7 @@ export class Alias extends FunctionRef {
      * Used to be able to use Alias in place of a regular Lambda. Lambda accepts
      * ARNs everywhere it accepts function names.
      */
-    public readonly functionArn: FunctionArn;
+    public readonly functionArn: string;
 
     /**
      * Role associated with this alias
@@ -95,8 +95,8 @@ export class Alias extends FunctionRef {
 
         // Not actually the name, but an ARN can be used in all places
         // where the name is expected, and an ARN can refer to an Alias.
-        this.functionName = new FunctionName(alias.ref);
-        this.functionArn = new FunctionArn(alias.ref);
+        this.functionName = alias.ref;
+        this.functionArn = alias.aliasArn;
     }
 
     public addPermission(name: string, permission: Permission) {

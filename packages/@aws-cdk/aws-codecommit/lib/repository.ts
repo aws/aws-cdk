@@ -1,7 +1,7 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, RepositoryArn, RepositoryName } from './codecommit.generated';
+import { cloudformation } from './codecommit.generated';
 import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 
 /**
@@ -12,7 +12,7 @@ export interface RepositoryRefProps {
      * The name of an existing CodeCommit Repository that we are referencing.
      * Must be in the same account and region as the root Stack.
      */
-    repositoryName: RepositoryName;
+    repositoryName: string;
 }
 
 /**
@@ -39,10 +39,10 @@ export abstract class RepositoryRef extends cdk.Construct {
     }
 
     /** The ARN of this Repository. */
-    public abstract readonly repositoryArn: RepositoryArn;
+    public abstract readonly repositoryArn: string;
 
     /** The human-visible name of this Repository. */
-    public abstract readonly repositoryName: RepositoryName;
+    public abstract readonly repositoryName: string;
 
     /**
      * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
@@ -51,7 +51,7 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryName: new RepositoryName(new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue()),
+            repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
         };
     }
 
@@ -170,16 +170,16 @@ export abstract class RepositoryRef extends cdk.Construct {
 }
 
 class ImportedRepositoryRef extends RepositoryRef {
-    public readonly repositoryArn: RepositoryArn;
-    public readonly repositoryName: RepositoryName;
+    public readonly repositoryArn: string;
+    public readonly repositoryName: string;
 
     constructor(parent: cdk.Construct, name: string, props: RepositoryRefProps) {
         super(parent, name);
 
-        this.repositoryArn = new RepositoryArn(cdk.Arn.fromComponents({
+        this.repositoryArn = cdk.ArnUtils.fromComponents({
             service: 'codecommit',
             resource: props.repositoryName,
-        }));
+        });
         this.repositoryName = props.repositoryName;
     }
 }

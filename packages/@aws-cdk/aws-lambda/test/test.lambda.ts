@@ -119,7 +119,7 @@ export = {
                 action: 'lambda:*',
                 principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
                 sourceAccount: new cdk.AwsAccountId().toString(),
-                sourceArn: new cdk.Arn('arn:aws:s3:::my_bucket')
+                sourceArn: 'arn:aws:s3:::my_bucket'
             });
 
             expect(stack).toMatch({
@@ -187,7 +187,7 @@ export = {
             const stack = new cdk.Stack();
             const fn = newTestLambda(stack);
 
-            test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal(new cdk.Arn('just:arn')) }),
+            test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal('just:arn') }),
                 /Invalid principal type for Lambda permission statement/);
 
             fn.addPermission('S1', { principal: new cdk.ServicePrincipal('my-service') });

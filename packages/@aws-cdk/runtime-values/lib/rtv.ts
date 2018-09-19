@@ -44,17 +44,17 @@ export class RuntimeValue extends cdk.Construct {
     /**
      * The name of the runtime parameter.
      */
-    public readonly parameterName: ParameterName;
+    public readonly parameterName: string;
 
     /**
      * The ARN fo the SSM parameter used for this runtime value.
      */
-    public readonly parameterArn: cdk.Arn;
+    public readonly parameterArn: string;
 
     constructor(parent: cdk.Construct, name: string, props: RuntimeValueProps) {
         super(parent, name);
 
-        this.parameterName = new cdk.FnConcat('/rtv/', new cdk.AwsStackName(), '/', props.package, '/', name);
+        this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${name}`;
 
         new ssm.cloudformation.ParameterResource(this, 'Parameter', {
             parameterName: this.parameterName,
@@ -62,7 +62,7 @@ export class RuntimeValue extends cdk.Construct {
             value: props.value,
         });
 
-        this.parameterArn = cdk.Arn.fromComponents({
+        this.parameterArn = cdk.ArnUtils.fromComponents({
             service: 'ssm',
             resource: 'parameter',
             resourceName: this.parameterName
@@ -84,11 +84,4 @@ export class RuntimeValue extends cdk.Construct {
             .addResource(this.parameterArn)
             .addActions(...RuntimeValue.SSM_READ_ACTIONS));
     }
-}
-
-/**
- * The full name of the runtime value's SSM parameter.
- */
-export class ParameterName extends cdk.Token {
-
 }

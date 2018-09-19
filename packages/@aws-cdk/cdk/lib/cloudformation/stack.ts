@@ -405,8 +405,8 @@ export abstract class Referenceable extends StackElement {
     /**
      * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
      */
-    public get ref(): Token {
-        return new Ref(this);
+    public get ref(): string {
+        return new Ref(this).toString();
     }
 }
 
