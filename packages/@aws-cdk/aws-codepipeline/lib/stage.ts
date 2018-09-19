@@ -6,9 +6,55 @@ import { cloudformation } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
 
 /**
+ * Allows you to control where to place a new Stage when it's added to the Pipeline.
+ * Note that you can provide only one of the below properties -
+ * specifying more than one will result in a validation error.
+ *
+ * @see #rightBefore
+ * @see #justAfter
+ * @see #atIndex
+ */
+export interface StagePlacement {
+    /**
+     * Inserts the new Stage as a parent of the given Stage
+     * (changing its current parent Stage, if it had one).
+     */
+    readonly rightBefore?: Stage;
+
+    /**
+     * Inserts the new Stage as a child of the given Stage
+     * (changing its current child Stage, if it had one).
+     */
+    readonly justAfter?: Stage;
+
+    /**
+     * Inserts the new Stage at the given index in the Pipeline,
+     * moving the Stage currently at that index,
+     * and any subsequent ones, one index down.
+     * Indexing starts at 0.
+     * The maximum allowed value is {@link Pipeline#stageCount},
+     * which will insert the new Stage at the end of the Pipeline.
+     */
+    readonly atIndex?: number;
+}
+
+/**
+ * The properties for the {@link Pipeline#addStage} method.
+ */
+export interface CommonStageProps {
+    /**
+     * Allows specifying where should the newly created {@link Stage}
+     * be placed in the Pipeline.
+     *
+     * @default the stage is added at the end of the Pipeline
+     */
+    placement?: StagePlacement;
+}
+
+/**
  * The construction properties for {@link Stage}.
  */
-export interface StageProps {
+export interface StageProps extends CommonStageProps {
     /**
      * The Pipeline to add the newly created Stage to.
      */
@@ -44,7 +90,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
         this.pipeline = props.pipeline;
         actions.validateName('Stage', name);
 
-        this.pipeline._addStage(this);
+        (this.pipeline as any)._attachStage(this, props.placement);
     }
 
     /**
@@ -91,8 +137,10 @@ export class Stage extends cdk.Construct implements actions.IStage {
         return this.pipeline.role;
     }
 
-    public _addAction(action: actions.Action): void {
-        // _addAction should be idempotent in case a customer ever calls it directly
+    // can't make this method private like Pipeline#_attachStage,
+    // as it comes from the IStage interface
+    public _attachAction(action: actions.Action): void {
+        // _attachAction should be idempotent in case a customer ever calls it directly
         if (!this._actions.includes(action)) {
             this._actions.push(action);
         }
