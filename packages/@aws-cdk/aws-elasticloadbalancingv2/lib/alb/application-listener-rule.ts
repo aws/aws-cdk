@@ -1,12 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ListenerRuleArn } from './elasticloadbalancingv2.generated';
-import { ListenerRef } from './listener-ref';
-import { TargetGroupRef } from './target-group-ref';
+import { cloudformation, ListenerRuleArn } from '../elasticloadbalancingv2.generated';
+import { IApplicationListener } from './application-listener';
+import { IApplicationTargetGroup } from './application-target-group';
 
 /**
- * Properties for defining a rule on a listener
+ * Basic properties for defining a rule on a listener
  */
-export interface BaseListenerRuleProps {
+export interface BaseApplicationListenerRuleProps {
     /**
      * Priority of the rule
      *
@@ -19,7 +19,7 @@ export interface BaseListenerRuleProps {
     /**
      * Target groups to forward requests to
      */
-    targets: TargetGroupRef[];
+    targetGroups?: IApplicationTargetGroup[];
 
     /**
      * Rule applies if the requested host matches the indicated host
@@ -47,17 +47,17 @@ export interface BaseListenerRuleProps {
 /**
  * Properties for defining a listener rule
  */
-export interface ListenerRuleProps extends BaseListenerRuleProps {
+export interface ApplicationListenerRuleProps extends BaseApplicationListenerRuleProps {
     /**
      * The listener to attach the rule to
      */
-    listener: ListenerRef;
+    listener: IApplicationListener;
 }
 
 /**
  * Define a new listener rule
  */
-export class ListenerRule extends cdk.Construct implements cdk.IDependable {
+export class ApplicationListenerRule extends cdk.Construct implements cdk.IDependable {
     /**
      * The ARN of this rule
      */
@@ -71,15 +71,22 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
     private readonly conditions: {[key: string]: string[] | undefined} = {};
 
     private readonly actions: any[] = [];
+    private readonly listener: IApplicationListener;
 
-    constructor(parent: cdk.Construct, id: string, props: ListenerRuleProps) {
+    constructor(parent: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
         super(parent, id);
+
+        if (!props.hostHeader && !props.pathPattern) {
+            throw new Error(`At least one of 'hostHeader' or 'pathPattern' is required when defining a load balancing rule.`);
+        }
+
+        this.listener = props.listener;
 
         const resource = new cloudformation.ListenerRuleResource(this, 'Resource', {
             listenerArn: props.listener.listenerArn,
             priority: props.priority,
             conditions: new cdk.Token(() => this.renderConditions()),
-            actions: new cdk.Token(() => this.renderActions()),
+            actions: new cdk.Token(() => this.actions),
         });
 
         if (props.hostHeader) {
@@ -88,6 +95,8 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
         if (props.pathPattern) {
             this.setCondition('path-pattern', [props.pathPattern]);
         }
+
+        (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
 
         this.dependencyElements.push(resource);
         this.listenerRuleArn = resource.ref;
@@ -101,16 +110,29 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
     }
 
     /**
+     * Validate the rule
+     */
+    public validate() {
+        if (this.actions.length === 0) {
+            return ['Listener rule needs at least one action'];
+        }
+        return [];
+    }
+
+    /**
      * Add a TargetGroup to load balance to
      */
-    public addTargetGroup(targetGroup: TargetGroupRef) {
+    public addTargetGroup(targetGroup: IApplicationTargetGroup) {
         this.actions.push({
             targetGroupArn: targetGroup.targetGroupArn,
             type: 'forward'
         });
-        return targetGroup;
+        targetGroup.registerListener(this.listener);
     }
 
+    /**
+     * Render the conditions for this rule
+     */
     private renderConditions() {
         const ret = [];
         for (const [field, values] of Object.entries(this.conditions)) {
@@ -119,12 +141,5 @@ export class ListenerRule extends cdk.Construct implements cdk.IDependable {
             }
         }
         return ret;
-    }
-
-    private renderActions() {
-        if (this.actions.length === 0) {
-            throw new Error('Listener needs at least one default action');
-        }
-        return this.actions;
     }
 }

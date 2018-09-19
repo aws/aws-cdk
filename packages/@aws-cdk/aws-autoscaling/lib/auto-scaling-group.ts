@@ -137,7 +137,8 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable, elbv2.ILoadBalancerTarget {
+export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable,
+    elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
     /**
      * The type of OS instances of this fleet are running.
      */
@@ -252,11 +253,19 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
     }
 
     /**
-     * Attach to ELBv2 Target Group
+     * Attach to ELBv2 Application Target Group
      */
-    public attachToELBv2TargetGroup(targetGroup: elbv2.TargetGroupRef): elbv2.LoadBalancerTargetProps {
+    public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
         this.targetGroupArns.push(targetGroup.targetGroupArn);
         targetGroup.registerConnectable(this);
+        return { targetType: elbv2.TargetType.SelfRegistering };
+    }
+
+    /**
+     * Attach to ELBv2 Application Target Group
+     */
+    public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        this.targetGroupArns.push(targetGroup.targetGroupArn);
         return { targetType: elbv2.TargetType.SelfRegistering };
     }
 
