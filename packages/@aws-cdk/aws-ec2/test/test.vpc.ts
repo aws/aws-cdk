@@ -10,7 +10,7 @@ export = {
             "vpc.vpcId returns a token to the VPC ID"(test: Test) {
                 const stack = getTestStack();
                 const vpc = new VpcNetwork(stack, 'TheVPC');
-                test.deepEqual(vpc.vpcId.resolve(), {Ref: 'TheVPC92636AB0' } );
+                test.deepEqual(resolve(vpc.vpcId), {Ref: 'TheVPC92636AB0' } );
                 test.done();
             },
 
@@ -68,7 +68,7 @@ export = {
             const zones = new AvailabilityZoneProvider(stack).availabilityZones.length;
             test.equal(vpc.publicSubnets.length, zones);
             test.equal(vpc.privateSubnets.length, zones);
-            test.deepEqual(vpc.vpcId.resolve(), { Ref: 'TheVPC92636AB0' });
+            test.deepEqual(resolve(vpc.vpcId), { Ref: 'TheVPC92636AB0' });
             test.done();
         },
 

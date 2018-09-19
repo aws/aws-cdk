@@ -13,7 +13,7 @@ class MyStack extends cdk.Stack {
         new CognitoChatRoomPool(this, 'UserPool');
 
         const bucket = s3.BucketRef.import(this, 'DougsBucket', {
-            bucketName: new s3.BucketName('dougs-chat-app')
+            bucketName: 'dougs-chat-app'
         });
 
         new ChatAppFunction(this, 'StartAddBucket', {

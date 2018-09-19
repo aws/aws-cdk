@@ -16,7 +16,7 @@ interface DemoResourceProps {
 }
 
 class DemoResource extends cdk.Construct {
-    public readonly response: cdk.Token;
+    public readonly response: string;
 
     constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
         super(parent, name);
@@ -33,7 +33,7 @@ class DemoResource extends cdk.Construct {
             properties: props
         });
 
-        this.response = resource.getAtt('Response');
+        this.response = resource.getAtt('Response').toString();
     }
 }
 

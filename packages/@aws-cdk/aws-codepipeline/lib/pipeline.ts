@@ -4,13 +4,8 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import util = require('@aws-cdk/util');
-import { cloudformation, PipelineName, PipelineVersion } from './codepipeline.generated';
+import { cloudformation } from './codepipeline.generated';
 import { CommonStageProps, Stage, StagePlacement } from './stage';
-
-/**
- * The ARN of a pipeline
- */
-export class PipelineArn extends cdk.Arn { }
 
 export interface PipelineProps {
     /**
@@ -59,17 +54,17 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     /**
      * ARN of this pipeline
      */
-    public readonly pipelineArn: PipelineArn;
+    public readonly pipelineArn: string;
 
     /**
      * The name of the pipeline
      */
-    public readonly pipelineName: PipelineName;
+    public readonly pipelineName: string;
 
     /**
      * The version of the pipeline
      */
-    public readonly pipelineVersion: PipelineVersion;
+    public readonly pipelineVersion: string;
 
     /**
      * Bucket used to store output artifacts
@@ -115,10 +110,10 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
         this.pipelineVersion = codePipeline.pipelineVersion;
 
         // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-        this.pipelineArn = new PipelineArn(cdk.Arn.fromComponents({
+        this.pipelineArn = cdk.ArnUtils.fromComponents({
             service: 'codepipeline',
             resource: this.pipelineName
-        }));
+        });
     }
 
     /**
@@ -153,7 +148,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      *      rule.addTarget(pipeline);
      *
      */
-    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         // the first time the event rule target is retrieved, we define an IAM
         // role assumable by the CloudWatch events service which is allowed to
         // start the execution of this pipeline. no need to define more than one

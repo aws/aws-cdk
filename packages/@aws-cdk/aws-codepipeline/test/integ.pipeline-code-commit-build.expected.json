@@ -240,9 +240,16 @@
                       ":",
                       "log-group",
                       ":",
-                      "/aws/codebuild/",
                       {
-                        "Ref": "MyBuildProject30DB9D6E"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "/aws/codebuild/",
+                            {
+                              "Ref": "MyBuildProject30DB9D6E"
+                            }
+                          ]
+                        ]
                       }
                     ]
                   ]
@@ -251,28 +258,28 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn",
+                      ":",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":",
+                      "logs",
+                      ":",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      "log-group",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
                           [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "logs",
-                            ":",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            "log-group",
-                            ":",
                             "/aws/codebuild/",
                             {
                               "Ref": "MyBuildProject30DB9D6E"

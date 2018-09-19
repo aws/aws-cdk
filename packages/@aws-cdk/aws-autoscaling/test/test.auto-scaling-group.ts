@@ -360,16 +360,16 @@ export = {
 
 function mockVpc(stack: cdk.Stack) {
     return ec2.VpcNetwork.import(stack, 'MyVpc', {
-        vpcId: new ec2.VPCId('my-vpc'),
+        vpcId: 'my-vpc',
         availabilityZones: [ 'az1' ],
-        publicSubnetIds: [ new ec2.SubnetId('pub1') ],
-        privateSubnetIds: [ new ec2.SubnetId('pri1') ],
+        publicSubnetIds: [ 'pub1' ],
+        privateSubnetIds: [ 'pri1' ],
         isolatedSubnetIds: [],
     });
 }
 
 function mockSecurityGroup(stack: cdk.Stack) {
     return ec2.SecurityGroupRef.import(stack, 'MySG', {
-        securityGroupId: new ec2.SecurityGroupId('most-secure'),
+        securityGroupId: 'most-secure',
     });
 }

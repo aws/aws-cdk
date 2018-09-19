@@ -366,7 +366,7 @@ export = {
 
         // WHEN
         const imported = apigateway.RestApi.import(stack, 'imported-api', {
-            restApiId: new apigateway.RestApiId('api-rxt4498f')
+            restApiId: 'api-rxt4498f'
         });
         const exported = imported.export();
 
@@ -528,7 +528,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const cloneFrom = apigateway.RestApi.import(stack, 'RestApi', {
-            restApiId: new apigateway.RestApiId('foobar')
+            restApiId: 'foobar'
         });
 
         // WHEN
@@ -580,7 +580,7 @@ export = {
         const api = new apigateway.RestApi(stack, 'myapi', {
             defaultIntegration: rootInteg,
             defaultMethodOptions: {
-                authorizerId: new apigateway.AuthorizerId('AUTHID'),
+                authorizerId: 'AUTHID',
                 authorizationType: apigateway.AuthorizationType.IAM,
             }
         });
@@ -599,7 +599,7 @@ export = {
         const child2 = api.root.addResource('child2', {
             defaultIntegration: new apigateway.MockIntegration(),
             defaultMethodOptions: {
-                authorizerId: new apigateway.AuthorizerId('AUTHID2'),
+                authorizerId: 'AUTHID2',
             }
         });
 

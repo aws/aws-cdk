@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ResourceId } from './apigateway.generated';
+import { cloudformation } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
@@ -18,7 +18,7 @@ export interface IRestApiResource {
     /**
      * The ID of the resource.
      */
-    readonly resourceId: ResourceId;
+    readonly resourceId: string;
 
     /**
      * The full path of this resuorce.
@@ -85,7 +85,7 @@ export interface ResourceProps extends ResourceOptions {
 
 export class Resource extends cdk.Construct implements IRestApiResource {
     public readonly resourceApi: RestApi;
-    public readonly resourceId: ResourceId;
+    public readonly resourceId: string;
     public readonly resourcePath: string;
     public readonly defaultIntegration?: Integration;
     public readonly defaultMethodOptions?: MethodOptions;
@@ -102,7 +102,7 @@ export class Resource extends cdk.Construct implements IRestApiResource {
         };
         const resource = new cloudformation.Resource(this, 'Resource', resourceProps);
 
-        this.resourceId = resource.ref;
+        this.resourceId = resource.resourceId;
         this.resourceApi = props.parent.resourceApi;
 
         // render resource path (special case for root)

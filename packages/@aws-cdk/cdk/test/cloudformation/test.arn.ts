@@ -1,9 +1,9 @@
 import { Test } from 'nodeunit';
-import { Arn, ArnComponents, resolve, Token } from '../../lib';
+import { ArnComponents, ArnUtils, resolve, Token } from '../../lib';
 
 export = {
     'create from components with defaults'(test: Test) {
-        const arn = Arn.fromComponents({
+        const arn = ArnUtils.fromComponents({
             service: 'sqs',
             resource: 'myqueuename'
         });
@@ -25,7 +25,7 @@ export = {
     },
 
     'create from components with specific values for the various components'(test: Test) {
-        const arn = Arn.fromComponents({
+        const arn = ArnUtils.fromComponents({
             service: 'dynamodb',
             resource: 'table',
             account: '123456789012',
@@ -53,7 +53,7 @@ export = {
     },
 
     'allow empty string in components'(test: Test) {
-        const arn = Arn.fromComponents({
+        const arn = ArnUtils.fromComponents({
             service: 's3',
             resource: 'my-bucket',
             account: '',
@@ -84,7 +84,7 @@ export = {
     },
 
     'resourcePathSep can be set to ":" instead of the default "/"'(test: Test) {
-        const arn = Arn.fromComponents({
+        const arn = ArnUtils.fromComponents({
             service: 'codedeploy',
             resource: 'application',
             sep: ':',
@@ -110,7 +110,7 @@ export = {
     },
 
     'fails if resourcePathSep is neither ":" nor "/"'(test: Test) {
-        test.throws(() => Arn.fromComponents({
+        test.throws(() => ArnUtils.fromComponents({
             service: 'foo',
             resource: 'bar',
             sep: 'x' }));
@@ -121,22 +121,22 @@ export = {
 
         'fails': {
             'if doesn\'t start with "arn:"'(test: Test) {
-                test.throws(() => Arn.parse("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
+                test.throws(() => ArnUtils.parse("barn:foo:x:a:1:2"), /ARNs must start with "arn:": barn:foo/);
                 test.done();
             },
 
             'if the ARN doesnt have enough components'(test: Test) {
-                test.throws(() => Arn.parse('arn:is:too:short'), /ARNs must have at least 6 components: arn:is:too:short/);
+                test.throws(() => ArnUtils.parse('arn:is:too:short'), /ARNs must have at least 6 components: arn:is:too:short/);
                 test.done();
             },
 
             'if "service" is not specified'(test: Test) {
-                test.throws(() => Arn.parse('arn:aws::4:5:6'), /The `service` component \(3rd component\) is required/);
+                test.throws(() => ArnUtils.parse('arn:aws::4:5:6'), /The `service` component \(3rd component\) is required/);
                 test.done();
             },
 
             'if "resource" is not specified'(test: Test) {
-                test.throws(() => Arn.parse('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
+                test.throws(() => ArnUtils.parse('arn:aws:service:::'), /The `resource` component \(6th component\) is required/);
                 test.done();
             }
         },
@@ -183,7 +183,7 @@ export = {
 
             Object.keys(tests).forEach(arn => {
                 const expected = tests[arn];
-                test.deepEqual(Arn.parse(arn), expected, arn);
+                test.deepEqual(ArnUtils.parse(arn), expected, arn);
             });
 
             test.done();
@@ -191,7 +191,7 @@ export = {
 
         'a Token with : separator'(test: Test) {
             const theToken = { Ref: 'SomeParameter' };
-            const parsed = Arn.parseToken(new Token(() => theToken), ':');
+            const parsed = ArnUtils.parseToken(new Token(() => theToken), ':');
 
             test.deepEqual(resolve(parsed.partition), { 'Fn::Select': [ 1, { 'Fn::Split': [ ':', theToken ]} ]});
             test.deepEqual(resolve(parsed.service), { 'Fn::Select': [ 2, { 'Fn::Split': [ ':', theToken ]} ]});
@@ -206,7 +206,7 @@ export = {
 
         'a Token with / separator'(test: Test) {
             const theToken = { Ref: 'SomeParameter' };
-            const parsed = Arn.parseToken(new Token(() => theToken));
+            const parsed = ArnUtils.parseToken(new Token(() => theToken));
 
             test.equal(parsed.sep, '/');
 

@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, DatabaseClusterRef, Password, Username } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseClusterEngine, DatabaseClusterRef } from '../lib';
 
 export = {
     'check that instantiation works'(test: Test) {
@@ -14,8 +14,8 @@ export = {
         new DatabaseCluster(stack, 'Database', {
             engine: DatabaseClusterEngine.Aurora,
             masterUser: {
-                username: new Username('admin'),
-                password: new Password('tooshort'),
+                username: 'admin',
+                password: 'tooshort',
             },
             instanceProps: {
                 instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -42,8 +42,8 @@ export = {
         const cluster = new DatabaseCluster(stack1, 'Database', {
             engine: DatabaseClusterEngine.Aurora,
             masterUser: {
-                username: new Username('admin'),
-                password: new Password('tooshort'),
+                username: 'admin',
+                password: 'tooshort',
             },
             instanceProps: {
                 instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -68,8 +68,8 @@ export = {
             engine: DatabaseClusterEngine.Aurora,
             instances: 1,
             masterUser: {
-                username: new Username('admin'),
-                password: new Password('tooshort'),
+                username: 'admin',
+                password: 'tooshort',
             },
             instanceProps: {
                 instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
@@ -105,8 +105,8 @@ export = {
         new DatabaseCluster(stack, 'Database', {
             engine: DatabaseClusterEngine.Aurora,
             masterUser: {
-                username: new Username('admin'),
-                password: new Password('tooshort'),
+                username: 'admin',
+                password: 'tooshort',
             },
             instanceProps: {
                 instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),

@@ -104,17 +104,20 @@ export class CodeName {
 /**
  * Class declaration
  */
-export class ClassDeclaration {
+export class AttributeTypeDeclaration {
     constructor(
             readonly typeName: CodeName,
-            readonly baseClassName: CodeName,
+            readonly baseClassName?: CodeName,
             readonly docLink?: string
         ) {
+    }
+
+    public get isPrimitive() {
+        return !this.baseClassName;
     }
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const ARN_NAME = new CodeName('', CORE_NAMESPACE, 'Arn');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
 
 /**
@@ -123,7 +126,7 @@ export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken'
 export class Attribute {
     constructor(
         readonly propertyName: string,
-        readonly attributeType: ClassDeclaration,
+        readonly attributeType: AttributeTypeDeclaration,
         readonly constructorArguments: string) {
     }
 }
@@ -184,17 +187,20 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The type we will generate for the attribute, including its base class and docs.
  * - The property name we will use to refer to the attribute.
  */
-export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink?: string): Attribute {
+export function attributeDefinition(resourceName: CodeName, attributeName: string, spec: schema.Attribute): Attribute {
     const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
     const propertyName = cloudFormationToScriptName(descriptiveName);            // "bucketArn"
 
-    // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
-    const baseClass = attributeName.endsWith('Arn') ? ARN_NAME : TOKEN_NAME;
+    let attrType;
+    if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
+        attrType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    } else {
+        // Not in a namespace, base the name on the descriptive name
+        const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
+        attrType = new AttributeTypeDeclaration(typeName, TOKEN_NAME, undefined);
+    }
 
     const constructorArguments = `this.getAtt('${attributeName}')`;
-
-    const attrType = new ClassDeclaration(typeName, baseClass, docLink);
     return new Attribute(propertyName, attrType, constructorArguments);
 }
 
@@ -202,14 +208,12 @@ export function attributeDefinition(resourceName: CodeName, attributeName: strin
  * Return an attribute definition name for the RefKind for this class
  */
 export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
-    const refClassName = descriptiveAttributeName(resourceName, refKind);
-    const refClass = new CodeName(resourceName.packageName, '', refClassName);
-    const baseClass = refKind === schema.SpecialRefKind.Arn ? ARN_NAME : TOKEN_NAME;
+    const propertyName = codemaker.toCamelCase(descriptiveAttributeName(resourceName, refKind));
 
-    const constructorArguments = '{ Ref: this.logicalId }, `${this.logicalId}.Ref`';
+    const constructorArguments = 'this.ref';
 
-    const refType = new ClassDeclaration(refClass, baseClass);
-    return new Attribute('ref', refType, constructorArguments);
+    const refType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    return new Attribute(propertyName, refType, constructorArguments);
 }
 
 /**

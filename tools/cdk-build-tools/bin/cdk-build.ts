@@ -46,7 +46,6 @@ const buildTimer = timers.start('Total time');
 
 main().then(() => {
     buildTimer.end();
-    process.stdout.write(`Build complete. ${timers.display()}\n`);
 }).catch(e => {
     buildTimer.end();
     process.stderr.write(`${e.toString()}\n`);

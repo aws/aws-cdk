@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ResourceId, RestApiId } from './apigateway.generated';
+import { cloudformation } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
@@ -139,7 +139,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
     /**
      * The ID of this API Gateway RestApi.
      */
-    public readonly restApiId: RestApiId;
+    public readonly restApiId: string;
 
     /**
      * API Gateway deployment that represents the latest changes of the API.
@@ -216,7 +216,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
             defaultIntegration: props.defaultIntegration,
             defaultMethodOptions: props.defaultMethodOptions,
             resourceApi: this,
-            resourceId: new ResourceId(resource.restApiRootResourceId),
+            resourceId: resource.restApiRootResourceId,
             resourcePath: '/'
         };
     }
@@ -258,7 +258,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
             method = '*';
         }
 
-        return cdk.Arn.fromComponents({
+        return cdk.ArnUtils.fromComponents({
             service: 'execute-api',
             resource: this.restApiId,
             sep: '/',
@@ -315,7 +315,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
     private configureCloudWatchRole(apiResource: cloudformation.RestApiResource) {
         const role = new iam.Role(this, 'CloudWatchRole', {
             assumedBy: new cdk.ServicePrincipal('apigateway.amazonaws.com'),
-            managedPolicyArns: [ cdk.Arn.fromComponents({
+            managedPolicyArns: [ cdk.ArnUtils.fromComponents({
                 service: 'iam',
                 region: '',
                 account: 'aws',

@@ -16,9 +16,9 @@ export class AwsManagedPolicy {
     /**
      * The Arn of this managed policy
      */
-    public get policyArn(): cdk.Arn {
+    public get policyArn(): string {
         // the arn is in the form of - arn:aws:iam::aws:policy/<policyName>
-        return cdk.Arn.fromComponents({
+        return cdk.ArnUtils.fromComponents({
             service: "iam",
             region: "", // no region for managed policy
             account: "aws", // the account for a managed policy is 'aws'

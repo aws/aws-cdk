@@ -6,7 +6,6 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { TopicPolicy } from './policy';
-import { TopicArn, TopicName } from './sns.generated';
 import { Subscription, SubscriptionProtocol } from './subscription';
 
 /**
@@ -20,9 +19,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
         return new ImportedTopic(parent, name, props);
     }
 
-    public abstract readonly topicArn: TopicArn;
+    public abstract readonly topicArn: string;
 
-    public abstract readonly topicName: TopicName;
+    public abstract readonly topicName: string;
 
     /**
      * Controls automatic creation of policy objects.
@@ -47,8 +46,8 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      */
     public export(): TopicRefProps {
         return {
-            topicArn: new TopicArn(new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue()),
-            topicName: new TopicName(new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue()),
+            topicArn: new cdk.Output(this, 'TopicArn', { value: this.topicArn }).makeImportValue().toString(),
+            topicName: new cdk.Output(this, 'TopicName', { value: this.topicName }).makeImportValue().toString(),
         };
     }
 
@@ -207,7 +206,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      *
      * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/resource-based-policies-cwe.html#sns-permissions
      */
-    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventRuleTargetPolicyAdded) {
             this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addAction('sns:Publish')
@@ -223,7 +222,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
         };
     }
 
-    public get alarmActionArn(): cdk.Arn {
+    public get alarmActionArn(): string {
         return this.topicArn;
     }
 
@@ -282,7 +281,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
      * @param bucketArn The ARN of the bucket sending the notifications
      * @param bucketId A unique ID of the bucket
      */
-    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+    public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
         // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
         if (!this.notifyingBuckets.has(bucketId)) {
 
@@ -307,8 +306,8 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
  * An imported topic
  */
 class ImportedTopic extends TopicRef {
-    public readonly topicArn: TopicArn;
-    public readonly topicName: TopicName;
+    public readonly topicArn: string;
+    public readonly topicName: string;
 
     protected autoCreatePolicy: boolean = false;
 
@@ -323,8 +322,8 @@ class ImportedTopic extends TopicRef {
  * Reference to an external topic.
  */
 export interface TopicRefProps {
-    topicArn: TopicArn;
-    topicName: TopicName;
+    topicArn: string;
+    topicName: string;
 }
 
 /**

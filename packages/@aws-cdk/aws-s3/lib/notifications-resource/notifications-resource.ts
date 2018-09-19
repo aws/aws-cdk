@@ -157,15 +157,15 @@ interface CommonConfiguration {
 }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
-    LambdaFunctionArn: cdk.Arn;
+    LambdaFunctionArn: string;
 }
 
 interface QueueConfiguration extends CommonConfiguration {
-    QueueArn: cdk.Arn;
+    QueueArn: string;
 }
 
 interface TopicConfiguration extends CommonConfiguration {
-    TopicArn: cdk.Arn;
+    TopicArn: string;
 }
 
 interface FilterRule {

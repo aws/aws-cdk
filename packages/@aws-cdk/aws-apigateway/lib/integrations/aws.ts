@@ -68,7 +68,7 @@ export class AwsIntegration extends Integration {
         super({
             type,
             integrationHttpMethod: 'POST',
-            uri: cdk.Arn.fromComponents({
+            uri: cdk.ArnUtils.fromComponents({
                 service: 'apigateway',
                 account: backend,
                 resource: apiType,

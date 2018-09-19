@@ -1,4 +1,4 @@
-import { App, Arn, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/cdk";
+import { App, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/cdk";
 import { Policy, Role } from "../lib";
 
 const app = new App(process.argv);
@@ -9,10 +9,10 @@ const role = new Role(stack, 'TestRole', {
     assumedBy: new ServicePrincipal('sqs.amazonaws.com')
 });
 
-role.addToPolicy(new PolicyStatement().addResource(new Arn('*')).addAction('sqs:SendMessage'));
+role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));
 
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
-policy.addStatement(new PolicyStatement().addAction('ec2:*').addResource(new Arn('*')));
+policy.addStatement(new PolicyStatement().addAction('ec2:*').addResource('*'));
 policy.attachToRole(role);
 
 process.stdout.write(app.run());

@@ -1,8 +1,8 @@
+import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import lambda = require('@aws-cdk/aws-lambda');
 import { cloudformation as s3 } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
-import { CustomResource, SingletonLambda } from '../lib';
 
 interface DemoResourceProps {
     /**
@@ -18,24 +18,24 @@ interface DemoResourceProps {
 
 class DemoResource extends cdk.Construct implements cdk.IDependable {
     public readonly dependencyElements: cdk.IDependable[];
-    public readonly response: cdk.Token;
+    public readonly response: string;
 
     constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
         super(parent, name);
 
         const resource = new CustomResource(this, 'Resource', {
-            lambdaProvider: new SingletonLambda(this, 'Singleton', {
+            lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
                 uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
                 // This makes the demo only work as top-level TypeScript program, but that's fine for now
-                code: new lambda.LambdaInlineCode(fs.readFileSync('integ.trivial-lambda-provider.py', { encoding: 'utf-8' })),
+                code: lambda.Code.inline(fs.readFileSync('provider.py', { encoding: 'utf-8' })),
                 handler: 'index.main',
                 timeout: 300,
-                runtime: lambda.LambdaRuntime.Python27,
+                runtime: lambda.Runtime.Python27,
             }),
             properties: props
         });
 
-        this.response = resource.getAtt('Response');
+        this.response = resource.getAtt('Response').toString();
         this.dependencyElements = [resource];
     }
 }

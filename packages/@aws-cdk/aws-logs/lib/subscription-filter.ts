@@ -28,7 +28,7 @@ export interface LogSubscriptionDestination {
     /**
      * The ARN of the subscription's destination
      */
-    readonly arn: cdk.Arn;
+    readonly arn: string;
 
     /**
      * The role to assume to write log events to the destination

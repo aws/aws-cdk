@@ -1,7 +1,7 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { QueueRef } from './queue-ref';
-import { cloudformation, QueueArn, QueueName, QueueUrl } from './sqs.generated';
+import { cloudformation } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -183,17 +183,17 @@ export class Queue extends QueueRef {
     /**
      * The ARN of this queue
      */
-    public readonly queueArn: QueueArn;
+    public readonly queueArn: string;
 
     /**
      * The name of this queue
      */
-    public readonly queueName: QueueName;
+    public readonly queueName: string;
 
     /**
      * The URL of this queue
      */
-    public readonly queueUrl: QueueUrl;
+    public readonly queueUrl: string;
 
     /**
      * If this queue is encrypted, this is the KMS key.
@@ -245,7 +245,7 @@ export class Queue extends QueueRef {
 
             if (encryption === QueueEncryption.KmsManaged) {
                 const masterKey = kms.EncryptionKey.import(this, 'Key', {
-                    keyArn: new kms.KeyArn('alias/aws/sqs')
+                    keyArn: 'alias/aws/sqs'
                 });
 
                 return {
@@ -311,6 +311,6 @@ interface FifoProps {
 }
 
 interface EncryptionProps {
-    readonly kmsMasterKeyId?: string | kms.KeyArn;
+    readonly kmsMasterKeyId?: string;
     readonly kmsDataKeyReusePeriodSeconds?: number;
 }

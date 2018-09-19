@@ -5,7 +5,7 @@ import { Project } from '../lib';
 
 const app = new cdk.App(process.argv);
 
-const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
+const stack = new cdk.Stack(app, 'aws-cdk-codebuild-project-shell');
 
 new Project(stack, 'MyProject', {
     buildScriptAsset: new assets.ZipDirectoryAsset(stack, 'Bundle', { path: 'script_bundle' })

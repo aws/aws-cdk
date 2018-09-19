@@ -1,9 +1,7 @@
 import cdk = require("@aws-cdk/cdk");
 import iam = require("../../aws-iam/lib/role");
 import { ServerApplication, ServerApplicationRef } from "./application";
-import { ApplicationName, cloudformation, DeploymentGroupName } from './codedeploy.generated';
-
-export class DeploymentGroupArn extends cdk.Arn {}
+import { cloudformation } from './codedeploy.generated';
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
@@ -22,7 +20,7 @@ export interface ServerDeploymentGroupRefProps {
      * The physical, human-readable name of the CodeDeploy EC2/on-premise Deployment Group
      * that we are referencing.
      */
-    deploymentGroupName: DeploymentGroupName;
+    deploymentGroupName: string;
 }
 
 /**
@@ -50,23 +48,21 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
     }
 
     public abstract readonly application: ServerApplicationRef;
-    public abstract readonly deploymentGroupName: DeploymentGroupName;
-    public abstract readonly deploymentGroupArn: DeploymentGroupArn;
+    public abstract readonly deploymentGroupName: string;
+    public abstract readonly deploymentGroupArn: string;
 
     public export(): ServerDeploymentGroupRefProps {
         return {
             application: this.application,
-            deploymentGroupName: new DeploymentGroupName(new cdk.Output(this, 'DeploymentGroupName', {
-                    value: this.deploymentGroupName
-                }).makeImportValue()),
+            deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', { value: this.deploymentGroupName }).makeImportValue().toString()
         };
     }
 }
 
 class ImportedServerDeploymentGroupRef extends ServerDeploymentGroupRef {
     public readonly application: ServerApplicationRef;
-    public readonly deploymentGroupName: DeploymentGroupName;
-    public readonly deploymentGroupArn: DeploymentGroupArn;
+    public readonly deploymentGroupName: string;
+    public readonly deploymentGroupArn: string;
 
     constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupRefProps) {
         super(parent, id);
@@ -108,8 +104,8 @@ export interface ServerDeploymentGroupProps {
 export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     public readonly application: ServerApplicationRef;
     public readonly role: iam.Role;
-    public readonly deploymentGroupArn: DeploymentGroupArn;
-    public readonly deploymentGroupName: DeploymentGroupName;
+    public readonly deploymentGroupArn: string;
+    public readonly deploymentGroupName: string;
 
     constructor(parent: cdk.Construct, id: string, props?: ServerDeploymentGroupProps) {
         super(parent, id);
@@ -133,12 +129,11 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     }
 }
 
-function deploymentGroupName2Arn(applicationName: ApplicationName,
-                                 deploymentGroupName: DeploymentGroupName): DeploymentGroupArn {
-    return cdk.Arn.fromComponents({
+function deploymentGroupName2Arn(applicationName: string, deploymentGroupName: string): string {
+    return cdk.ArnUtils.fromComponents({
         service: 'codedeploy',
         resource: 'deploymentgroup',
-        resourceName: new cdk.FnJoin('/', [applicationName, deploymentGroupName]),
+        resourceName: `${applicationName}/${deploymentGroupName}`,
         sep: ':',
     });
 }

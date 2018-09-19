@@ -7,7 +7,7 @@ import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { cloudformation, ProjectArn, ProjectName } from './codebuild.generated';
+import { cloudformation } from './codebuild.generated';
 import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
 import { BuildSource, NoSource } from './source';
 
@@ -26,7 +26,7 @@ export interface ProjectRefProps {
      * The human-readable name of the CodeBuild Project we're referencing.
      * The Project must be in the same account and region as the root Stack.
      */
-    projectName: ProjectName;
+    projectName: string;
 }
 
 /**
@@ -60,10 +60,10 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     }
 
     /** The ARN of this Project. */
-    public abstract readonly projectArn: ProjectArn;
+    public abstract readonly projectArn: string;
 
     /** The human-visible name of this Project. */
-    public abstract readonly projectName: ProjectName;
+    public abstract readonly projectName: string;
 
     /** The IAM service Role of this Project. Undefined for imported Projects. */
     public abstract readonly role?: iam.Role;
@@ -76,7 +76,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
      */
     public export(): ProjectRefProps {
         return {
-            projectName: new ProjectName(new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue()),
+            projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
         };
     }
 
@@ -276,7 +276,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     /**
      * Allows using build projects as event rule targets.
      */
-    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
@@ -296,18 +296,19 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
 }
 
 class ImportedProjectRef extends ProjectRef {
-    public readonly projectArn: ProjectArn;
-    public readonly projectName: ProjectName;
+    public readonly projectArn: string;
+    public readonly projectName: string;
     public readonly role?: iam.Role = undefined;
 
     constructor(parent: cdk.Construct, name: string, props: ProjectRefProps) {
         super(parent, name);
 
-        this.projectArn = new ProjectArn(cdk.Arn.fromComponents({
+        this.projectArn = cdk.ArnUtils.fromComponents({
             service: 'codebuild',
             resource: 'project',
             resourceName: props.projectName,
-        }));
+        });
+
         this.projectName = props.projectName;
     }
 }
@@ -427,12 +428,12 @@ export class Project extends ProjectRef {
     /**
      * The ARN of the project.
      */
-    public readonly projectArn: ProjectArn;
+    public readonly projectArn: string;
 
     /**
      * The name of the project.
      */
-    public readonly projectName: ProjectName;
+    public readonly projectName: string;
 
     private readonly source: BuildSource;
     private readonly buildImage: IBuildImage;
@@ -521,14 +522,14 @@ export class Project extends ProjectRef {
     }
 
     private createLoggingPermission() {
-        const logGroupArn = cdk.Arn.fromComponents({
+        const logGroupArn = cdk.ArnUtils.fromComponents({
             service: 'logs',
             resource: 'log-group',
             sep: ':',
-            resourceName: new cdk.FnConcat('/aws/codebuild/', this.projectName),
+            resourceName: `/aws/codebuild/${this.projectName}`,
         });
 
-        const logGroupStarArn = new cdk.Arn(new cdk.FnConcat(logGroupArn, ':*'));
+        const logGroupStarArn = `${logGroupArn}:*`;
 
         const p = new cdk.PolicyStatement();
         p.allow();

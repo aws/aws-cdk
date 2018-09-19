@@ -16,7 +16,7 @@ export = {
         new CrossAccountDestination(stack, 'Dest', {
             destinationName: 'MyDestination',
             role,
-            targetArn: new cdk.Arn('arn:bogus')
+            targetArn: 'arn:bogus'
         });
 
         // THEN
@@ -39,7 +39,7 @@ export = {
         const dest = new CrossAccountDestination(stack, 'Dest', {
             destinationName: 'MyDestination',
             role,
-            targetArn: new cdk.Arn('arn:bogus')
+            targetArn: 'arn:bogus'
         });
 
         // WHEN

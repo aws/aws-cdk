@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
-import { cloudformation, DeploymentId } from './apigateway.generated';
+import { cloudformation } from './apigateway.generated';
 import { RestApiRef } from './restapi-ref';
 
 export interface DeploymentProps  {
@@ -55,7 +55,7 @@ export interface DeploymentProps  {
  * automatically for the `restApi.latestDeployment` deployment.
  */
 export class Deployment extends cdk.Construct implements cdk.IDependable {
-    public readonly deploymentId: DeploymentId;
+    public readonly deploymentId: string;
     public readonly api: RestApiRef;
 
     /**
@@ -78,7 +78,7 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
         }
 
         this.api = props.api;
-        this.deploymentId = new DeploymentId(() => this.resource.ref);
+        this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
         this.dependencyElements.push(this.resource);
     }
 
@@ -142,13 +142,13 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
      * Returns a lazy reference to this resource (evaluated only upon synthesis).
      */
     public get ref() {
-        return new DeploymentId(() => ({ Ref: this.lazyLogicalId }));
+        return new cdk.Token(() => ({ Ref: this.lazyLogicalId })).toString();
     }
 
     /**
      * Does nothing.
      */
-    public set ref(_v: DeploymentId) {
+    public set ref(_v: string) {
         return;
     }
 

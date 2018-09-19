@@ -43,7 +43,7 @@ export class PipelineDeployAction extends actions.DeployAction {
         // permissions, based on:
         // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
-        const applicationArn = cdk.Arn.fromComponents({
+        const applicationArn = cdk.ArnUtils.fromComponents({
             service: 'codedeploy',
             resource: 'application',
             resourceName: props.applicationName,
@@ -56,7 +56,7 @@ export class PipelineDeployAction extends actions.DeployAction {
                 'codedeploy:RegisterApplicationRevision',
             ));
 
-        const deploymentGroupArn = cdk.Arn.fromComponents({
+        const deploymentGroupArn = cdk.ArnUtils.fromComponents({
             service: 'codedeploy',
             resource: 'deploymentgroup',
             resourceName: `${props.applicationName}/${props.deploymentGroupName}`,
@@ -69,7 +69,7 @@ export class PipelineDeployAction extends actions.DeployAction {
                 'codedeploy:GetDeployment',
             ));
 
-        const deployConfigArn = cdk.Arn.fromComponents({
+        const deployConfigArn = cdk.ArnUtils.fromComponents({
             service: 'codedeploy',
             resource: 'deploymentconfig',
             resourceName: '*',

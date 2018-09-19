@@ -12,7 +12,7 @@ export interface IBucketNotificationDestination {
      * @param bucketArn The ARN of the bucket
      * @param bucketId A unique ID of this bucket in the stack
      */
-    asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): BucketNotificationDestinationProps;
+    asBucketNotificationDestination(bucketArn: string, bucketId: string): BucketNotificationDestinationProps;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface BucketNotificationDestinationProps {
     /**
      * The ARN of the destination (i.e. Lambda, SNS, SQS).
      */
-    arn: cdk.Arn;
+    arn: string;
 
     /**
      * Any additional dependencies that should be resolved before the bucket notification

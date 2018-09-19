@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
-import { cloudformation, SubnetId, VPCId } from './ec2.generated';
+import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, subnetId } from './util';
 import { SubnetType, VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
@@ -205,7 +205,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VPCId;
+    public readonly vpcId: string;
 
     /**
      * List of public subnets in this VPC
@@ -252,7 +252,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     /**
      * Mapping of NatGateway by AZ
      */
-    private natGatewayByAZ: Obj<cdk.Token> = {};
+    private natGatewayByAZ: Obj<string> = {};
 
     /**
      * Subnet configurations for this VPC
@@ -298,7 +298,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
            this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);
         }
 
-        this.vpcId = this.resource.ref;
+        this.vpcId = this.resource.vpcId;
         this.dependencyElements.push(this.resource);
 
         this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
@@ -341,10 +341,10 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     }
 
     /**
-     * @returns {Token} The IPv4 CidrBlock as returned by the VPC
+     * @returns The IPv4 CidrBlock as returned by the VPC
      */
-    public get cidr(): cdk.Token {
-        return this.resource.getAtt("CidrBlock");
+    public get cidr(): string {
+        return this.resource.getAtt("CidrBlock").toString();
     }
 
     /**
@@ -421,7 +421,7 @@ export interface VpcSubnetProps {
     /**
      * The VPC which this subnet is part of
      */
-    vpcId: cdk.Token;
+    vpcId: string;
 
     /**
      * The CIDR notation for this subnet
@@ -454,7 +454,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: SubnetId;
+    public readonly subnetId: string;
 
     /**
      * Manage tags for Construct and propagate to children
@@ -464,7 +464,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     /**
      * The routeTableId attached to this subnet.
      */
-    private readonly routeTableId: cdk.Token;
+    private readonly routeTableId: string;
 
     constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
@@ -479,7 +479,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
             mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
             tags: this.tags,
         });
-        this.subnetId = subnet.ref;
+        this.subnetId = subnet.subnetId;
         const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
             vpcId: props.vpcId,
             tags: new cdk.TagManager(this),
@@ -495,7 +495,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
         this.dependencyElements.push(subnet, table, routeAssoc);
     }
 
-    protected addDefaultRouteToNAT(natGatewayId: cdk.Token) {
+    protected addDefaultRouteToNAT(natGatewayId: string) {
         new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
@@ -503,7 +503,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
         });
     }
 
-    protected addDefaultRouteToIGW(gatewayId: cdk.Token) {
+    protected addDefaultRouteToIGW(gatewayId: string) {
         new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
@@ -523,7 +523,7 @@ export class VpcPublicSubnet extends VpcSubnet {
     /**
      * Create a default route that points to a passed IGW
      */
-    public addDefaultIGWRouteEntry(gatewayId: cdk.Token) {
+    public addDefaultIGWRouteEntry(gatewayId: string) {
         this.addDefaultRouteToIGW(gatewayId);
     }
 
@@ -556,7 +556,7 @@ export class VpcPrivateSubnet extends VpcSubnet {
     /**
      * Adds an entry to this subnets route table that points to the passed NATGatwayId
      */
-    public addDefaultNatRouteEntry(natGatewayId: cdk.Token) {
+    public addDefaultNatRouteEntry(natGatewayId: string) {
         this.addDefaultRouteToNAT(natGatewayId);
     }
 }

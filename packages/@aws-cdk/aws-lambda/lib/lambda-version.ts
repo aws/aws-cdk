@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { FunctionRef } from './lambda-ref';
-import { cloudformation, Version } from './lambda.generated';
+import { cloudformation } from './lambda.generated';
 
 /**
  * Properties for a new Lambda version
@@ -48,7 +48,7 @@ export class FunctionVersion extends Construct {
     /**
      * The most recently deployed version of this function.
      */
-    public readonly functionVersion: Version;
+    public readonly functionVersion: string;
 
     /**
      * Lambda object this version is associated with
