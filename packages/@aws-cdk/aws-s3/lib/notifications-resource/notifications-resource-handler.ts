@@ -77,7 +77,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
             }
         });
 
-        this.functionArn = resource.getAtt('Arn');
+        this.functionArn = resource.getAtt('Arn').toString();
     }
 }
 

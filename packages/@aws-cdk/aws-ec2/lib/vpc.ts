@@ -344,7 +344,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
      * @returns The IPv4 CidrBlock as returned by the VPC
      */
     public get cidr(): string {
-        return this.resource.getAtt("CidrBlock");
+        return this.resource.getAtt("CidrBlock").toString();
     }
 
     /**

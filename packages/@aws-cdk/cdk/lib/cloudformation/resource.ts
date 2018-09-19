@@ -81,8 +81,8 @@ export class Resource extends Referenceable {
      * in case there is no generated attribute.
      * @param attributeName The name of the attribute.
      */
-    public getAtt(attributeName: string): string {
-        return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`).toString();
+    public getAtt(attributeName: string) {
+        return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
     }
 
     /**
