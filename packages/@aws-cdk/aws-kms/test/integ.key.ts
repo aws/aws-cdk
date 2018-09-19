@@ -1,4 +1,4 @@
-import { App, Arn, AwsAccountId, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { App, AwsAccountId, PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { EncryptionKey } from '../lib';
 
 const app = new App(process.argv);
@@ -10,7 +10,7 @@ const key = new EncryptionKey(stack, 'MyKey');
 key.addToResourcePolicy(new PolicyStatement()
     .addAllResources()
     .addAction('kms:encrypt')
-    .addAwsPrincipal(new Arn(new AwsAccountId())));
+    .addAwsPrincipal(new AwsAccountId().toString()));
 
 key.addAlias('alias/bar');
 

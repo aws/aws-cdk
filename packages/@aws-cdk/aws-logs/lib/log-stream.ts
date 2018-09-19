@@ -1,12 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogGroupRef } from './log-group';
-import { cloudformation, LogStreamName } from './logs.generated';
+import { cloudformation } from './logs.generated';
 
 /**
  * Properties for importing a LogStream
  */
 export interface LogStreamRefProps {
-    logStreamName: LogStreamName;
+    logStreamName: string;
 }
 
 /**
@@ -23,14 +23,14 @@ export abstract class LogStreamRef extends cdk.Construct {
     /**
      * The name of this log stream
      */
-    public abstract readonly logStreamName: LogStreamName;
+    public abstract readonly logStreamName: string;
 
     /**
      * Export this LogStream
      */
     public export(): LogStreamRefProps {
         return {
-            logStreamName: new LogStreamName(new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue())
+            logStreamName: new cdk.Output(this, 'LogStreamName', { value: this.logStreamName }).makeImportValue().toString()
         };
     }
 }
@@ -74,7 +74,7 @@ export class LogStream extends LogStreamRef {
     /**
      * The name of this log stream
      */
-    public readonly logStreamName: LogStreamName;
+    public readonly logStreamName: string;
 
     constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
         super(parent, id);
@@ -88,7 +88,7 @@ export class LogStream extends LogStreamRef {
             resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
         }
 
-        this.logStreamName = resource.ref;
+        this.logStreamName = resource.logStreamName;
     }
 }
 
@@ -99,7 +99,7 @@ class ImportedLogStream extends LogStreamRef {
     /**
      * The name of this log stream
      */
-    public readonly logStreamName: LogStreamName;
+    public readonly logStreamName: string;
 
     constructor(parent: cdk.Construct, id: string, props: LogStreamRefProps) {
         super(parent, id);

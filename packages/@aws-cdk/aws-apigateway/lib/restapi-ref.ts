@@ -1,11 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
-import { RestApiId } from './apigateway.generated';
 
 export interface RestApiRefProps {
     /**
      * The REST API ID of an existing REST API resource.
      */
-    restApiId: RestApiId;
+    restApiId: string;
 }
 
 export abstract class RestApiRef extends cdk.Construct {
@@ -23,7 +22,7 @@ export abstract class RestApiRef extends cdk.Construct {
     /**
      * The ID of this API Gateway RestApi.
      */
-    public readonly abstract restApiId: RestApiId;
+    public readonly abstract restApiId: string;
 
     /**
      * Exports a REST API resource from this stack.
@@ -31,13 +30,13 @@ export abstract class RestApiRef extends cdk.Construct {
      */
     public export(): RestApiRefProps {
         return {
-            restApiId: new RestApiId(new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue()),
+            restApiId: new cdk.Output(this, 'RestApiId', { value: this.restApiId }).makeImportValue().toString()
         };
     }
 }
 
 class ImportedRestApi extends RestApiRef {
-    public restApiId: RestApiId;
+    public restApiId: string;
 
     constructor(parent: cdk.Construct, id: string, props: RestApiRefProps) {
         super(parent, id);

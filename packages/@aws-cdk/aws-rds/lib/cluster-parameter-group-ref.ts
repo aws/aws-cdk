@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { DBClusterParameterGroupName } from './rds.generated';
 
 /**
  * A cluster parameter group
@@ -15,15 +14,14 @@ export abstract class ClusterParameterGroupRef extends cdk.Construct {
     /**
      * Name of this parameter group
      */
-    public abstract readonly parameterGroupName: DBClusterParameterGroupName;
+    public abstract readonly parameterGroupName: string;
 
     /**
      * Export this parameter group
      */
     public export(): ClusterParameterGroupRefProps {
         return {
-            parameterGroupName: new DBClusterParameterGroupName(
-                    new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue())
+            parameterGroupName: new cdk.Output(this, 'ParameterGroupName', { value: this.parameterGroupName }).makeImportValue().toString()
         };
     }
 }
@@ -32,14 +30,14 @@ export abstract class ClusterParameterGroupRef extends cdk.Construct {
  * Properties to reference a cluster parameter group
  */
 export interface ClusterParameterGroupRefProps {
-    parameterGroupName: DBClusterParameterGroupName;
+    parameterGroupName: string;
 }
 
 /**
  * An imported cluster parameter group
  */
 class ImportedClusterParameterGroup extends ClusterParameterGroupRef {
-    public readonly parameterGroupName: DBClusterParameterGroupName;
+    public readonly parameterGroupName: string;
 
     constructor(parent: cdk.Construct, id: string, props: ClusterParameterGroupRefProps) {
         super(parent, id);

@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { EncryptionKeyRef } from './key';
-import { AliasName, cloudformation } from './kms.generated';
+import { cloudformation } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'AWS';
@@ -34,7 +34,7 @@ export class EncryptionKeyAlias extends Construct {
     /**
      * The name of the alias.
      */
-    public aliasName: AliasName;
+    public aliasName: string;
 
     constructor(parent: Construct, name: string, props: EncryptionKeyAliasProps) {
         super(parent, name);
@@ -56,6 +56,6 @@ export class EncryptionKeyAlias extends Construct {
             targetKeyId: props.key.keyArn
         });
 
-        this.aliasName = resource.ref;
+        this.aliasName = resource.aliasName;
     }
 }

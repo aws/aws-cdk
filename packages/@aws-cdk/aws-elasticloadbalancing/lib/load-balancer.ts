@@ -159,7 +159,7 @@ export interface LoadBalancerListener {
     /**
      * ID of SSL certificate
      */
-    sslCertificateId?: cdk.Arn;
+    sslCertificateId?: string;
 
     /**
      * Allow connections to the load balancer from the given set of connection peers

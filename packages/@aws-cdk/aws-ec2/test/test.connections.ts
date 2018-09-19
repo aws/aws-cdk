@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Connections, IConnectable, SecurityGroup, SecurityGroupId, SecurityGroupRef, TcpAllPorts, TcpPort, VpcNetwork } from '../lib';
+import { Connections, IConnectable, SecurityGroup, SecurityGroupRef, TcpAllPorts, TcpPort, VpcNetwork } from '../lib';
 
 export = {
     'peering between two security groups does not recursive infinitely'(test: Test) {
@@ -29,7 +29,7 @@ export = {
         const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc });
         const somethingConnectable = new SomethingConnectable(new Connections({ securityGroup: sg1 }));
 
-        const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: new SecurityGroupId('sg-12345') });
+        const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
 
         // WHEN
         somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');

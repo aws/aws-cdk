@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, isToken, resolve, Token } from '../../lib';
+import { CloudFormationToken, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -123,9 +123,9 @@ export = {
     },
 
     'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-        test.ok(isToken({ resolve: () => 123 }));
-        test.ok(isToken({ a: 1, b: 2, resolve: () => 'hello' }));
-        test.ok(!isToken({ a: 1, b: 2, resolve: 3 }));
+        test.ok(unresolved({ resolve: () => 123 }));
+        test.ok(unresolved({ a: 1, b: 2, resolve: () => 'hello' }));
+        test.ok(!unresolved({ a: 1, b: 2, resolve: 3 }));
         test.done();
     },
 

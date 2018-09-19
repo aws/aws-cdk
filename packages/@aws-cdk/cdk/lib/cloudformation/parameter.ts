@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
-import { Referenceable } from './stack';
+import { Ref, Referenceable } from './stack';
 
 export interface ParameterProps {
     /**
@@ -89,7 +89,7 @@ export class Parameter extends Referenceable {
     constructor(parent: Construct, name: string, props: ParameterProps) {
         super(parent, name);
         this.properties = props;
-        this.value = this.ref;
+        this.value = new Ref(this);
     }
 
     public toCloudFormation(): object {

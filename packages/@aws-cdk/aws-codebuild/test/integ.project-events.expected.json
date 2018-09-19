@@ -129,9 +129,16 @@
                       ":",
                       "log-group",
                       ":",
-                      "/aws/codebuild/",
                       {
-                        "Ref": "MyProject39F7B0AE"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "/aws/codebuild/",
+                            {
+                              "Ref": "MyProject39F7B0AE"
+                            }
+                          ]
+                        ]
                       }
                     ]
                   ]
@@ -140,28 +147,28 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn",
+                      ":",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":",
+                      "logs",
+                      ":",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      "log-group",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
                           [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "logs",
-                            ":",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            "log-group",
-                            ":",
                             "/aws/codebuild/",
                             {
                               "Ref": "MyProject39F7B0AE"

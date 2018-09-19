@@ -1,6 +1,4 @@
-import iam = require('@aws-cdk/aws-iam');
-import cdk = require('@aws-cdk/cdk');
-import { cloudformation, RuleArn } from './events.generated';
+import { cloudformation } from './events.generated';
 
 export interface EventRuleTargetProps {
     /**
@@ -13,7 +11,7 @@ export interface EventRuleTargetProps {
     /**
      * The Amazon Resource Name (ARN) of the target.
      */
-    arn: cdk.Arn;
+    arn: string;
 
     /**
      * The Amazon Resource Name (ARN) of the AWS Identity and Access Management
@@ -21,7 +19,7 @@ export interface EventRuleTargetProps {
      * triggers multiple targets, you can use a different IAM role for each
      * target.
      */
-    roleArn?: iam.RoleArn;
+    roleArn?: string;
 
     /**
      * The Amazon ECS task definition and task count to use, if the event target
@@ -54,5 +52,5 @@ export interface IEventRuleTarget {
      * @param ruleArn The ARN of the CloudWatch Event Rule that would trigger this target.
      * @param ruleUniqueId A unique ID for this rule. Can be used to implement idempotency.
      */
-    asEventRuleTarget(ruleArn: RuleArn, ruleUniqueId: string): EventRuleTargetProps;
+    asEventRuleTarget(ruleArn: string, ruleUniqueId: string): EventRuleTargetProps;
 }

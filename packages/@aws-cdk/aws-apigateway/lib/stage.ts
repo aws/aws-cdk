@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, StageName } from './apigateway.generated';
+import { cloudformation } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { RestApiRef } from './restapi-ref';
 import { parseMethodOptionsPath } from './util';
@@ -127,7 +127,7 @@ export interface MethodDeploymentOptions {
 }
 
 export class Stage extends cdk.Construct implements cdk.IDependable {
-    public readonly stageName: StageName;
+    public readonly stageName: string;
     public readonly dependencyElements = new Array<cdk.IDependable>();
 
     private readonly restApi: RestApiRef;

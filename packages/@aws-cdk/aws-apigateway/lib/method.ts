@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { AuthorizerId, cloudformation, MethodId } from './apigateway.generated';
+import { cloudformation } from './apigateway.generated';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { IRestApiResource } from './resource';
@@ -26,7 +26,7 @@ export interface MethodOptions {
      * NOTE: in the future this will be replaced with an `AuthorizerRef`
      * construct.
      */
-    authorizerId?: AuthorizerId;
+    authorizerId?: string;
 
     /**
      * Indicates whether the method requires clients to submit a valid API key.
@@ -65,7 +65,7 @@ export interface MethodProps {
 }
 
 export class Method extends cdk.Construct {
-    public readonly methodId: MethodId;
+    public readonly methodId: string;
     public readonly httpMethod: string;
     public readonly resource: IRestApiResource;
     public readonly restApi: RestApi;
@@ -115,7 +115,7 @@ export class Method extends cdk.Construct {
      * NOTE: {stage} will refer to the `restApi.deploymentStage`, which will
      * automatically set if auto-deploy is enabled.
      */
-    public get methodArn(): cdk.Arn {
+    public get methodArn(): string {
         if (!this.restApi.deploymentStage) {
             throw new Error('There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`');
         }
@@ -128,7 +128,7 @@ export class Method extends cdk.Construct {
      * Returns an execute-api ARN for this method's "test-invoke-stage" stage.
      * This stage is used by the AWS Console UI when testing the method.
      */
-    public get testMethodArn(): cdk.Arn {
+    public get testMethodArn(): string {
         return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, 'test-invoke-stage');
     }
 
@@ -156,7 +156,7 @@ export class Method extends cdk.Construct {
             credentials = options.credentialsRole.roleArn;
         } else if (options.credentialsPassthrough) {
             // arn:aws:iam::*:user/*
-            credentials = cdk.Arn.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+            credentials = cdk.ArnUtils.fromComponents({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
         }
 
         return {
