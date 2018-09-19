@@ -53,7 +53,7 @@ export class Repository extends RepositoryRef {
         const resource = new cloudformation.RepositoryResource(this, 'Resource', {
             repositoryName: props.repositoryName,
             // It says "Text", but they actually mean "Object".
-            repositoryPolicyText: this.policyDocument,
+            repositoryPolicyText: new cdk.Token(() => this.policyDocument),
             lifecyclePolicy: new cdk.Token(() => this.renderLifecyclePolicy()),
         });
 

@@ -161,5 +161,29 @@ export = {
         });
 
         test.done();
+    },
+
+    'resource policy'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const repo = new ecr.Repository(stack, 'Repo');
+
+        // WHEN
+        repo.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
+
+        // THEN
+        expect(stack).to(haveResource('AWS::ECR::Repository', {
+            RepositoryPolicyText: {
+                Statement: [
+                    {
+                        Action: "*",
+                        Effect: "Allow"
+                    }
+                ],
+                Version: "2012-10-17"
+            },
+        }));
+
+        test.done();
     }
 };
