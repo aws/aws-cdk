@@ -7,6 +7,15 @@
         "ComputePlatform": "Server"
       }
     },
+    "CustomDeployConfig52EEBC13": {
+      "Type": "AWS::CodeDeploy::DeploymentConfig",
+      "Properties": {
+        "MinimumHealthyHosts": {
+          "Type": "HOST_COUNT",
+          "Value": 0
+        }
+      }
+    },
     "CodeDeployGroupRole1D304F7A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -38,6 +47,9 @@
             "CodeDeployGroupRole1D304F7A",
             "Arn"
           ]
+        },
+        "DeploymentConfigName": {
+          "Ref": "CustomDeployConfig52EEBC13"
         },
         "DeploymentGroupName": "IntegTestDeploymentGroup"
       }
