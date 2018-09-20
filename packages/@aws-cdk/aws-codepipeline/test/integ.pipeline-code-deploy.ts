@@ -11,9 +11,14 @@ const application = new codedeploy.ServerApplication(stack, 'CodeDeployApplicati
     applicationName: 'IntegTestDeployApp',
 });
 
+const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDeployConfig', {
+    minHealthyHostCount: 0,
+});
+
 new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
     application,
     deploymentGroupName: 'IntegTestDeploymentGroup',
+    deploymentConfig,
 });
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {

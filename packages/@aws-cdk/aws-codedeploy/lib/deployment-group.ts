@@ -2,6 +2,7 @@ import cdk = require("@aws-cdk/cdk");
 import iam = require("../../aws-iam/lib/role");
 import { ServerApplication, ServerApplicationRef } from "./application";
 import { cloudformation } from './codedeploy.generated';
+import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Deployment Group.
@@ -21,6 +22,13 @@ export interface ServerDeploymentGroupRefProps {
      * that we are referencing.
      */
     deploymentGroupName: string;
+
+    /**
+     * The Deployment Configuration this Deployment Group uses.
+     *
+     * @default ServerDeploymentConfig#OneAtATime
+     */
+    deploymentConfig?: IServerDeploymentConfig;
 }
 
 /**
@@ -50,11 +58,19 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
     public abstract readonly application: ServerApplicationRef;
     public abstract readonly deploymentGroupName: string;
     public abstract readonly deploymentGroupArn: string;
+    public readonly deploymentConfig: IServerDeploymentConfig;
+
+    constructor(parent: cdk.Construct, id: string, deploymentConfig?: IServerDeploymentConfig) {
+        super(parent, id);
+        this.deploymentConfig = deploymentConfig || ServerDeploymentConfig.OneAtATime;
+    }
 
     public export(): ServerDeploymentGroupRefProps {
         return {
             application: this.application,
-            deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', { value: this.deploymentGroupName }).makeImportValue().toString()
+            deploymentGroupName: new cdk.Output(this, 'DeploymentGroupName', {
+                value: this.deploymentGroupName
+            }).makeImportValue().toString(),
         };
     }
 }
@@ -65,7 +81,7 @@ class ImportedServerDeploymentGroupRef extends ServerDeploymentGroupRef {
     public readonly deploymentGroupArn: string;
 
     constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupRefProps) {
-        super(parent, id);
+        super(parent, id, props.deploymentConfig);
 
         this.application = props.application;
         this.deploymentGroupName = props.deploymentGroupName;
@@ -96,6 +112,13 @@ export interface ServerDeploymentGroupProps {
      * @default an auto-generated name will be used
      */
     deploymentGroupName?: string;
+
+    /**
+     * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
+     *
+     * @default ServerDeploymentConfig#OneAtATime
+     */
+    deploymentConfig?: IServerDeploymentConfig;
 }
 
 /**
@@ -107,23 +130,25 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     public readonly deploymentGroupArn: string;
     public readonly deploymentGroupName: string;
 
-    constructor(parent: cdk.Construct, id: string, props?: ServerDeploymentGroupProps) {
-        super(parent, id);
+    constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
+        super(parent, id, props && props.deploymentConfig);
 
-        this.application = (props && props.application) || new ServerApplication(this, 'Application');
+        this.application = props.application || new ServerApplication(this, 'Application');
 
-        this.role = (props && props.role) || new iam.Role(this, 'Role', {
+        this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new cdk.ServicePrincipal('codedeploy.amazonaws.com'),
             managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
         });
 
         const resource = new cloudformation.DeploymentGroupResource(this, 'Resource', {
             applicationName: this.application.applicationName,
-            deploymentGroupName: props && props.deploymentGroupName,
+            deploymentGroupName: props.deploymentGroupName,
             serviceRoleArn: this.role.roleArn,
+            deploymentConfigName: props.deploymentConfig &&
+                props.deploymentConfig.deploymentConfigName,
         });
 
-        this.deploymentGroupName = resource.ref;
+        this.deploymentGroupName = resource.deploymentGroupName;
         this.deploymentGroupArn = deploymentGroupName2Arn(this.application.applicationName,
             this.deploymentGroupName);
     }
