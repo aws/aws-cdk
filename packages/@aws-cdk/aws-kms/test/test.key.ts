@@ -1,7 +1,7 @@
 import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
-import { App, Arn, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EncryptionKey, KeyArn } from '../lib';
+import { EncryptionKey } from '../lib';
 
 export = {
     'default key'(test: Test) {
@@ -70,7 +70,7 @@ export = {
 
         const key = new EncryptionKey(stack, 'MyKey');
         const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-        p.addAwsPrincipal(new Arn('arn'));
+        p.addAwsPrincipal('arn');
         key.addToResourcePolicy(p);
 
         expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
@@ -145,7 +145,7 @@ export = {
             enabled: false
         });
         const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
-        p.addAwsPrincipal(new Arn('arn'));
+        p.addAwsPrincipal('arn');
         key.addToResourcePolicy(p);
 
         expect(app.synthesizeStack(stack.name)).to(exactlyMatchTemplate({
@@ -355,7 +355,7 @@ export = {
         'succeed if set to true (default)'(test: Test) {
             const stack = new Stack();
 
-            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 
             key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'));
 
@@ -366,7 +366,7 @@ export = {
 
             const stack = new Stack();
 
-            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 
             test.throws(() =>
               key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'), /* allowNoOp */ false),

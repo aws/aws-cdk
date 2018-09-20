@@ -1,4 +1,3 @@
-import { Token } from "@aws-cdk/cdk";
 import { Connections, IConnectable } from "./connections";
 
 /**
@@ -177,7 +176,7 @@ export class TcpPort implements IPortRange {
 export class TcpPortFromAttribute implements IPortRange {
     public readonly canInlineRule = false;
 
-    constructor(private readonly port: Token) {
+    constructor(private readonly port: string) {
     }
 
     public toRuleJSON(): any {

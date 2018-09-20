@@ -1,5 +1,4 @@
 import { Construct, IDependable, Output } from "@aws-cdk/cdk";
-import { SubnetId, VPCId } from "./ec2.generated";
 import { ExportSubnetGroup, ImportSubnetGroup, subnetName } from './util';
 
 /**
@@ -85,7 +84,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
     /**
      * Identifier for this VPC
      */
-    public abstract readonly vpcId: VPCId;
+    public abstract readonly vpcId: string;
 
     /**
      * List of public subnets in this VPC
@@ -149,7 +148,7 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
         const iso = new ExportSubnetGroup(this, 'IsolatedSubnetIDs', this.isolatedSubnets, SubnetType.Isolated, this.availabilityZones.length);
 
         return {
-            vpcId: new VPCId(new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue()),
+            vpcId: new Output(this, 'VpcId', { value: this.vpcId }).makeImportValue().toString(),
             availabilityZones: this.availabilityZones,
             publicSubnetIds: pub.ids,
             publicSubnetNames: pub.names,
@@ -175,7 +174,7 @@ class ImportedVpcNetwork extends VpcNetworkRef {
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VPCId;
+    public readonly vpcId: string;
 
     /**
      * List of public subnets in this VPC
@@ -222,7 +221,7 @@ export interface VpcNetworkRefProps {
     /**
      * VPC's identifier
      */
-    vpcId: VPCId;
+    vpcId: string;
 
     /**
      * List of availability zones for the subnets in this VPC.
@@ -234,7 +233,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    publicSubnetIds?: SubnetId[];
+    publicSubnetIds?: string[];
 
     /**
      * List of names for the public subnets
@@ -248,7 +247,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    privateSubnetIds?: SubnetId[];
+    privateSubnetIds?: string[];
 
     /**
      * List of names for the private subnets
@@ -262,7 +261,7 @@ export interface VpcNetworkRefProps {
      *
      * Must be undefined or match the availability zones in length and order.
      */
-    isolatedSubnetIds?: SubnetId[];
+    isolatedSubnetIds?: string[];
 
     /**
      * List of names for the isolated subnets
@@ -288,7 +287,7 @@ export abstract class VpcSubnetRef extends Construct implements IDependable {
     /**
      * The subnetId for this particular subnet
      */
-    public abstract readonly subnetId: SubnetId;
+    public abstract readonly subnetId: string;
 
     /**
      * Parts of this VPC subnet
@@ -308,7 +307,7 @@ class ImportedVpcSubnet extends VpcSubnetRef {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: SubnetId;
+    public readonly subnetId: string;
 
     constructor(parent: Construct, name: string, props: VpcSubnetRefProps) {
         super(parent, name);
@@ -327,5 +326,5 @@ export interface VpcSubnetRefProps {
     /**
      * The subnetId for this particular subnet
      */
-    subnetId: SubnetId;
+    subnetId: string;
 }

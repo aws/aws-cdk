@@ -8,7 +8,7 @@ import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 import { LifecycleRule } from './rule';
-import { BucketArn, BucketDomainName, BucketDualStackDomainName, BucketName, cloudformation } from './s3.generated';
+import { cloudformation } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 /**
@@ -21,7 +21,7 @@ export interface BucketRefProps {
      * The ARN fo the bucket. At least one of bucketArn or bucketName must be
      * defined in order to initialize a bucket ref.
      */
-    bucketArn?: BucketArn;
+    bucketArn?: string;
 
     /**
      * The name of the bucket. If the underlying value of ARN is a string, the
@@ -29,7 +29,7 @@ export interface BucketRefProps {
      * some features that require the bucket name such as auto-creating a bucket
      * policy, won't work.
      */
-    bucketName?: BucketName;
+    bucketName?: string;
 }
 
 /**
@@ -65,12 +65,12 @@ export abstract class BucketRef extends cdk.Construct {
     /**
      * The ARN of the bucket.
      */
-    public abstract readonly bucketArn: BucketArn;
+    public abstract readonly bucketArn: string;
 
     /**
      * The name of the bucket.
      */
-    public abstract readonly bucketName: BucketName;
+    public abstract readonly bucketName: string;
 
     /**
      * Optional KMS encryption key associated with this bucket.
@@ -96,8 +96,8 @@ export abstract class BucketRef extends cdk.Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new BucketArn(new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue()),
-            bucketName: new BucketName(new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue()),
+            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
         };
     }
 
@@ -152,7 +152,7 @@ export abstract class BucketRef extends cdk.Construct {
      *            bucket is returned.
      * @returns an ObjectS3Url token
      */
-    public urlForObject(key?: any): S3Url {
+    public urlForObject(key?: any): string {
         const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
         if (key) {
             // trim prepending '/'
@@ -163,7 +163,7 @@ export abstract class BucketRef extends cdk.Construct {
             components.push(key);
         }
 
-        return new S3Url(new cdk.FnConcat(...components));
+        return new cdk.FnConcat(...components).toString();
     }
 
     /**
@@ -175,8 +175,8 @@ export abstract class BucketRef extends cdk.Construct {
      *     arnForObjects('home/', team, '/', user, '/*')
      *
      */
-    public arnForObjects(...keyPattern: any[]): cdk.Arn {
-        return new cdk.Arn(new cdk.FnConcat(this.bucketArn, '/', ...keyPattern));
+    public arnForObjects(...keyPattern: any[]): string {
+        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern).toString();
     }
 
     /**
@@ -259,13 +259,13 @@ export abstract class BucketRef extends cdk.Construct {
     private grant(identity: iam.IPrincipal | undefined,
                   bucketActions: string[],
                   keyActions: string[],
-                  resource: cdk.Arn, ...otherResources: cdk.Arn[]) {
+                  resourceArn: string, ...otherResourceArns: string[]) {
 
         if (!identity) {
             return;
         }
 
-        const resources = [ resource, ...otherResources ];
+        const resources = [ resourceArn, ...otherResourceArns ];
 
         identity.addToPolicy(new cdk.PolicyStatement()
             .addResources(...resources)
@@ -324,14 +324,6 @@ export interface BucketProps {
     removalPolicy?: cdk.RemovalPolicy;
 
     /**
-     * The bucket policy associated with this bucket.
-     *
-     * @default A bucket policy will be created automatically in the first call
-     * to addToPolicy.
-     */
-    policy?: BucketPolicy;
-
-    /**
      * Whether this bucket should have versioning turned on or not.
      *
      * @default false
@@ -353,10 +345,10 @@ export interface BucketProps {
  * BucketResource.
  */
 export class Bucket extends BucketRef {
-    public readonly bucketArn: BucketArn;
-    public readonly bucketName: BucketName;
-    public readonly domainName: BucketDomainName;
-    public readonly dualstackDomainName: BucketDualStackDomainName;
+    public readonly bucketArn: string;
+    public readonly bucketName: string;
+    public readonly domainName: string;
+    public readonly dualstackDomainName: string;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
     protected policy?: BucketPolicy;
     protected autoCreatePolicy = true;
@@ -379,10 +371,9 @@ export class Bucket extends BucketRef {
         cdk.applyRemovalPolicy(resource, props.removalPolicy);
 
         this.versioned = props.versioned;
-        this.policy = props.policy;
         this.encryptionKey = encryptionKey;
         this.bucketArn = resource.bucketArn;
-        this.bucketName = resource.ref;
+        this.bucketName = resource.bucketName;
         this.domainName = resource.bucketDomainName;
         this.dualstackDomainName = resource.bucketDualStackDomainName;
 
@@ -588,20 +579,6 @@ export enum BucketEncryption {
 }
 
 /**
- * A key to an S3 object.
- */
-export class ObjectKey extends cdk.Token {
-
-}
-
-/**
- * The web URL (https://s3.us-west-1.amazonaws.com/bucket/key) of an S3 object.
- */
-export class S3Url extends cdk.Token {
-
-}
-
-/**
  * Notification event types.
  */
 export enum EventType {
@@ -722,8 +699,8 @@ export interface NotificationKeyFilter {
 }
 
 class ImportedBucketRef extends BucketRef {
-    public readonly bucketArn: BucketArn;
-    public readonly bucketName: BucketName;
+    public readonly bucketArn: string;
+    public readonly bucketName: string;
     public readonly encryptionKey?: kms.EncryptionKey;
 
     protected policy?: BucketPolicy;

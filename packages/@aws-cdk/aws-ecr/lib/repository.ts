@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, RepositoryArn, RepositoryName } from './ecr.generated';
+import { cloudformation } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 import { RepositoryRef } from "./repository-ref";
 
@@ -41,8 +41,8 @@ export interface RepositoryProps {
  * Define an ECR repository
  */
 export class Repository extends RepositoryRef {
-    public readonly repositoryName: RepositoryName;
-    public readonly repositoryArn: RepositoryArn;
+    public readonly repositoryName: string;
+    public readonly repositoryArn: string;
     private readonly lifecycleRules = new Array<LifecycleRule>();
     private readonly registryId?: string;
     private policyDocument?: cdk.PolicyDocument;
@@ -53,7 +53,7 @@ export class Repository extends RepositoryRef {
         const resource = new cloudformation.RepositoryResource(this, 'Resource', {
             repositoryName: props.repositoryName,
             // It says "Text", but they actually mean "Object".
-            repositoryPolicyText: this.policyDocument,
+            repositoryPolicyText: new cdk.Token(() => this.policyDocument),
             lifecyclePolicy: new cdk.Token(() => this.renderLifecyclePolicy()),
         });
 
@@ -66,7 +66,7 @@ export class Repository extends RepositoryRef {
             props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
         }
 
-        this.repositoryName = resource.ref;
+        this.repositoryName = resource.repositoryName;
         this.repositoryArn = resource.repositoryArn;
     }
 

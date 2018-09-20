@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
+import { cloudformation } from './lambda.generated';
 import { Runtime } from './runtime';
 
 /**
@@ -178,12 +178,12 @@ export class Function extends FunctionRef {
     /**
      * Name of this function
      */
-    public readonly functionName: FunctionName;
+    public readonly functionName: string;
 
     /**
      * ARN of this function
      */
-    public readonly functionArn: FunctionArn;
+    public readonly functionArn: string;
 
     /**
      * Execution role associated with this function
@@ -212,7 +212,7 @@ export class Function extends FunctionRef {
 
         this.environment = props.environment || { };
 
-        const managedPolicyArns = new Array<cdk.Arn>();
+        const managedPolicyArns = new Array<string>();
 
         // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);

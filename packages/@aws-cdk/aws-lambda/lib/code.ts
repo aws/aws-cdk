@@ -58,7 +58,7 @@ export abstract class Code {
  * Lambda code from an S3 archive.
  */
 export class S3Code extends Code {
-    private bucketName: s3.BucketName;
+    private bucketName: string;
 
     constructor(bucket: s3.BucketRef, private key: string, private objectVersion?: string) {
         super();

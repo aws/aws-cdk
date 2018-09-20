@@ -158,8 +158,8 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
     private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
     private readonly securityGroup: ec2.SecurityGroupRef;
     private readonly securityGroups: ec2.SecurityGroupRef[] = [];
-    private readonly loadBalancerNames: cdk.Token[] = [];
-    private readonly targetGroupArns: cdk.Token[] = [];
+    private readonly loadBalancerNames: string[] = [];
+    private readonly targetGroupArns: string[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
         super(parent, name);

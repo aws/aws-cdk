@@ -1,6 +1,6 @@
 import { Construct, Output, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
-import { cloudformation, SecurityGroupId, SecurityGroupName, SecurityGroupVpcId } from './ec2.generated';
+import { cloudformation } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { VpcNetworkRef } from './vpc-ref';
 
@@ -8,7 +8,7 @@ export interface SecurityGroupRefProps {
     /**
      * ID of security group
      */
-    securityGroupId: SecurityGroupId;
+    securityGroupId: string;
 }
 
 /**
@@ -22,7 +22,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
         return new ImportedSecurityGroup(parent, id, props);
     }
 
-    public abstract readonly securityGroupId: SecurityGroupId;
+    public abstract readonly securityGroupId: string;
     public readonly canInlineRule = false;
     public readonly connections = new Connections({ securityGroup: this });
 
@@ -78,7 +78,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
      */
     public export(): SecurityGroupRefProps {
         return {
-            securityGroupId: new SecurityGroupId(new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue())
+            securityGroupId: new Output(this, 'SecurityGroupId', { value: this.securityGroupId }).makeImportValue().toString()
         };
     }
 
@@ -121,17 +121,17 @@ export class SecurityGroup extends SecurityGroupRef {
     /**
      * An attribute that represents the security group name.
      */
-    public readonly groupName: SecurityGroupName;
+    public readonly groupName: string;
 
     /**
      * An attribute that represents the physical VPC ID this security group is part of.
      */
-    public readonly vpcId: SecurityGroupVpcId;
+    public readonly vpcId: string;
 
     /**
      * The ID of the security group
      */
-    public readonly securityGroupId: SecurityGroupId;
+    public readonly securityGroupId: string;
 
     private readonly securityGroup: cloudformation.SecurityGroupResource;
     private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
@@ -150,7 +150,7 @@ export class SecurityGroup extends SecurityGroupRef {
         });
 
         this.securityGroupId = this.securityGroup.securityGroupId;
-        this.groupName = this.securityGroup.ref;
+        this.groupName = this.securityGroup.securityGroupName;
         this.vpcId = this.securityGroup.securityGroupVpcId;
     }
 
@@ -266,7 +266,7 @@ export interface ConnectionRule {
  * A SecurityGroup that hasn't been created here
  */
 class ImportedSecurityGroup extends SecurityGroupRef {
-    public readonly securityGroupId: SecurityGroupId;
+    public readonly securityGroupId: string;
 
     constructor(parent: Construct, name: string, props: SecurityGroupRefProps) {
         super(parent, name);

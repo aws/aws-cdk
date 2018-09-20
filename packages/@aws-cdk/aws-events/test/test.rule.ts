@@ -1,9 +1,8 @@
-import { expect } from '@aws-cdk/assert';
-import iam = require('@aws-cdk/aws-iam');
+import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { IEventRuleTarget, RuleArn } from '../lib';
+import { IEventRuleTarget } from '../lib';
 import { EventRule } from '../lib/rule';
 
 // tslint:disable:object-literal-key-quotes
@@ -30,6 +29,24 @@ export = {
         test.done();
     },
 
+    'rule with physical name'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new EventRule(stack, 'MyRule', {
+        ruleName: 'PhysicalName',
+        scheduleExpression: 'rate(10 minutes)'
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::Events::Rule', {
+        Name: 'PhysicalName'
+      }));
+
+      test.done();
+    },
+
     'eventPattern is rendered properly'(test: Test) {
         const stack = new cdk.Stack();
 
@@ -42,7 +59,7 @@ export = {
                 detailType: [ 'detailType1' ],
                 id: [ 'id1', 'id2' ],
                 region: [ 'region1', 'region2', 'region3' ],
-                resources: [ new cdk.Arn('r1') ],
+                resources: [ 'r1' ],
                 source: [ 'src1', 'src2' ],
                 time: [ 't1' ],
                 version: [ '0' ]
@@ -140,7 +157,7 @@ export = {
         const t1: IEventRuleTarget = {
             asEventRuleTarget: () => ({
                 id: 'T1',
-                arn: new cdk.Arn('ARN1'),
+                arn: 'ARN1',
                 kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
             })
         };
@@ -148,8 +165,8 @@ export = {
         const t2: IEventRuleTarget = {
             asEventRuleTarget: () => ({
                 id: 'T2',
-                arn: new cdk.Arn('ARN2'),
-                roleArn: new iam.RoleArn('IAM-ROLE-ARN')
+                arn: 'ARN2',
+                roleArn: 'IAM-ROLE-ARN'
             })
         };
 
@@ -203,15 +220,15 @@ export = {
         const stack = new cdk.Stack();
         const t1: IEventRuleTarget = {
             asEventRuleTarget: () => ({
-                id: 'T1', arn: new cdk.Arn('ARN1'), kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
+                id: 'T1', arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
             })
         };
 
-        const t2: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T2', arn: new cdk.Arn('ARN2'), roleArn: new iam.RoleArn('IAM-ROLE-ARN') }) };
-        const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: new cdk.Arn('ARN3') }) };
-        const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: new cdk.Arn('ARN4') }) };
+        const t2: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T2', arn: 'ARN2', roleArn: 'IAM-ROLE-ARN' }) };
+        const t3: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T3', arn: 'ARN3' }) };
+        const t4: IEventRuleTarget = { asEventRuleTarget: () => ({ id: 'T4', arn: 'ARN4' }) };
 
-        const rule = new EventRule(stack, 'EventRule');
+        const rule = new EventRule(stack, 'EventRule', { scheduleExpression: 'rate(1 minute)' });
 
         // a plain string should just be stringified (i.e. double quotes added and escaped)
         rule.addTarget(t2, {
@@ -244,6 +261,7 @@ export = {
                 "Type": "AWS::Events::Rule",
                 "Properties": {
                     "State": "ENABLED",
+                    "ScheduleExpression": "rate(1 minute)",
                     "Targets": [
                       {
                         "Arn": "ARN2",
@@ -312,17 +330,17 @@ export = {
     'asEventRuleTarget can use the ruleArn and a uniqueId of the rule'(test: Test) {
         const stack = new cdk.Stack();
 
-        let receivedRuleArn = new RuleArn('FAIL');
+        let receivedRuleArn = 'FAIL';
         let receivedRuleId = 'FAIL';
 
         const t1: IEventRuleTarget = {
-            asEventRuleTarget: (ruleArn: RuleArn, ruleId: string) => {
+            asEventRuleTarget: (ruleArn: string, ruleId: string) => {
                 receivedRuleArn = ruleArn;
                 receivedRuleId = ruleId;
 
                 return {
                     id: 'T1',
-                    arn: new cdk.Arn('ARN1'),
+                    arn: 'ARN1',
                     kinesisParameters: { partitionKeyPath: 'partitionKeyPath' }
                 };
             }

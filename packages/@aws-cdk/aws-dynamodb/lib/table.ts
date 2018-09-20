@@ -1,7 +1,7 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
 import { Role } from '@aws-cdk/aws-iam';
 import { Construct, PolicyStatement, PolicyStatementEffect, ServicePrincipal } from '@aws-cdk/cdk';
-import { cloudformation as dynamodb, TableArn, TableName, TableStreamArn } from './dynamodb.generated';
+import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -66,6 +66,18 @@ export interface TableProps {
     writeAutoScaling?: AutoScalingProps;
 }
 
+export interface Attribute {
+    /**
+     * The name of an attribute.
+     */
+    name: string;
+
+    /**
+     * The data type of an attribute.
+     */
+    type: AttributeType;
+}
+
 /* tslint:disable:max-line-length */
 export interface AutoScalingProps {
     /**
@@ -106,9 +118,9 @@ export interface AutoScalingProps {
  * Provides a DynamoDB table.
  */
 export class Table extends Construct {
-    public readonly tableArn: TableArn;
-    public readonly tableName: TableName;
-    public readonly tableStreamArn: TableStreamArn;
+    public readonly tableArn: string;
+    public readonly tableName: string;
+    public readonly tableStreamArn: string;
 
     private readonly table: dynamodb.TableResource;
 
@@ -138,7 +150,7 @@ export class Table extends Construct {
         if (props.tableName) { this.addMetadata('aws:cdk:hasPhysicalName', props.tableName); }
 
         this.tableArn = this.table.tableArn;
-        this.tableName = this.table.ref;
+        this.tableName = this.table.tableName;
         this.tableStreamArn = this.table.tableStreamArn;
 
         if (props.readAutoScaling) {
@@ -150,13 +162,13 @@ export class Table extends Construct {
         }
     }
 
-    public addPartitionKey(name: string, type: KeyAttributeType): this {
-        this.addKey(name, type, HASH_KEY_TYPE);
+    public addPartitionKey(attribute: Attribute): this {
+        this.addKey(attribute.name, attribute.type, HASH_KEY_TYPE);
         return this;
     }
 
-    public addSortKey(name: string, type: KeyAttributeType): this {
-        this.addKey(name, type, RANGE_KEY_TYPE);
+    public addSortKey(attribute: Attribute): this {
+        this.addKey(attribute.name, attribute.type, RANGE_KEY_TYPE);
         return this;
     }
 
@@ -266,7 +278,7 @@ export class Table extends Construct {
         return this.keySchema.find(prop => prop.keyType === keyType);
     }
 
-    private addKey(name: string, type: KeyAttributeType, keyType: string) {
+    private addKey(name: string, type: AttributeType, keyType: string) {
         const existingProp = this.findKey(keyType);
         if (existingProp) {
             throw new Error(`Unable to set ${name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`);
@@ -279,7 +291,7 @@ export class Table extends Construct {
         return this;
     }
 
-    private registerAttribute(name: string, type: KeyAttributeType) {
+    private registerAttribute(name: string, type: AttributeType) {
         const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
         if (existingDef && existingDef.attributeType !== type) {
             throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
@@ -293,7 +305,7 @@ export class Table extends Construct {
     }
 }
 
-export enum KeyAttributeType {
+export enum AttributeType {
     Binary = 'B',
     Number = 'N',
     String = 'S',

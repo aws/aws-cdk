@@ -5,7 +5,7 @@ import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, FunctionArn, FunctionName } from './lambda.generated';
+import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -17,7 +17,7 @@ export interface FunctionRefProps {
      *
      * Format: arn:<partition>:lambda:<region>:<account-id>:function:<function-name>
      */
-    functionArn: FunctionArn;
+    functionArn: string;
 
     /**
      * The IAM execution role associated with this function.
@@ -32,7 +32,7 @@ export interface FunctionRefProps {
      * This needs to be given in order to support allowing connections
      * to this Lambda.
      */
-    securityGroupId?: ec2.SecurityGroupId;
+    securityGroupId?: string;
 }
 
 export abstract class FunctionRef extends cdk.Construct
@@ -127,12 +127,12 @@ export abstract class FunctionRef extends cdk.Construct
     /**
      * The name of the function.
      */
-    public abstract readonly functionName: FunctionName;
+    public abstract readonly functionName: string;
 
     /**
      * The ARN fo the function.
      */
-    public abstract readonly functionArn: FunctionArn;
+    public abstract readonly functionArn: string;
 
     /**
      * The IAM role associated with this function.
@@ -156,7 +156,7 @@ export abstract class FunctionRef extends cdk.Construct
     /**
      * Indicates if the policy that allows CloudWatch logs to publish to this lambda has been added.
      */
-    private logSubscriptionDestinationPolicyAddedFor: logs.LogGroupArn[] = [];
+    private logSubscriptionDestinationPolicyAddedFor: string[] = [];
 
     /**
      * Adds a permission to the Lambda resource policy.
@@ -215,7 +215,7 @@ export abstract class FunctionRef extends cdk.Construct
      * Returns a RuleTarget that can be used to trigger this Lambda as a
      * result from a CloudWatch event.
      */
-    public asEventRuleTarget(ruleArn: events.RuleArn, ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(ruleArn: string, ruleId: string): events.EventRuleTargetProps {
         const permissionId = `AllowEventRule${ruleId}`;
         if (!this.tryFindChild(permissionId)) {
             this.addPermission(permissionId, {
@@ -301,11 +301,10 @@ export abstract class FunctionRef extends cdk.Construct
      */
     public export(): FunctionRefProps {
         return {
-            functionArn: new FunctionArn(new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue()),
+            functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
             securityGroupId: this._connections && this._connections.securityGroup
-                    ? new ec2.SecurityGroupId(new cdk.Output(this, 'SecurityGroupId', {
-                            value: this._connections.securityGroup.securityGroupId
-                    }).makeImportValue()) : undefined
+                    ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue().toString()
+                    : undefined
         };
     }
 
@@ -313,11 +312,11 @@ export abstract class FunctionRef extends cdk.Construct
      * Allows this Lambda to be used as a destination for bucket notifications.
      * Use `bucket.onEvent(lambda)` to subscribe.
      */
-    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+    public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
         const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
         if (!this.tryFindChild(permissionId)) {
             this.addPermission(permissionId, {
-                sourceAccount: new cdk.AwsAccountId(),
+                sourceAccount: new cdk.AwsAccountId().toString(),
                 principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
                 sourceArn: bucketArn,
             });
@@ -355,8 +354,8 @@ export abstract class FunctionRef extends cdk.Construct
 }
 
 class LambdaRefImport extends FunctionRef {
-    public readonly functionName: FunctionName;
-    public readonly functionArn: FunctionArn;
+    public readonly functionName: string;
+    public readonly functionArn: string;
     public readonly role?: iam.Role;
 
     protected readonly canCreatePermissions = false;
@@ -365,7 +364,7 @@ class LambdaRefImport extends FunctionRef {
         super(parent, name);
 
         this.functionArn = props.functionArn;
-        this.functionName = new FunctionName(this.extractNameFromArn(props.functionArn));
+        this.functionName = this.extractNameFromArn(props.functionArn);
         this.role = props.role;
 
         if (props.securityGroupId) {
@@ -390,8 +389,8 @@ class LambdaRefImport extends FunctionRef {
      *
      * @returns `FnSelect(6, FnSplit(':', arn))`
      */
-    private extractNameFromArn(arn: cdk.Arn) {
-        return new cdk.FnSelect(6, new cdk.FnSplit(':', arn));
+    private extractNameFromArn(arn: string) {
+        return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
 
     }
 }

@@ -1,4 +1,4 @@
-import { Arn, PolicyPrincipal } from '@aws-cdk/cdk';
+import { PolicyPrincipal } from '@aws-cdk/cdk';
 
 /**
  * Represents a permission statement that can be added to a Lambda's resource policy
@@ -42,7 +42,7 @@ export interface Permission {
      * bucket owner's account ID. You can use this property to ensure that all
      * source principals are owned by a specific account.
      */
-    sourceAccount?: any;
+    sourceAccount?: string;
 
     /**
      * The ARN of a resource that is invoking your function. When granting
@@ -52,5 +52,5 @@ export interface Permission {
      * any bucket from any AWS account that creates a mapping to your function,
      * can invoke the function.
      */
-    sourceArn?: Arn;
+    sourceArn?: string;
 }
