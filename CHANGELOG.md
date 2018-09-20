@@ -21,7 +21,7 @@ See motivation and discussion in [#695](https://github.com/awslabs/aws-cdk/issue
 
 ### Bug Fixes
 
-* **assets:** cab't use multiple assets in the same stack ([#725](https://github.com/awslabs/aws-cdk/issues/725)) ([bba2e5b](https://github.com/awslabs/aws-cdk/commit/bba2e5b)), closes [#706](https://github.com/awslabs/aws-cdk/issues/706)
+* **assets:** can't use multiple assets in the same stack ([#725](https://github.com/awslabs/aws-cdk/issues/725)) ([bba2e5b](https://github.com/awslabs/aws-cdk/commit/bba2e5b)), closes [#706](https://github.com/awslabs/aws-cdk/issues/706)
 * **aws-codebuild:** typo in BuildEnvironment "priviledged" -> "privileged     ([#734](https://github.com/awslabs/aws-cdk/issues/734)) ([72fec36](https://github.com/awslabs/aws-cdk/commit/72fec36))
 * **aws-ecr:** fix addToResourcePolicy ([#737](https://github.com/awslabs/aws-cdk/issues/737)) ([eadbda5](https://github.com/awslabs/aws-cdk/commit/eadbda5))
 * **aws-events:** ruleName can now be specified ([#726](https://github.com/awslabs/aws-cdk/issues/726)) ([a7bc5ee](https://github.com/awslabs/aws-cdk/commit/a7bc5ee)), closes [#708](https://github.com/awslabs/aws-cdk/issues/708)
