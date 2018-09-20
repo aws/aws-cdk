@@ -1,3 +1,44 @@
+<a name="0.9.2"></a>
+## [0.9.2](https://github.com/awslabs/aws-cdk/compare/v0.9.1...v0.9.2) (2018-09-20)
+
+__NOTICE__: This release includes a framework-wide [__breaking
+change__](https://github.com/awslabs/aws-cdk/issues/712) which changes the type
+of all the string resource attributes across the framework. Instead of using
+strong-types that extend `cdk.Token` (such as `QueueArn`, `TopicName`, etc), we
+now represent all these attributes as normal `string`s, and codify the tokens
+into the string (using the feature introduced in [#168](https://github.com/awslabs/aws-cdk/issues/168)).
+
+Furthermore, the `cdk.Arn` type has been removed. In order to format/parse ARNs,
+use the static methods on `cdk.ArnUtils`.
+
+See motivation and discussion in [#695](https://github.com/awslabs/aws-cdk/issues/695).
+
+### Breaking Changes
+
+* **cfn2ts:** use stringified tokens for resource attributes instead of strong types ([#712](https://github.com/awslabs/aws-cdk/issues/712)) ([6508f78](https://github.com/awslabs/aws-cdk/commit/6508f78)), closes [#518](https://github.com/awslabs/aws-cdk/issues/518) [#695](https://github.com/awslabs/aws-cdk/issues/695) [#744](https://github.com/awslabs/aws-cdk/issues/744)
+* **aws-dynamodb:** Attribute type for keys, changes the signature of the `addPartitionKey` and `addSortKey` methods to be consistent across the board. ([#720](https://github.com/awslabs/aws-cdk/issues/720)) ([e6cc189](https://github.com/awslabs/aws-cdk/commit/e6cc189))
+* **aws-codebuild:** fix typo "priviledged" -> "privileged
+
+### Bug Fixes
+
+* **assets:** can't use multiple assets in the same stack ([#725](https://github.com/awslabs/aws-cdk/issues/725)) ([bba2e5b](https://github.com/awslabs/aws-cdk/commit/bba2e5b)), closes [#706](https://github.com/awslabs/aws-cdk/issues/706)
+* **aws-codebuild:** typo in BuildEnvironment "priviledged" -> "privileged     ([#734](https://github.com/awslabs/aws-cdk/issues/734)) ([72fec36](https://github.com/awslabs/aws-cdk/commit/72fec36))
+* **aws-ecr:** fix addToResourcePolicy ([#737](https://github.com/awslabs/aws-cdk/issues/737)) ([eadbda5](https://github.com/awslabs/aws-cdk/commit/eadbda5))
+* **aws-events:** ruleName can now be specified ([#726](https://github.com/awslabs/aws-cdk/issues/726)) ([a7bc5ee](https://github.com/awslabs/aws-cdk/commit/a7bc5ee)), closes [#708](https://github.com/awslabs/aws-cdk/issues/708)
+* **aws-lambda:** jsii use no long requires 'sourceAccount' ([#728](https://github.com/awslabs/aws-cdk/issues/728)) ([9e7d311](https://github.com/awslabs/aws-cdk/commit/9e7d311)), closes [#714](https://github.com/awslabs/aws-cdk/issues/714)
+* **aws-s3:** remove `policy` argument ([#730](https://github.com/awslabs/aws-cdk/issues/730)) ([a79190c](https://github.com/awslabs/aws-cdk/commit/a79190c)), closes [#672](https://github.com/awslabs/aws-cdk/issues/672)
+* **cdk:** "cdk init" java template is broken ([#732](https://github.com/awslabs/aws-cdk/issues/732)) ([281c083](https://github.com/awslabs/aws-cdk/commit/281c083)), closes [#711](https://github.com/awslabs/aws-cdk/issues/711) [awslabs/jsii#233](https://github.com/awslabs/jsii/issues/233)
+
+### Features
+
+* **aws-apigateway:** new API Gateway Construct Library ([#665](https://github.com/awslabs/aws-cdk/issues/665)) ([b0f3857](https://github.com/awslabs/aws-cdk/commit/b0f3857))
+* **aws-cdk:** detect presence of EC2 credentials ([#724](https://github.com/awslabs/aws-cdk/issues/724)) ([8e8c295](https://github.com/awslabs/aws-cdk/commit/8e8c295)), closes [#702](https://github.com/awslabs/aws-cdk/issues/702) [#130](https://github.com/awslabs/aws-cdk/issues/130)
+* **aws-codepipeline:** make the Stage insertion API in CodePipeline more flexible ([#460](https://github.com/awslabs/aws-cdk/issues/460)) ([d182818](https://github.com/awslabs/aws-cdk/commit/d182818))
+* **aws-codepipeline:** new "Pipeline#addStage" convenience method ([#647](https://github.com/awslabs/aws-cdk/issues/647)) ([25c9fa0](https://github.com/awslabs/aws-cdk/commit/25c9fa0))
+* **aws-rds:** add support for parameter groups ([#729](https://github.com/awslabs/aws-cdk/issues/729)) ([2541508](https://github.com/awslabs/aws-cdk/commit/2541508)), closes [#719](https://github.com/awslabs/aws-cdk/issues/719)
+* **docs:** add documentation for CDK toolkit plugings ([#733](https://github.com/awslabs/aws-cdk/issues/733)) ([965b918](https://github.com/awslabs/aws-cdk/commit/965b918))
+* **dependencies:** upgrade to [jsii 0.7.6](https://github.com/awslabs/jsii/releases/tag/v0.7.6)
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/awslabs/aws-cdk/compare/v0.9.0...v0.9.1) (2018-09-13)
 
