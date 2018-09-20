@@ -2,7 +2,7 @@ import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './codecommit.generated';
-import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
+import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.
@@ -56,16 +56,16 @@ export abstract class RepositoryRef extends cdk.Construct {
     }
 
     /**
-     * Convenience method for creating a new {@link PipelineSource} Action,
+     * Convenience method for creating a new {@link PipelineSourceAction},
      * and adding it to the given Stage.
      *
      * @param stage the Pipeline Stage to add the new Action to
      * @param name the name of the newly created Action
      * @param props the properties of the new Action
-     * @returns the newly created {@link PipelineSource} Action
+     * @returns the newly created {@link PipelineSourceAction}
      */
-    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
-        return new PipelineSource(this.parent!, name, {
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
+        return new PipelineSourceAction(this.parent!, name, {
             stage,
             repository: this,
             ...props,
