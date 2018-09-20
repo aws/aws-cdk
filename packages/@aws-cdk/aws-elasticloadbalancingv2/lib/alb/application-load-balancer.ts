@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { LoadBalancerArn } from '../elasticloadbalancingv2.generated';
 import { BaseLoadBalancer, BaseLoadBalancerProps, LoadBalancerRefProps } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
 import { BaseImportedLoadBalancer } from '../shared/imported';
@@ -114,7 +113,7 @@ export interface IApplicationLoadBalancer extends ec2.IConnectable {
     /**
      * The ARN of this load balancer
      */
-    readonly loadBalancerArn: LoadBalancerArn;
+    readonly loadBalancerArn: string;
 
     /**
      * The VPC this load balancer has been created in (if available)

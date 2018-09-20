@@ -15,7 +15,7 @@ export = {
         // WHEN
         lb.addListener('Listener', {
             port: 443,
-            certificateArns: [new cdk.Arn('')],
+            certificateArns: ['bla'],
             defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
         });
 
@@ -71,7 +71,7 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'Stack');
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-        const listener = lb.addListener('Listener', { port: 443 });
+        const listener = lb.addListener('Listener', { port: 80 });
         const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
 
         // WHEN
@@ -117,7 +117,7 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'Stack');
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-        const listener = lb.addListener('Listener', { port: 443 });
+        const listener = lb.addListener('Listener', { port: 80 });
 
         // WHEN
         listener.addTargets('Targets', {
@@ -176,7 +176,8 @@ export = {
         const listener = lb.addListener('Listener', { port: 443 });
 
         // WHEN
-        listener.addCertificateArns('Arns', new cdk.Arn('cert'));
+        listener.addCertificateArns('Arns', ['cert']);
+        listener.addTargets('Targets', { port: 8080, targets: [new elbv2.IpTarget('1.2.3.4')] });
 
         // THEN
         expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
@@ -199,7 +200,7 @@ export = {
         const listener2 = elbv2.ApplicationListener.import(stack2, 'Listener', listener1.export());
 
         // WHEN
-        listener2.addCertificateArns('Arns', new cdk.Arn('cert'));
+        listener2.addCertificateArns('Arns', ['cert']);
 
         // THEN
         expect(stack2).to(haveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
@@ -216,7 +217,7 @@ export = {
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'Stack');
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-        const listener = lb.addListener('Listener', { port: 443 });
+        const listener = lb.addListener('Listener', { port: 80 });
 
         // WHEN
         const group = listener.addTargets('Group', {
@@ -246,12 +247,12 @@ export = {
         test.done();
     },
 
-    'Enable health check for tagets targets'(test: Test) {
+    'Enable health check for targets'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'Stack');
         const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
-        const listener = lb.addListener('Listener', { port: 443 });
+        const listener = lb.addListener('Listener', { port: 80 });
 
         // WHEN
         const group = listener.addTargets('Group', {
@@ -278,7 +279,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'VPC');
-        const listener = elbv2.ApplicationListener.import(stack, 'Listener', { listenerArn: new elbv2.ListenerArn('ieks') });
+        const listener = elbv2.ApplicationListener.import(stack, 'Listener', { listenerArn: 'ieks' });
         const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
 
         // WHEN

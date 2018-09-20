@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { ListenerArn } from '../elasticloadbalancingv2.generated';
 import { BaseListener, ListenerRefProps } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
@@ -58,6 +57,8 @@ export class NetworkListener extends BaseListener implements INetworkListener {
         });
 
         this.loadBalancer = props.loadBalancer;
+
+        (props.defaultTargetGroups || []).forEach(this._addDefaultTargetGroup.bind(this));
     }
 
     /**
@@ -107,7 +108,7 @@ export interface INetworkListener {
     /**
      * ARN of the listener
      */
-    listenerArn: ListenerArn;
+    listenerArn: string;
 }
 
 /**

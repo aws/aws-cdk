@@ -1,6 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { LoadBalancerArn } from '../elasticloadbalancingv2.generated';
 import { BaseLoadBalancer, BaseLoadBalancerProps, LoadBalancerRefProps } from '../shared/base-load-balancer';
 import { BaseImportedLoadBalancer } from '../shared/imported';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
@@ -53,7 +52,7 @@ export interface INetworkLoadBalancer {
     /**
      * The ARN of this load balancer
      */
-    readonly loadBalancerArn: LoadBalancerArn;
+    readonly loadBalancerArn: string;
 
     /**
      * The VPC this load balancer has been created in (if available)

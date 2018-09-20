@@ -1,6 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { ListenerArn } from '../elasticloadbalancingv2.generated';
 import { BaseListener, ListenerRefProps } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
@@ -32,7 +31,7 @@ export interface BaseApplicationListenerProps {
     /**
      * The certificates to use on this listener
      */
-    certificateArns?: cdk.Arn[];
+    certificateArns?: string[];
 
     /**
      * The security policy that defines which ciphers and protocols are supported.
@@ -78,7 +77,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     /**
      * ARNs of certificates added to this listener
      */
-    private readonly certificateArns: cdk.Arn[];
+    private readonly certificateArns: string[];
 
     /**
      * Load balancer this listener is associated with
@@ -119,7 +118,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     /**
      * Add one or more certificates to this listener.
      */
-    public addCertificateArns(_id: string, ...arns: cdk.Arn[]): void {
+    public addCertificateArns(_id: string, arns: string[]): void {
         this.certificateArns.push(...arns);
     }
 
@@ -228,12 +227,12 @@ export interface IApplicationListener extends ec2.IConnectable {
     /**
      * ARN of the listener
      */
-    listenerArn: ListenerArn;
+    listenerArn: string;
 
     /**
      * Add one or more certificates to this listener.
      */
-    addCertificateArns(id: string, ...arns: cdk.Arn[]): void;
+    addCertificateArns(id: string, arns: string[]): void;
 
     /**
      * Load balance incoming requests to the given target groups.
@@ -271,7 +270,7 @@ class ImportedApplicationListener extends BaseImportedListener implements IAppli
     /**
      * Add one or more certificates to this listener.
      */
-    public addCertificateArns(id: string, ...arns: cdk.Arn[]): void {
+    public addCertificateArns(id: string, arns: string[]): void {
         new ApplicationListenerCertificate(this, id, {
             listener: this,
             certificateArns: arns

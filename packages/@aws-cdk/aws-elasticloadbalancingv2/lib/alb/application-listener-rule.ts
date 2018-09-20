@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ListenerRuleArn } from '../elasticloadbalancingv2.generated';
+import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
 
@@ -61,7 +61,7 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
     /**
      * The ARN of this rule
      */
-    public readonly listenerRuleArn: ListenerRuleArn;
+    public readonly listenerRuleArn: string;
 
     /**
      * The elements of this rule to add ordering dependencies on

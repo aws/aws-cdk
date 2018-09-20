@@ -16,7 +16,7 @@ export interface ApplicationListenerCertificateProps {
      *
      * Duplicates are not allowed.
      */
-    certificateArns: cdk.Arn[];
+    certificateArns: string[];
 }
 
 /**

@@ -1,12 +1,12 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ListenerArn } from '../elasticloadbalancingv2.generated';
+import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { ITargetGroup } from './base-target-group';
 
 /**
  * Base class for listeners
  */
 export abstract class BaseListener extends cdk.Construct {
-    public readonly listenerArn: ListenerArn;
+    public readonly listenerArn: string;
     private readonly defaultActions: any[] = [];
 
     constructor(parent: cdk.Construct, id: string, additionalProps: any) {
@@ -25,7 +25,7 @@ export abstract class BaseListener extends cdk.Construct {
      */
     public export(): ListenerRefProps {
         return {
-            listenerArn: new ListenerArn(new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue())
+            listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
         };
     }
 
@@ -57,5 +57,5 @@ export interface ListenerRefProps {
     /**
      * ARN of the listener
      */
-    listenerArn: ListenerArn;
+    listenerArn: string;
 }

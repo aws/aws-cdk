@@ -1,6 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, TargetGroupArn, TargetGroupFullName, TargetGroupName } from '../elasticloadbalancingv2.generated';
+import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
 
@@ -123,17 +123,17 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     /**
      * The ARN of the target group
      */
-    public readonly targetGroupArn: TargetGroupArn;
+    public readonly targetGroupArn: string;
 
     /**
      * The full name of the target group
      */
-    public readonly targetGroupFullName: TargetGroupFullName;
+    public readonly targetGroupFullName: string;
 
     /**
      * The name of the target group
      */
-    public readonly targetGroupName: TargetGroupName;
+    public readonly targetGroupName: string;
 
     /**
      * Health check for the members of this target group
@@ -222,7 +222,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
      */
     public export(): TargetGroupRefProps {
         return {
-            targetGroupArn: new TargetGroupArn(new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue()),
+            targetGroupArn: new cdk.Output(this, 'TargetGroupArn', { value: this.targetGroupArn }).makeImportValue().toString(),
             defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
         };
     }
@@ -261,7 +261,7 @@ export interface TargetGroupRefProps {
     /**
      * ARN of the target group
      */
-    targetGroupArn: TargetGroupArn;
+    targetGroupArn: string;
 
     /**
      * Port target group is listening on
@@ -276,7 +276,7 @@ export interface ITargetGroup {
     /**
      * ARN of the target group
      */
-    readonly targetGroupArn: TargetGroupArn;
+    readonly targetGroupArn: string;
 }
 
 /**

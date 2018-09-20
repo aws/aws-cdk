@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, LoadBalancerArn, LoadBalancerCanonicalHostedZoneId, LoadBalancerDnsName,
-    LoadBalancerFullName, LoadBalancerName } from '../elasticloadbalancingv2.generated';
+import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
 /**
@@ -51,35 +50,35 @@ export abstract class BaseLoadBalancer extends cdk.Construct {
      *
      * @example  Z2P70J7EXAMPLE
      */
-    public readonly canonicalHostedZoneId: LoadBalancerCanonicalHostedZoneId;
+    public readonly canonicalHostedZoneId: string;
 
     /**
      * The DNS name of this load balancer
      *
      * @example my-load-balancer-424835706.us-west-2.elb.amazonaws.com
      */
-    public readonly dnsName: LoadBalancerDnsName;
+    public readonly dnsName: string;
 
     /**
      * The full name of this load balancer
      *
      * @example app/my-load-balancer/50dc6c495c0c9188
      */
-    public readonly fullName: LoadBalancerFullName;
+    public readonly fullName: string;
 
     /**
      * The name of this load balancer
      *
      * @example my-load-balancer
      */
-    public readonly loadBalancerName: LoadBalancerName;
+    public readonly loadBalancerName: string;
 
     /**
      * The ARN of this load balancer
      *
      * @example arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
      */
-    public readonly loadBalancerArn: LoadBalancerArn;
+    public readonly loadBalancerArn: string;
 
     /**
      * The VPC this load balancer has been created in, if available
@@ -141,7 +140,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct {
      */
     public export(): LoadBalancerRefProps {
         return {
-            loadBalancerArn: new LoadBalancerArn(new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue())
+            loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
         };
     }
 }
@@ -153,5 +152,5 @@ export interface LoadBalancerRefProps {
     /**
      * ARN of the load balancer
      */
-    loadBalancerArn: LoadBalancerArn;
+    loadBalancerArn: string;
 }
