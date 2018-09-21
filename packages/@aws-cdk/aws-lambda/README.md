@@ -60,3 +60,33 @@ new lambda.PipelineInvokeAction(this, 'Lambda', {
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
+
+### Lambda with DLQ 
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
+    handler: 'index.handler'
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    deadLetterQueueEnabled: true
+});
+```
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/dlq.html)
+to learn more about AWS Lambdas and DLQs.
+
+### Lambda with X-Ray Tracing 
+
+```ts
+import lambda = require('@aws-cdk/aws-lambda');
+
+const fn = new lambda.Function(this, 'MyFunction', {
+    runtime: lambda.Runtime.NodeJS810,
+    handler: 'index.handler'
+    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    tracing: lambda.Tracing.Active
+});
+```
+See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html)
+to learn more about AWS Lambda's X-Ray support.

@@ -1,7 +1,7 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { QueueRef } from './queue-ref';
-import { cloudformation, QueueArn, QueueName, QueueUrl } from './sqs.generated';
+import { cloudformation } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -183,22 +183,22 @@ export class Queue extends QueueRef {
     /**
      * The ARN of this queue
      */
-    public readonly queueArn: QueueArn;
+    public readonly queueArn: string;
 
     /**
      * The name of this queue
      */
-    public readonly queueName: QueueName;
+    public readonly queueName: string;
 
     /**
      * The URL of this queue
      */
-    public readonly queueUrl: QueueUrl;
+    public readonly queueUrl: string;
 
     /**
      * If this queue is encrypted, this is the KMS key.
      */
-    public encryptionMasterKey?: kms.EncryptionKeyRef;
+    public readonly encryptionMasterKey?: kms.EncryptionKeyRef;
 
     protected readonly autoCreatePolicy = true;
 
@@ -214,10 +214,12 @@ export class Queue extends QueueRef {
                               }
                             : undefined;
 
+        const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
+
         const queue = new cloudformation.QueueResource(this, 'Resource', {
             queueName: props.queueName,
             ...this.determineFifoProps(props),
-            ...this.determineEncryptionProps(props),
+            ...encryptionProps,
             redrivePolicy,
             delaySeconds: props.deliveryDelaySec,
             maximumMessageSize: props.maxMessageSizeBytes,
@@ -225,9 +227,52 @@ export class Queue extends QueueRef {
             receiveMessageWaitTimeSeconds: props.receiveMessageWaitTimeSec,
             visibilityTimeout: props.visibilityTimeoutSec,
         });
+        this.encryptionMasterKey = encryptionMasterKey;
         this.queueArn = queue.queueArn;
         this.queueName = queue.queueName;
         this.queueUrl = queue.ref;
+
+        function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.EncryptionKeyRef } {
+            let encryption = props.encryption || QueueEncryption.Unencrypted;
+
+            if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
+                encryption = QueueEncryption.Kms; // KMS is implied by specifying an encryption key
+            }
+
+            if (encryption === QueueEncryption.Unencrypted) {
+                return { encryptionProps: {} };
+            }
+
+            if (encryption === QueueEncryption.KmsManaged) {
+                const masterKey = kms.EncryptionKey.import(this, 'Key', {
+                    keyArn: 'alias/aws/sqs'
+                });
+
+                return {
+                    encryptionMasterKey: masterKey,
+                    encryptionProps: {
+                        kmsMasterKeyId: 'alias/aws/sqs',
+                        kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+                    }
+                };
+            }
+
+            if (encryption === QueueEncryption.Kms) {
+                const masterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
+                    description: `Created by ${this.path}`
+                });
+
+                return {
+                    encryptionMasterKey: masterKey,
+                    encryptionProps: {
+                        kmsMasterKeyId: masterKey.keyArn,
+                        kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
+                    }
+                };
+            }
+
+            throw new Error(`Unexpected 'encryptionType': ${encryption}`);
+        }
     }
 
     /**
@@ -258,42 +303,6 @@ export class Queue extends QueueRef {
             fifoQueue,
         };
     }
-
-    private determineEncryptionProps(props: QueueProps): EncryptionProps {
-        let encryption = props.encryption || QueueEncryption.Unencrypted;
-
-        if (encryption !== QueueEncryption.Kms && props.encryptionMasterKey) {
-            encryption = QueueEncryption.Kms; // KMS is implied by specifying an encryption key
-        }
-
-        if (encryption === QueueEncryption.Unencrypted) {
-            return {};
-        }
-
-        if (encryption === QueueEncryption.KmsManaged) {
-            this.encryptionMasterKey = kms.EncryptionKey.import(this, 'Key', {
-                keyArn: new kms.KeyArn('alias/aws/sqs')
-            });
-
-            return {
-                kmsMasterKeyId: 'alias/aws/sqs',
-                kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
-            };
-        }
-
-        if (encryption === QueueEncryption.Kms) {
-            this.encryptionMasterKey = props.encryptionMasterKey || new kms.EncryptionKey(this, 'Key', {
-                description: `Created by ${this.path}`
-            });
-
-            return {
-                kmsMasterKeyId: this.encryptionMasterKey.keyArn,
-                kmsDataKeyReusePeriodSeconds: props.dataKeyReuseSec
-            };
-        }
-
-        throw new Error(`Unexpected 'encryptionType': ${encryption}`);
-    }
 }
 
 interface FifoProps {
@@ -302,6 +311,6 @@ interface FifoProps {
 }
 
 interface EncryptionProps {
-    readonly kmsMasterKeyId?: string | kms.KeyArn;
+    readonly kmsMasterKeyId?: string;
     readonly kmsDataKeyReusePeriodSeconds?: number;
 }

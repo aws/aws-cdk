@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
+import { LogGroupRef } from './log-group';
 import { cloudformation } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
@@ -10,7 +10,7 @@ export interface MetricFilterProps {
     /**
      * The log group to create the filter on.
      */
-    logGroup: LogGroup;
+    logGroup: LogGroupRef;
 
     /**
      * Pattern to search for log events.
@@ -59,6 +59,14 @@ export class MetricFilter extends cdk.Construct {
     constructor(parent: cdk.Construct, id: string, props: MetricFilterProps) {
         super(parent, id);
 
+        // It looks odd to map this object to a singleton list, but that's how
+        // we're supposed to do it according to the docs.
+        //
+        // > Currently, you can specify only one metric transformation for
+        // > each metric filter. If you want to specify multiple metric
+        // > transformations, you must specify multiple metric filters.
+        //
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
         new cloudformation.MetricFilterResource(this, 'Resource', {
             logGroupName: props.logGroup.logGroupName,
             filterPattern: props.filterPattern.logPatternString,

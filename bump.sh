@@ -6,9 +6,16 @@ if [ -z "${ver}" ]; then
   exit 1
 fi
 
-lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
-lerna run build
+/bin/bash ./install.sh
 
-# update test expectations
-UPDATE_DIFF=1 lerna run test
+lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
+
+# Update CHANGELOG.md only at the root
+cat > /tmp/context.json <<HERE
+{
+  "version": "${ver}"
+}
+HERE
+
+conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
 

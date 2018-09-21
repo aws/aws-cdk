@@ -7,7 +7,12 @@
         "EnableDnsHostnames": true,
         "EnableDnsSupport": true,
         "InstanceTenancy": "default",
-        "Tags": []
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1SubnetB4246D30": {
@@ -18,7 +23,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1RouteTableFEE4B781": {
@@ -26,7 +37,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1RouteTableAssociatioin249B4093": {
@@ -57,7 +74,13 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+          }
+        ]
       }
     },
     "VPCPublicSubnet1DefaultRoute91CEF279": {
@@ -80,7 +103,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": true
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2RouteTable6F1A15F1": {
@@ -88,7 +117,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2RouteTableAssociatioin766225D7": {
@@ -119,7 +154,13 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet2Subnet74179F39"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+          }
+        ]
       }
     },
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
@@ -142,7 +183,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1a",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet1RouteTableBE8A6027": {
@@ -150,7 +197,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
@@ -184,7 +237,13 @@
           "Ref": "VPCB9E5F0B4"
         },
         "AvailabilityZone": "test-region-1b",
-        "MapPublicIpOnLaunch": false
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet2RouteTable0A19E10E": {
@@ -192,7 +251,13 @@
       "Properties": {
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+          }
+        ]
       }
     },
     "VPCPrivateSubnet2RouteTableAssociatioinC31995B4": {
@@ -219,7 +284,15 @@
       }
     },
     "VPCIGWB7E252D3": {
-      "Type": "AWS::EC2::InternetGateway"
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-rds-integ/VPC"
+          }
+        ]
+      }
     },
     "VPCVPCGW99B986DC": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -229,6 +302,16 @@
         },
         "InternetGatewayId": {
           "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
+    "ParamsA8366201": {
+      "Type": "AWS::RDS::DBClusterParameterGroup",
+      "Properties": {
+        "Description": "A nice parameter group",
+        "Family": "aurora5.6",
+        "Parameters": {
+          "character_set_database": "utf8mb4"
         }
       }
     },
@@ -287,6 +370,9 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "DBClusterParameterGroupName": {
+          "Ref": "ParamsA8366201"
+        },
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },

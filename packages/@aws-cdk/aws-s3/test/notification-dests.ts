@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/cdk');
  * for AWS::SNS::Topic which implements IBucketNotificationDestination.
  */
 export class Topic extends cdk.Construct implements s3notifications.IBucketNotificationDestination {
-    public readonly topicArn: cdk.Arn;
+    public readonly topicArn: string;
     private readonly policy = new cdk.PolicyDocument();
     private readonly notifyingBucketPaths = new Set<string>();
 
@@ -14,7 +14,7 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
         super(parent, id);
 
         const resource = new cdk.Resource(this, 'Resource', { type: 'AWS::SNS::Topic' });
-        const topicArn = new cdk.Ref(resource);
+        const topicArn = resource.ref;
 
         new cdk.Resource(this, 'Policy', {
             type: 'AWS::SNS::TopicPolicy',
@@ -27,7 +27,7 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
         this.topicArn = topicArn;
     }
 
-    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3notifications.BucketNotificationDestinationProps {
+    public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3notifications.BucketNotificationDestinationProps {
 
         // add permission to each source bucket
         if (!this.notifyingBucketPaths.has(bucketId)) {

@@ -10,7 +10,7 @@ const key = new EncryptionKey(stack, 'MyKey');
 key.addToResourcePolicy(new PolicyStatement()
     .addAllResources()
     .addAction('kms:encrypt')
-    .addAwsPrincipal(new AwsAccountId()));
+    .addAwsPrincipal(new AwsAccountId().toString()));
 
 key.addAlias('alias/bar');
 

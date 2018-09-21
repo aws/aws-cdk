@@ -1,7 +1,6 @@
-import certificatemanager = require('@aws-cdk/aws-certificatemanager');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, DistributionDomainName } from './cloudfront.generated';
+import { cloudformation } from './cloudfront.generated';
 
 export enum HttpVersion {
     HTTP1_1 = "http1.1",
@@ -40,7 +39,7 @@ export enum ViewerProtocolPolicy {
  */
 export interface AliasConfiguration {
     readonly names: string[],
-    readonly acmCertRef: certificatemanager.CertificateArn,
+    readonly acmCertRef: string,
     readonly sslMethod?: SSLMethod,
 }
 
@@ -443,7 +442,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
      * If you are using aliases for your distribution, this is the domainName your DNS records should point to.
      * (In Route53, you could create an ALIAS record to this value, for example. )
      */
-    public readonly domainName: DistributionDomainName;
+    public readonly domainName: string;
 
     /**
      * Maps our methods to the string arrays they are

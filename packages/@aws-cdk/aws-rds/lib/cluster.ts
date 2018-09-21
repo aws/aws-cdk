@@ -1,9 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
 import { DatabaseClusterRef, Endpoint } from './cluster-ref';
-import { BackupProps, DatabaseClusterEngine, InstanceProps, Login, Parameters } from './props';
-import { cloudformation, DBClusterName, DBInstanceId } from './rds.generated';
+import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
+import { cloudformation } from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -71,7 +71,7 @@ export interface DatabaseClusterProps {
     /**
      * ARN of KMS key if you want to enable storage encryption
      */
-    kmsKeyArn?: kms.KeyArn;
+    kmsKeyArn?: string;
 
     /**
      * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -84,8 +84,10 @@ export interface DatabaseClusterProps {
 
     /**
      * Additional parameters to pass to the database engine
+     *
+     * @default No parameter group
      */
-    parameters?: Parameters;
+    parameterGroup?: ClusterParameterGroupRef;
 }
 
 /**
@@ -95,12 +97,12 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Identifier of the cluster
      */
-    public readonly clusterIdentifier: DBClusterName;
+    public readonly clusterIdentifier: string;
 
     /**
      * Identifiers of the replicas
      */
-    public readonly instanceIdentifiers: DBInstanceId[] = [];
+    public readonly instanceIdentifiers: string[] = [];
 
     /**
      * The endpoint to use for read/write operations
@@ -125,7 +127,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     /**
      * Security group identifier of this database
      */
-    protected readonly securityGroupId: ec2.SecurityGroupId;
+    protected readonly securityGroupId: string;
 
     constructor(parent: cdk.Construct, name: string, props: DatabaseClusterProps) {
         super(parent, name);
@@ -155,6 +157,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
             dbSubnetGroupName: subnetGroup.ref,
             vpcSecurityGroupIds: [this.securityGroupId],
             port: props.port,
+            dbClusterParameterGroupName: props.parameterGroup && props.parameterGroup.parameterGroupName,
             // Admin
             masterUsername: props.masterUser.username,
             masterUserPassword: props.masterUser.password,
@@ -183,7 +186,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
                                        props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
                                        undefined;
 
-            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.usePublicSubnets;
+            const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
 
             const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
                 // Link to cluster

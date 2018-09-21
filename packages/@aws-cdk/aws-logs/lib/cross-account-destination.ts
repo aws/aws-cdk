@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { LogGroup } from './log-group';
-import { cloudformation, DestinationArn, DestinationName } from './logs.generated';
+import { LogGroupRef } from './log-group';
+import { cloudformation } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
 export interface CrossAccountDestinationProps {
@@ -22,7 +22,7 @@ export interface CrossAccountDestinationProps {
     /**
      * The log destination target's ARN
      */
-    targetArn: cdk.Arn;
+    targetArn: string;
 }
 
 /**
@@ -44,12 +44,12 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     /**
      * The name of this CrossAccountDestination object
      */
-    public readonly destinationName: DestinationName;
+    public readonly destinationName: string;
 
     /**
      * The ARN of this CrossAccountDestination object
      */
-    public readonly destinationArn: DestinationArn;
+    public readonly destinationArn: string;
 
     /**
      * The inner resource
@@ -71,14 +71,14 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
         });
 
         this.destinationArn = this.resource.destinationArn;
-        this.destinationName = this.resource.ref;
+        this.destinationName = this.resource.destinationName;
     }
 
     public addToPolicy(statement: cdk.PolicyStatement) {
         this.policyDocument.addStatement(statement);
     }
 
-    public logSubscriptionDestination(_sourceLogGroup: LogGroup): LogSubscriptionDestination {
+    public logSubscriptionDestination(_sourceLogGroup: LogGroupRef): LogSubscriptionDestination {
         return { arn: this.destinationArn };
     }
 

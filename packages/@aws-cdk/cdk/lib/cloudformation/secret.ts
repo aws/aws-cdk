@@ -1,4 +1,4 @@
-import { Construct } from "../core/construct";
+import { Construct } from '../core/construct';
 import { Token } from '../core/tokens';
 import { Parameter } from './parameter';
 
@@ -12,9 +12,7 @@ import { Parameter } from './parameter';
  *
  * However, you can also just pass in values, like any other token: `new Secret('bla')`
  */
-export class Secret extends Token {
-
-}
+export class Secret extends Token { }
 
 export interface SecretProps {
     /**
@@ -91,6 +89,6 @@ export class SecretParameter extends Construct {
             noEcho: true,
         });
 
-        this.value = param.ref;
+        this.value = new Secret(param.ref);
     }
 }

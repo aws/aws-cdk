@@ -17,7 +17,7 @@ export PATH=${PYTHON_DEPS}/bin:$PATH
 # CONFIG
 staging=".staging"
 output="dist"
-refsrc="../pack/sphinx"
+refsrc="../dist/sphinx"
 refdocs="refs"
 refdocsdir="${staging}/${refdocs}"
 refs_index="${staging}/reference.rst"

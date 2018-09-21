@@ -276,7 +276,7 @@ export class Construct {
      * @param to The construct to return the path components relative to, or
      * the entire list of ancestors (including root) if omitted.
      */
-    protected ancestors(upTo?: Construct): Construct[] {
+    public ancestors(upTo?: Construct): Construct[] {
         const ret = new Array<Construct>();
 
         let curr: Construct | undefined = this;
@@ -376,7 +376,7 @@ export class Construct {
      * Returns true if this construct or any of it's parent constructs are
      * locked.
      */
-    private get locked() {
+    protected get locked() {
         if (this._locked) {
             return true;
         }

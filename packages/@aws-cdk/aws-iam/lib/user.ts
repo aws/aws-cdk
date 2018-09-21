@@ -1,6 +1,6 @@
-import { Arn, ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
 import { Group } from './group';
-import { cloudformation, UserArn, UserName } from './iam.generated';
+import { cloudformation } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -66,12 +66,12 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
     /**
      * An attribute that represents the user name.
      */
-    public readonly userName: UserName;
+    public readonly userName: string;
 
     /**
      * An attribute that represents the user's ARN.
      */
-    public readonly userArn: UserArn;
+    public readonly userArn: string;
 
     /**
      * Returns the ARN of this user.
@@ -79,7 +79,7 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
     public readonly principal: PolicyPrincipal;
 
     private readonly groups = new Array<any>();
-    private readonly managedPolicies = new Array<Arn>();
+    private readonly managedPolicyArns = new Array<string>();
     private readonly attachedPolicies = new AttachedPolicies();
     private defaultPolicy?: Policy;
 
@@ -89,12 +89,12 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
         const user = new cloudformation.UserResource(this, 'Resource', {
             userName: props.userName,
             groups: undefinedIfEmpty(() => this.groups),
-            managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
+            managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
             path: props.path,
             loginProfile: this.parseLoginProfile(props)
         });
 
-        this.userName = user.ref;
+        this.userName = user.userName;
         this.userArn = user.userArn;
         this.principal = new ArnPrincipal(this.userArn);
 
@@ -114,8 +114,8 @@ export class User extends Construct implements IIdentityResource, IPrincipal {
      * Attaches a managed policy to the user.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: Arn) {
-        this.managedPolicies.push(arn);
+    public attachManagedPolicy(arn: string) {
+        this.managedPolicyArns.push(arn);
     }
 
     /**

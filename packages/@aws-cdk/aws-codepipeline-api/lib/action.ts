@@ -48,7 +48,7 @@ export interface IStage {
     /**
      * The ARN of the Pipeline.
      */
-    readonly pipelineArn: cdk.Arn;
+    readonly pipelineArn: string;
 
     /**
      * The service Role of the Pipeline.
@@ -70,7 +70,7 @@ export interface IStage {
      *
      * @param action the Action to add to this Stage
      */
-    _addAction(action: Action): void;
+    _attachAction(action: Action): void;
 }
 
 /**
@@ -151,7 +151,7 @@ export abstract class Action extends cdk.Construct {
         this.runOrder = 1;
         this.stage = props.stage;
 
-        this.stage._addAction(this);
+        this.stage._attachAction(this);
     }
 
     public validate(): string[] {

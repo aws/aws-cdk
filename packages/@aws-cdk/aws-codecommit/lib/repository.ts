@@ -1,6 +1,8 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, RepositoryArn, RepositoryName } from './codecommit.generated';
+import { cloudformation } from './codecommit.generated';
+import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.
@@ -10,7 +12,7 @@ export interface RepositoryRefProps {
      * The name of an existing CodeCommit Repository that we are referencing.
      * Must be in the same account and region as the root Stack.
      */
-    repositoryName: RepositoryName;
+    repositoryName: string;
 }
 
 /**
@@ -37,10 +39,10 @@ export abstract class RepositoryRef extends cdk.Construct {
     }
 
     /** The ARN of this Repository. */
-    public abstract readonly repositoryArn: RepositoryArn;
+    public abstract readonly repositoryArn: string;
 
     /** The human-visible name of this Repository. */
-    public abstract readonly repositoryName: RepositoryName;
+    public abstract readonly repositoryName: string;
 
     /**
      * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
@@ -49,8 +51,25 @@ export abstract class RepositoryRef extends cdk.Construct {
      */
     public export(): RepositoryRefProps {
         return {
-            repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue(),
+            repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineSource} Action,
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineSource} Action
+     */
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
+        return new PipelineSource(this.parent!, name, {
+            stage,
+            repository: this,
+            ...props,
+        });
     }
 
     /**
@@ -151,13 +170,13 @@ export abstract class RepositoryRef extends cdk.Construct {
 }
 
 class ImportedRepositoryRef extends RepositoryRef {
-    public readonly repositoryArn: RepositoryArn;
-    public readonly repositoryName: RepositoryName;
+    public readonly repositoryArn: string;
+    public readonly repositoryName: string;
 
     constructor(parent: cdk.Construct, name: string, props: RepositoryRefProps) {
         super(parent, name);
 
-        this.repositoryArn = cdk.Arn.fromComponents({
+        this.repositoryArn = cdk.ArnUtils.fromComponents({
             service: 'codecommit',
             resource: props.repositoryName,
         });

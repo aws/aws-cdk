@@ -5,6 +5,7 @@
 // until we have that.
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 
 const app = new cdk.App(process.argv);
@@ -24,7 +25,7 @@ const asg = new autoscaling.AutoScalingGroup(appStack, 'ASG', {
     machineImage: new ec2.AmazonLinuxImage()
 });
 
-new ec2.ClassicLoadBalancer(appStack, 'LB', {
+new elb.LoadBalancer(appStack, 'LB', {
     vpc: importedVpc,
     internetFacing: true,
     listeners: [{

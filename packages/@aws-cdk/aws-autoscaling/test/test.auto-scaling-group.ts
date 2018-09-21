@@ -332,13 +332,44 @@ export = {
 
       test.done();
     },
+    'can add Security Group to Fleet'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+        const vpc = mockVpc(stack);
+
+        // WHEN
+        const asg = new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+            machineImage: new ec2.AmazonLinuxImage(),
+            vpc,
+        });
+        asg.addSecurityGroup(mockSecurityGroup(stack));
+        expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+            SecurityGroups: [
+                {
+                    "Fn::GetAtt": [
+                        "MyFleetInstanceSecurityGroup774E8234",
+                        "GroupId"
+                    ]
+                },
+                'most-secure'],
+        }));
+        test.done();
+    },
 };
 
 function mockVpc(stack: cdk.Stack) {
     return ec2.VpcNetwork.import(stack, 'MyVpc', {
-        vpcId: new ec2.VPCId('my-vpc'),
+        vpcId: 'my-vpc',
         availabilityZones: [ 'az1' ],
-        publicSubnetIds: [ new ec2.SubnetId('pub1') ],
-        privateSubnetIds: [ new ec2.SubnetId('pri1') ],
+        publicSubnetIds: [ 'pub1' ],
+        privateSubnetIds: [ 'pri1' ],
+        isolatedSubnetIds: [],
+    });
+}
+
+function mockSecurityGroup(stack: cdk.Stack) {
+    return ec2.SecurityGroupRef.import(stack, 'MySG', {
+        securityGroupId: 'most-secure',
     });
 }

@@ -1,5 +1,5 @@
 import { Construct,  } from '@aws-cdk/cdk';
-import { cloudformation, TopicArn, TopicName } from './sns.generated';
+import { cloudformation } from './sns.generated';
 import { TopicRef } from './topic-ref';
 
 /**
@@ -29,8 +29,8 @@ export interface TopicProps {
  * A new SNS topic
  */
 export class Topic extends TopicRef {
-    public readonly topicArn: TopicArn;
-    public readonly topicName: TopicName;
+    public readonly topicArn: string;
+    public readonly topicName: string;
 
     protected readonly autoCreatePolicy: boolean = true;
 

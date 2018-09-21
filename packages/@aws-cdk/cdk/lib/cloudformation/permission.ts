@@ -1,6 +1,4 @@
 import { Token } from '../core/tokens';
-import { Arn } from './arn';
-import { FnConcat } from './fn';
 import { AwsAccountId, AwsPartition } from './pseudo';
 
 export class PolicyDocument extends Token {
@@ -74,7 +72,7 @@ export class PrincipalPolicyFragment {
 }
 
 export class ArnPrincipal extends PolicyPrincipal {
-    constructor(public readonly arn: Arn) {
+    constructor(public readonly arn: string) {
         super();
     }
 
@@ -85,7 +83,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
     constructor(public readonly accountId: any) {
-        super(new FnConcat('arn:', new AwsPartition(), ':iam::', accountId, ':root'));
+        super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
     }
 }
 
@@ -210,7 +208,7 @@ export class PolicyStatement extends Token {
         return this;
     }
 
-    public addAwsPrincipal(arn: Arn): PolicyStatement {
+    public addAwsPrincipal(arn: string): PolicyStatement {
         return this.addPrincipal(new ArnPrincipal(arn));
     }
 
@@ -234,8 +232,8 @@ export class PolicyStatement extends Token {
     // Resources
     //
 
-    public addResource(resource: Arn): PolicyStatement {
-        this.resource.push(resource);
+    public addResource(arn: string): PolicyStatement {
+        this.resource.push(arn);
         return this;
     }
 
@@ -243,11 +241,11 @@ export class PolicyStatement extends Token {
      * Adds a ``"*"`` resource to this statement.
      */
     public addAllResources(): PolicyStatement {
-        return this.addResource(new Arn('*'));
+        return this.addResource('*');
     }
 
-    public addResources(...resources: Arn[]): PolicyStatement {
-        resources.forEach(r => this.addResource(r));
+    public addResources(...arns: string[]): PolicyStatement {
+        arns.forEach(r => this.addResource(r));
         return this;
     }
 

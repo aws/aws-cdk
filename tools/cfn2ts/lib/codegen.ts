@@ -79,9 +79,7 @@ export default class CodeGenerator {
 
             this.code.closeBlock();
 
-            if (attributeTypes.length === 0) { continue; }
             for (const attributeType of attributeTypes) {
-                this.code.line();
                 this.emitAttributeType(attributeType);
             }
         }
@@ -222,16 +220,17 @@ export default class CodeGenerator {
         // Attributes
         //
 
-        const attributeTypes = new Array<genspec.ClassDeclaration>();
+        const attributeTypes = new Array<genspec.AttributeTypeDeclaration>();
         const attributes = new Array<genspec.Attribute>();
 
         if (spec.Attributes) {
             for (const attributeName of Object.keys(spec.Attributes).sort()) {
+                const attributeSpec = spec.Attributes![attributeName];
+
                 this.code.line();
 
                 this.docLink(undefined, `@cloudformation_attribute ${attributeName}`);
-
-                const attr = genspec.attributeDefinition(resourceName, attributeName, undefined);
+                const attr = genspec.attributeDefinition(resourceName, attributeName, attributeSpec);
 
                 this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType.typeName.className};`);
 
@@ -245,13 +244,11 @@ export default class CodeGenerator {
         //
         if (spec.RefKind !== schema.SpecialRefKind.None) {
             const refAttribute = genspec.refAttributeDefinition(resourceName, spec.RefKind!);
-            this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
 
-            // If there's already an attribute with the same declared type, we don't have to duplicate
-            // the type, but we do have to initialize the attribute variable.
-            attributes.push(refAttribute);
-            const alreadyAnAttributeType = attributeTypes.some(t => t.typeName.fqn === refAttribute.attributeType.typeName.fqn);
-            if (!alreadyAnAttributeType) {
+            // If there's already an attribute with the same name, ref is not needed
+            if (!attributes.some(a => a.propertyName === refAttribute.propertyName)) {
+                this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType.typeName.className};`);
+                attributes.push(refAttribute);
                 attributeTypes.push(refAttribute.attributeType);
             }
         }
@@ -294,7 +291,15 @@ export default class CodeGenerator {
 
         // initialize all attribute properties
         for (const at of attributes) {
-            this.code.line(`this.${at.propertyName} = new ${at.attributeType.typeName.className}(${at.constructorArguments});`);
+            if (at.attributeType.isPrimitive) {
+                if (at.attributeType.typeName.className === 'string') {
+                    this.code.line(`this.${at.propertyName} = ${at.constructorArguments}.toString();`);
+                } else {
+                    throw new Error(`Unsupported primitive attribute type ${at.attributeType.typeName.className}`);
+                }
+            } else {
+                this.code.line(`this.${at.propertyName} = new ${at.attributeType.typeName.className}(${at.constructorArguments});`);
+            }
         }
 
         this.code.closeBlock();
@@ -475,8 +480,20 @@ export default class CodeGenerator {
     /**
      * Attribute types are classes that represent resource attributes (e.g. QueueArnAttribute).
      */
-    private emitAttributeType(attr: genspec.ClassDeclaration) {
+    private emitAttributeType(attr: genspec.AttributeTypeDeclaration) {
+        if (!attr.baseClassName) {
+            return; // primitive, no attribute type generated
+        }
+
+        this.code.line();
         this.openClass(attr.typeName, attr.docLink, attr.baseClassName.fqn);
+        // Add a private member that will make the class structurally
+        // different in TypeScript, which prevents assigning returning
+        // incorrectly-typed Tokens. Those will cause ClassCastExceptions
+        // in strictly-typed languages.
+        this.code.line('// @ts-ignore: private but unused on purpose.');
+        this.code.line(`private readonly thisIsA${attr.typeName.className} = true;`);
+
         this.closeClass(attr.typeName);
     }
 

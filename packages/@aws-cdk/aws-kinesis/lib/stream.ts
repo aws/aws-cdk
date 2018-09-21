@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, StreamArn } from './kinesis.generated';
+import { cloudformation } from './kinesis.generated';
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call
@@ -13,7 +13,7 @@ export interface StreamRefProps {
     /**
      * The ARN of the stream.
      */
-    streamArn: StreamArn;
+    streamArn: string;
 
     /**
      * The KMS key securing the contents of the stream if encryption is enabled.
@@ -54,12 +54,12 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     /**
      * The ARN of the stream.
      */
-    public abstract readonly streamArn: StreamArn;
+    public abstract readonly streamArn: string;
 
     /**
      * The name of the stream
      */
-    public abstract readonly streamName: StreamName;
+    public abstract readonly streamName: string;
 
     /**
      * Optional KMS encryption key associated with this stream.
@@ -75,15 +75,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
      * Exports this stream from the stack.
      */
     public export(): StreamRefProps {
-        const streamArn = new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue();
-        if (this.encryptionKey) {
-            return {
-                streamArn,
-                encryptionKey: this.encryptionKey.export()
-            };
-        } else {
-            return { streamArn };
-        }
+        return {
+            streamArn: new cdk.Output(this, 'StreamArn', { value: this.streamArn }).makeImportValue().toString(),
+            encryptionKey: this.encryptionKey ? this.encryptionKey.export() : undefined,
+        };
     }
 
     /**
@@ -170,7 +165,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
         );
     }
 
-    public logSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    public logSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         // Following example from https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html#DestinationKinesisExample
         if (!this.cloudWatchLogsRole) {
             // Create a role to be assumed by CWL that can write to this stream and pass itself.
@@ -200,7 +195,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     /**
      * Generate a CloudWatch Logs Destination and return the properties in the form o a subscription destination
      */
-    private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroup): logs.LogSubscriptionDestination {
+    private crossAccountLogSubscriptionDestination(sourceLogGroup: logs.LogGroupRef): logs.LogSubscriptionDestination {
         const sourceStack = cdk.Stack.find(sourceLogGroup);
         const thisStack = cdk.Stack.find(this);
 
@@ -284,8 +279,8 @@ export interface StreamProps {
  * A Kinesis stream. Can be encrypted with a KMS key.
  */
 export class Stream extends StreamRef {
-    public readonly streamArn: StreamArn;
-    public readonly streamName: StreamName;
+    public readonly streamArn: string;
+    public readonly streamName: string;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
 
     private readonly stream: cloudformation.StreamResource;
@@ -308,7 +303,7 @@ export class Stream extends StreamRef {
             streamEncryption
         });
         this.streamArn = this.stream.streamArn;
-        this.streamName = this.stream.ref;
+        this.streamName = this.stream.streamId;
         this.encryptionKey = encryptionKey;
 
         if (props.streamName) { this.addMetadata('aws:cdk:hasPhysicalName', props.streamName); }
@@ -367,22 +362,18 @@ export enum StreamEncryption {
     Kms = 'KMS',
 }
 
-/**
- * The name of the stream.
- */
-export class StreamName extends cdk.Token {}
-
 class ImportedStreamRef extends StreamRef {
-    public readonly streamArn: StreamArn;
-    public readonly streamName: StreamName;
+    public readonly streamArn: string;
+    public readonly streamName: string;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
 
     constructor(parent: cdk.Construct, name: string, props: StreamRefProps) {
         super(parent, name);
 
         this.streamArn = props.streamArn;
+
         // Get the name from the ARN
-        this.streamName = new StreamName(cdk.Arn.parseToken(props.streamArn).resourceName);
+        this.streamName = cdk.ArnUtils.parse(props.streamArn).resourceName!;
 
         if (props.encryptionKey) {
             this.encryptionKey = kms.EncryptionKeyRef.import(parent, 'Key', props.encryptionKey);

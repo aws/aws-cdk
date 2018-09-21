@@ -1,6 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { DBClusterEndpointAddress, DBClusterEndpointPort, DBClusterName, DBInstanceId } from './rds.generated';
 
 /**
  * Create a clustered database with a given number of instances.
@@ -21,12 +20,12 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IC
     /**
      * Identifier of the cluster
      */
-    public abstract readonly clusterIdentifier: DBClusterName;
+    public abstract readonly clusterIdentifier: string;
 
     /**
      * Identifiers of the replicas
      */
-    public abstract readonly instanceIdentifiers: DBInstanceId[] = [];
+    public abstract readonly instanceIdentifiers: string[] = [];
 
     /**
      * The endpoint to use for read/write operations
@@ -46,22 +45,23 @@ export abstract class DatabaseClusterRef extends cdk.Construct implements ec2.IC
     /**
      * The security group for this database cluster
      */
-    protected abstract readonly securityGroupId: ec2.SecurityGroupId;
+    protected abstract readonly securityGroupId: string;
 
     /**
      * Export a Database Cluster for importing in another stack
      */
     public export(): DatabaseClusterRefProps {
+        // tslint:disable:max-line-length
         return {
-            port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue(),
-            securityGroupId: new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue(),
-            clusterIdentifier: new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue(),
-            instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues(),
-            clusterEndpointAddress: new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue(),
-            readerEndpointAddress: new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue(),
-            // tslint:disable-next-line:max-line-length
-            instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues(),
+            port: new cdk.Output(this, 'Port', { value: this.clusterEndpoint.port, }).makeImportValue().toString(),
+            securityGroupId: new cdk.Output(this, 'SecurityGroupId', { value: this.securityGroupId, }).makeImportValue().toString(),
+            clusterIdentifier: new cdk.Output(this, 'ClusterIdentifier', { value: this.clusterIdentifier, }).makeImportValue().toString(),
+            instanceIdentifiers: new cdk.StringListOutput(this, 'InstanceIdentifiers', { values: this.instanceIdentifiers }).makeImportValues().map(x => x.toString()),
+            clusterEndpointAddress: new cdk.Output(this, 'ClusterEndpointAddress', { value: this.clusterEndpoint.hostname, }).makeImportValue().toString(),
+            readerEndpointAddress: new cdk.Output(this, 'ReaderEndpointAddress', { value: this.readerEndpoint.hostname, }).makeImportValue().toString(),
+            instanceEndpointAddresses: new cdk.StringListOutput(this, 'InstanceEndpointAddresses', { values: this.instanceEndpoints.map(e => e.hostname) }).makeImportValues().map(x => x.toString()),
         };
+        // tslint:enable:max-line-length
     }
 }
 
@@ -72,37 +72,38 @@ export interface DatabaseClusterRefProps {
     /**
      * The database port
      */
-    port: DBClusterEndpointPort;
+    port: string;
 
     /**
      * The security group for this database cluster
      */
-    securityGroupId: ec2.SecurityGroupId;
+    securityGroupId: string;
 
     /**
      * Identifier for the cluster
      */
-    clusterIdentifier: DBClusterName;
+    clusterIdentifier: string;
 
     /**
      * Identifier for the instances
      */
-    instanceIdentifiers: DBInstanceId[];
+    instanceIdentifiers: string[];
+    // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
     /**
      * Cluster endpoint address
      */
-    clusterEndpointAddress: DBClusterEndpointAddress;
+    clusterEndpointAddress: string;
 
     /**
      * Reader endpoint address
      */
-    readerEndpointAddress: DBClusterEndpointAddress;
+    readerEndpointAddress: string;
 
     /**
      * Endpoint addresses of individual instances
      */
-    instanceEndpointAddresses: DBClusterEndpointAddress[];
+    instanceEndpointAddresses: string[];
 }
 
 /**
@@ -122,12 +123,12 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Identifier of the cluster
      */
-    public readonly clusterIdentifier: DBClusterName;
+    public readonly clusterIdentifier: string;
 
     /**
      * Identifiers of the replicas
      */
-    public readonly instanceIdentifiers: DBInstanceId[] = [];
+    public readonly instanceIdentifiers: string[] = [];
 
     /**
      * The endpoint to use for read/write operations
@@ -147,7 +148,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     /**
      * Security group identifier of this database
      */
-    protected readonly securityGroupId: ec2.SecurityGroupId;
+    protected readonly securityGroupId: string;
 
     constructor(parent: cdk.Construct, name: string, props: DatabaseClusterRefProps) {
         super(parent, name);
@@ -166,11 +167,6 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
 }
 
 /**
- * A complete socket address (hostname + ":" + port)
- */
-export class SocketAddress extends cdk.Token { }
-
-/**
  * Connection endpoint of a database cluster or instance
  *
  * Consists of a combination of hostname and port.
@@ -179,21 +175,21 @@ export class Endpoint {
     /**
      * The hostname of the endpoint
      */
-    public readonly hostname: DBClusterEndpointAddress;
+    public readonly hostname: string;
 
     /**
      * The port of the endpoint
      */
-    public readonly port: DBClusterEndpointPort;
+    public readonly port: string;
 
     /**
      * The combination of "HOSTNAME:PORT" for this endpoint
      */
-    public readonly socketAddress: SocketAddress;
+    public readonly socketAddress: string;
 
-    constructor(address: DBClusterEndpointAddress, port: DBClusterEndpointPort) {
+    constructor(address: string, port: string) {
         this.hostname = address;
         this.port = port;
-        this.socketAddress = new SocketAddress(new cdk.FnJoin(":", [address, port]));
+        this.socketAddress = `${address}:${port}`;
     }
 }

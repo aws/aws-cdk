@@ -1,14 +1,8 @@
-import { AwsRegion, Token } from "@aws-cdk/cdk";
+import { AwsRegion } from "@aws-cdk/cdk";
 import { Alarm } from "./alarm";
 import { Metric } from "./metric";
 import { parseStatistic } from './util.statistic';
 import { ConcreteWidget } from "./widget";
-
-/**
- * An AWS region
- */
-export class Region extends Token {
-}
 
 /**
  * Basic properties for widgets that display metrics
@@ -24,7 +18,7 @@ export interface MetricWidgetProps {
      *
      * @default Current region
      */
-    region?: Region;
+    region?: string;
 
     /**
      * Width of the widget, in a grid of 24 units wide
