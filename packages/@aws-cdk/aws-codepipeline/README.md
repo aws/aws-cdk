@@ -34,7 +34,7 @@ const sourceStage = pipeline.addStage('Source', {
 Add an Action to a Stage:
 
 ```ts
-new codecommit.PipelineSource(this, 'Source', {
+new codecommit.PipelineSourceAction(this, 'Source', {
     stage: sourceStage,
     artifactName: 'MyPackageSourceArtifact',
     repository: codecommit.RepositoryRef.import(this, 'MyExistingRepository', {

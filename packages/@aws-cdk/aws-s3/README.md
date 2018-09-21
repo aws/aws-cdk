@@ -90,7 +90,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceStage = new codepipeline.Stage(this, 'Source', {
     pipeline,
 });
-const sourceAction = new s3.PipelineSource(this, 'S3Source', {
+const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
     stage: sourceStage,
     bucket: sourceBucket,
     bucketKey: 'path/to/file.zip',

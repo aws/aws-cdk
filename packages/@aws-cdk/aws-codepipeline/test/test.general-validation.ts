@@ -60,13 +60,13 @@ export = {
             const secondStage = new Stage(stack, 'SecondStage', { pipeline });
 
             const bucket = new s3.Bucket(stack, 'PipelineBucket');
-            new s3.PipelineSource(stack, 'FirstAction', {
+            new s3.PipelineSourceAction(stack, 'FirstAction', {
                 stage: firstStage,
                 artifactName: 'FirstArtifact',
                 bucket,
                 bucketKey: 'key',
             });
-            new s3.PipelineSource(stack, 'SecondAction', {
+            new s3.PipelineSourceAction(stack, 'SecondAction', {
                 stage: secondStage,
                 artifactName: 'SecondAction',
                 bucket,

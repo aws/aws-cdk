@@ -44,8 +44,8 @@ export interface SourceActionProps extends CommonActionProps {
 /**
  * Low-level class for source actions.
  * It is recommended that concrete types are used instead,
- * such as {@link s3.PipelineSource} or
- * {@link codecommit.PipelineSource}.
+ * such as {@link s3.PipelineSourceAction} or
+ * {@link codecommit.PipelineSourceAction}.
  */
 export abstract class SourceAction extends Action {
     public readonly artifact: Artifact;
