@@ -28,6 +28,10 @@ To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise insta
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyDeploymentGroup',
+    autoScalingGroups: [asg1, asg2],
+    // adds User Data that installs the CodeDeploy agent on your auto-scaling groups hosts
+    // default: true
+    installAgent: true,
 });
 ```
 
