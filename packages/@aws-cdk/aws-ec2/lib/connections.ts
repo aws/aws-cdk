@@ -185,35 +185,4 @@ export class Connections {
         }
         this.allowTo(other, this.defaultPortRange, description);
     }
-
-}
-
-/**
- * An instance of Connections that you can use on importerted classes that need to implement IConnectable
- */
-export class ImportedConnections extends Connections {
-    constructor() {
-        super({ securityGroupRule: {
-                canInlineRule: false,
-                uniqueId: '',
-                toEgressRuleJSON() { return {}; },
-                toIngressRuleJSON() { return {}; },
-            }
-        });
-    }
-
-    /**
-     * Allow connections to the peer on the given port
-     */
-    public allowTo(_other: IConnectable, _portRange: IPortRange, _description?: string) {
-        // FIXME: Record in metadata that we dropped these permissions
-    }
-
-    /**
-     * Allow connections from the peer on the given port
-     */
-    public allowFrom(_other: IConnectable, _portRange: IPortRange, _description?: string) {
-        // FIXME: Record in metadata that we dropped these permissions
-    }
-
 }

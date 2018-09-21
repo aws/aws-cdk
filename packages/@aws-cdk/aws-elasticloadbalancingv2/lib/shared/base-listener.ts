@@ -21,15 +21,6 @@ export abstract class BaseListener extends cdk.Construct {
     }
 
     /**
-     * Export this listener
-     */
-    public export(): ListenerRefProps {
-        return {
-            listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
-        };
-    }
-
-    /**
      * Validate this listener
      */
     public validate(): string[] {
@@ -48,14 +39,4 @@ export abstract class BaseListener extends cdk.Construct {
             type: 'forward'
         });
     }
-}
-
-/**
- * Properties to reference an existing listener
- */
-export interface ListenerRefProps {
-    /**
-     * ARN of the listener
-     */
-    listenerArn: string;
 }

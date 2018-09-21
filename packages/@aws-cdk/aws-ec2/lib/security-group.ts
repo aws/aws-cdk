@@ -182,7 +182,7 @@ export class SecurityGroup extends SecurityGroupRef {
         }
 
         this.addDirectEgressRule({
-            ...peer.toIngressRuleJSON(),
+            ...peer.toEgressRuleJSON(),
             ...connection.toRuleJSON(),
             description
         });

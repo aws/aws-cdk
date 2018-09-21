@@ -1,47 +1,5 @@
-import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { ListenerRefProps } from './base-listener';
-import { LoadBalancerRefProps } from "./base-load-balancer";
 import { TargetGroupRefProps } from './base-target-group';
-
-/**
- * Base class for existing load balancers
- */
-export class BaseImportedLoadBalancer extends cdk.Construct {
-    /**
-     * ARN of the load balancer
-     */
-    public readonly loadBalancerArn: string;
-
-    /**
-     * VPC of the load balancer
-     *
-     * Always undefined.
-     */
-    public readonly vpc?: ec2.VpcNetworkRef;
-
-    constructor(parent: cdk.Construct, id: string, props: LoadBalancerRefProps) {
-        super(parent, id);
-
-        this.loadBalancerArn = props.loadBalancerArn;
-    }
-}
-
-/**
- * Base class for existing listeners
- */
-export class BaseImportedListener extends cdk.Construct {
-    /**
-     * ARN of the listener
-     */
-    public readonly listenerArn: string;
-
-    constructor(parent: cdk.Construct, id: string, props: ListenerRefProps) {
-        super(parent, id);
-
-        this.listenerArn = props.listenerArn;
-    }
-}
 
 /**
  * Base class for existing target groups

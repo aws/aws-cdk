@@ -1,9 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { BaseLoadBalancer, BaseLoadBalancerProps, LoadBalancerRefProps } from '../shared/base-load-balancer';
+import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
-import { BaseImportedLoadBalancer } from '../shared/imported';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
 
 /**
@@ -48,7 +47,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     /**
      * Import an existing Application Load Balancer
      */
-    public static import(parent: cdk.Construct, id: string, props: LoadBalancerRefProps): IApplicationLoadBalancer {
+    public static import(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerRefProps): IApplicationLoadBalancer {
         return new ImportedApplicationLoadBalancer(parent, id, props);
     }
 
@@ -104,6 +103,16 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
             ...props
         });
     }
+
+    /**
+     * Export this load balancer
+     */
+    public export(): ApplicationLoadBalancerRefProps {
+        return {
+            loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
+            securityGroupId: this.securityGroup.export().securityGroupId,
+        };
+    }
 }
 
 /**
@@ -124,6 +133,21 @@ export interface IApplicationLoadBalancer extends ec2.IConnectable {
      * Add a new listener to this load balancer
      */
     addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
+}
+
+/**
+ * Properties to reference an existing load balancer
+ */
+export interface ApplicationLoadBalancerRefProps {
+    /**
+     * ARN of the load balancer
+     */
+    loadBalancerArn: string;
+
+    /**
+     * ID of the load balancer's security group
+     */
+    securityGroupId: string;
 }
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -152,10 +176,32 @@ const ELBV2_ACCOUNTS: {[region: string]: string } = {
 /**
  * An ApplicationLoadBalancer that has been defined elsewhere
  */
-class ImportedApplicationLoadBalancer extends BaseImportedLoadBalancer implements IApplicationLoadBalancer, ec2.IConnectable {
-    // FIXME: Proper security group export?
-    public readonly connections: ec2.Connections = new ec2.ImportedConnections();
+class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicationLoadBalancer, ec2.IConnectable {
+    /**
+     * Manage connections for this load balancer
+     */
+    public readonly connections: ec2.Connections;
+
+    /**
+     * ARN of the load balancer
+     */
+    public readonly loadBalancerArn: string;
+
+    /**
+     * VPC of the load balancer
+     *
+     * Always undefined.
+     */
     public readonly vpc?: ec2.VpcNetworkRef;
+
+    constructor(parent: cdk.Construct, id: string, props: ApplicationLoadBalancerRefProps) {
+        super(parent, id);
+
+        this.loadBalancerArn = props.loadBalancerArn;
+        this.connections = new ec2.Connections({
+            securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
+        });
+    }
 
     public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
         return new ApplicationListener(this, id, {

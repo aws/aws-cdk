@@ -18,7 +18,7 @@ export = {
         });
 
         // THEN
-        expectStandardBidi(fixture.stack);
+        expectSameStackSGRules(fixture.stack);
 
         test.done();
     },
@@ -46,7 +46,7 @@ export = {
         });
 
         // THEN
-        expectStandardBidi(fixture.stack);
+        expectSameStackSGRules(fixture.stack);
 
         test.done();
     },
@@ -73,7 +73,7 @@ export = {
         });
 
         // THEN
-        expectStandardBidi(fixture.stack);
+        expectSameStackSGRules(fixture.stack);
 
         test.done();
     },
@@ -94,14 +94,123 @@ export = {
         group.addTarget(target);
 
         // THEN
-        expectStandardBidi(fixture.stack);
+        expectSameStackSGRules(fixture.stack);
+
+        test.done();
+    },
+
+    'SG peering works on exported/imported load balancer'(test: Test) {
+        // GIVEN
+        const fixture = new TestFixture();
+        const stack2 = new cdk.Stack();
+        const vpc2 = new ec2.VpcNetwork(stack2, 'VPC');
+        const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
+            // We're assuming the 2nd VPC is peered to the 1st, or something.
+            vpc: vpc2,
+            port: 8008,
+            targets: [new FakeSelfRegisteringTarget(stack2, 'Target', vpc2)],
+        });
+
+        // WHEN
+        const lb2 = elbv2.ApplicationLoadBalancer.import(stack2, 'LB', fixture.lb.export());
+        const listener2 = lb2.addListener('YetAnotherListener', { port: 80 });
+        listener2.addTargetGroups('Default', { targetGroups: [group] });
+
+        // THEN
+        expectedImportedSGRules(stack2);
+
+        test.done();
+    },
+
+    'SG peering works on exported/imported listener'(test: Test) {
+        // GIVEN
+        const fixture = new TestFixture();
+        const stack2 = new cdk.Stack();
+        const vpc2 = new ec2.VpcNetwork(stack2, 'VPC');
+        const group = new elbv2.ApplicationTargetGroup(stack2, 'TargetGroup', {
+            // We're assuming the 2nd VPC is peered to the 1st, or something.
+            vpc: vpc2,
+            port: 8008,
+            targets: [new FakeSelfRegisteringTarget(stack2, 'Target', vpc2)],
+        });
+
+        // WHEN
+        const listener2 = elbv2.ApplicationListener.import(stack2, 'YetAnotherListener', fixture.listener.export());
+        listener2.addTargetGroups('Default', {
+            // Must be a non-default target
+            priority: 10,
+            hostHeader: 'example.com',
+            targetGroups: [group]
+        });
+
+        // THEN
+        expectedImportedSGRules(stack2);
+
+        test.done();
+    },
+
+    'default port peering works on constructed listener'(test: Test) {
+        // GIVEN
+        const fixture = new TestFixture();
+        fixture.listener.addTargets('Default', { port: 8080, targets: [new elbv2.InstanceTarget('i-12345')] });
+
+        // WHEN
+        fixture.listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+        // THEN
+        expect(fixture.stack).to(haveResource('AWS::EC2::SecurityGroup', {
+            SecurityGroupIngress: [
+                {
+                    CidrIp: "0.0.0.0/0",
+                    Description: "Open to the world",
+                    FromPort: 80,
+                    IpProtocol: "tcp",
+                    ToPort: 80
+                }
+            ],
+        }));
+
+        test.done();
+    },
+
+    'default port peering works on imported listener'(test: Test) {
+        // GIVEN
+        const fixture = new TestFixture();
+        fixture.listener.addTargets('Default', { port: 8080, targets: [new elbv2.InstanceTarget('i-12345')] });
+        const stack2 = new cdk.Stack();
+
+        // WHEN
+        const listener2 = elbv2.ApplicationListener.import(stack2, 'YetAnotherListener', fixture.listener.export());
+        listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+
+        // THEN
+        expect(stack2).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+            CidrIp: "0.0.0.0/0",
+            Description: "Open to the world",
+            IpProtocol: "tcp",
+            FromPort: { "Fn::ImportValue": "LBListenerPort7A9266A6" },
+            ToPort:  { "Fn::ImportValue": "LBListenerPort7A9266A6" },
+            GroupId: IMPORTED_LB_SECURITY_GROUP
+        }));
 
         test.done();
     },
 };
 
-function expectStandardBidi(stack: cdk.Stack) {
+const LB_SECURITY_GROUP = { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] };
+const IMPORTED_LB_SECURITY_GROUP = { "Fn::ImportValue": "LBSecurityGroupSecurityGroupId0270B565" };
+
+function expectSameStackSGRules(stack: cdk.Stack) {
+    expectSGRules(stack, LB_SECURITY_GROUP);
+}
+
+function expectedImportedSGRules(stack: cdk.Stack) {
+    expectSGRules(stack, IMPORTED_LB_SECURITY_GROUP);
+}
+
+function expectSGRules(stack: cdk.Stack, lbGroup: any) {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+        GroupId: lbGroup,
         IpProtocol: "tcp",
         Description: "Load balancer to target",
         DestinationSecurityGroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
@@ -113,7 +222,7 @@ function expectStandardBidi(stack: cdk.Stack) {
         Description: "Load balancer to target",
         FromPort: 8008,
         GroupId: { "Fn::GetAtt": [ "TargetSGDB98152D", "GroupId" ] },
-        SourceSecurityGroupId: { "Fn::GetAtt": [ "LBSecurityGroup8A41EA2B", "GroupId" ] },
+        SourceSecurityGroupId: lbGroup,
         ToPort: 8008
     }));
 }

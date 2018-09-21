@@ -1,8 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseListener, ListenerRefProps } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
-import { BaseImportedListener } from '../shared/imported';
 import { INetworkLoadBalancer } from './network-load-balancer';
 import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
 
@@ -40,7 +39,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     /**
      * Import an existing listener
      */
-    public static import(parent: cdk.Construct, id: string, props: ListenerRefProps): INetworkListener {
+    public static import(parent: cdk.Construct, id: string, props: NetworkListenerRefProps): INetworkListener {
         return new ImportedNetworkListener(parent, id, props);
     }
 
@@ -99,6 +98,16 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
         return group;
     }
+
+    /**
+     * Export this listener
+     */
+    public export(): NetworkListenerRefProps {
+        return {
+            listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString()
+        };
+    }
+
 }
 
 /**
@@ -112,9 +121,29 @@ export interface INetworkListener {
 }
 
 /**
+ * Properties to reference an existing listener
+ */
+export interface NetworkListenerRefProps {
+    /**
+     * ARN of the listener
+     */
+    listenerArn: string;
+}
+
+/**
  * An imported Network Listener
  */
-class ImportedNetworkListener extends BaseImportedListener implements INetworkListener {
+class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
+    /**
+     * ARN of the listener
+     */
+    public readonly listenerArn: string;
+
+    constructor(parent: cdk.Construct, id: string, props: NetworkListenerRefProps) {
+        super(parent, id);
+
+        this.listenerArn = props.listenerArn;
+    }
 }
 
 /**

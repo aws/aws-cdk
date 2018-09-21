@@ -279,7 +279,10 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'VPC');
-        const listener = elbv2.ApplicationListener.import(stack, 'Listener', { listenerArn: 'ieks' });
+        const listener = elbv2.ApplicationListener.import(stack, 'Listener', {
+            listenerArn: 'ieks',
+            securityGroupId: 'sg-12345'
+        });
         const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
 
         // WHEN

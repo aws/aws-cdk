@@ -34,7 +34,7 @@ export class CidrIPv4 implements ISecurityGroupRule, IConnectable {
     public readonly uniqueId: string;
 
     constructor(private readonly cidrIp: string) {
-        this.uniqueId = cidrIp;
+        this.uniqueId = cidrIp.replace('/', '_');
     }
 
     /**
@@ -69,7 +69,7 @@ export class CidrIPv6 implements ISecurityGroupRule, IConnectable {
     public readonly uniqueId: string;
 
     constructor(private readonly cidrIpv6: string) {
-        this.uniqueId = cidrIpv6;
+        this.uniqueId = cidrIpv6.replace('/', '_');
     }
 
     /**

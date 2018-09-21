@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseLoadBalancer, BaseLoadBalancerProps, LoadBalancerRefProps } from '../shared/base-load-balancer';
-import { BaseImportedLoadBalancer } from '../shared/imported';
+import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
 import { BaseNetworkListenerProps, NetworkListener } from './network-listener';
 
 /**
@@ -20,7 +19,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
  * Define a new network load balancer
  */
 export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoadBalancer {
-    public static import(parent: cdk.Construct, id: string, props: LoadBalancerRefProps): INetworkLoadBalancer {
+    public static import(parent: cdk.Construct, id: string, props: NetworkLoadBalancerRefProps): INetworkLoadBalancer {
         return new ImportedNetworkLoadBalancer(parent, id, props);
     }
 
@@ -42,6 +41,15 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
             loadBalancer: this,
             ...props
         });
+    }
+
+    /**
+     * Export this load balancer
+     */
+    public export(): NetworkLoadBalancerRefProps {
+        return {
+            loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
+        };
     }
 }
 
@@ -68,9 +76,37 @@ export interface INetworkLoadBalancer {
 }
 
 /**
+ * Properties to reference an existing load balancer
+ */
+export interface NetworkLoadBalancerRefProps {
+    /**
+     * ARN of the load balancer
+     */
+    loadBalancerArn: string;
+}
+
+/**
  * An imported network load balancer
  */
-class ImportedNetworkLoadBalancer extends BaseImportedLoadBalancer implements INetworkLoadBalancer {
+class ImportedNetworkLoadBalancer extends cdk.Construct implements INetworkLoadBalancer {
+    /**
+     * ARN of the load balancer
+     */
+    public readonly loadBalancerArn: string;
+
+    /**
+     * VPC of the load balancer
+     *
+     * Always undefined.
+     */
+    public readonly vpc?: ec2.VpcNetworkRef;
+
+    constructor(parent: cdk.Construct, id: string, props: NetworkLoadBalancerRefProps) {
+        super(parent, id);
+
+        this.loadBalancerArn = props.loadBalancerArn;
+    }
+
     /**
      * Add a listener to this load balancer
      *

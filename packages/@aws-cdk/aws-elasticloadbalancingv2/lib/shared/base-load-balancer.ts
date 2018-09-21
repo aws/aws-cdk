@@ -135,22 +135,4 @@ export abstract class BaseLoadBalancer extends cdk.Construct {
         this.setAttribute(key, undefined);
     }
 
-    /**
-     * Export this load balancer
-     */
-    public export(): LoadBalancerRefProps {
-        return {
-            loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString()
-        };
-    }
-}
-
-/**
- * Properties to reference an existing load balancer
- */
-export interface LoadBalancerRefProps {
-    /**
-     * ARN of the load balancer
-     */
-    loadBalancerArn: string;
 }

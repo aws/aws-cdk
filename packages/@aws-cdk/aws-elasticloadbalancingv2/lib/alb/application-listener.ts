@@ -1,9 +1,8 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseListener, ListenerRefProps } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
 import { ApplicationProtocol, SslPolicy } from '../shared/enums';
-import { BaseImportedListener } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
 import { ApplicationListenerRule } from './application-listener-rule';
@@ -65,7 +64,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     /**
      * Import an existing listener
      */
-    public static import(parent: cdk.Construct, id: string, props: ListenerRefProps): IApplicationListener {
+    public static import(parent: cdk.Construct, id: string, props: ApplicationListenerRefProps): IApplicationListener {
         return new ImportedApplicationListener(parent, id, props);
     }
 
@@ -89,6 +88,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
      */
     private readonly protocol: ApplicationProtocol;
 
+    /**
+     * The default port on which this listener is listening
+     */
+    private readonly defaultPort: number;
+
     constructor(parent: cdk.Construct, id: string, props: ApplicationListenerProps) {
         const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
 
@@ -104,6 +108,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         this.protocol = protocol;
         this.certificateArns = [];
         this.certificateArns.push(...(props.certificateArns || []));
+        this.defaultPort = port;
 
         // This listener edits the securitygroup of the load balancer,
         // but adds its own default port.
@@ -212,6 +217,17 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     /**
+     * Export this listener
+     */
+    public export(): ApplicationListenerRefProps {
+        return {
+            listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString(),
+            securityGroupId: this.connections.securityGroup!.export().securityGroupId,
+            defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
+        };
+    }
+
+    /**
      * Add a default TargetGroup
      */
     private addDefaultTargetGroup(targetGroup: IApplicationTargetGroup) {
@@ -263,9 +279,46 @@ export interface IApplicationListener extends ec2.IConnectable {
     registerConnectable(connectable: ec2.IConnectable, portRange: ec2.IPortRange): void;
 }
 
-class ImportedApplicationListener extends BaseImportedListener implements IApplicationListener {
-    // FIXME: Proper security group import?
-    public readonly connections: ec2.Connections = new ec2.ImportedConnections();
+/**
+ * Properties to reference an existing listener
+ */
+export interface ApplicationListenerRefProps {
+    /**
+     * ARN of the listener
+     */
+    listenerArn: string;
+
+    /**
+     * Security group ID of the load balancer this listener is associated with
+     */
+    securityGroupId: string;
+
+    /**
+     * The default port on which this listener is listening
+     */
+    defaultPort?: string;
+}
+
+class ImportedApplicationListener extends cdk.Construct implements IApplicationListener {
+    public readonly connections: ec2.Connections;
+
+    /**
+     * ARN of the listener
+     */
+    public readonly listenerArn: string;
+
+    constructor(parent: cdk.Construct, id: string, props: ApplicationListenerRefProps) {
+        super(parent, id);
+
+        this.listenerArn = props.listenerArn;
+
+        const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPortFromAttribute(props.defaultPort) : undefined;
+
+        this.connections = new ec2.Connections({
+            securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId }),
+            defaultPortRange,
+        });
+    }
 
     /**
      * Add one or more certificates to this listener.

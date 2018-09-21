@@ -1,3 +1,0 @@
-- Integ Tests
-- README
-- Docstrings everywhere
