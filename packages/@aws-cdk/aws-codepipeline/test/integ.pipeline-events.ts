@@ -19,7 +19,7 @@ const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
 });
 const project = new codebuild.PipelineProject(stack, 'BuildProject');
 
-const sourceAction = new codecommit.PipelineSource(pipeline, 'CodeCommitSource', {
+const sourceAction = new codecommit.PipelineSourceAction(pipeline, 'CodeCommitSource', {
     stage: sourceStage,
     artifactName: 'Source',
     repository,

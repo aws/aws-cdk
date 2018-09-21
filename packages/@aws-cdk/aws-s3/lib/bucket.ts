@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
-import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
+import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 import { LifecycleRule } from './rule';
 import { cloudformation } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
@@ -102,16 +102,16 @@ export abstract class BucketRef extends cdk.Construct {
     }
 
     /**
-     * Convenience method for creating a new {@link PipelineSource} Action,
+     * Convenience method for creating a new {@link PipelineSourceAction},
      * and adding it to the given Stage.
      *
      * @param stage the Pipeline Stage to add the new Action to
      * @param name the name of the newly created Action
      * @param props the properties of the new Action
-     * @returns the newly created {@link PipelineSource} Action
+     * @returns the newly created {@link PipelineSourceAction}
      */
-    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
-        return new PipelineSource(this.parent!, name, {
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
+        return new PipelineSourceAction(this.parent!, name, {
             stage,
             bucket: this,
             ...props,

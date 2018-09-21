@@ -14,7 +14,7 @@ const repo = new codecommit.Repository(stack, 'TemplateRepo', {
     repositoryName: 'template-repo'
 });
 const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
-const source = new codecommit.PipelineSource(stack, 'Source', {
+const source = new codecommit.PipelineSourceAction(stack, 'Source', {
     stage: sourceStage,
     repository: repo,
     artifactName: 'SourceArtifact',
