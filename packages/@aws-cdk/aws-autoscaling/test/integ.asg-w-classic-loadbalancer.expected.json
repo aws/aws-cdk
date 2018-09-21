@@ -458,7 +458,7 @@
         }
       }
     },
-    "FleetInstanceSecurityGroupPort80LBtofleetDC12B17A": {
+    "FleetInstanceSecurityGroupfromawscdkec2integLBSecurityGroupDEF4F99A8025E910CB": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -581,7 +581,7 @@
         }
       }
     },
-    "LBSecurityGroupPort80LBtofleet0986F2E8": {
+    "LBSecurityGrouptoawscdkec2integFleetInstanceSecurityGroupB03BE84D80B371C596": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
