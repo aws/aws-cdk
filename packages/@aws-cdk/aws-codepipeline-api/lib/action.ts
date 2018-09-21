@@ -97,7 +97,7 @@ export interface ActionProps extends CommonActionProps {
 
 /**
  * Low-level class for generic CodePipeline Actions.
- * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSource} or
+ * It is recommended that concrete types are used instead, such as {@link codecommit.PipelineSourceAction} or
  * {@link codebuild.PipelineBuildAction}.
  */
 export abstract class Action extends cdk.Construct {

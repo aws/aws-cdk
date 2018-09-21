@@ -3,11 +3,11 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketRef } from './bucket';
 
 /**
- * Common properties for creating {@link PipelineSource} -
+ * Common properties for creating {@link PipelineSourceAction} -
  * either directly, through its constructor,
  * or through {@link BucketRef#addToPipeline}.
  */
-export interface CommonPipelineSourceProps {
+export interface CommonPipelineSourceActionProps {
     /**
      * The name of the source's output artifact. Output artifacts are used by CodePipeline as
      * inputs into other actions.
@@ -31,9 +31,9 @@ export interface CommonPipelineSourceProps {
 }
 
 /**
- * Construction properties of the {@link PipelineSource S3 source Action}.
+ * Construction properties of the {@link PipelineSourceAction S3 source Action}.
  */
-export interface PipelineSourceProps extends CommonPipelineSourceProps, actions.CommonActionProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, actions.CommonActionProps {
     /**
      * The Amazon S3 bucket that stores the source code
      */
@@ -43,8 +43,8 @@ export interface PipelineSourceProps extends CommonPipelineSourceProps, actions.
 /**
  * Source that is provided by a specific Amazon S3 object.
  */
-export class PipelineSource extends actions.SourceAction {
-    constructor(parent: cdk.Construct, name: string, props: PipelineSourceProps) {
+export class PipelineSourceAction extends actions.SourceAction {
+    constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
         super(parent, name, {
             stage: props.stage,
             provider: 'S3',
