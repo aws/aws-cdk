@@ -69,9 +69,15 @@ export class Connections {
      */
     public readonly securityGroup?: SecurityGroupRef;
 
-    private readonly securityGroupRule: ISecurityGroupRule;
+    /**
+     * The rule that defines how to represent this peer in a security group
+     */
+    public readonly securityGroupRule: ISecurityGroupRule;
 
-    private readonly defaultPortRange?: IPortRange;
+    /**
+     * The default port configured for this connection peer, if available
+     */
+    public readonly defaultPortRange?: IPortRange;
 
     constructor(props: ConnectionsProps) {
         if (!props.securityGroupRule && !props.securityGroup) {

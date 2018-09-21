@@ -239,6 +239,6 @@ class TestFixture {
             maxAZs: 2
         });
         this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
-        this.listener = this.lb.addListener('Listener', { port: 80 });
+        this.listener = this.lb.addListener('Listener', { port: 80, open: false });
     }
 }

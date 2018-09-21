@@ -45,6 +45,21 @@ export interface BaseApplicationListenerProps {
      * @default None
      */
     defaultTargetGroups?: IApplicationTargetGroup[];
+
+    /**
+     * Allow anyone to connect to this listener
+     *
+     * If this is specified, the listener will be opened up to anyone who can reach it.
+     * For internal load balancers this is anyone in the same VPC. For public load
+     * balancers, this is anyone on the internet.
+     *
+     * If you want to be more selective about who can access this load
+     * balancer, set this to `false` and use the listener's `connections`
+     * object to selectively grant access to the listener.
+     *
+     * @default true
+     */
+    open?: boolean;
 }
 
 /**
@@ -118,6 +133,10 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
         });
 
         (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
+
+        if (props.open) {
+            this.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), `Allow from anyone on port ${port}`);
+        }
     }
 
     /**

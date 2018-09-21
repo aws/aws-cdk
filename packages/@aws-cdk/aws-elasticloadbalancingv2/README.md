@@ -3,6 +3,10 @@
 The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
 
+For more information, see the AWS documentation for
+[Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html)
+and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
+
 ### Defining an Application Load Balancer
 
 You define an application load balancer by creating an instance of
@@ -18,24 +22,26 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 
 const vpc = new ec2.VpcNetwork(...);
 
-// Create the load balancer in a VPC. Set 'internetFacing' to 'false' to
-// create an internal load balancer.
+// Create the load balancer in a VPC. 'internetFacing' is 'false'
+// by default, which creates an internal load balancer.
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
     vpc,
     internetFacing: true
 });
 
 // Add a listener and open up the load balancer's security group
-// to the world.
+// to the world. 'open' is the default, set this to 'false'
+// and use `listener.connections` if you want to be selective
+// about who can access the listener.
 const listener = lb.addListener('Listener', {
     port: 80,
+    open: true,
 });
-listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
 // Create an AutoScaling group and add it as a load balancing
 // target to the listener.
 const asg = new autoscaling.AutoScalingGroup(...);
-listener.addTargets('Targets', {
+listener.addTargets('ApplicationFleet', {
     port: 8080,
     targets: [asg]
 });
@@ -48,11 +54,11 @@ updated to allow the network traffic.
 
 It's possible to route traffic to targets based on conditions in the incoming
 HTTP request. Path- and host-based conditions are supported. For example,
-the following will route requests to the indicated AutoScalingGroup group
+the following will route requests to the indicated AutoScalingGroup
 only if the requested host in the request is `example.com`:
 
 ```ts
-listener.addTargets('Targets', {
+listener.addTargets('Example.Com Fleet', {
     priority: 10,
     hostHeader: 'example.com',
     port: 8080,
@@ -75,8 +81,8 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 
-// Create the load balancer in a VPC. Set 'internetFacing' to 'false' to
-// create an internal load balancer.
+// Create the load balancer in a VPC. 'internetFacing' is 'false'
+// by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
     vpc,
     internetFacing: true
@@ -88,7 +94,7 @@ const listener = lb.addListener('Listener', {
 });
 
 // Add targets on a particular port.
-listener.addTargets('Target', {
+listener.addTargets('AppFleet', {
     port: 443,
     targets: [asg]
 });
@@ -107,7 +113,7 @@ for more information.
 ### Targets and Target Groups
 
 Application and Network Load Balancers organize load balancing targets in Target
-Groups. If you add your balancing targets (such as AutoScaling groups, ECS
+Groups. If you add your balancing targets (such as AutoScalingGroups, ECS
 services or individual instances) to your listener directly, the appropriate
 `TargetGroup` will be automatically created for you.
 
@@ -115,14 +121,23 @@ If you need more control over the Target Groups created, create an instance of
 `ApplicationTargetGroup` or `NetworkTargetGroup`, add the members you desire,
 and add it to the listener by calling `addTargetGroups` instead of `addTargets`.
 
-`addTargets()` will always return the Target Group it just created for you.
+`addTargets()` will always return the Target Group it just created for you:
+
+```ts
+const group = listener.addTargets('AppFleet', {
+    port: 443,
+    targets: [asg1],
+});
+
+group.addTarget(asg2);
+```
 
 ### Configuring Health Checks
 
 Health checks are configured upon creation of a target group:
 
 ```ts
-listener.addTargets('Targets', {
+listener.addTargets('AppFleet', {
     port: 8080,
     targets: [asg],
     healthCheck: {
@@ -138,7 +153,19 @@ The health check can also be configured after creation by calling
 No attempts are made to configure security groups for the port you're
 configuring a health check for, but if the health check is on the same port
 you're routing traffic to, the security group already allows the traffic.
-If not, you will have to configure the security groups appropriately.
+If not, you will have to configure the security groups appropriately:
+
+```ts
+listener.addTargets('AppFleet', {
+    port: 8080,
+    targets: [asg],
+    healthCheck: {
+        port: 8088,
+    }
+});
+
+listener.connections.allowFrom(lb, new TcpPort(8088));
+```
 
 ### Protocol for Load Balancer Targets
 

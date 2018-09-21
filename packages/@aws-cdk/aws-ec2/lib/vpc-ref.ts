@@ -160,7 +160,11 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
     }
 
     /**
-     * Return whether the given subnet is one of this VPC's public subnets
+     * Return whether the given subnet is one of this VPC's public subnets.
+     *
+     * The subnet must literally be one of the subnet object obtained from
+     * this VPC. A subnet that merely represents the same subnet will
+     * never return true.
      */
     public isPublicSubnet(subnet: VpcSubnetRef) {
         return this.publicSubnets.indexOf(subnet) > -1;

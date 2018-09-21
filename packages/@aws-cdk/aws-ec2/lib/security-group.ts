@@ -32,10 +32,11 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     public readonly defaultPortRange?: IPortRange;
 
     public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
-        const id = `from ${peer.uniqueId}:${connection}`;
+        let id = `from ${peer.uniqueId}:${connection}`;
         if (description === undefined) {
             description = id;
         }
+        id = id.replace('/', '_');
 
         // Skip duplicates
         if (this.tryFindChild(id) === undefined) {
@@ -49,10 +50,11 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
     }
 
     public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
-        const id = `to ${peer.uniqueId}:${connection}`;
+        let id = `to ${peer.uniqueId}:${connection}`;
         if (description === undefined) {
             description = id;
         }
+        id = id.replace('/', '_');
 
         // Skip duplicates
         if (this.tryFindChild(id) === undefined) {
