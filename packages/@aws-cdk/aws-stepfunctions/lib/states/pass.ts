@@ -1,71 +1,95 @@
 import cdk = require('@aws-cdk/cdk');
-import { CatchProps, IChainable, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-chain';
-import { State } from './state';
+import { Chain } from '../chain';
+import { IChainable, INextable } from '../types';
+import { renderJsonPath, State, StateType } from './state';
 
+/**
+ * Properties for defining a Pass state
+ */
 export interface PassProps {
-    inputPath?: string;
-    outputPath?: string;
-    resultPath?: string;
+    /**
+     * An optional description for this state
+     *
+     * @default No comment
+     */
     comment?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the input to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * input to be the empty object {}.
+     *
+     * @default $
+     */
+    inputPath?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the output to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * output to be the empty object {}.
+     *
+     * @default $
+     */
+    outputPath?: string;
+
+    /**
+     * JSONPath expression to indicate where to inject the state's output
+     *
+     * May also be the special value DISCARD, which will cause the state's
+     * input to become its output.
+     *
+     * @default $
+     */
+    resultPath?: string;
+
+    /**
+     * If given, treat as the result of this operation
+     *
+     * Can be used to inject or replace the current execution state.
+     *
+     * @default No injected result
+     */
     result?: any;
 }
 
-export class Pass extends State {
-    private static Internals = class implements IInternalState {
-        public readonly canHaveCatch = false;
-        public readonly stateId: string;
-        public readonly policyStatements = new Array<cdk.PolicyStatement>();
+/**
+ * Define a Pass in the state machine
+ *
+ * A Pass state can be used to transform the current exeuction's state.
+ */
+export class Pass extends State implements INextable {
+    public readonly endStates: INextable[];
 
-        constructor(private readonly pass: Pass) {
-            this.stateId = this.pass.stateId;
-        }
-
-        public renderState() {
-            return {
-                ...this.pass.renderBaseState(),
-                ...this.pass.transitions.renderSingle(TransitionType.Next, { End: true }),
-            };
-        }
-
-        public addNext(targetState: IStateChain): void {
-            this.pass.addNextTransition(targetState);
-        }
-
-        public addCatch(_targetState: IStateChain, _props?: CatchProps): void {
-            throw new Error("Cannot catch errors on a Pass.");
-        }
-
-        public addRetry(_retry?: RetryProps): void {
-            // Nothing
-        }
-
-        public accessibleChains() {
-            return this.pass.accessibleStates();
-        }
-
-        public get hasOpenNextTransition(): boolean {
-            return !this.pass.hasNextTransition;
-        }
-    };
+    private readonly result?: any;
 
     constructor(parent: cdk.Construct, id: string, props: PassProps = {}) {
-        super(parent, id, {
+        super(parent, id, props);
+
+        this.result = props.result;
+        this.endStates = [this];
+    }
+
+    /**
+     * Continue normal execution with the given state
+     */
+    public next(next: IChainable): Chain {
+        super.makeNext(next.startState);
+        return Chain.sequence(this, next);
+    }
+
+    /**
+     * Return the Amazon States Language object for this state
+     */
+    public toStateJson(): object {
+        return {
             Type: StateType.Pass,
-            InputPath: props.inputPath,
-            OutputPath: props.outputPath,
-            ResultPath: props.resultPath,
-            Comment: props.comment,
-            Result: props.result,
-        });
-    }
-
-    public next(sm: IChainable): IStateChain {
-        return this.toStateChain().next(sm);
-    }
-
-    public toStateChain(): IStateChain {
-        return new StateChain(new Pass.Internals(this));
+            Comment: this.comment,
+            Result: this.result,
+            ResultPath: renderJsonPath(this.resultPath),
+            ...this.renderInputOutput(),
+            ...this.renderNextEnd(),
+        };
     }
 }

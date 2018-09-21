@@ -1,100 +1,145 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { CatchProps, Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-chain';
-import { State } from './state';
-import { renderRetries } from './util';
+import { Chain } from '../chain';
+import { StateGraph } from '../state-graph';
+import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { renderJsonPath, State, StateType } from './state';
 
+/**
+ * Properties for defining a Task state
+ */
 export interface TaskProps {
+    /**
+     * The resource that represents the work to be executed
+     *
+     * Can be either a Lambda Function or an Activity.
+     */
     resource: IStepFunctionsTaskResource;
-    inputPath?: string;
-    outputPath?: string;
-    resultPath?: string;
-    timeoutSeconds?: number;
-    heartbeatSeconds?: number;
+
+    /**
+     * An optional description for this state
+     *
+     * @default No comment
+     */
     comment?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the input to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * input to be the empty object {}.
+     *
+     * @default $
+     */
+    inputPath?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the output to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * output to be the empty object {}.
+     *
+     * @default $
+     */
+    outputPath?: string;
+
+    /**
+     * JSONPath expression to indicate where to inject the state's output
+     *
+     * May also be the special value DISCARD, which will cause the state's
+     * input to become its output.
+     *
+     * @default $
+     */
+    resultPath?: string;
+
+    /**
+     * Maximum run time of this state
+     *
+     * If the state takes longer than this amount of time to complete, a 'Timeout' error is raised.
+     *
+     * @default 60
+     */
+    timeoutSeconds?: number;
+
+    /**
+     * Maximum time between heart beats
+     *
+     * If the time between heart beats takes longer than this, a 'Timeout' error is raised.
+     *
+     * This is only relevant when using an Activity type as resource.
+     *
+     * @default No heart beat timeout
+     */
+    heartbeatSeconds?: number;
 }
 
-export class Task extends State {
-    private static Internals = class implements IInternalState {
-        public readonly canHaveCatch = true;
-        public readonly stateId: string;
-        public readonly policyStatements: cdk.PolicyStatement[];
-
-        constructor(private readonly task: Task) {
-            this.stateId = task.stateId;
-            this.policyStatements = task.resourceProps.policyStatements || [];
-        }
-
-        public renderState() {
-            return {
-                ...this.task.renderBaseState(),
-                ...renderRetries(this.task.retries),
-                ...this.task.transitions.renderSingle(TransitionType.Next, { End: true }),
-                ...this.task.transitions.renderList(TransitionType.Catch),
-            };
-        }
-
-        public addNext(targetState: IStateChain): void {
-            this.task.addNextTransition(targetState);
-        }
-
-        public addCatch(targetState: IStateChain, props: CatchProps = {}): void {
-            this.task.transitions.add(TransitionType.Catch, targetState, {
-                ErrorEquals: props.errors ? props.errors : [Errors.all],
-                ResultPath: props.resultPath
-            });
-        }
-
-        public addRetry(retry?: RetryProps): void {
-            this.task.retry(retry);
-        }
-
-        public accessibleChains() {
-            return this.task.accessibleStates();
-        }
-
-        public get hasOpenNextTransition(): boolean {
-            return !this.task.hasNextTransition;
-        }
-    };
-
+/**
+ * Define a Task state in the state machine
+ *
+ * Reaching a Task state causes some work to be executed, represented
+ * by the Task's resource property.
+ */
+export class Task extends State implements INextable {
+    public readonly endStates: INextable[];
     private readonly resourceProps: StepFunctionsTaskResourceProps;
-    private readonly retries = new Array<RetryProps>();
+    private readonly timeoutSeconds?: number;
+    private readonly heartbeatSeconds?: number;
 
     constructor(parent: cdk.Construct, id: string, props: TaskProps) {
-        super(parent, id, {
-            Type: StateType.Task,
-            InputPath: props.inputPath,
-            OutputPath: props.outputPath,
-            Resource: new cdk.Token(() => this.resourceProps.resourceArn),
-            ResultPath: props.resultPath,
-            TimeoutSeconds: props.timeoutSeconds,
-            HeartbeatSeconds: props.heartbeatSeconds,
-            Comment: props.comment,
-        });
+        super(parent, id, props);
+
+        this.timeoutSeconds = props.timeoutSeconds;
+        this.heartbeatSeconds = props.heartbeatSeconds;
         this.resourceProps = props.resource.asStepFunctionsTaskResource(this);
+        this.endStates = [this];
     }
 
-    public next(sm: IChainable): IStateChain {
-        return this.toStateChain().next(sm);
-    }
-
-    public onError(handler: IChainable, props?: CatchProps): IStateChain {
-        return this.toStateChain().onError(handler, props);
-    }
-
+    /**
+     * Add retry configuration for this state
+     *
+     * This controls if and how the execution will be retried if a particular
+     * error occurs.
+     */
     public retry(props: RetryProps = {}): Task {
-        if (!props.errors) {
-            props.errors = [Errors.all];
-        }
-        this.retries.push(props);
+        super.addRetry(props);
         return this;
     }
 
-    public toStateChain(): IStateChain {
-        return new StateChain(new Task.Internals(this));
+    /**
+     * Add a recovery handler for this state
+     *
+     * When a particular error occurs, execution will continue at the error
+     * handler instead of failing the state machine execution.
+     */
+    public onError(handler: IChainable, props: CatchProps = {}): Task {
+        super.addCatch(handler.startState, props);
+        return this;
+    }
+
+    /**
+     * Continue normal execution with the given state
+     */
+    public next(next: IChainable): Chain {
+        super.makeNext(next.startState);
+        return Chain.sequence(this, next);
+    }
+
+    /**
+     * Return the Amazon States Language object for this state
+     */
+    public toStateJson(): object {
+        return {
+            ...this.renderNextEnd(),
+            ...this.renderRetryCatch(),
+            ...this.renderInputOutput(),
+            Type: StateType.Task,
+            Comment: this.comment,
+            Resource: this.resourceProps.resourceArn,
+            ResultPath: renderJsonPath(this.resultPath),
+            TimeoutSeconds: this.timeoutSeconds,
+            HeartbeatSeconds: this.heartbeatSeconds,
+        };
     }
 
     /**
@@ -136,7 +181,7 @@ export class Task extends State {
      * @default average over 5 minutes
      */
     public metricTime(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
-        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'ActivityTime', { statistic: 'avg', ...props });
+        return this.taskMetric(this.resourceProps.metricPrefixSingular, 'Time', { statistic: 'avg', ...props });
     }
 
     /**
@@ -193,6 +238,13 @@ export class Task extends State {
         return this.taskMetric(this.resourceProps.metricPrefixPlural, 'HeartbeatTimedOut', props);
     }
 
+    protected onBindToGraph(graph: StateGraph) {
+        super.onBindToGraph(graph);
+        for (const policyStatement of this.resourceProps.policyStatements || []) {
+            graph.registerPolicyStatement(policyStatement);
+        }
+    }
+
     private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         if (prefix === undefined) {
             throw new Error('This Task Resource does not expose metrics');
@@ -211,10 +263,40 @@ export interface IStepFunctionsTaskResource {
     asStepFunctionsTaskResource(callingTask: Task): StepFunctionsTaskResourceProps;
 }
 
+/**
+ * Properties that define how to refer to a TaskResource
+ */
 export interface StepFunctionsTaskResourceProps {
+    /**
+     * The ARN of the resource
+     */
     resourceArn: string;
+
+    /**
+     * Additional policy statements to add to the execution role
+     *
+     * @default No policy roles
+     */
     policyStatements?: cdk.PolicyStatement[];
+
+    /**
+     * Prefix for singular metric names of activity actions
+     *
+     * @default No such metrics
+     */
     metricPrefixSingular?: string;
+
+    /**
+     * Prefix for plural metric names of activity actions
+     *
+     * @default No such metrics
+     */
     metricPrefixPlural?: string;
+
+    /**
+     * The dimensions to attach to metrics
+     *
+     * @default No metrics
+     */
     metricDimensions?: cloudwatch.DimensionHash;
 }

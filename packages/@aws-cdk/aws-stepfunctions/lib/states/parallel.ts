@@ -1,105 +1,129 @@
 import cdk = require('@aws-cdk/cdk');
-import { CatchProps, Errors, IChainable, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-chain';
-import { State } from './state';
-import { renderRetries } from './util';
+import { Chain } from '../chain';
+import { StateGraph } from '../state-graph';
+import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { renderJsonPath, State, StateType } from './state';
 
+/**
+ * Properties for defining a Parallel state
+ */
 export interface ParallelProps {
-    inputPath?: string;
-    outputPath?: string;
-    resultPath?: string;
+    /**
+     * An optional description for this state
+     *
+     * @default No comment
+     */
     comment?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the input to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * input to be the empty object {}.
+     *
+     * @default $
+     */
+    inputPath?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the output to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * output to be the empty object {}.
+     *
+     * @default $
+     */
+    outputPath?: string;
+
+    /**
+     * JSONPath expression to indicate where to inject the state's output
+     *
+     * May also be the special value DISCARD, which will cause the state's
+     * input to become its output.
+     *
+     * @default $
+     */
+    resultPath?: string;
 }
 
-export class Parallel extends State {
-    private static Internals = class implements IInternalState {
-        public readonly canHaveCatch = true;
-        public readonly stateId: string;
-
-        constructor(private readonly parallel: Parallel) {
-            this.stateId = parallel.stateId;
-        }
-
-        public renderState() {
-            return {
-                ...this.parallel.renderBaseState(),
-                ...renderRetries(this.parallel.retries),
-                ...this.parallel.transitions.renderSingle(TransitionType.Next, { End: true }),
-                ...this.parallel.transitions.renderList(TransitionType.Catch),
-            };
-        }
-
-        public addNext(targetState: IStateChain): void {
-            this.parallel.addNextTransition(targetState);
-        }
-
-        public addCatch(targetState: IStateChain, props: CatchProps = {}): void {
-            this.parallel.transitions.add(TransitionType.Catch, targetState, {
-                ErrorEquals: props.errors ? props.errors : [Errors.all],
-                ResultPath: props.resultPath
-            });
-        }
-
-        public addRetry(retry?: RetryProps): void {
-            this.parallel.retry(retry);
-        }
-
-        public accessibleChains() {
-            return this.parallel.accessibleStates();
-        }
-
-        public get hasOpenNextTransition(): boolean {
-            return !this.parallel.hasNextTransition;
-        }
-
-        public get policyStatements(): cdk.PolicyStatement[] {
-            const ret = new Array<cdk.PolicyStatement>();
-            for (const branch of this.parallel.branches) {
-                ret.push(...branch.toStateChain().renderStateMachine().policyStatements);
-            }
-            return ret;
-        }
-    };
-
-    private readonly branches: IChainable[] = [];
-    private readonly retries = new Array<RetryProps>();
+/**
+ * Define a Parallel state in the state machine
+ *
+ * A Parallel state can be used to run one or more state machines at the same
+ * time.
+ *
+ * The Result of a Parallel state is an array of the results of its substatemachines.
+ */
+export class Parallel extends State implements INextable {
+    public readonly endStates: INextable[];
 
     constructor(parent: cdk.Construct, id: string, props: ParallelProps = {}) {
-        super(parent, id, {
-            Type: StateType.Parallel,
-            InputPath: props.inputPath,
-            OutputPath: props.outputPath,
-            ResultPath: props.resultPath,
-            Comment: props.comment,
-            // Lazy because the states are mutable and they might get chained onto
-            // (Users shouldn't, but they might)
-            Branches: new cdk.Token(() => this.branches.map(b => b.toStateChain().renderStateMachine().stateMachineDefinition))
-        });
+        super(parent, id, props);
+
+        this.endStates = [this];
     }
 
-    public branch(definition: IChainable): Parallel {
-        this.branches.push(definition);
-        return this;
-    }
-
+    /**
+     * Add retry configuration for this state
+     *
+     * This controls if and how the execution will be retried if a particular
+     * error occurs.
+     */
     public retry(props: RetryProps = {}): Parallel {
-        if (!props.errors) {
-            props.errors = [Errors.all];
-        }
-        this.retries.push(props);
+        super.addRetry(props);
         return this;
     }
 
-    public next(sm: IChainable): IStateChain {
-        return this.toStateChain().next(sm);
+    /**
+     * Add a recovery handler for this state
+     *
+     * When a particular error occurs, execution will continue at the error
+     * handler instead of failing the state machine execution.
+     */
+    public onError(handler: IChainable, props: CatchProps = {}): Parallel {
+        super.addCatch(handler.startState, props);
+        return this;
     }
 
-    public onError(handler: IChainable, props: CatchProps = {}): IStateChain {
-        return this.toStateChain().onError(handler, props);
+    /**
+     * Continue normal execution with the given state
+     */
+    public next(next: IChainable): Chain {
+        super.makeNext(next.startState);
+        return Chain.sequence(this, next);
     }
 
-    public toStateChain(): IStateChain {
-        return new StateChain(new Parallel.Internals(this));
+    /**
+     * Define a branch to run along all other branches
+     */
+    public branch(branch: IChainable): Parallel {
+        const name = `Parallel '${this.stateId}' branch ${this.branches.length + 1}`;
+        super.addBranch(new StateGraph(branch.startState, name));
+        return this;
+    }
+
+    /**
+     * Validate this state
+     */
+    public validate(): string[] {
+        if (this.branches.length === 0) {
+            return ['Parallel must have at least one branch'];
+        }
+        return [];
+    }
+
+    /**
+     * Return the Amazon States Language object for this state
+     */
+    public toStateJson(): object {
+        return {
+            Type: StateType.Parallel,
+            Comment: this.comment,
+            ResultPath: renderJsonPath(this.resultPath),
+            ...this.renderNextEnd(),
+            ...this.renderInputOutput(),
+            ...this.renderRetryCatch(),
+            ...this.renderBranches(),
+        };
     }
 }

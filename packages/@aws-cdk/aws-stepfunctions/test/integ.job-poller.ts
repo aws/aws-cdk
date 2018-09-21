@@ -28,18 +28,14 @@ class JobPollerStack extends cdk.Stack {
             inputPath: '$.guid',
         });
 
-        const chain = submitJob
+        const chain = stepfunctions.Chain
+            .start(submitJob)
             .next(waitX)
             .next(getStatus)
             .next(isComplete
                 .on(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
                 .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
-                .otherwise(waitX))
-            .defaultRetry({
-                intervalSeconds: 1,
-                maxAttempts: 3,
-                backoffRate: 2
-            });
+                .otherwise(waitX));
 
         new stepfunctions.StateMachine(this, 'StateMachine', {
             definition: chain,

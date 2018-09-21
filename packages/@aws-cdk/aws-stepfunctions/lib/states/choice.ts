@@ -1,85 +1,136 @@
 import cdk = require('@aws-cdk/cdk');
-import { Condition } from '../asl-condition';
-import { CatchProps, IChainable, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-chain';
-import { State } from './state';
+import { Chain } from '../chain';
+import { Condition } from '../condition';
+import { IChainable, INextable } from '../types';
+import { State, StateType } from './state';
 
+/**
+ * Properties for defining a Choice state
+ */
 export interface ChoiceProps {
+    /**
+     * An optional description for this state
+     *
+     * @default No comment
+     */
     comment?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the input to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * input to be the empty object {}.
+     *
+     * @default $
+     */
     inputPath?: string;
+
+    /**
+     * JSONPath expression to select part of the state to be the output to this state.
+     *
+     * May also be the special value DISCARD, which will cause the effective
+     * output to be the empty object {}.
+     *
+     * @default $
+     */
     outputPath?: string;
 }
 
+/**
+ * Define a Choice in the state machine
+ *
+ * A choice state can be used to make decisions based on the execution
+ * state.
+ */
 export class Choice extends State {
-    private static Internals = class implements IInternalState {
-        public readonly canHaveCatch = false;
-        public readonly hasOpenNextTransition = false;
-        public readonly stateId: string;
-        public readonly policyStatements = new Array<cdk.PolicyStatement>();
-
-        constructor(private readonly choice: Choice) {
-            this.stateId = choice.stateId;
-        }
-
-        public renderState() {
-            return {
-                ...this.choice.renderBaseState(),
-                ...this.choice.transitions.renderList(TransitionType.Choice),
-                ...this.choice.transitions.renderSingle(TransitionType.Default),
-            };
-        }
-
-        public addNext(_targetState: IStateChain): void {
-            throw new Error("Cannot chain onto a Choice state. Use the state's .on() or .otherwise() instead.");
-        }
-
-        public addCatch(_targetState: IStateChain, _props?: CatchProps): void {
-            throw new Error("Cannot catch errors on a Choice.");
-        }
-
-        public accessibleChains() {
-            return this.choice.accessibleStates();
-        }
-
-        public addRetry(_retry?: RetryProps): void {
-            // Nothing
-        }
-    };
+    public readonly endStates: INextable[] = [];
 
     constructor(parent: cdk.Construct, id: string, props: ChoiceProps = {}) {
-        super(parent, id, {
-            Type: StateType.Choice,
-            InputPath: props.inputPath,
-            OutputPath: props.outputPath,
-            Comment: props.comment,
-        });
+        super(parent, id, props);
     }
 
+    /**
+     * If the given condition matches, continue execution with the given state
+     */
     public on(condition: Condition, next: IChainable): Choice {
-        this.transitions.add(TransitionType.Choice, next.toStateChain(), condition.renderCondition());
+        super.addChoice(condition, next.startState);
         return this;
     }
 
-    public otherwise(next: IChainable): Choice {
-        // We use the "next" transition to store the Default, even though the meaning is different.
-        if (this.transitions.has(TransitionType.Default)) {
-            throw new Error('Can only have one Default transition');
-        }
-        this.transitions.add(TransitionType.Default, next.toStateChain());
+    /**
+     * If none of the given conditions match, continue execution with the given state
+     *
+     * If no conditions match and no otherwise() has been given, an execution
+     * error will be raised.
+     */
+    public otherwise(def: IChainable): Choice {
+        super.makeDefault(def.startState);
         return this;
     }
 
-    public toStateChain(): IStateChain {
-        const chain = new StateChain(new Choice.Internals(this));
-        for (const transition of this.transitions.all()) {
-            chain.absorb(transition.targetChain);
+    /**
+     * Return a Chain that contains all reachable end states from this Choice
+     *
+     * Use this to combine all possible choice paths back.
+     */
+    public afterwards(options: AfterwardsOptions = {}): Chain {
+        const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
+        if (options.includeOtherwise && this.defaultChoice) {
+            throw new Error(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
         }
-
-        return chain;
+        if (options.includeOtherwise) {
+            endStates.push(new DefaultAsNext(this));
+        }
+        return Chain.custom(this, endStates, this);
     }
 
-    public closure(): IStateChain {
-        return this.toStateChain().closure();
+    /**
+     * Return the Amazon States Language object for this state
+     */
+    public toStateJson(): object {
+        return {
+            Type: StateType.Choice,
+            Comment: this.comment,
+            ...this.renderInputOutput(),
+            ...this.renderChoices(),
+        };
+    }
+}
+
+/**
+ * Options for selecting the choice paths
+ */
+export interface AfterwardsOptions {
+    /**
+     * Whether to include error handling states
+     *
+     * If this is true, all states which are error handlers (added through 'onError')
+     * and states reachable via error handlers will be included as well.
+     *
+     * @default false
+     */
+    includeErrorHandlers?: boolean;
+
+    /**
+     * Whether to include the default/otherwise transition for the current Choice state
+     *
+     * If this is true and the current Choice does not have a default outgoing
+     * transition, one will be added included when .next() is called on the chain.
+     *
+     * @default false
+     */
+    includeOtherwise?: boolean;
+}
+
+/**
+ * Adapter to make the .otherwise() transition settable through .next()
+ */
+class DefaultAsNext implements INextable {
+    constructor(private readonly choice: Choice) {
+    }
+
+    public next(state: IChainable): Chain {
+        this.choice.otherwise(state);
+        return Chain.sequence(this.choice, state);
     }
 }

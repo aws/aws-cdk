@@ -1,74 +1,98 @@
 import cdk = require('@aws-cdk/cdk');
-import { CatchProps, IChainable, IStateChain, RetryProps } from '../asl-external-api';
-import { IInternalState, StateType, TransitionType } from '../asl-internal-api';
-import { StateChain } from '../asl-state-chain';
-import { State } from './state';
+import { Chain } from '../chain';
+import { IChainable, INextable } from '../types';
+import { State, StateType } from './state';
 
+/**
+ * Properties for defining a Wait state
+ */
 export interface WaitProps {
+    /**
+     * An optional description for this state
+     *
+     * @default No comment
+     */
+    comment?: string;
+
+    /**
+     * Wait a fixed number of seconds
+     *
+     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
+     */
     seconds?: number;
+
+    /**
+     * Wait until the given ISO8601 timestamp
+     *
+     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
+     *
+     * @example 2016-03-14T01:59:00Z
+     */
     timestamp?: string;
 
+    /**
+     * Wait for a number of seconds stored in the state object.
+     *
+     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
+     *
+     * @example $.waitSeconds
+     */
     secondsPath?: string;
-    timestampPath?: string;
 
-    comment?: string;
+    /**
+     * Wait until a timestamp found in the state object.
+     *
+     * Exactly one of seconds, secondsPath, timestamp, timestampPath must be supplied.
+     *
+     * @example $.waitTimestamp
+     */
+    timestampPath?: string;
 }
 
-export class Wait extends State {
-    private static Internals = class implements IInternalState {
-        public readonly canHaveCatch = false;
-        public readonly stateId: string;
-        public readonly policyStatements = new Array<cdk.PolicyStatement>();
+/**
+ * Define a Wait state in the state machine
+ *
+ * A Wait state can be used to delay execution of the state machine for a while.
+ */
+export class Wait extends State implements INextable {
+    public readonly endStates: INextable[];
 
-        constructor(private readonly wait: Wait) {
-            this.stateId = wait.stateId;
-        }
-
-        public renderState() {
-            return {
-                ...this.wait.renderBaseState(),
-                ...this.wait.transitions.renderSingle(TransitionType.Next, { End: true }),
-            };
-        }
-
-        public addNext(targetState: IStateChain): void {
-            this.wait.addNextTransition(targetState);
-        }
-
-        public addCatch(_targetState: IStateChain, _props?: CatchProps): void {
-            throw new Error("Cannot catch errors on a Wait.");
-        }
-
-        public addRetry(_retry?: RetryProps): void {
-            // Nothing
-        }
-
-        public accessibleChains() {
-            return this.wait.accessibleStates();
-        }
-
-        public get hasOpenNextTransition(): boolean {
-            return !this.wait.hasNextTransition;
-        }
-    };
+    private readonly seconds?: number;
+    private readonly timestamp?: string;
+    private readonly secondsPath?: string;
+    private readonly timestampPath?: string;
 
     constructor(parent: cdk.Construct, id: string, props: WaitProps) {
-        // FIXME: Validate input
-        super(parent, id, {
+        super(parent, id, props);
+
+        this.seconds = props.seconds;
+        this.timestamp = props.timestamp;
+        this.secondsPath = props.secondsPath;
+        this.timestampPath = props.timestampPath;
+
+        this.endStates = [this];
+    }
+
+    /**
+     * Continue normal execution with the given state
+     */
+    public next(next: IChainable): Chain {
+        super.makeNext(next.startState);
+        return Chain.sequence(this, next);
+    }
+
+    /**
+     * Return the Amazon States Language object for this state
+     */
+    public toStateJson(): object {
+        return {
             Type: StateType.Wait,
-            Seconds: props.seconds,
-            Timestamp: props.timestamp,
-            SecondsPath: props.secondsPath,
-            TimestampPath: props.timestampPath,
-            Comment: props.comment,
-        });
-    }
-
-    public next(sm: IChainable): IStateChain {
-        return this.toStateChain().next(sm);
-    }
-
-    public toStateChain(): IStateChain {
-        return new StateChain(new Wait.Internals(this));
+            Comment: this.comment,
+            Seconds: this.seconds,
+            Timestamp: this.timestamp,
+            SecondsPath: this.secondsPath,
+            TimestampPath: this.timestampPath,
+            ...this.renderNextEnd(),
+        };
     }
 }

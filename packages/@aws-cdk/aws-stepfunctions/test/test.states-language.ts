@@ -1,7 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
-import { IChainable } from '../lib';
 
 export = {
     'Basic composition': {
@@ -31,7 +30,9 @@ export = {
             const task1 = new stepfunctions.Pass(stack, 'State One');
             const task2 = new stepfunctions.Pass(stack, 'State Two');
 
-            const chain = task1.next(task2);
+            const chain = stepfunctions.Chain
+                .start(task1)
+                .next(task2);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -76,7 +77,10 @@ export = {
             const task3 = new stepfunctions.Pass(stack, 'State Three');
 
             // WHEN
-            const chain = task1.next(task2).next(task3);
+            const chain = stepfunctions.Chain
+                .start(task1)
+                .next(task2)
+                .next(task3);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -100,7 +104,9 @@ export = {
             const task3 = new stepfunctions.Wait(stack, 'State Three', { seconds: 10 });
 
             // WHEN
-            const chain = task1.next(task2.next(task3));
+            const chain = stepfunctions.Chain
+                .start(task1)
+                .next(stepfunctions.Chain.start(task2).next(task3));
 
             // THEN
             test.deepEqual(render(chain), {
@@ -111,32 +117,6 @@ export = {
                     'State Three': { Type: 'Wait', End: true, Seconds: 10 },
                 }
             });
-
-            test.done();
-        },
-
-        'Start state in a StateMachineFragment can be implicit'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-
-            // WHEN
-            const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable');
-
-            // THEN
-            test.equals(render(sm).StartAt, 'Reusable/Choice');
-
-            test.done();
-        },
-
-        'Can skip adding names in StateMachineFragment'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-
-            // WHEN
-            const sm = new ReusableStateMachineWithImplicitStartState(stack, 'Reusable', { scopeStateNames: false });
-
-            // THEN
-            test.equals(render(sm).StartAt, 'Choice');
 
             test.done();
         },
@@ -154,16 +134,16 @@ export = {
             test.deepEqual(render(chain), {
                 StartAt: 'Before',
                 States: {
-                    'Before': { Type: 'Pass', Next: 'Reusable/Choice' },
-                    'Reusable/Choice': {
+                    'Before': { Type: 'Pass', Next: 'Choice' },
+                    'Choice': {
                         Type: 'Choice',
                         Choices: [
-                            { Variable: '$.branch', StringEquals: 'left', Next: 'Reusable/Left Branch' },
-                            { Variable: '$.branch', StringEquals: 'right', Next: 'Reusable/Right Branch' },
+                            { Variable: '$.branch', StringEquals: 'left', Next: 'Left Branch' },
+                            { Variable: '$.branch', StringEquals: 'right', Next: 'Right Branch' },
                         ]
                     },
-                    'Reusable/Left Branch': { Type: 'Pass', Next: 'After' },
-                    'Reusable/Right Branch': { Type: 'Pass', Next: 'After' },
+                    'Left Branch': { Type: 'Pass', Next: 'After' },
+                    'Right Branch': { Type: 'Pass', Next: 'After' },
                     'After': { Type: 'Pass', End: true },
                 }
             });
@@ -174,14 +154,13 @@ export = {
         'A success state cannot be chained onto'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineFragment(stack, 'SM');
 
-            const succeed = new stepfunctions.Succeed(sm, 'Succeed');
-            const pass = new stepfunctions.Pass(sm, 'Pass');
+            const succeed = new stepfunctions.Succeed(stack, 'Succeed');
+            const pass = new stepfunctions.Pass(stack, 'Pass');
 
             // WHEN
             test.throws(() => {
-                succeed.toStateChain().next(pass);
+                pass.next(succeed).next(pass);
             });
 
             test.done();
@@ -190,13 +169,12 @@ export = {
         'A failure state cannot be chained onto'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
-            const sm = new stepfunctions.StateMachineFragment(stack, 'SM');
-            const fail = new stepfunctions.Fail(sm, 'Fail', { error: 'X', cause: 'Y' });
-            const pass = new stepfunctions.Pass(sm, 'Pass');
+            const fail = new stepfunctions.Fail(stack, 'Fail', { error: 'X', cause: 'Y' });
+            const pass = new stepfunctions.Pass(stack, 'Pass');
 
             // WHEN
             test.throws(() => {
-                fail.toStateChain().next(pass);
+                pass.next(fail).next(pass);
             });
 
             test.done();
@@ -250,8 +228,8 @@ export = {
 
             // WHEN
             const para = new stepfunctions.Parallel(stack, 'Parallel');
-            para.branch(new ReusableStateMachine(stack, 'Reusable1'));
-            para.branch(new ReusableStateMachine(stack, 'Reusable2'));
+            para.branch(new ReusableStateMachine(stack, 'Reusable1').prefixStates('Reusable1/'));
+            para.branch(new ReusableStateMachine(stack, 'Reusable2').prefixStates('Reusable2/'));
 
             // THEN
             test.deepEqual(render(para), {
@@ -297,6 +275,35 @@ export = {
             test.done();
         },
 
+        'State Machine Fragments can be wrapped in a single state'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            const reusable = new SimpleChain(stack, 'Hello');
+            const state = reusable.asSingleState();
+
+            test.deepEqual(render(state), {
+                StartAt: 'Hello',
+                States: {
+                    Hello: {
+                        Type: 'Parallel',
+                        End: true,
+                        Branches: [
+                            {
+                                StartAt: 'Hello: Task1',
+                                States: {
+                                    'Hello: Task1': { Type: 'Task', Next: 'Hello: Task2', Resource: 'resource' },
+                                    'Hello: Task2': { Type: 'Task', End: true, Resource: 'resource' },
+                                }
+                            }
+                        ],
+                    },
+                }
+            });
+
+            test.done();
+        },
+
         'Chaining onto branched failure state ignores failure state'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
@@ -309,7 +316,7 @@ export = {
                 .otherwise(no);
 
             // WHEN
-            choice.closure().next(enfin);
+            choice.afterwards().next(enfin);
 
             // THEN
             test.deepEqual(render(choice), {
@@ -330,6 +337,36 @@ export = {
 
             test.done();
         },
+
+        'Can include OTHERWISE transition for Choice in afterwards()'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+
+            // WHEN
+            const chain = new stepfunctions.Choice(stack, 'Choice')
+                .on(stepfunctions.Condition.stringEquals('$.foo', 'bar'),
+                    new stepfunctions.Pass(stack, 'Yes'))
+                .afterwards({ includeOtherwise: true })
+                .next(new stepfunctions.Pass(stack, 'Finally'));
+
+            // THEN
+            test.deepEqual(render(chain), {
+                StartAt: 'Choice',
+                States: {
+                    Choice: {
+                        Type: 'Choice',
+                        Choices: [
+                            { Variable: '$.foo', StringEquals: 'bar', Next: 'Yes' },
+                        ],
+                        Default: 'Finally',
+                    },
+                    Yes: { Type: 'Pass', Next: 'Finally' },
+                    Finally: { Type: 'Pass', End: true },
+                }
+            });
+
+            test.done();
+        }
     },
 
     'Goto support': {
@@ -356,7 +393,7 @@ export = {
         },
     },
 
-    'Error handling': {
+    'Catches': {
         'States can have error branches'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
@@ -421,7 +458,7 @@ export = {
 
         },
 
-        'Error branch is attached to all tasks in chain'(test: Test) {
+        'Can wrap chain and attach error handler'(test: Test) {
             // GIVEN
             const stack = new cdk.Stack();
 
@@ -430,121 +467,14 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            const chain = task1.next(task2).onError(errorHandler);
+            const chain = task1.next(task2).asSingleState('Wrapped').onError(errorHandler);
 
             // THEN
             test.deepEqual(render(chain), {
-                StartAt: 'Task1',
+                StartAt: 'Wrapped',
                 States: {
-                    Task1: {
-                        Type: 'Task',
-                        Resource: 'resource',
-                        Next: 'Task2',
-                        Catch: [
-                            { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
-                        ]
-                    },
-                    Task2: {
-                        Type: 'Task',
-                        Resource: 'resource',
-                        End: true,
-                        Catch: [
-                            { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
-                        ]
-                    },
-                    ErrorHandler: { Type: 'Pass', End: true }
-                }
-            });
-
-            test.done();
-        },
-
-        'Add default retries on all tasks in the chain, but not those outside'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
-            const task3 = new stepfunctions.Task(stack, 'Task3', { resource: new FakeResource() });
-            const task4 = new stepfunctions.Task(stack, 'Task4', { resource: new FakeResource() });
-            const task5 = new stepfunctions.Task(stack, 'Task5', { resource: new FakeResource() });
-            const choice = new stepfunctions.Choice(stack, 'Choice');
-            const errorHandler1 = new stepfunctions.Task(stack, 'ErrorHandler1', { resource: new FakeResource() });
-            const errorHandler2 = new stepfunctions.Task(stack, 'ErrorHandler2', { resource: new FakeResource() });
-            const para = new stepfunctions.Parallel(stack, 'Para');
-
-            // WHEN
-            task1.next(task2);
-            para.onError(errorHandler2);
-
-            task2.onError(errorHandler1)
-                .next(choice
-                    .on(stepfunctions.Condition.stringEquals('$.var', 'value'),
-                        task3.next(task4))
-                    .otherwise(para
-                        .branch(task5)))
-                .defaultRetry();
-
-            // THEN
-            const theCatch1 = { Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler1' } ] };
-            const theCatch2 = { Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler2' } ] };
-            const theRetry = { Retry: [ { ErrorEquals: ['States.ALL'] } ] };
-
-            test.deepEqual(render(task1), {
-                StartAt: 'Task1',
-                States: {
-                    Task1: { Next: 'Task2', Type: 'Task', Resource: 'resource' },
-                    Task2: { Next: 'Choice', Type: 'Task', Resource: 'resource', ...theCatch1, ...theRetry },
-                    ErrorHandler1: { End: true, Type: 'Task', Resource: 'resource', ...theRetry },
-                    Choice: {
-                        Type: 'Choice',
-                        Choices: [ { Variable: '$.var', StringEquals: 'value', Next: 'Task3' } ],
-                        Default: 'Para',
-                    },
-                    Task3: { Next: 'Task4', Type: 'Task', Resource: 'resource', ...theRetry },
-                    Task4: { End: true, Type: 'Task', Resource: 'resource', ...theRetry },
-                    Para: {
+                    Wrapped: {
                         Type: 'Parallel',
-                        End: true,
-                        Branches: [
-                            {
-                                StartAt: 'Task5',
-                                States: {
-                                    Task5: { End: true, Type: 'Task', Resource: 'resource' }
-                                }
-                            }
-                        ],
-                        ...theCatch2,
-                        ...theRetry
-                    },
-                    ErrorHandler2: { End: true, Type: 'Task', Resource: 'resource' },
-                }
-            });
-
-            test.done();
-        },
-
-        /*
-
-        ** FIXME: Not implemented at the moment, since we need to make a Construct for this and the
-           name and parent aren't obvious.
-
-        'Machine is wrapped in parallel if not all tasks can have catch'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const wait = new stepfunctions.Wait(stack, 'Wait', { seconds: 10 });
-            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
-
-            const chain = task1.next(wait).onError(errorHandler);
-
-            // THEN
-            test.deepEqual(render(chain), {
-                StartAt: 'Para',
-                States: {
-                    Para: {
-                        Type: 'Parallel',
-                        End: true,
                         Branches: [
                             {
                                 StartAt: 'Task1',
@@ -552,27 +482,27 @@ export = {
                                     Task1: {
                                         Type: 'Task',
                                         Resource: 'resource',
-                                        Next: 'Wait',
+                                        Next: 'Task2',
                                     },
-                                    Wait: {
-                                        Type: 'Wait',
+                                    Task2: {
+                                        Type: 'Task',
+                                        Resource: 'resource',
                                         End: true,
-                                        Seconds: 10
                                     },
                                 }
                             }
                         ],
                         Catch: [
                             { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
-                        ]
+                        ],
+                        End: true
                     },
                     ErrorHandler: { Type: 'Pass', End: true }
-                }
+                },
             });
 
             test.done();
         },
-        */
 
         'Chaining does not chain onto error handler state'(test: Test) {
             // GIVEN
@@ -644,39 +574,8 @@ export = {
 
             // WHEN
             task1.onError(errorHandler)
-                .next(new SimpleChain(stack, 'Chain').onError(errorHandler))
+                .next(new SimpleChain(stack, 'Chain').catch(errorHandler))
                 .next(task2.onError(errorHandler));
-
-            test.done();
-        },
-
-        'After calling .closure() do chain onto error state'(test: Test) {
-            // GIVEN
-            const stack = new cdk.Stack();
-
-            const task1 = new stepfunctions.Task(stack, 'Task1', { resource: new FakeResource() });
-            const task2 = new stepfunctions.Task(stack, 'Task2', { resource: new FakeResource() });
-            const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
-
-            // WHEN
-            const chain = task1.onError(errorHandler).closure().next(task2);
-
-            // THEN
-            test.deepEqual(render(chain), {
-                StartAt: 'Task1',
-                States: {
-                    Task1: {
-                        Type: 'Task',
-                        Resource: 'resource',
-                        Next: 'Task2',
-                        Catch: [
-                            { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' },
-                        ]
-                    },
-                    ErrorHandler: { Type: 'Pass', Next: 'Task2' },
-                    Task2: { Type: 'Task', Resource: 'resource', End: true },
-                }
-            });
 
             test.done();
         },
@@ -725,31 +624,83 @@ export = {
 
             test.done();
         }
-    }
+    },
+
+    'State machine validation': {
+        'No duplicate state IDs'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            const intermediateParent = new cdk.Construct(stack, 'Parent');
+
+            const state1 = new stepfunctions.Pass(stack, 'State');
+            const state2 = new stepfunctions.Pass(intermediateParent, 'State');
+
+            state1.next(state2);
+
+            // WHEN
+            test.throws(() => {
+                render(state1);
+            });
+
+            test.done();
+        },
+
+        'No duplicate state IDs even across Parallel branches'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            const intermediateParent = new cdk.Construct(stack, 'Parent');
+
+            const state1 = new stepfunctions.Pass(stack, 'State');
+            const state2 = new stepfunctions.Pass(intermediateParent, 'State');
+
+            const parallel = new stepfunctions.Parallel(stack, 'Parallel')
+                .branch(state1)
+                .branch(state2);
+
+            // WHEN
+            test.throws(() => {
+                render(parallel);
+            });
+
+            test.done();
+        },
+
+        'No cross-parallel jumps'(test: Test) {
+            // GIVEN
+            const stack = new cdk.Stack();
+            const state1 = new stepfunctions.Pass(stack, 'State1');
+            const state2 = new stepfunctions.Pass(stack, 'State2');
+
+            test.throws(() => {
+                new stepfunctions.Parallel(stack, 'Parallel')
+                    .branch(state1.next(state2))
+                    .branch(state2);
+            });
+
+            test.done();
+        },
+    },
 };
 
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
+    public readonly startState: stepfunctions.State;
+    public readonly endStates: stepfunctions.INextable[];
     constructor(parent: cdk.Construct, id: string) {
         super(parent, id);
 
-        this.start(
-            new stepfunctions.Choice(this, 'Choice')
-                .on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
-                .on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch')));
-    }
-}
+        const choice = new stepfunctions.Choice(this, 'Choice')
+            .on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
+            .on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
 
-class ReusableStateMachineWithImplicitStartState extends stepfunctions.StateMachineFragment {
-    constructor(parent: cdk.Construct, id: string, props: stepfunctions.StateMachineFragmentProps = {}) {
-        super(parent, id, props);
-
-        const choice = new stepfunctions.Choice(this, 'Choice');
-        choice.on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'));
-        choice.on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
+        this.startState = choice;
+        this.endStates = choice.afterwards().endStates;
     }
 }
 
 class SimpleChain extends stepfunctions.StateMachineFragment {
+    public readonly startState: stepfunctions.State;
+    public readonly endStates: stepfunctions.INextable[];
+
     private readonly task2: stepfunctions.Task;
     constructor(parent: cdk.Construct, id: string) {
         super(parent, id);
@@ -758,9 +709,12 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
         this.task2 = new stepfunctions.Task(this, 'Task2', { resource: new FakeResource() });
 
         task1.next(this.task2);
+
+        this.startState = task1;
+        this.endStates = [this.task2];
     }
 
-    public onError(state: stepfunctions.IChainable, props?: stepfunctions.CatchProps): SimpleChain {
+    public catch(state: stepfunctions.IChainable, props?: stepfunctions.CatchProps): SimpleChain {
         this.task2.onError(state, props);
         return this;
     }
@@ -774,6 +728,6 @@ class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
     }
 }
 
-function render(sm: IChainable) {
-    return cdk.resolve(sm.toStateChain().renderStateMachine().stateMachineDefinition);
+function render(sm: stepfunctions.IChainable) {
+    return cdk.resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
 }

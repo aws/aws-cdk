@@ -36,9 +36,10 @@ export = {
         expect(stack).to(haveResource('AWS::StepFunctions::StateMachine', {
             DefinitionString: {
                 "Fn::Join": ["", [
-                    "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"Type\":\"Task\",\"Resource\":\"",
+                    "{\"StartAt\":\"Task\",\"States\":{\"Task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
                     { Ref: "Activity04690B0A" },
-                    "\",\"End\":true}}}"
+                    "\"}}}"
+
                 ]]
             },
         }));

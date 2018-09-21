@@ -2,9 +2,13 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { IChainable } from './asl-external-api';
+import { StateGraph } from './state-graph';
 import { cloudformation } from './stepfunctions.generated';
+import { IChainable } from './types';
 
+/**
+ * Properties for defining a State Machine
+ */
 export interface StateMachineProps {
     /**
      * A name for the state machine
@@ -25,8 +29,12 @@ export interface StateMachineProps {
      */
     role?: iam.Role;
 
+    /**
+     * Maximum run time for this state machine
+     *
+     * @default No timeout
+     */
     timeoutSeconds?: number;
-
 }
 
 /**
@@ -47,18 +55,16 @@ export class StateMachine extends cdk.Construct {
             assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('states.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
         });
 
-        const rendered = props.definition.toStateChain().renderStateMachine();
-        if (props.timeoutSeconds !== undefined) {
-            rendered.stateMachineDefinition.TimeoutSeconds = props.timeoutSeconds;
-        }
+        const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
+        graph.timeoutSeconds = props.timeoutSeconds;
 
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
-            definitionString: cdk.CloudFormationJSON.stringify(rendered.stateMachineDefinition),
+            definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson()),
         });
 
-        for (const statement of rendered.policyStatements) {
+        for (const statement of graph.policyStatements) {
             this.addToRolePolicy(statement);
         }
 
@@ -66,6 +72,9 @@ export class StateMachine extends cdk.Construct {
         this.stateMachineArn = resource.stateMachineArn;
     }
 
+    /**
+     * Add the given statement to the role's policy
+     */
     public addToRolePolicy(statement: cdk.PolicyStatement) {
         this.role.addToPolicy(statement);
     }
