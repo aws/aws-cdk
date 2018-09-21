@@ -1,4 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import autoscaling = require('@aws-cdk/aws-autoscaling');
+import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codedeploy = require('../lib');
@@ -38,6 +40,53 @@ export = {
             test.notEqual(deploymentGroup, undefined);
 
             test.done();
-        }
+        },
+
+        "created with ASGs contains the ASG names"(test: Test) {
+            const stack = new cdk.Stack();
+
+            const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+                instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+                machineImage: new ec2.AmazonLinuxImage(),
+                vpc: new ec2.VpcNetwork(stack, 'VPC'),
+            });
+
+            new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+                autoScalingGroups: [asg],
+            });
+
+            expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+                "AutoScalingGroups": [
+                  {
+                    "Ref": "ASG46ED3070",
+                  },
+                ]
+            }));
+
+            test.done();
+        },
+
+        "created without ASGs but adding them later contains the ASG names"(test: Test) {
+            const stack = new cdk.Stack();
+
+            const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+                instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Standard3, ec2.InstanceSize.Small),
+                machineImage: new ec2.AmazonLinuxImage(),
+                vpc: new ec2.VpcNetwork(stack, 'VPC'),
+            });
+
+            const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
+            deploymentGroup.addAutoScalingGroup(asg);
+
+            expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+                "AutoScalingGroups": [
+                  {
+                    "Ref": "ASG46ED3070",
+                  },
+                ]
+            }));
+
+            test.done();
+        },
     },
 };

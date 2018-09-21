@@ -249,8 +249,8 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
      * Add command to the startup script of fleet instances.
      * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
      */
-    public addUserData(script: string) {
-        this.userDataLines.push(script);
+    public addUserData(...scriptLines: string[]) {
+        scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
     }
 
     public autoScalingGroupName() {
