@@ -43,6 +43,10 @@ export abstract class RepositoryRef extends cdk.Construct {
 
     /** The human-visible name of this Repository. */
     public abstract readonly repositoryName: string;
+    /** The HTTP clone URL */
+    public abstract readonly repositoryCloneUrlHttp: string;
+    /** The SSH clone URL */
+    public abstract readonly repositoryCloneUrlSsh: string;
 
     /**
      * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
@@ -181,6 +185,24 @@ class ImportedRepositoryRef extends RepositoryRef {
             resource: props.repositoryName,
         });
         this.repositoryName = props.repositoryName;
+    }
+
+    public get repositoryCloneUrlHttp() {
+        return new cdk.FnConcat('https://git-codecommit.',
+                                new cdk.AwsRegion(),
+                                '.',
+                                new cdk.AwsURLSuffix(),
+                                '/v1/repos/',
+                                this.repositoryName).toString();
+    }
+
+    public get repositoryCloneUrlSsh() {
+        return new cdk.FnConcat('ssh://git-codecommit.',
+                                new cdk.AwsRegion(),
+                                '.',
+                                new cdk.AwsURLSuffix(),
+                                '/v1/repos/',
+                                this.repositoryName).toString();
     }
 }
 
