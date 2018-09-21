@@ -769,7 +769,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
 class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
     public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
         return {
-            resourceArn: new cdk.Arn('resource'),
+            resourceArn: 'resource'
         };
     }
 }

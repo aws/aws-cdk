@@ -94,13 +94,13 @@ export = {
 
 class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
     public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
-        const resourceArn = new cdk.Arn('resource');
+        const resourceArn = 'resource';
 
         return {
             resourceArn,
             policyStatements: [new cdk.PolicyStatement()
                 .addAction('resource:Everything')
-                .addResource(new cdk.Arn('resource'))
+                .addResource('resource')
             ],
             metricPrefixSingular: 'FakeResource',
             metricPrefixPlural: 'FakeResources',

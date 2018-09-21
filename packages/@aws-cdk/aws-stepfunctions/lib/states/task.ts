@@ -212,7 +212,7 @@ export interface IStepFunctionsTaskResource {
 }
 
 export interface StepFunctionsTaskResourceProps {
-    resourceArn: cdk.Arn;
+    resourceArn: string;
     policyStatements?: cdk.PolicyStatement[];
     metricPrefixSingular?: string;
     metricPrefixPlural?: string;

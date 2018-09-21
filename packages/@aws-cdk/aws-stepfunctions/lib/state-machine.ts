@@ -3,7 +3,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { IChainable } from './asl-external-api';
-import { cloudformation, StateMachineArn, StateMachineName } from './stepfunctions.generated';
+import { cloudformation } from './stepfunctions.generated';
 
 export interface StateMachineProps {
     /**
@@ -34,8 +34,8 @@ export interface StateMachineProps {
  */
 export class StateMachine extends cdk.Construct {
     public readonly role: iam.Role;
-    public readonly stateMachineName: StateMachineName;
-    public readonly stateMachineArn: StateMachineArn;
+    public readonly stateMachineName: string;
+    public readonly stateMachineArn: string;
 
     /** A role used by CloudWatch events to trigger a build */
     private eventsRole?: iam.Role;
@@ -63,7 +63,7 @@ export class StateMachine extends cdk.Construct {
         }
 
         this.stateMachineName = resource.stateMachineName;
-        this.stateMachineArn = resource.ref;
+        this.stateMachineArn = resource.stateMachineArn;
     }
 
     public addToRolePolicy(statement: cdk.PolicyStatement) {
@@ -73,7 +73,7 @@ export class StateMachine extends cdk.Construct {
     /**
      * Allows using state machines as event rule targets.
      */
-    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
