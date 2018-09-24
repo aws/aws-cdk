@@ -188,16 +188,15 @@ class ImportedRepositoryRef extends RepositoryRef {
     }
 
     public get repositoryCloneUrlHttp() {
-        return new cdk.FnConcat('https://git-codecommit.',
-                                new cdk.AwsRegion(),
-                                '.',
-                                new cdk.AwsURLSuffix(),
-                                '/v1/repos/',
-                                this.repositoryName).toString();
+        return this.repositoryCloneUrl('https');
     }
 
     public get repositoryCloneUrlSsh() {
-        return new cdk.FnConcat('ssh://git-codecommit.',
+        return this.repositoryCloneUrl('ssh');
+    }
+
+    private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
+        return new cdk.FnConcat(`${protocol}://git-codecommit.`,
                                 new cdk.AwsRegion(),
                                 '.',
                                 new cdk.AwsURLSuffix(),
