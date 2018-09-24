@@ -1,0 +1,64 @@
+{
+  "name": "@aws-cdk/aws-iot1click",
+  "version": "0.9.2",
+  "description": "The CDK Construct Library for AWS::IoT1Click",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.IoT1Click",
+        "packageId": "Amazon.CDK.AWS.IoT1Click",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.iot1click",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "iot1click"
+        }
+      },
+      "sphinx": {}
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::IoT1Click"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-iot1click"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "^0.9.2",
+    "cdk-build-tools": "^0.9.2",
+    "cfn2ts": "^0.9.2",
+    "pkglint": "^0.9.2"
+  },
+  "dependencies": {
+    "@aws-cdk/cdk": "^0.9.2"
+  }
+}

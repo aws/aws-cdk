@@ -68,6 +68,12 @@ EOM
   "jsii": {
     "outdir": "dist",
     "targets": {
+      "dotnet": {
+        "namespace": "${S/AWS::/Amazon.CDK.AWS.}",
+        "packageId": "${S/AWS::/Amazon.CDK.AWS.}",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "java": {
         "package": "software.amazon.awscdk.${PB/aws-/services.}",
         "maven": {
