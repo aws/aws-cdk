@@ -1,7 +1,7 @@
 ## [UNRELEASED]
 ### CloudFormation Changes
 
-* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.8.0` ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/TBD))
+* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.8.0` ([@RomainMuller] in [#767](https://github.com/awslabs/aws-cdk/pull/767))
   + **New Construct Libraries**
     - `@aws-cdk/aws-amazonmq`
     - `@aws-cdk/aws-iot1click`
