@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { CreateReplaceChangeSet, CreateUpdateStack, ExecuteChangeSet } from '@aws-cdk/aws-cloudformation';
 import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Project } from '@aws-cdk/aws-codebuild';
-import { PipelineSource, Repository } from '@aws-cdk/aws-codecommit';
+import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
@@ -26,7 +26,7 @@ export = {
 
     const sourceStage = new Stage(pipeline, 'source', { pipeline });
 
-    const source = new PipelineSource(stack, 'source', {
+    const source = new PipelineSourceAction(stack, 'source', {
       stage: sourceStage,
       artifactName: 'SourceArtifact',
       repository: repo,
@@ -360,7 +360,7 @@ class TestFixture extends cdk.Stack {
   public readonly sourceStage: Stage;
   public readonly deployStage: Stage;
   public readonly repo: Repository;
-  public readonly source: PipelineSource;
+  public readonly source: PipelineSourceAction;
 
   constructor() {
     super();
@@ -369,7 +369,7 @@ class TestFixture extends cdk.Stack {
     this.sourceStage = new Stage(this.pipeline, 'Source', { pipeline: this.pipeline });
     this.deployStage = new Stage(this.pipeline, 'Deploy', { pipeline: this.pipeline });
     this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
-    this.source = new PipelineSource(this, 'Source', {
+    this.source = new PipelineSourceAction(this, 'Source', {
       stage: this.sourceStage,
       artifactName: 'SourceArtifact',
       repository: this.repo,
