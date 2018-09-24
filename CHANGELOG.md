@@ -1,3 +1,146 @@
+## [UNRELEASED]
+### CloudFormation Changes
+
+* __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.8.0` ([@RomainMuller] in [#594](https://github.com/awslabs/aws-cdk/pull/TBD))
+  + **New Construct Libraries**
+    - `@aws-cdk/aws-amazonmq`
+    - `@aws-cdk/aws-iot1click`
+  + **New Resource Types**
+    - AWS::IoT1Click::Device
+    - AWS::IoT1Click::Placement
+    - AWS::IoT1Click::Project
+  * **Attribute Changes**
+    - AWS::EC2::VPCEndpoint CreationTimestamp (__added__)
+    - AWS::EC2::VPCEndpoint DnsEntries (__added__)
+    - AWS::EC2::VPCEndpoint NetworkInterfaceIds (__added__)
+  * **Property Changes**
+    - AWS::ApiGateway::Deployment DeploymentCanarySettings (__added__)
+    - AWS::ApiGateway::Method AuthorizationScopes (__added__)
+    - AWS::ApiGateway::Stage AccessLogSetting (__added__)
+    - AWS::ApiGateway::Stage CanarySetting (__added__)
+    - AWS::AutoScaling::AutoScalingGroup LaunchTemplate (__added__)
+    - AWS::CodeBuild::Project LogsConfig (__added__)
+    - AWS::CodeBuild::Project SecondaryArtifacts (__added__)
+    - AWS::CodeBuild::Project SecondarySources (__added__)
+    - AWS::CodeDeploy::DeploymentGroup Ec2TagSet (__added__)
+    - AWS::CodeDeploy::DeploymentGroup OnPremisesTagSet (__added__)
+    - AWS::EC2::FlowLog LogDestination (__added__)
+    - AWS::EC2::FlowLog LogDestinationType (__added__)
+    - AWS::EC2::FlowLog DeliverLogsPermissionArn.Required (__changed__)
+      - Old: true
+      - New: false
+    - AWS::EC2::FlowLog LogGroupName.Required (__changed__)
+      - Old: true
+      - New: false
+    - AWS::EC2::VPCEndpoint IsPrivateDnsEnabled (__deleted__)
+    - AWS::EC2::VPCEndpoint PrivateDnsEnabled (__added__)
+    - AWS::EC2::VPCEndpoint RouteTableIds.DuplicatesAllowed (__added__)
+    - AWS::EC2::VPCEndpoint SecurityGroupIds.DuplicatesAllowed (__added__)
+    - AWS::EC2::VPCEndpoint SubnetIds.DuplicatesAllowed (__added__)
+    - AWS::EC2::VPCEndpoint VPCEndpointType.UpdateType (__changed__)
+      - Old: Mutable
+      - New: Immutable
+    - AWS::ECS::Service SchedulingStrategy (__added__)
+    - AWS::ECS::Service ServiceRegistries.UpdateType (__changed__)
+      - Old: Mutable
+      - New: Immutable
+    - AWS::ElastiCache::ReplicationGroup NodeGroupConfiguration.UpdateType (__changed__)
+      - Old: Immutable
+      - New: Conditional
+    - AWS::ElastiCache::ReplicationGroup NumNodeGroups.UpdateType (__changed__)
+      - Old: Immutable
+      - New: Conditional
+    - AWS::RDS::DBCluster EngineMode (__added__)
+    - AWS::RDS::DBCluster ScalingConfiguration (__added__)
+    - AWS::SageMaker::NotebookInstance LifecycleConfigName.UpdateType (__changed__)
+      - Old: Immutable
+      - New: Mutable
+  * **Property Type Changes**
+    - AWS::ApiGateway::Deployment.AccessLogSetting (__added__)
+    - AWS::ApiGateway::Deployment.CanarySetting (__added__)
+    - AWS::ApiGateway::Deployment.DeploymentCanarySettings (__added__)
+    - AWS::ApiGateway::Stage.AccessLogSetting (__added__)
+    - AWS::ApiGateway::Stage.CanarySetting (__added__)
+    - AWS::AutoScaling::AutoScalingGroup.LaunchTemplateSpecification (__added__)
+    - AWS::CodeBuild::Project.CloudWatchLogsConfig (__added__)
+    - AWS::CodeBuild::Project.LogsConfig (__added__)
+    - AWS::CodeBuild::Project.S3LogsConfig (__added__)
+    - AWS::CodeDeploy::DeploymentGroup.EC2TagSet (__added__)
+    - AWS::CodeDeploy::DeploymentGroup.EC2TagSetListObject (__added__)
+    - AWS::CodeDeploy::DeploymentGroup.OnPremisesTagSet (__added__)
+    - AWS::CodeDeploy::DeploymentGroup.OnPremisesTagSetListObject (__added__)
+    - AWS::EC2::SpotFleet.ClassicLoadBalancer (__added__)
+    - AWS::EC2::SpotFleet.ClassicLoadBalancersConfig (__added__)
+    - AWS::EC2::SpotFleet.FleetLaunchTemplateSpecification (__added__)
+    - AWS::EC2::SpotFleet.LaunchTemplateConfig (__added__)
+    - AWS::EC2::SpotFleet.LaunchTemplateOverrides (__added__)
+    - AWS::EC2::SpotFleet.LoadBalancersConfig (__added__)
+    - AWS::EC2::SpotFleet.TargetGroup (__added__)
+    - AWS::EC2::SpotFleet.TargetGroupsConfig (__added__)
+    - AWS::ECS::TaskDefinition.DockerVolumeConfiguration (__added__)
+    - AWS::ECS::TaskDefinition.RepositoryCredentials (__added__)
+    - AWS::ECS::TaskDefinition.Tmpfs (__added__)
+    - AWS::Events::Rule.SqsParameters (__added__)
+    - AWS::RDS::DBCluster.ScalingConfiguration (__added__)
+    - AWS::ApiGateway::Deployment.StageDescription AccessLogSetting (__added__)
+    - AWS::ApiGateway::Deployment.StageDescription CanarySetting (__added__)
+    - AWS::ApiGateway::Method.Integration ConnectionId (__added__)
+    - AWS::ApiGateway::Method.Integration ConnectionType (__added__)
+    - AWS::ApiGateway::Method.Integration TimeoutInMillis (__added__)
+    - AWS::ApiGateway::UsagePlan.ApiStage Throttle (__added__)
+    - AWS::CodeBuild::Project.Artifacts ArtifactIdentifier (__added__)
+    - AWS::CodeBuild::Project.Source SourceIdentifier (__added__)
+    - AWS::CodeBuild::Project.VpcConfig SecurityGroupIds.Required (__changed__)
+      - Old: true
+      - New: false
+    - AWS::CodeBuild::Project.VpcConfig Subnets.Required (__changed__)
+      - Old: true
+      - New: false
+    - AWS::CodeBuild::Project.VpcConfig VpcId.Required (__changed__)
+      - Old: true
+      - New: false
+    - AWS::CodeDeploy::DeploymentGroup.EC2TagFilter Key.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilters.html#cfn-properties-codedeploy-deploymentgroup-ec2tagfilters-key
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilter.html#cfn-codedeploy-deploymentgroup-ec2tagfilter-key
+    - AWS::CodeDeploy::DeploymentGroup.EC2TagFilter Type.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilters.html#cfn-properties-codedeploy-deploymentgroup-ec2tagfilters-type
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilter.html#cfn-codedeploy-deploymentgroup-ec2tagfilter-type
+    - AWS::CodeDeploy::DeploymentGroup.EC2TagFilter Value.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilters.html#cfn-properties-codedeploy-deploymentgroup-ec2tagfilters-value
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-ec2tagfilter.html#cfn-codedeploy-deploymentgroup-ec2tagfilter-value
+    - AWS::CodeDeploy::DeploymentGroup.TagFilter Key.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters.html#cfn-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters-key
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-tagfilter.html#cfn-codedeploy-deploymentgroup-tagfilter-key
+    - AWS::CodeDeploy::DeploymentGroup.TagFilter Type.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters.html#cfn-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters-type
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-tagfilter.html#cfn-codedeploy-deploymentgroup-tagfilter-type
+    - AWS::CodeDeploy::DeploymentGroup.TagFilter Value.Documentation (__changed__)
+      - Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters.html#cfn-properties-codedeploy-deploymentgroup-onpremisesinstancetagfilters-value
+      - New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codedeploy-deploymentgroup-tagfilter.html#cfn-codedeploy-deploymentgroup-tagfilter-value
+    - AWS::EC2::SpotFleet.SpotFleetRequestConfigData InstanceInterruptionBehavior (__added__)
+    - AWS::EC2::SpotFleet.SpotFleetRequestConfigData LaunchTemplateConfigs (__added__)
+    - AWS::EC2::SpotFleet.SpotFleetRequestConfigData LoadBalancersConfig (__added__)
+    - AWS::EC2::SpotFleet.SpotPlacement Tenancy (__added__)
+    - AWS::ECS::Service.ServiceRegistry ContainerName (__added__)
+    - AWS::ECS::Service.ServiceRegistry ContainerPort (__added__)
+    - AWS::ECS::Service.ServiceRegistry Port.UpdateType (__changed__)
+      - Old: Mutable
+      - New: Immutable
+    - AWS::ECS::Service.ServiceRegistry RegistryArn.UpdateType (__changed__)
+      - Old: Mutable
+      - New: Immutable
+    - AWS::ECS::TaskDefinition.ContainerDefinition RepositoryCredentials (__added__)
+    - AWS::ECS::TaskDefinition.LinuxParameters SharedMemorySize (__added__)
+    - AWS::ECS::TaskDefinition.LinuxParameters Tmpfs (__added__)
+    - AWS::ECS::TaskDefinition.Volume DockerVolumeConfiguration (__added__)
+    - AWS::ElastiCache::ReplicationGroup.NodeGroupConfiguration NodeGroupId (__added__)
+    - AWS::Events::Rule.Target SqsParameters (__added__)
+    - AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.DuplicatesAllowed (__added__)
+    - AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.ItemType (__added__)
+    - AWS::RDS::OptionGroup.OptionConfiguration OptionSettings.Type (__changed__)
+      - Old: OptionSetting
+      - New: List
+
 <a name="0.9.2"></a>
 ## [0.9.2](https://github.com/awslabs/aws-cdk/compare/v0.9.1...v0.9.2) (2018-09-20)
 
