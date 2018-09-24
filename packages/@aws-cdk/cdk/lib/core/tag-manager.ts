@@ -48,6 +48,28 @@ export interface TagProps {
     overwrite?: boolean;
 }
 
+export interface TagGroups {
+    /**
+     * Tags that overwrite ancestor tags
+     */
+    stickyTags: Tags;
+
+    /**
+     * Tags that are overwritten by ancestor tags
+     */
+    nonSitckyTags: Tags;
+
+    /**
+     * Tags with propagate true not from an ancestor
+     */
+    propagateTags: Tags;
+
+    /**
+     * Tags that are propagated from ancestors
+     */
+    ancestorTags: Tags;
+}
+
 /**
  * Properties for removing tags
  */
@@ -58,6 +80,21 @@ export interface RemoveProps {
      * @default true
      */
     blockPropagate?: boolean;
+}
+
+export interface TagManagerProps {
+    initialTags?: Tags;
+<<<<<<< HEAD
+    autoScalingGroup?: boolean;
+||||||| parent of 99e87ce7... tag manager refactor to extract only a single protected method
+
+    /**
+     * If set this tag Manager will resolve to Autoscaling Group Tags with
+     * PropagateAtLaunch set based on the tag property `propagate`
+     */
+    autoScalingGroup?: boolean;
+=======
+>>>>>>> 99e87ce7... tag manager refactor to extract only a single protected method
 }
 
 /**
@@ -120,8 +157,10 @@ export class TagManager extends Token {
      */
     private readonly blockedTags: string[] = [];
 
-    constructor(private readonly parent: Construct, initialTags: Tags  = {}) {
+    constructor(private readonly parent: Construct, props: TagManagerProps  = {}) {
         super();
+
+        const initialTags = props.initialTags || {};
         for (const key of Object.keys(initialTags)) {
             const tag = {
                 value: initialTags[key],
@@ -135,6 +174,8 @@ export class TagManager extends Token {
      * Converts the `tags` to a Token for use in lazy evaluation
      */
     public resolve(): any {
+        // need this for scoping
+        const blockedTags = this.blockedTags;
         function filterTags(_tags: FullTags, filter: TagProps = {}): Tags {
             const filteredTags: Tags = {};
             Object.keys(_tags).map( key => {
@@ -154,6 +195,7 @@ export class TagManager extends Token {
                     filteredTags[key] = _tags[key].value;
                 }
             });
+            for (const key of blockedTags) { delete filteredTags[key]; }
             return filteredTags;
         }
 
@@ -165,17 +207,21 @@ export class TagManager extends Token {
                     Object.assign(parentTags, tagsFrom);
                 }
             }
+            for (const key of blockedTags) { delete parentTags[key]; }
             return parentTags;
         }
 
-        const propOverwrite = filterTags(this._tags, {sticky: false});
-        const nonOverwrite = filterTags(this._tags, {sticky: true});
+        const nonSitckyTags = filterTags(this._tags, {sticky: false});
+        const stickyTags = filterTags(this._tags, {sticky: true});
         const ancestors = this.parent.ancestors();
-        ancestors.push(this.parent);
-        const tags = {...propOverwrite, ...propagatedTags(ancestors), ...nonOverwrite};
-        for (const key of this.blockedTags) { delete tags[key]; }
-
-        return Object.keys(tags).map( key => ({key, value: tags[key]}));
+        const ancestorTags = propagatedTags(ancestors);
+        const propagateTags = filterTags(this._tags, {propagate: true});
+        return this.tagFormatResolve( {
+            ancestorTags,
+            nonSitckyTags,
+            stickyTags,
+            propagateTags,
+        });
     }
 
     /**
@@ -202,6 +248,7 @@ export class TagManager extends Token {
      * Removes the specified tag from the array if it exists
      *
      * @param key The key of the tag to remove
+     * @param props The `RemoveProps` for the tag
      */
     public removeTag(key: string, props: RemoveProps = {blockPropagate: true}): void {
         if (props.blockPropagate) {
@@ -210,9 +257,9 @@ export class TagManager extends Token {
         delete this._tags[key];
     }
 
-    /**
-     * Retrieve all propagated tags from all ancestors
-     *
-     * This retrieves tags from parents but not local tags
-     */
+    protected tagFormatResolve(tagGroups: TagGroups): any {
+        const tags = {...tagGroups.nonSitckyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+        for (const key of this.blockedTags) { delete tags[key]; }
+        return Object.keys(tags).map( key => ({key, value: tags[key]}));
+    }
 }

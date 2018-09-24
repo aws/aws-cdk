@@ -273,7 +273,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
             throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
         }
 
-        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags = new cdk.TagManager(this, { initialTags: props.tags});
         this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
 
         const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
