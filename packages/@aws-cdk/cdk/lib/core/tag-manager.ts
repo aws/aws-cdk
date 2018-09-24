@@ -48,6 +48,9 @@ export interface TagProps {
     overwrite?: boolean;
 }
 
+/**
+ * This is the interface for arguments to `tagFormatResolve` to enable extensions
+ */
 export interface TagGroups {
     /**
      * Tags that overwrite ancestor tags
@@ -82,19 +85,14 @@ export interface RemoveProps {
     blockPropagate?: boolean;
 }
 
+/**
+ * Properties for Tag Manager
+ */
 export interface TagManagerProps {
-    initialTags?: Tags;
-<<<<<<< HEAD
-    autoScalingGroup?: boolean;
-||||||| parent of 99e87ce7... tag manager refactor to extract only a single protected method
-
     /**
-     * If set this tag Manager will resolve to Autoscaling Group Tags with
-     * PropagateAtLaunch set based on the tag property `propagate`
+     * Initial tags to set on the tag manager using TAG_DEFAULTS
      */
-    autoScalingGroup?: boolean;
-=======
->>>>>>> 99e87ce7... tag manager refactor to extract only a single protected method
+    initialTags?: Tags;
 }
 
 /**
@@ -257,6 +255,13 @@ export class TagManager extends Token {
         delete this._tags[key];
     }
 
+    /**
+     * Handles returning the tags in the desired format
+     *
+     * This function can be overridden to support another tag format. This was
+     * specifically designed to enable AutoScalingGroup Tags that have an
+     * additional CloudFormation key for `PropagateAtLaunch`
+     */
     protected tagFormatResolve(tagGroups: TagGroups): any {
         const tags = {...tagGroups.nonSitckyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
         for (const key of this.blockedTags) { delete tags[key]; }

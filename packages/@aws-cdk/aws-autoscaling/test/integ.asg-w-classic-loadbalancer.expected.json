@@ -544,6 +544,13 @@
             "Ref": "LB8A12904C"
           }
         ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "aws-cdk-ec2-integ/Fleet"
+          }
+        ],
         "VPCZoneIdentifier": [
           {
             "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
