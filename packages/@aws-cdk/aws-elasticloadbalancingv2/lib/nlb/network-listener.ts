@@ -117,7 +117,7 @@ export interface INetworkListener {
     /**
      * ARN of the listener
      */
-    listenerArn: string;
+    readonly listenerArn: string;
 }
 
 /**

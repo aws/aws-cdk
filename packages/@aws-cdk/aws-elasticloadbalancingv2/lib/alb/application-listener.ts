@@ -262,7 +262,7 @@ export interface IApplicationListener extends ec2.IConnectable {
     /**
      * ARN of the listener
      */
-    listenerArn: string;
+    readonly listenerArn: string;
 
     /**
      * Add one or more certificates to this listener.
