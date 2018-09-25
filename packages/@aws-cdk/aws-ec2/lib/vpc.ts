@@ -468,7 +468,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
 
     constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
-        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags = new cdk.TagManager(this, {initialTags: props.tags});
         this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
 
         this.availabilityZone = props.availabilityZone;

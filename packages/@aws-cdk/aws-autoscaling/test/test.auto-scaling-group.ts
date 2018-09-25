@@ -19,28 +19,35 @@ export = {
 
         expect(stack).toMatch({
             "Resources": {
-              "MyFleetInstanceSecurityGroup774E8234": {
-                "Type": "AWS::EC2::SecurityGroup",
-                "Properties": {
-                  "GroupDescription": "MyFleet/InstanceSecurityGroup",
-                  "SecurityGroupEgress": [
-                    {
-                      "CidrIp": "0.0.0.0/0",
-                      "Description": "Outbound traffic allowed by default",
-                      "FromPort": -1,
-                      "IpProtocol": "-1",
-                      "ToPort": -1
+                "MyFleetInstanceSecurityGroup774E8234": {
+                    "Type": "AWS::EC2::SecurityGroup",
+                    "Properties": {
+                        "GroupDescription": "MyFleet/InstanceSecurityGroup",
+                        "SecurityGroupEgress": [
+                            {
+                                "CidrIp": "0.0.0.0/0",
+                                "Description": "Outbound traffic allowed by default",
+                                "FromPort": -1,
+                                "IpProtocol": "-1",
+                                "ToPort": -1
+                            }
+                        ],
+                        "SecurityGroupIngress": [],
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "MyFleet"
+                            }
+                        ],
+
+                        "VpcId": "my-vpc"
                     }
-                  ],
-                  "SecurityGroupIngress": [],
-                  "VpcId": "my-vpc"
-                }
-              },
-              "MyFleetInstanceRole25A84AB8": {
-                "Type": "AWS::IAM::Role",
-                "Properties": {
-                  "AssumeRolePolicyDocument": {
-                    "Statement": [
+                },
+                "MyFleetInstanceRole25A84AB8": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                        "AssumeRolePolicyDocument": {
+                            "Statement": [
                       {
                         "Action": "sts:AssumeRole",
                         "Effect": "Allow",
@@ -99,19 +106,19 @@ export = {
                   "LaunchConfigurationName": {
                     "Ref": "MyFleetLaunchConfig5D7F9801"
                   },
-                  "LoadBalancerNames": [],
-                  "Tags": [
-                    {
-                      "Key": "Name",
-                      "PropagateAtLaunch": true,
-                      "Value": "MyFleet"
-                    }
-                  ],
-                  "MaxSize": "1",
-                  "MinSize": "1",
-                  "VPCZoneIdentifier": [
-                    "pri1"
-                  ]
+                    "Tags": [
+                        {
+                            "Key": "Name",
+                            "PropagateAtLaunch": true,
+                            "Value": "MyFleet"
+                        }
+                    ],
+
+                    "MaxSize": "1",
+                    "MinSize": "1",
+                    "VPCZoneIdentifier": [
+                        "pri1"
+                    ]
                 }
               }
             }
@@ -141,54 +148,6 @@ export = {
                         Action: "test:SpecialName",
                         Effect: "Allow",
                         Resource: "*"
-                    }
-                ],
-                Version: "2012-10-17"
-            },
-        }));
-        test.done();
-    },
-
-    'can configure replacing update'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
-      const vpc = mockVpc(stack);
-
-      // WHEN
-      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-          instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
-          machineImage: new ec2.AmazonLinuxImage(),
-          vpc,
-          updateType: autoscaling.UpdateType.ReplacingUpdate,
-          replacingUpdateMinSuccessfulInstancesPercent: 50
-      });
-
-      // THEN
-      expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-        UpdatePolicy: {
-          AutoScalingReplacingUpdate: {
-            WillReplace: true
-          }
-        },
-        CreationPolicy: {
-          AutoScalingCreationPolicy: {
-            MinSuccessfulInstancesPercent: 50
-          }
-        }
-      }, ResourcePart.CompleteDefinition));
-
-      test.done();
-    },
-
-    'can configure rolling update'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
-      const vpc = mockVpc(stack);
-
-      // WHEN
-      new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-                    {
-                      "Ref": "MyFleetInstanceRole25A84AB8"
                     }
                 ],
                 Version: "2012-10-17"

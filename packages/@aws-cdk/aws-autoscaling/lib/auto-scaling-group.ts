@@ -492,7 +492,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk
 
 class TagManager extends cdk.TagManager {
     protected tagFormatResolve(tagGroups: cdk.TagGroups): any {
-        const tags = {...tagGroups.nonSitckyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+        const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
         return Object.keys(tags).map( (key) => {
             const propagateAtLaunch = !!tagGroups.propagateTags[key] || !!tagGroups.ancestorTags[key];
             return {key, value: tags[key], propagateAtLaunch};

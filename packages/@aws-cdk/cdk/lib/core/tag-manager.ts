@@ -60,7 +60,7 @@ export interface TagGroups {
     /**
      * Tags that are overwritten by ancestor tags
      */
-    nonSitckyTags: Tags;
+    nonStickyTags: Tags;
 
     /**
      * Tags with propagate true not from an ancestor
@@ -209,14 +209,14 @@ export class TagManager extends Token {
             return parentTags;
         }
 
-        const nonSitckyTags = filterTags(this._tags, {sticky: false});
+        const nonStickyTags = filterTags(this._tags, {sticky: false});
         const stickyTags = filterTags(this._tags, {sticky: true});
         const ancestors = this.parent.ancestors();
         const ancestorTags = propagatedTags(ancestors);
         const propagateTags = filterTags(this._tags, {propagate: true});
         return this.tagFormatResolve( {
             ancestorTags,
-            nonSitckyTags,
+            nonStickyTags,
             stickyTags,
             propagateTags,
         });
@@ -263,7 +263,7 @@ export class TagManager extends Token {
      * additional CloudFormation key for `PropagateAtLaunch`
      */
     protected tagFormatResolve(tagGroups: TagGroups): any {
-        const tags = {...tagGroups.nonSitckyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+        const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
         for (const key of this.blockedTags) { delete tags[key]; }
         return Object.keys(tags).map( key => ({key, value: tags[key]}));
     }
