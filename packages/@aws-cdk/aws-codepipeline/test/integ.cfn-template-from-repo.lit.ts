@@ -25,7 +25,7 @@ const prodStage = new codepipeline.Stage(pipeline, 'Deploy', { pipeline });
 const stackName = 'OurStack';
 const changeSetName = 'StagedChangeSet';
 
-new cfn.CreateReplaceChangeSet(prodStage, 'PrepareChanges', {
+new cfn.PipelineCreateReplaceChangeSetAction(prodStage, 'PrepareChanges', {
     stage: prodStage,
     stackName,
     changeSetName,
@@ -37,7 +37,7 @@ new codepipeline.ManualApprovalAction(stack, 'ApproveChanges', {
     stage: prodStage,
 });
 
-new cfn.ExecuteChangeSet(stack, 'ExecuteChanges', {
+new cfn.PipelineExecuteChangeSetAction(stack, 'ExecuteChanges', {
     stage: prodStage,
     stackName,
     changeSetName,
