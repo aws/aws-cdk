@@ -8,18 +8,18 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _passing_in_data:
+.. _passing_in_values:
 
-##########################################
-Passing in External Data to Your |cdk| App
-##########################################
+############################################
+Passing in External Values to Your |cdk| App
+############################################
 
 .. See https://github.com/awslabs/aws-cdk/issues/603 (includes work from the following PR)
        https://github.com/awslabs/aws-cdk/pull/183
 
 There may be cases where you want to parameterize one or more of your stack resources.
-Therefore, you want to be able to pass data into your app from outside your app.
-Currently, you can get data into your app from outside your app through any of the following.
+Therefore, you want to be able to pass values into your app from outside your app.
+Currently, you can get values into your app from outside your app through any of the following.
 
 - Using a context variable
 - Using an environment variable
@@ -30,7 +30,7 @@ Currently, you can get data into your app from outside your app through any of t
 
 Each of these techniques is described in the following sections.
 
-.. _passing_in_data_from_context:
+.. _passing_in_values_from_context:
 
 Getting a Value from a Context Variable
 =======================================
@@ -39,15 +39,15 @@ You can specify a context variable either as
 part of a |toolkit| command,
 or in a **context** section of *cdk.json*.
 
-To pass the value of a command-line context value to your app,
-run a |toolkit| command using the **--context** (**-c**) option,
+To create a command-line context variable,
+use the **--context** (**-c**) option of a |toolkit| command,
 as shown in the following example.
 
 .. code-block:: sh
 
     cdk synth -c bucket_name=mygroovybucket
 
-To specify the same context variable in *cdk.json*:
+To specify the same context variable and value in *cdk.json*:
 
 .. code-block:: json
 
@@ -65,7 +65,7 @@ which gets the value of the context variable **bucket_name**.
 
     const bucket_name string = this.getContext("bucket_name");
 
-.. _passing_in_data_from_env_vars:
+.. _passing_in_value_from_env_vars:
 
 Getting a Value from an Environment Variable
 ============================================
@@ -78,7 +78,7 @@ which gets the value of the environment variable **MYBUCKET**.
 
     const bucket_name = process.env.MYBUCKET;
 
-.. _passing_in_data_from_ssm:
+.. _passing_in_value_from_ssm:
 
 Getting a Value from an SSM Store Variable
 ==========================================
@@ -93,16 +93,16 @@ which uses the value of the SSM variable **my-awesome-value**.
 
 See the :doc:`context` topic for information about the :py:class:`SSMParameterProvider <@aws-cdk/cdk.SSMParameterProvider>`.
 
-.. _passing_in_data_between_stacks:
+.. _passing_in_value_between_stacks:
 
-Passing in Data From Another Stack
-==================================
+Passing in a Value From Another Stack
+=====================================
 
-You can pass data from one stack to another stack in the same app
+You can pass a value from one stack to another stack in the same app
 by using the **export** method in one stack and the **import** method in the other stack.
 
 The following example creates a bucket on one stack
-and passes a reference to the other stack through an interface.
+and passes a reference to that bucket to the other stack through an interface.
 
 First create a stack with a bucket.
 The stack includes a a property we use to pass the bucket's properties to the other stack.
@@ -125,30 +125,30 @@ in the stack property.
 	}
     }
 
-Next create another stack that gets a reference to the other bucket
-from the properties passed in through the constructor.
-
-.. code-block:: ts
-
-    // The class for the other stack
-    class MyCdkStack extends cdk.Stack {
-        constructor(parent: cdk.App, name: string, props: XferBucketProps) {
-            super(parent, name);
-
-            const myOtherBucket = s3.Bucket.import(this, "MyOtherBucket", props.theBucketRefProps);
-
-	    // Do something with myOtherBucket
-        }
-    }
-
 Create an interface for the second stack's properties.
 We use this interface to pass the bucket properties between the two stacks.
 
 .. code-block:: ts
 
     // Interface we'll use to pass the bucket's properties to another stack
-    interface XferBucketProps {
+    interface MyCdkStackProps {
         theBucketRefProps: s3.BucketRefProps;
+    }
+
+Create the second stack that gets a reference to the other bucket
+from the properties passed in through the constructor.
+
+.. code-block:: ts
+
+    // The class for the other stack
+    class MyCdkStack extends cdk.Stack {
+        constructor(parent: cdk.App, name: string, props: MyCdkStackProps) {
+            super(parent, name);
+
+            const myOtherBucket = s3.Bucket.import(this, "MyOtherBucket", props.theBucketRefProps);
+
+	    // Do something with myOtherBucket
+        }
     }
 
 Finally, connect the dots in your app.
