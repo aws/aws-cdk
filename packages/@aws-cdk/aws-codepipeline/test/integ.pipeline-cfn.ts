@@ -32,7 +32,7 @@ const role = new Role(stack, 'CfnChangeSetRole', {
     assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
-new cfn.CreateReplaceChangeSet(stack, 'DeployCFN', {
+new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
     stage: cfnStage,
     changeSetName,
     stackName,

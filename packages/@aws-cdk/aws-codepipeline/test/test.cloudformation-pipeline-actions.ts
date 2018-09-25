@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { CreateReplaceChangeSet, CreateUpdateStack, ExecuteChangeSet } from '@aws-cdk/aws-cloudformation';
+import { PipelineCreateReplaceChangeSetAction, PipelineCreateUpdateStackAction, PipelineExecuteChangeSetAction } from '@aws-cdk/aws-cloudformation';
 import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Project } from '@aws-cdk/aws-codebuild';
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
@@ -57,7 +57,7 @@ export = {
     const stackName = 'BrelandsStack';
     const changeSetName = 'MyMagicalChangeSet';
 
-    new CreateReplaceChangeSet(stack, 'BuildChangeSetProd', {
+    new PipelineCreateReplaceChangeSetAction(stack, 'BuildChangeSetProd', {
       stage: prodStage,
       stackName,
       changeSetName,
@@ -66,7 +66,7 @@ export = {
       templateConfiguration: new ArtifactPath(buildAction.artifact!, 'templateConfig.json')
     });
 
-    new ExecuteChangeSet(stack, 'ExecuteChangeSetProd', {
+    new PipelineExecuteChangeSetAction(stack, 'ExecuteChangeSetProd', {
       stage: prodStage,
       stackName,
       changeSetName,
@@ -200,7 +200,7 @@ export = {
     const stack = new TestFixture();
 
     // WHEN
-    new CreateUpdateStack(stack.deployStage, 'CreateUpdate', {
+    new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
       stage: stack.deployStage,
       stackName: 'MyStack',
       templatePath: stack.source.artifact.subartifact('template.yaml'),
@@ -253,7 +253,7 @@ export = {
     const stack = new TestFixture();
 
     // WHEN
-    new CreateUpdateStack(stack, 'CreateUpdate', {
+    new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
       stage: stack.deployStage,
       stackName: 'MyStack',
       templatePath: stack.source.artifact.subartifact('template.yaml'),
@@ -284,7 +284,7 @@ export = {
     const stack = new TestFixture();
 
     // WHEN
-    new CreateUpdateStack(stack, 'CreateUpdate', {
+    new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
       stage: stack.deployStage,
       stackName: 'MyStack',
       templatePath: stack.source.artifact.subartifact('template.yaml'),
@@ -317,7 +317,7 @@ export = {
     const stack = new TestFixture();
 
     // WHEN
-    new CreateUpdateStack(stack, 'CreateUpdate', {
+    new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
       stage: stack.deployStage,
       stackName: 'MyStack',
       templatePath: stack.source.artifact.subartifact('template.yaml'),
