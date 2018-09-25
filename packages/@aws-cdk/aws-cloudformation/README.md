@@ -18,14 +18,14 @@ for more details about using CloudFormation in CodePipeline.
 
 This package defines the following actions:
 
-* **CreateUpdateStack** - Deploy a CloudFormation template directly from the pipeline. The indicated stack is created,
+* **PipelineCreateUpdateStackAction** - Deploy a CloudFormation template directly from the pipeline. The indicated stack is created,
   or updated if it already exists. If the stack is in a failure state, deployment will fail (unless `replaceOnFailure`
   is set to `true`, in which case it will be destroyed and recreated).
-* **DeleteStackOnly** - Delete the stack with the given name.
-* **CreateReplaceChangeSet** - Prepare a change set to be applied later. You will typically use change sets if you want
+* **PipelineDeleteStackAction** - Delete the stack with the given name.
+* **PipelineCreateReplaceChangeSetAction** - Prepare a change set to be applied later. You will typically use change sets if you want
   to manually verify the changes that are being staged, or if you want to separate the people (or system) preparing the
   changes from the people (or system) applying the changes.
-* **ExecuteChangeSet** - Execute a change set prepared previously.
+* **PipelineExecuteChangeSetAction** - Execute a change set prepared previously.
 
 ### Custom Resources
 
