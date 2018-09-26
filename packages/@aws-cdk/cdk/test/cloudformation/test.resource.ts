@@ -347,6 +347,181 @@ export = {
 
         test.deepEqual(resolve(r.ref), { Ref: 'MyResource' });
         test.done();
+    },
+
+    'overrides': {
+        'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+            const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+            // WHEN
+            r.addOverride('Type', 'YouCanEvenOverrideTheType');
+            r.addOverride('Metadata', { Key: 12 });
+            r.addOverride('Use.Dot.Notation', 'To create subtrees');
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'YouCanEvenOverrideTheType',
+                     Use: { Dot: { Notation: 'To create subtrees' } },
+                     Metadata: { Key: 12 } } } });
+
+            test.done();
+        },
+
+        'addOverride(p, null) will assign an "null" value'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+
+            const r = new Resource(stack, 'MyResource', {
+                type: 'AWS::Resource::Type',
+                properties: {
+                    Hello: {
+                        World: {
+                            Value1: 'Hello',
+                            Value2: 129,
+                        }
+                    }
+                }
+            });
+
+            // WHEN
+            r.addOverride('Properties.Hello.World.Value2', null);
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
+
+            test.done();
+        },
+
+        'addOverride(p, undefined) can be used to delete a value'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+
+            const r = new Resource(stack, 'MyResource', {
+                type: 'AWS::Resource::Type',
+                properties: {
+                    Hello: {
+                        World: {
+                            Value1: 'Hello',
+                            Value2: 129,
+                        }
+                    }
+                }
+            });
+
+            // WHEN
+            r.addOverride('Properties.Hello.World.Value2', undefined);
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+
+            test.done();
+        },
+
+        'addOverride(p, undefined) will not create empty trees'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+
+            const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+            // WHEN
+            r.addPropertyOverride('Tree.Exists', 42);
+            r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties: { Tree: { Exists: 42 } } } } });
+
+            test.done();
+        },
+
+        'addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar `undefined`'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+
+            const r = new Resource(stack, 'MyResource', {
+                type: 'AWS::Resource::Type',
+                properties: {
+                    Hello: {
+                        World: {
+                            Value1: 'Hello',
+                            Value2: 129,
+                            Value3: [ 'foo', 'bar' ]
+                        }
+                    }
+                }
+            });
+
+            // WHEN
+            r.addDeletionOverride('Properties.Hello.World.Value2');
+            r.addPropertyDeletionOverride('Hello.World.Value3');
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+
+            test.done();
+        },
+
+        'addOverride(p, v) will overwrite any non-objects along the path'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+            const r = new Resource(stack, 'MyResource', {
+                type: 'AWS::Resource::Type',
+                properties: {
+                    Hello: {
+                        World: 42
+                    }
+                }
+            });
+
+            // WHEN
+            r.addOverride('Properties.Override1', [ 'Hello', 123 ]);
+            r.addOverride('Properties.Override1.Override2', { Heyy: [ 1 ] });
+            r.addOverride('Properties.Hello.World.Foo.Bar', 42);
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties:
+                      { Hello: { World: { Foo: { Bar: 42 } } },
+                        Override1: {
+                            Override2: { Heyy: [ 1] }
+                        } } } } });
+            test.done();
+        },
+
+        'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
+            // GIVEN
+            const stack = new Stack();
+            const r = new Resource(stack, 'MyResource', {
+                type: 'AWS::Resource::Type',
+                properties: { Hello: { World: 42 } }
+            });
+
+            // WHEN
+            r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
+
+            // THEN
+            test.deepEqual(stack.toCloudFormation(), { Resources:
+                { MyResource:
+                   { Type: 'AWS::Resource::Type',
+                     Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
+            test.done();
+        }
     }
 };
 
