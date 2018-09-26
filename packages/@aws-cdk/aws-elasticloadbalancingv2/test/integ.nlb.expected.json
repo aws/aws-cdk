@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC"
+            "Value": "aws-cdk-elbv2-integ/VPC"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -41,7 +41,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -121,7 +121,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -158,7 +158,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -187,7 +187,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -201,7 +201,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -241,7 +241,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -255,7 +255,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-elbv2-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -289,7 +289,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-rds-integ/VPC"
+            "Value": "aws-cdk-elbv2-integ/VPC"
           }
         ]
       }
@@ -305,121 +305,55 @@
         }
       }
     },
-    "ParamsA8366201": {
-      "Type": "AWS::RDS::DBClusterParameterGroup",
+    "LB8A12904C": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "Description": "A nice parameter group",
-        "Family": "aurora5.6",
-        "Parameters": {
-          "character_set_database": "utf8mb4"
-        }
-      }
-    },
-    "DatabaseSubnets56F17B9A": {
-      "Type": "AWS::RDS::DBSubnetGroup",
-      "Properties": {
-        "DBSubnetGroupDescription": "Subnets for Database database",
-        "SubnetIds": [
+        "LoadBalancerAttributes": [],
+        "Scheme": "internet-facing",
+        "Subnets": [
           {
             "Ref": "VPCPublicSubnet1SubnetB4246D30"
           },
           {
             "Ref": "VPCPublicSubnet2Subnet74179F39"
           }
-        ]
+        ],
+        "Type": "network"
       }
     },
-    "DatabaseSecurityGroup5C91FDCB": {
-      "Type": "AWS::EC2::SecurityGroup",
+    "LBListener49E825B4": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "GroupDescription": "RDS security group",
-        "SecurityGroupEgress": [],
-        "SecurityGroupIngress": [],
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "LBListenerTargetGroupF04FCF6D"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "LB8A12904C"
+        },
+        "Port": 443,
+        "Protocol": "TCP"
+      }
+    },
+    "LBListenerTargetGroupF04FCF6D": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": 443,
+        "Protocol": "TCP",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
-        }
-      }
-    },
-    "DatabaseSecurityGroupfrom00000IndirectPortF24F2E03": {
-      "Type": "AWS::EC2::SecurityGroupIngress",
-      "Properties": {
-        "IpProtocol": "tcp",
-        "CidrIp": "0.0.0.0/0",
-        "Description": "Open to the world",
-        "FromPort": {
-          "Fn::GetAtt": [
-            "DatabaseB269D8BB",
-            "Endpoint.Port"
-          ]
         },
-        "GroupId": {
-          "Fn::GetAtt": [
-            "DatabaseSecurityGroup5C91FDCB",
-            "GroupId"
-          ]
-        },
-        "ToPort": {
-          "Fn::GetAtt": [
-            "DatabaseB269D8BB",
-            "Endpoint.Port"
-          ]
-        }
-      }
-    },
-    "DatabaseB269D8BB": {
-      "Type": "AWS::RDS::DBCluster",
-      "Properties": {
-        "Engine": "aurora",
-        "DBClusterParameterGroupName": {
-          "Ref": "ParamsA8366201"
-        },
-        "DBSubnetGroupName": {
-          "Ref": "DatabaseSubnets56F17B9A"
-        },
-        "MasterUsername": "admin",
-        "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
-        "StorageEncrypted": false,
-        "VpcSecurityGroupIds": [
+        "TargetGroupAttributes": [],
+        "Targets": [
           {
-            "Fn::GetAtt": [
-              "DatabaseSecurityGroup5C91FDCB",
-              "GroupId"
-            ]
+            "Id": "10.0.1.1"
           }
-        ]
-      }
-    },
-    "DatabaseInstance1844F58FD": {
-      "Type": "AWS::RDS::DBInstance",
-      "Properties": {
-        "DBInstanceClass": "db.t2.small",
-        "DBClusterIdentifier": {
-          "Ref": "DatabaseB269D8BB"
-        },
-        "DBSubnetGroupName": {
-          "Ref": "DatabaseSubnets56F17B9A"
-        },
-        "Engine": "aurora",
-        "PubliclyAccessible": true
-      },
-      "DependsOn": [
-        "VPCB9E5F0B4",
-        "VPCIGWB7E252D3",
-        "VPCVPCGW99B986DC"
-      ]
-    },
-    "DatabaseInstance2AA380DEE": {
-      "Type": "AWS::RDS::DBInstance",
-      "Properties": {
-        "DBInstanceClass": "db.t2.small",
-        "DBClusterIdentifier": {
-          "Ref": "DatabaseB269D8BB"
-        },
-        "DBSubnetGroupName": {
-          "Ref": "DatabaseSubnets56F17B9A"
-        },
-        "Engine": "aurora",
-        "PubliclyAccessible": true
+        ],
+        "TargetType": "ip"
       },
       "DependsOn": [
         "VPCB9E5F0B4",

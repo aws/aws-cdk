@@ -99,7 +99,6 @@ export = {
                   "LaunchConfigurationName": {
                     "Ref": "MyFleetLaunchConfig5D7F9801"
                   },
-                  "LoadBalancerNames": [],
                   "MaxSize": "1",
                   "MinSize": "1",
                   "VPCZoneIdentifier": [
@@ -229,7 +228,6 @@ export = {
                   LaunchConfigurationName: {
                     Ref: "MyFleetLaunchConfig5D7F9801"
                   },
-                  LoadBalancerNames: [],
                   MaxSize: "1",
                   MinSize: "1",
                   VPCZoneIdentifier: [

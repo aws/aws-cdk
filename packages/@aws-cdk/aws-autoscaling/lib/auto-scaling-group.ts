@@ -1,5 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
@@ -136,7 +137,8 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable {
+export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable,
+    elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
     /**
      * The type of OS instances of this fleet are running.
      */
@@ -157,6 +159,7 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
     private readonly securityGroup: ec2.SecurityGroupRef;
     private readonly securityGroups: ec2.SecurityGroupRef[] = [];
     private readonly loadBalancerNames: string[] = [];
+    private readonly targetGroupArns: string[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
         super(parent, name);
@@ -206,7 +209,8 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
             maxSize: maxSize.toString(),
             desiredCapacity: desiredCapacity.toString(),
             launchConfigurationName: launchConfig.ref,
-            loadBalancerNames: new cdk.Token(() => this.loadBalancerNames),
+            loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
+            targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
         };
 
         if (props.notificationsTopic) {
@@ -241,8 +245,28 @@ export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancer
         this.securityGroups.push(securityGroup);
     }
 
+    /**
+     * Attach to a classic load balancer
+     */
     public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
         this.loadBalancerNames.push(loadBalancer.loadBalancerName);
+    }
+
+    /**
+     * Attach to ELBv2 Application Target Group
+     */
+    public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        this.targetGroupArns.push(targetGroup.targetGroupArn);
+        targetGroup.registerConnectable(this);
+        return { targetType: elbv2.TargetType.SelfRegistering };
+    }
+
+    /**
+     * Attach to ELBv2 Application Target Group
+     */
+    public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        this.targetGroupArns.push(targetGroup.targetGroupArn);
+        return { targetType: elbv2.TargetType.SelfRegistering };
     }
 
     /**
