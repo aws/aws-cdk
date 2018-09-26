@@ -43,6 +43,7 @@ as shared class libraries.
    logical-ids
    environments
    apps
+   passing-in-data
    context
    assets
    applets
