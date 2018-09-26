@@ -41,17 +41,14 @@ export async function deployStack(stack: cxapi.SynthesizedStack,
     const cfn = await sdk.cloudFormation(stack.environment, Mode.ForWriting);
     const bodyParameter = await makeBodyParameter(stack, toolkitInfo);
 
-    if (!await stackExists(cfn, deployName)) {
-        await createEmptyStack(cfn, deployName, quiet);
-    } else {
-        debug('Stack named %s already exists, updating it!', deployName);
-    }
+    const update = await stackExists(cfn, deployName);
 
     const changeSetName = `CDK-${executionId}`;
-    debug('Attempting to create ChangeSet %s on stack %s', changeSetName, deployName);
+    debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
     const changeSet = await cfn.createChangeSet({
         StackName: deployName,
         ChangeSetName: changeSetName,
+        ChangeSetType: update ? 'UPDATE' : 'CREATE',
         Description: `CDK Changeset for execution ${executionId}`,
         TemplateBody: bodyParameter.TemplateBody,
         TemplateURL: bodyParameter.TemplateURL,
@@ -85,24 +82,6 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
         });
     }
     return result;
-}
-
-async function createEmptyStack(cfn: aws.CloudFormation, stackName: string, quiet: boolean): Promise<void> {
-    debug('Creating new empty stack named %s', stackName);
-
-    const template = {
-        Resources: {
-            WaitCondition: {
-                Type: 'AWS::CloudFormation::WaitConditionHandle'
-            }
-        }
-    };
-
-    const response = await cfn.createStack({ StackName: stackName, TemplateBody: JSON.stringify(template, null, 2) }).promise();
-    debug('CreateStack response: %j', response);
-    const monitor = quiet ? undefined : new StackActivityMonitor(cfn, stackName, undefined, 1).start();
-    await waitForStack(cfn, stackName);
-    if (monitor) { monitor.stop(); }
 }
 
 /**
