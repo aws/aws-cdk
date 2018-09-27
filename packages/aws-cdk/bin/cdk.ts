@@ -314,10 +314,10 @@ async function initCommandLine() {
    * should be supplied, where the templates will be written.
    */
   async function cliSynthesize(stackNames: string[],
-                 doInteractive: boolean,
-                 outputDir: string|undefined,
-                 json: boolean,
-                 trackVersions: boolean): Promise<void> {
+                               doInteractive: boolean,
+                               outputDir: string|undefined,
+                               json: boolean,
+                               trackVersions: boolean): Promise<void> {
     const stackIds = await selectStacks(...stackNames);
     renames.validateSelectedStacks(stackIds);
 

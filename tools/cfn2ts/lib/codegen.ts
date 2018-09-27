@@ -347,8 +347,8 @@ export default class CodeGenerator {
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
   private emitCloudFormationMapper(typeName: genspec.CodeName,
-                   propSpecs: { [name: string]: schema.Property },
-                   nameConversionTable: Dictionary<string>) {
+                                   propSpecs: { [name: string]: schema.Property },
+                                   nameConversionTable: Dictionary<string>) {
     const mapperName = genspec.cfnMapperName(typeName);
 
     this.code.line('/**');
@@ -418,8 +418,8 @@ export default class CodeGenerator {
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
   private emitValidator(typeName: genspec.CodeName,
-              propSpecs: { [name: string]: schema.Property },
-              nameConversionTable: Dictionary<string>) {
+                        propSpecs: { [name: string]: schema.Property },
+                        nameConversionTable: Dictionary<string>) {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');

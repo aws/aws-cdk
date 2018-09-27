@@ -3,8 +3,8 @@ import path = require('path');
 
 export class PackageVersion {
   constructor(public readonly name: string,
-        public readonly maxVersion: string,
-        public readonly allVersions: string[]) {}
+              public readonly maxVersion: string,
+              public readonly allVersions: string[]) {}
 
   public toString() {
     return `${this.name}@${this.maxVersion}`;

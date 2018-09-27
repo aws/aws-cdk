@@ -48,8 +48,8 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
  * @returns a map representing the differences between +oldValue+ and +newValue+.
  */
 export function diffKeyedEntities<T>(oldValue: { [key: string]: any } | undefined,
-                   newValue: { [key: string]: any } | undefined,
-                   elementDiff: (oldElement: any, newElement: any, key: string) => T): { [name: string]: T } {
+                                     newValue: { [key: string]: any } | undefined,
+                                     elementDiff: (oldElement: any, newElement: any, key: string) => T): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];

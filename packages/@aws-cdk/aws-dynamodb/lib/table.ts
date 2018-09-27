@@ -208,8 +208,8 @@ export class Table extends Construct {
   }
 
   private buildAutoScaling(scalingPolicyResource: applicationautoscaling.ScalingPolicyResource | undefined,
-               scalingType: string,
-               props: AutoScalingProps) {
+                           scalingType: string,
+                           props: AutoScalingProps) {
     if (scalingPolicyResource) {
       throw new Error(`${scalingType} Auto Scaling already defined for Table`);
     }
@@ -242,8 +242,8 @@ export class Table extends Construct {
   }
 
   private buildScalableTargetResourceProps(scalableDimension: string,
-                       scalingRole: Role,
-                       props: AutoScalingProps) {
+                                           scalingRole: Role,
+                                           props: AutoScalingProps) {
     return {
       maxCapacity: props.maxCapacity,
       minCapacity: props.minCapacity,
@@ -255,9 +255,9 @@ export class Table extends Construct {
   }
 
   private buildScalingPolicyResourceProps(predefinedMetricType: string,
-                      scalingParameter: string,
-                      scalableTargetResource: applicationautoscaling.ScalableTargetResource,
-                      props: AutoScalingProps) {
+                                          scalingParameter: string,
+                                          scalableTargetResource: applicationautoscaling.ScalableTargetResource,
+                                          props: AutoScalingProps) {
     const scalingPolicyName = props.scalingPolicyName || `${this.tableName}${scalingParameter}ScalingPolicy`;
     return {
       policyName: scalingPolicyName,

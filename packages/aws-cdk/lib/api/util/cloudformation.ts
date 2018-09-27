@@ -110,8 +110,8 @@ export async function waitForChangeSet(cfn: CloudFormation, stackName: string, c
  * @returns     the CloudFormation description of the stabilized stack
  */
 export async function waitForStack(cfn: CloudFormation,
-                   stackName: string,
-                   failOnDeletedStack: boolean = true): Promise<CloudFormation.Stack | undefined> {
+                                   stackName: string,
+                                   failOnDeletedStack: boolean = true): Promise<CloudFormation.Stack | undefined> {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const description = await describeStack(cfn, stackName);

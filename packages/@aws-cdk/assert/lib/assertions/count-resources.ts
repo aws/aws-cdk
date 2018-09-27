@@ -12,7 +12,7 @@ class CountResourcesAssertion extends Assertion<StackInspector> {
   private inspected: number = 0;
 
   constructor(private readonly resourceType: string,
-        private readonly count: number) {
+              private readonly count: number) {
     super();
   }
 

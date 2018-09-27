@@ -60,9 +60,9 @@ export class StackActivityMonitor {
   private lastPrintTime = Date.now();
 
   constructor(private readonly cfn: aws.CloudFormation,
-        private readonly stackName: string,
-        private readonly metadata?: cxapi.StackMetadata,
-        private readonly resourcesTotal?: number) {
+              private readonly stackName: string,
+              private readonly metadata?: cxapi.StackMetadata,
+              private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {
       // +1 because the stack also emits a "COMPLETE" event at the end, and that wasn't

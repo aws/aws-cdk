@@ -239,7 +239,7 @@ export class InstanceType {
  */
 export class InstanceTypePair extends InstanceType {
   constructor(public readonly instanceClass: InstanceClass,
-        public readonly instanceSize: InstanceSize) {
+              public readonly instanceSize: InstanceSize) {
     super(instanceClass + '.' + instanceSize);
   }
 }

@@ -24,10 +24,10 @@ export interface DeployStackResult {
 }
 
 export async function deployStack(stack: cxapi.SynthesizedStack,
-                  sdk: SDK,
-                  toolkitInfo?: ToolkitInfo,
-                  deployName?: string,
-                  quiet: boolean = false): Promise<DeployStackResult> {
+                                  sdk: SDK,
+                                  toolkitInfo?: ToolkitInfo,
+                                  deployName?: string,
+                                  quiet: boolean = false): Promise<DeployStackResult> {
   if (!stack.environment) {
     throw new Error(`The stack ${stack.name} does not have an environment`);
   }

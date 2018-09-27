@@ -218,8 +218,8 @@ export class ResourceDifference extends Difference<Resource> {
   public readonly otherChanges: { [key: string]: Difference<any> };
 
   constructor(oldValue: Resource | undefined,
-        newValue: Resource | undefined,
-        args: {
+              newValue: Resource | undefined,
+              args: {
           resourceType: string | { oldType: string, newType: string },
           propertyChanges: { [key: string]: Difference<any> },
           otherChanges: { [key: string]: Difference<any> }

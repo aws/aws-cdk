@@ -257,9 +257,9 @@ export abstract class BucketRef extends cdk.Construct {
   }
 
   private grant(identity: iam.IPrincipal | undefined,
-          bucketActions: string[],
-          keyActions: string[],
-          resourceArn: string, ...otherResourceArns: string[]) {
+                bucketActions: string[],
+                keyActions: string[],
+                resourceArn: string, ...otherResourceArns: string[]) {
 
     if (!identity) {
       return;

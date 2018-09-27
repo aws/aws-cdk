@@ -52,8 +52,8 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
  * Iterate over the list of missing context values and invoke the appropriate providers from the map to retrieve them
  */
 export async function provideContextValues(missingValues: { [key: string]: MissingContext },
-                       projectConfig: Settings,
-                       availableContextProviders: ProviderMap) {
+                                           projectConfig: Settings,
+                                           availableContextProviders: ProviderMap) {
   for (const key of Object.keys(missingValues)) {
     const query = missingValues[key];
 

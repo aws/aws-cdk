@@ -21,8 +21,8 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
   private readonly predicate: PropertyPredicate;
 
   constructor(private readonly resourceType: string,
-        private readonly properties?: any,
-        part?: ResourcePart) {
+              private readonly properties?: any,
+              part?: ResourcePart) {
     super();
 
     this.predicate = typeof properties === 'function' ? properties : makeSuperObjectPredicate(properties);

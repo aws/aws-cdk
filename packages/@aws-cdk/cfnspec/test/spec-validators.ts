@@ -27,9 +27,9 @@ function validatePropertyTypes(test: Test, specification: Specification) {
 }
 
 function validateProperties(typeName: string,
-              test: Test,
-              properties: { [name: string]: schema.Property },
-              specification: Specification) {
+                            test: Test,
+                            properties: { [name: string]: schema.Property },
+                            specification: Specification) {
   const requiredKeys = ['Documentation', 'Required', 'UpdateType'];
   for (const name of Object.keys(properties)) {
     const property = properties[name];
@@ -114,9 +114,9 @@ function validateProperties(typeName: string,
 }
 
 function validateAttributes(typeName: string,
-              test: Test,
-              attributes: { [name: string]: schema.Attribute },
-              specification: Specification) {
+                            test: Test,
+                            attributes: { [name: string]: schema.Attribute },
+                            specification: Specification) {
   for (const name of Object.keys(attributes)) {
     const attribute = attributes[name];
     test.ok(('Type' in attribute) !== ('PrimitiveType' in attribute));
