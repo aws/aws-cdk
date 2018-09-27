@@ -1,4 +1,4 @@
-import { Construct, Output, Token } from '@aws-cdk/cdk';
+import { Construct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
 import { cloudformation } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
@@ -107,6 +107,11 @@ export interface SecurityGroupProps {
     description?: string;
 
     /**
+     * The AWS resource tags to associate with the security group.
+     */
+    tags?: Tags;
+
+    /**
      * The VPC in which to create the security group.
      */
     vpc: VpcNetworkRef;
@@ -119,7 +124,7 @@ export interface SecurityGroupProps {
  * inline ingress and egress rule (which saves on the total number of resources inside
  * the template).
  */
-export class SecurityGroup extends SecurityGroupRef {
+export class SecurityGroup extends SecurityGroupRef implements ITaggable {
     /**
      * An attribute that represents the security group name.
      */
@@ -135,6 +140,11 @@ export class SecurityGroup extends SecurityGroupRef {
      */
     public readonly securityGroupId: string;
 
+    /**
+     * Manage tags for this construct and children
+     */
+    public readonly tags: TagManager;
+
     private readonly securityGroup: cloudformation.SecurityGroupResource;
     private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
     private readonly directEgressRules: cloudformation.SecurityGroupResource.EgressProperty[] = [];
@@ -142,6 +152,7 @@ export class SecurityGroup extends SecurityGroupRef {
     constructor(parent: Construct, name: string, props: SecurityGroupProps) {
         super(parent, name);
 
+        this.tags = new TagManager(this, { initialTags: props.tags});
         const groupDescription = props.description || this.path;
         this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
             groupName: props.groupName,
@@ -149,6 +160,7 @@ export class SecurityGroup extends SecurityGroupRef {
             securityGroupIngress: new Token(() => this.directIngressRules),
             securityGroupEgress: new Token(() => this.directEgressRules),
             vpcId: props.vpc.vpcId,
+            tags: this.tags,
         });
 
         this.securityGroupId = this.securityGroup.securityGroupId;
