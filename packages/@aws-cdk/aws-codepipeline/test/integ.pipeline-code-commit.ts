@@ -12,12 +12,12 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = pipeline.addStage('source');
 repo.addToPipeline(sourceStage, 'source', {
-    artifactName: 'SourceArtifact',
+  artifactName: 'SourceArtifact',
 });
 
 const buildStage = new codepipeline.Stage(stack, 'build', { pipeline });
 new codepipeline.ManualApprovalAction(stack, 'manual', {
-    stage: buildStage,
+  stage: buildStage,
 });
 
 process.stdout.write(app.run());

@@ -22,20 +22,20 @@ project.onStateChange('StateChange', topic);
 // The phase will be extracted from the "completed-phase" field of the event
 // details.
 project.onPhaseChange('PhaseChange').addTarget(topic, {
-    textTemplate: `Build phase changed to <phase>`,
-    pathsMap: {
-        phase: '$.detail.completed-phase'
-    }
+  textTemplate: `Build phase changed to <phase>`,
+  pathsMap: {
+    phase: '$.detail.completed-phase'
+  }
 });
 
 // trigger a build when a commit is pushed to the repo
 const onCommitRule = repo.onCommit('OnCommit', project, 'master');
 onCommitRule.addTarget(topic, {
-    textTemplate: 'A commit was pushed to the repository <repo> on branch <branch>',
-    pathsMap: {
-        branch: '$.detail.referenceName',
-        repo: '$.detail.repositoryName'
-    }
+  textTemplate: 'A commit was pushed to the repository <repo> on branch <branch>',
+  pathsMap: {
+    branch: '$.detail.referenceName',
+    repo: '$.detail.repositoryName'
+  }
 });
 
 process.stdout.write(app.run());

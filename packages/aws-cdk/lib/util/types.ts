@@ -16,7 +16,7 @@ export type Obj<T> = {[key: string]: T};
  * so we return false in those cases.
  */
 export function isObject(x: any): x is Obj<any> {
-    return x !== null && typeof x === 'object' && !isArray(x);
+  return x !== null && typeof x === 'object' && !isArray(x);
 }
 
 /**
@@ -28,5 +28,5 @@ export const isArray = Array.isArray;
  * Return the value of the first argument if it's not undefined, otherwise the default
  */
 export function ifDefined<T>(x: T | undefined, def: T): T {
-    return typeof x !== 'undefined' ? x : def;
+  return typeof x !== 'undefined' ? x : def;
 }

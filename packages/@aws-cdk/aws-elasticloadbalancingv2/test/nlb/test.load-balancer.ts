@@ -5,74 +5,74 @@ import { Test } from 'nodeunit';
 import elbv2 = require('../../lib');
 
 export = {
-    'Trivial construction: internet facing'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'Stack');
+  'Trivial construction: internet facing'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
 
-        // WHEN
-        new elbv2.NetworkLoadBalancer(stack, 'LB', {
-            vpc,
-            internetFacing: true,
-        });
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-            Scheme: "internet-facing",
-            Subnets: [
-                { Ref: "StackPublicSubnet1Subnet0AD81D22" },
-                { Ref: "StackPublicSubnet2Subnet3C7D2288" },
-                { Ref: "StackPublicSubnet3SubnetCC1055D9" }
-            ],
-            Type: "network"
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internet-facing",
+      Subnets: [
+        { Ref: "StackPublicSubnet1Subnet0AD81D22" },
+        { Ref: "StackPublicSubnet2Subnet3C7D2288" },
+        { Ref: "StackPublicSubnet3SubnetCC1055D9" }
+      ],
+      Type: "network"
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Trivial construction: internal'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'Stack');
+  'Trivial construction: internal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
 
-        // WHEN
-        new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-            Scheme: "internal",
-            Subnets: [
-                { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
-                { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
-                { Ref: "StackPrivateSubnet3Subnet28548F2E" }
-            ],
-            Type: "network"
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: "internal",
+      Subnets: [
+        { Ref: "StackPrivateSubnet1Subnet47AC2BC7" },
+        { Ref: "StackPrivateSubnet2SubnetA2F8EDD8" },
+        { Ref: "StackPrivateSubnet3Subnet28548F2E" }
+      ],
+      Type: "network"
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'Attributes'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const vpc = new ec2.VpcNetwork(stack, 'Stack');
+  'Attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
 
-        // WHEN
-        new elbv2.NetworkLoadBalancer(stack, 'LB', {
-            vpc,
-            crossZoneEnabled: true,
-        });
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      crossZoneEnabled: true,
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-            LoadBalancerAttributes: [
-                {
-                    Key: "load_balancing.cross_zone.enabled",
-                    Value: "true"
-                }
-            ]
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: [
+        {
+          Key: "load_balancing.cross_zone.enabled",
+          Value: "true"
+        }
+      ]
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 };
