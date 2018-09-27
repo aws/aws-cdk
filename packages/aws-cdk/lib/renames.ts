@@ -1,5 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
-import util = require('@aws-cdk/util');
+import util = require('./util');
 
 export type RenameTable = {[key: string]: string};
 

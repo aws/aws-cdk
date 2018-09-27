@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import rds = require('@aws-cdk/aws-rds');
 import cdk = require('@aws-cdk/cdk');
-import util = require('@aws-cdk/util');
 
 export interface SqlServerProps {
     instanceClass?: string;
@@ -34,22 +33,16 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
             dbSubnetGroupDescription: 'Database subnet group',
         });
 
-        const p = util.applyDefaults(props, {
-            instanceClass: 'db.m4.large',
-            engine: 'sqlserver-se',
-            engineVersion: '13.00.4422.0.v1',
-            licenseModel: 'license-included',
-            allocatedStorage: 200
-        });
+        const allocatedStorage = props.allocatedStorage !== undefined ? props.allocatedStorage : 200;
 
         new rds.cloudformation.DBInstanceResource(this, 'Resource', {
-            allocatedStorage: p.allocatedStorage.toString(),
-            dbInstanceClass: p.instanceClass,
-            engine: p.engine,
-            engineVersion: p.engineVersion,
-            licenseModel: p.licenseModel,
-            masterUsername: p.masterUsername,
-            masterUserPassword: p.masterPassword,
+            allocatedStorage: allocatedStorage.toString(),
+            dbInstanceClass: props.instanceClass || 'db.m4.large',
+            engine: props.engine || 'sqlserver-se',
+            engineVersion: props.engineVersion || '13.00.4422.0.v1',
+            licenseModel: props.licenseModel || 'license-included',
+            masterUsername: props.masterUsername,
+            masterUserPassword: props.masterPassword,
             port: SqlServer.PORT.toString(),
             dbSubnetGroupName: subnetGroup.ref,
             vpcSecurityGroups: [ securityGroup.securityGroupId ]

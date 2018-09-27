@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { deepClone, deepGet, deepMerge, deepSet } from '../lib';
+import { deepClone, deepGet, deepMerge, deepSet } from '../../lib/util';
 
 export = {
     'deepSet can set deeply'(test: Test) {
