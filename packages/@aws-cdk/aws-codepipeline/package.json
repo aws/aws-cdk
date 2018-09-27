@@ -75,11 +75,7 @@
     "@aws-cdk/aws-events": "^0.9.2",
     "@aws-cdk/aws-iam": "^0.9.2",
     "@aws-cdk/aws-s3": "^0.9.2",
-    "@aws-cdk/cdk": "^0.9.2",
-    "@aws-cdk/util": "^0.9.2"
+    "@aws-cdk/cdk": "^0.9.2"
   },
-  "bundledDependencies": [
-    "@aws-cdk/util"
-  ],
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

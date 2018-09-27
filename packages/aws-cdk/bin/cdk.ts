@@ -2,7 +2,6 @@
 import 'source-map-support/register';
 
 import cxapi = require('@aws-cdk/cx-api');
-import cdkUtil = require('@aws-cdk/util');
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
@@ -10,6 +9,7 @@ import minimatch = require('minimatch');
 import util = require('util');
 import YAML = require('yamljs');
 import yargs = require('yargs');
+import cdkUtil = require('../lib/util');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import contextplugins = require('../lib/contextplugins');

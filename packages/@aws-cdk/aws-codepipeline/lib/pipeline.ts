@@ -3,7 +3,6 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import util = require('@aws-cdk/util');
 import { cloudformation } from './codepipeline.generated';
 import { CommonStageProps, Stage, StagePlacement } from './stage';
 
@@ -204,10 +203,10 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
      * @override
      */
     public validate(): string[] {
-        return util.flatten([
-            this.validateHasStages(),
-            this.validateSourceActionLocations()
-        ]);
+        return [
+            ...this.validateHasStages(),
+            ...this.validateSourceActionLocations()
+        ];
     }
 
     /**
@@ -292,12 +291,16 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     }
 
     private validateSourceActionLocations(): string[] {
-        return util.flatMap(this.stages, (stage, i) => {
-            const onlySourceActionsPermitted = i === 0;
-            return util.flatMap(stage.actions, (action, _) =>
-                actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id)
-            );
-        });
+        const errors = new Array<string>();
+        let firstStage = true;
+        for (const stage of this.stages) {
+            const onlySourceActionsPermitted = firstStage;
+            for (const action of stage.actions) {
+                errors.push(...actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id));
+            }
+            firstStage = false;
+        }
+        return errors;
     }
 
     private validateHasStages(): string[] {

@@ -1,8 +1,8 @@
-import util = require('@aws-cdk/util');
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
 import { warning } from './logging';
+import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
