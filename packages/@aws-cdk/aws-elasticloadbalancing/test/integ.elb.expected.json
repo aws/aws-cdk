@@ -185,6 +185,7 @@
             "ToPort": 80
           }
         ],
+        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }

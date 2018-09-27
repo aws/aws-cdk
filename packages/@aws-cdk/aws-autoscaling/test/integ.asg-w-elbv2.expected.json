@@ -319,6 +319,12 @@
           }
         ],
         "SecurityGroupIngress": [],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/Fleet"
+          }
+        ],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -405,6 +411,13 @@
         "LaunchConfigurationName": {
           "Ref": "FleetLaunchConfig59F79D36"
         },
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "aws-cdk-ec2-integ/Fleet"
+          }
+        ],
         "TargetGroupARNs": [
           {
             "Ref": "LBListenerTargetGroupF04FCF6D"
@@ -463,6 +476,7 @@
             "ToPort": 80
           }
         ],
+        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }

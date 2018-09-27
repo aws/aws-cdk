@@ -453,6 +453,12 @@
           }
         ],
         "SecurityGroupIngress": [],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-cdk-ec2-integ/Fleet"
+          }
+        ],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
@@ -544,6 +550,13 @@
             "Ref": "LB8A12904C"
           }
         ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "PropagateAtLaunch": true,
+            "Value": "aws-cdk-ec2-integ/Fleet"
+          }
+        ],
         "VPCZoneIdentifier": [
           {
             "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
@@ -576,6 +589,7 @@
             "ToPort": 80
           }
         ],
+        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
