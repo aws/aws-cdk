@@ -128,6 +128,10 @@ export = {
           cidrMask: 24,
           name: 'ingress',
           subnetType: SubnetType.Public,
+          tags: {
+            type: 'Public',
+            init: 'No',
+          },
         },
         {
           cidrMask: 24,
@@ -155,6 +159,12 @@ export = {
         CidrBlock: `10.0.6.${i * 16}/28`
         }));
       }
+      expect(stack).to(haveResource("AWS::EC2::Subnet", hasTags(
+        [
+          { Key: 'type', Value: 'Public'},
+          { Key: 'init', Value: 'No'},
+        ],
+      )));
       test.done();
     },
     "with custom subents and natGateways = 2 there should be only two NATGW"(test: Test) {
@@ -163,21 +173,21 @@ export = {
         cidr: '10.0.0.0/21',
         natGateways: 2,
         subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'ingress',
-          subnetType: SubnetType.Public,
-        },
-        {
-          cidrMask: 24,
-          name: 'application',
-          subnetType: SubnetType.Private,
-        },
-        {
-          cidrMask: 28,
-          name: 'rds',
-          subnetType: SubnetType.Isolated,
-        }
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Public,
+          },
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.Private,
+          },
+          {
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.Isolated,
+          }
         ],
         maxAZs: 3
       });
@@ -186,12 +196,12 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Subnet", 9));
       for (let i = 0; i < 6; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.${i}.0/24`
+          CidrBlock: `10.0.${i}.0/24`
         }));
       }
       for (let i = 0; i < 3; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.6.${i * 16}/28`
+          CidrBlock: `10.0.6.${i * 16}/28`
         }));
       }
       test.done();
@@ -230,7 +240,7 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Route", 4));
       for (let i = 0; i < 4; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.${i * 64}.0/18`
+          CidrBlock: `10.0.${i * 64}.0/18`
         }));
       }
       expect(stack).to(haveResource("AWS::EC2::Route", {

@@ -382,6 +382,7 @@
           }
         ],
         "SecurityGroupIngress": [],
+        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
