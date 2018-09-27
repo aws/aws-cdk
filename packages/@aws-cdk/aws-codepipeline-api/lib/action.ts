@@ -101,11 +101,11 @@ export interface ActionProps extends CommonActionProps {
  * {@link codebuild.PipelineBuildAction}.
  */
 export abstract class Action extends cdk.Construct {
-   /**
-  * The category of the action.
-  * The category defines which action type the owner
-  * (the entity that performs the action) performs.
-  */
+  /**
+   * The category of the action.
+   * The category defines which action type the owner
+   * (the entity that performs the action) performs.
+   */
   public readonly category: ActionCategory;
 
   /**

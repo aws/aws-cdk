@@ -543,7 +543,7 @@ export class Project extends ProjectRef {
   }
 
   private renderEnvironment(env: BuildEnvironment = {},
-                projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
+                            projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
       cloudformation.ProjectResource.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
