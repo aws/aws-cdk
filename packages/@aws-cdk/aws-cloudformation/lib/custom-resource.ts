@@ -62,8 +62,8 @@ export class CustomResource extends cloudformation.CustomResource {
   /**
    * Override renderProperties to mix in the user-defined properties
    */
-  protected renderProperties(): {[key: string]: any}  {
-    const props = super.renderProperties();
+  protected renderProperties(properties: any): {[key: string]: any}  {
+    const props = super.renderProperties(properties);
     return Object.assign(props, uppercaseProperties(this.userProperties || {}));
   }
 

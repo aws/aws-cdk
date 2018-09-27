@@ -322,8 +322,12 @@ export default class CodeGenerator {
    * Since resolve() deep-resolves, we only need to do this once.
    */
   private emitCloudFormationPropertiesOverride(propsType: genspec.CodeName) {
-    this.code.openBlock('protected renderProperties(): { [key: string]: any } ');
-    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(${CORE}.resolve(this.properties));`);
+    this.code.openBlock(`public get propertyOverrides(): ${propsType.className}`);
+    this.code.line(`return this.untypedPropertyOverrides;`);
+    this.code.closeBlock();
+
+    this.code.openBlock('protected renderProperties(properties: any): { [key: string]: any } ');
+    this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(${CORE}.resolve(properties));`);
     this.code.closeBlock();
   }
 
