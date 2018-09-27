@@ -523,7 +523,7 @@ export = {
       test.done();
     },
 
-    untypedPropertyOverrides: {
+    'untypedPropertyOverrides': {
 
       'can be used by derived classes to specify overrides before render()'(test: Test) {
         const stack = new Stack();
