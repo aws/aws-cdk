@@ -48,9 +48,28 @@ export class Resource extends Referenceable {
   public readonly resourceType: string;
 
   /**
-   * AWS resource properties
+   * AWS resource property overrides.
+   *
+   * During synthesis, the method "renderProperties(this.overrides)" is called
+   * with this object, and merged on top of the output of
+   * "renderProperties(this.properties)".
+   *
+   * Derived classes should expose a strongly-typed version of this object as
+   * a public property called `propertyOverrides`.
+   */
+  protected readonly untypedPropertyOverrides: any = { };
+
+  /**
+   * AWS resource properties.
+   *
+   * This object is rendered via a call to "renderProperties(this.properties)".
    */
   protected readonly properties: any;
+
+  /**
+   * An object to be merged on top of the entire resource definition.
+   */
+  private readonly rawOverrides: any = { };
 
   private dependsOn = new Array<IDependable>();
 
@@ -94,22 +113,84 @@ export class Resource extends Referenceable {
   }
 
   /**
+   * Adds an override to the synthesized CloudFormation resource. To add a
+   * property override, either use `addPropertyOverride` or prefix `path` with
+   * "Properties." (i.e. `Properties.TopicName`).
+   *
+   * @param path  The path of the property, you can use dot notation to
+   *        override values in complex types. Any intermdediate keys
+   *        will be created as needed.
+   * @param value The value. Could be primitive or complex.
+   */
+  public addOverride(path: string, value: any) {
+    const parts = path.split('.');
+    let curr: any = this.rawOverrides;
+
+    while (parts.length > 1) {
+      const key = parts.shift()!;
+
+      // if we can't recurse further or the previous value is not an
+      // object overwrite it with an object.
+      const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
+      if (!isObject) {
+        curr[key] = { };
+      }
+
+      curr = curr[key];
+    }
+
+    const lastKey = parts.shift()!;
+    curr[lastKey] = value;
+  }
+
+  /**
+   * Syntactic sugar for `addOverride(path, undefined)`.
+   * @param path The path of the value to delete
+   */
+  public addDeletionOverride(path: string) {
+    this.addOverride(path, undefined);
+  }
+
+  /**
+   * Adds an override to a resource property.
+   *
+   * Syntactic sugar for `addOverride("Properties.<...>", value)`.
+   *
+   * @param propertyPath The path of the property
+   * @param value The value
+   */
+  public addPropertyOverride(propertyPath: string, value: any) {
+    this.addOverride(`Properties.${propertyPath}`, value);
+  }
+
+  /**
+   * Adds an override that deletes the value of a property from the resource definition.
+   * @param propertyPath The path to the property.
+   */
+  public addPropertyDeletionOverride(propertyPath: string) {
+    this.addPropertyOverride(propertyPath, undefined);
+  }
+
+  /**
    * Emits CloudFormation for this resource.
    */
   public toCloudFormation(): object {
     try {
+      // merge property overrides onto properties and then render (and validate).
+      const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
+
       return {
         Resources: {
-          [this.logicalId]: {
+          [this.logicalId]: deepMerge({
             Type: this.resourceType,
-            Properties: ignoreEmpty(this.renderProperties()),
+            Properties: ignoreEmpty(properties),
             DependsOn: ignoreEmpty(this.renderDependsOn()),
             CreationPolicy:  capitalizePropertyNames(this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this.options.updatePolicy),
             DeletionPolicy: capitalizePropertyNames(this.options.deletionPolicy),
             Metadata: ignoreEmpty(this.options.metadata),
             Condition: this.options.condition && this.options.condition.logicalId
-          }
+          }, this.rawOverrides)
         }
       };
     } catch (e) {
@@ -124,9 +205,8 @@ export class Resource extends Referenceable {
     }
   }
 
-  protected renderProperties(): { [key: string]: any } {
-    // FIXME: default implementation is not great, it should throw, but it avoids breaking all unit tests for now.
-    return this.properties;
+  protected renderProperties(properties: any): { [key: string]: any } {
+    return properties;
   }
 
   private renderDependsOn() {
@@ -191,4 +271,41 @@ export interface ResourceOptions {
    * using construct.addMetadata(), but would not appear in the CloudFormation template automatically.
    */
   metadata?: { [key: string]: any };
+}
+
+/**
+ * Merges `source` into `target`, overriding any existing values.
+ * `null`s will cause a value to be deleted.
+ */
+export function deepMerge(target: any, source: any) {
+  if (typeof(source) !== 'object' || typeof(target) !== 'object') {
+    throw new Error(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+  }
+
+  for (const key of Object.keys(source)) {
+    const value = source[key];
+    if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
+      // if the value at the target is not an object, override it with an
+      // object so we can continue the recursion
+      if (typeof(target[key]) !== 'object') {
+        target[key] = { };
+      }
+
+      deepMerge(target[key], value);
+
+      // if the result of the merge is an empty object, it's because the
+      // eventual value we assigned is `undefined`, and there are no
+      // sibling concrete values alongside, so we can delete this tree.
+      const output = target[key];
+      if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+        delete target[key];
+      }
+    } else if (value === undefined) {
+      delete target[key];
+    } else {
+      target[key] = value;
+    }
+  }
+
+  return target;
 }
