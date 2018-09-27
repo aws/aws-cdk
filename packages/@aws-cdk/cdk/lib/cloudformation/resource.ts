@@ -176,15 +176,14 @@ export class Resource extends Referenceable {
    */
   public toCloudFormation(): object {
     try {
-
-      const properties = ignoreEmpty(this.renderProperties(this.properties)) || { };
-      const overrides = ignoreEmpty(this.renderProperties(this.untypedPropertyOverrides)) || { };
+      // merge property overrides onto properties and then render (and validate).
+      const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));
 
       return {
         Resources: {
           [this.logicalId]: deepMerge({
             Type: this.resourceType,
-            Properties: ignoreEmpty(deepMerge(properties, overrides)),
+            Properties: ignoreEmpty(properties),
             DependsOn: ignoreEmpty(this.renderDependsOn()),
             CreationPolicy:  capitalizePropertyNames(this.options.creationPolicy),
             UpdatePolicy: capitalizePropertyNames(this.options.updatePolicy),

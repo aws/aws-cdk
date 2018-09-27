@@ -521,6 +521,54 @@ export = {
            { Type: 'AWS::Resource::Type',
            Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
       test.done();
+    },
+
+    untypedPropertyOverrides: {
+
+      'can be used by derived classes to specify overrides before render()'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource', {
+          prop1: 'foo'
+        });
+
+        r.setProperty('prop2', 'bar');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
+        test.done();
+      },
+
+      '"properties" is undefined'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource');
+
+        r.setProperty('prop3', 'zoo');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP3: 'zoo' } } } });
+        test.done();
+      },
+
+      '"properties" is empty'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource', { });
+
+        r.setProperty('prop3', 'zoo');
+        r.setProperty('prop2', 'hey');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
+        test.done();
+      }
     }
   }
 };
@@ -547,4 +595,22 @@ class Counter extends Resource {
 
 function withoutHash(logId: string) {
   return logId.substr(0, logId.length - 8);
+}
+
+class CustomizableResource extends Resource {
+  constructor(parent: Construct, id: string, props?: any) {
+    super(parent, id, { type: 'MyResourceType', properties: props });
+  }
+
+  public setProperty(key: string, value: any) {
+    this.untypedPropertyOverrides[key] = value;
+  }
+
+  public renderProperties(properties: any) {
+    return {
+      PROP1: properties.prop1,
+      PROP2: properties.prop2,
+      PROP3: properties.prop3
+    };
+  }
 }
