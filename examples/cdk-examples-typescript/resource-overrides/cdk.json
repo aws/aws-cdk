@@ -1,0 +1,22 @@
+{
+  "app": "node index",
+  "context": {
+    "availability-zones:993655754359:us-east-1": [
+      "us-east-1a",
+      "us-east-1b",
+      "us-east-1c",
+      "us-east-1d",
+      "us-east-1e",
+      "us-east-1f"
+    ],
+    "availability-zones:585695036304:us-east-1": [
+      "us-east-1a",
+      "us-east-1b",
+      "us-east-1c",
+      "us-east-1d",
+      "us-east-1e",
+      "us-east-1f"
+    ],
+    "ssm:585695036304:us-east-1:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-0ff8a91507f77f867"
+  }
+}

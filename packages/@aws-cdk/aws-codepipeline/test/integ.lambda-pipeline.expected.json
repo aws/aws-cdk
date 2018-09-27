@@ -267,7 +267,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "\n        exports.handler = function () {\n            console.log(\"Hello, world!\");\n        };\n    "
+          "ZipFile": "\n    exports.handler = function () {\n      console.log(\"Hello, world!\");\n    };\n  "
         },
         "Handler": "index.handler",
         "Role": {

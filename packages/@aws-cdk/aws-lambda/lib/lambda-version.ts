@@ -6,26 +6,26 @@ import { cloudformation } from './lambda.generated';
  * Properties for a new Lambda version
  */
 export interface FunctionVersionProps {
-    /**
-     * SHA256 of the version of the Lambda source code
-     *
-     * Specify to validate that you're deploying the right version.
-     *
-     * @default No validation is performed
-     */
-    codeSha256?: string;
+  /**
+   * SHA256 of the version of the Lambda source code
+   *
+   * Specify to validate that you're deploying the right version.
+   *
+   * @default No validation is performed
+   */
+  codeSha256?: string;
 
-    /**
-     * Description of the version
-     *
-     * @default Description of the Lambda
-     */
-    description?: string;
+  /**
+   * Description of the version
+   *
+   * @default Description of the Lambda
+   */
+  description?: string;
 
-    /**
-     * Function to get the value of
-     */
-    lambda: FunctionRef;
+  /**
+   * Function to get the value of
+   */
+  lambda: FunctionRef;
 }
 
 /**
@@ -45,26 +45,26 @@ export interface FunctionVersionProps {
  * creating the `Version.
  */
 export class FunctionVersion extends Construct {
-    /**
-     * The most recently deployed version of this function.
-     */
-    public readonly functionVersion: string;
+  /**
+   * The most recently deployed version of this function.
+   */
+  public readonly functionVersion: string;
 
-    /**
-     * Lambda object this version is associated with
-     */
-    public readonly lambda: FunctionRef;
+  /**
+   * Lambda object this version is associated with
+   */
+  public readonly lambda: FunctionRef;
 
-    constructor(parent: Construct, name: string, props: FunctionVersionProps) {
-        super(parent, name);
+  constructor(parent: Construct, name: string, props: FunctionVersionProps) {
+    super(parent, name);
 
-        const version = new cloudformation.VersionResource(this, 'Resource', {
-            codeSha256: props.codeSha256,
-            description: props.description,
-            functionName: props.lambda.functionName
-        });
+    const version = new cloudformation.VersionResource(this, 'Resource', {
+      codeSha256: props.codeSha256,
+      description: props.description,
+      functionName: props.lambda.functionName
+    });
 
-        this.functionVersion = version.version;
-        this.lambda = props.lambda;
-    }
+    this.functionVersion = version.version;
+    this.lambda = props.lambda;
+  }
 }
