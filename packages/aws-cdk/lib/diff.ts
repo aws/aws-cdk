@@ -12,11 +12,11 @@ import { print } from './logging';
  * @returns the count of differences that were rendered.
  */
 export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack): number {
-    const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
-    if (!diff.isEmpty) {
-        cfnDiff.formatDifferences(process.stderr, diff);
-    } else {
-        print(colors.green('There were no differences'));
-    }
-    return diff.count;
+  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  if (!diff.isEmpty) {
+    cfnDiff.formatDifferences(process.stderr, diff);
+  } else {
+    print(colors.green('There were no differences'));
+  }
+  return diff.count;
 }

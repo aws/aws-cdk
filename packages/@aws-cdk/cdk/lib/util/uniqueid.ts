@@ -29,27 +29,27 @@ const MAX_HUMAN_LEN = 240; // max ID len is 255
  * @returns a unique alpha-numeric identifier with a maximum length of 255
  */
 export function makeUniqueId(components: string[]) {
-    components = components.filter(x => x !== HIDDEN_ID);
+  components = components.filter(x => x !== HIDDEN_ID);
 
-    if (components.length === 0) {
-        throw new Error('Unable to calculate a unique id for an empty set of components');
-    }
+  if (components.length === 0) {
+    throw new Error('Unable to calculate a unique id for an empty set of components');
+  }
 
-    // top-level resources will simply use the `name` as-is in order to support
-    // transparent migration of cloudformation templates to the CDK without the
-    // need to rename all resources.
-    if (components.length === 1) {
-        return components[0];
-    }
+  // top-level resources will simply use the `name` as-is in order to support
+  // transparent migration of cloudformation templates to the CDK without the
+  // need to rename all resources.
+  if (components.length === 1) {
+    return components[0];
+  }
 
-    const hash = pathHash(components);
-    const human = removeDupes(components)
-        .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
-        .map(removeNonAlphanumeric)
-        .join('')
-        .slice(0, MAX_HUMAN_LEN);
+  const hash = pathHash(components);
+  const human = removeDupes(components)
+    .filter(x => x !== HIDDEN_FROM_HUMAN_ID)
+    .map(removeNonAlphanumeric)
+    .join('')
+    .slice(0, MAX_HUMAN_LEN);
 
-    return human + hash;
+  return human + hash;
 }
 
 /**
@@ -58,15 +58,15 @@ export function makeUniqueId(components: string[]) {
  * The hash is limited in size.
  */
 function pathHash(path: string[]): string {
-    const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest("hex");
-    return md5.slice(0, HASH_LEN).toUpperCase();
+  const md5 = crypto.createHash('md5').update(path.join(PATH_SEP)).digest("hex");
+  return md5.slice(0, HASH_LEN).toUpperCase();
 }
 
 /**
  * Removes all non-alphanumeric characters in a string.
  */
 function removeNonAlphanumeric(s: string) {
-    return s.replace(/[^A-Za-z0-9]/g, '');
+  return s.replace(/[^A-Za-z0-9]/g, '');
 }
 
 /**
@@ -76,13 +76,13 @@ function removeNonAlphanumeric(s: string) {
  * current component.
  */
 function removeDupes(path: string[]): string[] {
-    const ret = new Array<string>();
+  const ret = new Array<string>();
 
-    for (const component of path) {
-        if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
-            ret.push(component);
-        }
+  for (const component of path) {
+    if (ret.length === 0 || !ret[ret.length - 1].endsWith(component)) {
+      ret.push(component);
     }
+  }
 
-    return ret;
+  return ret;
 }
