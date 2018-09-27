@@ -2,7 +2,6 @@ import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { QueuePolicy } from './policy';
-import { QueueArn } from './sqs.generated';
 
 /**
  * Reference to a new or existing Amazon SQS queue
@@ -18,12 +17,12 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
     /**
      * The ARN of this queue
      */
-    public abstract readonly queueArn: QueueArn;
+    public abstract readonly queueArn: string;
 
     /**
      * The URL of this queue
      */
-    public abstract readonly queueUrl: QueueUrl;
+    public abstract readonly queueUrl: string;
 
     /**
      * If this queue is server-side encrypted, this is the KMS encryption key.
@@ -49,10 +48,10 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
      */
     public export(): QueueRefProps {
         return {
-            queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue(),
-            queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue(),
+            queueArn: new cdk.Output(this, 'QueueArn', { value: this.queueArn }).makeImportValue().toString(),
+            queueUrl: new cdk.Output(this, 'QueueUrl', { value: this.queueUrl }).makeImportValue().toString(),
             keyArn: this.encryptionMasterKey
-                ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue()
+                ? new cdk.Output(this, 'KeyArn', { value: this.encryptionMasterKey.keyArn }).makeImportValue().toString()
                 : undefined
         };
     }
@@ -80,7 +79,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
      * @param bucketArn The ARN of the notifying bucket.
      * @param bucketId A unique ID for the notifying bucket.
      */
-    public asBucketNotificationDestination(bucketArn: cdk.Arn, bucketId: string): s3n.BucketNotificationDestinationProps {
+    public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
         if (!this.notifyingBuckets.has(bucketId)) {
             this.addToResourcePolicy(new cdk.PolicyStatement()
                 .addServicePrincipal('s3.amazonaws.com')
@@ -98,7 +97,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
                     .addServicePrincipal('s3.amazonaws.com')
                     .addAction('kms:GenerateDataKey')
                     .addAction('kms:Decrypt')
-                    .addResource('*'), /* allowNoOp */ false);
+                    .addAllResources(), /* allowNoOp */ false);
             }
 
             this.notifyingBuckets.add(bucketId);
@@ -119,25 +118,25 @@ export interface QueueRefProps {
     /**
      * The ARN of the queue.
      */
-    queueArn: QueueArn;
+    queueArn: string;
 
     /**
      * The URL of the queue.
      */
-    queueUrl: QueueUrl;
+    queueUrl: string;
 
     /**
      * KMS encryption key, if this queue is server-side encrypted by a KMS key.
      */
-    keyArn?: kms.KeyArn;
+    keyArn?: string;
 }
 
 /**
  * A queue that has been imported
  */
 class ImportedQueue extends QueueRef {
-    public readonly queueArn: QueueArn;
-    public readonly queueUrl: QueueUrl;
+    public readonly queueArn: string;
+    public readonly queueUrl: string;
     public readonly encryptionMasterKey?: kms.EncryptionKeyRef;
 
     protected readonly autoCreatePolicy = false;
@@ -153,10 +152,4 @@ class ImportedQueue extends QueueRef {
             });
         }
     }
-}
-
-/**
- * URL of a queue
- */
-export class QueueUrl extends cdk.Token {
 }

@@ -20,7 +20,7 @@ export = {
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
         const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
-        const source = new codecommit.PipelineSource(stack, 'source', {
+        const source = new codecommit.PipelineSourceAction(stack, 'source', {
             stage: sourceStage,
             artifactName: 'SourceArtifact',
             repository,
@@ -49,7 +49,7 @@ export = {
         const p = new codepipeline.Pipeline(stack, 'P');
 
         const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
-        new codepipeline.GitHubSource(stack, 'GH', {
+        new codepipeline.GitHubSourceAction(stack, 'GH', {
             stage: s1,
             artifactName: 'A',
             branch: 'branch',
@@ -137,7 +137,7 @@ export = {
         const pipeline = new codepipeline.Pipeline(stack, 'PL');
 
         const stage1 = new codepipeline.Stage(stack, 'S1', { pipeline });
-        new s3.PipelineSource(stack, 'A1', {
+        new s3.PipelineSourceAction(stack, 'A1', {
           stage: stage1,
           artifactName: 'Artifact',
           bucket: new s3.Bucket(stack, 'Bucket'),
@@ -262,6 +262,8 @@ export = {
         });
 
         const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+
+        // first stage must contain a Source action so we can't use it to test Lambda
         const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
         new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
             stage,
@@ -269,7 +271,7 @@ export = {
             userParameters: 'foo-bar/42'
         });
 
-        expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+        expect(stack, /* skip validation */ true).to(haveResource('AWS::CodePipeline::Pipeline', {
             "ArtifactStore": {
               "Location": {
                 "Ref": "PipelineArtifactsBucket22248F97"
@@ -309,7 +311,7 @@ export = {
             ]
         }));
 
-        expect(stack).to(haveResource('AWS::IAM::Policy', {
+        expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
             "PolicyDocument": {
               "Statement": [
                 {
@@ -338,7 +340,7 @@ export = {
         'does not poll for changes'(test: Test) {
             const stack = new cdk.Stack();
 
-            const result = new codecommit.PipelineSource(stack, 'stage', {
+            const result = new codecommit.PipelineSourceAction(stack, 'stage', {
                 stage: stageForTesting(stack),
                 artifactName: 'SomeArtifact',
                 repository: repositoryForTesting(stack),
@@ -351,7 +353,7 @@ export = {
         'polls for changes'(test: Test) {
             const stack = new cdk.Stack();
 
-            const result = new codecommit.PipelineSource(stack, 'stage', {
+            const result = new codecommit.PipelineSourceAction(stack, 'stage', {
                 stage: stageForTesting(stack),
                 artifactName: 'SomeArtifact',
                 repository: repositoryForTesting(stack),

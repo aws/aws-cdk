@@ -1,5 +1,4 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
@@ -82,7 +81,7 @@ export class Resource extends Referenceable {
      * in case there is no generated attribute.
      * @param attributeName The name of the attribute.
      */
-    public getAtt(attributeName: string): Token {
+    public getAtt(attributeName: string) {
         return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
     }
 

@@ -1,4 +1,4 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { EncryptionKeyRef } from './key';
 import { cloudformation } from './kms.generated';
 
@@ -34,7 +34,7 @@ export class EncryptionKeyAlias extends Construct {
     /**
      * The name of the alias.
      */
-    public aliasName: AliasName;
+    public aliasName: string;
 
     constructor(parent: Construct, name: string, props: EncryptionKeyAliasProps) {
         super(parent, name);
@@ -56,8 +56,6 @@ export class EncryptionKeyAlias extends Construct {
             targetKeyId: props.key.keyArn
         });
 
-        this.aliasName = resource.ref;
+        this.aliasName = resource.aliasName;
     }
 }
-
-export class AliasName extends Token { }

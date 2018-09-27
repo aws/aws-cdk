@@ -1,5 +1,4 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import kms = require('@aws-cdk/aws-kms');
 import rds = require('@aws-cdk/aws-rds');
 import cdk = require('@aws-cdk/cdk');
 
@@ -61,7 +60,7 @@ export interface NeptuneDatabaseProps {
     /**
      * ARN of KMS key if you want to enable storage encryption
      */
-    kmsKeyArn?: kms.KeyArn;
+    kmsKeyArn?: string;
 
     /**
      * A daily time range in 24-hours UTC format in which backups preferably execute.
@@ -74,7 +73,12 @@ export interface NeptuneDatabaseProps {
      */
     preferredMaintenanceWindow?: string;
 
-    // Additional parameters to the database engine go here
+    /**
+     * Parameter group with Neptune settings
+     *
+     * @default No parameter group
+     */
+    parameterGroup?: rds.ClusterParameterGroupRef;
 }
 
 /**
@@ -86,12 +90,12 @@ export class NeptuneDatabase extends cdk.Construct implements ec2.IConnectable {
     /**
      * Identifier of the cluster
      */
-    public readonly clusterIdentifier: rds.ClusterIdentifier;
+    public readonly clusterIdentifier: string;
 
     /**
      * Identifiers of the replicas
      */
-    public readonly instanceIdentifiers: rds.InstanceIdentifier[] = [];
+    public readonly instanceIdentifiers: string[] = [];
 
     /**
      * The endpoint to use for read/write operations
@@ -125,8 +129,8 @@ export class NeptuneDatabase extends cdk.Construct implements ec2.IConnectable {
             instanceIdentifierBase: props.instanceIdentifierBase,
             defaultDatabaseName: props.defaultDatabaseName,
             kmsKeyArn: props.kmsKeyArn,
-            parameters: {}, // Additional parameters go here
             preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+            parameterGroup: props.parameterGroup,
         });
 
         this.clusterIdentifier = this.cluster.clusterIdentifier;

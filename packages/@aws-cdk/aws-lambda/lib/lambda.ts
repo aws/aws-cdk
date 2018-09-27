@@ -1,10 +1,32 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
+import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
-import { FunctionName, FunctionRef } from './lambda-ref';
+import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation, FunctionArn } from './lambda.generated';
+import { cloudformation } from './lambda.generated';
 import { Runtime } from './runtime';
+
+/**
+ * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
+ */
+export enum Tracing {
+    /**
+     * Lambda will respect any tracing header it receives from an upstream service.
+     * If no tracing header is received, Lambda will call X-Ray for a tracing decision.
+     */
+    Active,
+    /**
+     * Lambda will only trace the request from an upstream service
+     * if it contains a tracing header with "sampled=1"
+     */
+    PassThrough,
+    /**
+     * Lambda will not trace any request.
+     */
+    Disabled
+}
 
 export interface FunctionProps {
     /**
@@ -89,6 +111,56 @@ export interface FunctionProps {
      * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
      */
     role?: iam.Role;
+
+    /**
+     * VPC network to place Lambda network interfaces
+     *
+     * Specify this if the Lambda function needs to access resources in a VPC.
+     */
+    vpc?: ec2.VpcNetworkRef;
+
+    /**
+     * Where to place the network interfaces within the VPC.
+     *
+     * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+     * requires a NAT gateway, so picking Public subnets is not allowed.
+     *
+     * @default All private subnets
+     */
+    vpcPlacement?: ec2.VpcPlacementStrategy;
+
+    /**
+     * What security group to associate with the Lambda's network interfaces.
+     *
+     * Only used if 'vpc' is supplied.
+     *
+     * @default If the function is placed within a VPC and a security group is
+     * not specified, a dedicated security group will be created for this
+     * function.
+     */
+    securityGroup?: ec2.SecurityGroupRef;
+
+    /**
+     * Enabled DLQ. If `deadLetterQueue` is undefined,
+     * an SQS queue with default options will be defined for your Function.
+     *
+     * @default false unless `deadLetterQueue` is set, which implies DLQ is enabled
+     */
+    deadLetterQueueEnabled?: boolean;
+
+    /**
+     * The SQS queue to use if DLQ is enabled.
+     *
+     * @default SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
+     */
+    deadLetterQueue?: sqs.QueueRef;
+
+    /**
+     * Enable AWS X-Ray Tracing for Lambda Function.
+     *
+     * @default undefined X-Ray tracing disabled
+     */
+    tracing?: Tracing;
 }
 
 /**
@@ -106,12 +178,12 @@ export class Function extends FunctionRef {
     /**
      * Name of this function
      */
-    public readonly functionName: FunctionName;
+    public readonly functionName: string;
 
     /**
      * ARN of this function
      */
-    public readonly functionArn: FunctionArn;
+    public readonly functionArn: string;
 
     /**
      * Execution role associated with this function
@@ -140,16 +212,19 @@ export class Function extends FunctionRef {
 
         this.environment = props.environment || { };
 
+        const managedPolicyArns = new Array<string>();
+
+        // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaBasicExecutionRole").policyArn);
+
+        if (props.vpc) {
+            // Policy that will have ENI creation permissions
+            managedPolicyArns.push(new iam.AwsManagedPolicy("service-role/AWSLambdaVPCAccessExecutionRole").policyArn);
+        }
+
         this.role = props.role || new iam.Role(this, 'ServiceRole', {
             assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
-            // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-            managedPolicyArns: [  cdk.Arn.fromComponents({
-                service: "iam",
-                region: "", // no region for managed policy
-                account: "aws", // the account for a managed policy is 'aws'
-                resource: "policy",
-                resourceName: "service-role/AWSLambdaBasicExecutionRole",
-            })],
+            managedPolicyArns,
         });
 
         for (const statement of (props.initialPolicy || [])) {
@@ -166,6 +241,9 @@ export class Function extends FunctionRef {
             role: this.role.roleArn,
             environment: new cdk.Token(() => this.renderEnvironment()),
             memorySize: props.memorySize,
+            vpcConfig: this.configureVpc(props),
+            deadLetterConfig: this.buildDeadLetterConfig(props),
+            tracingConfig: this.buildTracingConfig(props)
         });
 
         resource.addDependency(this.role);
@@ -226,4 +304,75 @@ export class Function extends FunctionRef {
             variables: this.environment
         };
     }
+
+    /**
+     * If configured, set up the VPC-related properties
+     *
+     * Returns the VpcConfig that should be added to the
+     * Lambda creation properties.
+     */
+    private configureVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
+        if (!props.vpc) { return undefined; }
+
+        let securityGroup = props.securityGroup;
+        if (!securityGroup) {
+            securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+                vpc: props.vpc,
+                description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+            });
+        }
+
+        this._connections = new ec2.Connections({ securityGroup });
+
+        // Pick subnets, make sure they're not Public. Routing through an IGW
+        // won't work because the ENIs don't get a Public IP.
+        const subnets = props.vpc.subnets(props.vpcPlacement);
+        for (const subnet of subnets) {
+            if (props.vpc.isPublicSubnet(subnet)) {
+                throw new Error('Not possible to place Lambda Functions in a Public subnet');
+            }
+        }
+
+        return {
+            subnetIds: subnets.map(s => s.subnetId),
+            securityGroupIds: [securityGroup.securityGroupId]
+        };
+    }
+
+    private buildDeadLetterConfig(props: FunctionProps) {
+        if (props.deadLetterQueue && props.deadLetterQueueEnabled === false) {
+            throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
+        }
+
+        if (!props.deadLetterQueue && !props.deadLetterQueueEnabled) {
+            return undefined;
+        }
+
+        const deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
+            retentionPeriodSec: 1209600
+        });
+
+        this.addToRolePolicy(new cdk.PolicyStatement()
+            .addAction('sqs:SendMessage')
+            .addResource(deadLetterQueue.queueArn));
+
+        return {
+            targetArn: deadLetterQueue.queueArn
+        };
+    }
+
+    private buildTracingConfig(props: FunctionProps) {
+        if (props.tracing === undefined || props.tracing === Tracing.Disabled) {
+            return undefined;
+        }
+
+        this.addToRolePolicy(new cdk.PolicyStatement()
+            .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
+            .addAllResources());
+
+        return {
+            mode: Tracing[props.tracing]
+        };
+    }
+
 }

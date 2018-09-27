@@ -1,6 +1,6 @@
 import { Construct, FnConcat, Token } from '@aws-cdk/cdk';
 import { EventPattern } from './event-pattern';
-import { cloudformation, RuleArn } from './events.generated';
+import { cloudformation } from './events.generated';
 import { TargetInputTemplate } from './input-options';
 import { EventRuleRef } from './rule-ref';
 import { IEventRuleTarget } from './target';
@@ -64,7 +64,7 @@ export interface EventRuleProps {
  * Defines a CloudWatch Event Rule in this stack.
  */
 export class EventRule extends EventRuleRef {
-    public readonly ruleArn: RuleArn;
+    public readonly ruleArn: string;
 
     private readonly targets = new Array<cloudformation.RuleResource.TargetProperty>();
     private readonly eventPattern: EventPattern = { };
@@ -74,6 +74,7 @@ export class EventRule extends EventRuleRef {
         super(parent, name);
 
         const resource = new cloudformation.RuleResource(this, 'Resource', {
+            ruleName: props.ruleName,
             description: props.description,
             state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
             scheduleExpression: new Token(() => this.scheduleExpression),

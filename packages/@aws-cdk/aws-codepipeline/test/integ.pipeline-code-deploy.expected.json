@@ -1,13 +1,22 @@
 {
   "Resources": {
-    "CodeDeployApplication": {
+    "CodeDeployApplicationE587C27C": {
       "Type": "AWS::CodeDeploy::Application",
       "Properties": {
         "ApplicationName": "IntegTestDeployApp",
         "ComputePlatform": "Server"
       }
     },
-    "CodeDeployGroupRole9EDBB624": {
+    "CustomDeployConfig52EEBC13": {
+      "Type": "AWS::CodeDeploy::DeploymentConfig",
+      "Properties": {
+        "MinimumHealthyHosts": {
+          "Type": "HOST_COUNT",
+          "Value": 0
+        }
+      }
+    },
+    "CodeDeployGroupRole1D304F7A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -27,15 +36,20 @@
         ]
       }
     },
-    "CodeDeployGroup": {
+    "CodeDeployGroup58220FC8": {
       "Type": "AWS::CodeDeploy::DeploymentGroup",
       "Properties": {
-        "ApplicationName": "IntegTestDeployApp",
+        "ApplicationName": {
+          "Ref": "CodeDeployApplicationE587C27C"
+        },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
-            "CodeDeployGroupRole9EDBB624",
+            "CodeDeployGroupRole1D304F7A",
             "Arn"
           ]
+        },
+        "DeploymentConfigName": {
+          "Ref": "CustomDeployConfig52EEBC13"
         },
         "DeploymentGroupName": "IntegTestDeploymentGroup"
       }

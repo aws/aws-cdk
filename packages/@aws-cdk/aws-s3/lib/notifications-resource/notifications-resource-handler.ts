@@ -42,7 +42,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
      * The ARN of the handler's lambda function. Used as a service token in the
      * custom resource.
      */
-    public readonly functionArn: cdk.Arn;
+    public readonly functionArn: string;
 
     constructor(parent: cdk.Construct, id: string) {
         super(parent, id);
@@ -50,7 +50,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         const role = new iam.Role(this, 'Role', {
             assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
             managedPolicyArns: [
-                cdk.Arn.fromComponents({
+                cdk.ArnUtils.fromComponents({
                     service: 'iam',
                     region: '', // no region for managed policy
                     account: 'aws', // the account for a managed policy is 'aws'
@@ -63,7 +63,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
         // handler allows to put bucket notification on s3 buckets.
         role.addToPolicy(new cdk.PolicyStatement()
             .addAction('s3:PutBucketNotification')
-            .addResource('*'));
+            .addAllResources());
 
         const resource = new cdk.Resource(this, 'Resource', {
             type: 'AWS::Lambda::Function',
@@ -77,7 +77,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
             }
         });
 
-        this.functionArn = resource.getAtt('Arn');
+        this.functionArn = resource.getAtt('Arn').toString();
     }
 }
 

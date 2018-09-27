@@ -61,9 +61,23 @@ export interface ConnectionsProps {
  *
  */
 export class Connections {
-    private readonly securityGroupRule: ISecurityGroupRule;
-    private readonly securityGroup?: SecurityGroupRef;
-    private readonly defaultPortRange?: IPortRange;
+    /**
+     * Underlying securityGroup for this Connections object, if present
+     *
+     * May be empty if this Connections object is not managing a SecurityGroup,
+     * but simply representing a Connectable peer.
+     */
+    public readonly securityGroup?: SecurityGroupRef;
+
+    /**
+     * The rule that defines how to represent this peer in a security group
+     */
+    public readonly securityGroupRule: ISecurityGroupRule;
+
+    /**
+     * The default port configured for this connection peer, if available
+     */
+    public readonly defaultPortRange?: IPortRange;
 
     constructor(props: ConnectionsProps) {
         if (!props.securityGroupRule && !props.securityGroup) {
@@ -78,7 +92,7 @@ export class Connections {
     /**
      * Allow connections to the peer on the given port
      */
-    public allowTo(other: IConnectable, portRange: IPortRange, description: string) {
+    public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
         if (this.securityGroup) {
             this.securityGroup.addEgressRule(other.connections.securityGroupRule, portRange, description);
         }
@@ -91,7 +105,7 @@ export class Connections {
     /**
      * Allow connections from the peer on the given port
      */
-    public allowFrom(other: IConnectable, portRange: IPortRange, description: string) {
+    public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
         if (this.securityGroup) {
             this.securityGroup.addIngressRule(other.connections.securityGroupRule, portRange, description);
         }
@@ -103,7 +117,7 @@ export class Connections {
     /**
      * Allow hosts inside the security group to connect to each other on the given port
      */
-    public allowInternally(portRange: IPortRange, description: string) {
+    public allowInternally(portRange: IPortRange, description?: string) {
         if (this.securityGroup) {
             this.securityGroup.addIngressRule(this.securityGroupRule, portRange, description);
         }
@@ -112,14 +126,14 @@ export class Connections {
     /**
      * Allow to all IPv4 ranges
      */
-    public allowToAnyIPv4(portRange: IPortRange, description: string) {
+    public allowToAnyIPv4(portRange: IPortRange, description?: string) {
         this.allowTo(new AnyIPv4(), portRange, description);
     }
 
     /**
      * Allow from any IPv4 ranges
      */
-    public allowFromAnyIPv4(portRange: IPortRange, description: string) {
+    public allowFromAnyIPv4(portRange: IPortRange, description?: string) {
         this.allowFrom(new AnyIPv4(), portRange, description);
     }
 
@@ -128,7 +142,7 @@ export class Connections {
      *
      * Even if the peer has a default port, we will always use our default port.
      */
-    public allowDefaultPortFrom(other: IConnectable, description: string) {
+    public allowDefaultPortFrom(other: IConnectable, description?: string) {
         if (!this.defaultPortRange) {
             throw new Error('Cannot call allowDefaultPortFrom(): this resource has no default port');
         }
@@ -138,7 +152,7 @@ export class Connections {
     /**
      * Allow hosts inside the security group to connect to each other
      */
-    public allowDefaultPortInternally(description: string) {
+    public allowDefaultPortInternally(description?: string) {
         if (!this.defaultPortRange) {
             throw new Error('Cannot call allowDefaultPortInternally(): this resource has no default port');
         }
@@ -148,7 +162,7 @@ export class Connections {
     /**
      * Allow default connections from all IPv4 ranges
      */
-    public allowDefaultPortFromAnyIpv4(description: string) {
+    public allowDefaultPortFromAnyIpv4(description?: string) {
         if (!this.defaultPortRange) {
             throw new Error('Cannot call allowDefaultPortFromAnyIpv4(): this resource has no default port');
         }
@@ -158,11 +172,23 @@ export class Connections {
     /**
      * Allow connections to the security group on their default port
      */
-    public allowToDefaultPort(other: IConnectable, description: string) {
+    public allowToDefaultPort(other: IConnectable, description?: string) {
         if (other.connections.defaultPortRange === undefined) {
             throw new Error('Cannot call alloToDefaultPort(): other resource has no default port');
         }
 
         this.allowTo(other, other.connections.defaultPortRange, description);
+    }
+
+    /**
+     * Allow connections from the peer on our default port
+     *
+     * Even if the peer has a default port, we will always use our default port.
+     */
+    public allowDefaultPortTo(other: IConnectable, description?: string) {
+        if (!this.defaultPortRange) {
+            throw new Error('Cannot call allowDefaultPortTo(): this resource has no default port');
+        }
+        this.allowTo(other, this.defaultPortRange, description);
     }
 }

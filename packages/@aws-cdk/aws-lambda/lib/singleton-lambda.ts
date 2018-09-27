@@ -1,8 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Function, FunctionProps } from './lambda';
-import { FunctionName, FunctionRef } from './lambda-ref';
-import { FunctionArn } from './lambda.generated';
+import { FunctionRef } from './lambda-ref';
 import { Permission } from './permission';
 
 /**
@@ -36,8 +35,8 @@ export interface SingletonFunctionProps extends FunctionProps {
  * for every SingletonLambda you create.
  */
 export class SingletonFunction extends FunctionRef {
-    public readonly functionName: FunctionName;
-    public readonly functionArn: FunctionArn;
+    public readonly functionName: string;
+    public readonly functionArn: string;
     public readonly role?: iam.Role | undefined;
     protected readonly canCreatePermissions: boolean;
     private lambdaFunction: FunctionRef;

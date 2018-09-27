@@ -392,15 +392,21 @@ export interface TemplateOptions {
 }
 
 /**
- * A construct, which is part of a stack and can be referenced using it's logical ID
- * using the CloudFormation intrinsic function { Ref: ID }.
+ * Base class for referenceable CloudFormation constructs which are not Resources
+ *
+ * These constructs are things like Conditions and Parameters, can be
+ * referenced by taking the `.ref` attribute.
+ *
+ * Resource constructs do not inherit from Referenceable because they have their
+ * own, more specific types returned from the .ref attribute. Also, some
+ * resources aren't referenceable at all (such as BucketPolicies or GatewayAttachments).
  */
 export abstract class Referenceable extends StackElement {
     /**
      * Returns a token to a CloudFormation { Ref } that references this entity based on it's logical ID.
      */
-    public get ref(): Token {
-        return new CloudFormationToken({ Ref: this.logicalId }, `${this.logicalId}.Ref`);
+    public get ref(): string {
+        return new Ref(this).toString();
     }
 }
 
@@ -431,4 +437,13 @@ function stackElements(node: Construct, into: StackElement[] = []): StackElement
     }
 
     return into;
+}
+
+/**
+ * A generic, untyped reference to a Stack Element
+ */
+export class Ref extends CloudFormationToken {
+    constructor(element: StackElement) {
+        super({ Ref: element.logicalId }, `${element.logicalId}.Ref`);
+    }
 }

@@ -1,12 +1,12 @@
 import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
-import { cloudformation, KeyArn } from './kms.generated';
+import { cloudformation } from './kms.generated';
 
 export interface EncryptionKeyRefProps {
     /**
      * The ARN of the external KMS key.
      */
-    keyArn: KeyArn;
+    keyArn: string;
 }
 
 export abstract class EncryptionKeyRef extends Construct {
@@ -35,7 +35,7 @@ export abstract class EncryptionKeyRef extends Construct {
     /**
      * The ARN of the key.
      */
-    public abstract readonly keyArn: KeyArn;
+    public abstract readonly keyArn: string;
 
     /**
      * Optional policy document that represents the resource policy of this key.
@@ -74,7 +74,7 @@ export abstract class EncryptionKeyRef extends Construct {
      */
     public export(): EncryptionKeyRefProps {
         return {
-            keyArn: new Output(this, 'KeyArn').makeImportValue()
+            keyArn: new Output(this, 'KeyArn').makeImportValue().toString()
         };
     }
 }
@@ -114,7 +114,7 @@ export interface EncryptionKeyProps {
  * Definews a KMS key.
  */
 export class EncryptionKey extends EncryptionKeyRef {
-    public readonly keyArn: KeyArn;
+    public readonly keyArn: string;
     protected readonly policy?: PolicyDocument;
 
     constructor(parent: Construct, name: string, props: EncryptionKeyProps = {}) {
@@ -159,14 +159,14 @@ export class EncryptionKey extends EncryptionKeyRef {
         ];
 
         this.addToResourcePolicy(new PolicyStatement()
-            .addResource('*')
+            .addAllResources()
             .addActions(...actions)
             .addAccountRootPrincipal());
     }
 }
 
 class EncryptionKeyRefImport extends EncryptionKeyRef {
-    public readonly keyArn: KeyArn;
+    public readonly keyArn: string;
     protected readonly policy = undefined; // no policy associated with an imported key
 
     constructor(parent: Construct, name: string, props: EncryptionKeyRefProps) {

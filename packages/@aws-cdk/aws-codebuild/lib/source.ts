@@ -21,11 +21,23 @@ export abstract class BuildSource {
     public abstract toSourceJSON(): cloudformation.ProjectResource.SourceProperty;
 }
 
+export class NoSource extends BuildSource {
+    constructor() {
+        super();
+    }
+
+    public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+        return {
+            type: SourceType.None,
+        };
+    }
+}
+
 /**
  * CodeCommit Source definition for a CodeBuild project
  */
 export class CodeCommitSource extends BuildSource {
-    constructor(private readonly repo: codecommit.Repository) {
+    constructor(private readonly repo: codecommit.RepositoryRef) {
         super();
     }
 
@@ -135,10 +147,11 @@ export class S3BucketSource extends BuildSource {
  * Source types for CodeBuild Project
  */
 export enum SourceType {
+    None = 'NO_SOURCE',
     CodeCommit = 'CODECOMMIT',
     CodePipeline = 'CODEPIPELINE',
     GitHub = 'GITHUB',
     GitHubEnterPrise = 'GITHUB_ENTERPRISE',
     BitBucket = 'BITBUCKET',
-    S3 = 'S3'
+    S3 = 'S3',
 }

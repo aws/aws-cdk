@@ -10,7 +10,7 @@ export = {
         p.addResource('yourQueue');
 
         p.addAllResources();
-        p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name'));
+        p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name').toString());
         p.limitToAccount('12221121221');
 
         test.deepEqual(resolve(p), { Action:
@@ -26,7 +26,7 @@ export = {
                     [ 'arn:',
                       { Ref: 'AWS::Partition' },
                       ':iam::',
-                      'my', 'account', 'name',
+                      { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
                       ':root' ] ] } },
            Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
@@ -149,7 +149,10 @@ export = {
         },
 
         'true if there is one resource'(test: Test) {
-            test.equal(new PolicyStatement().addResource('one-resource').hasResource, true, 'hasResource is true when there is one resource');
+            test.equal(
+                new PolicyStatement().addResource('one-resource').hasResource,
+                true,
+                'hasResource is true when there is one resource');
             test.done();
         },
 
@@ -174,28 +177,6 @@ export = {
             test.equal(p.hasPrincipal, true);
             test.done();
         }
-    },
-
-    'isOnlyStarResource': {
-        'true if there is a single "*" resource'(test: Test) {
-            test.equal(new PolicyStatement().addAllResources().isOnlyStarResource, true);
-            test.done();
-        },
-
-        'false if there are other resources'(test: Test) {
-            const p = new PolicyStatement();
-            p.addResources('r1', 'r2', 'r3');
-            test.equal(p.isOnlyStarResource, false);
-            test.done();
-        },
-
-        'false if there are other resources and a "*" resource'(test: Test) {
-            const p = new PolicyStatement();
-            p.addResources('r1', 'r2', 'r3');
-            p.addResource('*');
-            test.equal(p.isOnlyStarResource, false);
-            test.done();
-        },
     },
 
     'statementCount returns the number of statement in the policy document'(test: Test) {

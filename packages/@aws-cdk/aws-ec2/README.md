@@ -1,7 +1,7 @@
 ## AWS Compute and Networking Construct Library
 
-The `@aws-cdk/aws-ec2` package contains primitives for setting up networking,
-instances, and load balancers.
+The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
+instances.
 
 ### VPC
 
@@ -41,7 +41,6 @@ const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
       cidrMask: 24,
       name: 'Ingress',
       subnetType: SubnetType.Public,
-      natGateway: true,
     },
     {
       cidrMask: 24,
@@ -171,30 +170,6 @@ const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
 The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
-
-
-### Load Balancer
-
-Load balancers send traffic to one or more fleets. Create a load balancer,
-set up listeners and a health check, and supply the fleet(s) you want to load
-balance to in the `targets` property.
-
-The load balancer allows all connections by default. If you want to change that,
-pass the `allowConnectionsFrom` property while setting up the listener.
-
-```ts
-new ec2.ClassicLoadBalancer(stack, 'LB', {
-    vpc,
-    internetFacing: true,
-    listeners: [{
-        externalPort: 80,
-    }],
-    healthCheck: {
-        port: 80
-    },
-    targets: [fleet]
-});
-```
 
 ### Allowing Connections
 

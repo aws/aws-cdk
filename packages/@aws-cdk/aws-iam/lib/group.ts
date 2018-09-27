@@ -1,5 +1,5 @@
-import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
-import { cloudformation, GroupArn } from './iam.generated';
+import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { cloudformation } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -37,12 +37,12 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
     /**
      * The runtime name of this group.
      */
-    public readonly groupName: GroupName;
+    public readonly groupName: string;
 
     /**
      * The ARN of this group.
      */
-    public readonly groupArn: GroupArn;
+    public readonly groupArn: string;
 
     /**
      * An "AWS" policy principal that represents this group.
@@ -64,7 +64,7 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
             path: props.path,
         });
 
-        this.groupName = group.ref;
+        this.groupName = group.groupName;
         this.groupArn = group.groupArn;
         this.principal = new ArnPrincipal(this.groupArn);
     }
@@ -73,7 +73,7 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
      * Attaches a managed policy to this group.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: any) {
+    public attachManagedPolicy(arn: string) {
         this.managedPolicies.push(arn);
     }
 
@@ -104,8 +104,4 @@ export class Group extends Construct implements IIdentityResource, IPrincipal {
 
         this.defaultPolicy.addStatement(statement);
     }
-}
-
-export class GroupName extends Token {
-
 }

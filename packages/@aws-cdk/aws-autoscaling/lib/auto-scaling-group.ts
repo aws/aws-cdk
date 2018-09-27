@@ -1,4 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
@@ -135,7 +137,8 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadBalancerTarget, ec2.IConnectable {
+export class AutoScalingGroup extends cdk.Construct implements elb.ILoadBalancerTarget, ec2.IConnectable,
+    elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
     /**
      * The type of OS instances of this fleet are running.
      */
@@ -153,14 +156,17 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
 
     private readonly userDataLines = new Array<string>();
     private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
-    private readonly securityGroup: ec2.SecurityGroup;
-    private readonly loadBalancerNames: cdk.Token[] = [];
+    private readonly securityGroup: ec2.SecurityGroupRef;
+    private readonly securityGroups: ec2.SecurityGroupRef[] = [];
+    private readonly loadBalancerNames: string[] = [];
+    private readonly targetGroupArns: string[] = [];
 
     constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
         super(parent, name);
 
         this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
         this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
+        this.securityGroups.push(this.securityGroup);
 
         if (props.allowAllOutbound !== false) {
             this.connections.allowTo(new ec2.AnyIPv4(), new ec2.AllConnections(), 'Outbound traffic allowed by default');
@@ -177,12 +183,13 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         // use delayed evaluation
         const machineImage = props.machineImage.getImage(this);
         const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
+        const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
         const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
             imageId: machineImage.imageId,
             keyName: props.keyName,
             instanceType: props.instanceType.toString(),
-            securityGroups: [this.securityGroup.securityGroupId],
+            securityGroups: securityGroupsToken,
             iamInstanceProfile: iamProfile.ref,
             userData: userDataToken
         });
@@ -202,7 +209,8 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
             maxSize: maxSize.toString(),
             desiredCapacity: desiredCapacity.toString(),
             launchConfigurationName: launchConfig.ref,
-            loadBalancerNames: new cdk.Token(() => this.loadBalancerNames),
+            loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
+            targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
         };
 
         if (props.notificationsTopic) {
@@ -227,16 +235,46 @@ export class AutoScalingGroup extends cdk.Construct implements ec2.IClassicLoadB
         this.applyUpdatePolicies(props);
     }
 
-    public attachToClassicLB(loadBalancer: ec2.ClassicLoadBalancer): void {
+    /**
+     * Add the security group to all instances via the launch configuration
+     * security groups array.
+     *
+     * @param securityGroup: The SecurityGroupRef to add
+     */
+    public addSecurityGroup(securityGroup: ec2.SecurityGroupRef): void {
+        this.securityGroups.push(securityGroup);
+    }
+
+    /**
+     * Attach to a classic load balancer
+     */
+    public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
         this.loadBalancerNames.push(loadBalancer.loadBalancerName);
+    }
+
+    /**
+     * Attach to ELBv2 Application Target Group
+     */
+    public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        this.targetGroupArns.push(targetGroup.targetGroupArn);
+        targetGroup.registerConnectable(this);
+        return { targetType: elbv2.TargetType.SelfRegistering };
+    }
+
+    /**
+     * Attach to ELBv2 Application Target Group
+     */
+    public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
+        this.targetGroupArns.push(targetGroup.targetGroupArn);
+        return { targetType: elbv2.TargetType.SelfRegistering };
     }
 
     /**
      * Add command to the startup script of fleet instances.
      * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
      */
-    public addUserData(script: string) {
-        this.userDataLines.push(script);
+    public addUserData(...scriptLines: string[]) {
+        scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
     }
 
     public autoScalingGroupName() {

@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { CertificateArn, CertificateRef } from './certificate-ref';
+import { CertificateRef } from './certificate-ref';
 import { cloudformation } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
@@ -52,7 +52,7 @@ export class Certificate extends CertificateRef {
     /**
      * The certificate's ARN
      */
-    public readonly certificateArn: CertificateArn;
+    public readonly certificateArn: string;
 
     constructor(parent: Construct, name: string, props: CertificateProps) {
         super(parent, name);
@@ -65,7 +65,7 @@ export class Certificate extends CertificateRef {
             domainValidationOptions: allDomainNames.map(domainValidationOption),
         });
 
-        this.certificateArn = cert.ref;
+        this.certificateArn = cert.certificateArn;
 
         /**
          * Return the domain validation options for the given domain

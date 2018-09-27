@@ -18,8 +18,15 @@
         "experimentalDecorators": true,
         "strictPropertyInitialization":false
     },
+    "include": [
+        "**/*.ts",
+        "**/*.d.ts"
+    ],
     "exclude": [
         "lib/init-templates/**/*"
+    ],
+    "files": [
+        "lib/init-templates/app/dotnet/add-project.hook.ts"
     ]
 }
 

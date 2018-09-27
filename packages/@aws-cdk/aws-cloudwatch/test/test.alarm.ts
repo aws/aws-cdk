@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Arn, Stack } from '@aws-cdk/cdk';
+import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Alarm, IAlarmAction, Metric } from '../lib';
 
@@ -109,7 +109,7 @@ class TestAlarmAction implements IAlarmAction {
     constructor(private readonly arn: string) {
     }
 
-    public get alarmActionArn(): Arn {
-        return new Arn(this.arn);
+    public get alarmActionArn(): string {
+        return this.arn;
     }
 }

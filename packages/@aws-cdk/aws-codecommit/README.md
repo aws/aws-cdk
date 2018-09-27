@@ -40,13 +40,22 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 });
 const sourceStage = new codepipeline.Stage(this, 'Source', {
     pipeline,
-}));
-const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
+});
+const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
     stage: sourceStage,
     artifactName: 'SourceOutput', // name can be arbitrary
     repository,
 });
 // use sourceAction.artifact as the inputArtifact to later Actions...
+```
+
+You can also add the Repository to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+const sourceAction = repository.addToPipeline(sourceStage, 'CodeCommit', {
+    artifactName: 'SourceOutput',
+});
 ```
 
 ### Events

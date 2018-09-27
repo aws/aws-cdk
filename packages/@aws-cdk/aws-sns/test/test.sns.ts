@@ -506,7 +506,10 @@ export = {
       const topic = new sns.Topic(stack, 'Topic');
 
       // WHEN
-      topic.addToResourcePolicy(new cdk.PolicyStatement().addResource('*').addActions('sns:*').addPrincipal(new cdk.ArnPrincipal('arn')));
+      topic.addToResourcePolicy(new cdk.PolicyStatement()
+            .addAllResources()
+            .addActions('sns:*')
+            .addPrincipal(new cdk.ArnPrincipal('arn')));
 
       // THEN
       expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
@@ -696,7 +699,7 @@ export = {
 
         const topic = new sns.Topic(stack, 'MyTopic');
 
-        const bucketArn = new cdk.Arn('arn:bucket');
+        const bucketArn = 'arn:bucket';
         const bucketId = 'bucketId';
 
         const dest1 = topic.asBucketNotificationDestination(bucketArn, bucketId);
@@ -712,7 +715,7 @@ export = {
         test.deepEqual(dest2.type, s3n.BucketNotificationDestinationType.Topic);
 
         // another bucket will be added to the topic policy
-        const dest3 = topic.asBucketNotificationDestination(new cdk.Arn('bucket2'), 'bucket2');
+        const dest3 = topic.asBucketNotificationDestination('bucket2', 'bucket2');
         test.deepEqual(resolve(dest3.arn), resolve(topic.topicArn));
         test.deepEqual(dest3.type, s3n.BucketNotificationDestinationType.Topic);
 

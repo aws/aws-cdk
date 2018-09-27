@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
-import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneId, HostedZoneRef } from './hosted-zone-ref';
+import { HostedZoneRef } from './hosted-zone-ref';
 import { cloudformation, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
@@ -26,7 +25,7 @@ export interface PublicHostedZoneProps {
      *
      * @default no DNS query logging
      */
-    queryLogsLogGroupArn?: logs.LogGroupArn;
+    queryLogsLogGroupArn?: string;
 }
 
 /**
@@ -36,7 +35,7 @@ export class PublicHostedZone extends HostedZoneRef {
     /**
      * Identifier of this hosted zone
      */
-    public readonly hostedZoneId: HostedZoneId;
+    public readonly hostedZoneId: string;
 
     /**
      * Fully qualified domain name for the hosted zone
@@ -83,7 +82,7 @@ export class PrivateHostedZone extends HostedZoneRef {
     /**
      * Identifier of this hosted zone
      */
-    public readonly hostedZoneId: HostedZoneId;
+    public readonly hostedZoneId: string;
 
     /**
      * Fully qualified domain name for the hosted zone

@@ -53,7 +53,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceStage = new codepipeline.Stage(this, 'Source', {
     pipeline,
 });
-const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
+const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
     stage: sourceStage,
     artifactName: 'SourceOutput',
     repository,
@@ -78,6 +78,15 @@ const project = new codebuild.Project(this, 'MyProject', {
     artifacts: new codebuild.CodePipelineBuildArtifacts(),
     // rest of the properties from PipelineProject are passed unchanged...
 }
+```
+
+You can also add the Project to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+project.addBuildToPipeline(buildStage, 'CodeBuild', {
+    inputArtifact: sourceAction.artifact,
+})
 ```
 
 ### Using Project as an event target

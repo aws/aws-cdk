@@ -1,5 +1,7 @@
 import { Construct } from './construct';
 
+export type ConstructConstructor = { new (...args: any[]): Construct };
+
 export namespace jsx {
 
     /**
@@ -19,13 +21,13 @@ export namespace jsx {
      * @param children Array of children
      * @returns element tree
      */
-    export function create(type: any, props: any, ...children: any[]) {
+    export function create(type: ConstructConstructor, props: any, ...children: JSX.Element[]): JSX.Element {
         if (!(type.prototype instanceof Construct)) {
             throw new Error('All nodes must derive from Construct: ' + type);
         }
 
         return {
-            type, props, children
+            type, props: props || {}, children
         };
     }
 
@@ -36,7 +38,7 @@ export namespace jsx {
      * @param parent Optional parent for the construct tree
      * @returns A Construct object
      */
-    export function construct(tree: any, parent?: Construct): Construct {
+    export function construct(tree: JSX.Element, parent?: Construct): Construct {
         const id = (tree.props && tree.props.id) || '';
         const root = new tree.type(parent, id, tree.props); // create root
         createChildren(root, tree.children);
@@ -50,5 +52,30 @@ export namespace jsx {
             createChildren(childObj, child.children);
         }
     }
+}
 
+declare global {
+    namespace JSX {
+        /**
+         * Declare JSX.Element to be the lazy specification of a Construct
+         */
+        export interface Element {
+            type: ConstructConstructor;
+
+            props: any;
+
+            children: JSX.Element[];
+        }
+
+        interface ElementAttributesProperty {
+            // Property of the object that TSC will use to see the allowable
+            // parameters for every type.
+            jsxProps: any;
+        }
+
+        interface IntrinsicAttributes {
+            // Properties used by the framework, not by the individual classes.
+            id: string;
+        }
+    }
 }

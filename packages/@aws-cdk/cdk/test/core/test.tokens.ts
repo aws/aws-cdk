@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, isToken, resolve, Token } from '../../lib';
+import { CloudFormationToken, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -123,9 +123,9 @@ export = {
     },
 
     'isToken(obj) can be used to determine if an object is a token'(test: Test) {
-        test.ok(isToken({ resolve: () => 123 }));
-        test.ok(isToken({ a: 1, b: 2, resolve: () => 'hello' }));
-        test.ok(!isToken({ a: 1, b: 2, resolve: 3 }));
+        test.ok(unresolved({ resolve: () => 123 }));
+        test.ok(unresolved({ a: 1, b: 2, resolve: () => 'hello' }));
+        test.ok(!unresolved({ a: 1, b: 2, resolve: 3 }));
         test.done();
     },
 
@@ -242,6 +242,34 @@ export = {
 
         test.done();
     },
+
+    'tokens can be used in hash keys but must resolve to a string'(test: Test) {
+        // GIVEN
+        const token = new Token(() => 'I am a string');
+
+        // WHEN
+        const s = {
+            [token.toString()]: `boom ${token}`
+        };
+
+        // THEN
+        test.deepEqual(resolve(s), { 'I am a string': 'boom I am a string' });
+        test.done();
+    },
+
+    'fails if token in a hash key resolves to a non-string'(test: Test) {
+        // GIVEN
+        const token = new CloudFormationToken({ Ref: 'Other' });
+
+        // WHEN
+        const s = {
+            [token.toString()]: `boom ${token}`
+        };
+
+        // THEN
+        test.throws(() => resolve(s), 'The key "${Token[TOKEN.19]}" has been resolved to {"Ref":"Other"} but must be resolvable to a string');
+        test.done();
+    }
 };
 
 class Promise2 extends Token {

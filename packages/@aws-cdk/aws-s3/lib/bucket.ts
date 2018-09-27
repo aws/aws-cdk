@@ -1,3 +1,4 @@
+import actions = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import { IBucketNotificationDestination } from '@aws-cdk/aws-s3-notifications';
@@ -5,9 +6,10 @@ import cdk = require('@aws-cdk/cdk');
 import { BucketPolicy } from './bucket-policy';
 import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
+import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 import { LifecycleRule } from './rule';
-import { BucketArn, BucketDomainName, BucketDualStackDomainName, cloudformation } from './s3.generated';
-import { parseBucketArn, parseBucketName, validateBucketName } from './util';
+import { cloudformation } from './s3.generated';
+import { parseBucketArn, parseBucketName } from './util';
 
 /**
  * A reference to a bucket. The easiest way to instantiate is to call
@@ -19,7 +21,7 @@ export interface BucketRefProps {
      * The ARN fo the bucket. At least one of bucketArn or bucketName must be
      * defined in order to initialize a bucket ref.
      */
-    bucketArn?: BucketArn;
+    bucketArn?: string;
 
     /**
      * The name of the bucket. If the underlying value of ARN is a string, the
@@ -27,7 +29,7 @@ export interface BucketRefProps {
      * some features that require the bucket name such as auto-creating a bucket
      * policy, won't work.
      */
-    bucketName?: BucketName;
+    bucketName?: string;
 }
 
 /**
@@ -63,12 +65,12 @@ export abstract class BucketRef extends cdk.Construct {
     /**
      * The ARN of the bucket.
      */
-    public abstract readonly bucketArn: BucketArn;
+    public abstract readonly bucketArn: string;
 
     /**
      * The name of the bucket.
      */
-    public abstract readonly bucketName: BucketName;
+    public abstract readonly bucketName: string;
 
     /**
      * Optional KMS encryption key associated with this bucket.
@@ -94,9 +96,26 @@ export abstract class BucketRef extends cdk.Construct {
      */
     public export(): BucketRefProps {
         return {
-            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue(),
-            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue(),
+            bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
+            bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineSourceAction},
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineSourceAction}
+     */
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
+        return new PipelineSourceAction(this.parent!, name, {
+            stage,
+            bucket: this,
+            ...props,
+        });
     }
 
     /**
@@ -133,7 +152,7 @@ export abstract class BucketRef extends cdk.Construct {
      *            bucket is returned.
      * @returns an ObjectS3Url token
      */
-    public urlForObject(key?: any): S3Url {
+    public urlForObject(key?: any): string {
         const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
         if (key) {
             // trim prepending '/'
@@ -144,7 +163,7 @@ export abstract class BucketRef extends cdk.Construct {
             components.push(key);
         }
 
-        return new cdk.FnConcat(...components);
+        return new cdk.FnConcat(...components).toString();
     }
 
     /**
@@ -156,8 +175,8 @@ export abstract class BucketRef extends cdk.Construct {
      *     arnForObjects('home/', team, '/', user, '/*')
      *
      */
-    public arnForObjects(...keyPattern: any[]): cdk.Arn {
-        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern);
+    public arnForObjects(...keyPattern: any[]): string {
+        return new cdk.FnConcat(this.bucketArn, '/', ...keyPattern).toString();
     }
 
     /**
@@ -240,13 +259,13 @@ export abstract class BucketRef extends cdk.Construct {
     private grant(identity: iam.IPrincipal | undefined,
                   bucketActions: string[],
                   keyActions: string[],
-                  resource: cdk.Arn, ...otherResources: cdk.Arn[]) {
+                  resourceArn: string, ...otherResourceArns: string[]) {
 
         if (!identity) {
             return;
         }
 
-        const resources = [ resource, ...otherResources ];
+        const resources = [ resourceArn, ...otherResourceArns ];
 
         identity.addToPolicy(new cdk.PolicyStatement()
             .addResources(...resources)
@@ -260,7 +279,7 @@ export abstract class BucketRef extends cdk.Construct {
                 .addActions(...keyActions));
 
             this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
-                .addResource('*')
+                .addAllResources()
                 .addPrincipal(identity.principal)
                 .addActions(...keyActions));
         }
@@ -305,14 +324,6 @@ export interface BucketProps {
     removalPolicy?: cdk.RemovalPolicy;
 
     /**
-     * The bucket policy associated with this bucket.
-     *
-     * @default A bucket policy will be created automatically in the first call
-     * to addToPolicy.
-     */
-    policy?: BucketPolicy;
-
-    /**
      * Whether this bucket should have versioning turned on or not.
      *
      * @default false
@@ -334,10 +345,10 @@ export interface BucketProps {
  * BucketResource.
  */
 export class Bucket extends BucketRef {
-    public readonly bucketArn: BucketArn;
-    public readonly bucketName: BucketName;
-    public readonly domainName: BucketDomainName;
-    public readonly dualstackDomainName: BucketDualStackDomainName;
+    public readonly bucketArn: string;
+    public readonly bucketName: string;
+    public readonly domainName: string;
+    public readonly dualstackDomainName: string;
     public readonly encryptionKey?: kms.EncryptionKeyRef;
     protected policy?: BucketPolicy;
     protected autoCreatePolicy = true;
@@ -347,8 +358,6 @@ export class Bucket extends BucketRef {
 
     constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
         super(parent, name);
-
-        validateBucketName(props && props.bucketName);
 
         const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
@@ -362,10 +371,9 @@ export class Bucket extends BucketRef {
         cdk.applyRemovalPolicy(resource, props.removalPolicy);
 
         this.versioned = props.versioned;
-        this.policy = props.policy;
         this.encryptionKey = encryptionKey;
         this.bucketArn = resource.bucketArn;
-        this.bucketName = resource.ref;
+        this.bucketName = resource.bucketName;
         this.domainName = resource.bucketDomainName;
         this.dualstackDomainName = resource.bucketDualStackDomainName;
 
@@ -571,27 +579,6 @@ export enum BucketEncryption {
 }
 
 /**
- * The name of the bucket.
- */
-export class BucketName extends cdk.Token {
-
-}
-
-/**
- * A key to an S3 object.
- */
-export class ObjectKey extends cdk.Token {
-
-}
-
-/**
- * The web URL (https://s3.us-west-1.amazonaws.com/bucket/key) of an S3 object.
- */
-export class S3Url extends cdk.Token {
-
-}
-
-/**
  * Notification event types.
  */
 export enum EventType {
@@ -712,8 +699,8 @@ export interface NotificationKeyFilter {
 }
 
 class ImportedBucketRef extends BucketRef {
-    public readonly bucketArn: BucketArn;
-    public readonly bucketName: BucketName;
+    public readonly bucketArn: string;
+    public readonly bucketName: string;
     public readonly encryptionKey?: kms.EncryptionKey;
 
     protected policy?: BucketPolicy;
@@ -722,8 +709,13 @@ class ImportedBucketRef extends BucketRef {
     constructor(parent: cdk.Construct, name: string, props: BucketRefProps) {
         super(parent, name);
 
+        const bucketName = parseBucketName(props);
+        if (!bucketName) {
+            throw new Error('Bucket name is required');
+        }
+
         this.bucketArn = parseBucketArn(props);
-        this.bucketName = parseBucketName(props);
+        this.bucketName = bucketName;
         this.autoCreatePolicy = false;
         this.policy = undefined;
     }

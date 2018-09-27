@@ -12,7 +12,9 @@ const RESOURCE_CLASS_POSTFIX = 'Resource';
 export const CORE_NAMESPACE = 'cdk';
 
 /**
- * The name of corresponding objects in the generated code
+ * The name of a class or method in the generated code.
+ *
+ * Has constructor functions to generate them from the CloudFormation specification.
  *
  * This refers to TypeScript constructs (typically a class)
  */
@@ -99,11 +101,33 @@ export class CodeName {
     }
 }
 
-export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+/**
+ * Class declaration
+ */
+export class AttributeTypeDeclaration {
+    constructor(
+            readonly typeName: CodeName,
+            readonly baseClassName?: CodeName,
+            readonly docLink?: string
+        ) {
+    }
 
+    public get isPrimitive() {
+        return !this.baseClassName;
+    }
+}
+
+export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
+
+/**
+ * Resource attribute
+ */
 export class Attribute {
-    constructor(readonly propertyName: string, readonly typeName: CodeName, readonly baseClassName: string, readonly docLink?: string) {
+    constructor(
+        readonly propertyName: string,
+        readonly attributeType: AttributeTypeDeclaration,
+        readonly constructorArguments: string) {
     }
 }
 
@@ -163,22 +187,33 @@ export function validatorName(typeName: CodeName): CodeName {
  * - The type we will generate for the attribute, including its base class and docs.
  * - The property name we will use to refer to the attribute.
  */
-export function attributeDefinition(resourceName: CodeName, attributeName: string, docLink?: string): Attribute {
-    // Original, unmodified CloudFormation name
-    const specName = new PropertyAttributeName(resourceName.specName!.module, resourceName.specName!.resourceName, attributeName); // "Arn"
-
+export function attributeDefinition(resourceName: CodeName, attributeName: string, spec: schema.Attribute): Attribute {
     const descriptiveName = descriptiveAttributeName(resourceName, attributeName);  // "BucketArn"
     const propertyName = cloudFormationToScriptName(descriptiveName);            // "bucketArn"
 
-    // Not in a namespace, base the name on the descriptive name
-    const typeName = new CodeName(resourceName.packageName, '', descriptiveName, specName); // "BucketArn"
-
-    let baseClass = `${CORE_NAMESPACE}.Token`;
-    if (attributeName.endsWith('Arn')) {
-        baseClass = `${CORE_NAMESPACE}.Arn`;
+    let attrType;
+    if ('PrimitiveType' in spec && spec.PrimitiveType === 'String') {
+        attrType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    } else {
+        // Not in a namespace, base the name on the descriptive name
+        const typeName = new CodeName(resourceName.packageName, '', descriptiveName); // "BucketArn"
+        attrType = new AttributeTypeDeclaration(typeName, TOKEN_NAME, undefined);
     }
 
-    return new Attribute(propertyName, typeName, baseClass, docLink);
+    const constructorArguments = `this.getAtt('${attributeName}')`;
+    return new Attribute(propertyName, attrType, constructorArguments);
+}
+
+/**
+ * Return an attribute definition name for the RefKind for this class
+ */
+export function refAttributeDefinition(resourceName: CodeName, refKind: string): Attribute {
+    const propertyName = codemaker.toCamelCase(descriptiveAttributeName(resourceName, refKind));
+
+    const constructorArguments = 'this.ref';
+
+    const refType = new AttributeTypeDeclaration(CodeName.forPrimitive('string'));
+    return new Attribute(propertyName, refType, constructorArguments);
 }
 
 /**

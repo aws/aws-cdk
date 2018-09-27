@@ -1,14 +1,19 @@
+import assets = require('@aws-cdk/assets');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { cloudformation, ProjectArn } from './codebuild.generated';
-import { BuildSource } from './source';
+import { cloudformation } from './codebuild.generated';
+import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
+import { BuildSource, NoSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
+const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
+const S3_KEY_ENV = 'SCRIPT_S3_KEY';
 
 /**
  * Properties of a reference to a CodeBuild Project.
@@ -21,7 +26,7 @@ export interface ProjectRefProps {
      * The human-readable name of the CodeBuild Project we're referencing.
      * The Project must be in the same account and region as the root Stack.
      */
-    projectName: ProjectName;
+    projectName: string;
 }
 
 /**
@@ -55,10 +60,10 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     }
 
     /** The ARN of this Project. */
-    public abstract readonly projectArn: ProjectArn;
+    public abstract readonly projectArn: string;
 
     /** The human-visible name of this Project. */
-    public abstract readonly projectName: ProjectName;
+    public abstract readonly projectName: string;
 
     /** The IAM service Role of this Project. Undefined for imported Projects. */
     public abstract readonly role?: iam.Role;
@@ -71,8 +76,25 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
      */
     public export(): ProjectRefProps {
         return {
-            projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue(),
+            projectName: new cdk.Output(this, 'ProjectName', { value: this.projectName }).makeImportValue().toString(),
         };
+    }
+
+    /**
+     * Convenience method for creating a new {@link PipelineBuildAction} build Action,
+     * and adding it to the given Stage.
+     *
+     * @param stage the Pipeline Stage to add the new Action to
+     * @param name the name of the newly created Action
+     * @param props the properties of the new Action
+     * @returns the newly created {@link PipelineBuildAction} build Action
+     */
+    public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps): PipelineBuildAction {
+        return new PipelineBuildAction(this.parent!, name, {
+            stage,
+            project: this,
+            ...props,
+        });
     }
 
     /**
@@ -254,7 +276,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
     /**
      * Allows using build projects as event rule targets.
      */
-    public asEventRuleTarget(_ruleArn: events.RuleArn, _ruleId: string): events.EventRuleTargetProps {
+    public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
                 assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
@@ -274,18 +296,19 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
 }
 
 class ImportedProjectRef extends ProjectRef {
-    public readonly projectArn: ProjectArn;
-    public readonly projectName: ProjectName;
+    public readonly projectArn: string;
+    public readonly projectName: string;
     public readonly role?: iam.Role = undefined;
 
     constructor(parent: cdk.Construct, name: string, props: ProjectRefProps) {
         super(parent, name);
 
-        this.projectArn = cdk.Arn.fromComponents({
+        this.projectArn = cdk.ArnUtils.fromComponents({
             service: 'codebuild',
             resource: 'project',
             resourceName: props.projectName,
         });
+
         this.projectName = props.projectName;
     }
 }
@@ -302,6 +325,26 @@ export interface CommonProjectProps {
      * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec-ref-example
      */
     buildSpec?: any;
+
+    /**
+     * Run a script from an asset as build script
+     *
+     * If supplied together with buildSpec, the asset script will be run
+     * _after_ the existing commands in buildspec.
+     *
+     * This feature can also be used without a source, to simply run an
+     * arbitrary script in a serverless way.
+     *
+     * @default No asset build script
+     */
+    buildScriptAsset?: assets.Asset;
+
+    /**
+     * The script in the asset to run.
+     *
+     * @default build.sh
+     */
+    buildScriptAssetEntrypoint?: string;
 
     /**
      * Service Role to assume while running the build.
@@ -359,8 +402,10 @@ export interface CommonProjectProps {
 export interface ProjectProps extends CommonProjectProps {
     /**
      * The source of the build.
+     *
+     * @default NoSource
      */
-    source: BuildSource;
+    source?: BuildSource;
 
     /**
      * Defines where build artifacts will be stored.
@@ -383,56 +428,77 @@ export class Project extends ProjectRef {
     /**
      * The ARN of the project.
      */
-    public readonly projectArn: ProjectArn;
+    public readonly projectArn: string;
 
     /**
      * The name of the project.
      */
-    public readonly projectName: ProjectName;
+    public readonly projectName: string;
+
+    private readonly source: BuildSource;
+    private readonly buildImage: IBuildImage;
 
     constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
         super(parent, name);
+
+        if (props.buildScriptAssetEntrypoint && !props.buildScriptAsset) {
+            throw new Error('To use buildScriptAssetEntrypoint, supply buildScriptAsset as well.');
+        }
 
         this.role = props.role || new iam.Role(this, 'Role', {
             assumedBy: new cdk.ServicePrincipal('codebuild.amazonaws.com')
         });
 
-        const environment = this.renderEnvironment(props.environment, props.environmentVariables);
-
         let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
         if (props.cacheBucket) {
-            const cacheDir = props.cacheDir != null ? props.cacheDir : '';
+            const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue();
             cache = {
                 type: 'S3',
-                location: props.cacheBucket.arnForObjects(cacheDir)
+                location: new cdk.FnJoin('/', [props.cacheBucket.bucketName, cacheDir]),
             };
 
             props.cacheBucket.grantReadWrite(this.role);
         }
 
+        this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.UBUNTU_14_04_BASE;
+
         // let source "bind" to the project. this usually involves granting permissions
         // for the code build role to interact with the source.
-        const source = props.source;
-        source.bind(this);
+        this.source = props.source || new NoSource();
+        this.source.bind(this);
 
         const artifacts = this.parseArtifacts(props);
         artifacts.bind(this);
 
-        const sourceJson = source.toSourceJSON();
-        if (typeof props.buildSpec === 'string') {
-            sourceJson.buildSpec = props.buildSpec;
-        } else {
-            sourceJson.buildSpec = JSON.stringify(props.buildSpec);
+        // Inject download commands for asset if requested
+        const environmentVariables = props.environmentVariables || {};
+        const buildSpec = props.buildSpec || {};
+
+        if (props.buildScriptAsset) {
+            environmentVariables[S3_BUCKET_ENV] = { value: props.buildScriptAsset.s3BucketName };
+            environmentVariables[S3_KEY_ENV] = { value: props.buildScriptAsset.s3ObjectKey };
+            extendBuildSpec(buildSpec, this.buildImage.runScriptBuildspec(props.buildScriptAssetEntrypoint || 'build.sh'));
+            props.buildScriptAsset.grantRead(this.role);
         }
 
-        this.validateCodePipelineSettings(source, artifacts);
+        // Render the source and add in the buildspec
+        const sourceJson = this.source.toSourceJSON();
+        if (typeof buildSpec === 'string') {
+            sourceJson.buildSpec = buildSpec; // Filename to buildspec file
+        } else if (Object.keys(buildSpec).length > 0) {
+            // We have to pretty-print the buildspec, otherwise
+            // CodeBuild will not recognize it as an inline buildspec.
+            sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
+        }
+
+        this.validateCodePipelineSettings(artifacts);
 
         const resource = new cloudformation.ProjectResource(this, 'Resource', {
             description: props.description,
             source: sourceJson,
             artifacts: artifacts.toArtifactsJSON(),
             serviceRole: this.role.roleArn,
-            environment,
+            environment: this.renderEnvironment(props.environment, environmentVariables),
             encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
             badgeEnabled: props.badge,
             cache,
@@ -456,14 +522,14 @@ export class Project extends ProjectRef {
     }
 
     private createLoggingPermission() {
-        const logGroupArn = cdk.Arn.fromComponents({
+        const logGroupArn = cdk.ArnUtils.fromComponents({
             service: 'logs',
             resource: 'log-group',
             sep: ':',
-            resourceName: new cdk.FnConcat('/aws/codebuild/', this.projectName),
+            resourceName: `/aws/codebuild/${this.projectName}`,
         });
 
-        const logGroupStarArn = new cdk.FnConcat(logGroupArn, ':*');
+        const logGroupStarArn = `${logGroupArn}:*`;
 
         const p = new cdk.PolicyStatement();
         p.allow();
@@ -494,17 +560,16 @@ export class Project extends ProjectRef {
 
         const hasEnvironmentVars = Object.keys(vars).length > 0;
 
-        const buildImage = env.buildImage || LinuxBuildImage.UBUNTU_14_04_BASE;
-        const errors = buildImage.validate(env);
+        const errors = this.buildImage.validate(env);
         if (errors.length > 0) {
             throw new Error("Invalid CodeBuild environment: " + errors.join('\n'));
         }
 
         return {
-            type: buildImage.type,
-            image: buildImage.imageId,
-            privilegedMode: env.priviledged || false,
-            computeType: env.computeType || buildImage.defaultComputeType,
+            type: this.buildImage.type,
+            image: this.buildImage.imageId,
+            privilegedMode: env.privileged || false,
+            computeType: env.computeType || this.buildImage.defaultComputeType,
             environmentVariables: !hasEnvironmentVars ? undefined : Object.keys(vars).map(name => ({
                 name,
                 type: vars[name].type || BuildEnvironmentVariableType.PlainText,
@@ -517,15 +582,15 @@ export class Project extends ProjectRef {
         if (props.artifacts) {
             return props.artifacts;
         }
-        if (props.source.toSourceJSON().type === CODEPIPELINE_TYPE) {
+        if (this.source.toSourceJSON().type === CODEPIPELINE_TYPE) {
             return new CodePipelineBuildArtifacts();
         } else {
             return new NoBuildArtifacts();
         }
     }
 
-    private validateCodePipelineSettings(source: BuildSource, artifacts: BuildArtifacts) {
-        const sourceType = source.toSourceJSON().type;
+    private validateCodePipelineSettings(artifacts: BuildArtifacts) {
+        const sourceType = this.source.toSourceJSON().type;
         const artifactsType = artifacts.toArtifactsJSON().type;
 
         if ((sourceType === CODEPIPELINE_TYPE || artifactsType === CODEPIPELINE_TYPE) &&
@@ -570,7 +635,7 @@ export interface BuildEnvironment {
      *
      * @default false
      */
-    priviledged?: boolean;
+    privileged?: boolean;
 
     /**
      * The environment variables that your builds can use.
@@ -608,6 +673,11 @@ export interface IBuildImage {
      * @param buildEnvironment the current build environment
      */
     validate(buildEnvironment: BuildEnvironment): string[];
+
+    /**
+     * Make a buildspec to run the indicated script
+     */
+    runScriptBuildspec(entrypoint: string): any;
 }
 
 /**
@@ -652,6 +722,34 @@ export class LinuxBuildImage implements IBuildImage {
     public validate(_: BuildEnvironment): string[] {
         return [];
     }
+
+    public runScriptBuildspec(entrypoint: string): any {
+        return {
+            version: '0.2',
+            phases: {
+                pre_build: {
+                    commands: [
+                        // Better echo the location here; if this fails, the error message only contains
+                        // the unexpanded variables by default. It might fail if you're running an old
+                        // definition of the CodeBuild project--the permissions will have been changed
+                        // to only allow downloading the very latest version.
+                        `echo "Downloading scripts from s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}}"`,
+                        `aws s3 cp s3://\${${S3_BUCKET_ENV}}/\${${S3_KEY_ENV}} /tmp`,
+                        `mkdir -p /tmp/scriptdir`,
+                        `unzip /tmp/$(basename \$${S3_KEY_ENV}) -d /tmp/scriptdir`,
+                    ]
+                },
+                build: {
+                    commands: [
+                        'export SCRIPT_DIR=/tmp/scriptdir',
+                        `echo "Running ${entrypoint}"`,
+                        `chmod +x /tmp/scriptdir/${entrypoint}`,
+                        `/tmp/scriptdir/${entrypoint}`,
+                    ]
+                }
+            }
+        };
+    }
 }
 
 /**
@@ -677,6 +775,31 @@ export class WindowsBuildImage implements IBuildImage {
             ret.push("Windows images do not support the Small ComputeType");
         }
         return ret;
+    }
+
+    public runScriptBuildspec(entrypoint: string): any {
+        return {
+            version: '0.2',
+            phases: {
+                pre_build: {
+                    // Would love to do downloading here and executing in the next step,
+                    // but I don't know how to propagate the value of $TEMPDIR.
+                    //
+                    // Punting for someone who knows PowerShell well enough.
+                    commands: []
+                },
+                build: {
+                    commands: [
+                        `Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName`,
+                        `aws s3 cp s3://$env:${S3_BUCKET_ENV}/$env:${S3_KEY_ENV} $TEMPDIR\\scripts.zip`,
+                        'New-Item -ItemType Directory -Path $TEMPDIR\\scriptdir',
+                        'Expand-Archive -Path $TEMPDIR/scripts.zip -DestinationPath $TEMPDIR\\scriptdir',
+                        '$env:SCRIPT_DIR = "$TEMPDIR\\scriptdir"',
+                        `& $TEMPDIR\\scriptdir\\${entrypoint}`
+                    ]
+                }
+            }
+        };
     }
 }
 
@@ -706,4 +829,29 @@ export enum BuildEnvironmentVariableType {
     ParameterStore = 'PARAMETER_STORE'
 }
 
-export class ProjectName extends cdk.Token { }
+/**
+ * Extend buildSpec phases with the contents of another one
+ */
+function extendBuildSpec(buildSpec: any, extend: any) {
+    if (typeof buildSpec === 'string') {
+        throw new Error('Cannot extend buildspec that is given as a string. Pass the buildspec as a structure instead.');
+    }
+    if (buildSpec.version === '0.1') {
+        throw new Error('Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
+    }
+    if (buildSpec.version === undefined) {
+        buildSpec.version = extend.version;
+    }
+
+    if (!buildSpec.phases) {
+        buildSpec.phases = {};
+    }
+
+    for (const phaseName of Object.keys(extend.phases)) {
+        if (!(phaseName in buildSpec.phases)) { buildSpec.phases[phaseName] = {}; }
+        const phase = buildSpec.phases[phaseName];
+
+        if (!(phase.commands)) { phase.commands = []; }
+        phase.commands.push(...extend.phases[phaseName].commands);
+    }
+}

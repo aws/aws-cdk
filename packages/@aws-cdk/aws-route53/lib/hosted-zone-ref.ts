@@ -1,4 +1,4 @@
-import { Construct, Output, Token } from "@aws-cdk/cdk";
+import { Construct, Output } from "@aws-cdk/cdk";
 
 /**
  * Imported or created hosted zone
@@ -11,7 +11,7 @@ export abstract class HostedZoneRef extends Construct {
     /**
      * ID of this hosted zone
      */
-    public abstract readonly hostedZoneId: HostedZoneId;
+    public abstract readonly hostedZoneId: string;
 
     /**
      * FQDN of this hosted zone
@@ -23,16 +23,10 @@ export abstract class HostedZoneRef extends Construct {
      */
     public export(): HostedZoneRefProps {
         return {
-            hostedZoneId: new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue(),
+            hostedZoneId: new Output(this, 'HostedZoneId', { value: this.hostedZoneId }).makeImportValue().toString(),
             zoneName: this.zoneName,
         };
     }
-}
-
-/**
- * Hosted zone identifier
- */
-export class HostedZoneId extends Token {
 }
 
 /**
@@ -42,7 +36,7 @@ export interface HostedZoneRefProps {
     /**
      * Identifier of the hosted zone
      */
-    hostedZoneId: HostedZoneId;
+    hostedZoneId: string;
 
     /**
      * Name of the hosted zone
@@ -54,7 +48,7 @@ export interface HostedZoneRefProps {
  * Imported hosted zone
  */
 export class ImportedHostedZone extends HostedZoneRef {
-    public readonly hostedZoneId: HostedZoneId;
+    public readonly hostedZoneId: string;
 
     public readonly zoneName: string;
 

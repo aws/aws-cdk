@@ -1,5 +1,4 @@
 import { Token } from '../core/tokens';
-import { FnConcat } from './fn';
 import { AwsAccountId, AwsPartition } from './pseudo';
 
 export class PolicyDocument extends Token {
@@ -73,7 +72,7 @@ export class PrincipalPolicyFragment {
 }
 
 export class ArnPrincipal extends PolicyPrincipal {
-    constructor(public readonly arn: any) {
+    constructor(public readonly arn: string) {
         super();
     }
 
@@ -84,7 +83,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
     constructor(public readonly accountId: any) {
-        super(new FnConcat('arn:', new AwsPartition(), ':iam::', accountId, ':root'));
+        super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
     }
 }
 
@@ -92,7 +91,7 @@ export class AccountPrincipal extends ArnPrincipal {
  * An IAM principal that represents an AWS service (i.e. sqs.amazonaws.com).
  */
 export class ServicePrincipal extends PolicyPrincipal {
-    constructor(public readonly service: any) {
+    constructor(public readonly service: string) {
         super();
     }
 
@@ -209,15 +208,15 @@ export class PolicyStatement extends Token {
         return this;
     }
 
-    public addAwsPrincipal(arn: any): PolicyStatement {
+    public addAwsPrincipal(arn: string): PolicyStatement {
         return this.addPrincipal(new ArnPrincipal(arn));
     }
 
-    public addAwsAccountPrincipal(accountId: any): PolicyStatement {
+    public addAwsAccountPrincipal(accountId: string): PolicyStatement {
         return this.addPrincipal(new AccountPrincipal(accountId));
     }
 
-    public addServicePrincipal(service: any): PolicyStatement {
+    public addServicePrincipal(service: string): PolicyStatement {
         return this.addPrincipal(new ServicePrincipal(service));
     }
 
@@ -233,8 +232,8 @@ export class PolicyStatement extends Token {
     // Resources
     //
 
-    public addResource(resource: any): PolicyStatement {
-        this.resource.push(resource);
+    public addResource(arn: string): PolicyStatement {
+        this.resource.push(arn);
         return this;
     }
 
@@ -245,8 +244,8 @@ export class PolicyStatement extends Token {
         return this.addResource('*');
     }
 
-    public addResources(...resources: any[]): PolicyStatement {
-        resources.forEach(r => this.addResource(r));
+    public addResources(...arns: string[]): PolicyStatement {
+        arns.forEach(r => this.addResource(r));
         return this;
     }
 
@@ -257,14 +256,7 @@ export class PolicyStatement extends Token {
         return this.resource && this.resource.length > 0;
     }
 
-    /**
-     * Indicates if this permission has only a ``"*"`` resource associated with it.
-     */
-    public get isOnlyStarResource() {
-        return this.resource && this.resource.length === 1 && this.resource[0] === '*';
-    }
-
-    public describe(sid: any): PolicyStatement {
+    public describe(sid: string): PolicyStatement {
         this.sid = sid;
         return this;
     }
@@ -320,7 +312,7 @@ export class PolicyStatement extends Token {
         return this.addCondition(key, value);
     }
 
-    public limitToAccount(accountId: any): PolicyStatement {
+    public limitToAccount(accountId: string): PolicyStatement {
         return this.addCondition('StringEquals', new Token(() => {
             return { 'sts:ExternalId': accountId };
         }));
@@ -358,6 +350,8 @@ export class PolicyStatement extends Token {
                 if (values.length === 1) {
                     return values[0];
                 }
+
+                return values;
             }
 
             if (typeof(values) === 'object') {

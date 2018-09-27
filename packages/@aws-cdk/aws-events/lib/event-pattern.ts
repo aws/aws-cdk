@@ -1,5 +1,3 @@
-import { Arn } from "@aws-cdk/cdk";
-
 /**
  * Events in Amazon CloudWatch Events are represented as JSON objects. For more
  * information about JSON objects, see RFC 7159.
@@ -91,7 +89,7 @@ export interface EventPattern {
      * Auto Scaling groups, but API calls with AWS CloudTrail do not include
      * resource ARNs.
      */
-    resources?: Arn[];
+    resources?: string[];
 
     /**
      * A JSON object, whose content is at the discretion of the service

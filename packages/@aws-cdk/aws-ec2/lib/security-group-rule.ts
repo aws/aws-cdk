@@ -1,4 +1,3 @@
-import { Token } from "@aws-cdk/cdk";
 import { Connections, IConnectable } from "./connections";
 
 /**
@@ -9,6 +8,11 @@ export interface ISecurityGroupRule {
      * Whether the rule can be inlined into a SecurityGroup or not
      */
     readonly canInlineRule: boolean;
+
+    /**
+     * A unique identifier for this connection peer
+     */
+    readonly uniqueId: string;
 
     /**
      * Produce the ingress rule JSON for the given connection
@@ -27,8 +31,10 @@ export interface ISecurityGroupRule {
 export class CidrIPv4 implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
     public readonly connections: Connections = new Connections({ securityGroupRule: this });
+    public readonly uniqueId: string;
 
     constructor(private readonly cidrIp: string) {
+        this.uniqueId = cidrIp;
     }
 
     /**
@@ -60,8 +66,10 @@ export class AnyIPv4 extends CidrIPv4 {
 export class CidrIPv6 implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
     public readonly connections: Connections = new Connections({ securityGroupRule: this });
+    public readonly uniqueId: string;
 
     constructor(private readonly cidrIpv6: string) {
+        this.uniqueId = cidrIpv6;
     }
 
     /**
@@ -99,8 +107,10 @@ export class AnyIPv6 extends CidrIPv6 {
 export class PrefixList implements ISecurityGroupRule, IConnectable {
     public readonly canInlineRule = true;
     public readonly connections: Connections = new Connections({ securityGroupRule: this });
+    public readonly uniqueId: string;
 
     constructor(private readonly prefixListId: string) {
+        this.uniqueId = prefixListId;
     }
 
     public toIngressRuleJSON(): any {
@@ -154,6 +164,10 @@ export class TcpPort implements IPortRange {
             toPort: this.port
         };
     }
+
+    public toString() {
+        return `${this.port}`;
+    }
 }
 
 /**
@@ -162,7 +176,7 @@ export class TcpPort implements IPortRange {
 export class TcpPortFromAttribute implements IPortRange {
     public readonly canInlineRule = false;
 
-    constructor(private readonly port: Token) {
+    constructor(private readonly port: string) {
     }
 
     public toRuleJSON(): any {
@@ -171,6 +185,10 @@ export class TcpPortFromAttribute implements IPortRange {
             fromPort: this.port,
             toPort: this.port
         };
+    }
+
+    public toString() {
+        return '{IndirectPort}';
     }
 }
 
@@ -190,6 +208,10 @@ export class TcpPortRange implements IPortRange {
             toPort: this.endPort
         };
     }
+
+    public toString() {
+        return `${this.startPort}-${this.endPort}`;
+    }
 }
 
 /**
@@ -205,6 +227,10 @@ export class TcpAllPorts implements IPortRange {
             toPort: 65535
         };
     }
+
+    public toString() {
+        return 'ALL PORTS';
+    }
 }
 
 /**
@@ -219,5 +245,9 @@ export class AllConnections implements IPortRange {
             fromPort: -1,
             toPort: -1,
         };
+    }
+
+    public toString() {
+        return 'ALL TRAFFIC';
     }
 }

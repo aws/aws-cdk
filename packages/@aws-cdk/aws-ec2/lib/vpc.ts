@@ -2,7 +2,14 @@ import cdk = require('@aws-cdk/cdk');
 import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { VpcNetworkId, VpcNetworkRef, VpcSubnetId, VpcSubnetRef } from './vpc-ref';
+import { DEFAULT_SUBNET_NAME, subnetId } from './util';
+import { SubnetType, VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
+
 /**
  * VpcNetworkProps allows you to specify configuration options for a VPC
  */
@@ -42,7 +49,7 @@ export interface VpcNetworkProps {
     /**
      * The AWS resource tags to associate with the VPC.
      */
-    tags?: cdk.Tag[];
+    tags?: cdk.Tags;
 
     /**
      * Define the maximum number of AZs to use in this region
@@ -118,44 +125,6 @@ export enum DefaultInstanceTenancy {
 }
 
 /**
- * The type of Subnet
- */
-export enum SubnetType {
-
-    /**
-     * Isolated Subnets do not route Outbound traffic
-     *
-     * This can be good for subnets with RDS or
-     * Elasticache endpoints
-     */
-    Isolated = 1,
-
-    /**
-     * Subnet that routes to the internet, but not vice versa.
-     *
-     * Instances in a private subnet can connect to the Internet, but will not
-     * allow connections to be initiated from the Internet.
-     *
-     * Outbound traffic will be routed via a NAT Gateway. Preference being in
-     * the same AZ, but if not available will use another AZ. This is common for
-     * experimental cost conscious accounts or accounts where HA outbound
-     * traffic is not needed.
-     */
-    Private = 2,
-
-    /**
-     * Subnet connected to the Internet
-     *
-     * Instances in a Public subnet can connect to the Internet and can be
-     * connected to from the Internet as long as they are launched with public IPs.
-     *
-     * Public subnets route outbound traffic via an Internet Gateway.
-     */
-    Public = 3
-
-}
-
-/**
  * Specify configuration parameters for a VPC to be built
  */
 export interface SubnetConfiguration {
@@ -181,6 +150,11 @@ export interface SubnetConfiguration {
      * availability zone.
      */
     name: string;
+
+    /**
+     * The AWS resource tags to associate with the resource.
+     */
+    tags?: cdk.Tags;
 }
 
 /**
@@ -203,7 +177,7 @@ export interface SubnetConfiguration {
  *
  * }
  */
-export class VpcNetwork extends VpcNetworkRef {
+export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     /**
      * The default CIDR range used when creating VPCs.
@@ -220,18 +194,18 @@ export class VpcNetwork extends VpcNetworkRef {
     public static readonly DEFAULT_SUBNETS: SubnetConfiguration[] = [
         {
             subnetType: SubnetType.Public,
-            name: 'Public',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Public],
         },
         {
             subnetType: SubnetType.Private,
-            name: 'Private',
+            name: DEFAULT_SUBNET_NAME[SubnetType.Private],
         }
     ];
 
     /**
      * Identifier for this VPC
      */
-    public readonly vpcId: VpcNetworkId;
+    public readonly vpcId: string;
 
     /**
      * List of public subnets in this VPC
@@ -247,6 +221,16 @@ export class VpcNetwork extends VpcNetworkRef {
      * List of isolated subnets in this VPC
      */
     public readonly isolatedSubnets: VpcSubnetRef[] = [];
+
+    /**
+     * AZs for this VPC
+     */
+    public readonly availabilityZones: string[];
+
+    /**
+     * Manage tags for this construct and children
+     */
+    public readonly tags: cdk.TagManager;
 
     /**
      * Maximum Number of NAT Gateways used to control cost
@@ -268,19 +252,12 @@ export class VpcNetwork extends VpcNetworkRef {
     /**
      * Mapping of NatGateway by AZ
      */
-    private natGatewayByAZ: Obj<cdk.Token> = {};
+    private natGatewayByAZ: Obj<string> = {};
 
     /**
      * Subnet configurations for this VPC
      */
     private subnetConfiguration: SubnetConfiguration[] = [];
-
-    /**
-     * Maximum AZs to Uses for this VPC
-     *
-     * @default All
-     */
-    private availabilityZones: string[];
 
     /**
      * VpcNetwork creates a VPC that spans a whole region.
@@ -296,13 +273,15 @@ export class VpcNetwork extends VpcNetworkRef {
             throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
         }
 
+        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
+
         const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
         this.networkBuilder = new NetworkBuilder(cidrBlock);
 
         const enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
         const enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport;
         const instanceTenancy = props.defaultInstanceTenancy || 'default';
-        const tags = props.tags || [];
 
         // Define a VPC using the provided CIDR range
         this.resource = new cloudformation.VPCResource(this, 'Resource', {
@@ -310,7 +289,7 @@ export class VpcNetwork extends VpcNetworkRef {
             enableDnsHostnames,
             enableDnsSupport,
             instanceTenancy,
-            tags
+            tags: this.tags,
         });
 
         this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
@@ -319,7 +298,7 @@ export class VpcNetwork extends VpcNetworkRef {
            this.availabilityZones = this.availabilityZones.slice(0, props.maxAZs);
         }
 
-        this.vpcId = this.resource.ref;
+        this.vpcId = this.resource.vpcId;
         this.dependencyElements.push(this.resource);
 
         this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
@@ -336,7 +315,9 @@ export class VpcNetwork extends VpcNetworkRef {
 
         // Create an Internet Gateway and attach it if necessary
         if (allowOutbound) {
-            const igw = new cloudformation.InternetGatewayResource(this, 'IGW');
+            const igw = new cloudformation.InternetGatewayResource(this, 'IGW', {
+                tags: new cdk.TagManager(this),
+            });
             const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
                 internetGatewayId: igw.ref,
                 vpcId: this.resource.ref
@@ -360,10 +341,10 @@ export class VpcNetwork extends VpcNetworkRef {
     }
 
     /**
-     * @returns {Token} The IPv4 CidrBlock as returned by the VPC
+     * @returns The IPv4 CidrBlock as returned by the VPC
      */
-    public get cidr(): cdk.Token {
-        return this.resource.getAtt("CidrBlock");
+    public get cidr(): string {
+        return this.resource.getAtt("CidrBlock").toString();
     }
 
     /**
@@ -394,12 +375,13 @@ export class VpcNetwork extends VpcNetworkRef {
 
     private createSubnetResources(subnetConfig: SubnetConfiguration, cidrMask: number) {
         this.availabilityZones.forEach((zone, index) => {
-            const name: string = `${subnetConfig.name}Subnet${index + 1}`;
-            const subnetProps = {
+            const name = subnetId(subnetConfig.name, index);
+            const subnetProps: VpcSubnetProps = {
                 availabilityZone: zone,
                 vpcId: this.vpcId,
                 cidrBlock: this.networkBuilder.addSubnet(cidrMask),
                 mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.Public),
+                tags: subnetConfig.tags,
             };
 
             switch (subnetConfig.subnetType) {
@@ -439,7 +421,7 @@ export interface VpcSubnetProps {
     /**
      * The VPC which this subnet is part of
      */
-    vpcId: cdk.Token;
+    vpcId: string;
 
     /**
      * The CIDR notation for this subnet
@@ -452,12 +434,18 @@ export interface VpcSubnetProps {
      * Defaults to true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
      */
     mapPublicIpOnLaunch?: boolean;
+
+    /**
+     * The AWS resource tags to associate with the Subnet
+     */
+    tags?: cdk.Tags;
 }
 
 /**
  * Represents a new VPC subnet resource
  */
-export class VpcSubnet extends VpcSubnetRef {
+export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
+
     /**
      * The Availability Zone the subnet is located in
      */
@@ -466,25 +454,35 @@ export class VpcSubnet extends VpcSubnetRef {
     /**
      * The subnetId for this particular subnet
      */
-    public readonly subnetId: VpcSubnetId;
+    public readonly subnetId: string;
+
+    /**
+     * Manage tags for Construct and propagate to children
+     */
+    public readonly tags: cdk.TagManager;
 
     /**
      * The routeTableId attached to this subnet.
      */
-    private readonly routeTableId: cdk.Token;
+    private readonly routeTableId: string;
 
     constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
+        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
+
         this.availabilityZone = props.availabilityZone;
         const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
             vpcId: props.vpcId,
             cidrBlock: props.cidrBlock,
             availabilityZone: props.availabilityZone,
             mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
+            tags: this.tags,
         });
-        this.subnetId = subnet.ref;
+        this.subnetId = subnet.subnetId;
         const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
             vpcId: props.vpcId,
+            tags: new cdk.TagManager(this),
         });
         this.routeTableId = table.ref;
 
@@ -497,7 +495,7 @@ export class VpcSubnet extends VpcSubnetRef {
         this.dependencyElements.push(subnet, table, routeAssoc);
     }
 
-    protected addDefaultRouteToNAT(natGatewayId: cdk.Token) {
+    protected addDefaultRouteToNAT(natGatewayId: string) {
         new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
@@ -505,7 +503,7 @@ export class VpcSubnet extends VpcSubnetRef {
         });
     }
 
-    protected addDefaultRouteToIGW(gatewayId: cdk.Token) {
+    protected addDefaultRouteToIGW(gatewayId: string) {
         new cloudformation.RouteResource(this, `DefaultRoute`, {
             routeTableId: this.routeTableId,
             destinationCidrBlock: '0.0.0.0/0',
@@ -525,7 +523,7 @@ export class VpcPublicSubnet extends VpcSubnet {
     /**
      * Create a default route that points to a passed IGW
      */
-    public addDefaultIGWRouteEntry(gatewayId: cdk.Token) {
+    public addDefaultIGWRouteEntry(gatewayId: string) {
         this.addDefaultRouteToIGW(gatewayId);
     }
 
@@ -540,7 +538,8 @@ export class VpcPublicSubnet extends VpcSubnet {
             subnetId: this.subnetId,
             allocationId: new cloudformation.EIPResource(this, `EIP`, {
                 domain: 'vpc'
-            }).eipAllocationId
+            }).eipAllocationId,
+            tags: new cdk.TagManager(this),
         });
         return ngw.ref;
     }
@@ -557,7 +556,7 @@ export class VpcPrivateSubnet extends VpcSubnet {
     /**
      * Adds an entry to this subnets route table that points to the passed NATGatwayId
      */
-    public addDefaultNatRouteEntry(natGatewayId: cdk.Token) {
+    public addDefaultNatRouteEntry(natGatewayId: string) {
         this.addDefaultRouteToNAT(natGatewayId);
     }
 }

@@ -1,7 +1,8 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Connections, IConnectable, SecurityGroup, SecurityGroupId, SecurityGroupRef, TcpAllPorts, TcpPort, VpcNetwork } from '../lib';
+import { AllConnections, AnyIPv4, AnyIPv6, Connections, IConnectable, PrefixList, SecurityGroup, SecurityGroupRef,
+    TcpAllPorts, TcpPort, TcpPortFromAttribute, TcpPortRange, VpcNetwork } from '../lib';
 
 export = {
     'peering between two security groups does not recursive infinitely'(test: Test) {
@@ -29,7 +30,7 @@ export = {
         const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc });
         const somethingConnectable = new SomethingConnectable(new Connections({ securityGroup: sg1 }));
 
-        const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: new SecurityGroupId('sg-12345') });
+        const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
 
         // WHEN
         somethingConnectable.connections.allowTo(securityGroup, new TcpAllPorts(), 'Connect there');
@@ -53,6 +54,39 @@ export = {
             SourceSecurityGroupId: { "Fn::GetAtt": [ "SomeSecurityGroupEF219AD6", "GroupId" ] },
             ToPort: 65535
         }));
+
+        test.done();
+    },
+
+    'peer between all types of peers and port range types'(test: Test) {
+        // GIVEN
+        const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
+        const vpc = new VpcNetwork(stack, 'VPC');
+        const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+        const peers = [
+            new SecurityGroup(stack, 'PeerGroup', { vpc }),
+            new AnyIPv4(),
+            new AnyIPv6(),
+            new PrefixList('pl-012345'),
+        ];
+
+        const ports = [
+            new TcpPort(1234),
+            new TcpPortFromAttribute("port!"),
+            new TcpAllPorts(),
+            new TcpPortRange(80, 90),
+            new AllConnections()
+        ];
+
+        // WHEN
+        for (const peer of peers) {
+            for (const port of ports) {
+                sg.connections.allowTo(peer, port);
+            }
+        }
+
+        // THEN -- no crash
 
         test.done();
     }

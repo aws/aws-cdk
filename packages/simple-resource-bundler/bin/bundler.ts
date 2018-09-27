@@ -38,7 +38,7 @@ async function main() {
             'export = resources;'
         ];
 
-        fs.writeFile(path.join(output, 'resources.d.ts'), declContents.join('\n'));
+        await fs.writeFile(path.join(output, 'resources.d.ts'), declContents.join('\n'));
     }
 }
 

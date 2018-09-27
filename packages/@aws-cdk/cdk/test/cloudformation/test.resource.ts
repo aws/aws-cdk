@@ -1,20 +1,18 @@
 import { Test } from 'nodeunit';
-import { applyRemovalPolicy, Arn, Condition, Construct, DeletionPolicy,
-        FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement, Referenceable,
-        RemovalPolicy, Resource, Root, Stack, Token } from '../../lib';
+import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
+        FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement,
+        RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
 
 export = {
     'all resources derive from Resource, which derives from Entity'(test: Test) {
         const stack = new Stack();
 
-        const r = new Resource(stack, 'MyResource', {
+        new Resource(stack, 'MyResource', {
             type: 'MyResourceType',
             properties: {
                 Prop1: 'p1', Prop2: 123
             }
         });
-
-        test.ok(r instanceof Referenceable);
 
         test.deepEqual(stack.toCloudFormation(), {
             Resources: {
@@ -48,13 +46,6 @@ export = {
         test.equal(withoutHash(res1.logicalId), 'level1childoflevel1');
         test.equal(withoutHash(res2.logicalId), 'level1level2level3childoflevel3');
 
-        test.done();
-    },
-
-    'entity.ref will return a token for a CloudFormation {Ref} for this entity'(test: Test) {
-        const stack = new Stack();
-        const res = new Resource(stack, 'MyResource', { type: 'ResourceType' });
-        test.deepEqual(res.ref.resolve(), { Ref: 'MyResource' });
         test.done();
     },
 
@@ -349,6 +340,14 @@ export = {
                     'MyC3C2R38CE6F9F7' ] } } });
         test.done();
     },
+
+    'resource.ref returns the {Ref} token'(test: Test) {
+        const stack = new Stack();
+        const r = new Resource(stack, 'MyResource', { type: 'R' });
+
+        test.deepEqual(resolve(r.ref), { Ref: 'MyResource' });
+        test.done();
+    }
 };
 
 interface CounterProps {
@@ -357,22 +356,19 @@ interface CounterProps {
 }
 
 class Counter extends Resource {
-    public readonly arn: CounterArnAttr;
-    public readonly url: CounterUrlAttr;
+    public readonly arn: string;
+    public readonly url: string;
 
     constructor(parent: Construct, name: string, props: CounterProps) {
         super(parent, name, { type: 'My::Counter', properties: { Count: props.Count } });
-        this.arn = new CounterArnAttr(this.getAtt('Arn'));
-        this.url = new CounterUrlAttr(() => this.getAtt('URL'));
+        this.arn = this.getAtt('Arn').toString();
+        this.url = this.getAtt('URL').toString();
     }
 
     public increment(by = 1) {
         this.properties.Count += by;
     }
 }
-
-class CounterArnAttr extends Arn { }
-class CounterUrlAttr extends Token { }
 
 function withoutHash(logId: string) {
     return logId.substr(0, logId.length - 8);

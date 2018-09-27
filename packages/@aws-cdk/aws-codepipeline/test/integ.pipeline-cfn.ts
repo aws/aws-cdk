@@ -16,7 +16,7 @@ const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
     versioned: true,
 });
-const source = new s3.PipelineSource(stack, 'Source', {
+const source = new s3.PipelineSourceAction(stack, 'Source', {
     stage: sourceStage,
     artifactName: 'SourceArtifact',
     bucket,
@@ -32,7 +32,7 @@ const role = new Role(stack, 'CfnChangeSetRole', {
     assumedBy: new ServicePrincipal('cloudformation.amazonaws.com'),
 });
 
-new cfn.CreateReplaceChangeSet(stack, 'DeployCFN', {
+new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
     stage: cfnStage,
     changeSetName,
     stackName,

@@ -1,7 +1,7 @@
 import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
 import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { EncryptionKey, KeyArn } from '../lib';
+import { EncryptionKey } from '../lib';
 
 export = {
     'default key'(test: Test) {
@@ -69,7 +69,7 @@ export = {
         const stack = new Stack(app, 'Test');
 
         const key = new EncryptionKey(stack, 'MyKey');
-        const p = new PolicyStatement().addResource('*').addAction('kms:encrypt');
+        const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
         p.addAwsPrincipal('arn');
         key.addToResourcePolicy(p);
 
@@ -144,7 +144,7 @@ export = {
             enableKeyRotation: true,
             enabled: false
         });
-        const p = new PolicyStatement().addResource('*').addAction('kms:encrypt');
+        const p = new PolicyStatement().addAllResources().addAction('kms:encrypt');
         p.addAwsPrincipal('arn');
         key.addToResourcePolicy(p);
 
@@ -297,7 +297,7 @@ export = {
     'import/export can be used to bring in an existing key'(test: Test) {
         const stack1 = new Stack();
         const policy = new PolicyDocument();
-        policy.addStatement(new PolicyStatement().addResource('*'));
+        policy.addStatement(new PolicyStatement().addAllResources());
         const myKey = new EncryptionKey(stack1, 'MyKey', { policy });
         const exportedKeyRef = myKey.export();
 
@@ -355,9 +355,9 @@ export = {
         'succeed if set to true (default)'(test: Test) {
             const stack = new Stack();
 
-            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 
-            key.addToResourcePolicy(new PolicyStatement().addResource('*').addAction('*'));
+            key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'));
 
             test.done();
         },
@@ -366,10 +366,10 @@ export = {
 
             const stack = new Stack();
 
-            const key = EncryptionKey.import(stack, 'Imported', { keyArn: new KeyArn('foo/bar') });
+            const key = EncryptionKey.import(stack, 'Imported', { keyArn: 'foo/bar' });
 
             test.throws(() =>
-              key.addToResourcePolicy(new PolicyStatement().addResource('*').addAction('*'), /* allowNoOp */ false),
+              key.addToResourcePolicy(new PolicyStatement().addAllResources().addAction('*'), /* allowNoOp */ false),
               'Unable to add statement to IAM resource policy for KMS key: "foo/bar"');
 
             test.done();

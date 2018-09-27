@@ -31,7 +31,7 @@ export interface IPrincipal {
      * Attaches a managed policy to this principal.
      * @param arn The ARN of the managed policy
      */
-    attachManagedPolicy(arn: any): void;
+    attachManagedPolicy(arn: string): void;
 }
 
 /**

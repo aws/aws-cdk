@@ -120,7 +120,7 @@ export class Output extends StackElement {
         };
     }
 
-    public get ref(): Token {
+    public get ref(): string {
         throw new Error('Outputs cannot be referenced');
     }
 }

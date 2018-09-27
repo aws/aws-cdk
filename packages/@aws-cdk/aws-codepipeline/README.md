@@ -11,15 +11,30 @@ const pipeline = new Pipeline(this, 'MyFirstPipeline', {
 Append a Stage to the Pipeline:
 
 ```ts
-const sourceStage = new Stage(this, 'Source', {
-    pipeline,
+const sourceStage = pipeline.addStage('Source');
+```
+
+You can also instantiate the `Stage` Construct directly,
+which will add it to the Pipeline provided in its construction properties.
+
+You can insert the new Stage at an arbitrary point in the Pipeline:
+
+```ts
+const sourceStage = pipeline.addStage('Source', {
+    placement: {
+        // note: you can only specify one of the below properties
+        rightBefore: anotherStage,
+        justAfter: anotherStage,
+        atIndex: 3, // indexing starts at 0
+                    // pipeline.stageCount returns the number of Stages currently in the Pipeline
+    }
 });
 ```
 
 Add an Action to a Stage:
 
 ```ts
-new codecommit.PipelineSource(this, 'Source', {
+new codecommit.PipelineSourceAction(this, 'Source', {
     stage: sourceStage,
     artifactName: 'MyPackageSourceArtifact',
     repository: codecommit.RepositoryRef.import(this, 'MyExistingRepository', {

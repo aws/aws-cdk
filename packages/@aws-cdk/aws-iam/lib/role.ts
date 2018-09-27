@@ -1,5 +1,5 @@
-import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
-import { cloudformation, RoleArn } from './iam.generated';
+import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { cloudformation } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -15,10 +15,10 @@ export interface RoleProps {
 
     /**
      * A list of ARNs for managed policies associated with this role.
-     * You can add managed policies later using `addManagedPolicy(arn)`.
+     * You can add managed policies later using `attachManagedPolicy(arn)`.
      * @default No managed policies.
      */
-    managedPolicyArns?: any[];
+    managedPolicyArns?: string[];
 
     /**
      * The path associated with this role. For information about IAM paths, see
@@ -79,12 +79,12 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
     /**
      * Returns the ARN of this role.
      */
-    public readonly roleArn: RoleArn;
+    public readonly roleArn: string;
 
     /**
      * Returns the name of the role.
      */
-    public readonly roleName: RoleName;
+    public readonly roleName: string;
 
     /**
      * Returns the ARN of this role.
@@ -97,20 +97,20 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
     public readonly dependencyElements: IDependable[];
 
     private defaultPolicy?: Policy;
-    private readonly managedPolicies: string[];
+    private readonly managedPolicyArns: string[];
     private readonly attachedPolicies = new AttachedPolicies();
 
     constructor(parent: Construct, name: string, props: RoleProps) {
         super(parent, name);
 
         this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
-        this.managedPolicies = props.managedPolicyArns || [ ];
+        this.managedPolicyArns = props.managedPolicyArns || [ ];
 
         validateMaxSessionDuration(props.maxSessionDurationSec);
 
         const role = new cloudformation.RoleResource(this, 'Resource', {
             assumeRolePolicyDocument: this.assumeRolePolicy as any,
-            managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
+            managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
             path: props.path,
             roleName: props.roleName,
             maxSessionDuration: props.maxSessionDurationSec
@@ -118,7 +118,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
 
         this.roleArn = role.roleArn;
         this.principal = new ArnPrincipal(this.roleArn);
-        this.roleName = role.ref;
+        this.roleName = role.roleName;
         this.dependencyElements = [ role ];
     }
 
@@ -140,8 +140,8 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
      * Attaches a managed policy to this role.
      * @param arn The ARN of the managed policy to attach.
      */
-    public attachManagedPolicy(arn: any) {
-        this.managedPolicies.push(arn);
+    public attachManagedPolicy(arn: string) {
+        this.managedPolicyArns.push(arn);
     }
 
     /**
@@ -152,10 +152,6 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
         this.attachedPolicies.attach(policy);
         policy.attachToRole(this);
     }
-}
-
-export class RoleName extends Token {
-
 }
 
 function createAssumeRolePolicy(principal: PolicyPrincipal) {
