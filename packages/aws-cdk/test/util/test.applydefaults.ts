@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { applyDefaults } from '../lib';
+import { applyDefaults } from '../../lib/util';
 
 export = {
     'applyDefaults() works'(test: Test) {
