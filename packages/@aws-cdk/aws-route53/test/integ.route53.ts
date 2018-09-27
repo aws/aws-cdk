@@ -9,17 +9,17 @@ const stack = new cdk.Stack(app, 'aws-cdk-route53-integ');
 const vpc = new ec2.VpcNetwork(stack, 'VPC');
 
 const privateZone = new PrivateHostedZone(stack, 'PrivateZone', {
-    zoneName: 'cdk.local', vpc
+  zoneName: 'cdk.local', vpc
 });
 
 const publicZone = new PublicHostedZone(stack, 'PublicZone', {
-    zoneName: 'cdk.test'
+  zoneName: 'cdk.test'
 });
 
 new TXTRecord(privateZone, 'TXT', {
-    recordName: '_foo',
-    recordValue: 'Bar!',
-    ttl: 60
+  recordName: '_foo',
+  recordValue: 'Bar!',
+  ttl: 60
 });
 
 new cdk.Output(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });

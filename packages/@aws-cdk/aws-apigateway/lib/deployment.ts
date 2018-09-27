@@ -4,24 +4,24 @@ import { cloudformation } from './apigateway.generated';
 import { RestApiRef } from './restapi-ref';
 
 export interface DeploymentProps  {
-    /**
-     * The Rest API to deploy.
-     */
-    api: RestApiRef;
+  /**
+   * The Rest API to deploy.
+   */
+  api: RestApiRef;
 
-    /**
-     * A description of the purpose of the API Gateway deployment.
-     */
-    description?: string;
+  /**
+   * A description of the purpose of the API Gateway deployment.
+   */
+  description?: string;
 
-    /**
-     * When an API Gateway model is updated, a new deployment will automatically be created.
-     * If this is true (default), the old API Gateway Deployment resource will not be deleted.
-     * This will allow manually reverting back to a previous deployment in case for example
-     *
-     * @default false
-     */
-    retainDeployments?: boolean;
+  /**
+   * When an API Gateway model is updated, a new deployment will automatically be created.
+   * If this is true (default), the old API Gateway Deployment resource will not be deleted.
+   * This will allow manually reverting back to a previous deployment in case for example
+   *
+   * @default false
+   */
+  retainDeployments?: boolean;
 }
 
 /**
@@ -55,135 +55,135 @@ export interface DeploymentProps  {
  * automatically for the `restApi.latestDeployment` deployment.
  */
 export class Deployment extends cdk.Construct implements cdk.IDependable {
-    public readonly deploymentId: string;
-    public readonly api: RestApiRef;
+  public readonly deploymentId: string;
+  public readonly api: RestApiRef;
 
-    /**
-     * Allows taking a dependency on this construct.
-     */
-    public readonly dependencyElements = new Array<cdk.IDependable>();
+  /**
+   * Allows taking a dependency on this construct.
+   */
+  public readonly dependencyElements = new Array<cdk.IDependable>();
 
-    private readonly resource: LatestDeploymentResource;
+  private readonly resource: LatestDeploymentResource;
 
-    constructor(parent: cdk.Construct, id: string, props: DeploymentProps) {
-        super(parent, id);
+  constructor(parent: cdk.Construct, id: string, props: DeploymentProps) {
+    super(parent, id);
 
-        this.resource = new LatestDeploymentResource(this, 'Resource', {
-            description: props.description,
-            restApiId: props.api.restApiId,
-        });
+    this.resource = new LatestDeploymentResource(this, 'Resource', {
+      description: props.description,
+      restApiId: props.api.restApiId,
+    });
 
-        if (props.retainDeployments) {
-            this.resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
-        }
-
-        this.api = props.api;
-        this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
-        this.dependencyElements.push(this.resource);
+    if (props.retainDeployments) {
+      this.resource.options.deletionPolicy = cdk.DeletionPolicy.Retain;
     }
 
-    /**
-     * Adds a dependency for this deployment. Should be called by all resources and methods
-     * so they are provisioned before this Deployment.
-     */
-    public addDependency(dep: cdk.IDependable) {
-        this.resource.addDependency(dep);
-    }
+    this.api = props.api;
+    this.deploymentId = new cdk.Token(() => this.resource.deploymentId).toString();
+    this.dependencyElements.push(this.resource);
+  }
 
-    /**
-     * Adds a component to the hash that determines this Deployment resource's
-     * logical ID.
-     *
-     * This should be called by constructs of the API Gateway model that want to
-     * invalidate the deployment when their settings change. The component will
-     * be resolve()ed during synthesis so tokens are welcome.
-     */
-    public addToLogicalId(data: any) {
-        this.resource.addToLogicalId(data);
-    }
+  /**
+   * Adds a dependency for this deployment. Should be called by all resources and methods
+   * so they are provisioned before this Deployment.
+   */
+  public addDependency(dep: cdk.IDependable) {
+    this.resource.addDependency(dep);
+  }
+
+  /**
+   * Adds a component to the hash that determines this Deployment resource's
+   * logical ID.
+   *
+   * This should be called by constructs of the API Gateway model that want to
+   * invalidate the deployment when their settings change. The component will
+   * be resolve()ed during synthesis so tokens are welcome.
+   */
+  public addToLogicalId(data: any) {
+    this.resource.addToLogicalId(data);
+  }
 }
 
 class LatestDeploymentResource extends cloudformation.DeploymentResource {
-    private originalLogicalId?: string;
-    private lazyLogicalIdRequired: boolean;
-    private lazyLogicalId?: string;
-    private hashComponents = new Array<any>();
+  private originalLogicalId?: string;
+  private lazyLogicalIdRequired: boolean;
+  private lazyLogicalId?: string;
+  private hashComponents = new Array<any>();
 
-    constructor(parent: cdk.Construct, id: string, props: cloudformation.DeploymentResourceProps) {
-        super(parent, id, props);
+  constructor(parent: cdk.Construct, id: string, props: cloudformation.DeploymentResourceProps) {
+    super(parent, id, props);
 
-        // from this point, don't allow accessing logical ID before synthesis
-        this.lazyLogicalIdRequired = true;
+    // from this point, don't allow accessing logical ID before synthesis
+    this.lazyLogicalIdRequired = true;
+  }
+
+  /**
+   * Returns either the original or the custom logical ID of this resource.
+   */
+  public get logicalId() {
+    if (!this.lazyLogicalIdRequired) {
+      return this.originalLogicalId!;
     }
 
-    /**
-     * Returns either the original or the custom logical ID of this resource.
-     */
-    public get logicalId() {
-        if (!this.lazyLogicalIdRequired) {
-            return this.originalLogicalId!;
-        }
-
-        if (!this.lazyLogicalId) {
-            throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
-        }
-
-        return this.lazyLogicalId;
+    if (!this.lazyLogicalId) {
+      throw new Error('This resource has a lazy logical ID which is calculated just before synthesis. Use a cdk.Token to evaluate');
     }
 
-    /**
-     * Sets the logical ID of this resource.
-     */
-    public set logicalId(v: string) {
-        this.originalLogicalId = v;
+    return this.lazyLogicalId;
+  }
+
+  /**
+   * Sets the logical ID of this resource.
+   */
+  public set logicalId(v: string) {
+    this.originalLogicalId = v;
+  }
+
+  /**
+   * Returns a lazy reference to this resource (evaluated only upon synthesis).
+   */
+  public get ref() {
+    return new cdk.Token(() => ({ Ref: this.lazyLogicalId })).toString();
+  }
+
+  /**
+   * Does nothing.
+   */
+  public set ref(_v: string) {
+    return;
+  }
+
+  /**
+   * Allows adding arbitrary data to the hashed logical ID of this deployment.
+   * This can be used to couple the deployment to the API Gateway model.
+   */
+  public addToLogicalId(data: unknown) {
+    // if the construct is locked, it means we are already synthesizing and then
+    // we can't modify the hash because we might have already calculated it.
+    if (this.locked) {
+      throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 
-    /**
-     * Returns a lazy reference to this resource (evaluated only upon synthesis).
-     */
-    public get ref() {
-        return new cdk.Token(() => ({ Ref: this.lazyLogicalId })).toString();
+    this.hashComponents.push(data);
+  }
+
+  /**
+   * Hooks into synthesis to calculate a logical ID that hashes all the components
+   * add via `addToLogicalId`.
+   */
+  public validate() {
+    // if hash components were added to the deployment, we use them to calculate
+    // a logical ID for the deployment resource.
+    if (this.hashComponents.length === 0) {
+      this.lazyLogicalId = this.originalLogicalId;
+    } else {
+      const md5 = crypto.createHash('md5');
+      this.hashComponents
+        .map(c => cdk.resolve(c))
+        .forEach(c => md5.update(JSON.stringify(c)));
+
+      this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
     }
 
-    /**
-     * Does nothing.
-     */
-    public set ref(_v: string) {
-        return;
-    }
-
-    /**
-     * Allows adding arbitrary data to the hashed logical ID of this deployment.
-     * This can be used to couple the deployment to the API Gateway model.
-     */
-    public addToLogicalId(data: unknown) {
-        // if the construct is locked, it means we are already synthesizing and then
-        // we can't modify the hash because we might have already calculated it.
-        if (this.locked) {
-            throw new Error('Cannot modify the logical ID when the construct is locked');
-        }
-
-        this.hashComponents.push(data);
-    }
-
-    /**
-     * Hooks into synthesis to calculate a logical ID that hashes all the components
-     * add via `addToLogicalId`.
-     */
-    public validate() {
-        // if hash components were added to the deployment, we use them to calculate
-        // a logical ID for the deployment resource.
-        if (this.hashComponents.length === 0) {
-            this.lazyLogicalId = this.originalLogicalId;
-        } else {
-            const md5 = crypto.createHash('md5');
-            this.hashComponents
-                .map(c => cdk.resolve(c))
-                .forEach(c => md5.update(JSON.stringify(c)));
-
-            this.lazyLogicalId = this.originalLogicalId + md5.digest("hex");
-        }
-
-        return [];
-    }
+    return [];
+  }
 }

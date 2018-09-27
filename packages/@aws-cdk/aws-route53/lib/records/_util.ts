@@ -7,23 +7,23 @@ import { HostedZoneRef } from '../hosted-zone-ref';
  * qualifying relative names appropriately:
  *
  * @param providedName the user-specified name of the record.
- * @param zoneName     the fully-qualified name of the zone the record will be created in.
+ * @param zoneName   the fully-qualified name of the zone the record will be created in.
  *
  * @returns <ul>
- *              <li>If +providedName+ ends with a +.+, use it as-is</li>
- *              <li>If +providedName+ ends with +zoneName+, append a trailing +.+</li>
- *              <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
- *          </ul>
+ *        <li>If +providedName+ ends with a +.+, use it as-is</li>
+ *        <li>If +providedName+ ends with +zoneName+, append a trailing +.+</li>
+ *        <li>Otherwise, append +.+, +zoneName+ and a trailing +.+</li>
+ *      </ul>
  */
 export function determineFullyQualifiedDomainName(providedName: string, hostedZone: HostedZoneRef): string {
-    if (providedName.endsWith('.')) {
-        return providedName;
-    }
+  if (providedName.endsWith('.')) {
+    return providedName;
+  }
 
-    const suffix = `.${hostedZone.zoneName}`;
-    if (providedName.endsWith(suffix)) {
-        return `${providedName}.`;
-    }
+  const suffix = `.${hostedZone.zoneName}`;
+  if (providedName.endsWith(suffix)) {
+    return `${providedName}.`;
+  }
 
-    return `${providedName}${suffix}.`;
+  return `${providedName}${suffix}.`;
 }

@@ -21,39 +21,39 @@ export class SharedIniFile {
   private parsedContents?: {[key: string]: {[key: string]: string}};
 
   constructor(options?: SharedIniFileOptions) {
-    options = options || {};
-    this.isConfig = options.isConfig === true;
-    this.filename = options.filename || this.getDefaultFilepath();
+  options = options || {};
+  this.isConfig = options.isConfig === true;
+  this.filename = options.filename || this.getDefaultFilepath();
   }
 
   public async getProfile(profile: string) {
-    await this.ensureFileLoaded();
+  await this.ensureFileLoaded();
 
-    const profileIndex = profile !== (AWS as any).util.defaultProfile && this.isConfig ?
-      'profile ' + profile : profile;
+  const profileIndex = profile !== (AWS as any).util.defaultProfile && this.isConfig ?
+    'profile ' + profile : profile;
 
-    return this.parsedContents![profileIndex];
+  return this.parsedContents![profileIndex];
   }
 
   private getDefaultFilepath(): string {
-    return path.join(
-      os.homedir(),
-      '.aws',
-      this.isConfig ? 'config' : 'credentials'
-    );
+  return path.join(
+    os.homedir(),
+    '.aws',
+    this.isConfig ? 'config' : 'credentials'
+  );
   }
 
   private async ensureFileLoaded() {
-    if (this.parsedContents) {
-      return;
-    }
+  if (this.parsedContents) {
+    return;
+  }
 
-    if (!await fs.pathExists(this.filename)) {
-      this.parsedContents = {};
-      return;
-    }
+  if (!await fs.pathExists(this.filename)) {
+    this.parsedContents = {};
+    return;
+  }
 
-    const contents: string = (await fs.readFile(this.filename)).toString();
-    this.parsedContents = (AWS as any).util.ini.parse(contents);
+  const contents: string = (await fs.readFile(this.filename)).toString();
+  this.parsedContents = (AWS as any).util.ini.parse(contents);
   }
 }
