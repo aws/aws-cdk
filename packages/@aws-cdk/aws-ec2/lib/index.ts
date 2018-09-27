@@ -3,6 +3,7 @@ export * from './instance-types';
 export * from './machine-image';
 export * from './security-group';
 export * from './security-group-rule';
+export * from './user-data';
 export * from './vpc';
 export * from './vpc-ref';
 

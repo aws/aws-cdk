@@ -169,7 +169,11 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
      */
     public readonly tags: cdk.TagManager;
 
-    private readonly userDataLines = new Array<string>();
+    /**
+     * The user data associated with this AutoScalingGroup
+     */
+    public readonly userData: ec2.UserData;
+
     private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
     private readonly securityGroup: ec2.SecurityGroupRef;
     private readonly securityGroups: ec2.SecurityGroupRef[] = [];
@@ -199,16 +203,14 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
 
         // use delayed evaluation
         const machineImage = props.machineImage.getImage(this);
-        const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
-        const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
         const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
             imageId: machineImage.imageId,
             keyName: props.keyName,
             instanceType: props.instanceType.toString(),
-            securityGroups: securityGroupsToken,
+            securityGroups: new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId)),
             iamInstanceProfile: iamProfile.ref,
-            userData: userDataToken
+            userData: new cdk.Token(() => new cdk.FnBase64(this.userData.render()))
         });
 
         launchConfig.addDependency(this.role);
@@ -250,6 +252,11 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
         this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
         this.osType = machineImage.os.type;
 
+        this.userData = new ec2.UserData(this, 'UserData', {
+            os: machineImage.os,
+            defaultSignalResource: this.autoScalingGroup
+    });
+
         this.applyUpdatePolicies(props);
     }
 
@@ -290,9 +297,11 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     /**
      * Add command to the startup script of fleet instances.
      * The command must be in the scripting language supported by the fleet's OS (i.e. Linux/Windows).
+     *
+     * @deprecated Use userdata.addCommands() instead.
      */
     public addUserData(...scriptLines: string[]) {
-        scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
+        this.userData.addCommand(...scriptLines);
     }
 
     public autoScalingGroupName() {

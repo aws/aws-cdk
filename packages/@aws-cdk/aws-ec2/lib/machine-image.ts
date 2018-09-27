@@ -221,10 +221,29 @@ export enum OperatingSystemType {
 }
 
 /**
+ * Options for rendering UserData
+ */
+export interface UserDataOptions {
+    /**
+     * Whether to log commands as they're being executed
+     *
+     * @default true
+     */
+    verbose?: boolean;
+
+    /**
+     * Whether to stop executing as soon as an error is encountered
+     *
+     * @default false
+     */
+    strict?: boolean;
+}
+
+/**
  * Abstraction of OS features we need to be aware of
  */
 export abstract class OperatingSystem {
-    public abstract createUserData(scripts: string[]): string;
+    public abstract createUserData(scripts: string[], options: UserDataOptions): string;
     abstract get type(): OperatingSystemType;
 }
 
@@ -232,7 +251,7 @@ export abstract class OperatingSystem {
  * OS features specialized for Windows
  */
 export class WindowsOS extends OperatingSystem {
-    public createUserData(scripts: string[]): string {
+    public createUserData(scripts: string[], _options: UserDataOptions): string {
         return `<powershell>${scripts.join('\n')}</powershell>`;
     }
 
@@ -245,8 +264,14 @@ export class WindowsOS extends OperatingSystem {
  * OS features specialized for Linux
  */
 export class LinuxOS extends OperatingSystem {
-    public createUserData(scripts: string[]): string {
-        return '#!/bin/bash\n' + scripts.join('\n');
+    public createUserData(scripts: string[], options: UserDataOptions): string {
+        const bashFlags = [];
+        if (options.verbose !== false) { bashFlags.push('x'); }
+        if (options.strict) { bashFlags.push('eu'); }
+
+        const bashCommand = '#!/bin/bash' + (bashFlags.length > 0) ? ` -${bashFlags.join('')}` : '';
+
+        return [bashCommand].concat(scripts).join('\n');
     }
 
     get type(): OperatingSystemType {
