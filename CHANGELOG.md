@@ -1,10 +1,4 @@
 ## [UNRELEASED]
-
-
-### Bug Fixes
-
-* **aws-cloudfront:** Fix empty string defaultRootObject being replaced with the default value instead of passing the empty string to CloudFormation. Closes [#794](https://github.com/awslabs/aws-cdk/issues/794)
-
 ### CloudFormation Changes
 
 * __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.8.0` ([@RomainMuller] in [#767](https://github.com/awslabs/aws-cdk/pull/767))
