@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Properties common to all CloudFormation actions
  */
-export interface CloudFormationCommonProps extends codepipeline.CommonActionProps {
+export interface PipelineCloudFormationActionProps extends codepipeline.CommonActionProps {
     /**
      * The name of the stack to apply this action to
      */
@@ -37,7 +37,7 @@ export interface CloudFormationCommonProps extends codepipeline.CommonActionProp
 /**
  * Base class for Actions that execute CloudFormation
  */
-export abstract class CloudFormationAction extends codepipeline.DeployAction {
+export abstract class PipelineCloudFormationAction extends codepipeline.DeployAction {
     /**
      * Output artifact containing the CloudFormation call response
      *
@@ -45,7 +45,7 @@ export abstract class CloudFormationAction extends codepipeline.DeployAction {
      */
     public artifact?: codepipeline.Artifact;
 
-    constructor(parent: cdk.Construct, id: string, props: CloudFormationCommonProps, configuration?: any) {
+    constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
         super(parent, id, {
             stage: props.stage,
             artifactBounds: {
@@ -70,9 +70,9 @@ export abstract class CloudFormationAction extends codepipeline.DeployAction {
 }
 
 /**
- * Properties for the ExecuteChangeSet action.
+ * Properties for the PipelineExecuteChangeSetAction.
  */
-export interface ExecuteChangeSetProps extends CloudFormationCommonProps {
+export interface PipelineExecuteChangeSetActionProps extends PipelineCloudFormationActionProps {
     /**
      * Name of the change set to execute.
      */
@@ -82,8 +82,8 @@ export interface ExecuteChangeSetProps extends CloudFormationCommonProps {
 /**
  * CodePipeline action to execute a prepared change set.
  */
-export class ExecuteChangeSet extends CloudFormationAction {
-    constructor(parent: cdk.Construct, id: string, props: ExecuteChangeSetProps) {
+export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction {
+    constructor(parent: cdk.Construct, id: string, props: PipelineExecuteChangeSetActionProps) {
         super(parent, id, props, {
             ActionMode: 'CHANGE_SET_EXECUTE',
             ChangeSetName: props.changeSetName,
@@ -95,7 +95,7 @@ export class ExecuteChangeSet extends CloudFormationAction {
 /**
  * Properties common to CloudFormation actions that stage deployments
  */
-export interface CloudFormationDeploymentActionCommonProps extends CloudFormationCommonProps {
+export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFormationActionProps {
     /**
      * IAM role to assume when deploying changes.
      *
@@ -176,10 +176,10 @@ export interface CloudFormationDeploymentActionCommonProps extends CloudFormatio
 /**
  * Base class for all CloudFormation actions that execute or stage deployments.
  */
-export abstract class CloudFormationDeploymentAction extends CloudFormationAction {
+export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFormationAction {
     public readonly role: iam.Role;
 
-    constructor(parent: cdk.Construct, id: string, props: CloudFormationDeploymentActionCommonProps, configuration: any) {
+    constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
         const capabilities = props.fullPermissions && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities;
 
         super(parent, id, props, {
@@ -214,9 +214,9 @@ export abstract class CloudFormationDeploymentAction extends CloudFormationActio
 }
 
 /**
- * Properties for the CreateReplaceChangeSet action.
+ * Properties for the PipelineCreateReplaceChangeSetAction.
  */
-export interface CreateReplaceChangeSetProps extends CloudFormationDeploymentActionCommonProps {
+export interface PipelineCreateReplaceChangeSetActionProps extends PipelineCloudFormationDeployActionProps {
     /**
      * Name of the change set to create or update.
      */
@@ -234,8 +234,8 @@ export interface CreateReplaceChangeSetProps extends CloudFormationDeploymentAct
  * Creates the change set if it doesn't exist based on the stack name and template that you submit.
  * If the change set exists, AWS CloudFormation deletes it, and then creates a new one.
  */
-export class CreateReplaceChangeSet extends CloudFormationDeploymentAction {
-    constructor(parent: cdk.Construct, id: string, props: CreateReplaceChangeSetProps) {
+export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormationDeployAction {
+    constructor(parent: cdk.Construct, id: string, props: PipelineCreateReplaceChangeSetActionProps) {
         super(parent, id, props, {
             ActionMode: 'CHANGE_SET_REPLACE',
             ChangeSetName: props.changeSetName,
@@ -247,9 +247,9 @@ export class CreateReplaceChangeSet extends CloudFormationDeploymentAction {
 }
 
 /**
- * Properties for the CreateUpdate action
+ * Properties for the PipelineCreateUpdateStackAction.
  */
-export interface CreateUpdateProps extends CloudFormationDeploymentActionCommonProps {
+export interface PipelineCreateUpdateStackActionProps extends PipelineCloudFormationDeployActionProps {
     /**
      * Input artifact with the CloudFormation template to deploy
      */
@@ -285,8 +285,8 @@ export interface CreateUpdateProps extends CloudFormationDeploymentActionCommonP
  * Use this action to automatically replace failed stacks without recovering or
  * troubleshooting them. You would typically choose this mode for testing.
  */
-export class CreateUpdateStack extends CloudFormationDeploymentAction {
-    constructor(parent: cdk.Construct, id: string, props: CreateUpdateProps) {
+export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeployAction {
+    constructor(parent: cdk.Construct, id: string, props: PipelineCreateUpdateStackActionProps) {
         super(parent, id, props, {
             ActionMode: props.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
             TemplatePath: props.templatePath.location
@@ -296,10 +296,10 @@ export class CreateUpdateStack extends CloudFormationDeploymentAction {
 }
 
 /**
- * Properties for the DeleteOnly action
+ * Properties for the PipelineDeleteStackAction.
  */
 // tslint:disable-next-line:no-empty-interface
-export interface DeleteStackOnlyProps extends CloudFormationDeploymentActionCommonProps {
+export interface PipelineDeleteStackActionProps extends PipelineCloudFormationDeployActionProps {
 }
 
 /**
@@ -308,8 +308,8 @@ export interface DeleteStackOnlyProps extends CloudFormationDeploymentActionComm
  * Deletes a stack. If you specify a stack that doesn't exist, the action completes successfully
  * without deleting a stack.
  */
-export class DeleteStackOnly extends CloudFormationDeploymentAction {
-    constructor(parent: cdk.Construct, id: string, props: DeleteStackOnlyProps) {
+export class PipelineDeleteStackAction extends PipelineCloudFormationDeployAction {
+    constructor(parent: cdk.Construct, id: string, props: PipelineDeleteStackActionProps) {
         super(parent, id, props, {
             ActionMode: 'DELETE_ONLY',
         });

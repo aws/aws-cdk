@@ -37,7 +37,7 @@ export class NoSource extends BuildSource {
  * CodeCommit Source definition for a CodeBuild project
  */
 export class CodeCommitSource extends BuildSource {
-    constructor(private readonly repo: codecommit.Repository) {
+    constructor(private readonly repo: codecommit.RepositoryRef) {
         super();
     }
 

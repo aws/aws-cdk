@@ -2,7 +2,7 @@ import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './codecommit.generated';
-import { CommonPipelineSourceProps, PipelineSource } from './pipeline-action';
+import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
  * Properties for the {@link RepositoryRef.import} method.
@@ -43,6 +43,10 @@ export abstract class RepositoryRef extends cdk.Construct {
 
     /** The human-visible name of this Repository. */
     public abstract readonly repositoryName: string;
+    /** The HTTP clone URL */
+    public abstract readonly repositoryCloneUrlHttp: string;
+    /** The SSH clone URL */
+    public abstract readonly repositoryCloneUrlSsh: string;
 
     /**
      * Exports this Repository. Allows the same Repository to be used in 2 different Stacks.
@@ -56,16 +60,16 @@ export abstract class RepositoryRef extends cdk.Construct {
     }
 
     /**
-     * Convenience method for creating a new {@link PipelineSource} Action,
+     * Convenience method for creating a new {@link PipelineSourceAction},
      * and adding it to the given Stage.
      *
      * @param stage the Pipeline Stage to add the new Action to
      * @param name the name of the newly created Action
      * @param props the properties of the new Action
-     * @returns the newly created {@link PipelineSource} Action
+     * @returns the newly created {@link PipelineSourceAction}
      */
-    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceProps): PipelineSource {
-        return new PipelineSource(this.parent!, name, {
+    public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
+        return new PipelineSourceAction(this.parent!, name, {
             stage,
             repository: this,
             ...props,
@@ -181,6 +185,23 @@ class ImportedRepositoryRef extends RepositoryRef {
             resource: props.repositoryName,
         });
         this.repositoryName = props.repositoryName;
+    }
+
+    public get repositoryCloneUrlHttp() {
+        return this.repositoryCloneUrl('https');
+    }
+
+    public get repositoryCloneUrlSsh() {
+        return this.repositoryCloneUrl('ssh');
+    }
+
+    private repositoryCloneUrl(protocol: 'https' | 'ssh'): string {
+        return new cdk.FnConcat(`${protocol}://git-codecommit.`,
+                                new cdk.AwsRegion(),
+                                '.',
+                                new cdk.AwsURLSuffix(),
+                                '/v1/repos/',
+                                this.repositoryName).toString();
     }
 }
 

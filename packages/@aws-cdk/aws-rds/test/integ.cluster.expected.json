@@ -340,7 +340,7 @@
         }
       }
     },
-    "DatabaseSecurityGroupOpentotheworld94E9606E": {
+    "DatabaseSecurityGroupfrom00000IndirectPortF24F2E03": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",

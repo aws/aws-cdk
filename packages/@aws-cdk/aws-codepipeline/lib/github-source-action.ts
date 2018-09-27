@@ -2,9 +2,9 @@ import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * Construction properties of the {@link GitHubSource GitHub source action}.
+ * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
-export interface GitHubSourceProps extends actions.CommonActionProps {
+export interface GitHubSourceActionProps extends actions.CommonActionProps {
     /**
      * The name of the source's output artifact. Output artifacts are used by CodePipeline as
      * inputs into other actions.
@@ -51,8 +51,8 @@ export interface GitHubSourceProps extends actions.CommonActionProps {
 /**
  * Source that is provided by a GitHub repository.
  */
-export class GitHubSource extends actions.SourceAction {
-    constructor(parent: cdk.Construct, name: string, props: GitHubSourceProps) {
+export class GitHubSourceAction extends actions.SourceAction {
+    constructor(parent: cdk.Construct, name: string, props: GitHubSourceActionProps) {
         super(parent, name, {
             stage: props.stage,
             owner: 'ThirdParty',

@@ -1,4 +1,5 @@
 import { Test, testCase } from 'nodeunit';
+import {} from '../lib';
 
 exports = testCase({
     notTested(test: Test) {

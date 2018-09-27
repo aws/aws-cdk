@@ -6,6 +6,8 @@ if [ -z "${ver}" ]; then
   exit 1
 fi
 
+/bin/bash ./install.sh
+
 lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
 
 # Update CHANGELOG.md only at the root
