@@ -3,11 +3,11 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { NeptuneDatabase } from '../lib';
 
-exports = {
+export = {
   'check that instantiation works'(test: Test) {
     const stack = new cdk.Stack();
 
-    const vpc = new ec2.VpcNetwork(this, 'VPC');
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
 
     new NeptuneDatabase(stack, 'Database', {
       masterUser: {
