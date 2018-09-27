@@ -347,6 +347,229 @@ export = {
 
     test.deepEqual(resolve(r.ref), { Ref: 'MyResource' });
     test.done();
+  },
+
+  'overrides': {
+    'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addOverride('Type', 'YouCanEvenOverrideTheType');
+      r.addOverride('Metadata', { Key: 12 });
+      r.addOverride('Use.Dot.Notation', 'To create subtrees');
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'YouCanEvenOverrideTheType',
+           Use: { Dot: { Notation: 'To create subtrees' } },
+           Metadata: { Key: 12 } } } });
+
+      test.done();
+    },
+
+    'addOverride(p, null) will assign an "null" value'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const r = new Resource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: {
+          Hello: {
+            World: {
+              Value1: 'Hello',
+              Value2: 129,
+            }
+          }
+        }
+      });
+
+      // WHEN
+      r.addOverride('Properties.Hello.World.Value2', null);
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
+
+      test.done();
+    },
+
+    'addOverride(p, undefined) can be used to delete a value'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const r = new Resource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: {
+          Hello: {
+            World: {
+              Value1: 'Hello',
+              Value2: 129,
+            }
+          }
+        }
+      });
+
+      // WHEN
+      r.addOverride('Properties.Hello.World.Value2', undefined);
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+
+      test.done();
+    },
+
+    'addOverride(p, undefined) will not create empty trees'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const r = new Resource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addPropertyOverride('Tree.Exists', 42);
+      r.addPropertyOverride('Tree.Does.Not.Exist', undefined);
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties: { Tree: { Exists: 42 } } } } });
+
+      test.done();
+    },
+
+    'addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar `undefined`'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+
+      const r = new Resource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: {
+          Hello: {
+            World: {
+              Value1: 'Hello',
+              Value2: 129,
+              Value3: [ 'foo', 'bar' ]
+            }
+          }
+        }
+      });
+
+      // WHEN
+      r.addDeletionOverride('Properties.Hello.World.Value2');
+      r.addPropertyDeletionOverride('Hello.World.Value3');
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+
+      test.done();
+    },
+
+    'addOverride(p, v) will overwrite any non-objects along the path'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r = new Resource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: {
+          Hello: {
+            World: 42
+          }
+        }
+      });
+
+      // WHEN
+      r.addOverride('Properties.Override1', [ 'Hello', 123 ]);
+      r.addOverride('Properties.Override1.Override2', { Heyy: [ 1 ] });
+      r.addOverride('Properties.Hello.World.Foo.Bar', 42);
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties:
+            { Hello: { World: { Foo: { Bar: 42 } } },
+            Override1: {
+              Override2: { Heyy: [ 1] }
+            } } } } });
+      test.done();
+    },
+
+    'addPropertyOverride(pp, v) is a sugar for overriding properties'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const r = new Resource(stack, 'MyResource', {
+        type: 'AWS::Resource::Type',
+        properties: { Hello: { World: 42 } }
+      });
+
+      // WHEN
+      r.addPropertyOverride('Hello.World', { Hey: 'Jude' });
+
+      // THEN
+      test.deepEqual(stack.toCloudFormation(), { Resources:
+        { MyResource:
+           { Type: 'AWS::Resource::Type',
+           Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
+      test.done();
+    },
+
+    'untypedPropertyOverrides': {
+
+      'can be used by derived classes to specify overrides before render()'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource', {
+          prop1: 'foo'
+        });
+
+        r.setProperty('prop2', 'bar');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
+        test.done();
+      },
+
+      '"properties" is undefined'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource');
+
+        r.setProperty('prop3', 'zoo');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP3: 'zoo' } } } });
+        test.done();
+      },
+
+      '"properties" is empty'(test: Test) {
+        const stack = new Stack();
+
+        const r = new CustomizableResource(stack, 'MyResource', { });
+
+        r.setProperty('prop3', 'zoo');
+        r.setProperty('prop2', 'hey');
+
+        test.deepEqual(stack.toCloudFormation(), { Resources:
+          { MyResource:
+             { Type: 'MyResourceType',
+               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
+        test.done();
+      }
+    }
   }
 };
 
@@ -372,4 +595,22 @@ class Counter extends Resource {
 
 function withoutHash(logId: string) {
   return logId.substr(0, logId.length - 8);
+}
+
+class CustomizableResource extends Resource {
+  constructor(parent: Construct, id: string, props?: any) {
+    super(parent, id, { type: 'MyResourceType', properties: props });
+  }
+
+  public setProperty(key: string, value: any) {
+    this.untypedPropertyOverrides[key] = value;
+  }
+
+  public renderProperties(properties: any) {
+    return {
+      PROP1: properties.prop1,
+      PROP2: properties.prop2,
+      PROP3: properties.prop3
+    };
+  }
 }
