@@ -68,7 +68,7 @@ export async function deployStack(stack: cxapi.SynthesizedStack,
     const monitor = quiet ? undefined : new StackActivityMonitor(cfn, deployName, stack.metadata, changeSetDescription.Changes.length).start();
     debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
     await waitForStack(cfn, deployName);
-    if (monitor) { monitor.stop(); }
+    if (monitor) { await monitor.stop(); }
     debug('Stack %s has completed updating', deployName);
     return { noOp: false, outputs: await getStackOutputs(cfn, deployName), stackArn: changeSet.StackId! };
 }
@@ -127,7 +127,7 @@ export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK, deployName?
     const monitor = quiet ? undefined : new StackActivityMonitor(cfn, deployName).start();
     await cfn.deleteStack({ StackName: deployName }).promise().catch(e => { throw e; });
     const destroyedStack = await waitForStack(cfn, deployName, false);
-    if (monitor) { monitor.stop(); }
+    if (monitor) { await monitor.stop(); }
     if (destroyedStack && destroyedStack.StackStatus !== 'DELETE_COMPLETE') {
         const status = StackStatus.fromStackDescription(destroyedStack);
         throw new Error(`Failed to destroy ${deployName}: ${status}`);
