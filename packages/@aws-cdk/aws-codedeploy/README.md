@@ -47,6 +47,50 @@ const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'Existi
 });
 ```
 
+#### Load balancers
+
+You can [specify a load balancer](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html)
+with the `loadBalancer` property when creating a Deployment Group.
+
+With Classic Elastic Load Balancer, you provide it directly:
+
+```ts
+import lb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const elb = new lb.LoadBalancer(this, 'ELB', {
+    // ...
+});
+elb.addTarget(/* ... */);
+elb.addListener({
+    // ...
+});
+
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
+    loadBalancer: elb,
+});
+```
+
+With Application Load Balancer or Network Load Balancer,
+you provide a Target Group as the load balancer:
+
+```ts
+import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
+    // ...
+});
+const listener = alb.addListener('Listener', {
+    // ...
+});
+const targetGroup = listener.addTargets('Fleet', {
+    // ...
+});
+
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
+    loadBalancer: targetGroup,
+});
+```
+
 ### Deployment Configurations
 
 You can also pass a Deployment Configuration when creating the Deployment Group:
