@@ -106,15 +106,15 @@ were part of your app.
 Access the AWS CloudFormation Layer
 ===================================
 
-This topic discusses ways to work around gaps and missing features at the AWS
-Construct Library. We also refer to this as an "escape hatch", as it allows
-users to escape from the abstraction boundary defined by the AWS Construct and
-patch the underlying resources.
+This topic discusses ways to directly modify the underlying CloudFormation
+resources at the AWS Construct Library. We also call this technique an "escape
+hatch", as it allows users to "escape" from the abstraction boundary defined by
+the AWS Construct and patch the underlying resources.
 
 .. important::
 
-   **We generally do not recommend this method, as it breaks the abstraction
-   layer and can potentially produce invalid results**.
+   **We do not recommend this method, as it breaks the abstraction layer and
+   might produce unexpected results**.
 
    Furthermore, the internal implementation of an AWS construct is not part of
    the API compatibility guarantees that we can make. This means that updates to
@@ -128,22 +128,22 @@ encapsulates the :py:class:`@aws-cdk/aws-s3.cloudformation.BucketResource`. When
 a stack that includes an AWS construct is synthesized, the CloudFormation
 definition of the underlying resources are included in the resulting template.
 
-In the fullness of time, the APIs provided by AWS constructs are expected to
-support all the services and capabilities offered by AWS, but we are aware that
-the library still has many gaps both at the service level (some services simply
-don't have any constructs yet) and at the resource level (an AWS construct
-exists, but some features are missing).
+Eventually, the APIs provided by AWS constructs are expected to support all the
+services and capabilities offered by AWS, but we are aware that the library
+still has many gaps both at the service level (some services don't have any
+constructs yet) and at the resource level (an AWS construct exists, but some
+features are missing).
 
 .. note::
 
    If you encounter a missing capability in the AWS Construct Library, whether
-   it is an entire library, a specific resource or a feature, please consider to
+   it is an entire library, a specific resource or a feature,
    `raise an issue <https://github.com/awslabs/aws-cdk/issues/new>`_ on GitHub,
    and letting us know.
 
 This topic covers the following use cases:
 
-- How to access CloudFormation the internal resources encapsulated by an AWS construct
+- How to access the low-level CloudFormation resources encapsulated by an AWS construct
 - How to specify resource options such as metadata, dependencies on resources
 - How to add overrides to a CloudFormation resource and property definitions
 - How to directly define low-level CloudFormation resources without an AWS construct
@@ -155,8 +155,8 @@ Accessing Low-level Resources
 -----------------------------
 
 You can use :py:meth:`construct.findChild(id) <@aws-cdk/cdk.Construct.findChild>`
-to access any child of this construct by it's construct ID. By convention, the "main"
-resource of any AWS Construct will always be called ``"Resource"``.
+to access any child of this construct by its construct ID. By convention, the "main"
+resource of any AWS Construct is called ``"Resource"``.
 
 The following example shows how to access the underlying S3 bucket resource
 given an :py:class:`s3.Bucket <@aws-cdk/s3.Bucket>` construct:
@@ -166,17 +166,17 @@ given an :py:class:`s3.Bucket <@aws-cdk/s3.Bucket>` construct:
    // let's create an AWS bucket construct
    const bucket = new s3.Bucket(this, 'MyBucket');
 
-   // we use our "knoweledge" that the main construct is called "Resource" and
+   // we use our knowledge that the main construct is called "Resource" and
    // that it's actual type is s3.cloudformation.BucketResource; const
-   bucketResource = bucket.findResource('Resource') as s3.cloudformation.BucketResource;
+   const bucketResource = bucket.findResource('Resource') as s3.cloudformation.BucketResource;
 
 At this point, ``bucketResource`` represents the low-level CloudFormation resource of type
 :py:class:`s3.cloudformation.BucketResource <@aws-cdk/aws-s3.cloudformation.BucketResource>`
 encapsulated by our bucket.
 
 :py:meth:`construct.findChild(id) <@aws-cdk/cdk.Construct.findChild>` will fail
-if the child could not be located, which means that if the underlying L2 changes
-the IDs or structure for some reason, synthesis will fail.
+if the child could not be located, which means that if the underlying |l2| changes
+the IDs or structure for some reason, synthesis fails.
 
 It is also possible to use :py:meth:`construct.children <@aws-cdk/cdk.Construct.children>` for more
 advanced queries. For example, we can look for a child that has a certain CloudFormation resource
@@ -188,9 +188,10 @@ type:
       bucket.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket')
       as s3.cloudformation.BucketResource;
 
-From that point, users are interacting with the strong-typed L1 resources (which
-extend :py:class:`cdk.Resource <@aws-cdk/cdk.Resource>`), so we will look into
-how to extend their surface area to support the various requirements.
+From that point, users are interacting with CloudFormation resource classes
+(which extend :py:class:`cdk.Resource <@aws-cdk/cdk.Resource>`), so we will look
+into how to use their APIs in order to modify the behavior of the AWS construct
+at hand.
 
 Resource Options
 ----------------
@@ -213,7 +214,7 @@ For example, this code:
 
    bucketResource.addDependency(otherBucket.findChild('Resource') as cdk.Resource);
 
-Will synthesize the following template:
+Synthesizes the following template:
 
 .. code-block:: json
 
@@ -239,7 +240,7 @@ CloudFormation schema of the resource, and use code-completion and
 type-checking.
 
 You will normally use this mechanism when a certain feature is available at the
-CloudFormation layer but was not exposed by the AWS Construct.
+CloudFormation layer but is not exposed by the AWS Construct.
 
 The following example sets a bucket's analytics configuration:
 
@@ -273,8 +274,9 @@ For example:
 
 .. code-block:: ts
 
-   // define an override at the resource definition root
-   bucketResource.addOverride('Transform', 'Boom');
+   // define an override at the resource definition root, you can even modify the "Type"
+   // of the resource if needed.
+   bucketResource.addOverride('Type', 'AWS::S3::SpecialBucket');
 
    // define an override for a property (both are equivalent operations):
    bucketResource.addPropertyOverride('VersioningConfiguration.Status', 'NewStatus');
@@ -284,15 +286,15 @@ For example:
    // with the values set by the higher-level construct
    bucketResource.addPropertyOverride('LoggingConfiguration.DestinationBucketName', otherBucket.bucketName);
 
-   // it is also possible to assign a `null` value if this is your thing
+   // it is also possible to assign a `null` value
    bucketResource.addPropertyOverride('Foo.Bar', null);
 
-Will synthesize to:
+Synthesizes to:
 
 .. code-block:: json
 
    {
-      "Type": "AWS::S3::Bucket",
+      "Type": "AWS::S3::SpecialBucket",
       "Properties": {
          "Foo": {
             "Bar": null
@@ -305,8 +307,7 @@ Will synthesize to:
                "Ref": "Other34654A52"
             }
         }
-      },
-      "Transform": "Boom"
+      }
    }
 
 Use ``undefined``, :py:meth:`cdk.Resource.addDeletionOverride <@aws-cdk/cdk.Resource.addDeletionOverride>`
@@ -324,7 +325,7 @@ to delete values:
    bucketResource.addPropertyOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.EncryptEverythingAndAlways', true);
    bucketResource.addPropertyDeletionOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.ServerSideEncryptionByDefault');
 
-Will synthesize to:
+Synthesizes to:
 
 .. code-block:: json
 
@@ -348,8 +349,8 @@ Directly Defining CloudFormation Resources
 -------------------------------------------
 
 It is also possible to explicitly define CloudFormation resources in your stack.
-To that end, simply instantiate one of the constructs under the
-``cloudformation`` namespace of the dedicated library.
+To that end, instantiate one of the constructs under the ``cloudformation``
+namespace of the dedicated library.
 
 .. code-block:: ts
 
@@ -359,11 +360,10 @@ To that end, simply instantiate one of the constructs under the
       ]
    });
 
-In the rare case where you wish to define a resource that doesn't have a
-corresponding ``cloudformation`` class (i.e. a new resource that was not yet
-published in the CloudFormation resource specification), it is possible to
-simply instantiate the :py:class:`cdk.Resource <@aws-cdk/cdk.Resource>`
-object:
+In the rare case where you want to define a resource that doesn't have a
+corresponding ``cloudformation`` class (such as a new resource that was not yet
+published in the CloudFormation resource specification), you can instantiate the
+:py:class:`cdk.Resource <@aws-cdk/cdk.Resource>` object:
 
 .. code-block:: ts
 
