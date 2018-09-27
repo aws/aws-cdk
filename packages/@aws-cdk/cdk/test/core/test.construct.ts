@@ -106,7 +106,7 @@ export = {
     test.equal(t.root.toString(), 'Root');
     test.equal(t.child1_1_1.toString(), 'Construct [Child1/Child11/Child111]');
     test.equal(t.child2.toString(), 'Construct [Child2]');
-    test.equal(t.root.toTreeString(), 'Root\n  Construct [Child1]\n  Construct [Child11]\n    Construct [Child111]\n  Construct [Child12]\n  Construct [Child2]\n  Construct [Child21]\n');
+    test.equal(t.root.toTreeString(), 'Root\n  Construct [Child1]\n    Construct [Child11]\n      Construct [Child111]\n    Construct [Child12]\n  Construct [Child2]\n    Construct [Child21]\n');
     test.done();
   },
 

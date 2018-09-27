@@ -40,7 +40,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: "{\n  \"phases\": [\n  \"say hi\"\n  ]\n}",
+        BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
       }
     }));
 
