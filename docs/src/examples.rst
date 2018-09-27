@@ -176,7 +176,7 @@ The following example creates the Aurora database **MyAuroraDatabase**.
            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
            vpc: vpc,
            vpcPlacement: {
-             usePublicSubnets: true
+             subnetsToUse: ec2.SubnetType.Public
            }
          }
        });

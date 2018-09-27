@@ -8,29 +8,29 @@ import { Test } from 'nodeunit';
 // export const cdk = codeGenTest(TargetLibrary.CDK, 'expected.cdk.output', path.join(__dirname, 'enrichments'));
 
 export = {
-    'test me'(test: Test) {
-        test.done();
-    }
+  'test me'(test: Test) {
+    test.done();
+  }
 };
 
 // function codeGenTest(target: TargetLibrary, expectedFileName: string, enrichmentsDir?: string) {
-//     return async function(test: Test) {
-//         let outdir = fs.mkdtempSync('/tmp/cfngen');
-//         let outfile = path.join(outdir, 'out.ts');
+//   return async function(test: Test) {
+//     let outdir = fs.mkdtempSync('/tmp/cfngen');
+//     let outfile = path.join(outdir, 'out.ts');
 
-//         try {
-//             await generate(outfile, target, enrichmentsDir);
-//         }
-//         catch (e) {
-//             console.log(e);
-//             throw e;
-//         }
-
-//         let expectedPath = path.join(__dirname, expectedFileName);
-//         let expected = fs.readFileSync(expectedPath);
-//         let actual = fs.readFileSync(outfile);
-
-//         test.deepEqual(actual, expected, `Expected: ${expectedPath}, actual: ${outfile}`);
-//         test.done();
+//     try {
+//       await generate(outfile, target, enrichmentsDir);
 //     }
+//     catch (e) {
+//       console.log(e);
+//       throw e;
+//     }
+
+//     let expectedPath = path.join(__dirname, expectedFileName);
+//     let expected = fs.readFileSync(expectedPath);
+//     let actual = fs.readFileSync(outfile);
+
+//     test.deepEqual(actual, expected, `Expected: ${expectedPath}, actual: ${outfile}`);
+//     test.done();
+//   }
 // }

@@ -15,35 +15,35 @@ const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
 const buildStage = new codepipeline.Stage(stack, 'Build', { pipeline });
 
 const repository = new codecommit.Repository(stack, 'CodeCommitRepo', {
-    repositoryName: 'foo'
+  repositoryName: 'foo'
 });
 const project = new codebuild.PipelineProject(stack, 'BuildProject');
 
 const sourceAction = new codecommit.PipelineSourceAction(pipeline, 'CodeCommitSource', {
-    stage: sourceStage,
-    artifactName: 'Source',
-    repository,
+  stage: sourceStage,
+  artifactName: 'Source',
+  repository,
 });
 new codebuild.PipelineBuildAction(stack, 'CodeBuildAction', {
-    stage: buildStage,
-    inputArtifact: sourceAction.artifact,
-    project
+  stage: buildStage,
+  inputArtifact: sourceAction.artifact,
+  project
 });
 
 const topic = new sns.Topic(stack, 'MyTopic');
 
 pipeline.onStateChange('OnPipelineStateChange').addTarget(topic, {
-    textTemplate: 'Pipeline <pipeline> changed state to <state>',
-    pathsMap: {
-        pipeline: '$.detail.pipeline',
-        state: '$.detail.state'
-    }
+  textTemplate: 'Pipeline <pipeline> changed state to <state>',
+  pathsMap: {
+    pipeline: '$.detail.pipeline',
+    state: '$.detail.state'
+  }
 });
 
 sourceStage.onStateChange('OnSourceStateChange', topic);
 
 sourceAction.onStateChange('OnActionStateChange', topic).addEventPattern({
-    detail: { state: [ 'STARTED' ] }
+  detail: { state: [ 'STARTED' ] }
 });
 
 process.stdout.write(app.run());
