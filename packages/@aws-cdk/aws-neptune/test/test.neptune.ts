@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { NeptuneDatabase } from '../lib';
 
-exports = {
+export = {
   'check that instantiation works'(test: Test) {
     const stack = new cdk.Stack();
 
