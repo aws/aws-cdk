@@ -9,6 +9,7 @@ class ChildTagger extends Construct implements ITaggable {
         this.tags = new TagManager(parent);
     }
 }
+
 class Child extends Construct {
     constructor(parent: Construct, name: string) {
         super(parent, name);
@@ -16,7 +17,6 @@ class Child extends Construct {
 }
 
 export = {
-
     'TagManger handles tags for a Contruct Tree': {
         'setTag by default propagates to children'(test: Test) {
             const root = new Root();

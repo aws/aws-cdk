@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { flatMap, flatten, partition } from '../lib';
+import { flatMap, flatten, partition } from '../../lib/util';
 
 export = {
     'flatten combines arrays'(test: Test) {

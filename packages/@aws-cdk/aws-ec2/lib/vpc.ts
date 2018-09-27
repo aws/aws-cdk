@@ -1,5 +1,4 @@
 import cdk = require('@aws-cdk/cdk');
-import { Obj } from '@aws-cdk/util';
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, subnetId } from './util';
@@ -252,7 +251,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     /**
      * Mapping of NatGateway by AZ
      */
-    private natGatewayByAZ: Obj<string> = {};
+    private natGatewayByAZ: { [az: string]: string } = {};
 
     /**
      * Subnet configurations for this VPC
@@ -273,7 +272,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
             throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
         }
 
-        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags = new cdk.TagManager(this, { initialTags: props.tags});
         this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
 
         const cidrBlock = ifUndefined(props.cidr, VpcNetwork.DEFAULT_CIDR_RANGE);
@@ -468,7 +467,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
 
     constructor(parent: cdk.Construct, name: string, props: VpcSubnetProps) {
         super(parent, name);
-        this.tags = new cdk.TagManager(this, props.tags);
+        this.tags = new cdk.TagManager(this, {initialTags: props.tags});
         this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
 
         this.availabilityZone = props.availabilityZone;
@@ -530,7 +529,7 @@ export class VpcPublicSubnet extends VpcSubnet {
     /**
      * Creates a new managed NAT gateway attached to this public subnet.
      * Also adds the EIP for the managed NAT.
-     * Returns the NAT Gateway ref
+     * @returns A ref to the the NAT Gateway ID
      */
     public addNatGateway() {
         // Create a NAT Gateway in this public subnet
@@ -541,7 +540,7 @@ export class VpcPublicSubnet extends VpcSubnet {
             }).eipAllocationId,
             tags: new cdk.TagManager(this),
         });
-        return ngw.ref;
+        return ngw.natGatewayId;
     }
 }
 
