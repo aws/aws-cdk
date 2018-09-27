@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
 import { ClusterParameterGroup } from '../lib/cluster-parameter-group';
@@ -14,6 +15,7 @@ const params = new ClusterParameterGroup(stack, 'Params', {
 });
 params.setParameter('character_set_database', 'utf8mb4');
 
+const kmsKey = new kms.EncryptionKey(stack, 'DbSecurity');
 const cluster = new DatabaseCluster(stack, 'Database', {
     engine: DatabaseClusterEngine.Aurora,
     masterUser: {
@@ -26,6 +28,7 @@ const cluster = new DatabaseCluster(stack, 'Database', {
         vpc
     },
     parameterGroup: params,
+    kmsKeyArn: kmsKey.keyArn,
 });
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
