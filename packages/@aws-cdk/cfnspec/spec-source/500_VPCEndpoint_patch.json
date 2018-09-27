@@ -1,0 +1,16 @@
+{
+    "ResourceTypes": {
+        "AWS::EC2::VPCEndpoint": {
+            "patch": {
+                "description": "Rename 'VPCEndpointType' to 'VpcEndpointType': https://github.com/awslabs/aws-cdk/issues/765",
+                "operations": [
+                    {
+                        "from": "/Properties/VPCEndpointType",
+                        "op": "move",
+                        "path": "/Properties/VpcEndpointType"
+                    }
+                ]
+            }
+        }
+    }
+}
