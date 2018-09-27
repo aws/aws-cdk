@@ -6,7 +6,7 @@ const app = new App(process.argv);
 const stack = new Stack(app, 'integ-iam-role-1');
 
 const role = new Role(stack, 'TestRole', {
-    assumedBy: new ServicePrincipal('sqs.amazonaws.com')
+  assumedBy: new ServicePrincipal('sqs.amazonaws.com')
 });
 
 role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessage'));

@@ -9,9 +9,9 @@ const g1 = new Group(stack, 'MyGroup');
 const g2 = new Group(stack, 'YourGroup');
 
 for (let i = 0; i < 5; ++i) {
-    const user = new User(stack, `User${i + 1}`);
-    user.addToGroup(g1);
-    g2.addUser(user);
+  const user = new User(stack, `User${i + 1}`);
+  user.addToGroup(g1);
+  g2.addUser(user);
 }
 
 const policy = new Policy(stack, 'MyPolicy');

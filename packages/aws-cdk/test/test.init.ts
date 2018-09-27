@@ -5,46 +5,46 @@ import path = require('path');
 import { cliInit } from '../lib/init';
 
 const state: {
-    previousWorkingDir?: string;
-    tempDir?: string;
+  previousWorkingDir?: string;
+  tempDir?: string;
 } = {};
 
 export = {
-    async "setUp"(callback: () => void) {
-        state.previousWorkingDir = process.cwd();
-        state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
-        // tslint:disable-next-line:no-console
-        console.log('Temporary working directory:', state.tempDir);
-        process.chdir(state.tempDir);
-        callback();
-    },
+  async "setUp"(callback: () => void) {
+    state.previousWorkingDir = process.cwd();
+    state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+    // tslint:disable-next-line:no-console
+    console.log('Temporary working directory:', state.tempDir);
+    process.chdir(state.tempDir);
+    callback();
+  },
 
-    async "tearDown"(callback: () => void) {
-        // tslint:disable-next-line:no-console
-        console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
-        process.chdir(state.previousWorkingDir!);
-        await fs.remove(state.tempDir!);
+  async "tearDown"(callback: () => void) {
+    // tslint:disable-next-line:no-console
+    console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
+    process.chdir(state.previousWorkingDir!);
+    await fs.remove(state.tempDir!);
 
-        callback();
-    },
+    callback();
+  },
 
-    async 'create a TypeScript library project'(test: Test) {
-        await cliInit('lib', 'typescript', false);
+  async 'create a TypeScript library project'(test: Test) {
+    await cliInit('lib', 'typescript', false);
 
-        // Check that package.json and lib/ got created in the current directory
-        test.equal(true, await fs.pathExists('package.json'));
-        test.equal(true, await fs.pathExists('lib'));
+    // Check that package.json and lib/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('lib'));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    async 'create a TypeScript app project'(test: Test) {
-        await cliInit('app', 'typescript', false);
+  async 'create a TypeScript app project'(test: Test) {
+    await cliInit('app', 'typescript', false);
 
-        // Check that package.json and bin/ got created in the current directory
-        test.equal(true, await fs.pathExists('package.json'));
-        test.equal(true, await fs.pathExists('bin'));
+    // Check that package.json and bin/ got created in the current directory
+    test.equal(true, await fs.pathExists('package.json'));
+    test.equal(true, await fs.pathExists('bin'));
 
-        test.done();
-    }
+    test.done();
+  }
 };

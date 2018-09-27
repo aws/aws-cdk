@@ -8,14 +8,14 @@ export const VERSION = '1';
 export const BASE64_REQ_PREFIX = 'base64:';
 
 export interface ListStacksRequest {
-    type: 'list',
-    context?: any
+  type: 'list',
+  context?: any
 }
 
 export interface SynthesizeRequest {
-    type: 'synth',
-    stacks: string[],
-    context?: any,
+  type: 'synth',
+  stacks: string[],
+  context?: any,
 }
 
 export type CXRequest = ListStacksRequest | SynthesizeRequest;
@@ -25,61 +25,61 @@ export type CXRequest = ListStacksRequest | SynthesizeRequest;
  * (should have been an interface, but jsii still doesn't have support for structs).
  */
 export interface MissingContext {
-    provider: string;
-    scope: string[];
-    args: string[];
+  provider: string;
+  scope: string[];
+  args: string[];
 }
 
 export interface ListStacksResponse {
-    stacks: StackInfo[]
+  stacks: StackInfo[]
 }
 
 export interface SynthesizeResponse {
-    stacks: SynthesizedStack[];
-    runtime?: AppRuntime;
+  stacks: SynthesizedStack[];
+  runtime?: AppRuntime;
 }
 
 /**
  * Identifies a single stack
  */
 export interface StackId {
-    name: string;
+  name: string;
 }
 
 /**
  * Identifies and contains metadata about a stack
  */
 export interface StackInfo extends StackId {
-    environment?: Environment;
+  environment?: Environment;
 }
 
 /**
  * A complete synthesized stack
  */
 export interface SynthesizedStack extends StackInfo {
-    missing?: { [key: string]: MissingContext };
-    metadata: StackMetadata;
-    template: any;
+  missing?: { [key: string]: MissingContext };
+  metadata: StackMetadata;
+  template: any;
 }
 
 /**
  * An metadata entry in the construct.
  */
 export interface MetadataEntry {
-    /**
-     * The type of the metadata entry.
-     */
-    type: string;
+  /**
+   * The type of the metadata entry.
+   */
+  type: string;
 
-    /**
-     * The data.
-     */
-    data?: any;
+  /**
+   * The data.
+   */
+  data?: any;
 
-    /**
-     * A stack trace for when the entry was created.
-     */
-    trace: string[];
+  /**
+   * A stack trace for when the entry was created.
+   */
+  trace: string[];
 }
 
 /**
@@ -91,10 +91,10 @@ export type StackMetadata = { [path: string]: MetadataEntry[] };
  * Information about the application's runtime components.
  */
 export interface AppRuntime {
-    /**
-     * The list of libraries loaded in the application, associated with their versions.
-     */
-    libraries: { [name: string]: string };
+  /**
+   * The list of libraries loaded in the application, associated with their versions.
+   */
+  libraries: { [name: string]: string };
 }
 
 /**
@@ -109,30 +109,30 @@ export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
 
 export const ASSET_METADATA = 'aws:cdk:asset';
 export interface AssetMetadataEntry {
-    /**
-     * Path on disk to the asset
-     */
-    path: string;
+  /**
+   * Path on disk to the asset
+   */
+  path: string;
 
-    /**
-     * Logical identifier for the asset
-     */
-    id: string;
+  /**
+   * Logical identifier for the asset
+   */
+  id: string;
 
-    /**
-     * Requested packaging style
-     */
-    packaging: 'zip' | 'file';
+  /**
+   * Requested packaging style
+   */
+  packaging: 'zip' | 'file';
 
-    /**
-     * Name of parameter where S3 bucket should be passed in
-     */
-    s3BucketParameter: string;
+  /**
+   * Name of parameter where S3 bucket should be passed in
+   */
+  s3BucketParameter: string;
 
-    /**
-     * Name of parameter where S3 key should be passed in
-     */
-    s3KeyParameter: string;
+  /**
+   * Name of parameter where S3 key should be passed in
+   */
+  s3KeyParameter: string;
 }
 
 /**
@@ -155,7 +155,7 @@ export const ERROR_METADATA_KEY = 'aws:cdk:error';
  *
  * Asset keys will look like:
  *
- *      /assets/MyConstruct12345678/||abcdef12345.zip
+ *    /assets/MyConstruct12345678/||abcdef12345.zip
  *
  * This allows us to encode both the prefix and the full location in a single
  * CloudFormation Template Parameter.

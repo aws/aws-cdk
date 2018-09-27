@@ -10,14 +10,14 @@ const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
 new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
-    originConfigs: [
-        {
-            s3OriginSource: {
-                s3BucketSource: sourceBucket
-            },
-            behaviors : [ {isDefaultBehavior: true}]
-        }
-    ]
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: sourceBucket
+      },
+      behaviors : [ {isDefaultBehavior: true}]
+    }
+  ]
  });
 
 process.stdout.write(app.run());

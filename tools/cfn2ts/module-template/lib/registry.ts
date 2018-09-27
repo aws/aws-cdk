@@ -1,11 +1,11 @@
 export interface PropertySpecification {
-    readonly isRequired: boolean;
-    readonly updateType: 'Conditional' | 'Immutable' | 'Mutable';
+  readonly isRequired: boolean;
+  readonly updateType: 'Conditional' | 'Immutable' | 'Mutable';
 }
 
 export interface ResourceClass {
-    readonly resourceProperties: { [name: string]: PropertySpecification | undefined };
-    readonly resourceTypeName: string;
+  readonly resourceProperties: { [name: string]: PropertySpecification | undefined };
+  readonly resourceTypeName: string;
 }
 
 const catalog: { [resourceType: string]: ResourceClass } = {};
@@ -17,11 +17,11 @@ const catalog: { [resourceType: string]: ResourceClass } = {};
  * @param resourceClass the corresponding Resource implementation.
  */
 export function registerResourceType(resourceClass: ResourceClass) {
-    const typeName = resourceClass.resourceTypeName;
-    if (catalog.hasOwnProperty(typeName)) {
-        throw new Error(`Attempted to re-define CloudFormation resource ${typeName}`);
-    }
-    catalog[typeName] = resourceClass;
+  const typeName = resourceClass.resourceTypeName;
+  if (catalog.hasOwnProperty(typeName)) {
+    throw new Error(`Attempted to re-define CloudFormation resource ${typeName}`);
+  }
+  catalog[typeName] = resourceClass;
 }
 
 /**
@@ -32,5 +32,5 @@ export function registerResourceType(resourceClass: ResourceClass) {
  * @returns a resource implementation class, or undefined if this resource type is not declared.
  */
 export function resourceImplementationFor(resourceType: string): ResourceClass | undefined {
-    return catalog[resourceType];
+  return catalog[resourceType];
 }

@@ -7,9 +7,9 @@ const app = new cdk.App(process.argv);
 const stack = new cdk.Stack(app, 'lambda-events');
 
 const fn = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NodeJS610,
-    handler: 'index.handler',
-    code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
+  runtime: lambda.Runtime.NodeJS610,
+  handler: 'index.handler',
+  code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });
 
 const timer = new events.EventRule(stack, 'Timer', { scheduleExpression: 'rate(1 minute)' });
@@ -22,6 +22,6 @@ process.stdout.write(app.run());
 
 // tslint:disable:no-console
 function handler(event: any, _context: any, callback: any) {
-    console.log(JSON.stringify(event, undefined, 2));
-    return callback();
+  console.log(JSON.stringify(event, undefined, 2));
+  return callback();
 }

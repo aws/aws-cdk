@@ -11,28 +11,28 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
-    versioned: true,
+  versioned: true,
 });
 new s3.PipelineSourceAction(stack, 'Source', {
-    stage: sourceStage,
-    artifactName: 'SourceArtifact',
-    bucket,
-    bucketKey: 'key',
+  stage: sourceStage,
+  artifactName: 'SourceArtifact',
+  bucket,
+  bucketKey: 'key',
 });
 
 const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
-    code: new lambda.InlineCode(`
-        exports.handler = function () {
-            console.log("Hello, world!");
-        };
-    `),
-    handler: 'index.handler',
-    runtime: lambda.Runtime.NodeJS610,
+  code: new lambda.InlineCode(`
+    exports.handler = function () {
+      console.log("Hello, world!");
+    };
+  `),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NodeJS610,
 });
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda', { pipeline });
 new lambda.PipelineInvokeAction(stack, 'Lambda', {
-    stage: lambdaStage,
-    lambda: lambdaFun,
+  stage: lambdaStage,
+  lambda: lambdaFun,
 });
 
 process.stdout.write(app.run());

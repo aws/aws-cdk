@@ -15,17 +15,17 @@
  * on Amazon EC2 with AWS CloudFormation.
  */
 export interface CreationPolicy {
-    /**
-     * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
-     * update to succeed.
-     */
-    autoScalingCreationPolicy?: AutoScalingCreationPolicy;
+  /**
+   * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
+   * update to succeed.
+   */
+  autoScalingCreationPolicy?: AutoScalingCreationPolicy;
 
-    /**
-     * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
-     * the length of time that AWS CloudFormation waits for those signals.
-     */
-    resourceSignal?: ResourceSignal;
+  /**
+   * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
+   * the length of time that AWS CloudFormation waits for those signals.
+   */
+  resourceSignal?: ResourceSignal;
 }
 
 /**
@@ -33,14 +33,14 @@ export interface CreationPolicy {
  * update to succeed.
  */
 export interface AutoScalingCreationPolicy {
-    /**
-     * Specifies the percentage of instances in an Auto Scaling replacement update that must signal success for the
-     * update to succeed. You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent.
-     * For example, if you update five instances with a minimum successful percentage of 50, three instances must signal success.
-     * If an instance doesn't send a signal within the time specified by the Timeout property, AWS CloudFormation assumes that the
-     * instance wasn't created.
-     */
-    minSuccessfulInstancesPercent?: number;
+  /**
+   * Specifies the percentage of instances in an Auto Scaling replacement update that must signal success for the
+   * update to succeed. You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent.
+   * For example, if you update five instances with a minimum successful percentage of 50, three instances must signal success.
+   * If an instance doesn't send a signal within the time specified by the Timeout property, AWS CloudFormation assumes that the
+   * instance wasn't created.
+   */
+  minSuccessfulInstancesPercent?: number;
 }
 
 /**
@@ -49,19 +49,19 @@ export interface AutoScalingCreationPolicy {
  */
 export interface ResourceSignal {
 
-    /**
-     * The number of success signals AWS CloudFormation must receive before it sets the resource status as CREATE_COMPLETE.
-     * If the resource receives a failure signal or doesn't receive the specified number of signals before the timeout period
-     * expires, the resource creation fails and AWS CloudFormation rolls the stack back.
-     */
-    count?: number;
+  /**
+   * The number of success signals AWS CloudFormation must receive before it sets the resource status as CREATE_COMPLETE.
+   * If the resource receives a failure signal or doesn't receive the specified number of signals before the timeout period
+   * expires, the resource creation fails and AWS CloudFormation rolls the stack back.
+   */
+  count?: number;
 
-    /**
-     * The length of time that AWS CloudFormation waits for the number of signals that was specified in the Count property.
-     * The timeout period starts after AWS CloudFormation starts creating the resource, and the timeout expires no sooner
-     * than the time you specify but can occur shortly thereafter. The maximum time that you can specify is 12 hours.
-     */
-    timeout?: string;
+  /**
+   * The length of time that AWS CloudFormation waits for the number of signals that was specified in the Count property.
+   * The timeout period starts after AWS CloudFormation starts creating the resource, and the timeout expires no sooner
+   * than the time you specify but can occur shortly thereafter. The maximum time that you can specify is 12 hours.
+   */
+  timeout?: string;
 }
 
 /**
@@ -71,29 +71,29 @@ export interface ResourceSignal {
  * that lead to resources being removed.
  */
 export enum DeletionPolicy {
-    /**
-     * AWS CloudFormation deletes the resource and all its content if applicable during stack deletion. You can add this
-     * deletion policy to any resource type. By default, if you don't specify a DeletionPolicy, AWS CloudFormation deletes
-     * your resources. However, be aware of the following considerations:
-     */
-    Delete = 'Delete',
+  /**
+   * AWS CloudFormation deletes the resource and all its content if applicable during stack deletion. You can add this
+   * deletion policy to any resource type. By default, if you don't specify a DeletionPolicy, AWS CloudFormation deletes
+   * your resources. However, be aware of the following considerations:
+   */
+  Delete = 'Delete',
 
-    /**
-     * AWS CloudFormation keeps the resource without deleting the resource or its contents when its stack is deleted.
-     * You can add this deletion policy to any resource type. Note that when AWS CloudFormation completes the stack deletion,
-     * the stack will be in Delete_Complete state; however, resources that are retained continue to exist and continue to incur
-     * applicable charges until you delete those resources.
-     */
-    Retain = 'Retain',
+  /**
+   * AWS CloudFormation keeps the resource without deleting the resource or its contents when its stack is deleted.
+   * You can add this deletion policy to any resource type. Note that when AWS CloudFormation completes the stack deletion,
+   * the stack will be in Delete_Complete state; however, resources that are retained continue to exist and continue to incur
+   * applicable charges until you delete those resources.
+   */
+  Retain = 'Retain',
 
-    /**
-     * For resources that support snapshots (AWS::EC2::Volume, AWS::ElastiCache::CacheCluster, AWS::ElastiCache::ReplicationGroup,
-     * AWS::RDS::DBInstance, AWS::RDS::DBCluster, and AWS::Redshift::Cluster), AWS CloudFormation creates a snapshot for the
-     * resource before deleting it. Note that when AWS CloudFormation completes the stack deletion, the stack will be in the
-     * Delete_Complete state; however, the snapshots that are created with this policy continue to exist and continue to
-     * incur applicable charges until you delete those snapshots.
-     */
-    Snapshot = 'Snapshot',
+  /**
+   * For resources that support snapshots (AWS::EC2::Volume, AWS::ElastiCache::CacheCluster, AWS::ElastiCache::ReplicationGroup,
+   * AWS::RDS::DBInstance, AWS::RDS::DBCluster, and AWS::Redshift::Cluster), AWS CloudFormation creates a snapshot for the
+   * resource before deleting it. Note that when AWS CloudFormation completes the stack deletion, the stack will be in the
+   * Delete_Complete state; however, the snapshots that are created with this policy continue to exist and continue to
+   * incur applicable charges until you delete those snapshots.
+   */
+  Snapshot = 'Snapshot',
 }
 
 /**
@@ -103,26 +103,26 @@ export enum DeletionPolicy {
  */
 export interface UpdatePolicy {
 
-    /**
-     * Specifies whether an Auto Scaling group and the instances it contains are replaced during an update. During replacement,
-     * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
-     * can roll back to the old Auto Scaling group and delete the new Auto Scaling group.
-     */
-    autoScalingReplacingUpdate?: AutoScalingReplacingUpdate;
+  /**
+   * Specifies whether an Auto Scaling group and the instances it contains are replaced during an update. During replacement,
+   * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
+   * can roll back to the old Auto Scaling group and delete the new Auto Scaling group.
+   */
+  autoScalingReplacingUpdate?: AutoScalingReplacingUpdate;
 
-    /**
-     * To specify how AWS CloudFormation handles rolling updates for an Auto Scaling group, use the AutoScalingRollingUpdate
-     * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
-     * group in batches or all at once.
-     */
-    autoScalingRollingUpdate?: AutoScalingRollingUpdate;
+  /**
+   * To specify how AWS CloudFormation handles rolling updates for an Auto Scaling group, use the AutoScalingRollingUpdate
+   * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
+   * group in batches or all at once.
+   */
+  autoScalingRollingUpdate?: AutoScalingRollingUpdate;
 
-    /**
-     * To specify how AWS CloudFormation handles updates for the MinSize, MaxSize, and DesiredCapacity properties when
-     * the AWS::AutoScaling::AutoScalingGroup resource has an associated scheduled action, use the AutoScalingScheduledAction
-     * policy.
-     */
-    autoScalingScheduledAction?: AutoScalingScheduledAction;
+  /**
+   * To specify how AWS CloudFormation handles updates for the MinSize, MaxSize, and DesiredCapacity properties when
+   * the AWS::AutoScaling::AutoScalingGroup resource has an associated scheduled action, use the AutoScalingScheduledAction
+   * policy.
+   */
+  autoScalingScheduledAction?: AutoScalingScheduledAction;
 
 }
 
@@ -133,65 +133,65 @@ export interface UpdatePolicy {
  */
 export interface AutoScalingRollingUpdate {
 
-    /**
-     * Specifies the maximum number of instances that AWS CloudFormation updates.
-     */
-    maxBatchSize?: number;
+  /**
+   * Specifies the maximum number of instances that AWS CloudFormation updates.
+   */
+  maxBatchSize?: number;
 
-    /**
-     * Specifies the minimum number of instances that must be in service within the Auto Scaling group while AWS
-     * CloudFormation updates old instances.
-     */
-    minInstancesInService?: number;
+  /**
+   * Specifies the minimum number of instances that must be in service within the Auto Scaling group while AWS
+   * CloudFormation updates old instances.
+   */
+  minInstancesInService?: number;
 
-    /**
-     * Specifies the percentage of instances in an Auto Scaling rolling update that must signal success for an update to succeed.
-     * You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent. For example, if you
-     * update five instances with a minimum successful percentage of 50, three instances must signal success.
-     *
-     * If an instance doesn't send a signal within the time specified in the PauseTime property, AWS CloudFormation assumes
-     * that the instance wasn't updated.
-     *
-     * If you specify this property, you must also enable the WaitOnResourceSignals and PauseTime properties.
-     */
-    minSuccessfulInstancesPercent?: number;
+  /**
+   * Specifies the percentage of instances in an Auto Scaling rolling update that must signal success for an update to succeed.
+   * You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent. For example, if you
+   * update five instances with a minimum successful percentage of 50, three instances must signal success.
+   *
+   * If an instance doesn't send a signal within the time specified in the PauseTime property, AWS CloudFormation assumes
+   * that the instance wasn't updated.
+   *
+   * If you specify this property, you must also enable the WaitOnResourceSignals and PauseTime properties.
+   */
+  minSuccessfulInstancesPercent?: number;
 
-    /**
-     * The amount of time that AWS CloudFormation pauses after making a change to a batch of instances to give those instances
-     * time to start software applications. For example, you might need to specify PauseTime when scaling up the number of
-     * instances in an Auto Scaling group.
-     *
-     * If you enable the WaitOnResourceSignals property, PauseTime is the amount of time that AWS CloudFormation should wait
-     * for the Auto Scaling group to receive the required number of valid signals from added or replaced instances. If the
-     * PauseTime is exceeded before the Auto Scaling group receives the required number of signals, the update fails. For best
-     * results, specify a time period that gives your applications sufficient time to get started. If the update needs to be
-     * rolled back, a short PauseTime can cause the rollback to fail.
-     *
-     * Specify PauseTime in the ISO8601 duration format (in the format PT#H#M#S, where each # is the number of hours, minutes,
-     * and seconds, respectively). The maximum PauseTime is one hour (PT1H).
-     */
-    pauseTime?: string;
+  /**
+   * The amount of time that AWS CloudFormation pauses after making a change to a batch of instances to give those instances
+   * time to start software applications. For example, you might need to specify PauseTime when scaling up the number of
+   * instances in an Auto Scaling group.
+   *
+   * If you enable the WaitOnResourceSignals property, PauseTime is the amount of time that AWS CloudFormation should wait
+   * for the Auto Scaling group to receive the required number of valid signals from added or replaced instances. If the
+   * PauseTime is exceeded before the Auto Scaling group receives the required number of signals, the update fails. For best
+   * results, specify a time period that gives your applications sufficient time to get started. If the update needs to be
+   * rolled back, a short PauseTime can cause the rollback to fail.
+   *
+   * Specify PauseTime in the ISO8601 duration format (in the format PT#H#M#S, where each # is the number of hours, minutes,
+   * and seconds, respectively). The maximum PauseTime is one hour (PT1H).
+   */
+  pauseTime?: string;
 
-    /**
-     * Specifies the Auto Scaling processes to suspend during a stack update. Suspending processes prevents Auto Scaling from
-     * interfering with a stack update. For example, you can suspend alarming so that Auto Scaling doesn't execute scaling
-     * policies associated with an alarm. For valid values, see the ScalingProcesses.member.N parameter for the SuspendProcesses
-     * action in the Auto Scaling API Reference.
-     */
-    suspendProcesses?: string[];
+  /**
+   * Specifies the Auto Scaling processes to suspend during a stack update. Suspending processes prevents Auto Scaling from
+   * interfering with a stack update. For example, you can suspend alarming so that Auto Scaling doesn't execute scaling
+   * policies associated with an alarm. For valid values, see the ScalingProcesses.member.N parameter for the SuspendProcesses
+   * action in the Auto Scaling API Reference.
+   */
+  suspendProcesses?: string[];
 
-    /**
-     * Specifies whether the Auto Scaling group waits on signals from new instances during an update. Use this property to
-     * ensure that instances have completed installing and configuring applications before the Auto Scaling group update proceeds.
-     * AWS CloudFormation suspends the update of an Auto Scaling group after new EC2 instances are launched into the group.
-     * AWS CloudFormation must receive a signal from each new instance within the specified PauseTime before continuing the update.
-     * To signal the Auto Scaling group, use the cfn-signal helper script or SignalResource API.
-     *
-     * To have instances wait for an Elastic Load Balancing health check before they signal success, add a health-check
-     * verification by using the cfn-init helper script. For an example, see the verify_instance_health command in the Auto Scaling
-     * rolling updates sample template.
-     */
-    waitOnResourceSignals?: boolean;
+  /**
+   * Specifies whether the Auto Scaling group waits on signals from new instances during an update. Use this property to
+   * ensure that instances have completed installing and configuring applications before the Auto Scaling group update proceeds.
+   * AWS CloudFormation suspends the update of an Auto Scaling group after new EC2 instances are launched into the group.
+   * AWS CloudFormation must receive a signal from each new instance within the specified PauseTime before continuing the update.
+   * To signal the Auto Scaling group, use the cfn-signal helper script or SignalResource API.
+   *
+   * To have instances wait for an Elastic Load Balancing health check before they signal success, add a health-check
+   * verification by using the cfn-init helper script. For an example, see the verify_instance_health command in the Auto Scaling
+   * rolling updates sample template.
+   */
+  waitOnResourceSignals?: boolean;
 }
 
 /**
@@ -208,7 +208,7 @@ export interface AutoScalingRollingUpdate {
  * Auto Scaling group.
  */
 export interface AutoScalingReplacingUpdate {
-    willReplace?: boolean;
+  willReplace?: boolean;
 }
 
 /**
@@ -222,11 +222,11 @@ export interface AutoScalingReplacingUpdate {
  * or DesiredCapacity properties unless you have modified these values in your template.\
  */
 export interface AutoScalingScheduledAction {
-    /*
-    * Specifies whether AWS CloudFormation ignores differences in group size properties between your current Auto Scaling
-    * group and the Auto Scaling group described in the AWS::AutoScaling::AutoScalingGroup resource of your template during
-    * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
-    * values and updates your Auto Scaling group.
-    */
-    ignoreUnmodifiedGroupSizeProperties?: boolean;
+  /*
+  * Specifies whether AWS CloudFormation ignores differences in group size properties between your current Auto Scaling
+  * group and the Auto Scaling group described in the AWS::AutoScaling::AutoScalingGroup resource of your template during
+  * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
+  * values and updates your Auto Scaling group.
+  */
+  ignoreUnmodifiedGroupSizeProperties?: boolean;
 }

@@ -13,10 +13,10 @@ import { Integration, IntegrationOptions, IntegrationType } from '../integration
  * Gateway responses are other examples of mock integrations.
  */
 export class MockIntegration extends Integration {
-    constructor(options?: IntegrationOptions) {
-        super({
-            type: IntegrationType.Mock,
-            options
-        });
-    }
+  constructor(options?: IntegrationOptions) {
+    super({
+      type: IntegrationType.Mock,
+      options
+    });
+  }
 }

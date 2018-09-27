@@ -10,20 +10,20 @@ import cdk = require('@aws-cdk/cdk');
  * prefix when constructing this object.
  */
 export class AwsManagedPolicy {
-    constructor(private readonly managedPolicyName: string) {
-    }
+  constructor(private readonly managedPolicyName: string) {
+  }
 
-    /**
-     * The Arn of this managed policy
-     */
-    public get policyArn(): string {
-        // the arn is in the form of - arn:aws:iam::aws:policy/<policyName>
-        return cdk.ArnUtils.fromComponents({
-            service: "iam",
-            region: "", // no region for managed policy
-            account: "aws", // the account for a managed policy is 'aws'
-            resource: "policy",
-            resourceName: this.managedPolicyName
-        });
-    }
+  /**
+   * The Arn of this managed policy
+   */
+  public get policyArn(): string {
+    // the arn is in the form of - arn:aws:iam::aws:policy/<policyName>
+    return cdk.ArnUtils.fromComponents({
+      service: "iam",
+      region: "", // no region for managed policy
+      account: "aws", // the account for a managed policy is 'aws'
+      resource: "policy",
+      resourceName: this.managedPolicyName
+    });
+  }
 }

@@ -10,10 +10,10 @@ const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 const bucket = new s3.Bucket(stack, 'MyBucket');
 
 new codebuild.Project(stack, 'MyProject', {
-    source: new codebuild.S3BucketSource(bucket, 'path/to/my/source.zip'),
-    environment: {
-        computeType: codebuild.ComputeType.Large
-    }
+  source: new codebuild.S3BucketSource(bucket, 'path/to/my/source.zip'),
+  environment: {
+    computeType: codebuild.ComputeType.Large
+  }
 });
 
 process.stdout.write(app.run());

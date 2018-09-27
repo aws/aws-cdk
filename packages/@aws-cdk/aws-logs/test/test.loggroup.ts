@@ -4,118 +4,118 @@ import { Test } from 'nodeunit';
 import { LogGroup, LogGroupRef } from '../lib';
 
 export = {
-    'fixed retention'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
+  'fixed retention'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-        // WHEN
-        new LogGroup(stack, 'LogGroup', {
-            retentionDays: 7
-        });
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retentionDays: 7
+    });
 
-        // THEN
-        expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-            RetentionInDays: 7
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: 7
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'default retention'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
+  'default retention'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-        // WHEN
-        new LogGroup(stack, 'LogGroup');
+    // WHEN
+    new LogGroup(stack, 'LogGroup');
 
-        // THEN
-        expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-            RetentionInDays: 730
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      RetentionInDays: 730
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'infinite retention/dont delete log group by default'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
+  'infinite retention/dont delete log group by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-        // WHEN
-        new LogGroup(stack, 'LogGroup', {
-            retentionDays: Infinity
-        });
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retentionDays: Infinity
+    });
 
-        // THEN
-        expect(stack).to(matchTemplate({
-            Resources: {
-                LogGroupF5B46931: {
-                    Type: "AWS::Logs::LogGroup",
-                    DeletionPolicy: "Retain"
-                }
-            }
-        }));
+    // THEN
+    expect(stack).to(matchTemplate({
+      Resources: {
+        LogGroupF5B46931: {
+          Type: "AWS::Logs::LogGroup",
+          DeletionPolicy: "Retain"
+        }
+      }
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'will delete log group if asked to'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
+  'will delete log group if asked to'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
 
-        // WHEN
-        new LogGroup(stack, 'LogGroup', {
-            retentionDays: Infinity,
-            retainLogGroup: false
-        });
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      retentionDays: Infinity,
+      retainLogGroup: false
+    });
 
-        // THEN
-        expect(stack).to(matchTemplate({
-            Resources: {
-                LogGroupF5B46931: { Type: "AWS::Logs::LogGroup" }
-              }
-        }));
+    // THEN
+    expect(stack).to(matchTemplate({
+      Resources: {
+        LogGroupF5B46931: { Type: "AWS::Logs::LogGroup" }
+        }
+    }));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'export/import'(test: Test) {
-        // GIVEN
-        const stack1 = new Stack();
-        const lg = new LogGroup(stack1, 'LogGroup');
-        const stack2 = new Stack();
+  'export/import'(test: Test) {
+    // GIVEN
+    const stack1 = new Stack();
+    const lg = new LogGroup(stack1, 'LogGroup');
+    const stack2 = new Stack();
 
-        // WHEN
-        const imported = LogGroupRef.import(stack2, 'Import', lg.export());
-        imported.newStream(stack2, 'MakeMeAStream');
+    // WHEN
+    const imported = LogGroupRef.import(stack2, 'Import', lg.export());
+    imported.newStream(stack2, 'MakeMeAStream');
 
-        // THEN
-        expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
+    // THEN
+    expect(stack2).to(haveResource('AWS::Logs::LogStream', {}));
 
-        test.done();
-    },
+    test.done();
+  },
 
-    'extractMetric'(test: Test) {
-        // GIVEN
-        const stack = new Stack();
-        const lg = new LogGroup(stack, 'LogGroup');
+  'extractMetric'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
 
-        // WHEN
-        lg.extractMetric('$.myField', 'MyService', 'Field');
+    // WHEN
+    lg.extractMetric('$.myField', 'MyService', 'Field');
 
-        // THEN
-        expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
-            FilterPattern: "{ $.myField = \"*\" }",
-            LogGroupName: { Ref: "LogGroupF5B46931" },
-            MetricTransformations: [
-              {
-                MetricName: "Field",
-                MetricNamespace: "MyService",
-                MetricValue: "$.myField"
-              }
-            ]
-        }));
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+      FilterPattern: "{ $.myField = \"*\" }",
+      LogGroupName: { Ref: "LogGroupF5B46931" },
+      MetricTransformations: [
+        {
+        MetricName: "Field",
+        MetricNamespace: "MyService",
+        MetricValue: "$.myField"
+        }
+      ]
+    }));
 
-        test.done();
-    }
+    test.done();
+  }
 
 };

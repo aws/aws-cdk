@@ -3,27 +3,27 @@ import { Action, ActionArtifactBounds, ActionCategory, CommonActionProps } from 
 import { Artifact } from './artifact';
 
 export interface DeployActionProps extends CommonActionProps {
-    provider: string;
+  provider: string;
 
-    artifactBounds: ActionArtifactBounds;
+  artifactBounds: ActionArtifactBounds;
 
-    inputArtifact?: Artifact;
+  inputArtifact?: Artifact;
 
-    configuration?: any;
+  configuration?: any;
 }
 
 export abstract class DeployAction extends Action {
-    constructor(parent: cdk.Construct, name: string, props: DeployActionProps) {
-        super(parent, name, {
-            stage: props.stage,
-            category: ActionCategory.Deploy,
-            provider: props.provider,
-            artifactBounds: props.artifactBounds,
-            configuration: props.configuration,
-        });
+  constructor(parent: cdk.Construct, name: string, props: DeployActionProps) {
+    super(parent, name, {
+      stage: props.stage,
+      category: ActionCategory.Deploy,
+      provider: props.provider,
+      artifactBounds: props.artifactBounds,
+      configuration: props.configuration,
+    });
 
-        if (props.inputArtifact) {
-            this.addInputArtifact(props.inputArtifact);
-        }
+    if (props.inputArtifact) {
+      this.addInputArtifact(props.inputArtifact);
     }
+  }
 }

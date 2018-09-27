@@ -10,15 +10,15 @@ const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 const bucket = new s3.Bucket(stack, 'CacheBucket');
 
 new codebuild.Project(stack, 'MyProject', {
-    cacheBucket: bucket,
-    buildSpec: {
-        build: {
-            commands: ['echo Hello']
-        },
-        cache: {
-            paths: ['/root/.cache/pip/**/*']
-        }
+  cacheBucket: bucket,
+  buildSpec: {
+    build: {
+      commands: ['echo Hello']
+    },
+    cache: {
+      paths: ['/root/.cache/pip/**/*']
     }
+  }
 });
 
 process.stdout.write(app.run());

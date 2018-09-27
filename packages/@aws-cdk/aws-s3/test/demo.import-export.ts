@@ -7,26 +7,26 @@ import s3 = require('../lib');
 // `Bucket.import`.
 
 class Producer extends cdk.Stack {
-    public readonly myBucketRef: s3.BucketRefProps;
+  public readonly myBucketRef: s3.BucketRefProps;
 
-    constructor(parent: cdk.App, name: string) {
-        super(parent, name);
+  constructor(parent: cdk.App, name: string) {
+    super(parent, name);
 
-        const bucket = new s3.Bucket(this, 'MyBucket');
-        this.myBucketRef = bucket.export();
-    }
+    const bucket = new s3.Bucket(this, 'MyBucket');
+    this.myBucketRef = bucket.export();
+  }
 }
 
 interface ConsumerConstructProps {
-    bucket: s3.BucketRef;
+  bucket: s3.BucketRef;
 }
 
 class ConsumerConstruct extends cdk.Construct {
-    constructor(parent: cdk.Construct, name: string, props: ConsumerConstructProps) {
-        super(parent, name);
+  constructor(parent: cdk.Construct, name: string, props: ConsumerConstructProps) {
+    super(parent, name);
 
-        props.bucket.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
-    }
+    props.bucket.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
+  }
 }
 
 // Define a stack that requires a BucketRef as an input and uses `Bucket.import`
@@ -35,20 +35,20 @@ class ConsumerConstruct extends cdk.Construct {
 // this bucket and contents.
 
 interface ConsumerProps {
-    userBucketRef: s3.BucketRefProps;
+  userBucketRef: s3.BucketRefProps;
 }
 
 class Consumer extends cdk.Stack {
-    constructor(parent: cdk.App, name: string, props: ConsumerProps) {
-        super(parent, name);
+  constructor(parent: cdk.App, name: string, props: ConsumerProps) {
+    super(parent, name);
 
-        const user = new iam.User(this, 'MyUser');
-        const userBucket = s3.Bucket.import(this, 'ImportBucket', props.userBucketRef);
+    const user = new iam.User(this, 'MyUser');
+    const userBucket = s3.Bucket.import(this, 'ImportBucket', props.userBucketRef);
 
-        new ConsumerConstruct(this, 'SomeConstruct', { bucket: userBucket });
+    new ConsumerConstruct(this, 'SomeConstruct', { bucket: userBucket });
 
-        userBucket.grantReadWrite(user);
-    }
+    userBucket.grantReadWrite(user);
+  }
 }
 
 // -------------------------------------------------------
@@ -62,7 +62,7 @@ const app = new cdk.App(process.argv);
 const producer = new Producer(app, 'produce');
 
 new Consumer(app, 'consume', {
-    userBucketRef: producer.myBucketRef
+  userBucketRef: producer.myBucketRef
 });
 
 process.stdout.write(app.run());

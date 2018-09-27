@@ -14,33 +14,33 @@ const stack = new cdk.Stack(app, `aws-cdk-cloudwatch`);
 const queue = new cdk.Resource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 
 const metric = new cloudwatch.Metric({
-    namespace: 'AWS/SQS',
-    metricName: 'ApproximateNumberOfMessagesVisible',
-    dimensions: { QueueName: queue.getAtt('QueueName') }
+  namespace: 'AWS/SQS',
+  metricName: 'ApproximateNumberOfMessagesVisible',
+  dimensions: { QueueName: queue.getAtt('QueueName') }
 });
 
 const alarm = metric.newAlarm(stack, 'Alarm', {
-    threshold: 100,
-    evaluationPeriods: 3
+  threshold: 100,
+  evaluationPeriods: 3
 });
 
 const dashboard = new cloudwatch.Dashboard(stack, 'Dash');
 dashboard.add(
-    new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),
-    new cloudwatch.TextWidget({ markdown: 'you like?' }),
+  new cloudwatch.TextWidget({ markdown: '# This is my dashboard' }),
+  new cloudwatch.TextWidget({ markdown: 'you like?' }),
 );
 dashboard.add(new cloudwatch.AlarmWidget({
-    title: 'Messages in queue',
-    alarm,
+  title: 'Messages in queue',
+  alarm,
 }));
 dashboard.add(new cloudwatch.GraphWidget({
-    title: 'More messages in queue with alarm annotation',
-    left: [metric],
-    leftAnnotations: [alarm.toAnnotation()]
+  title: 'More messages in queue with alarm annotation',
+  left: [metric],
+  leftAnnotations: [alarm.toAnnotation()]
 }));
 dashboard.add(new cloudwatch.SingleValueWidget({
-    title: 'Current messages in queue',
-    metrics: [metric]
+  title: 'Current messages in queue',
+  metrics: [metric]
 }));
 
 process.stdout.write(app.run());
