@@ -28,72 +28,72 @@
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html
  */
 export interface EventPattern {
-    /**
-     * By default, this is set to 0 (zero) in all events.
-     */
-    version?: string[];
+  /**
+   * By default, this is set to 0 (zero) in all events.
+   */
+  version?: string[];
 
-    /**
-     * A unique value is generated for every event. This can be helpful in
-     * tracing events as they move through rules to targets, and are processed.
-     */
-    id?: string[];
+  /**
+   * A unique value is generated for every event. This can be helpful in
+   * tracing events as they move through rules to targets, and are processed.
+   */
+  id?: string[];
 
-    /**
-     * Identifies, in combination with the source field, the fields and values
-     * that appear in the detail field.
-     *
-     * Represents the "detail-type" event field.
-     */
-    detailType?: string[];
+  /**
+   * Identifies, in combination with the source field, the fields and values
+   * that appear in the detail field.
+   *
+   * Represents the "detail-type" event field.
+   */
+  detailType?: string[];
 
-    /**
-     * Identifies the service that sourced the event. All events sourced from
-     * within AWS begin with "aws." Customer-generated events can have any value
-     * here, as long as it doesn't begin with "aws." We recommend the use of
-     * Java package-name style reverse domain-name strings.
-     *
-     * To find the correct value for source for an AWS service, see the table in
-     * AWS Service Namespaces. For example, the source value for Amazon
-     * CloudFront is aws.cloudfront.
-     *
-     * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
-     */
-    source?: string[];
+  /**
+   * Identifies the service that sourced the event. All events sourced from
+   * within AWS begin with "aws." Customer-generated events can have any value
+   * here, as long as it doesn't begin with "aws." We recommend the use of
+   * Java package-name style reverse domain-name strings.
+   *
+   * To find the correct value for source for an AWS service, see the table in
+   * AWS Service Namespaces. For example, the source value for Amazon
+   * CloudFront is aws.cloudfront.
+   *
+   * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
+   */
+  source?: string[];
 
-    /**
-     * The 12-digit number identifying an AWS account.
-     */
-    account?: string[];
+  /**
+   * The 12-digit number identifying an AWS account.
+   */
+  account?: string[];
 
-    /**
-     * The event timestamp, which can be specified by the service originating
-     * the event. If the event spans a time interval, the service might choose
-     * to report the start time, so this value can be noticeably before the time
-     * the event is actually received.
-     */
-    time?: string[];
+  /**
+   * The event timestamp, which can be specified by the service originating
+   * the event. If the event spans a time interval, the service might choose
+   * to report the start time, so this value can be noticeably before the time
+   * the event is actually received.
+   */
+  time?: string[];
 
-    /**
-     * Identifies the AWS region where the event originated.
-     */
-    region?: string[];
+  /**
+   * Identifies the AWS region where the event originated.
+   */
+  region?: string[];
 
-    /**
-     * This JSON array contains ARNs that identify resources that are involved
-     * in the event. Inclusion of these ARNs is at the discretion of the
-     * service.
-     *
-     * For example, Amazon EC2 instance state-changes include Amazon EC2
-     * instance ARNs, Auto Scaling events include ARNs for both instances and
-     * Auto Scaling groups, but API calls with AWS CloudTrail do not include
-     * resource ARNs.
-     */
-    resources?: string[];
+  /**
+   * This JSON array contains ARNs that identify resources that are involved
+   * in the event. Inclusion of these ARNs is at the discretion of the
+   * service.
+   *
+   * For example, Amazon EC2 instance state-changes include Amazon EC2
+   * instance ARNs, Auto Scaling events include ARNs for both instances and
+   * Auto Scaling groups, but API calls with AWS CloudTrail do not include
+   * resource ARNs.
+   */
+  resources?: string[];
 
-    /**
-     * A JSON object, whose content is at the discretion of the service
-     * originating the event.
-     */
-    detail?: any;
+  /**
+   * A JSON object, whose content is at the discretion of the service
+   * originating the event.
+   */
+  detail?: any;
 }

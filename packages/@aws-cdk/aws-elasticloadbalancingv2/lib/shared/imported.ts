@@ -5,14 +5,14 @@ import { TargetGroupRefProps } from './base-target-group';
  * Base class for existing target groups
  */
 export class BaseImportedTargetGroup extends cdk.Construct {
-    /**
-     * ARN of the target group
-     */
-    public readonly targetGroupArn: string;
+  /**
+   * ARN of the target group
+   */
+  public readonly targetGroupArn: string;
 
-    constructor(parent: cdk.Construct, id: string, props: TargetGroupRefProps) {
-        super(parent, id);
+  constructor(parent: cdk.Construct, id: string, props: TargetGroupRefProps) {
+    super(parent, id);
 
-        this.targetGroupArn = props.targetGroupArn;
-    }
+    this.targetGroupArn = props.targetGroupArn;
+  }
 }
