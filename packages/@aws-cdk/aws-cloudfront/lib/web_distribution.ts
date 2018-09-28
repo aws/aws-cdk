@@ -40,7 +40,7 @@ export interface AliasConfiguration {
   readonly acmCertRef: string;
 
   /**
-   * Domain names on the certificate 
+   * Domain names on the certificate
    *
    * Both main domain name and Subject Alternative Names.
    */
@@ -55,7 +55,7 @@ export interface AliasConfiguration {
    * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
    */
   readonly sslMethod?: SSLMethod;
-  
+
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
    *
@@ -646,4 +646,3 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     return toReturn;
   }
 }
-
