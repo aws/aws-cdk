@@ -70,15 +70,15 @@ export enum SSLMethod {
 export interface LoggingConfiguration {
   /**
    * Bucket to log requests to
-   * 
+   *
    * @default A logging bucket is automatically created
    */
   readonly bucket: s3.BucketRef,
-  
+
   /**
    * Whether to include the cookies in the logs
    *
-   * @default false 
+   * @default false
    */
   readonly includeCookies?: boolean,
 
