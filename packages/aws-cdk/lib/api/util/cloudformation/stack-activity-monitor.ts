@@ -2,6 +2,7 @@ import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
 import util = require('util');
+import { error } from '../../../logging';
 
 interface StackActivity {
   readonly event: aws.CloudFormation.StackEvent;
@@ -59,6 +60,11 @@ export class StackActivityMonitor {
    */
   private lastPrintTime = Date.now();
 
+  /**
+   * Set to the activity of reading the current events
+   */
+  private readPromise?: Promise<AWS.CloudFormation.StackEvent[]>;
+
   constructor(private readonly cfn: aws.CloudFormation,
               private readonly stackName: string,
               private readonly metadata?: cxapi.StackMetadata,
@@ -80,10 +86,16 @@ export class StackActivityMonitor {
     return this;
   }
 
-  public stop() {
+  public async stop() {
     this.active = false;
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
+    }
+
+    if (this.readPromise) {
+      // We're currently reading events, wait for it to finish and print them before continuing.
+      await this.readPromise;
+      this.flushEvents();
     }
   }
 
@@ -99,8 +111,18 @@ export class StackActivityMonitor {
       return;
     }
 
-    await this.readEvents();
-    this.flushEvents();
+    try {
+      this.readPromise = this.readEvents();
+      await this.readPromise;
+      this.readPromise = undefined;
+
+      // We might have been stop()ped while the network call was in progress.
+      if (!this.active) { return; }
+
+      this.flushEvents();
+    } catch (e) {
+      error("Error occurred while monitoring stack: %s", e);
+    }
     this.scheduleNextTick();
   }
 
@@ -220,7 +242,7 @@ export class StackActivityMonitor {
     return colors.reset;
   }
 
-  private async readEvents(nextToken?: string) {
+  private async readEvents(nextToken?: string): Promise<AWS.CloudFormation.StackEvent[]> {
     const output = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise()
       .catch( e => {
         if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
