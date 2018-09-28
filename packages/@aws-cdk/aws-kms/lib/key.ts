@@ -111,7 +111,7 @@ export interface EncryptionKeyProps {
 }
 
 /**
- * Definews a KMS key.
+ * Defines a KMS key.
  */
 export class EncryptionKey extends EncryptionKeyRef {
   public readonly keyArn: string;
