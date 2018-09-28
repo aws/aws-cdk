@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codepipeline-api",
-  "version": "0.8.2",
+  "version": "0.10.0",
   "description": "Actions API for AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,12 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "codepipeline-api"
         }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Codepipeline.Api",
+        "packageId": "Amazon.CDK.AWS.Codepipeline.Api",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
@@ -46,19 +52,15 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cdk-integ-tools": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "^0.10.0",
+    "cdk-build-tools": "^0.10.0",
+    "cdk-integ-tools": "^0.10.0",
+    "pkglint": "^0.10.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-events": "^0.8.2",
-    "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2",
-    "@aws-cdk/util": "^0.8.2"
+    "@aws-cdk/aws-events": "^0.10.0",
+    "@aws-cdk/aws-iam": "^0.10.0",
+    "@aws-cdk/cdk": "^0.10.0"
   },
-  "bundledDependencies": [
-    "@aws-cdk/util"
-  ],
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

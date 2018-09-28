@@ -4,6 +4,7 @@ import software.amazon.awscdk.App;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.iam.User;
+import software.amazon.awscdk.services.iam.UserProps;
 import software.amazon.awscdk.services.sns.Topic;
 import software.amazon.awscdk.services.sns.TopicProps;
 import software.amazon.awscdk.services.sqs.Queue;
@@ -31,7 +32,7 @@ public class HelloStack extends Stack {
                 .withBucketCount(5)
                 .build());
 
-        User user = new User(this, "MyUser");
+        User user = new User(this, "MyUser", UserProps.builder().build());
         hello.grantRead(user);
     }
 }

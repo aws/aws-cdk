@@ -135,8 +135,8 @@ and sort key **Timestamp**.
          writeCapacity: 5
        });
 
-       table.addPartitionKey('Alias', dynamodb.KeyAttributeType.String);
-       table.addSortKey('Timestamp', dynamodb.KeyAttributeType.String);
+       table.addPartitionKey({ name: 'Alias', type: dynamodb.AttributeType.String });
+       table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.String });
      }
    }
 
@@ -168,15 +168,15 @@ The following example creates the Aurora database **MyAuroraDatabase**.
        new rds.DatabaseCluster(this, 'MyRdsDb', {
          defaultDatabaseName: 'MyAuroraDatabase',
          masterUser: {
-           username: new cdk.Token('admin'),
-           password: new cdk.Token('123456')
+           username: 'admin',
+           password: '123456'
          },
          engine: rds.DatabaseClusterEngine.Aurora,
          instanceProps: {
            instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
            vpc: vpc,
            vpcPlacement: {
-             usePublicSubnets: true
+             subnetsToUse: ec2.SubnetType.Public
            }
          }
        });

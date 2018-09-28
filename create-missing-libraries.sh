@@ -68,6 +68,12 @@ EOM
   "jsii": {
     "outdir": "dist",
     "targets": {
+      "dotnet": {
+        "namespace": "${S/AWS::/Amazon.CDK.AWS.}",
+        "packageId": "${S/AWS::/Amazon.CDK.AWS.}",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "java": {
         "package": "software.amazon.awscdk.${PB/aws-/services.}",
         "maven": {
@@ -128,7 +134,7 @@ EOM
 import { Test, testCase } from 'nodeunit';
 import {} from '../lib';
 
-exports = testCase({
+export = testCase({
     notTested(test: Test) {
         test.ok(true, 'No tests are specified for this package.');
         test.done();

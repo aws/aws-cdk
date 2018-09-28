@@ -1,7 +1,7 @@
 {
   "name": "merkle-build",
   "private": true,
-  "version": "0.8.2",
+  "version": "0.10.0",
   "description": "Build tool helper for calculating hashes of a Merkle tree",
   "main": "lib/index.js",
   "types": "lib/index.ts",
@@ -22,7 +22,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
-    "pkglint": "^0.8.2"
+    "pkglint": "^0.10.0"
   },
   "dependencies": {
     "fs-extra": "^4.0.2"

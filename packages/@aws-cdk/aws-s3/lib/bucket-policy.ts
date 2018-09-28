@@ -3,10 +3,10 @@ import { BucketRef } from './bucket';
 import { cloudformation } from './s3.generated';
 
 export interface BucketPolicyProps {
-    /**
-     * The Amazon S3 bucket that the policy applies to.
-     */
-    bucket: BucketRef;
+  /**
+   * The Amazon S3 bucket that the policy applies to.
+   */
+  bucket: BucketRef;
 }
 
 /**
@@ -14,23 +14,23 @@ export interface BucketPolicyProps {
  */
 export class BucketPolicy extends Construct {
 
-    /**
-     * A policy document containing permissions to add to the specified bucket.
-     * For more information, see Access Policy Language Overview in the Amazon
-     * Simple Storage Service Developer Guide.
-     */
-    public readonly document = new PolicyDocument();
+  /**
+   * A policy document containing permissions to add to the specified bucket.
+   * For more information, see Access Policy Language Overview in the Amazon
+   * Simple Storage Service Developer Guide.
+   */
+  public readonly document = new PolicyDocument();
 
-    constructor(parent: Construct, name: string, props: BucketPolicyProps) {
-        super(parent, name);
+  constructor(parent: Construct, name: string, props: BucketPolicyProps) {
+    super(parent, name);
 
-        if (!props.bucket.bucketName) {
-            throw new Error('Bucket doesn\'t have a bucketName defined');
-        }
-
-        new cloudformation.BucketPolicyResource(this, 'Resource', {
-            bucket: props.bucket.bucketName,
-            policyDocument: this.document,
-        });
+    if (!props.bucket.bucketName) {
+      throw new Error('Bucket doesn\'t have a bucketName defined');
     }
+
+    new cloudformation.BucketPolicyResource(this, 'Resource', {
+      bucket: props.bucket.bucketName,
+      policyDocument: this.document,
+    });
+  }
 }

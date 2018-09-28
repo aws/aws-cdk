@@ -1,12 +1,18 @@
 {
   "name": "@aws-cdk/aws-serverless",
-  "version": "0.8.2",
+  "version": "0.10.0",
   "description": "The CDK Construct Library for AWS::Serverless",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Serverless",
+        "packageId": "Amazon.CDK.AWS.Serverless",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
       "java": {
         "package": "software.amazon.awscdk.services.serverless",
         "maven": {
@@ -21,14 +27,15 @@
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git"
   },
+  "homepage": "https://github.com/awslabs/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "watch": "cdk-watch",
-    "lint": "cdk-lint",
-    "test": "cdk-test",
     "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
     "pkglint": "pkglint -f",
-    "package": "cdk-package"
+    "test": "cdk-test",
+    "watch": "cdk-watch"
   },
   "cdk-build": {
     "cloudformation": "AWS::Serverless"
@@ -37,7 +44,7 @@
     "aws",
     "cdk",
     "constructs",
-    "serverless"
+    "aws-serverless"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -46,13 +53,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.8.2",
-    "cdk-build-tools": "^0.8.2",
-    "cfn2ts": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "@aws-cdk/assert": "^0.10.0",
+    "cdk-build-tools": "^0.10.0",
+    "cfn2ts": "^0.10.0",
+    "pkglint": "^0.10.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.8.2"
-  },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+    "@aws-cdk/cdk": "^0.10.0"
+  }
 }

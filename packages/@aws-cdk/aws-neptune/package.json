@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-neptune",
-  "version": "0.8.2",
+  "version": "0.10.0",
   "description": "CDK Constructs for AWS Neptune",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,6 +13,12 @@
           "groupId": "software.amazon.awscdk",
           "artifactId": "neptune"
         }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Neptune",
+        "packageId": "Amazon.CDK.AWS.Neptune",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
       },
       "sphinx": {}
     }
@@ -45,15 +51,15 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.8.2",
-    "pkglint": "^0.8.2"
+    "cdk-build-tools": "^0.10.0",
+    "pkglint": "^0.10.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^0.8.2",
-    "@aws-cdk/aws-iam": "^0.8.2",
-    "@aws-cdk/aws-kms": "^0.8.2",
-    "@aws-cdk/aws-rds": "^0.8.2",
-    "@aws-cdk/cdk": "^0.8.2"
+    "@aws-cdk/aws-ec2": "^0.10.0",
+    "@aws-cdk/aws-iam": "^0.10.0",
+    "@aws-cdk/aws-kms": "^0.10.0",
+    "@aws-cdk/aws-rds": "^0.10.0",
+    "@aws-cdk/cdk": "^0.10.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
