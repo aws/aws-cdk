@@ -1,5 +1,5 @@
 <a name="0.10.0"></a>
-# [0.10.0](https://github.com/awslabs/aws-cdk/compare/v0.9.2...v0.10.0) (2018-09-27)
+## [0.10.0](https://github.com/awslabs/aws-cdk/compare/v0.9.2...v0.10.0) (2018-09-27)
 
 This release introduces a better way to "escape" L2 constructs in case of missing features
 by adding the ability to add arbitrary overrides for resource properties:
