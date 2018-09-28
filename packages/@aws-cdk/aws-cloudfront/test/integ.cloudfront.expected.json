@@ -33,10 +33,7 @@
           "Origins": [
             {
               "DomainName": {
-                "Fn::GetAtt": [
-                  "Bucket83908E77",
-                  "DomainName"
-                ]
+                "Fn::ImportValue":"aws-cdk-cloudfront:BucketBucketDomain3E81AE28"
               },
               "Id": "origin1",
               "S3OriginConfig": {}
@@ -47,6 +44,19 @@
             "CloudFrontDefaultCertificate": true
           }
         }
+      }
+    }
+  },
+  "Outputs": {
+    "BucketBucketDomain3E81AE28": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Bucket83908E77",
+          "DomainName"
+        ]
+      },
+      "Export": {
+        "Name": "aws-cdk-cloudfront:BucketBucketDomain3E81AE28"
       }
     }
   }

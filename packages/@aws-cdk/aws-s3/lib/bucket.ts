@@ -30,6 +30,13 @@ export interface BucketRefProps {
    * policy, won't work.
    */
   bucketName?: string;
+
+  /**
+   * The domain name of the bucket.
+   *
+   * @default Inferred from bucket name
+   */
+  bucketDomainName?: string;
 }
 
 /**
@@ -71,6 +78,11 @@ export abstract class BucketRef extends cdk.Construct {
    * The name of the bucket.
    */
   public abstract readonly bucketName: string;
+
+  /**
+   * The domain of the bucket.
+   */
+  public abstract readonly domainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -347,7 +359,6 @@ export interface BucketProps {
 export class Bucket extends BucketRef {
   public readonly bucketArn: string;
   public readonly bucketName: string;
-  public readonly domainName: string;
   public readonly dualstackDomainName: string;
   public readonly encryptionKey?: kms.EncryptionKeyRef;
   protected policy?: BucketPolicy;
@@ -355,6 +366,8 @@ export class Bucket extends BucketRef {
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly versioned?: boolean;
   private readonly notifications: BucketNotifications;
+  private exportedDomainName?: string = undefined;
+  private readonly bucketDomainName: string;
 
   constructor(parent: cdk.Construct, name: string, props: BucketProps = {}) {
     super(parent, name);
@@ -374,7 +387,7 @@ export class Bucket extends BucketRef {
     this.encryptionKey = encryptionKey;
     this.bucketArn = resource.bucketArn;
     this.bucketName = resource.bucketName;
-    this.domainName = resource.bucketDomainName;
+    this.bucketDomainName = resource.bucketDomainName;
     this.dualstackDomainName = resource.bucketDualStackDomainName;
 
     // Add all lifecycle rules
@@ -383,6 +396,16 @@ export class Bucket extends BucketRef {
     // defines a BucketNotifications construct. Notice that an actual resource will only
     // be added if there are notifications added, so we don't need to condition this.
     this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
+  }
+
+  public get domainName(): string {
+    // We need to export the BucketDomain, otherwise it can only be referenced inside its stack.
+    if (this.exportedDomainName === undefined) {
+      this.exportedDomainName = new cdk.Output(this, `BucketDomain`, { value: this.bucketDomainName })
+        .makeImportValue().toString();
+    }
+
+    return this.exportedDomainName!;
   }
 
   /**
@@ -701,6 +724,7 @@ export interface NotificationKeyFilter {
 class ImportedBucketRef extends BucketRef {
   public readonly bucketArn: string;
   public readonly bucketName: string;
+  public readonly domainName: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   protected policy?: BucketPolicy;
@@ -716,7 +740,12 @@ class ImportedBucketRef extends BucketRef {
 
     this.bucketArn = parseBucketArn(props);
     this.bucketName = bucketName;
+    this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;
     this.policy = undefined;
+  }
+
+  private generateDomainName() {
+    return `${this.bucketName}.s3.amazonaws.com`;
   }
 }
