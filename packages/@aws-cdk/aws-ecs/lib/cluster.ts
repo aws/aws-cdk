@@ -2,6 +2,8 @@ import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './ecs.generated';
+import { Service } from './service';
+import { TaskDefinition } from './task-definition';
 
 export interface ClusterProps {
   /**
@@ -49,12 +51,12 @@ export class Cluster extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
     super(parent, name);
 
-    const cluster = new cloudformation.ClusterResource(this, "Resource", {clusterName: props.clusterName});
+    const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
 
     this.clusterArn = cluster.clusterArn;
     this.clusterName = cluster.ref;
 
-    const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoScalingGroup', {
       vpc: props.vpc,
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
       machineImage: new EcsOptimizedAmi(),
@@ -62,13 +64,13 @@ export class Cluster extends cdk.Construct {
     });
 
     // Tie instances to cluster
-    fleet.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+    autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
 
     if (!props.containersAccessInstanceRole) {
       // Deny containers access to instance metadata service
       // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-      fleet.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-      fleet.addUserData('sudo service iptables save');
+      autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+      autoScalingGroup.addUserData('sudo service iptables save');
     }
 
     // Note: if the fleet doesn't launch or doesn't register itself with
@@ -90,7 +92,7 @@ export class Cluster extends cdk.Construct {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-    fleet.addToRolePolicy(new cdk.PolicyStatement().addActions(
+    autoScalingGroup.addToRolePolicy(new cdk.PolicyStatement().addActions(
       "ecs:CreateCluster",
       "ecs:DeregisterContainerInstance",
       "ecs:DiscoverPollEndpoint",
@@ -106,7 +108,14 @@ export class Cluster extends cdk.Construct {
       "logs:PutLogEvents"
     ).addAllResources()); // Conceivably we might do better than all resources and add targeted ARNs
 
-    this.fleet = fleet;
+    this.fleet = autoScalingGroup;
+  }
 
+  public runService(taskDefinition: TaskDefinition): Service {
+    return new Service(this, `${taskDefinition.family}Service`, {
+      cluster: this,
+      taskDefinition,
+      // FIXME: additional props? Or set on Service object?
+    });
   }
 }

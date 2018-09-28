@@ -31,27 +31,22 @@ class BonjourECS extends cdk.Stack {
         //     with the application container itself
         //   - autoscaling - application autoscaling (Fargate focused?)
 
-        const taskDef = new ecs.TaskDefinition(this, "MyTD", {
+        const taskDefinition = new ecs.TaskDefinition(this, "MyTD", {
             family: "ecs-task-definition",
             placementConstraints: [{
                 type: "distinctInstance"
             }],
-            containerDefinitions: [
-                {
-                    name: "web",
-                    image: "amazon/amazon-ecs-sample",
-                    cpu: 1024,
-                    memory: 512,
-                    essential: true
-                }
-            ]
         });
 
-        new ecs.Service(this, "Service", {
-            cluster: cluster.clusterName,
-            taskDefinition: taskDef.taskDefinitionArn,
-            desiredCount: 1,
-        });
+        taskDefinition.addContainer(new ecs.ContainerDefinition(this, 'Def', {
+            name: "web",
+            image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+            cpu: 1024,
+            memoryMiB: 512,
+            essential: true
+        }));
+
+        cluster.runService(taskDefinition);
     }
 }
 

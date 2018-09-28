@@ -3,9 +3,6 @@ import { ContainerDefinition } from './container-definition';
 import { cloudformation } from './ecs.generated';
 
 export interface TaskDefinitionProps {
-
-  containerDefinitions: ContainerDefinition[];
-
   /**
    * The number of cpu units used by the task. If using the EC2 launch type,
    * this field is optional. Supported values are between 128 CPU units
@@ -35,7 +32,7 @@ export interface TaskDefinitionProps {
   /**
    * Namespace for task definition versions
    *
-   * @default CloudFormation-generated name
+   * @default Automatically generated name
    */
   family?: string;
 
@@ -58,7 +55,7 @@ export interface TaskDefinitionProps {
    *
    * @default 512
    */
-  memory?: string;
+  memoryMiB?: string;
 
   /**
    * The Docker networking mode to use for the containers in the task, such as none, bridge, or host.
@@ -98,15 +95,16 @@ export interface TaskDefinitionProps {
 }
 
 export class TaskDefinition extends cdk.Construct {
+  public readonly family: string;
   public readonly taskDefinitionArn: string;
-  private readonly containerDefinitions: cloudformation.TaskDefinitionResource.ContainerDefinitionProperty[] = [];
+  private readonly containerDefinitions = new Array<ContainerDefinition>();
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
 
   constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
     super(parent, name);
 
-    props.containerDefinitions.forEach(cd => this.addContainer(cd));
+    this.family = props.family || this.uniqueId;
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
@@ -117,11 +115,11 @@ export class TaskDefinition extends cdk.Construct {
     }
 
     const taskDef = new cloudformation.TaskDefinitionResource(this, "TaskDef", {
-      containerDefinitions: new cdk.Token(() => this.containerDefinitions),
+      containerDefinitions: new cdk.Token(() => this.containerDefinitions.map(x => x.toContainerDefinitionJson())),
       cpu: props.cpu,
       executionRoleArn: props.executionRoleArn,
-      family: props.family,
-      memory: props.memory,
+      family: this.family,
+      memory: props.memoryMiB,
       networkMode: props.networkMode,
       placementConstraints: new cdk.Token(() => this.placementConstraints),
       taskRoleArn: props.taskRoleArn
@@ -130,9 +128,8 @@ export class TaskDefinition extends cdk.Construct {
     this.taskDefinitionArn = taskDef.ref;
   }
 
-  private addContainer(definition: ContainerDefinition) {
-    const cd = this.renderContainerDefininition(definition);
-    this.containerDefinitions.push(cd);
+  public addContainer(container: ContainerDefinition) {
+    this.containerDefinitions.push(container);
   }
 
   private addPlacementConstraint(constraint: PlacementConstraint) {
@@ -145,60 +142,12 @@ export class TaskDefinition extends cdk.Construct {
     this.volumes.push(volume);
   }
 
-  // Populates task definition with container definition
-  private renderContainerDefininition(definition: ContainerDefinition): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
-    // const logConfigs = this.renderLogConfiguration(definition.logConfiguration); // what to do if undefined?
-
-    return {
-      name: definition.name,
-      image: definition.image,
-      command: definition.command,
-      cpu: definition.cpu,
-      disableNetworking: definition.disableNetworking,
-      dnsSearchDomains: definition.dnsSearchDomains,
-      dnsServers: definition.dnsServers,
-      // dockerLabels: definition.dockerLabels,
-      dockerSecurityOptions: definition.dockerSecurityOptions,
-      entryPoint: definition.entryPoint,
-      essential: definition.essential,
-      hostname: definition.hostname,
-      links: definition.links,
-      // logConfiguration: logConfigs, // only set if passed in?
-      memory: definition.memory,
-      memoryReservation: definition.memoryReservation,
-      privileged: definition.privileged,
-      readonlyRootFilesystem: definition.readonlyRootFilesystem,
-      user: definition.user,
-      workingDirectory: definition.workingDirectory
-    };
-  }
-
   private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
     return {
       type: pc.type,
       expression: pc.expression
     };
   }
-
-  // private renderLogConfiguration(lc: LogConfiguration[]): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty.LogConfiguration[] {
-  //   return {
-  //     logDriver: lc.logDriver,
-  //     options: lc.options
-  //   };
-  // }
-
-  // private renderVolume(volume: Volume): cloudformation.TaskDefinitionResource.VolumeProperty {
-  //   return {
-  //     host: this.renderHost(volume.host),
-  //     name: volume.name
-  //   };
-  // }
-
-  // private renderHost(host: Host): cloudformation.TaskDefinitionResource.VolumeProperty.Host {
-  //   return {
-  //     sourcePath: host.sourcePath
-  //   }
-  // }
 }
 
 export interface PlacementConstraint {
