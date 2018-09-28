@@ -26,21 +26,45 @@ export enum ViewerProtocolPolicy {
 }
 
 /**
- * CloudFront can use a custom domain that you provide instead of a "cloudfront.net" domain.
- * To use this feature - you must provide the list of additional domains,
- * and the ACM Certificate that CloudFront should use for these additional domains.
+ * Configuration for custom domain names
  *
- * Note - CloudFront only accepts one additional certificate - therefore the certificate *must*
- * use have SANs (Subject Alternative Names) for all domains listed.
- *
- * sslMethod is optional - we default to SNI if not specified. See the notes on SSLMethod if you wish to use other SSL termination types.
- *
- * @default sslMethod: SNI by default
+ * CloudFront can use a custom domain that you provide instead of a
+ * "cloudfront.net" domain. To use this feature you must provide the list of
+ * additional domains, and the ACM Certificate that CloudFront should use for
+ * these additional domains.
  */
 export interface AliasConfiguration {
-  readonly names: string[],
-  readonly acmCertRef: string,
-  readonly sslMethod?: SSLMethod,
+  /**
+   * ARN of an AWS Certificate Manager (ACM) certificate.
+   */
+  readonly acmCertRef: string;
+
+  /**
+   * Domain names on the certificate
+   *
+   * Both main domain name and Subject Alternative Names.
+   */
+  readonly names: string[];
+
+  /**
+   * How CloudFront should serve HTTPS requests.
+   *
+   * See the notes on SSLMethod if you wish to use other SSL termination types.
+   *
+   * @default SNI
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_ViewerCertificate.html
+   */
+  readonly sslMethod?: SSLMethod;
+
+  /**
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default securityPolicy: SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
+   */
+  readonly securityPolicy?: SecurityPolicyProtocol;
 }
 
 /**
@@ -62,6 +86,18 @@ export interface AliasConfiguration {
 export enum SSLMethod {
   SNI = "sni-only",
   VIP = "vip"
+}
+
+/**
+ * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+ * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
+ */
+export enum SecurityPolicyProtocol {
+  SSLv3 = "SSLv3",
+  TLSv1 = "TLSv1",
+  TLSv1_2016 = "TLSv1_2016",
+  TLSv1_1_2016 = "TLSv1.1_2016",
+  TLSv1_2_2018 = "TLSv1.2_2018"
 }
 
 /**
@@ -464,6 +500,17 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     ALL: ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
   };
 
+  /**
+   * Maps for which SecurityPolicyProtocol are available to which SSLMethods
+   */
+  private readonly VALID_SSL_PROTOCOLS: { [key: string]: string[] } = {
+    "sni-only": [
+      SecurityPolicyProtocol.TLSv1, SecurityPolicyProtocol.TLSv1_1_2016,
+      SecurityPolicyProtocol.TLSv1_2016, SecurityPolicyProtocol.TLSv1_2_2018
+    ],
+    "vip": [SecurityPolicyProtocol.SSLv3, SecurityPolicyProtocol.TLSv1],
+  };
+
   constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
     super(parent, name);
 
@@ -565,7 +612,21 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       distributionConfig.viewerCertificate = {
         acmCertificateArn: props.aliasConfiguration.acmCertRef,
         sslSupportMethod: props.aliasConfiguration.sslMethod || SSLMethod.SNI,
+        minimumProtocolVersion: props.aliasConfiguration.securityPolicy
       };
+
+      if (distributionConfig.viewerCertificate.minimumProtocolVersion !== undefined) {
+        const validProtocols = this.VALID_SSL_PROTOCOLS[distributionConfig.viewerCertificate.sslSupportMethod!.toString()];
+
+        if (validProtocols === undefined) {
+          throw new Error(`Invalid sslMethod. ${distributionConfig.viewerCertificate.sslSupportMethod!.toString()} is not fully implemented yet.`);
+        }
+
+        if (validProtocols.indexOf(distributionConfig.viewerCertificate.minimumProtocolVersion.toString()) === -1) {
+          // tslint:disable-next-line:max-line-length
+          throw new Error(`${distributionConfig.viewerCertificate.minimumProtocolVersion} is not compabtible with sslMethod ${distributionConfig.viewerCertificate.sslSupportMethod}.\n\tValid Protocols are: ${validProtocols.join(", ")}`);
+        }
+      }
     } else {
       distributionConfig.viewerCertificate = {
         cloudFrontDefaultCertificate: true
