@@ -459,7 +459,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     const distributionConfig: cloudformation.DistributionResource.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
-      defaultRootObject: props.defaultRootObject || "index.html",
+      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PriceClass100,
       ipv6Enabled: props.enableIpV6 || true,
