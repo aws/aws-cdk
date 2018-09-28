@@ -32,8 +32,9 @@ export interface BucketRefProps {
   bucketName?: string;
 
   /**
-   * The domain of the bucket. This is not required and will be infered from
-   * the bucket name.
+   * The domain name of the bucket. 
+   *
+   * @default Inferred from bucket name
    */
   bucketDomainName?: string;
 }
