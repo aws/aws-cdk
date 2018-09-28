@@ -1,12 +1,45 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { AttributeType, StreamViewType, Table } from '../lib';
+import { Attribute, AttributeType, ProjectionType, SecondaryIndexProps, StreamViewType, Table } from '../lib';
+
+// CDK parameters
+const STACK_NAME = 'MyStack';
+const CONSTRUCT_NAME = 'MyTable';
+
+// DynamoDB table parameters
+const TABLE_NAME = 'MyTable';
+const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.String };
+const TABLE_SORT_KEY: Attribute = { name: 'sortKey', type: AttributeType.Number };
+
+// DynamoDB global secondary index parameters
+const GSI_NAME = 'MyGSI';
+const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.String };
+const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.Binary };
+const GSI_NON_KEY = 'gsiNonKey';
+function* GSI_GENERATOR() {
+  let n = 0;
+  while (true) {
+    const globalSecondaryIndexProps: SecondaryIndexProps = {
+      indexName: `${GSI_NAME}${n}`,
+      partitionKey: { name: `${GSI_PARTITION_KEY.name}${n}`, type: GSI_PARTITION_KEY.type }
+    };
+    yield globalSecondaryIndexProps;
+    n++;
+  }
+}
+function* GSI_NON_KEY_ATTRIBUTE_GENERATOR() {
+  let n = 0;
+  while (true) {
+    yield `${GSI_NON_KEY}${n}`;
+    n++;
+  }
+}
 
 export = {
   'default properties': {
     'fails without a hash key'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable');
+      new Table(app.stack, CONSTRUCT_NAME);
       test.throws(() => app.synthesizeTemplate(), /partition key/);
 
       test.done();
@@ -14,7 +47,7 @@ export = {
 
     'hash key only'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable').addPartitionKey({ name: 'hashKey', type: AttributeType.Binary });
+      new Table(app.stack, CONSTRUCT_NAME).addPartitionKey(TABLE_PARTITION_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -22,9 +55,10 @@ export = {
           MyTable794EDED1: {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
-              AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'B' }],
+              AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
               KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -35,9 +69,9 @@ export = {
 
     'hash + range key'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable')
-        .addPartitionKey({ name: 'hashKey', type: AttributeType.Binary })
-        .addSortKey({ name: 'sortKey', type: AttributeType.Number });
+      new Table(app.stack, CONSTRUCT_NAME)
+        .addPartitionKey(TABLE_PARTITION_KEY)
+        .addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -46,7 +80,7 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'hashKey', AttributeType: 'B' },
+                { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               KeySchema: [
@@ -54,6 +88,7 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -64,9 +99,9 @@ export = {
 
     'point-in-time recovery is not enabled'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable')
-        .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
-        .addSortKey({ name: 'sortKey', type: AttributeType.Number });
+      new Table(app.stack, CONSTRUCT_NAME)
+        .addPartitionKey(TABLE_PARTITION_KEY)
+        .addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -75,14 +110,15 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -93,9 +129,9 @@ export = {
 
     'server-side encryption is not enabled'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable')
-        .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
-        .addSortKey({ name: 'sortKey', type: AttributeType.Number });
+      new Table(app.stack, CONSTRUCT_NAME)
+        .addPartitionKey(TABLE_PARTITION_KEY)
+        .addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -104,14 +140,15 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -122,9 +159,9 @@ export = {
 
     'stream is not enabled'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable')
-        .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
-        .addSortKey({ name: 'sortKey', type: AttributeType.Number });
+      new Table(app.stack, CONSTRUCT_NAME)
+        .addPartitionKey(TABLE_PARTITION_KEY)
+        .addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -133,14 +170,15 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -151,9 +189,9 @@ export = {
 
     'ttl is not enabled'(test: Test) {
       const app = new TestApp();
-      new Table(app.stack, 'MyTable')
-        .addPartitionKey({ name: 'partitionKey', type: AttributeType.Binary })
-        .addSortKey({ name: 'sortKey', type: AttributeType.Number });
+      new Table(app.stack, CONSTRUCT_NAME)
+        .addPartitionKey(TABLE_PARTITION_KEY)
+        .addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -162,14 +200,15 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'B' },
+                { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+              GlobalSecondaryIndexes: []
             }
           }
         }
@@ -180,14 +219,14 @@ export = {
 
     'can specify new and old images'(test: Test) {
       const app = new TestApp();
-      const table = new Table(app.stack, 'MyTable', {
-        tableName: 'MyTable',
+      const table = new Table(app.stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
         readCapacity: 42,
         writeCapacity: 1337,
         streamSpecification: StreamViewType.NewAndOldImages
       });
-      table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-      table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+      table.addPartitionKey(TABLE_PARTITION_KEY);
+      table.addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -196,15 +235,16 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'S' },
-                { AttributeName: 'sortKey', AttributeType: 'B' }
+                { AttributeName: 'hashKey', AttributeType: 'S' },
+                { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               StreamSpecification: { StreamViewType: 'NEW_AND_OLD_IMAGES' },
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+              GlobalSecondaryIndexes: [],
               TableName: 'MyTable'
             }
           }
@@ -216,14 +256,14 @@ export = {
 
     'can specify new images only'(test: Test) {
       const app = new TestApp();
-      const table = new Table(app.stack, 'MyTable', {
-        tableName: 'MyTable',
+      const table = new Table(app.stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
         readCapacity: 42,
         writeCapacity: 1337,
         streamSpecification: StreamViewType.NewImage
       });
-      table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-      table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+      table.addPartitionKey(TABLE_PARTITION_KEY);
+      table.addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -232,13 +272,14 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+              GlobalSecondaryIndexes: [],
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'S' },
-                { AttributeName: 'sortKey', AttributeType: 'B' }
+                { AttributeName: 'hashKey', AttributeType: 'S' },
+                { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
               TableName: 'MyTable'
@@ -252,14 +293,14 @@ export = {
 
     'can specify old images only'(test: Test) {
       const app = new TestApp();
-      const table = new Table(app.stack, 'MyTable', {
-        tableName: 'MyTable',
+      const table = new Table(app.stack, CONSTRUCT_NAME, {
+        tableName: TABLE_NAME,
         readCapacity: 42,
         writeCapacity: 1337,
         streamSpecification: StreamViewType.OldImage
       });
-      table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-      table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+      table.addPartitionKey(TABLE_PARTITION_KEY);
+      table.addSortKey(TABLE_SORT_KEY);
       const template = app.synthesizeTemplate();
 
       test.deepEqual(template, {
@@ -268,13 +309,14 @@ export = {
             Type: 'AWS::DynamoDB::Table',
             Properties: {
               KeySchema: [
-                { AttributeName: 'partitionKey', KeyType: 'HASH' },
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+              GlobalSecondaryIndexes: [],
               AttributeDefinitions: [
-                { AttributeName: 'partitionKey', AttributeType: 'S' },
-                { AttributeName: 'sortKey', AttributeType: 'B' }
+                { AttributeName: 'hashKey', AttributeType: 'S' },
+                { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
               TableName: 'MyTable'
@@ -289,8 +331,8 @@ export = {
 
   'when specifying every property'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       pitrEnabled: true,
@@ -298,8 +340,8 @@ export = {
       streamSpecification: StreamViewType.KeysOnly,
       ttlAttributeName: 'timeToLive'
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     const template = app.synthesizeTemplate();
 
     test.deepEqual(template, {
@@ -308,17 +350,18 @@ export = {
           Type: 'AWS::DynamoDB::Table',
           Properties: {
             AttributeDefinitions: [
-              { AttributeName: 'partitionKey', AttributeType: 'S' },
-              { AttributeName: 'sortKey', AttributeType: 'B' }
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' }
             ],
             KeySchema: [
-              { AttributeName: 'partitionKey', KeyType: 'HASH' },
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
               { AttributeName: 'sortKey', KeyType: 'RANGE' }
             ],
             ProvisionedThroughput: {
               ReadCapacityUnits: 42,
               WriteCapacityUnits: 1337
             },
+            GlobalSecondaryIndexes: [],
             PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
             SSESpecification: { SSEEnabled: true },
             StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
@@ -332,15 +375,440 @@ export = {
     test.done();
   },
 
-  'when specifying Read Auto Scaling'(test: Test) {
+  'when adding a global secondary index with hash key only'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+        readCapacity: 42,
+        writeCapacity: 1337
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when adding a global secondary index with hash + range key'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+        sortKey: GSI_SORT_KEY,
+        projectionType: ProjectionType.All,
+        readCapacity: 42,
+        writeCapacity: 1337
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+              { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                  { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when adding a global secondary index with projection type KEYS_ONLY'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+        sortKey: GSI_SORT_KEY,
+        projectionType: ProjectionType.KeysOnly,
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+              { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                  { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { ProjectionType: 'KEYS_ONLY' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when adding a global secondary index with projection type INCLUDE'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.Include,
+      nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value, gsiNonKeyAttributeGenerator.next().value],
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+              { AttributeName: 'gsiSortKey', AttributeType: 'B' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                  { AttributeName: 'gsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { NonKeyAttributes: ['gsiNonKey0', 'gsiNonKey1'], ProjectionType: 'INCLUDE' },
+                ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with projection type INCLUDE, but without specifying non-key attributes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.Include
+    }), /non-key attributes should be specified when using INCLUDE projection type/);
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with projection type ALL, but with non-key attributes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value]
+    }), /non-key attributes should not be specified when not using INCLUDE projection type/);
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with projection type KEYS_ONLY, but with non-key attributes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      projectionType: ProjectionType.KeysOnly,
+      nonKeyAttributes: [gsiNonKeyAttributeGenerator.next().value]
+    }), /non-key attributes should not be specified when not using INCLUDE projection type/);
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with projection type INCLUDE, but with more than 20 non-key attributes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    const gsiNonKeyAttributes: string[] = [];
+    for (let i = 0; i < 21; i++) {
+      gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
+    }
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.Include,
+      nonKeyAttributes: gsiNonKeyAttributes
+    }), /a maximum number of nonKeyAttributes across all of secondary indexes is 20/);
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with projection type INCLUDE, but with key attributes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      projectionType: ProjectionType.Include,
+      nonKeyAttributes: [GSI_NON_KEY, TABLE_PARTITION_KEY.name]
+      // tslint:disable-next-line:max-line-length
+    }), /a key attribute, hashKey, is part of a list of non-key attributes, gsiNonKey,hashKey, which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure/);
+
+    test.done();
+  },
+
+  'when adding multiple global secondary indexes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiGenerator = GSI_GENERATOR();
+    for (let i = 0; i < 5; i++) {
+      table.addGlobalSecondaryIndex(gsiGenerator.next().value);
+    }
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey0', AttributeType: 'S' },
+              { AttributeName: 'gsiHashKey1', AttributeType: 'S' },
+              { AttributeName: 'gsiHashKey2', AttributeType: 'S' },
+              { AttributeName: 'gsiHashKey3', AttributeType: 'S' },
+              { AttributeName: 'gsiHashKey4', AttributeType: 'S' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI0',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey0', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              },
+              {
+                IndexName: 'MyGSI1',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey1', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              },
+              {
+                IndexName: 'MyGSI2',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey2', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              },
+              {
+                IndexName: 'MyGSI3',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey3', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              },
+              {
+                IndexName: 'MyGSI4',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey4', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              },
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'error when adding more than 5 global secondary indexes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const gsiGenerator = GSI_GENERATOR();
+    for (let i = 0; i < 5; i++) {
+      table.addGlobalSecondaryIndex(gsiGenerator.next().value);
+    }
+
+    test.throws(() => table.addGlobalSecondaryIndex(gsiGenerator.next().value),
+      /a maximum number of global secondary index per table is 5/);
+
+    test.done();
+  },
+
+  'when adding a global secondary index without specifying read and write capacity'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addGlobalSecondaryIndex({
+        indexName: GSI_NAME,
+        partitionKey: GSI_PARTITION_KEY,
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' },
+                ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when specifying Read Auto Scaling'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      readCapacity: 42,
+      writeCapacity: 1337
+    });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -356,12 +824,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
@@ -414,8 +883,8 @@ export = {
 
   'when specifying Read Auto Scaling via constructor'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       readAutoScaling: {
@@ -427,8 +896,8 @@ export = {
         scalingPolicyName: 'MyAwesomePolicyName'
       }
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     const template = app.synthesizeTemplate();
 
     test.deepEqual(template, { Resources:
@@ -436,12 +905,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
@@ -494,8 +964,8 @@ export = {
 
   'error when specifying Read Auto Scaling via constructor and attempting to addReadAutoScaling'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       readAutoScaling: {
@@ -507,8 +977,8 @@ export = {
         scalingPolicyName: 'MyAwesomePolicyName'
       }
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 500,
       maxCapacity: 5000,
@@ -523,13 +993,13 @@ export = {
 
   'when specifying Read Auto Scaling without scalingPolicyName'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -544,12 +1014,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
@@ -603,12 +1074,12 @@ export = {
 
   'when specifying Read Auto Scaling without scalingPolicyName without Table Name'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -623,12 +1094,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ] } },
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -681,13 +1153,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid scalingTargetValue < 10'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -702,13 +1174,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid scalingTargetValue > 90'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -723,13 +1195,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid scaleInCooldown'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -743,13 +1215,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid scaleOutCooldown'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -763,13 +1235,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid maximumCapacity'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: 50,
       maxCapacity: -5,
@@ -783,13 +1255,13 @@ export = {
 
   'error when specifying Read Auto Scaling with invalid minimumCapacity'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addReadAutoScaling({
       minCapacity: -5,
       maxCapacity: 500,
@@ -803,13 +1275,13 @@ export = {
 
   'when specifying Write Auto Scaling'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -825,12 +1297,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
@@ -883,8 +1356,8 @@ export = {
 
   'when specifying Write Auto Scaling via constructor'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       writeAutoScaling: {
@@ -896,8 +1369,8 @@ export = {
         scalingPolicyName: 'MyAwesomePolicyName'
       }
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     const template = app.synthesizeTemplate();
 
     test.deepEqual(template, { Resources:
@@ -905,12 +1378,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
@@ -963,8 +1437,8 @@ export = {
 
   'error when specifying Write Auto Scaling via constructor and attempting to addWriteAutoScaling'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337,
       writeAutoScaling: {
@@ -976,8 +1450,8 @@ export = {
         scalingPolicyName: 'MyAwesomePolicyName'
       }
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 500,
       maxCapacity: 5000,
@@ -992,13 +1466,13 @@ export = {
 
   'when specifying Write Auto Scaling without scalingPolicyName'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1013,12 +1487,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ],
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
@@ -1072,12 +1547,12 @@ export = {
 
   'when specifying Write Auto Scaling without scalingPolicyName without Table Name'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1092,12 +1567,13 @@ export = {
          { Type: 'AWS::DynamoDB::Table',
          Properties:
           { KeySchema:
-           [ { AttributeName: 'partitionKey', KeyType: 'HASH' },
+           [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
+          GlobalSecondaryIndexes: [],
           AttributeDefinitions:
-           [ { AttributeName: 'partitionKey', AttributeType: 'S' },
-             { AttributeName: 'sortKey', AttributeType: 'B' } ] } },
+           [ { AttributeName: 'hashKey', AttributeType: 'S' },
+             { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1150,13 +1626,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid scalingTargetValue < 10'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1171,13 +1647,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid scalingTargetValue > 90'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1192,13 +1668,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid scaleInCooldown'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1212,13 +1688,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid scaleOutCooldown'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: 500,
@@ -1232,13 +1708,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid maximumCapacity'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: 50,
       maxCapacity: -5,
@@ -1252,13 +1728,13 @@ export = {
 
   'error when specifying Write Auto Scaling with invalid minimumCapacity'(test: Test) {
     const app = new TestApp();
-    const table = new Table(app.stack, 'MyTable', {
-      tableName: 'MyTable',
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
       readCapacity: 42,
       writeCapacity: 1337
     });
-    table.addPartitionKey({ name: 'partitionKey', type: AttributeType.String });
-    table.addSortKey({ name: 'sortKey', type: AttributeType.Binary });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addSortKey(TABLE_SORT_KEY);
     test.throws(() => table.addWriteAutoScaling({
       minCapacity: -5,
       maxCapacity: 500,
@@ -1274,7 +1750,7 @@ export = {
 class TestApp {
   private readonly app = new App();
   // tslint:disable-next-line:member-ordering
-  public readonly stack: Stack = new Stack(this.app, 'MyStack');
+  public readonly stack: Stack = new Stack(this.app, STACK_NAME);
 
   public synthesizeTemplate() {
     return this.app.synthesizeStack(this.stack.name).template;
