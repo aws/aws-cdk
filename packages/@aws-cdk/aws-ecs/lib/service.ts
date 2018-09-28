@@ -1,18 +1,18 @@
 import cdk = require('@aws-cdk/cdk');
-import { ClusterName } from './cluster';
+import { Cluster } from './cluster';
 import { cloudformation } from './ecs.generated';
-import { TaskDefinitionArn } from './task-definition';
+import { TaskDefinition } from './task-definition';
 
 export interface ServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: ClusterName; // should be required? do we assume 'default' exists?
+  cluster: Cluster; // should be required? do we assume 'default' exists?
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: TaskDefinitionArn;
+  taskDefinition: TaskDefinition;
 
   /**
    * Number of desired copies of running tasks
@@ -77,8 +77,8 @@ export class Service extends cdk.Construct {
     super(parent, name);
 
     new cloudformation.ServiceResource(this, "Service", {
-      cluster: props.cluster,
-      taskDefinition: props.taskDefinition,
+      cluster: props.cluster.clusterName,
+      taskDefinition: props.taskDefinition.taskDefinitionArn,
       desiredCount: props.desiredCount,
       serviceName: props.serviceName,
       launchType: props.launchType,

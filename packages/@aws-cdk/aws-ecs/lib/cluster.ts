@@ -1,7 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation, ClusterArn} from './ecs.generated';
+import { cloudformation } from './ecs.generated';
 
 export interface ClusterProps {
   /**
@@ -52,9 +52,9 @@ export class ClusterName extends cdk.CloudFormationToken {
 
 export class Cluster extends cdk.Construct {
 
-  public readonly clusterArn: ClusterArn;
+  public readonly clusterArn: string;
 
-  public readonly clusterName: ClusterName;
+  public readonly clusterName: string;
 
   public readonly fleet: autoscaling.AutoScalingGroup;
 
@@ -64,8 +64,7 @@ export class Cluster extends cdk.Construct {
     const cluster = new cloudformation.ClusterResource(this, "Resource", {clusterName: props.clusterName});
 
     this.clusterArn = cluster.clusterArn;
-
-    this.clusterName = new ClusterName(cluster.ref);
+    this.clusterName = cluster.ref;
 
     const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
       vpc: props.vpc,

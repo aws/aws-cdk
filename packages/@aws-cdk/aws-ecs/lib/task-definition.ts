@@ -96,11 +96,8 @@ export interface TaskDefinitionProps {
   volumes?: Volume[];
 }
 
-export class TaskDefinitionArn extends cdk.Token {
-}
-
 export class TaskDefinition extends cdk.Construct {
-  public readonly taskDefinitionArn: TaskDefinitionArn;
+  public readonly taskDefinitionArn: string;
   private readonly containerDefinitions: cloudformation.TaskDefinitionResource.ContainerDefinitionProperty[] = [];
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
