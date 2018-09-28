@@ -61,7 +61,7 @@
           },
           "Logging": {
             "Bucket": {
-              "Fn::GetAtt":["Bucket83908E77","DomainName"]
+              "Fn::ImportValue":"aws-cdk-cloudfront-custom:BucketBucketDomain3E81AE28"
             },
             "IncludeCookies": true,
             "Prefix": "test-prefix"
@@ -124,11 +124,35 @@
           },
           "Logging": {
             "Bucket": {
-              "Fn::GetAtt":["AnAmazingWebsiteProbably2LoggingS3BucketB2C21612","DomainName"]
+              "Fn::ImportValue":"aws-cdk-cloudfront-custom:AnAmazingWebsiteProbably2LoggingS3BucketBucketDomain99064878"
             },
             "IncludeCookies": false
           }
         }
+      }
+    }
+  },
+  "Outputs": {
+    "BucketBucketDomain3E81AE28": {
+      "Value": {
+        "Fn::GetAtt": [
+          "Bucket83908E77",
+          "DomainName"
+        ]
+      },
+      "Export": {
+        "Name": "aws-cdk-cloudfront-custom:BucketBucketDomain3E81AE28"
+      }
+    },
+    "AnAmazingWebsiteProbably2LoggingS3BucketBucketDomain99064878": {
+      "Value": {
+        "Fn::GetAtt": [
+          "AnAmazingWebsiteProbably2LoggingS3BucketB2C21612",
+          "DomainName"
+        ]
+      },
+      "Export": {
+        "Name": "aws-cdk-cloudfront-custom:AnAmazingWebsiteProbably2LoggingS3BucketBucketDomain99064878"
       }
     }
   }

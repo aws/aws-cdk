@@ -127,10 +127,7 @@ export = {
           "Origins": [
             {
             "DomainName": {
-              "Fn::GetAtt": [
-              "Bucket83908E77",
-              "DomainName"
-              ]
+              "Fn::ImportValue": "BucketBucketDomain3E81AE28"
             },
             "Id": "origin1",
             "S3OriginConfig": {}
@@ -162,6 +159,19 @@ export = {
           "CacheBehaviors": []
           }
         }
+        }
+      },
+      "Outputs": {
+        "BucketBucketDomain3E81AE28": {
+          "Value": {
+            "Fn::GetAtt": [
+              "Bucket83908E77",
+              "DomainName"
+            ]
+          },
+          "Export": {
+            "Name": "BucketBucketDomain3E81AE28"
+          }
         }
       }
       });
@@ -191,7 +201,7 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "Bucket83908E77": {
-        "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket"
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
         "Type": "AWS::CloudFront::Distribution",
@@ -201,10 +211,7 @@ export = {
           "Origins": [
             {
             "DomainName": {
-              "Fn::GetAtt": [
-              "Bucket83908E77",
-              "DomainName"
-              ]
+              "Fn::ImportValue": "BucketBucketDomain3E81AE28"
             },
             "Id": "origin1",
             "S3OriginConfig": {}
@@ -217,9 +224,9 @@ export = {
           "DefaultCacheBehavior": {
             "AllowedMethods": [
             "GET",
-            "HEAD"
-            ],
-            "CachedMethods": [
+                  "HEAD"
+                ],
+                "CachedMethods": [
             "GET",
             "HEAD"
             ],
@@ -239,6 +246,19 @@ export = {
           "CacheBehaviors": []
           }
         }
+        }
+      },
+      "Outputs": {
+        "BucketBucketDomain3E81AE28": {
+          "Value": {
+            "Fn::GetAtt": [
+              "Bucket83908E77",
+              "DomainName"
+            ]
+          },
+          "Export": {
+            "Name": "BucketBucketDomain3E81AE28"
+          }
         }
       }
       });
