@@ -65,17 +65,28 @@ export enum SSLMethod {
 }
 
 /**
- * CloudFront supports logging of incoming requests and can log details to a given S3 Bucket.
- *
- * If you wish to configure logging you can configure details about it.
- *
- * @default bucket: if you do not pass a bucket for logging - we'll create one
- * @default includeCookies: false by default
- * @default prefix: no prefix is set by default.
+ * Logging configuration for incoming requests
  */
 export interface LoggingConfiguration {
+  /**
+   * Bucket to log requests to
+   * 
+   * @default A logging bucket is automatically created
+   */
   readonly bucket: s3.BucketRef,
+  
+  /**
+   * Whether to include the cookies in the logs
+   *
+   * @default false 
+   */
   readonly includeCookies?: boolean,
+
+  /**
+   * Where in the bucket to store logs
+   *
+   * @default No prefix
+   */
   readonly prefix?: string
 }
 
