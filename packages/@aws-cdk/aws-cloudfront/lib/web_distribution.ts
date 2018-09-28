@@ -35,7 +35,12 @@ export enum ViewerProtocolPolicy {
  *
  * sslMethod is optional - we default to SNI if not specified. See the notes on SSLMethod if you wish to use other SSL termination types.
  *
+ * securityPolicy - The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+ * CloudFront serves your objects only to browsers or devices that support at least the SSL version that you specify.
+ *
+ *
  * @default sslMethod: SNI by default
+ * @default securityPolicy: SSLv3 if sslMethod VIP, TLSv1 if sslMethod SNI
  */
 export interface AliasConfiguration {
   readonly names: string[],
