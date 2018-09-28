@@ -74,7 +74,7 @@ export enum SSLMethod {
  * @default prefix: no prefix is set by default.
  */
 export interface LoggingConfiguration {
-  readonly bucket?: s3.BucketRef,
+  readonly bucket: s3.BucketRef,
   readonly includeCookies?: boolean,
   readonly prefix?: string
 }
@@ -558,6 +558,14 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     } else {
       distributionConfig.viewerCertificate = {
         cloudFrontDefaultCertificate: true
+      };
+    }
+
+    if (props.loggingConfig) {
+      distributionConfig.logging = {
+        bucket: props.loggingConfig.bucket.domainName,
+        includeCookies: props.loggingConfig.includeCookies || false,
+        prefix: props.loggingConfig.prefix
       };
     }
 
