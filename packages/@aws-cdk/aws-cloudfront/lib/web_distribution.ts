@@ -73,7 +73,7 @@ export interface LoggingConfiguration {
    *
    * @default A logging bucket is automatically created
    */
-  readonly bucket: s3.BucketRef,
+  readonly bucket?: s3.BucketRef,
 
   /**
    * Whether to include the cookies in the logs
@@ -574,7 +574,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
 
     if (props.loggingConfig) {
       distributionConfig.logging = {
-        bucket: props.loggingConfig.bucket.domainName,
+        bucket: (props.loggingConfig.bucket || new s3.Bucket(parent, `${name}LoggingS3Bucket`)).domainName,
         includeCookies: props.loggingConfig.includeCookies || false,
         prefix: props.loggingConfig.prefix
       };

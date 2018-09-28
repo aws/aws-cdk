@@ -31,4 +31,23 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   }
 });
 
+new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably2', {
+  originConfigs: [
+    {
+      originHeaders: {
+        "X-Custom-Header": "somevalue",
+      },
+      customOriginSource: {
+        domainName: "brelandm.a2z.com",
+      },
+      behaviors: [
+        {
+        isDefaultBehavior: true,
+        }
+      ]
+    }
+  ],
+  loggingConfig: {}
+});
+
 process.stdout.write(app.run());

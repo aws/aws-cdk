@@ -32,7 +32,7 @@ export interface BucketRefProps {
   bucketName?: string;
 
   /**
-   * The domain name of the bucket. 
+   * The domain name of the bucket.
    *
    * @default Inferred from bucket name
    */
