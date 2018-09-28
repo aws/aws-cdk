@@ -24,30 +24,18 @@ export interface ClusterProps {
   containersAccessInstanceRole?: boolean;
 }
 
-// TODO: replace this with call to SSM, stored as "/aws/service/ecs/optimized-ami/amazon-linux/recommended"
-// https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ECS/EC2LaunchType/clusters/public-vpc.yml
-export const ECS_OPTIMIZED_AMI = new ec2.GenericLinuxImage({
-  'us-east-2': 'ami-028a9de0a7e353ed9',
-  'us-east-1': 'ami-00129b193dc81bc31',
-  'us-west-2': 'ami-00d4f478',
-  'us-west-1': 'ami-0d438d09af26c9583',
-  'eu-west-2': 'ami-a44db8c3',
-  'eu-west-3': 'ami-07da674f0655ef4e1',
-  'eu-west-1': 'ami-0af844a965e5738db',
-  'eu-central-1': 'ami-0291ba887ba0d515f',
-  'ap-northeast-2': 'ami-047d2a61f94f862dc',
-  'ap-northeast-1': 'ami-0041c416aa23033a2',
-  'ap-southeast-2': 'ami-0092e55c70015d8c3',
-  'ap-southeast-1': 'ami-091bf462afdb02c60',
-  'ca-central-1': 'ami-192fa27d',
-  'ap-south-1': 'ami-0c179ca015d301829',
-  'sa-east-1': 'ami-0018ff8ee48970ac3',
-  'us-gov-west-1': 'ami-c6079ba7',
-});
+/**
+ * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
+ */
+export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
+  private static AmiParamterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
 
-// Needs to inherit from CloudFormationToken to make the string substitution
-// downstairs work. This is temporary, will go away in the near future.
-export class ClusterName extends cdk.CloudFormationToken {
+  public getImage(parent: cdk.Construct): ec2.MachineImage {
+    const ssmProvider = new cdk.SSMParameterProvider(parent);
+
+    const ami = ssmProvider.getString(EcsOptimizedAmi.AmiParamterName);
+    return new ec2.MachineImage(ami, new ec2.LinuxOS());
+  }
 }
 
 export class Cluster extends cdk.Construct {
@@ -69,7 +57,7 @@ export class Cluster extends cdk.Construct {
     const fleet = new autoscaling.AutoScalingGroup(this, 'MyASG', {
       vpc: props.vpc,
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
-      machineImage: ECS_OPTIMIZED_AMI,
+      machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate
     });
 
