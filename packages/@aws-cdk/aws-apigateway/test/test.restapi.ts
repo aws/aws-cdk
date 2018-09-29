@@ -233,7 +233,8 @@ export = {
     });
 
     // WHEN
-    api.root.addResource('{proxy+}');
+    const proxy = api.root.addResource('{proxy+}');
+    proxy.addMethod('ANY');
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
