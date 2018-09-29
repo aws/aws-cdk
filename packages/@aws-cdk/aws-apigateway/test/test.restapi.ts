@@ -223,6 +223,26 @@ export = {
     test.done();
   },
 
+  '"addResource" allows configuration of proxy paths'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+      restApiName: 'my-rest-api'
+    });
+
+    // WHEN
+    api.root.addResource('{proxy+}');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+      PathPart: "{proxy+}",
+      ParentId: { "Fn::GetAtt": ["restapiC5611D27", "RootResourceId"] }
+    }));
+    test.done();
+  },
+
   '"addMethod" can be used to add methods to resources'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
