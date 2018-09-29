@@ -129,6 +129,16 @@ export enum InstanceClass {
   T2 = 't2',
 
   /**
+   * Burstable instances, 3rd generation
+   */
+  Burstable3 = 't3',
+
+  /**
+   * Burstable instances, 3rd generation
+   */
+  T3 = 't3',
+
+  /**
    * Memory-intensive instances, 1st generation
    */
   MemoryIntensive1 = 'x1',
