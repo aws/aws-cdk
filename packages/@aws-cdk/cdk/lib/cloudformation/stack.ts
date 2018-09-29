@@ -93,6 +93,11 @@ export class Stack extends Construct {
   public readonly name: string;
 
   /**
+   * Other stacks this stack depends on
+   */
+  private readonly dependsOnStacks = new Set<Stack>();
+
+  /**
    * Creates a new stack.
    *
    * @param parent Parent of this stack, usually a Program instance.
@@ -130,35 +135,33 @@ export class Stack extends Construct {
    * the tree and invoking toCloudFormation() on all Entity objects.
    */
   public toCloudFormation() {
-    // before we begin synthesis, we shall lock this stack, so children cannot be added
-    this.lock();
-
-    try {
-      const template: any = {
-        Description: this.templateOptions.description,
-        Transform: this.templateOptions.transform,
-        AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-        Metadata: this.templateOptions.metadata
-      };
-
-      const elements = stackElements(this);
-      const fragments = elements.map(e => e.toCloudFormation());
-
-      // merge in all CloudFormation fragments collected from the tree
-      for (const fragment of fragments) {
-        merge(template, fragment);
-      }
-
-      // resolve all tokens and remove all empties
-      const ret = resolve(template) || { };
-
-      this.logicalIds.assertAllRenamesApplied();
-
-      return ret;
-    } finally {
-      // allow mutations after synthesis is finished.
-      this.unlock();
+    // We must double-check to see that our stack is frozen here, and
+    // perform the freezing if not. This is to support unit tests that only
+    // work at the level of Stacks.
+    if (!this.frozen) {
+      this.freeze();
+      this.markFrozen();
     }
+
+    const template: any = {
+      Description: this.templateOptions.description,
+      Transform: this.templateOptions.transform,
+      AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
+      Metadata: this.templateOptions.metadata
+    };
+
+    const elements = stackElements(this);
+    const fragments = elements.map(e => e.toCloudFormation());
+
+    // merge in all CloudFormation fragments collected from the tree
+    for (const fragment of fragments) {
+      merge(template, fragment);
+    }
+
+    this.logicalIds.assertAllRenamesApplied();
+
+    // FIXME: should use removeEmpty() instead of resolve()
+    return resolve(template);
   }
 
   /**
@@ -198,6 +201,35 @@ export class Stack extends Construct {
   }
 
   /**
+   * Add a dependency between this stack and another stack
+   */
+  public addStackDependency(stack: Stack) {
+    if (stack.dependsOnStack(this)) {
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`Stack '${this.name}' already depends on stack '${stack.name}'. Adding this dependency would create a cyclic reference.`);
+    }
+    this.dependsOnStacks.add(stack);
+  }
+
+  /**
+   * Export a Token value for use in another stack
+   */
+  public exportValue(tokenValue: Token, consumingStack: Stack): Token {
+    if (this.env.account !== consumingStack.env.account || this.env.region !== consumingStack.env.region) {
+      throw new Error('Can only reference cross stacks in the same region and account.');
+    }
+
+    // Ensure a singleton Output for this value
+    const resolved = resolve(tokenValue);
+    const id = 'Output' + JSON.stringify(resolved);
+    let output = this.tryFindChild(id) as Output;
+    if (!output) {
+      output = new Output(this, id, { value: tokenValue });
+    }
+    return output.makeImportValue();
+  }
+
+  /**
    * Validate stack name
    *
    * CloudFormation stack names can include dashes in addition to the regular identifier
@@ -227,6 +259,17 @@ export class Stack extends Construct {
     }
 
     return env;
+  }
+
+  /**
+   * Check whether this stack has a (transitive) dependency on another stack
+   */
+  private dependsOnStack(other: Stack) {
+    if (this === other) { return true; }
+    for (const dep of this.dependsOnStacks) {
+      if (dep.dependsOnStack(other)) { return true; }
+    }
+    return false;
   }
 }
 
@@ -293,6 +336,8 @@ export abstract class StackElement extends Construct implements IDependable {
    * The stack this Construct has been made a part of
    */
   protected stack: Stack;
+
+  private frozenRepresentation?: object;
 
   /**
    * Creates an entity and binds it to a tree.
@@ -362,7 +407,23 @@ export abstract class StackElement extends Construct implements IDependable {
    *   }
    * }
    */
-  public abstract toCloudFormation(): object;
+  public toCloudFormation(): object {
+    if (!this.frozen) {
+      throw new Error('StackElement must be frozen before it is synthesized');
+    }
+    return this.frozenRepresentation!;
+  }
+
+  protected abstract renderCloudFormation(): object;
+
+  protected freeze() {
+    this.freezeChildren();
+
+    const stack = Stack.find(this);
+    this.frozenRepresentation = resolve(this.renderCloudFormation(), {
+        context: { stack }
+    });
+  }
 }
 
 /**
@@ -447,3 +508,6 @@ export class Ref extends CloudFormationToken {
     super({ Ref: element.logicalId }, `${element.logicalId}.Ref`);
   }
 }
+
+// Has to be at the end to prevent circular imports
+import { Output } from './output';

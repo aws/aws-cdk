@@ -31,7 +31,7 @@ export class Include extends StackElement {
     this.template = props.template;
   }
 
-  public toCloudFormation() {
+  protected renderCloudFormation() {
     return this.template;
   }
 }

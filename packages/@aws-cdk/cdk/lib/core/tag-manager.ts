@@ -1,5 +1,5 @@
 import { Construct } from './construct';
-import { Token } from './tokens';
+import { ContextMap, Token } from './tokens';
 
 /**
  * ITaggable indicates a entity manages tags via the `tags` property
@@ -171,7 +171,7 @@ export class TagManager extends Token {
   /**
    * Converts the `tags` to a Token for use in lazy evaluation
    */
-  public resolve(): any {
+  public resolve(_context: ContextMap): any {
     // need this for scoping
     const blockedTags = this.blockedTags;
     function filterTags(_tags: FullTags, filter: TagProps = {}): Tags {

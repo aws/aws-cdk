@@ -42,7 +42,7 @@ export class Construct {
    * If this is set to 'true'. addChild() calls for this construct and any child
    * will fail. This is used to prevent tree mutations during synthesis.
    */
-  private _locked = false;
+  private _frozen = false;
 
   /**
    * Creates a new construct node.
@@ -289,6 +289,30 @@ export class Construct {
   }
 
   /**
+   * Signal that tree construction has finished
+   *
+   * Subclasses can override this to take mutating actions
+   * at the last moment. After this method, no mutation
+   * should occur anymore.
+   */
+  protected freeze(): void {
+    this.freezeChildren();
+  }
+
+  protected markFrozen() {
+    this._frozen = true;
+    for (const child of this.children) {
+      child.markFrozen();
+    }
+  }
+
+  protected freezeChildren() {
+    for (const child of this.children) {
+      child.freeze();
+    }
+  }
+
+  /**
    * Validate that the id of the construct legal.
    * Construct IDs can be any characters besides the path separator.
    */
@@ -331,14 +355,13 @@ export class Construct {
    * @returns The resolved path part name of the child
    */
   protected addChild(child: Construct, childName: string) {
-    if (this.locked) {
-
+    if (this.frozen) {
       // special error if root is locked
       if (!this.path) {
-        throw new Error('Cannot add children during synthesis');
+        throw new Error('Cannot add children after freezing');
       }
 
-      throw new Error(`Cannot add children to "${this.path}" during synthesis`);
+      throw new Error(`Cannot add children to "${this.path}" after freezing`);
     }
 
     if (childName in this._children) {
@@ -353,14 +376,7 @@ export class Construct {
    * call, no more children can be added to this construct or to any children.
    */
   protected lock() {
-    this._locked = true;
-  }
-
-  /**
-   * Unlocks this costruct and allows mutations (adding children).
-   */
-  protected unlock() {
-    this._locked = false;
+    this._frozen = true;
   }
 
   /**
@@ -373,19 +389,10 @@ export class Construct {
   }
 
   /**
-   * Returns true if this construct or any of it's parent constructs are
-   * locked.
+   * Returns true if this construct is frozen.
    */
-  protected get locked() {
-    if (this._locked) {
-      return true;
-    }
-
-    if (this.parent && this.parent.locked) {
-      return true;
-    }
-
-    return false;
+  protected get frozen() {
+    return this._frozen;
   }
 }
 

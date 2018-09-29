@@ -1,12 +1,14 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, resolve, Token } from '../../lib';
+import { ArnComponents, ArnUtils, resolve, Stack, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
+    const stack = new Stack();
+
     const arn = ArnUtils.fromComponents({
       service: 'sqs',
       resource: 'myqueuename'
-    });
+    }, stack);
 
     test.deepEqual(resolve(arn), { 'Fn::Join':
     [ '',
@@ -84,12 +86,14 @@ export = {
   },
 
   'resourcePathSep can be set to ":" instead of the default "/"'(test: Test) {
+    const stack = new Stack();
+
     const arn = ArnUtils.fromComponents({
       service: 'codedeploy',
       resource: 'application',
       sep: ':',
       resourceName: 'WordPress_App'
-    });
+    }, stack);
 
     test.deepEqual(resolve(arn), { 'Fn::Join':
     [ '',

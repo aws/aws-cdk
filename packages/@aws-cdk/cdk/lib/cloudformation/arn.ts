@@ -1,4 +1,4 @@
-import { AwsAccountId, AwsPartition, AwsRegion, FnConcat, Token } from '..';
+import { AwsAccountId, AwsPartition, AwsRegion, Construct, FnConcat, Token } from '..';
 import { FnSelect, FnSplit } from '../cloudformation/fn';
 import { unresolved } from '../core/tokens';
 import { CloudFormationToken } from './cloudformation-token';
@@ -22,16 +22,30 @@ export class ArnUtils {
    *   arn:{partition}:{service}:{region}:{account}:{resource}{sep}}{resource-name}
    *
    */
-  public static fromComponents(components: ArnComponents): string {
-    const partition = components.partition == null
-      ? new AwsPartition()
-      : components.partition;
-    const region = components.region == null
-      ? new AwsRegion()
-      : components.region;
-    const account = components.account == null
-      ? new AwsAccountId()
-      : components.account;
+  public static fromComponents(components: ArnComponents, anchor?: Construct): string {
+    let partition = components.partition;
+    if (partition == null) {
+      if (!anchor) {
+        throw new Error('Must provide anchor when using current partition');
+      }
+      partition = new AwsPartition(anchor).toString();
+    }
+
+    let region = components.region;
+    if (region == null) {
+      if (!anchor) {
+        throw new Error('Must provide anchor when using current region');
+      }
+      region = new AwsRegion(anchor).toString();
+    }
+
+    let account = components.account;
+    if (account == null) {
+      if (!anchor) {
+        throw new Error('Must provide anchor when using current account');
+      }
+      account = new AwsAccountId(anchor).toString();
+    }
 
     const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 

@@ -62,6 +62,8 @@ export class App extends Root {
       return this.usage;
     }
 
+    this.freezeConstructTree();
+
     const result = this.runCommand();
     return JSON.stringify(result, undefined, 2);
   }
@@ -157,6 +159,20 @@ export class App extends Root {
         visit(child);
       }
     }
+  }
+
+  /**
+   * Freeze all constructs in the tree
+   */
+  public freezeConstructTree() {
+    // This is a two-step operation since you generally want the guarantee
+    // that at "frozen=true" a construct does not change anymore, but it may
+    // still be changed by siblings calling mutating operations.
+    //
+    // Only after all constructs in the tree have finished freezing do we
+    // consider a construct truly frozen (and can it be sythesized).
+    this.freeze();
+    this.markFrozen();
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {

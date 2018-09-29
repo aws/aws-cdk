@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { App, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack, Token } from '../../lib';
+import { App, AwsAccountId, Condition, Construct, Include, Output, Parameter, Resource, Root, Stack } from '../../lib';
 
 export = {
   'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
@@ -172,20 +172,29 @@ export = {
     test.done();
   },
 
-  'Can\'t add children during synthesis'(test: Test) {
-    const stack = new Stack();
+  'Pseudo values attached to one stack can be referenced in another'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const account1 = new AwsAccountId(stack1);
+    const stack2 = new Stack(app, 'Stack2');
 
-    // add a construct with a token that when resolved adds a child. this
-    // means that this child is going to be added during synthesis and this
-    // is a no-no.
-    new Resource(stack, 'Resource', { type: 'T', properties: {
-      foo: new Token(() => new Construct(stack, 'Foo'))
-    }});
+    // WHEN - used in another stack
+    new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    test.throws(() => stack.toCloudFormation(), /Cannot add children during synthesis/);
+    // THEN
+    // Need to freeze manually now, because we want to test using JUST the stacks.
+    app.freezeConstructTree();
 
-    // okay to add after synthesis
-    new Construct(stack, 'C1');
+    test.deepEqual(stack1.toCloudFormation(), {
+      Output: {
+      }
+    });
+
+    test.deepEqual(stack2.toCloudFormation(), {
+      Parameters: {
+      }
+    });
 
     test.done();
   },

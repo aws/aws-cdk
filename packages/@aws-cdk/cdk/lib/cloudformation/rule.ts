@@ -92,7 +92,7 @@ export class Rule extends Referenceable {
     });
   }
 
-  public toCloudFormation(): object {
+  protected renderCloudFormation(): object {
     return {
       Rules: {
         [this.logicalId]: {

@@ -1,4 +1,5 @@
-import { Token } from '../core/tokens';
+import { Construct } from '../core/construct';
+import { ContextMap, Token } from '../core/tokens';
 import { AwsAccountId, AwsPartition } from './pseudo';
 
 export class PolicyDocument extends Token {
@@ -82,8 +83,8 @@ export class ArnPrincipal extends PolicyPrincipal {
 }
 
 export class AccountPrincipal extends ArnPrincipal {
-  constructor(public readonly accountId: any) {
-    super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
+  constructor(public readonly anchor: Construct, public readonly accountId: any) {
+    super(`arn:${new AwsPartition(anchor)}:iam::${accountId}:root`);
   }
 }
 
@@ -137,8 +138,8 @@ export class FederatedPrincipal extends PolicyPrincipal {
 }
 
 export class AccountRootPrincipal extends AccountPrincipal {
-  constructor() {
-    super(new AwsAccountId());
+  constructor(anchor: Construct) {
+    super(anchor, new AwsAccountId(anchor));
   }
 }
 
@@ -212,8 +213,8 @@ export class PolicyStatement extends Token {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addAwsAccountPrincipal(accountId: string): PolicyStatement {
-    return this.addPrincipal(new AccountPrincipal(accountId));
+  public addAwsAccountPrincipal(anchor: Construct, accountId: string): PolicyStatement {
+    return this.addPrincipal(new AccountPrincipal(anchor, accountId));
   }
 
   public addServicePrincipal(service: string): PolicyStatement {
@@ -224,8 +225,8 @@ export class PolicyStatement extends Token {
     return this.addPrincipal(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(): PolicyStatement {
-    return this.addPrincipal(new AccountRootPrincipal());
+  public addAccountRootPrincipal(anchor: Construct): PolicyStatement {
+    return this.addPrincipal(new AccountRootPrincipal(anchor));
   }
 
   //
@@ -322,7 +323,7 @@ export class PolicyStatement extends Token {
   // Serialization
   //
 
-  public resolve(): any {
+  public resolve(_context: ContextMap): any {
     return this.toJson();
   }
 

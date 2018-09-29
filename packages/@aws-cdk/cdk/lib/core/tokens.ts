@@ -6,6 +6,14 @@ import { Construct } from "./construct";
  */
 export const RESOLVE_METHOD = 'resolve';
 
+export type ContextMap = {[key: string]: any};
+
+export interface ResolveOptions {
+    context?: ContextMap;
+
+    prefix?: string[];
+}
+
 /**
  * Represents a special or lazily-evaluated value.
  *
@@ -44,10 +52,10 @@ export class Token {
   /**
    * @returns The resolved value for this token.
    */
-  public resolve(): any {
+  public resolve(context: ContextMap): any {
     let value = this.valueOrFunction;
     if (typeof(value) === 'function') {
-      value = value();
+      value = value(context);
     }
 
     return value;
@@ -119,14 +127,15 @@ export function unresolved(obj: any): obj is Token {
  * Values can only be primitives, arrays or tokens. Other objects (i.e. with methods) will be rejected.
  *
  * @param obj The object to resolve.
- * @param prefix Prefix key path components for diagnostics.
+ * @param options Resolution options (prefix and context)
  */
-export function resolve(obj: any, prefix?: string[]): any {
-  const path = prefix || [ ];
-  const pathName = '/' + path.join('/');
+export function resolve(obj: any, options: ResolveOptions = {}): any {
+  const prefix = options.prefix || [ ];
+  const context = options.context || {};
+  const pathName = '/' + prefix.join('/');
 
   // protect against cyclic references by limiting depth.
-  if (path.length > 200) {
+  if (prefix.length > 200) {
     throw new Error('Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
 
@@ -174,8 +183,8 @@ export function resolve(obj: any, prefix?: string[]): any {
   //
 
   if (unresolved(obj)) {
-    const value = obj[RESOLVE_METHOD]();
-    return resolve(value, path);
+    const value = obj[RESOLVE_METHOD](context);
+    return resolve(value, { context, prefix });
   }
 
   //
@@ -184,7 +193,7 @@ export function resolve(obj: any, prefix?: string[]): any {
 
   if (Array.isArray(obj)) {
     const arr = obj
-      .map((x, i) => resolve(x, path.concat(i.toString())))
+      .map((x, i) => resolve(x, { context, prefix: prefix.concat(i.toString()) }))
       .filter(x => typeof(x) !== 'undefined');
 
     return arr;
@@ -208,7 +217,7 @@ export function resolve(obj: any, prefix?: string[]): any {
       throw new Error(`The key "${key}" has been resolved to ${JSON.stringify(resolvedKey)} but must be resolvable to a string`);
     }
 
-    const value = resolve(obj[key], path.concat(key));
+    const value = resolve(obj[key], { context, prefix: prefix.concat(key) });
 
     // skip undefined
     if (typeof(value) === 'undefined') {

@@ -1,8 +1,10 @@
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
+import { CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve, Stack } from '../../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
+    const stack = new Stack();
+
     const p = new PolicyStatement();
     p.addAction('sqs:SendMessage');
     p.addActions('dynamodb:CreateTable', 'dynamodb:DeleteTable');
@@ -10,7 +12,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name').toString());
+    p.addAwsAccountPrincipal(stack, new FnConcat('my', 'account', 'name').toString());
     p.limitToAccount('12221121221');
 
     test.deepEqual(resolve(p), { Action:
@@ -105,8 +107,10 @@ export = {
   },
 
   'addAccountRootPrincipal adds a principal with the current account root'(test: Test) {
+    const stack = new Stack();
+
     const p = new PolicyStatement();
-    p.addAccountRootPrincipal();
+    p.addAccountRootPrincipal(stack);
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {

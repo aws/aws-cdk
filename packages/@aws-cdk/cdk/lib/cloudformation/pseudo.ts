@@ -1,61 +1,62 @@
-import { CloudFormationToken } from './cloudformation-token';
+import { Construct } from '../core/construct';
+import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
 
-export class PseudoParameter extends CloudFormationToken {
-  constructor(name: string) {
-    super({ Ref: name }, name);
+export class PseudoParameter extends StackAwareCloudFormationToken {
+  constructor(anchor: Construct, name: string) {
+      super(anchor, { Ref: name }, name);
   }
 }
 
 export class AwsAccountId extends PseudoParameter {
-  constructor() {
-    super('AWS::AccountId');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::AccountId');
   }
 }
 
 export class AwsDomainSuffix extends PseudoParameter {
-  constructor() {
-    super('AWS::DomainSuffix');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::DomainSuffix');
   }
 }
 
 export class AwsURLSuffix extends PseudoParameter {
-  constructor() {
-    super('AWS::URLSuffix');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::URLSuffix');
   }
 }
 
 export class AwsNotificationARNs extends PseudoParameter {
-  constructor() {
-    super('AWS::NotificationARNs');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::NotificationARNs');
   }
 }
 
-export class AwsNoValue extends PseudoParameter {
+export class AwsNoValue extends CloudFormationToken {
   constructor() {
-    super('AWS::NoValue');
+    super({ Ref:  'AWS::NoValue' });
   }
 }
 
 export class AwsPartition extends PseudoParameter {
-  constructor() {
-    super('AWS::Partition');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::Partition');
   }
 }
 
 export class AwsRegion extends PseudoParameter {
-  constructor() {
-    super('AWS::Region');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::Region');
   }
 }
 
 export class AwsStackId extends PseudoParameter {
-  constructor() {
-    super('AWS::StackId');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::StackId');
   }
 }
 
 export class AwsStackName extends PseudoParameter {
-  constructor() {
-    super('AWS::StackName');
+  constructor(anchor: Construct) {
+    super(anchor, 'AWS::StackName');
   }
 }

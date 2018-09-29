@@ -153,7 +153,7 @@ export abstract class BucketRef extends cdk.Construct {
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: any): string {
-    const components = [ 'https://', 's3.', new cdk.AwsRegion(), '.', new cdk.AwsURLSuffix(), '/', this.bucketName ];
+    const components = [ 'https://', 's3.', new cdk.AwsRegion(this), '.', new cdk.AwsURLSuffix(this), '/', this.bucketName ];
     if (key) {
       // trim prepending '/'
       if (typeof key === 'string' && key.startsWith('/')) {
