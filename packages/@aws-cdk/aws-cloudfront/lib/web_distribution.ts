@@ -635,7 +635,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
 
     if (props.loggingConfig) {
       distributionConfig.logging = {
-        bucket: (props.loggingConfig.bucket || new s3.Bucket(parent, `${name}LoggingS3Bucket`)).domainName,
+        bucket: (props.loggingConfig.bucket || new s3.Bucket(parent, `LoggingBucket`)).domainName,
         includeCookies: props.loggingConfig.includeCookies || false,
         prefix: props.loggingConfig.prefix
       };
