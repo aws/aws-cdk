@@ -8,7 +8,7 @@ import { ProjectRef } from './project';
  * either directly, through its constructor,
  * or through {@link ProjectRef#addBuildToPipeline}.
  */
-export interface CommonPipelineBuildActionProps {
+export interface CommonPipelineBuildActionProps extends codepipeline.CommonActionProps {
   /**
    * The source to use as input for this build
    */
@@ -23,7 +23,8 @@ export interface CommonPipelineBuildActionProps {
 /**
  * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
  */
-export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps, codepipeline.CommonActionProps {
+export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The build project
    */
@@ -40,6 +41,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
 
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       provider: 'CodeBuild',
       inputArtifact: props.inputArtifact,
       artifactName: props.artifactName,
