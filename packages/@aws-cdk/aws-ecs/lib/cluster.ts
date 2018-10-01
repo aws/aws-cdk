@@ -46,7 +46,7 @@ export class Cluster extends cdk.Construct {
 
   public readonly clusterName: string;
 
-  public readonly fleet: autoscaling.AutoScalingGroup;
+  public readonly autoScalingGroup: autoscaling.AutoScalingGroup;
 
   constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
     super(parent, name);
@@ -73,7 +73,7 @@ export class Cluster extends cdk.Construct {
       autoScalingGroup.addUserData('sudo service iptables save');
     }
 
-    // Note: if the fleet doesn't launch or doesn't register itself with
+    // Note: if the ASG doesn't launch or doesn't register itself with
     // ECS, *Cluster* stabilization will fail after timing our for an hour
     // or so, because the *Service* doesn't have any running instances.
     // During this time, you CANNOT DO ANYTHING ELSE WITH YOUR STACK.
@@ -108,7 +108,7 @@ export class Cluster extends cdk.Construct {
       "logs:PutLogEvents"
     ).addAllResources()); // Conceivably we might do better than all resources and add targeted ARNs
 
-    this.fleet = autoScalingGroup;
+    this.autoScalingGroup = autoScalingGroup;
   }
 
   public runService(taskDefinition: TaskDefinition): Service {
