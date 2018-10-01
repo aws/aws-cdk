@@ -15,11 +15,14 @@ export interface ContainerDefinitionProps {
    *
    * You can use images in the Docker Hub registry or specify other
    * repositories (repository-url/image:tag).
+   * TODO: Update these to specify using classes of ContainerImage
    */
   image: ContainerImage;
 
   /**
    * The CMD value to pass to the container.
+   *
+   * If you provide a shell command as a single string, you have to quote command-line arguments.
    *
    * @default CMD value built into container image
    */
@@ -242,18 +245,9 @@ export interface HealthCheck {
   /**
    * Command to run, as the binary path and arguments.
    *
-   * If you use this form, you do not have to quote command-line arguments.
-   *
-   * Exactly one of command and shellCommand must be supplied.
+   * If you provide a shell command as a single string, you have to quote command-line arguments.
    */
-  command?: string[];
-
-  /**
-   * Command to run, as a shell command
-   *
-   * Exactly one of command and shellCommand must be supplied.
-   */
-  shellCommand?: string;
+  command: string[];
 
   /**
    * Time period in seconds between each health check execution.
@@ -306,15 +300,31 @@ function renderKV(env: {[key: string]: string}, keyName: string, valueName: stri
 }
 
 function renderHealthCheck(hc: HealthCheck): cloudformation.TaskDefinitionResource.HealthCheckProperty {
-  if ((hc.command === undefined) === (hc.shellCommand === undefined)) {
-    throw new Error(`Exactly one of 'command' and 'shellCommand' must be supplied.`);
-  }
-
   return {
-    command: hc.command !== undefined ? ['CMD'].concat(hc.command) : ['CMD-SHELL', hc.shellCommand!],
+    command: getHealthCheckCommand(hc),
     interval: hc.intervalSeconds,
     retries: hc.retries,
     startPeriod: hc.startPeriod,
     timeout: hc.timeout
   };
+}
+
+function getHealthCheckCommand(hc: HealthCheck): string[] {
+  let cmd = hc.command;
+  const hcCommand = new Array<string>();
+
+  if (cmd.length === 0) {
+    throw new Error(`At least one argument must be supplied for health check command.`);
+  }
+
+  if (cmd.length === 1) {
+    hcCommand.push('CMD-SHELL', cmd[0]);
+    return hcCommand;
+  }
+
+  if (cmd[0] !== "CMD" || cmd[0] !== 'CMD-SHELL') {
+    hcCommand.push('CMD')
+  }
+
+  return hcCommand.concat(cmd);
 }
