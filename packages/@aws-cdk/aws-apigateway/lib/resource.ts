@@ -135,12 +135,13 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 }
 
 function validateResourcePathPart(part: string) {
-    // strip {} which indicate this is a parameter
-    if (part.startsWith('{') && part.endsWith('}')) {
-        part = part.substr(1, part.length - 2);
-    }
+  // strip {} which indicate this is a parameter
+  if (part.startsWith('{') && part.endsWith('}')) {
+    part = part.substr(1, part.length - 2);
+  }
 
-    if (!/^[a-zA-Z0-9\.\_\-]+[\+]?$/.test(part)) {
-        throw new Error(`Resource's path part only allow a-zA-Z0-9._- and curly braces at the beginning and the end: ${part}`);
-    }
+  if (!/^[a-zA-Z0-9\.\_\-]+[\+]?$/.test(part)) {
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9._-], an optional trailing '+'
+      and curly braces at the beginning and the end: ${part}`);
+  }
 }
