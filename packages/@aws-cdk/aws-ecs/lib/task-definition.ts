@@ -99,11 +99,11 @@ export interface TaskDefinitionProps {
 export class TaskDefinition extends cdk.Construct {
   public readonly family: string;
   public readonly taskDefinitionArn: string;
+  public readonly taskRole: iam.Role;
   private readonly containerDefinitions = new Array<ContainerDefinition>();
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
   private executionRole?: iam.Role;
-  private readonly taskRole: iam.Role;
 
   constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
     super(parent, name);
