@@ -1,23 +1,9 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './ecs.generated';
-import { Service } from './service';
-import { TaskDefinition } from './task-definition';
+import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
 
-export interface ClusterProps {
-  /**
-   * A name for the cluster.
-   *
-   * @default CloudFormation-generated name
-   */
-  clusterName?: string;
-
-  /**
-   * The VPC where your ECS instances will be running
-   */
-  vpc: ec2.VpcNetworkRef;
-
+export interface EcsClusterProps extends BaseClusterProps {
   /**
    * Whether or not the containers can access the instance role
    *
@@ -26,35 +12,11 @@ export interface ClusterProps {
   containersAccessInstanceRole?: boolean;
 }
 
-/**
- * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
- */
-export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
-  private static AmiParamterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
-
-  public getImage(parent: cdk.Construct): ec2.MachineImage {
-    const ssmProvider = new cdk.SSMParameterProvider(parent);
-
-    const ami = ssmProvider.getString(EcsOptimizedAmi.AmiParamterName);
-    return new ec2.MachineImage(ami, new ec2.LinuxOS());
-  }
-}
-
-export class Cluster extends cdk.Construct {
-
-  public readonly clusterArn: string;
-
-  public readonly clusterName: string;
-
+export class EcsCluster extends BaseCluster {
   public readonly autoScalingGroup: autoscaling.AutoScalingGroup;
 
-  constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
-    super(parent, name);
-
-    const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
-
-    this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.ref;
+  constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
+    super(parent, name, props);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoScalingGroup', {
       vpc: props.vpc,
@@ -111,11 +73,25 @@ export class Cluster extends cdk.Construct {
     this.autoScalingGroup = autoScalingGroup;
   }
 
-  public runService(taskDefinition: TaskDefinition): Service {
-    return new Service(this, `${taskDefinition.family}Service`, {
-      cluster: this,
-      taskDefinition,
-      // FIXME: additional props? Or set on Service object?
-    });
+  // public runService(taskDefinition: EcsTaskDefinition): EcsService {
+  //   return new Service(this, `${taskDefinition.family}Service`, {
+  //     cluster: this,
+  //     taskDefinition,
+  //     // FIXME: additional props? Or set on Service object?
+  //   });
+  // }
+}
+
+/**
+ * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
+ */
+export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
+  private static AmiParamterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+
+  public getImage(parent: cdk.Construct): ec2.MachineImage {
+    const ssmProvider = new cdk.SSMParameterProvider(parent);
+
+    const ami = ssmProvider.getString(EcsOptimizedAmi.AmiParamterName);
+    return new ec2.MachineImage(ami, new ec2.LinuxOS());
   }
 }
