@@ -203,7 +203,7 @@ export class ContainerDefinition extends cdk.Construct {
     return this._usesEcrImages;
   }
 
-  public toContainerDefinitionJson(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
+  public renderContainerDefinition(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
     return {
       command: this.props.command,
       cpu: this.props.cpu,
