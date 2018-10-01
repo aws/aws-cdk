@@ -137,7 +137,7 @@ export class TaskDefinition extends cdk.Construct {
     });
 
     const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
-      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.toContainerDefinitionJson())),
+      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
       cpu: props.cpu,
       executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
       family: this.family,
