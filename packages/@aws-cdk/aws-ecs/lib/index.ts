@@ -9,4 +9,5 @@ export * from './log-drivers/log-driver';
 export * from './log-drivers/aws-log-driver';
 
 // AWS::ECS CloudFormation Resources:
+//
 export * from './ecs.generated';

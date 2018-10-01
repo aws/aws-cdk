@@ -83,7 +83,7 @@ class EcrImage extends ecs.ContainerImage {
     this.imageName = `${repository.repositoryUri}:${tag}`;
   }
 
-  public bind(_containerDefinition: ecs.ContainerDefinition): void {
-    // Nothing, for now
+  public bind(containerDefinition: ecs.ContainerDefinition): void {
+    containerDefinition.useEcrImage();
   }
 }

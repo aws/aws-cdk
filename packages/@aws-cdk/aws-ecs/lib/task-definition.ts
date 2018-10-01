@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from './container-definition';
 import { cloudformation } from './ecs.generated';
@@ -19,15 +20,6 @@ export interface TaskDefinitionProps {
    * @default 256
    */
   cpu?: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the task execution role that
-   * containers in this task can assume. All containers in this task are
-   * granted the permissions that are specified in this role.
-   *
-   * Needed in Fargate to communicate with Cloudwatch Logs and ECR.
-   */
-  executionRoleArn?: string;
 
   /**
    * Namespace for task definition versions
@@ -82,11 +74,21 @@ export interface TaskDefinitionProps {
   // requiresCompatibilities?: string[]; // FARGATE or EC2 -- set on ECS TD vs FG TD
 
   /**
-   * The Amazon Resource Name (ARN) of an AWS Identity and Access Management
-   * (IAM) role that grants containers in the task permission to call AWS
-   * APIs on your behalf
+   * The IAM role assumed by the ECS agent.
+   *
+   * The role will be used to retrieve container images from ECR and
+   * create CloudWatch log groups.
+   *
+   * @default An execution role will be automatically created if you use ECR images in your task definition
    */
-  taskRoleArn?: string;
+  executionRole?: iam.Role;
+
+  /**
+   * The IAM role assumable by your application code running inside the container
+   *
+   * @default A task role is automatically created for you
+   */
+  taskRole?: iam.Role;
 
   /**
    * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
@@ -100,6 +102,8 @@ export class TaskDefinition extends cdk.Construct {
   private readonly containerDefinitions = new Array<ContainerDefinition>();
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
+  private executionRole?: iam.Role;
+  private readonly taskRole: iam.Role;
 
   constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
     super(parent, name);
@@ -114,24 +118,46 @@ export class TaskDefinition extends cdk.Construct {
       props.volumes.forEach(v => this.addVolume(v));
     }
 
-    const taskDef = new cloudformation.TaskDefinitionResource(this, "TaskDef", {
+    this.executionRole = props.executionRole;
+
+    this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
+        assumedBy: new cdk.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+
+    const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
       containerDefinitions: new cdk.Token(() => this.containerDefinitions.map(x => x.toContainerDefinitionJson())),
       cpu: props.cpu,
-      executionRoleArn: props.executionRoleArn,
+      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
       family: this.family,
       memory: props.memoryMiB,
       networkMode: props.networkMode,
       placementConstraints: new cdk.Token(() => this.placementConstraints),
-      taskRoleArn: props.taskRoleArn
+      taskRoleArn: this.taskRole.roleArn
     });
 
-    this.taskDefinitionArn = taskDef.ref;
+    this.taskDefinitionArn = taskDef.taskDefinitionArn;
   }
 
+  /**
+   * Add a policy statement to the Task Role
+   */
+  public addToRolePolicy(statement: cdk.PolicyStatement) {
+    this.taskRole.addToPolicy(statement);
+  }
+
+  /**
+   * Add a container to this task
+   */
   public addContainer(container: ContainerDefinition) {
     this.containerDefinitions.push(container);
+    if (container.usesEcrImages) {
+      this.generateExecutionRole();
+    }
   }
 
+  /**
+   * Constrain where this task can be placed
+   */
   private addPlacementConstraint(constraint: PlacementConstraint) {
     const pc = this.renderPlacementConstraint(constraint);
     this.placementConstraints.push(pc);
@@ -147,6 +173,18 @@ export class TaskDefinition extends cdk.Construct {
       type: pc.type,
       expression: pc.expression
     };
+  }
+
+  /**
+   * Generate a default execution role that allows pulling from ECR
+   */
+  private generateExecutionRole() {
+    if (!this.executionRole) {
+      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new cdk.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+      this.executionRole.attachManagedPolicy(new iam.AwsManagedPolicy("service-role/AmazonECSTaskExecutionRolePolicy").policyArn);
+    }
   }
 }
 

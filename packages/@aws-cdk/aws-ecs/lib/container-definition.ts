@@ -173,6 +173,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly links = new Array<string>();
 
+  private _usesEcrImages: boolean = false;
+
   constructor(parent: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
     this.name = props.name;
@@ -185,6 +187,17 @@ export class ContainerDefinition extends cdk.Construct {
     } else {
       this.links.push(`${container.name}`);
     }
+  }
+
+  /**
+   * Mark this ContainerDefinition as using an ECR image
+   */
+  public useEcrImage() {
+    this._usesEcrImages = true;
+  }
+
+  public get usesEcrImages() {
+    return this._usesEcrImages;
   }
 
   public toContainerDefinitionJson(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
