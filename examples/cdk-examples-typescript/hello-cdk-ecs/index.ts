@@ -34,7 +34,7 @@ class BonjourECS extends cdk.Stack {
         const taskDefinition = new ecs.TaskDefinition(this, "MyTD", {
             family: "ecs-task-definition",
             placementConstraints: [{
-                type: PlacementConstraintType.DistinctInstance
+                type: ecs.PlacementConstraintType.DistinctInstance
             }],
         });
 
