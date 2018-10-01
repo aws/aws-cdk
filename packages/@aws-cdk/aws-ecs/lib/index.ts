@@ -1,7 +1,10 @@
 export * from './base/base-cluster';
 export * from './ecs/ecs-cluster';
-// export * from './fargate/fargate-cluster';
-export * from './service';
+export * from './fargate/fargate-cluster';
+
+export * from './base/base-service';
+export * from './ecs/ecs-service';
+export * from './fargate/fargate-service';
 export * from './task-definition';
 export * from './container-definition';
 export * from './container-image';
