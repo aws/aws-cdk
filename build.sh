@@ -1,6 +1,27 @@
 #!/bin/bash
 set -euo pipefail
 
+bail="--no-bail"
+while [[ "${1:-}" != "" ]]; do
+    case $1 in
+        -h|--help)
+            echo "Usage: build.sh [--bail|-b] [--force|-f]"
+            exit 1
+            ;;
+        -b|--bail)
+            bail="--bail"
+            ;;
+        -f|--force)
+            export CDK_BUILD="--force"
+            ;;
+        *)
+            echo "Unrecognized parameter: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
 if [ ! -d node_modules ]; then
     /bin/bash ./install.sh
 fi
@@ -24,10 +45,10 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run --no-bail --stream build || fail
+time lerna run $bail --stream build || fail
 
 echo "============================================================================================="
 echo "testing..."
-lerna run --no-bail --stream test || fail
+lerna run $bail --stream test || fail
 
 touch $BUILD_INDICATOR

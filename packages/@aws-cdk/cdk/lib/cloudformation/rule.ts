@@ -25,16 +25,16 @@ import { Referenceable } from './stack';
  * https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
 export interface RuleProps {
-    /**
-     * If the rule condition evaluates to false, the rule doesn't take effect.
-     * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
-     */
-    ruleCondition?: FnCondition;
+  /**
+   * If the rule condition evaluates to false, the rule doesn't take effect.
+   * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
+   */
+  ruleCondition?: FnCondition;
 
-    /**
-     * Assertions which define the rule.
-     */
-    assertions?: RuleAssertion[];
+  /**
+   * Assertions which define the rule.
+   */
+  assertions?: RuleAssertion[];
 }
 
 /**
@@ -53,68 +53,68 @@ export interface RuleProps {
  * @link https://docs.aws.amazon.com/servicecatalog/latest/adminguide/reference-template_constraint_rules.html
  */
 export class Rule extends Referenceable {
-    /**
-     * If the rule condition evaluates to false, the rule doesn't take effect.
-     * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
-     */
-    public ruleCondition?: FnCondition;
+  /**
+   * If the rule condition evaluates to false, the rule doesn't take effect.
+   * If the function in the rule condition evaluates to true, expressions in each assert are evaluated and applied.
+   */
+  public ruleCondition?: FnCondition;
 
-    /**
-     * Assertions which define the rule.
-     */
-    public assertions?: RuleAssertion[];
+  /**
+   * Assertions which define the rule.
+   */
+  public assertions?: RuleAssertion[];
 
-    /**
-     * Creates and adds a rule.
-     * @param parent The parent construct.
-     * @param props The rule props.
-     */
-    constructor(parent: Construct, name: string, props?: RuleProps) {
-        super(parent, name);
+  /**
+   * Creates and adds a rule.
+   * @param parent The parent construct.
+   * @param props The rule props.
+   */
+  constructor(parent: Construct, name: string, props?: RuleProps) {
+    super(parent, name);
 
-        this.ruleCondition = props && props.ruleCondition;
-        this.assertions = props && props.assertions;
+    this.ruleCondition = props && props.ruleCondition;
+    this.assertions = props && props.assertions;
+  }
+
+  /**
+   * Adds an assertion to the rule.
+   * @param condition The expression to evaluation.
+   * @param description The description of the assertion.
+   */
+  public addAssertion(condition: FnCondition, description: string) {
+    if (!this.assertions) {
+      this.assertions = [];
     }
 
-    /**
-     * Adds an assertion to the rule.
-     * @param condition The expression to evaluation.
-     * @param description The description of the assertion.
-     */
-    public addAssertion(condition: FnCondition, description: string) {
-        if (!this.assertions) {
-            this.assertions = [];
+    this.assertions.push({
+      assert: condition,
+      assertDescription: description
+    });
+  }
+
+  public toCloudFormation(): object {
+    return {
+      Rules: {
+        [this.logicalId]: {
+          RuleCondition: this.ruleCondition,
+          Assertions: capitalizePropertyNames(this.assertions)
         }
-
-        this.assertions.push({
-            assert: condition,
-            assertDescription: description
-        });
-    }
-
-    public toCloudFormation(): object {
-        return {
-            Rules: {
-                [this.logicalId]: {
-                    RuleCondition: this.ruleCondition,
-                    Assertions: capitalizePropertyNames(this.assertions)
-                }
-            }
-        };
-    }
+      }
+    };
+  }
 }
 
 /**
  * A rule assertion.
  */
 export interface RuleAssertion {
-    /**
-     * The assertion.
-     */
-    assert: FnCondition;
+  /**
+   * The assertion.
+   */
+  assert: FnCondition;
 
-    /**
-     * The assertion description.
-     */
-    assertDescription: string;
+  /**
+   * The assertion description.
+   */
+  assertDescription: string;
 }

@@ -1,4 +1,62 @@
-## [UNRELEASED]
+<a name="0.10.0"></a>
+## [0.10.0](https://github.com/awslabs/aws-cdk/compare/v0.9.2...v0.10.0) (2018-09-27)
+
+This release introduces a better way to "escape" L2 constructs in case of missing features
+by adding the ability to add arbitrary overrides for resource properties:
+
+```ts
+const bucket = new s3.Bucket(this, 'L2Bucket');
+
+// access L1
+const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
+
+// strongly-typed overrides
+bucketResource.propertyOverrides.bucketName = 'NewBucketName';
+
+// weakly-typed overrides
+bucketResource.addPropertyOverride('BucketName', 'NewerBucketName');
+```
+
+### Bug Fixes
+
+* **aws-codecommit:** typo in README ([#780](https://github.com/awslabs/aws-cdk/issues/780)) ([0e79c2d](https://github.com/awslabs/aws-cdk/commit/0e79c2d))
+* **aws-ec2:** fix capitalization of "VPCEndpointType" to "VpcEndpointType" ([#789](https://github.com/awslabs/aws-cdk/issues/789)) ([7a8ee2c](https://github.com/awslabs/aws-cdk/commit/7a8ee2c)), closes [#765](https://github.com/awslabs/aws-cdk/issues/765)
+* **docs:** fix issue [#718](https://github.com/awslabs/aws-cdk/issues/718) (Aurora DB example) ([#783](https://github.com/awslabs/aws-cdk/issues/783)) ([016f3a8](https://github.com/awslabs/aws-cdk/commit/016f3a8))
+
+
+### Code Refactoring
+
+* **util:** remove [@aws-cdk](https://github.com/aws-cdk)/util ([#745](https://github.com/awslabs/aws-cdk/issues/745)) ([10015cb](https://github.com/awslabs/aws-cdk/commit/10015cb)), closes [#709](https://github.com/awslabs/aws-cdk/issues/709)
+
+
+### Features
+
+* **aws-cloudformation:** rename the CodePipeline actions ([#771](https://github.com/awslabs/aws-cdk/issues/771)) ([007e7b4](https://github.com/awslabs/aws-cdk/commit/007e7b4))
+* **aws-cloudformation:** update the README of the module to reflect the new action names ([#775](https://github.com/awslabs/aws-cdk/issues/775)) ([6c0e75b](https://github.com/awslabs/aws-cdk/commit/6c0e75b)), closes [#771](https://github.com/awslabs/aws-cdk/issues/771)
+* **aws-codedeploy:** add auto-scaling groups property to ServerDeploymentGroup ([#739](https://github.com/awslabs/aws-cdk/issues/739)) ([0b28886](https://github.com/awslabs/aws-cdk/commit/0b28886))
+* **aws-codedeploy:** add deployment configuration construct ([#653](https://github.com/awslabs/aws-cdk/issues/653)) ([e6b67ad](https://github.com/awslabs/aws-cdk/commit/e6b67ad))
+* **aws-codepipeline, aws-codecommit, aws-s3:** change the convention for naming the source Actions to XxxSourceAction ([#753](https://github.com/awslabs/aws-cdk/issues/753)) ([9c3ce7f](https://github.com/awslabs/aws-cdk/commit/9c3ce7f))
+* **aws-elasticloadbalancingv2:** support for ALB/NLB ([#750](https://github.com/awslabs/aws-cdk/issues/750)) ([bd9ee01](https://github.com/awslabs/aws-cdk/commit/bd9ee01))
+* tagging support for AutoScaling/SecurityGroup ([#766](https://github.com/awslabs/aws-cdk/issues/766)) ([3d48eb2](https://github.com/awslabs/aws-cdk/commit/3d48eb2))
+* **core:** resource overrides (escape hatch) ([#784](https://github.com/awslabs/aws-cdk/issues/784)) ([5054eef](https://github.com/awslabs/aws-cdk/commit/5054eef)), closes [#606](https://github.com/awslabs/aws-cdk/issues/606)
+* **toolkit:** stop creating 'empty' stacks ([#779](https://github.com/awslabs/aws-cdk/issues/779)) ([1dddd8a](https://github.com/awslabs/aws-cdk/commit/1dddd8a))
+
+### BREAKING CHANGES
+
+* **cdk**: the constructor signature of `TagManager` has changed. `initialTags` is now passed inside a props object.
+* **util:** `@aws-cdk/util` is no longer available
+* **aws-elasticloadbalancingv2:** adds classes for modeling Application and Network Load
+Balancers. AutoScalingGroups now implement the interface that makes
+constructs a load balancing target. The breaking change is that Security
+Group rule identifiers have been changed in order to make adding rules
+more reliable. No code changes are necessary but existing deployments
+may experience unexpected changes.
+* **aws-cloudformation:** this renames all CloudFormation Actions for CodePipeline
+to bring them in line with Actions defined in other service packages.
+* **aws-codepipeline, aws-codecommit, aws-s3:** change the names of the source Actions from XxxSource to XxxSourceAction.
+This is to align them with the other Actions, like Build.
+Also, CodeBuild has the concept of Sources, so it makes sense to strongly differentiate between the two.
+
 ### CloudFormation Changes
 
 * __@aws-cdk/cfnspec__: Updated [CloudFormation resource specification] to `v2.8.0` ([@RomainMuller] in [#767](https://github.com/awslabs/aws-cdk/pull/767))
