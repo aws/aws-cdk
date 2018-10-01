@@ -152,13 +152,13 @@ export class TaskDefinition extends cdk.Construct {
 
 export interface PlacementConstraint {
   expression?: string;
-  type: string; // PlacementConstraintType;
+  type: PlacementConstraintType;
 }
 
-// enum PlacementConstraintType{
-//   DistinctInstance = "distinctInstance",
-//   MemberOf = "memberOf"
-// }
+export enum PlacementConstraintType {
+  DistinctInstance = "distinctInstance",
+  MemberOf = "memberOf"
+}
 
 export interface Volume {
   host?: Host;
