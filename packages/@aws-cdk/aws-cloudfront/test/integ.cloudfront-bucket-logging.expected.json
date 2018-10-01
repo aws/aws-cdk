@@ -3,7 +3,7 @@
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket"
     },
-    "AnAmazingWebsiteProbably2LoggingS3BucketB2C21612": {
+    "LoggingBucket1E5A6F3B": {
       "Type": "AWS::S3::Bucket"
     },
     "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
@@ -124,7 +124,7 @@
           },
           "Logging": {
             "Bucket": {
-              "Fn::GetAtt":["AnAmazingWebsiteProbably2LoggingS3BucketB2C21612","DomainName"]
+              "Fn::GetAtt":["LoggingBucket1E5A6F3B","DomainName"]
             },
             "IncludeCookies": false
           }
