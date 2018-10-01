@@ -1,3 +1,4 @@
+import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -43,6 +44,13 @@ export abstract class RepositoryRef extends cdk.Construct {
     const parts = cdk.ArnUtils.parse(this.repositoryArn);
     return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`;
   }
+
+  /**
+   * Refer to a particular image tag from this repository
+   */
+  public getImage(tag: string = "latest"): ecs.ContainerImage {
+    return new EcrImage(this, tag);
+  }
 }
 
 export interface RepositoryRefProps {
@@ -64,5 +72,18 @@ class ImportedRepository extends RepositoryRef {
 
   public addToResourcePolicy(_statement: cdk.PolicyStatement) {
     // FIXME: Add annotation about policy we dropped on the floor
+  }
+}
+
+class EcrImage extends ecs.ContainerImage {
+  public readonly imageName: string;
+
+  constructor(repository: RepositoryRef, tag: string) {
+    super();
+    this.imageName = `${repository.repositoryUri}:${tag}`;
+  }
+
+  public bind(_containerDefinition: ecs.ContainerDefinition): void {
+    // Nothing, for now
   }
 }
