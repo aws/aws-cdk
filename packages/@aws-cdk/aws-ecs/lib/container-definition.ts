@@ -317,7 +317,7 @@ function renderHealthCheck(hc: HealthCheck): cloudformation.TaskDefinitionResour
 }
 
 function getHealthCheckCommand(hc: HealthCheck): string[] {
-  let cmd = hc.command;
+  const cmd = hc.command;
   const hcCommand = new Array<string>();
 
   if (cmd.length === 0) {
@@ -330,7 +330,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   }
 
   if (cmd[0] !== "CMD" || cmd[0] !== 'CMD-SHELL') {
-    hcCommand.push('CMD')
+    hcCommand.push('CMD');
   }
 
   return hcCommand.concat(cmd);
