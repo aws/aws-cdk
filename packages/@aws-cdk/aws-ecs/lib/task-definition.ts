@@ -50,12 +50,13 @@ export interface TaskDefinitionProps {
   memoryMiB?: string;
 
   /**
-   * The Docker networking mode to use for the containers in the task, such as none, bridge, or host.
+   * The Docker networking mode to use for the containers in the task.
+   *
    * For Fargate or to use task networking, "awsvpc" mode is required.
    *
-   * @default bridge
+   * @default NetworkMode.Bridge
    */
-  networkMode?: string;
+  networkMode?: NetworkMode;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -100,7 +101,17 @@ export class TaskDefinition extends cdk.Construct {
   public readonly family: string;
   public readonly taskDefinitionArn: string;
   public readonly taskRole: iam.Role;
-  private readonly containerDefinitions = new Array<ContainerDefinition>();
+  public readonly networkMode: NetworkMode;
+
+  /**
+   * Default container for this task
+   *
+   * Load balancers will send traffic to this container. The first
+   * essential container that is added to this task will become the default
+   * container.
+   */
+  public defaultContainer?: ContainerDefinition;
+  private readonly containers = new Array<ContainerDefinition>();
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
   private executionRole?: iam.Role;
@@ -109,6 +120,7 @@ export class TaskDefinition extends cdk.Construct {
     super(parent, name);
 
     this.family = props.family || this.uniqueId;
+    this.networkMode = props.networkMode || NetworkMode.Bridge;
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
@@ -125,12 +137,12 @@ export class TaskDefinition extends cdk.Construct {
     });
 
     const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
-      containerDefinitions: new cdk.Token(() => this.containerDefinitions.map(x => x.toContainerDefinitionJson())),
+      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.toContainerDefinitionJson())),
       cpu: props.cpu,
       executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
       family: this.family,
       memory: props.memoryMiB,
-      networkMode: props.networkMode,
+      networkMode: this.networkMode,
       placementConstraints: new cdk.Token(() => this.placementConstraints),
       taskRoleArn: this.taskRole.roleArn
     });
@@ -149,9 +161,12 @@ export class TaskDefinition extends cdk.Construct {
    * Add a container to this task
    */
   public addContainer(container: ContainerDefinition) {
-    this.containerDefinitions.push(container);
+    this.containers.push(container);
     if (container.usesEcrImages) {
       this.generateExecutionRole();
+    }
+    if (this.defaultContainer === undefined && container.essential) {
+      this.defaultContainer = container;
     }
   }
 
@@ -186,6 +201,34 @@ export class TaskDefinition extends cdk.Construct {
       this.executionRole.attachManagedPolicy(new iam.AwsManagedPolicy("service-role/AmazonECSTaskExecutionRolePolicy").policyArn);
     }
   }
+}
+
+/**
+ * The Docker networking mode to use for the containers in the task.
+ */
+export enum NetworkMode {
+  /**
+   * The task's containers do not have external connectivity and port mappings can't be specified in the container definition.
+   */
+  None = 'none',
+
+  /**
+   * The task utilizes Docker's built-in virtual network which runs inside each container instance.
+   */
+  Bridge = 'bridge',
+
+  /**
+   * The task is allocated an elastic network interface.
+   */
+  AwsVpc = 'awsvpc',
+
+  /**
+   * The task bypasses Docker's built-in virtual network and maps container ports directly to the EC2 instance's network interface directly.
+   *
+   * In this mode, you can't run multiple instantiations of the same task on a
+   * single container instance when port mappings are used.
+   */
+  Host = 'host',
 }
 
 export interface PlacementConstraint {

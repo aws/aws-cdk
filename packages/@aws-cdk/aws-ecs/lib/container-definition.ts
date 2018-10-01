@@ -85,11 +85,11 @@ export interface ContainerDefinitionProps {
    *
    * If you specify true and the container fails, all other containers in the
    * task stop. If you specify false and the container fails, none of the other
-   * containers in the task is affected. This value is true by default.
+   * containers in the task is affected.
    *
    * You must have at least one essential container in a task.
    *
-   * @default false
+   * @default true
    */
   essential?: boolean;
 
@@ -171,6 +171,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly linuxParameters = new LinuxParameters();
 
+  public readonly essential: boolean;
+
   private readonly links = new Array<string>();
 
   private _usesEcrImages: boolean = false;
@@ -178,6 +180,7 @@ export class ContainerDefinition extends cdk.Construct {
   constructor(parent: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
     this.name = props.name;
+    this.essential = props.essential !== undefined ? props.essential : true;
     props.image.bind(this);
   }
 
@@ -200,6 +203,10 @@ export class ContainerDefinition extends cdk.Construct {
     return this._usesEcrImages;
   }
 
+  public loadBalancerPort(_classicLB: boolean): number {
+    return 0;
+  }
+
   public toContainerDefinitionJson(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
     return {
       command: this.props.command,
@@ -210,7 +217,7 @@ export class ContainerDefinition extends cdk.Construct {
       dockerLabels: this.props.dockerLabels,
       dockerSecurityOptions: this.props.dockerSecurityOptions,
       entryPoint: this.props.entryPoint,
-      essential: this.props.essential,
+      essential: this.essential,
       hostname: this.props.hostname,
       image: this.props.image.imageName,
       memory: this.props.memoryMiB,
