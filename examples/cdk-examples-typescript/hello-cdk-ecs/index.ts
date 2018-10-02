@@ -38,7 +38,7 @@ class BonjourECS extends cdk.Stack {
     const container = taskDefinition.addContainer('web', {
       image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
       cpu: 1024,
-      memoryMiB: 512,
+      memoryLimitMiB: 512,
       essential: true
     });
 
@@ -46,13 +46,13 @@ class BonjourECS extends cdk.Stack {
     container.linuxParameters.dropCapabilities(ecs.Capability.Chown);
 
     container.linuxParameters.addDevices({
-      containerPath: "/pudding",
-      hostPath: "/dev/sda",
+      containerPath: "/dev/pudding",
+      hostPath: "/dev/clyde",
       permissions: [ecs.DevicePermission.Read]
     });
 
     container.linuxParameters.addTmpfs({
-      containerPath: "/pudding",
+      containerPath: "/dev/sda",
       size: 12345,
       mountOptions: [ecs.TmpfsMountOption.Ro]
     });
@@ -65,6 +65,23 @@ class BonjourECS extends cdk.Stack {
       softLimit: 1234,
       hardLimit: 1234,
     });
+
+    container.addPortMappings({
+      containerPort: 80,
+      hostPort: 80,
+      protocol: ecs.Protocol.Tcp,
+    });
+
+    container.addMountPoints({
+      containerPath: '/tmp/cache',
+      sourceVolume: 'volume-1',
+      readOnly: true,
+    }, {
+      containerPath: './cache',
+      sourceVolume: 'volume-2',
+      readOnly: true,
+    });
+
 
     new ecs.EcsService(this, "EcsService", {
             cluster,

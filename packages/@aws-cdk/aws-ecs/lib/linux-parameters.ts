@@ -14,7 +14,7 @@ export class LinuxParameters {
   private readonly tmpfs: Tmpfs[] = [];
 
   /**
-   * AddCapability only works with EC2 launch type
+   * AddCapabilities only works with EC2 launch type
    */
   public addCapabilities(...cap: Capability[]) {
     this.capAdd.push(...cap);
