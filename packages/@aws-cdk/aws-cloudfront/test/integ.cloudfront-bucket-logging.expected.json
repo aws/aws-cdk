@@ -3,9 +3,6 @@
     "Bucket83908E77": {
       "Type": "AWS::S3::Bucket"
     },
-    "LoggingBucket1E5A6F3B": {
-      "Type": "AWS::S3::Bucket"
-    },
     "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -33,6 +30,16 @@
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "Bucket83908E77",
+                "DomainName"
+              ]
+            },
+            "IncludeCookies": true,
+            "Prefix": "test-prefix"
+          },
           "Origins": [
             {
               "CustomOriginConfig": {
@@ -58,16 +65,12 @@
           "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
             "CloudFrontDefaultCertificate": true
-          },
-          "Logging": {
-            "Bucket": {
-              "Fn::GetAtt":["Bucket83908E77","DomainName"]
-            },
-            "IncludeCookies": true,
-            "Prefix": "test-prefix"
           }
         }
       }
+    },
+    "AnAmazingWebsiteProbably2LoggingBucket222F7CE9": {
+      "Type": "AWS::S3::Bucket"
     },
     "AnAmazingWebsiteProbably2CFDistribution7C1CCD12": {
       "Type": "AWS::CloudFront::Distribution",
@@ -96,6 +99,15 @@
           "Enabled": true,
           "HttpVersion": "http2",
           "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "AnAmazingWebsiteProbably2LoggingBucket222F7CE9",
+                "DomainName"
+              ]
+            },
+            "IncludeCookies": false
+          },
           "Origins": [
             {
               "CustomOriginConfig": {
@@ -121,12 +133,6 @@
           "PriceClass": "PriceClass_100",
           "ViewerCertificate": {
             "CloudFrontDefaultCertificate": true
-          },
-          "Logging": {
-            "Bucket": {
-              "Fn::GetAtt":["LoggingBucket1E5A6F3B","DomainName"]
-            },
-            "IncludeCookies": false
           }
         }
       }
