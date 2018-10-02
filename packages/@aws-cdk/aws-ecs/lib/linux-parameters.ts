@@ -5,9 +5,9 @@ export class LinuxParameters {
 
   public sharedMemorySize?: number;
 
-  private readonly addCapabilities: Capability[] = [];
+  private readonly capAdd: Capability[] = [];
 
-  private readonly dropCapabilities: Capability[] = [];
+  private readonly capDrop: Capability[] = [];
 
   private readonly devices: Device[] = [];
 
@@ -16,15 +16,15 @@ export class LinuxParameters {
   /**
    * AddCapability only works with EC2 launch type
    */
-  public addCapability(...cap: Capability[]) {
-    this.addCapabilities.push(...cap);
+  public addCapabilities(...cap: Capability[]) {
+    this.capAdd.push(...cap);
   }
 
-  public dropCapability(...cap: Capability[]) {
-    this.dropCapabilities.push(...cap);
+  public dropCapabilities(...cap: Capability[]) {
+    this.capDrop.push(...cap);
   }
 
-  public addDevice(...device: Device[]) {
+  public addDevices(...device: Device[]) {
     this.devices.push(...device);
   }
 
@@ -37,8 +37,8 @@ export class LinuxParameters {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: this.addCapabilities,
-        drop: this.dropCapabilities,
+        add: this.capAdd,
+        drop: this.capDrop,
       },
       devices: this.devices.map(renderDevice),
       tmpfs: this.tmpfs.map(renderTmpfs)

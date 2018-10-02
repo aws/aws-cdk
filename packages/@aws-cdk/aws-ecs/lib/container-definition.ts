@@ -174,6 +174,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly linuxParameters = new LinuxParameters();
 
+  public readonly ulimits = new Array<Ulimit>();
+
   public readonly essential: boolean;
 
   private readonly links = new Array<string>();
@@ -193,6 +195,10 @@ export class ContainerDefinition extends cdk.Construct {
     } else {
       this.links.push(`${container.name}`);
     }
+  }
+
+  public addUlimits(...ulimits: Ulimit[]) {
+    this.ulimits.push(...ulimits);
   }
 
   /**
@@ -234,7 +240,7 @@ export class ContainerDefinition extends cdk.Construct {
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: undefined, // FIXME
-      ulimits: [], // FIXME
+      ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
       volumesFrom: [], // FIXME
       workingDirectory: this.props.workingDirectory,
@@ -336,4 +342,41 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   }
 
   return hcCommand.concat(cmd);
+}
+
+/**
+ * Container ulimits. Correspond to ulimits options on docker run.
+ *
+ * NOTE: Does not work for Windows containers.
+ */
+export interface Ulimit {
+  name: UlimitName,
+  softLimit: number,
+  hardLimit: number,
+}
+
+export enum UlimitName {
+  Core = "core",
+  Cpu = "cpu",
+  Data = "data",
+  Fsize = "fsize",
+  Locks = "locks",
+  Memlock = "memlock",
+  Msgqueue = "msgqueue",
+  Nice = "nice",
+  Nofile = "nofile",
+  Nproc = "nproc",
+  Rss = "rss",
+  Rtprio = "rtprio",
+  Rttime = "rttime",
+  Sigpending = "sigpending",
+  Stack = "stack"
+}
+
+function renderUlimit(ulimit: Ulimit): cloudformation.TaskDefinitionResource.UlimitProperty {
+  return {
+    name: ulimit.name,
+    softLimit: ulimit.softLimit,
+    hardLimit: ulimit.hardLimit,
+  };
 }

@@ -43,9 +43,10 @@ class BonjourECS extends cdk.Stack {
       essential: true
     });
 
-    container.linuxParameters.addCapability(ecs.Capability.All);
+    container.linuxParameters.addCapabilities(ecs.Capability.All);
+    container.linuxParameters.dropCapabilities(ecs.Capability.Chown);
 
-    container.linuxParameters.addDevice({
+    container.linuxParameters.addDevices({
       containerPath: "/pudding",
       hostPath: "/dev/sda",
       permissions: [ecs.DevicePermission.Read]
@@ -59,6 +60,12 @@ class BonjourECS extends cdk.Stack {
 
     container.linuxParameters.sharedMemorySize = 65535
     container.linuxParameters.initProcessEnabled = true
+
+    container.addUlimits({
+      name: ecs.UlimitName.Core,
+      softLimit: 1234,
+      hardLimit: 1234,
+    });
 
     taskDefinition.addContainer(container);
 
