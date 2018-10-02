@@ -55,6 +55,12 @@ class BonjourECS extends cdk.Stack {
       permissions: [ecs.DevicePermission.Read]
     });
 
+    container.linuxParameters.addTmpfs({
+      containerPath: "/pudding",
+      size: 12345,
+      mountOptions: [ecs.TmpfsMountOption.Ro]
+    });
+
     taskDefinition.addContainer(container);
 
     new ecs.EcsService(this, "EcsService", {

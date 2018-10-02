@@ -11,7 +11,7 @@ export class LinuxParameters {
 
   private readonly devices: Device[] = [];
 
-  // private readonly tmpfs: Tmpfs[] = [];
+  private readonly tmpfs: Tmpfs[] = [];
 
   /**
    * AddCapability only works with EC2 launch type
@@ -28,7 +28,11 @@ export class LinuxParameters {
     this.devices.push(...device);
   }
 
-  public toLinuxParametersJson(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
+  public addTmpfs(...tmpfs: Tmpfs[]) {
+    this.tmpfs.push(...tmpfs);
+  }
+
+  public renderLinuxParameters(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
@@ -36,7 +40,8 @@ export class LinuxParameters {
         add: this.addCapabilities,
         drop: this.dropCapabilities,
       },
-      devices: this.devices.map(renderDevice)
+      devices: this.devices.map(renderDevice),
+      tmpfs: this.tmpfs.map(renderTmpfs)
     };
   }
 }
@@ -55,8 +60,19 @@ function renderDevice(device: Device): cloudformation.TaskDefinitionResource.Dev
   }
 }
 
-// export interface Tmpfs {
-// }
+export interface Tmpfs {
+  containerPath: string,
+  size: number,
+  mountOptions?: TmpfsMountOption[],
+}
+
+function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsProperty {
+  return {
+    containerPath: tmpfs.containerPath,
+    size: tmpfs.size,
+    mountOptions: tmpfs.mountOptions
+  }
+}
 
 export enum Capability {
   All = "ALL",
@@ -103,4 +119,46 @@ export enum DevicePermission {
   Read = "read",
   Write = "write",
   Mknod = "mknod",
+}
+
+export enum TmpfsMountOption {
+  Defaults = "defaults",
+  Ro = "ro",
+  Rw = "rw",
+  Suid = "suid",
+  Nosuid = "nosuid",
+  Dev = "dev",
+  Nodev = "nodev",
+  Exec = "exec",
+  Noexec = "noexec",
+  Sync = "sync",
+  Async = "async",
+  Dirsync = "dirsync",
+  Remount = "remount",
+  Mand = "mand",
+  Nomand = "nomand",
+  Atime = "atime",
+  Noatime = "noatime",
+  Diratime = "diratime",
+  Nodiratime = "nodiratime",
+  Bind = "bind",
+  Rbind = "rbind",
+  Unbindable = "unbindable",
+  Runbindable = "runbindable",
+  Private = "private",
+  Rprivate = "rprivate",
+  Shared = "shared",
+  Rshared = "rshared",
+  Slave = "slave",
+  Rslave = "rslave",
+  Relatime = "relatime",
+  Norelatime = "norelatime",
+  Strictatime = "strictatime",
+  Nostrictatime = "nostrictatime",
+  Mode = "mode",
+  Uid = "uid",
+  Gid = "gid",
+  NrInodes = "nr_inodes",
+  NrBlocks = "nr_blocks",
+  Mpol = "mpol"
 }

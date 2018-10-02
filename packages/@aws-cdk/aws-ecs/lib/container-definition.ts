@@ -240,7 +240,7 @@ export class ContainerDefinition extends cdk.Construct {
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
-      linuxParameters: this.linuxParameters.toLinuxParametersJson(),
+      linuxParameters: this.linuxParameters.renderLinuxParameters(),
     };
   }
 }
