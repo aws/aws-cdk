@@ -174,6 +174,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly linuxParameters = new LinuxParameters();
 
+  public readonly portMappings = new Array<PortMapping>();
+
   public readonly ulimits = new Array<Ulimit>();
 
   public readonly essential: boolean;
@@ -195,6 +197,10 @@ export class ContainerDefinition extends cdk.Construct {
     } else {
       this.links.push(`${container.name}`);
     }
+  }
+
+  public addPortMappings(...portMappings: PortMapping[]) {
+    this.portMappings.push(...portMappings);
   }
 
   public addUlimits(...ulimits: Ulimit[]) {
@@ -233,7 +239,7 @@ export class ContainerDefinition extends cdk.Construct {
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: [], // FIXME
       name: this.props.name,
-      portMappings: [], // FIXME
+      portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: undefined, // FIXME
@@ -375,5 +381,24 @@ function renderUlimit(ulimit: Ulimit): cloudformation.TaskDefinitionResource.Uli
     name: ulimit.name,
     softLimit: ulimit.softLimit,
     hardLimit: ulimit.hardLimit,
+  };
+}
+
+export interface PortMapping {
+  containerPort?: number,
+  hostPort?: number,
+  protocol: Protocol
+}
+
+export enum Protocol {
+  Tcp = "tcp",
+  Udp = "udp",
+}
+
+function renderPortMapping(pm: PortMapping): cloudformation.TaskDefinitionResource.PortMappingProperty {
+  return {
+    containerPort: pm.containerPort,
+    hostPort: pm.hostPort,
+    protocol: pm.protocol,
   };
 }

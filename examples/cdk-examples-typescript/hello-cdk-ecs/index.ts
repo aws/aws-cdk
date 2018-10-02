@@ -47,13 +47,13 @@ class BonjourECS extends cdk.Stack {
     container.linuxParameters.dropCapabilities(ecs.Capability.Chown);
 
     container.linuxParameters.addDevices({
-      containerPath: "/pudding",
-      hostPath: "/dev/sda",
+      containerPath: "/dev/pudding",
+      hostPath: "/dev/clyde",
       permissions: [ecs.DevicePermission.Read]
     });
 
     container.linuxParameters.addTmpfs({
-      containerPath: "/pudding",
+      containerPath: "/dev/sda",
       size: 12345,
       mountOptions: [ecs.TmpfsMountOption.Ro]
     });
@@ -65,6 +65,12 @@ class BonjourECS extends cdk.Stack {
       name: ecs.UlimitName.Core,
       softLimit: 1234,
       hardLimit: 1234,
+    });
+
+    container.addPortMappings({
+      containerPort: 80
+      hostPort: 80,
+      protocol: ecs.Protocol.Tcp,
     });
 
     taskDefinition.addContainer(container);
