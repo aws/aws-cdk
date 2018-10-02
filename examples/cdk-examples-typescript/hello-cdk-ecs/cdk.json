@@ -36,6 +36,7 @@
       "eu-west-1a",
       "eu-west-1b",
       "eu-west-1c"
-    ]
+    ],
+    "ssm:794715269151:us-west-2:/aws/service/ecs/optimized-ami/amazon-linux/recommended": "{\"schema_version\":1,\"image_name\":\"amzn-ami-2018.03.g-amazon-ecs-optimized\",\"image_id\":\"ami-00430184c7bb49914\",\"os\":\"Amazon Linux\",\"ecs_runtime_version\":\"Docker version 18.06.1-ce\",\"ecs_agent_version\":\"1.20.3\"}"
   }
 }

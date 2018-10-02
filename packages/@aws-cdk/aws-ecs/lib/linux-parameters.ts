@@ -9,12 +9,12 @@ export class LinuxParameters {
 
   private readonly dropCapabilities: Capability[] = [];
 
-  // private readonly devices: Device[] = [];
+  private readonly devices: Device[] = [];
 
-  // private readonly tmpfs: Tmpfs[] = [];
+  private readonly tmpfs: Tmpfs[] = [];
 
   /**
-   * Only works with EC2 launch type
+   * AddCapability only works with EC2 launch type
    */
   public addCapability(...cap: Capability[]) {
     this.addCapabilities.push(...cap);
@@ -24,23 +24,55 @@ export class LinuxParameters {
     this.dropCapabilities.push(...cap);
   }
 
-  public toLinuxParametersJson(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
+  public addDevice(...device: Device[]) {
+    this.devices.push(...device);
+  }
+
+  public addTmpfs(...tmpfs: Tmpfs[]) {
+    this.tmpfs.push(...tmpfs);
+  }
+
+  public renderLinuxParameters(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
         add: this.addCapabilities,
         drop: this.dropCapabilities,
-      }
+      },
+      devices: this.devices.map(renderDevice),
+      tmpfs: this.tmpfs.map(renderTmpfs)
     };
   }
 }
 
-// export interface Device {
-// }
+export interface Device {
+  containerPath?: string,
+  hostPath: string,
+  permissions?: DevicePermission[]
+}
 
-// export interface Tmpfs {
-// }
+function renderDevice(device: Device): cloudformation.TaskDefinitionResource.DeviceProperty {
+  return {
+    containerPath: device.containerPath,
+    hostPath: device.hostPath,
+    permissions: device.permissions
+  }
+}
+
+export interface Tmpfs {
+  containerPath: string,
+  size: number,
+  mountOptions?: TmpfsMountOption[],
+}
+
+function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsProperty {
+  return {
+    containerPath: tmpfs.containerPath,
+    size: tmpfs.size,
+    mountOptions: tmpfs.mountOptions
+  }
+}
 
 export enum Capability {
   All = "ALL",
@@ -81,4 +113,52 @@ export enum Capability {
   SysTtyConfig = "SYS_TTY_CONFIG",
   Syslog = "SYSLOG",
   WakeAlarm = "WAKE_ALARM"
+}
+
+export enum DevicePermission {
+  Read = "read",
+  Write = "write",
+  Mknod = "mknod",
+}
+
+export enum TmpfsMountOption {
+  Defaults = "defaults",
+  Ro = "ro",
+  Rw = "rw",
+  Suid = "suid",
+  Nosuid = "nosuid",
+  Dev = "dev",
+  Nodev = "nodev",
+  Exec = "exec",
+  Noexec = "noexec",
+  Sync = "sync",
+  Async = "async",
+  Dirsync = "dirsync",
+  Remount = "remount",
+  Mand = "mand",
+  Nomand = "nomand",
+  Atime = "atime",
+  Noatime = "noatime",
+  Diratime = "diratime",
+  Nodiratime = "nodiratime",
+  Bind = "bind",
+  Rbind = "rbind",
+  Unbindable = "unbindable",
+  Runbindable = "runbindable",
+  Private = "private",
+  Rprivate = "rprivate",
+  Shared = "shared",
+  Rshared = "rshared",
+  Slave = "slave",
+  Rslave = "rslave",
+  Relatime = "relatime",
+  Norelatime = "norelatime",
+  Strictatime = "strictatime",
+  Nostrictatime = "nostrictatime",
+  Mode = "mode",
+  Uid = "uid",
+  Gid = "gid",
+  NrInodes = "nr_inodes",
+  NrBlocks = "nr_blocks",
+  Mpol = "mpol"
 }

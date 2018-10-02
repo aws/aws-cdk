@@ -64,7 +64,7 @@ export class AwsLogDriver extends LogDriver {
   /**
    * Return the log driver CloudFormation JSON
    */
-  public toLogDriverJson(): cloudformation.TaskDefinitionResource.LogConfigurationProperty {
+  public renderLogDriver(): cloudformation.TaskDefinitionResource.LogConfigurationProperty {
     return {
       logDriver: 'awslogs',
       options: removeEmpty({
