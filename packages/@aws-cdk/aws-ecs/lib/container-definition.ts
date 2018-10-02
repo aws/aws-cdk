@@ -174,7 +174,7 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly linuxParameters = new LinuxParameters();
 
-  public readonly ulimits = new Array<Ulimits>();
+  public readonly ulimits = new Array<Ulimit>();
 
   public readonly essential: boolean;
 
@@ -197,7 +197,7 @@ export class ContainerDefinition extends cdk.Construct {
     }
   }
 
-  public addUlimits(...ulimits: Ulimits) {
+  public addUlimits(...ulimits: Ulimit[]) {
     this.ulimits.push(...ulimits);
   }
 
@@ -346,7 +346,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
  *
  * NOTE: Does not work for Windows containers.
  */
-export interface Ulimits {
+export interface Ulimit {
   name: UlimitName,
   softLimit: number,
   hardLimit: number,
