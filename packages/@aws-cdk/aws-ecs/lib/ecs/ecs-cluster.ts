@@ -86,12 +86,14 @@ export class EcsCluster extends BaseCluster {
  * Construct a Linux machine image from the latest ECS Optimized AMI published in SSM
  */
 export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
-  private static AmiParamterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
+  private static AmiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
 
   public getImage(parent: cdk.Construct): ec2.MachineImage {
     const ssmProvider = new cdk.SSMParameterProvider(parent);
 
-    const ami = ssmProvider.getString(EcsOptimizedAmi.AmiParamterName);
+    const json = ssmProvider.getString(EcsOptimizedAmi.AmiParameterName);
+    const ami = JSON.parse(json).image_id;
+
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
   }
 }
