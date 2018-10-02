@@ -9,7 +9,7 @@ export class LinuxParameters {
 
   private readonly dropCapabilities: Capability[] = [];
 
-  // private readonly devices: Device[] = [];
+  private readonly devices: Device[] = [];
 
   // private readonly tmpfs: Tmpfs[] = [];
 
@@ -24,6 +24,10 @@ export class LinuxParameters {
     this.dropCapabilities.push(...cap);
   }
 
+  public addDevice(...device: Device[]) {
+    this.devices.push(...device);
+  }
+
   public toLinuxParametersJson(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
@@ -31,13 +35,25 @@ export class LinuxParameters {
       capabilities: {
         add: this.addCapabilities,
         drop: this.dropCapabilities,
-      }
+      },
+      devices: this.devices.map(renderDevice)
     };
   }
 }
 
-// export interface Device {
-// }
+export interface Device {
+  containerPath?: string,
+  hostPath: string,
+  permissions?: DevicePermission[]
+}
+
+function renderDevice(device: Device): cloudformation.TaskDefinitionResource.DeviceProperty {
+  return {
+    containerPath: device.containerPath,
+    hostPath: device.hostPath,
+    permissions: device.permissions
+  }
+}
 
 // export interface Tmpfs {
 // }
@@ -81,4 +97,10 @@ export enum Capability {
   SysTtyConfig = "SYS_TTY_CONFIG",
   Syslog = "SYSLOG",
   WakeAlarm = "WAKE_ALARM"
+}
+
+export enum DevicePermission {
+  Read = "read",
+  Write = "write",
+  Mknod = "mknod",
 }

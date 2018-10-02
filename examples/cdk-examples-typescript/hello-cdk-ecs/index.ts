@@ -33,9 +33,10 @@ class BonjourECS extends cdk.Stack {
 
     const taskDefinition = new ecs.EcsTaskDefinition(this, "EcsTD", {
       family: "ecs-task-definition",
-      placementConstraints: [{
-        type: ecs.PlacementConstraintType.DistinctInstance
-      }],
+      // placementConstraints: [{
+      //   type: ecs.PlacementConstraintType.MemberOf,
+      //   expression: "attribute:ecs.instance-type =~ t2.*"
+      // }],
     });
 
     const container = new ecs.ContainerDefinition(this, 'Container', {
@@ -47,6 +48,12 @@ class BonjourECS extends cdk.Stack {
     });
 
     container.linuxParameters.addCapability(ecs.Capability.All);
+
+    container.linuxParameters.addDevice({
+      containerPath: "/pudding",
+      hostPath: "/dev/sda",
+      permissions: [ecs.DevicePermission.Read]
+    });
 
     taskDefinition.addContainer(container);
 
@@ -61,6 +68,6 @@ class BonjourECS extends cdk.Stack {
 
 const app = new cdk.App(process.argv);
 
-new BonjourECS(app, 'GoedeMorgen');
+new BonjourECS(app, 'Bonjour');
 
 process.stdout.write(app.run());
