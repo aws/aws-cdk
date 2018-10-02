@@ -64,7 +64,8 @@ export interface BaseServiceProps {
   ////////////////////////////////////////////
 }
 
-export abstract class BaseService extends cdk.Construct implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
+export abstract class BaseService extends cdk.Construct
+    implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
   public readonly connections: ec2.Connections;
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
