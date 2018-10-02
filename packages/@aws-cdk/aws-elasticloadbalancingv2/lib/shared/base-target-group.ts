@@ -238,15 +238,10 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
    * Register the given load balancing target as part of this group
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
-    if ((props.targetType === TargetType.SelfRegistering) !== (props.targetJson === undefined)) {
-      throw new Error('Load balancing target should specify targetJson if and only if TargetType is not SelfRegistering');
+    if (this.targetType !== undefined && this.targetType !== props.targetType) {
+      throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
     }
-    if (props.targetType !== TargetType.SelfRegistering) {
-      if (this.targetType !== undefined && this.targetType !== props.targetType) {
-        throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
-      }
-      this.targetType = props.targetType;
-    }
+    this.targetType = props.targetType;
 
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
@@ -290,6 +285,8 @@ export interface LoadBalancerTargetProps {
 
   /**
    * JSON representing the target's direct addition to the TargetGroup list
+   *
+   * May be omitted if the target is going to register itself later.
    */
   targetJson?: any;
 }

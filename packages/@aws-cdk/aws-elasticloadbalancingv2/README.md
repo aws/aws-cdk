@@ -179,18 +179,14 @@ load balancing target:
 public attachToApplicationTargetGroup(targetGroup: ApplicationTargetGroup): LoadBalancerTargetProps {
     targetGroup.registerConnectable(...);
     return {
-        targetType: TargetType.Instance | TargetType.Ip | TargetType.SelfRegistering,
+        targetType: TargetType.Instance | TargetType.Ip
         targetJson: { id: ..., port: ... },
     };
 }
 ```
-
-`targetType` should be one of `Instance` or `Ip` if the target can be directly
-added to the target group, or `SelfRegistering` if the target will register new
-instances with the load balancer at some later point.
-
-If the `targetType` is `Instance` or `Ip`, `targetJson` should contain the `id`
-of the target (either instance ID or IP address depending on the type) and
+`targetType` should be one of `Instance` or `Ip`. If the target can be
+directly added to the target group, `targetJson` should contain the `id` of
+the target (either instance ID or IP address depending on the type) and
 optionally a `port` or `availabilityZone` override.
 
 Application load balancer targets can call `registerConnectable()` on the

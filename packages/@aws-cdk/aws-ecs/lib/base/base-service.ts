@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTaskDefinition } from '../base/base-task-definition';
+import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
 
 export interface BaseServiceProps {
@@ -97,25 +97,19 @@ export abstract class BaseService extends cdk.Construct
   }
 
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.loadBalancers.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDef.defaultContainer!.name,
-      containerPort: this.taskDef.defaultContainer!.loadBalancerPort(false),
-    });
-    this.createLoadBalancerRole();
+    const ret = this.attachToELBv2(targetGroup);
 
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    // Open up security groups. For dynamic port mapping, we won't know the port range
+    // in advance so we need to open up all ports.
+    const port = this.instancePort;
+    const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
+    targetGroup.registerConnectable(this, portRange);
+
+    return ret;
   }
 
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.loadBalancers.push({
-      targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDef.defaultContainer!.name,
-      containerPort: this.taskDef.defaultContainer!.loadBalancerPort(false),
-    });
-    this.createLoadBalancerRole();
-
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return this.attachToELBv2(targetGroup);
   }
 
   public get securityGroup(): ec2.SecurityGroupRef {
@@ -151,7 +145,36 @@ export abstract class BaseService extends cdk.Construct
       }
     };
   }
+
+  private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
+    if (this.taskDef.networkMode === NetworkMode.None) {
+      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
+    }
+
+    this.loadBalancers.push({
+      targetGroupArn: targetGroup.targetGroupArn,
+      containerName: this.taskDef.defaultContainer!.name,
+      containerPort: this.instancePort,
+    });
+    this.createLoadBalancerRole();
+
+    return { targetType: elbv2.TargetType.Ip };
+  }
+
+  /**
+   * Return the port on which the instance will be listening
+   *
+   * Returns 0 if the networking mode implies dynamic port allocation.
+   */
+  private get instancePort() {
+    return this.taskDef.networkMode === NetworkMode.Bridge ? 0 : this.taskDef.defaultContainer!.instancePort;
+  }
 }
+
+/**
+ * The port range to open up for dynamic port mapping
+ */
+const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
 
 /**
  * Fargate platform version

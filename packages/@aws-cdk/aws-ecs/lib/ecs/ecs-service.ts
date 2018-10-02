@@ -167,10 +167,17 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
    * Don't call this. Call `loadBalancer.addTarget()` instead.
    */
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
+    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+      throw new Error("Cannot use a Classic Load Balancer if NetworkMode is Bridge. Use Host or AwsVpc instead.");
+    }
+    if (this.taskDefinition.networkMode === NetworkMode.None) {
+      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
+    }
+
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName: this.taskDefinition.defaultContainer!.name,
-      containerPort: this.taskDefinition.defaultContainer!.loadBalancerPort(true),
+      containerPort: this.taskDefinition.defaultContainer!.instancePort,
     });
     this.createLoadBalancerRole();
   }

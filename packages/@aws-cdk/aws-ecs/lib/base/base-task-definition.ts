@@ -34,10 +34,11 @@ export interface BaseTaskDefinitionProps {
   volumes?: Volume[];
 }
 
-export class BaseTaskDefinition extends cdk.Construct {
+export abstract class BaseTaskDefinition extends cdk.Construct {
   public readonly family: string;
   public readonly taskDefinitionArn: string;
   public readonly taskRole: iam.Role;
+  public abstract readonly networkMode: NetworkMode;
 
   /**
    * Default container for this task

@@ -206,7 +206,10 @@ export class ContainerDefinition extends cdk.Construct {
     return this._usesEcrImages;
   }
 
-  public loadBalancerPort(_classicLB: boolean): number {
+  /**
+   * Return the instance port that the container will be listening on
+   */
+  public get instancePort(): number {
     return 0;
   }
 
