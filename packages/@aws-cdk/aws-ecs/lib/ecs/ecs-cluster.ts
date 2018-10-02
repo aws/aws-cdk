@@ -91,7 +91,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
   public getImage(parent: cdk.Construct): ec2.MachineImage {
     const ssmProvider = new cdk.SSMParameterProvider(parent);
 
-    const json = ssmProvider.getString(EcsOptimizedAmi.AmiParameterName);
+    const json = ssmProvider.getString(EcsOptimizedAmi.AmiParameterName, "{\"image_id\": \"\"}");
     const ami = JSON.parse(json).image_id;
 
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
