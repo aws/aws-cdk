@@ -235,7 +235,7 @@ export class ContainerDefinition extends cdk.Construct {
       user: this.props.user,
       volumesFrom: [], // FIXME
       workingDirectory: this.props.workingDirectory,
-      logConfiguration: this.props.logging && this.props.logging.toLogDriverJson(),
+      logConfiguration: this.props.logging && this.props.logging.renderLogDriver(),
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
@@ -295,7 +295,6 @@ export interface HealthCheck {
 
 // mountPoints?: mountPoint[];
 // portMappings?: portMapping[];
-// ulimits?: ulimit[];
 // volumesFrom?: volumeFrom[];
 
 function renderKV(env: {[key: string]: string}, keyName: string, valueName: string): any {
