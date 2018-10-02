@@ -57,7 +57,7 @@ function renderDevice(device: Device): cloudformation.TaskDefinitionResource.Dev
     containerPath: device.containerPath,
     hostPath: device.hostPath,
     permissions: device.permissions
-  }
+  };
 }
 
 export interface Tmpfs {
@@ -71,7 +71,7 @@ function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsP
     containerPath: tmpfs.containerPath,
     size: tmpfs.size,
     mountOptions: tmpfs.mountOptions
-  }
+  };
 }
 
 export enum Capability {

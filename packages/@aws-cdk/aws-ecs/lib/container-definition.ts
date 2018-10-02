@@ -384,6 +384,7 @@ function renderUlimit(ulimit: Ulimit): cloudformation.TaskDefinitionResource.Uli
   };
 }
 
+// TODO: add default?
 export interface PortMapping {
   containerPort?: number,
   hostPort?: number,
