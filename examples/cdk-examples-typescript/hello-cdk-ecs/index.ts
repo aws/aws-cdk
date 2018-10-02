@@ -82,6 +82,10 @@ class BonjourECS extends cdk.Stack {
       readOnly: true,
     });
 
+    container.addVolumesFrom({
+      sourceContainer: 'web',
+      readOnly: true,
+    });
 
     new ecs.EcsService(this, "EcsService", {
             cluster,
