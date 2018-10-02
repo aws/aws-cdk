@@ -61,6 +61,9 @@ class BonjourECS extends cdk.Stack {
       mountOptions: [ecs.TmpfsMountOption.Ro]
     });
 
+    container.linuxParameters.sharedMemorySize = 65535
+    container.linuxParameters.initProcessEnabled = true
+
     taskDefinition.addContainer(container);
 
     new ecs.EcsService(this, "EcsService", {
