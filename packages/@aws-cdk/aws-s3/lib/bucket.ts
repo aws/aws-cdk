@@ -30,6 +30,13 @@ export interface BucketRefProps {
    * policy, won't work.
    */
   bucketName?: string;
+
+  /**
+   * The domain name of the bucket.
+   *
+   * @default Inferred from bucket name
+   */
+  bucketDomainName?: string;
 }
 
 /**
@@ -71,6 +78,11 @@ export abstract class BucketRef extends cdk.Construct {
    * The name of the bucket.
    */
   public abstract readonly bucketName: string;
+
+  /**
+   * The domain of the bucket.
+   */
+  public abstract readonly domainName: string;
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -701,6 +713,7 @@ export interface NotificationKeyFilter {
 class ImportedBucketRef extends BucketRef {
   public readonly bucketArn: string;
   public readonly bucketName: string;
+  public readonly domainName: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   protected policy?: BucketPolicy;
@@ -716,7 +729,12 @@ class ImportedBucketRef extends BucketRef {
 
     this.bucketArn = parseBucketArn(props);
     this.bucketName = bucketName;
+    this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;
     this.policy = undefined;
+  }
+
+  private generateDomainName() {
+    return `${this.bucketName}.s3.amazonaws.com`;
   }
 }
