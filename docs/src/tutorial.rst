@@ -244,7 +244,7 @@ Make sure it builds and creates a stack
 
 .. _deploy_and_test:
 
-Deplay and Test the App
+Deploy and Test the App
 =======================
 
 Run the following command to deploy your app.
