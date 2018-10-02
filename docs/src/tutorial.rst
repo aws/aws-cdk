@@ -128,32 +128,6 @@ in the *resources* directory.
         })
           .catch(rejectedPromise);
         break;
-      case "create":
-        S3.putObject({
-          Bucket: bucketName,
-          Key: event.apples.name,
-          Body: JSON.stringify(event.apples, null, 2),
-          ContentType: 'application/json'
-        }).promise()
-          .then(function() { callback(null, event.apples); })
-          .catch(rejectedPromise);
-        break;
-      case "show":
-        S3.getObject({ Bucket: bucketName, Key: event.name})
-          .promise()
-          .then(function(data) {
-            callback(null, JSON.parse(data.Body.toString('utf-8')));
-        })
-          .catch(rejectedPromise);
-        break;
-      case "delete":
-        S3.deleteObject({ Bucket: bucketName, Key: event.name })
-          .promise()
-          .then(function(data) {
-            callback(null, { success: true });
-        })
-          .catch(rejectedPromise);
-        break;
       default:
         return callback("Unknown operation: " + event.operation, null);
       }
@@ -209,12 +183,6 @@ in the *lib* directory.
 
         const bucket = new s3.Bucket(this, 'AppleStore');
 
-        const servicePrincipal = new cdk.ServicePrincipal('apigateway.amazon.com');
-
-        new iam.Role(this, 'IntegrationRole', {
-            assumedBy: servicePrincipal
-        });
-
         const handler = new lambda.Function(this, 'AppleHandler', {
           runtime: lambda.Runtime.NodeJS610,
           code: lambda.Code.directory('resources'),
@@ -231,41 +199,12 @@ in the *lib* directory.
           description: 'This service serves apples.'
         });
 
-        api.root.addMethod('ANY'); // What they get from /
-
-        /*
-            We support 4 operations:
-            - get list of apples (GET /apples)
-            - post (create) an apple based on json input (POST /apples/{apple_id})
-            - get an apple by name (GET /apples/{apple_id})
-            - delete an apple by name (DELETE /apples/{apple_id})
-        */
-
-        const apples = api.root.addResource('apples');
-
         const getApplesIntegration = new apigateway.LambdaIntegration(handler, {
-          requestTemplates: { 'application/json': '{ "operation": "list"}' }
-        });
-
-        const postApplesIntegration = new apigateway.LambdaIntegration(handler, {
-          requestTemplates: { 'application/json': '{"operation":"create","apple":$input.json("$")}' }
+          requestTemplates: { 'application/json': '{ "operation": "list"}' },
+          integrationResponse: [ { statusCode: '200' } ]
         });
 
         apples.addMethod('GET', getApplesIntegration);   // GET /apples
-        apples.addMethod('POST', postApplesIntegration); // POST /apples/{apple_id}
-
-        const apple = apples.addResource('{apple_id}');
-
-        const getAppleIntegration = new apigateway.LambdaIntegration(handler, {
-          requestTemplates:  { 'application/json': '{"operation":"show","name":"$input.params("name")"}' }
-        });
-
-        const deleteAppleIntegration = new apigateway.LambdaIntegration(handler, {
-          requestTemplates: { 'application/json': '{"operation":"delete","apple":$input.json("$")}' }
-        });
-
-        apple.addMethod('GET', getAppleIntegration);       // GET /apples/{apple_id}
-        apple.addMethod('DELETE', deleteAppleIntegration); // DELETE /apples/{apple_id}
       }
     }
 
@@ -283,13 +222,13 @@ Add the Service to the App
 
 To add the service to our app,
 add the following line of code after the existing **import** statement
-in *MyAppleService.ts*.
+.
 
 .. code-block:: ts
 
     import apple_service = require('../lib/apple_service')
 
-Add the following line of code at the end of the constructor.
+Add the following line of code at the end of the constructor in *my_apple_service.ts*.
 
 .. code-block:: ts
 
@@ -302,3 +241,88 @@ Make sure it builds and creates a stack
 
     npm run build
     cdk synth
+
+.. _deploy_and_test:
+
+Deplay and Test the App
+=======================
+
+Run the following command to deploy your app.
+
+.. code-block:: sh
+
+    cdk deploy
+
+Once your app is deployed (it should take about a minute),
+open the AWS Console,
+navigate to the API Gateway service,
+find your app in the list,
+and test the GET function.
+
+Since we haven't stored any apples, the list should be empty.
+Let's manually store an apple.
+
+1. Create the file **my_groovy_apple** and add the following content.
+
+    .. code-block:: sh
+
+        {
+            "key1": "value1"
+        }
+
+2. Navigate to the S3 Console and find your apple bucket
+   (its name should start with the string **myappleservicestack**).
+
+3. Select the bucket, select **Upload file**, and upload **my_groovy_apple**.
+4. Navigate to the API Gateway console.
+5. Select **Apple Service**.
+6. Select the **GET** method.
+7. Select **Test**, **Test**.
+8. You should get the following response body.
+
+    .. code-block:: sh
+
+        {
+            "key1": "value1"
+        }
+
+Adding apples manually to our S3 bucket is a pain.
+Since we want to enable all CRUD (create, read, update, delete) operations,
+add the following to *apples.js*, after the **list** case and before the
+**default** case.
+
+.. code-block:: ts
+
+    case "create":
+      S3.putObject({
+        Bucket: bucketName,
+        Key: event.apples.name,
+        Body: JSON.stringify(event.apples, null, 2),
+        ContentType: 'application/json'
+      }).promise()
+        .then(function() { callback(null, event.apples); })
+        .catch(rejectedPromise);
+      break;
+    case "show":
+      S3.getObject({ Bucket: bucketName, Key: event.name})
+        .promise()
+        .then(function(data) {
+          callback(null, JSON.parse(data.Body.toString('utf-8')));
+      })
+        .catch(rejectedPromise);
+      break;
+    case "delete":
+      S3.deleteObject({ Bucket: bucketName, Key: event.name })
+        .promise()
+        .then(function(data) {
+          callback(null, { success: true });
+      })
+        .catch(rejectedPromise);
+      break;
+
+Now we should be able to store, show, or delete an apple.
+Use the API Gateway console to test these functions.
+You'll have to pass in the name of an apple,
+so set the **name** entry to the name of an apple.
+Since we added the apple **my_groovy_apple** to the S3 bucket,
+you can use it as the name for any of these operations.
