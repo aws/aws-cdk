@@ -28,12 +28,12 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
       launchType: 'EC2'
     });
 
+    this.taskDefinition = props.taskDefinition;
+    this.taskDef = props.taskDefinition;
+
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
-
-    this.taskDefinition = props.taskDefinition;
-    this.taskDef = props.taskDefinition;
   }
 
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {

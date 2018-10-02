@@ -42,7 +42,7 @@ export class FargateTaskDefinition extends BaseTaskDefinition {
       cpu: props.cpu,
       memoryMiB: props.memoryMiB,
       networkMode: NetworkMode.AwsVpc,
-      requiresCompatibilities: Compatibilities.Fargate
+      requiresCompatibilities: [Compatibilities.Fargate]
     });
   }
 }

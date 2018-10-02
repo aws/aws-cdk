@@ -45,7 +45,7 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
       cpu: props.cpu,
       memoryMiB: props.memoryMiB,
       networkMode: props.networkMode || NetworkMode.Bridge,
-      requiresCompatibilities: Compatibilities.Ec2,
+      requiresCompatibilities: [Compatibilities.Ec2],
       placementConstraints: new cdk.Token(() => this.placementConstraints)
     });
 
