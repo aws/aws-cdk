@@ -138,9 +138,15 @@ function validateResourcePathPart(part: string) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
     part = part.substr(1, part.length - 2);
+
+    // proxy resources are allowed to end with a '+'
+    if (part.endsWith('+')) {
+      part = part.substr(0, part.length - 1);
+    }
   }
 
   if (!/^[a-zA-Z0-9\.\_\-]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow a-zA-Z0-9._- and curly braces at the beginning and the end: ${part}`);
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9._-], an optional trailing '+'
+      and curly braces at the beginning and the end: ${part}`);
   }
 }
