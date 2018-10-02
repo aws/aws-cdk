@@ -10,7 +10,7 @@
 
 .. note::
 
-    The China regions (BJS and ZHY) do not support version reporting.
+    The China regions (cn-north-1 and cn-northwest-1) do not support version reporting.
 
     See :ref:`version-reporting` for more details and how to
     :ref:`opt-out <version-reporting-opt-out>`
