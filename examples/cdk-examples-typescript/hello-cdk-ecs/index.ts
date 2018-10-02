@@ -43,9 +43,10 @@ class BonjourECS extends cdk.Stack {
       essential: true
     });
 
-    container.linuxParameters.addCapability(ecs.Capability.All);
+    container.linuxParameters.addCapabilities(ecs.Capability.All);
+    container.linuxParameters.dropCapabilities(ecs.Capability.Chown);
 
-    container.linuxParameters.addDevice({
+    container.linuxParameters.addDevices({
       containerPath: "/pudding",
       hostPath: "/dev/sda",
       permissions: [ecs.DevicePermission.Read]
