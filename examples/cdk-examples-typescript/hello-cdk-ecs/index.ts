@@ -68,10 +68,21 @@ class BonjourECS extends cdk.Stack {
     });
 
     container.addPortMappings({
-      containerPort: 80
+      containerPort: 80,
       hostPort: 80,
       protocol: ecs.Protocol.Tcp,
     });
+
+    container.addMountPoints({
+      containerPath: '/tmp/cache',
+      sourceVolume: 'volume-1',
+      readOnly: true,
+    }, {
+      containerPath: './cache',
+      sourceVolume: 'volume-2',
+      readOnly: true,
+    });
+
 
     taskDefinition.addContainer(container);
 

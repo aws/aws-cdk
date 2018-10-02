@@ -174,6 +174,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly linuxParameters = new LinuxParameters();
 
+  public readonly mountPoints = new Array<MountPoint>();
+
   public readonly portMappings = new Array<PortMapping>();
 
   public readonly ulimits = new Array<Ulimit>();
@@ -197,6 +199,10 @@ export class ContainerDefinition extends cdk.Construct {
     } else {
       this.links.push(`${container.name}`);
     }
+  }
+
+  public addMountPoints(...mountPoints: MountPoint[]) {
+    this.mountPoints.push(...mountPoints);
   }
 
   public addPortMappings(...portMappings: PortMapping[]) {
@@ -237,7 +243,7 @@ export class ContainerDefinition extends cdk.Construct {
       image: this.props.image.imageName,
       memory: this.props.memoryMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: [], // FIXME
+      mountPoints: this.mountPoints.map(renderMountPoint),
       name: this.props.name,
       portMappings: this.portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
@@ -401,5 +407,19 @@ function renderPortMapping(pm: PortMapping): cloudformation.TaskDefinitionResour
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
     protocol: pm.protocol,
+  };
+}
+
+export interface MountPoint {
+    containerPath: string,
+    readOnly: boolean,
+    sourceVolume: string,
+}
+
+function renderMountPoint(mp: MountPoint): cloudformation.TaskDefinitionResource.MountPointProperty {
+  return {
+    containerPath: mp.containerPath,
+    readOnly: mp.readOnly,
+    sourceVolume: mp.sourceVolume,
   };
 }
