@@ -4,23 +4,6 @@ import { cloudformation } from '../ecs.generated';
 
 export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
   /**
-   * The number of cpu units used by the task. If using the EC2 launch type,
-   * this field is optional. Supported values are between 128 CPU units
-   * (0.125 vCPUs) and 10240 CPU units (10 vCPUs).
-   *
-   * @default 256
-   */
-  cpu?: string;
-
-  /**
-   * The amount (in MiB) of memory used by the task. If using the EC2 launch type, this field is optional and any value
-   * can be used.
-   *
-   * @default 512
-   */
-  memoryMiB?: string;
-
-  /**
    * The Docker networking mode to use for the containers in the task.
    *
    * @default NetworkMode.Bridge
@@ -41,12 +24,10 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
   public readonly networkMode: NetworkMode;
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[];
 
-  constructor(parent: cdk.Construct, name: string, props: EcsTaskDefinitionProps) {
+  constructor(parent: cdk.Construct, name: string, props: EcsTaskDefinitionProps = {}) {
     const networkMode = props.networkMode || NetworkMode.Bridge;
 
     super(parent, name, props, {
-      cpu: props.cpu,
-      memoryMiB: props.memoryMiB,
       networkMode,
       requiresCompatibilities: [Compatibilities.Ec2],
       placementConstraints: new cdk.Token(() => this.placementConstraints)

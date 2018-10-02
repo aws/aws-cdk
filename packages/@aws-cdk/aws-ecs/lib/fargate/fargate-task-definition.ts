@@ -13,7 +13,7 @@ export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
    *
    * @default 256
    */
-  cpu: string;
+  cpu?: string;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -33,14 +33,16 @@ export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
    *
    * @default 512
    */
-  memoryMiB: string;
+  memoryMiB?: string;
 }
 
 export class FargateTaskDefinition extends BaseTaskDefinition {
-  constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps) {
+  public readonly networkMode = NetworkMode.AwsVpc;
+
+  constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
     super(parent, name, props, {
-      cpu: props.cpu,
-      memoryMiB: props.memoryMiB,
+      cpu: props.cpu || '256',
+      memoryMiB: props.memoryMiB || '512',
       networkMode: NetworkMode.AwsVpc,
       requiresCompatibilities: [Compatibilities.Fargate]
     });

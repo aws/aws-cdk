@@ -6,11 +6,6 @@ import { LogDriver } from './log-drivers/log-driver';
 
 export interface ContainerDefinitionProps {
   /**
-   * A name for the container.
-   */
-  name: string;
-
-  /**
    * The image to use for a container.
    *
    * You can use images in the Docker Hub registry or specify other
@@ -122,8 +117,10 @@ export interface ContainerDefinitionProps {
    *
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
+   *
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    */
-  memoryMiB?: number;
+  memoryLimitMiB?: number;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -132,6 +129,8 @@ export interface ContainerDefinitionProps {
    * container memory within the limit. If the container requires more memory,
    * it can consume up to the value specified by the Memory property or all of
    * the available memory on the container instance—whichever comes first.
+   *
+   * At least one of memoryLimitMiB and memoryReservationMiB is required.
    */
   memoryReservationMiB?: number;
 
@@ -170,8 +169,6 @@ export interface ContainerDefinitionProps {
 }
 
 export class ContainerDefinition extends cdk.Construct {
-  public readonly name: string;
-
   public readonly linuxParameters = new LinuxParameters();
 
   public readonly ulimits = new Array<Ulimit>();
@@ -184,16 +181,15 @@ export class ContainerDefinition extends cdk.Construct {
 
   constructor(parent: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
-    this.name = props.name;
     this.essential = props.essential !== undefined ? props.essential : true;
     props.image.bind(this);
   }
 
   public addLink(container: ContainerDefinition, alias?: string) {
     if (alias !== undefined) {
-      this.links.push(`${container.name}:${alias}`);
+      this.links.push(`${container.id}:${alias}`);
     } else {
-      this.links.push(`${container.name}`);
+      this.links.push(`${container.id}`);
     }
   }
 
@@ -232,10 +228,10 @@ export class ContainerDefinition extends cdk.Construct {
       essential: this.essential,
       hostname: this.props.hostname,
       image: this.props.image.imageName,
-      memory: this.props.memoryMiB,
+      memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: [], // FIXME
-      name: this.props.name,
+      name: this.id,
       portMappings: [], // FIXME
       privileged: this.props.privileged,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,

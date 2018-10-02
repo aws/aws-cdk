@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerDefinition } from '../container-definition';
+import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
 import { cloudformation } from '../ecs.generated';
 
 export interface BaseTaskDefinitionProps {
@@ -88,7 +88,8 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   /**
    * Add a container to this task
    */
-  public addContainer(container: ContainerDefinition) {
+  public addContainer(id: string, props: ContainerDefinitionProps) {
+    const container = new ContainerDefinition(this, id, props);
     this.containers.push(container);
     if (container.usesEcrImages) {
       this.generateExecutionRole();
@@ -96,6 +97,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
+    return container;
   }
 
   private addVolume(volume: Volume) {

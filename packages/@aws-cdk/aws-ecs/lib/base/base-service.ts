@@ -153,7 +153,7 @@ export abstract class BaseService extends cdk.Construct
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDef.defaultContainer!.name,
+      containerName: this.taskDef.defaultContainer!.id,
       containerPort: this.instancePort,
     });
     this.createLoadBalancerRole();

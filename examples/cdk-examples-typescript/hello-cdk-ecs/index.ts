@@ -35,8 +35,7 @@ class BonjourECS extends cdk.Stack {
       family: "ecs-task-definition",
     });
 
-    const container = new ecs.ContainerDefinition(this, 'Container', {
-      name: "web",
+    const container = taskDefinition.addContainer('web', {
       image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
       cpu: 1024,
       memoryMiB: 512,
@@ -58,16 +57,14 @@ class BonjourECS extends cdk.Stack {
       mountOptions: [ecs.TmpfsMountOption.Ro]
     });
 
-    container.linuxParameters.sharedMemorySize = 65535
-    container.linuxParameters.initProcessEnabled = true
+    container.linuxParameters.sharedMemorySize = 65535;
+    container.linuxParameters.initProcessEnabled = true;
 
     container.addUlimits({
       name: ecs.UlimitName.Core,
       softLimit: 1234,
       hardLimit: 1234,
     });
-
-    taskDefinition.addContainer(container);
 
     new ecs.EcsService(this, "EcsService", {
             cluster,
