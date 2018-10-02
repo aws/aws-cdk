@@ -17,6 +17,10 @@ export interface BaseClusterProps {
 }
 
 export class BaseCluster extends cdk.Construct {
+  /**
+   * The VPC this cluster was created in
+   */
+  public readonly vpc: ec2.VpcNetworkRef;
 
   public readonly clusterArn: string;
 
@@ -27,6 +31,7 @@ export class BaseCluster extends cdk.Construct {
 
     const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
 
+    this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;
     this.clusterName = cluster.ref;
   }

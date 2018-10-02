@@ -38,16 +38,22 @@ export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
 }
 
 export class EcsTaskDefinition extends BaseTaskDefinition {
-  private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[] = [];
+  public readonly networkMode: NetworkMode;
+  private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[];
 
   constructor(parent: cdk.Construct, name: string, props: EcsTaskDefinitionProps) {
+    const networkMode = props.networkMode || NetworkMode.Bridge;
+
     super(parent, name, props, {
       cpu: props.cpu,
       memoryMiB: props.memoryMiB,
-      networkMode: props.networkMode || NetworkMode.Bridge,
+      networkMode,
       requiresCompatibilities: [Compatibilities.Ec2],
       placementConstraints: new cdk.Token(() => this.placementConstraints)
     });
+
+    this.networkMode = networkMode;
+    this.placementConstraints = [];
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));

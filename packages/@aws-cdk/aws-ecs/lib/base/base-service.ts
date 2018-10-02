@@ -52,40 +52,30 @@ export interface BaseServiceProps {
    */
   healthCheckGracePeriodSeconds?: number;
 
-  ///////// TBD ///////////////////////////////
-  // healthCheckGracePeriodSeconds?: number; // only needed with load balancers
-  // loadBalancers?: LoadBalancer[];
-  // placementConstraints?: PlacementConstraint[];
-  // placementStrategies?: PlacementStrategy[];
-  // networkConfiguration?: NetworkConfiguration;
-  // serviceRegistries?: ServiceRegistry[];
-  //
-  // platformVersion?: string; // FARGATE ONLY. default is LATEST. Other options:  1.2.0, 1.1.0, 1.0.0
-  ////////////////////////////////////////////
+  /**
+   * Fargate platform version to run this service on
+   *
+   * Unless you have specific compatibility requirements, you don't need to
+   * specify this.
+   *
+   * @default Latest
+   */
+  platformVersion?: FargatePlatformVersion;
 }
 
 export abstract class BaseService extends cdk.Construct
     implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
-  public readonly connections: ec2.Connections;
+  public abstract readonly connections: ec2.Connections;
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
+  protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
   protected readonly abstract taskDef: BaseTaskDefinition;
+  protected _securityGroup?: ec2.SecurityGroupRef;
   private role?: iam.Role;
   private readonly resource: cloudformation.ServiceResource;
 
   constructor(parent: cdk.Construct, name: string, props: BaseServiceProps, additionalProps: any) {
     super(parent, name);
-
-    this.connections = new ec2.Connections({
-      securityGroupRule: {
-        canInlineRule: false,
-        toEgressRuleJSON() { return {}; },
-        toIngressRuleJSON() { return {}; },
-        uniqueId: ''
-      },
-    });
-
-    // this.taskDefinition = props.taskDefinition;
 
     this.role = props.role;
 
@@ -98,6 +88,8 @@ export abstract class BaseService extends cdk.Construct
         minimumHealthyPercent: props.minimumHealthyPercent
       },
       role: new cdk.Token(() => this.role && this.role.roleArn),
+      networkConfiguration: this.networkConfiguration,
+      platformVersion: props.platformVersion,
       ...additionalProps
     });
 
@@ -105,7 +97,6 @@ export abstract class BaseService extends cdk.Construct
   }
 
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    // FIXME: Security Groups
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName: this.taskDef.defaultContainer!.name,
@@ -127,6 +118,10 @@ export abstract class BaseService extends cdk.Construct
     return { targetType: elbv2.TargetType.SelfRegistering };
   }
 
+  public get securityGroup(): ec2.SecurityGroupRef {
+    return this._securityGroup!;
+  }
+
   protected createLoadBalancerRole() {
     if (!this.role) {
       this.role = new iam.Role(this, 'Role', {
@@ -136,4 +131,57 @@ export abstract class BaseService extends cdk.Construct
       this.resource.addDependency(this.role);
     }
   }
+
+  // tslint:disable-next-line:max-line-length
+  protected configureAwsVpcNetworking(vpc: ec2.VpcNetworkRef, assignPublicIp?: boolean, vpcPlacement?: ec2.VpcPlacementStrategy, securityGroup?: ec2.SecurityGroupRef) {
+    if (vpcPlacement === undefined) {
+      vpcPlacement = { subnetsToUse: assignPublicIp ? ec2.SubnetType.Public : ec2.SubnetType.Private };
+    }
+    if (securityGroup === undefined) {
+      securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    }
+    const subnets = vpc.subnets(vpcPlacement);
+    this._securityGroup = securityGroup;
+
+    this.networkConfiguration = {
+      awsvpcConfiguration: {
+        assignPublicIp : assignPublicIp ? 'ENABLED' : 'DISABLED',
+        subnets: subnets.map(x => x.subnetId),
+        securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
+      }
+    };
+  }
+}
+
+/**
+ * Fargate platform version
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+ */
+export enum FargatePlatformVersion {
+  /**
+   * The latest, recommended platform version
+   */
+  Latest = 'LATEST',
+
+  /**
+   * Version 1.2
+   *
+   * Supports private registries.
+   */
+  Version12 = '1.2.0',
+
+  /**
+   * Version 1.1.0
+   *
+   * Supports task metadata, health checks, service discovery.
+   */
+  Version11 = '1.1.0',
+
+  /**
+   * Initial release
+   *
+   * Based on Amazon Linux 2017.09.
+   */
+  Version10 = '1.0.0',
 }

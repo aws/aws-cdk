@@ -1,3 +1,4 @@
+import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { BaseTaskDefinition } from '../base/base-task-definition';
@@ -14,20 +15,45 @@ export interface FargateServiceProps extends BaseServiceProps {
    * Task Definition used for running tasks in the service
    */
   taskDefinition: FargateTaskDefinition;
+
+  /**
+   * Assign public IP addresses to each task
+   *
+   * @default false
+   */
+  assignPublicIp?: boolean;
+
+  /**
+   * In what subnets to place the task's ENIs
+   *
+   * @default Public subnet if assignPublicIp, private subnets otherwise
+   */
+  vpcPlacement?: ec2.VpcPlacementStrategy;
+
+  /**
+   * Existing security group to use for the tasks
+   *
+   * @default A new security group is created
+   */
+  securityGroup?: ec2.SecurityGroupRef;
 }
 
 export class FargateService extends BaseService {
+  public readonly connections: ec2.Connections;
+  public readonly taskDefinition: FargateTaskDefinition;
   protected readonly taskDef: BaseTaskDefinition;
-  private readonly taskDefinition: FargateTaskDefinition;
 
   constructor(parent: cdk.Construct, name: string, props: FargateServiceProps) {
     super(parent, name, props, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
-      launchType: 'FARGATE'
+      launchType: 'FARGATE',
     });
 
-    if (!this.taskDefinition.defaultContainer) {
+    this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
+    this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
+
+    if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
 
