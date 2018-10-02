@@ -60,6 +60,12 @@ class BonjourECS extends cdk.Stack {
     container.linuxParameters.sharedMemorySize = 65535
     container.linuxParameters.initProcessEnabled = true
 
+    container.addUlimits({
+      name: ecs.UlimitName.Core,
+      softLimit: 1234,
+      hardLimit: 1234,
+    });
+
     taskDefinition.addContainer(container);
 
     new ecs.EcsService(this, "EcsService", {
