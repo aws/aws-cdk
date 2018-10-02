@@ -8,5 +8,5 @@ export abstract class LogDriver extends cdk.Construct {
   /**
    * Return the log driver CloudFormation JSON
    */
-  public abstract toLogDriverJson(): cloudformation.TaskDefinitionResource.LogConfigurationProperty;
+  public abstract renderLogDriver(): cloudformation.TaskDefinitionResource.LogConfigurationProperty;
 }
