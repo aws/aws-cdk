@@ -52,7 +52,7 @@ on AWS.
           to estimate charges for the use of various AWS resources.
 
 .. _additional_docs:
-	  
+
 Additional Documentation and Resources
 ======================================
 
@@ -71,7 +71,7 @@ In addition to this guide, the following are other resources available to |cdk| 
 * `AWS CDK Sample for Cloud9 <https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-cdk.html>`_
   
 .. _about_aws:
-    
+
 About Amazon Web Services
 =========================
 
@@ -97,5 +97,5 @@ To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and c
    AWS CloudFormation Library <cloudformation>
    Examples <examples>
    Tools <tools>
+   Writing Constructs <writing-constructs>
    Reference <reference>
-
