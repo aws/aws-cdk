@@ -227,7 +227,7 @@ README
 * Reference docs are not needed.
 * Use literate (.lit.ts) integration tests into README file.
 
-Evolving constructs
+Construct IDs
 ===================
 
 * All children's construct IDs are part of your public contract; those IDs are
