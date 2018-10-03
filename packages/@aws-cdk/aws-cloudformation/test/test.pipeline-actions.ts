@@ -32,7 +32,7 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
-      test.deepEqual(action.inputArtifacts, [artifact],
+      test.deepEqual(action._inputArtifacts, [artifact],
                      'The inputArtifact was correctly registered');
 
       _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
@@ -145,10 +145,11 @@ function _isOrContains(entity: string | string[], value: string): boolean {
   return false;
 }
 
-class StageDouble implements cpapi.IStage {
+class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
   public readonly name: string;
   public readonly pipelineArn: string;
   public readonly pipelineRole: iam.Role;
+  public readonly _internal = this;
 
   public readonly actions = new Array<cpapi.Action>();
 
@@ -164,6 +165,14 @@ class StageDouble implements cpapi.IStage {
 
   public _attachAction(action: cpapi.Action) {
     this.actions.push(action);
+  }
+
+  public _generateOutputArtifactName(): string {
+    throw new Error('Unsupported');
+  }
+
+  public _findInputArtifact(): cpapi.Artifact {
+    throw new Error('Unsupported');
   }
 }
 

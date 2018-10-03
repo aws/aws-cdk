@@ -12,8 +12,10 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
   /**
    * The name of the source's output artifact.
    * Output artifacts are used by CodePipeline as inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * @default 'master'
@@ -54,7 +56,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
         BranchName: props.branch || 'master',
         PollForSourceChanges: props.pollForSourceChanges !== undefined ? props.pollForSourceChanges : true
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp

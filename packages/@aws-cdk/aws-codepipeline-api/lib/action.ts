@@ -37,6 +37,37 @@ export function defaultBounds(): ActionArtifactBounds {
 }
 
 /**
+ * The API of Stage used internally by the CodePipeline Construct.
+ * You should never need to call any of the methods inside of it yourself.
+ */
+export interface IInternalStage {
+  /**
+   * Adds an Action to this Stage.
+   *
+   * @param action the Action to add to this Stage
+   */
+  _attachAction(action: Action): void;
+
+  /**
+   * Generates a unique output artifact name for the given Action.
+   *
+   * @param action the Action to generate the output artifact name for
+   */
+  _generateOutputArtifactName(action: Action): string;
+
+  /**
+   * Finds an input artifact for the given Action.
+   * The chosen artifact will be the output artifact of the
+   * last Action in the Pipeline
+   * (up to the Stage this Action belongs to)
+   * with the highest runOrder that has an output artifact.
+   *
+   * @param action the Action to find the input artifact for
+   */
+  _findInputArtifact(action: Action): Artifact;
+}
+
+/**
  * The abstract interface of a Pipeline Stage that is used by Actions.
  */
 export interface IStage {
@@ -56,21 +87,17 @@ export interface IStage {
   readonly pipelineRole: iam.Role;
 
   /**
+   * The API of Stage used internally by the CodePipeline Construct.
+   * You should never need to call any of the methods inside of it yourself.
+   */
+  readonly _internal: IInternalStage;
+
+  /**
    * Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity.
    *
    * @param identity the IAM Identity to grant the permissions to
    */
   grantPipelineBucketReadWrite(identity: iam.IPrincipal): void;
-
-  /**
-   * Adds an Action to this Stage.
-   * This is an internal operation -
-   * an Action is added to a Stage when it's constructed,
-   * so there's no need to call this method explicitly.
-   *
-   * @param action the Action to add to this Stage
-   */
-  _attachAction(action: Action): void;
 }
 
 /**
@@ -146,8 +173,8 @@ export abstract class Action extends cdk.Construct {
   public readonly owner: string;
   public readonly version: string;
 
-  private readonly _inputArtifacts = new Array<Artifact>();
-  private readonly _outputArtifacts = new Array<Artifact>();
+  private readonly inputArtifacts = new Array<Artifact>();
+  private readonly outputArtifacts = new Array<Artifact>();
   private readonly artifactBounds: ActionArtifactBounds;
   private readonly stage: IStage;
 
@@ -165,13 +192,13 @@ export abstract class Action extends cdk.Construct {
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.stage = props.stage;
 
-    this.stage._attachAction(this);
+    this.stage._internal._attachAction(this);
   }
 
   public validate(): string[] {
-    return validation.validateArtifactBounds('input', this._inputArtifacts, this.artifactBounds.minInputs,
+    return validation.validateArtifactBounds('input', this.inputArtifacts, this.artifactBounds.minInputs,
         this.artifactBounds.maxInputs, this.category, this.provider)
-      .concat(validation.validateArtifactBounds('output', this._outputArtifacts, this.artifactBounds.minOutputs,
+      .concat(validation.validateArtifactBounds('output', this.outputArtifacts, this.artifactBounds.minOutputs,
         this.artifactBounds.maxOutputs, this.category, this.provider)
     );
   }
@@ -191,28 +218,22 @@ export abstract class Action extends cdk.Construct {
     return rule;
   }
 
-  public get inputArtifacts(): Artifact[] {
-    return this._inputArtifacts.slice();
+  public get _inputArtifacts(): Artifact[] {
+    return this.inputArtifacts.slice();
   }
 
-  public get outputArtifacts(): Artifact[] {
-    return this._outputArtifacts.slice();
+  public get _outputArtifacts(): Artifact[] {
+    return this.outputArtifacts.slice();
   }
 
-  protected addChild(child: cdk.Construct, name: string) {
-    super.addChild(child, name);
-    if (child instanceof Artifact) {
-      this._outputArtifacts.push(child);
-    }
-  }
-
-  protected addOutputArtifact(name: string): Artifact {
+  protected addOutputArtifact(name: string = this.stage._internal._generateOutputArtifactName(this)): Artifact {
     const artifact = new Artifact(this, name);
+    this.outputArtifacts.push(artifact);
     return artifact;
   }
 
-  protected addInputArtifact(artifact: Artifact): Action {
-    this._inputArtifacts.push(artifact);
+  protected addInputArtifact(artifact: Artifact = this.stage._internal._findInputArtifact(this)): Action {
+    this.inputArtifacts.push(artifact);
     return this;
   }
 }

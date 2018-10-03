@@ -12,7 +12,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = pipeline.addStage('source');
 repo.addToPipeline(sourceStage, 'source', {
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
 });
 
 const buildStage = new codepipeline.Stage(stack, 'build', { pipeline });
