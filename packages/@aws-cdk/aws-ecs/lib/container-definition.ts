@@ -244,7 +244,14 @@ export class ContainerDefinition extends cdk.Construct {
     if (this.portMappings.length === 0) {
       throw new Error(`Container ${this.id} hasn't defined any ports`);
     }
-    return this.portMappings[0].hostPort || this.portMappings[0].containerPort;
+    const defaultPortMapping = this.portMappings[0];
+    if (defaultPortMapping.hostPort !== undefined) {
+      return defaultPortMapping.hostPort;
+    }
+    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+      return 0;
+    }
+    return defaultPortMapping.containerPort;
   }
 
   public renderContainerDefinition(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
