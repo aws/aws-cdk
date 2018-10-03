@@ -251,7 +251,7 @@ export class UdpPort implements IPortRange {
   }
 
   public toString() {
-    return `${this.port}`;
+    return `UDP ${this.port}`;
   }
 }
 
@@ -295,7 +295,7 @@ export class UdpPortRange implements IPortRange {
   }
 
   public toString() {
-    return `${this.startPort}-${this.endPort}`;
+    return `UDP ${this.startPort}-${this.endPort}`;
   }
 }
 
@@ -314,7 +314,7 @@ export class UdpAllPorts implements IPortRange {
   }
 
   public toString() {
-    return 'ALL PORTS';
+    return 'UDP ALL PORTS';
   }
 }
 
