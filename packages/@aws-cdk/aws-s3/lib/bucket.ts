@@ -110,6 +110,7 @@ export abstract class BucketRef extends cdk.Construct {
     return {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
     };
   }
 

@@ -329,7 +329,8 @@ export = {
       const bucketRef = bucket.export();
       test.deepEqual(cdk.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
-        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' }
+        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
+        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
       });
       test.done();
     },
@@ -340,7 +341,8 @@ export = {
       const bucketRef = bucket.export();
       test.deepEqual(cdk.resolve(bucketRef), {
         bucketArn: { 'Fn::ImportValue': 'MyStack:MyBucketBucketArnE260558C' },
-        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' }
+        bucketName: { 'Fn::ImportValue': 'MyStack:MyBucketBucketName8A027014' },
+        bucketDomainName: { 'Fn::ImportValue': 'MyStack:MyBucketDomainNameF76B9A7A' }
       });
       test.done();
     },
@@ -456,6 +458,17 @@ export = {
           },
           "Export": {
           "Name": "S1:MyBucketBucketName8A027014"
+          }
+        },
+        "MyBucketDomainNameF76B9A7A": {
+          "Value": {
+            "Fn::GetAtt": [
+              "MyBucketF68F3FF0",
+              "DomainName"
+            ]
+          },
+          "Export": {
+            "Name": "S1:MyBucketDomainNameF76B9A7A"
           }
         }
         }
@@ -880,6 +893,17 @@ export = {
         },
         "Export": {
         "Name": "MyBucketBucketName8A027014"
+        }
+      },
+      "MyBucketDomainNameF76B9A7A": {
+        "Value": {
+          "Fn::GetAtt": [
+            "MyBucketF68F3FF0",
+            "DomainName"
+          ]
+        },
+        "Export": {
+          "Name": "MyBucketDomainNameF76B9A7A"
         }
       }
       }
