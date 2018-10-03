@@ -177,7 +177,7 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
     this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName: this.taskDefinition.defaultContainer!.id,
-      containerPort: this.taskDefinition.defaultContainer!.instancePort,
+      containerPort: this.taskDefinition.defaultContainer!.ingressPort,
     });
   }
 }
