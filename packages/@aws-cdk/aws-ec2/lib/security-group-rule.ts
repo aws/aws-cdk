@@ -153,21 +153,20 @@ export enum Protocol {
  */
 export class TcpPort implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Tcp;
 
   constructor(private readonly port: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Tcp,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    return `${this.protocol} ${this.port}`;
+    return `${this.port}`;
   }
 }
 
@@ -176,21 +175,20 @@ export class TcpPort implements IPortRange {
  */
 export class TcpPortFromAttribute implements IPortRange {
   public readonly canInlineRule = false;
-  private readonly protocol = Protocol.Tcp;
 
   constructor(private readonly port: string) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Tcp,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    return `${this.protocol} {IndirectPort}`;
+    return '{IndirectPort}';
   }
 }
 
@@ -199,21 +197,20 @@ export class TcpPortFromAttribute implements IPortRange {
  */
 export class TcpPortRange implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Tcp;
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Tcp,
       fromPort: this.startPort,
       toPort: this.endPort
     };
   }
 
   public toString() {
-    return `${this.protocol} ${this.startPort}-${this.endPort}`;
+    return `${this.startPort}-${this.endPort}`;
   }
 }
 
@@ -222,18 +219,17 @@ export class TcpPortRange implements IPortRange {
  */
 export class TcpAllPorts implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Tcp;
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Tcp,
       fromPort: 0,
       toPort: 65535
     };
   }
 
   public toString() {
-    return `${this.protocol} ALL PORTS`;
+    return 'ALL PORTS';
   }
 }
 
@@ -242,21 +238,20 @@ export class TcpAllPorts implements IPortRange {
  */
 export class UdpPort implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Udp;
 
   constructor(private readonly port: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Udp,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    return `${this.protocol} ${this.port}`;
+    return `UDP ${this.port}`;
   }
 }
 
@@ -265,21 +260,20 @@ export class UdpPort implements IPortRange {
  */
 export class UdpPortFromAttribute implements IPortRange {
   public readonly canInlineRule = false;
-  private readonly protocol = Protocol.Udp;
 
   constructor(private readonly port: string) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Udp,
       fromPort: this.port,
       toPort: this.port
     };
   }
 
   public toString() {
-    return `${this.protocol} {IndirectPort}`;
+    return '{IndirectPort}';
   }
 }
 
@@ -288,21 +282,20 @@ export class UdpPortFromAttribute implements IPortRange {
  */
 export class UdpPortRange implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Udp;
 
   constructor(private readonly startPort: number, private readonly endPort: number) {
   }
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Udp,
       fromPort: this.startPort,
       toPort: this.endPort
     };
   }
 
   public toString() {
-    return `${this.protocol} ${this.startPort}-${this.endPort}`;
+    return `UDP ${this.startPort}-${this.endPort}`;
   }
 }
 
@@ -311,18 +304,17 @@ export class UdpPortRange implements IPortRange {
  */
 export class UdpAllPorts implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.Udp;
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: Protocol.Udp,
       fromPort: 0,
       toPort: 65535
     };
   }
 
   public toString() {
-    return `${this.protocol} ALL PORTS`;
+    return 'UDP ALL PORTS';
   }
 }
 
@@ -331,11 +323,10 @@ export class UdpAllPorts implements IPortRange {
  */
 export class AllConnections implements IPortRange {
   public readonly canInlineRule = true;
-  private readonly protocol = Protocol.All;
 
   public toRuleJSON(): any {
     return {
-      ipProtocol: this.protocol,
+      ipProtocol: '-1',
       fromPort: -1,
       toPort: -1,
     };
