@@ -89,7 +89,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
    * Add a container to this task
    */
   public addContainer(id: string, props: ContainerDefinitionProps) {
-    const container = new ContainerDefinition(this, id, props);
+    const container = new ContainerDefinition(this, id, this, props);
     this.containers.push(container);
     if (container.usesEcrImages) {
       this.generateExecutionRole();
@@ -97,6 +97,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
+
     return container;
   }
 

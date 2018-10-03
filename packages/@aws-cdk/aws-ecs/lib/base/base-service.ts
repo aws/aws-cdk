@@ -145,7 +145,7 @@ export abstract class BaseService extends cdk.Construct
    * Returns 0 if the networking mode implies dynamic port allocation.
    */
   private get instancePort() {
-    return this.taskDef.networkMode === NetworkMode.Bridge ? 0 : this.taskDef.defaultContainer!.instancePort;
+    return this.taskDef.networkMode === NetworkMode.Bridge ? 0 : this.taskDef.defaultContainer!.ingressPort;
   }
 }
 

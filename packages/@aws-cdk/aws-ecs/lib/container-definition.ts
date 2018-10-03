@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { BaseTaskDefinition, NetworkMode } from './base/base-task-definition';
 import { ContainerImage } from './container-image';
 import { cloudformation } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
@@ -183,11 +184,14 @@ export class ContainerDefinition extends cdk.Construct {
 
   private readonly links = new Array<string>();
 
+  private readonly taskDefinition: BaseTaskDefinition;
+
   private _usesEcrImages: boolean = false;
 
-  constructor(parent: cdk.Construct, id: string, private readonly props: ContainerDefinitionProps) {
+  constructor(parent: cdk.Construct, id: string, taskDefinition: BaseTaskDefinition, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
     this.essential = props.essential !== undefined ? props.essential : true;
+    this.taskDefinition = taskDefinition;
     props.image.bind(this);
   }
 
@@ -204,6 +208,13 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   public addPortMappings(...portMappings: PortMapping[]) {
+    for (const pm of portMappings) {
+      if (this.taskDefinition.networkMode === NetworkMode.AwsVpc || this.taskDefinition.networkMode === NetworkMode.Host) {
+        if (pm.containerPort !== pm.hostPort && pm.hostPort !== undefined) {
+          throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
+        }
+      }
+    }
     this.portMappings.push(...portMappings);
   }
 
@@ -229,7 +240,7 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * Return the instance port that the container will be listening on
    */
-  public get instancePort(): number {
+  public get ingressPort(): number {
     if (this.portMappings.length === 0) {
       throw new Error(`Container ${this.id} hasn't defined any ports`);
     }
