@@ -42,7 +42,7 @@ export class FargateTaskDefinition extends BaseTaskDefinition {
   constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
     super(parent, name, props, {
       cpu: props.cpu || '256',
-      memoryMiB: props.memoryMiB || '512',
+      memory: props.memoryMiB || '512',
       networkMode: NetworkMode.AwsVpc,
       requiresCompatibilities: [Compatibilities.Fargate]
     });

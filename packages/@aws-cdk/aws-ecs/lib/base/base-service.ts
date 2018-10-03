@@ -1,6 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
-import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
@@ -39,13 +38,6 @@ export interface BaseServiceProps {
   minimumHealthyPercent?: number;
 
   /**
-   * Role used by ECS agent to register containers with the Load Balancer
-   *
-   * @default A role will be created for you
-   */
-  role?: iam.Role;
-
-  /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
    * @default ???
@@ -71,23 +63,20 @@ export abstract class BaseService extends cdk.Construct
   protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
   protected readonly abstract taskDef: BaseTaskDefinition;
   protected _securityGroup?: ec2.SecurityGroupRef;
-  private role?: iam.Role;
   private readonly resource: cloudformation.ServiceResource;
 
   constructor(parent: cdk.Construct, name: string, props: BaseServiceProps, additionalProps: any) {
     super(parent, name);
 
-    this.role = props.role;
-
     this.resource = new cloudformation.ServiceResource(this, "Service", {
-      desiredCount: props.desiredCount,
+      desiredCount: props.desiredCount || 1,
       serviceName: props.serviceName,
       loadBalancers: new cdk.Token(() => this.loadBalancers),
       deploymentConfiguration: {
         maximumPercent: props.maximumPercent,
         minimumHealthyPercent: props.minimumHealthyPercent
       },
-      role: new cdk.Token(() => this.role && this.role.roleArn),
+      /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: this.networkConfiguration,
       platformVersion: props.platformVersion,
       ...additionalProps
@@ -114,16 +103,6 @@ export abstract class BaseService extends cdk.Construct
 
   public get securityGroup(): ec2.SecurityGroupRef {
     return this._securityGroup!;
-  }
-
-  protected createLoadBalancerRole() {
-    if (!this.role) {
-      this.role = new iam.Role(this, 'Role', {
-        assumedBy: new cdk.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
-      this.role.attachManagedPolicy(new iam.AwsManagedPolicy('service-role/AmazonEC2ContainerServiceRole').policyArn);
-      this.resource.addDependency(this.role);
-    }
   }
 
   // tslint:disable-next-line:max-line-length
@@ -156,7 +135,6 @@ export abstract class BaseService extends cdk.Construct
       containerName: this.taskDef.defaultContainer!.id,
       containerPort: this.instancePort,
     });
-    this.createLoadBalancerRole();
 
     return { targetType: elbv2.TargetType.Ip };
   }
