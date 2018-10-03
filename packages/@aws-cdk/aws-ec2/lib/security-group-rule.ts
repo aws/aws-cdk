@@ -273,7 +273,7 @@ export class UdpPortFromAttribute implements IPortRange {
   }
 
   public toString() {
-    return '{IndirectPort}';
+    return 'UDP {IndirectPort}';
   }
 }
 
