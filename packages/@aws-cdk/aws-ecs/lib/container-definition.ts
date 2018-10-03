@@ -175,6 +175,8 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly portMappings = new Array<PortMapping>();
 
+  public readonly volumesFrom = new Array<VolumeFrom>();
+
   public readonly ulimits = new Array<Ulimit>();
 
   public readonly essential: boolean;
@@ -207,6 +209,10 @@ export class ContainerDefinition extends cdk.Construct {
 
   public addUlimits(...ulimits: Ulimit[]) {
     this.ulimits.push(...ulimits);
+  }
+
+  public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
+    this.volumesFrom.push(...volumesFrom);
   }
 
   /**
@@ -250,7 +256,7 @@ export class ContainerDefinition extends cdk.Construct {
       repositoryCredentials: undefined, // FIXME
       ulimits: this.ulimits.map(renderUlimit),
       user: this.props.user,
-      volumesFrom: [], // FIXME
+      volumesFrom: this.volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.props.logging && this.props.logging.renderLogDriver(),
       environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
@@ -309,10 +315,6 @@ export interface HealthCheck {
    */
   timeout?: number;
 }
-
-// mountPoints?: mountPoint[];
-// portMappings?: portMapping[];
-// volumesFrom?: volumeFrom[];
 
 function renderKV(env: {[key: string]: string}, keyName: string, valueName: string): any {
   const ret = [];
@@ -420,5 +422,17 @@ function renderMountPoint(mp: MountPoint): cloudformation.TaskDefinitionResource
     containerPath: mp.containerPath,
     readOnly: mp.readOnly,
     sourceVolume: mp.sourceVolume,
+  };
+}
+
+export interface VolumeFrom {
+    sourceContainer: string,
+    readOnly: boolean,
+}
+
+function renderVolumeFrom(vf: VolumeFrom): cloudformation.TaskDefinitionResource.VolumeFromProperty {
+  return {
+    sourceContainer: vf.sourceContainer,
+    readOnly: vf.readOnly,
   };
 }
