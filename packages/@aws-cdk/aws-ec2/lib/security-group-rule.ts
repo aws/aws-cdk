@@ -234,7 +234,92 @@ export class TcpAllPorts implements IPortRange {
 }
 
 /**
- * All TCP Ports
+ * A single UDP port
+ */
+export class UdpPort implements IPortRange {
+  public readonly canInlineRule = true;
+
+  constructor(private readonly port: number) {
+  }
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Udp,
+      fromPort: this.port,
+      toPort: this.port
+    };
+  }
+
+  public toString() {
+    return `UDP ${this.port}`;
+  }
+}
+
+/**
+ * A single UDP port that is provided by a resource attribute
+ */
+export class UdpPortFromAttribute implements IPortRange {
+  public readonly canInlineRule = false;
+
+  constructor(private readonly port: string) {
+  }
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Udp,
+      fromPort: this.port,
+      toPort: this.port
+    };
+  }
+
+  public toString() {
+    return 'UDP {IndirectPort}';
+  }
+}
+
+/**
+ * A UDP port range
+ */
+export class UdpPortRange implements IPortRange {
+  public readonly canInlineRule = true;
+
+  constructor(private readonly startPort: number, private readonly endPort: number) {
+  }
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Udp,
+      fromPort: this.startPort,
+      toPort: this.endPort
+    };
+  }
+
+  public toString() {
+    return `UDP ${this.startPort}-${this.endPort}`;
+  }
+}
+
+/**
+ * All UDP Ports
+ */
+export class UdpAllPorts implements IPortRange {
+  public readonly canInlineRule = true;
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Udp,
+      fromPort: 0,
+      toPort: 65535
+    };
+  }
+
+  public toString() {
+    return 'UDP ALL PORTS';
+  }
+}
+
+/**
+ * All Traffic
  */
 export class AllConnections implements IPortRange {
   public readonly canInlineRule = true;
