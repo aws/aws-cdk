@@ -13,9 +13,13 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryMiB: '1GB',
   cpu: '512'
 });
-taskDefinition.addContainer('web', {
+const container = taskDefinition.addContainer('web', {
   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
+});
+container.addPortMappings({
+  containerPort: 8080,
+  protocol: ecs.Protocol.Tcp
 });
 
 const service = new ecs.FargateService(stack, "Service", {

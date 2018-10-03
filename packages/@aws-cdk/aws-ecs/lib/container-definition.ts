@@ -230,7 +230,10 @@ export class ContainerDefinition extends cdk.Construct {
    * Return the instance port that the container will be listening on
    */
   public get instancePort(): number {
-    return 0;
+    if (this.portMappings.length === 0) {
+      throw new Error(`Container ${this.id} hasn't defined any ports`);
+    }
+    return this.portMappings[0].hostPort || this.portMappings[0].containerPort;
   }
 
   public renderContainerDefinition(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
@@ -391,11 +394,32 @@ function renderUlimit(ulimit: Ulimit): cloudformation.TaskDefinitionResource.Uli
   };
 }
 
-// TODO: add default?
+/**
+ * Map a host port to a container port
+ */
 export interface PortMapping {
-  containerPort?: number,
-  hostPort?: number,
-  protocol: Protocol
+  /**
+   * Port inside the container
+   */
+  containerPort: number;
+
+  /**
+   * Port on the host
+   *
+   * In AwsVpc or Host networking mode, leave this out or set it to the
+   * same value as containerPort.
+   *
+   * In Bridge networking mode, leave this out or set it to non-reserved
+   * non-ephemeral port.
+   */
+  hostPort?: number;
+
+  /**
+   * Protocol
+   *
+   * @default Tcp
+   */
+  protocol?: Protocol
 }
 
 export enum Protocol {
@@ -407,7 +431,7 @@ function renderPortMapping(pm: PortMapping): cloudformation.TaskDefinitionResour
   return {
     containerPort: pm.containerPort,
     hostPort: pm.hostPort,
-    protocol: pm.protocol,
+    protocol: pm.protocol || Protocol.Tcp,
   };
 }
 
