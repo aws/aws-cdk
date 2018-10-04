@@ -1,0 +1,5 @@
+# applet is loaded from the local ./test-applet.js file
+applet: cdk-ecs:LoadBalancedFargateServiceApplet
+image: 'amazon/amazon-ecs-sample'
+cpu: 2048
+memoryMiB: 1024
