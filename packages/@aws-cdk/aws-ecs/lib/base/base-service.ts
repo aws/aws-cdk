@@ -136,6 +136,8 @@ export abstract class BaseService extends cdk.Construct
       containerPort: this.instancePort,
     });
 
+    this.resource.addDependency(targetGroup.listenerDependency());
+
     return { targetType: elbv2.TargetType.Ip };
   }
 

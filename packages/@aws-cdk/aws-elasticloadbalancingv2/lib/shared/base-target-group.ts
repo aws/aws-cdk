@@ -2,7 +2,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
+import { Attributes, LazyDependable, renderAttributes } from './util';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -146,6 +146,11 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   protected readonly defaultPort: string;
 
   /**
+   * List of listeners routing to this target group
+   */
+  protected readonly dependableListeners = new Array<cdk.IDependable>();
+
+  /**
    * Attributes of this target group
    */
   private readonly attributes: Attributes = {};
@@ -235,6 +240,13 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   }
 
   /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  public listenerDependency(): cdk.IDependable {
+    return new LazyDependable(this.dependableListeners);
+  }
+
+  /**
    * Register the given load balancing target as part of this group
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
@@ -272,6 +284,11 @@ export interface ITargetGroup {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
+
+  /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  listenerDependency(): cdk.IDependable;
 }
 
 /**
