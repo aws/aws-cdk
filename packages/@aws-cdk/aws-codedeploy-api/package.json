@@ -1,22 +1,22 @@
 {
-  "name": "@aws-cdk/aws-codedeploy",
+  "name": "@aws-cdk/aws-codedeploy-api",
   "version": "0.10.0",
-  "description": "The CDK Construct Library for AWS::CodeDeploy",
+  "description": "Load Balancer API for AWS CodeDeploy",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.codedeploy",
+        "package": "software.amazon.awscdk.services.codedeploy.api",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "codedeploy"
+          "artifactId": "codedeploy-api"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.CodeDeploy",
-        "packageId": "Amazon.CDK.AWS.CodeDeploy",
+        "namespace": "Amazon.CDK.AWS.CodeDeploy.Api",
+        "packageId": "Amazon.CDK.AWS.CodeDeploy.Api",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
@@ -36,9 +36,6 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::CodeDeploy"
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -53,19 +50,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.10.0",
-    "@aws-cdk/aws-ec2": "^0.10.0",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.10.0",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.10.0",
     "cdk-build-tools": "^0.10.0",
-    "cdk-integ-tools": "^0.10.0",
     "cfn2ts": "^0.10.0",
     "pkglint": "^0.10.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.10.0",
-    "@aws-cdk/aws-codedeploy-api": "^0.10.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.10.0",
-    "@aws-cdk/aws-s3": "^0.10.0",
     "@aws-cdk/cdk": "^0.10.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"

@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codedeploy = require('../lib');
@@ -84,6 +85,74 @@ export = {
           "Ref": "ASG46ED3070",
           },
         ]
+      }));
+
+      test.done();
+    },
+
+    'can be created with an ALB Target Group as the load balancer'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
+        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+      });
+      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.Http });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        loadBalancer: targetGroup,
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [
+            {
+              "Name": {
+                "Fn::GetAtt": [
+                  "ALBListenerFleetGroup008CEEE4",
+                  "TargetGroupName",
+                ],
+              },
+            },
+          ],
+        },
+        "DeploymentStyle": {
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
+      }));
+
+      test.done();
+    },
+
+    'can be created with an NLB Target Group as the load balancer'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+      });
+      const listener = nlb.addListener('Listener', { port: 80 });
+      const targetGroup = listener.addTargets('Fleet', { port: 80 });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        loadBalancer: targetGroup,
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [
+            {
+              "Name": {
+                "Fn::GetAtt": [
+                  "NLBListenerFleetGroupB882EC86",
+                  "TargetGroupName",
+                ],
+              },
+            },
+          ],
+        },
+        "DeploymentStyle": {
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
       }));
 
       test.done();
