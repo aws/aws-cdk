@@ -6,7 +6,10 @@ import cdk = require('@aws-cdk/cdk');
 class BonjourFargate extends cdk.Stack {
   constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
     super(parent, name, props);
-    const vpc = new ec2.VpcNetwork(this, 'VPC');
+    const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
+      maxAZs: 2 // Just to limit the number of resources created and avoid reaching quotas
+    });
+
     const cluster = new ecs.FargateCluster(this, 'Cluster', {
       vpc
     });
@@ -16,10 +19,14 @@ class BonjourFargate extends cdk.Stack {
       memoryMiB: '2GB'
     });
 
-    taskDefinition.addContainer('WebApp', {
+    const container = taskDefinition.addContainer('WebApp', {
       // image: new ecs.ImageFromSource('./my-webapp-source'),
       image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
-      // portMappings: [{ containerPort: 8080 }],
+    });
+
+    container.addPortMappings({
+      containerPort: 80,
+      protocol: ecs.Protocol.Tcp
     });
 
     const service = new ecs.FargateService(this, 'Service', {
@@ -41,6 +48,9 @@ class BonjourFargate extends cdk.Stack {
       targets: [service],
       protocol: elbv2.ApplicationProtocol.Http
     });
+
+    // This outputs for the DNS where you can access your service
+    new cdk.Output(this, 'LoadBalancerDNS', { value: loadBalancer.dnsName });
   }
 }
 
