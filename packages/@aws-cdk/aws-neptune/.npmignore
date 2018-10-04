@@ -1,14 +1,16 @@
-# Don't include original .ts files when doing `npm pack`
+# The basics
 *.ts
-!*.d.ts
-coverage
-.nyc_output
 *.tgz
-
-dist
-.LAST_PACKAGE
-.LAST_BUILD
+!*.d.ts
 !*.js
 
-# Include .jsii
-!.jsii
+# Coverage
+coverage
+.nyc_output
+.nycrc
+
+# Build gear
+dist
+.LAST_BUILD
+.LAST_PACKAGE
+.jsii
