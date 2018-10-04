@@ -1,8 +1,8 @@
 import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import _ = require('lodash');
 import nodeunit = require('nodeunit');
-import util = require('util');
 import cloudformation = require('../lib');
 
 export = nodeunit.testCase({
@@ -96,7 +96,7 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
     if (configuration && !action.configuration) { continue; }
     if (configuration) {
       for (const key of Object.keys(configuration)) {
-        if (!util.isDeepStrictEqual(cdk.resolve(action.configuration[key]), cdk.resolve(configuration[key]))) {
+        if (!_.isEqual(cdk.resolve(action.configuration[key]), cdk.resolve(configuration[key]))) {
           continue;
         }
       }
@@ -119,10 +119,10 @@ function _grantsPermission(statements: PolicyStatementJson[], action: string, re
 function _isOrContains(entity: string | string[], value: string): boolean {
   const resolvedValue = cdk.resolve(value);
   const resolvedEntity = cdk.resolve(entity);
-  if (util.isDeepStrictEqual(resolvedEntity, resolvedValue)) { return true; }
+  if (_.isEqual(resolvedEntity, resolvedValue)) { return true; }
   if (!Array.isArray(resolvedEntity)) { return false; }
   for (const tested of entity) {
-    if (util.isDeepStrictEqual(tested, resolvedValue)) { return true; }
+    if (_.isEqual(tested, resolvedValue)) { return true; }
   }
   return false;
 }
