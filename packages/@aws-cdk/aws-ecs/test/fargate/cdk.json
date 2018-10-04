@@ -1,0 +1,9 @@
+{
+  "context": {
+    "availability-zones:794715269151:eu-west-1": [
+      "eu-west-1a",
+      "eu-west-1b",
+      "eu-west-1c"
+    ]
+  }
+}
