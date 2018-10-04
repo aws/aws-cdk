@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import ecs = require('../../lib');
 
 const app = new cdk.App(process.argv);
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-fargate');
 
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
@@ -16,7 +16,10 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 });
 const container = taskDefinition.addContainer('web', {
   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
-  memoryLimitMiB: 1024,
+});
+container.addPortMappings({
+  containerPort: 80,
+  protocol: ecs.Protocol.Tcp
 });
 container.addPortMappings({
   containerPort: 80,

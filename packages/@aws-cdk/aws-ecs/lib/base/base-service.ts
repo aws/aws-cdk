@@ -77,7 +77,7 @@ export abstract class BaseService extends cdk.Construct
         minimumHealthyPercent: props.minimumHealthyPercent
       },
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: this.networkConfiguration,
+      networkConfiguration: new cdk.Token(() => this.networkConfiguration),
       platformVersion: props.platformVersion,
       ...additionalProps
     });
@@ -135,6 +135,8 @@ export abstract class BaseService extends cdk.Construct
       containerName: this.taskDef.defaultContainer!.id,
       containerPort: this.instancePort,
     });
+
+    this.resource.addDependency(targetGroup.listenerDependency());
 
     return { targetType: elbv2.TargetType.Ip };
   }
