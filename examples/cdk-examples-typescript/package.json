@@ -23,6 +23,7 @@
     "pkglint": "^0.10.0"
   },
   "dependencies": {
+    "@aws-cdk/applet-js": "^0.10.0",
     "@aws-cdk/aws-autoscaling": "^0.10.0",
     "@aws-cdk/aws-cloudformation": "^0.10.0",
     "@aws-cdk/aws-cognito": "^0.10.0",
