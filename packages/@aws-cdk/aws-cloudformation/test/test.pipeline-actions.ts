@@ -9,15 +9,8 @@ export = nodeunit.testCase({
   CreateReplaceChangeSet: {
     works(test: nodeunit.Test) {
       const stack = new cdk.Stack();
-      const statements = new Array<PolicyStatementJson>();
-      const pipelineRole = {
-        addToPolicy: statement => { statements.push(statement.toJson()); }
-      } as iam.Role;
-      const actions = new Array<cpapi.Action>();
-      const stage = {
-        _attachAction: act => { actions.push(act); },
-        pipelineRole
-      } as cpapi.IStage;
+      const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+      const stage = new StageDouble({ pipelineRole });
       const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
       const action = new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'Action', {
         stage,
@@ -26,7 +19,7 @@ export = nodeunit.testCase({
         templatePath: artifact.atPath('path/to/file')
       });
 
-      test.ok(_grantsPermission(statements, 'iam:PassRole', action.role.roleArn),
+      test.ok(_grantsPermission(pipelineRole.statements, 'iam:PassRole', action.role.roleArn),
               'The pipelineRole was given permissions to iam:PassRole to the action');
 
       const stackArn = cdk.ArnUtils.fromComponents({
@@ -34,22 +27,20 @@ export = nodeunit.testCase({
         resource: 'stack',
         resourceName: 'MyStack/*'
       });
-      test.ok(_grantsPermission(statements, 'cloudformation:DescribeStacks', stackArn)
-              && _grantsPermission(statements, 'cloudformation:DescribeChangeSet', stackArn),
+      const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
+      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn),
               'The pipelineRole was given permissions to describe the stack & it\'s ChangeSets');
-      test.ok(_grantsPermission(statements, 'cloudformation:CreateChangeSet', stackArn, {
-                StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' }
-              }),
+      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition),
+              'The pipelineRole was given permissions to describe the desired ChangeSet');
+      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition),
               'The pipelineRole was given permissions to create the desired ChangeSet');
-      test.ok(_grantsPermission(statements, 'cloudformation:DeleteChangeSet', stackArn, {
-                StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' }
-              }),
+      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition),
               'The pipelineRole was given permissions to delete the desired ChangeSet');
 
       test.deepEqual(action.inputArtifacts, [artifact],
                      'The inputArtifact was correctly registered');
 
-      test.ok(_hasAction(actions, 'AWS', 'CloudFormation', 'Deploy', {
+      test.ok(_hasAction(stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -61,15 +52,8 @@ export = nodeunit.testCase({
   ExecuteChangeSet: {
     works(test: nodeunit.Test) {
       const stack = new cdk.Stack();
-      const statements = new Array<PolicyStatementJson>();
-      const pipelineRole = {
-        addToPolicy: statement => { statements.push(statement.toJson()); }
-      } as iam.Role;
-      const actions = new Array<cpapi.Action>();
-      const stage = {
-        _attachAction: act => { actions.push(act); },
-        pipelineRole
-      } as cpapi.IStage;
+      const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+      const stage = new StageDouble({ pipelineRole });
       new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action', {
         stage,
         changeSetName: 'MyChangeSet',
@@ -81,12 +65,12 @@ export = nodeunit.testCase({
         resource: 'stack',
         resourceName: 'MyStack/*'
       });
-      test.ok(_grantsPermission(statements, 'cloudformation:ExecuteChangeSet', stackArn, {
+      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn, {
                 StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' }
               }),
               'The pipelineRole was given permissions to execute the desired ChangeSet');
 
-      test.ok(_hasAction(actions, 'AWS', 'CloudFormation', 'Deploy', {
+      test.ok(_hasAction(stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
@@ -141,4 +125,39 @@ function _isOrContains(entity: string | string[], value: string): boolean {
     if (util.isDeepStrictEqual(tested, resolvedValue)) { return true; }
   }
   return false;
+}
+
+class StageDouble implements cpapi.IStage {
+  public readonly name: string;
+  public readonly pipelineArn: string;
+  public readonly pipelineRole: iam.Role;
+
+  public readonly actions = new Array<cpapi.Action>();
+
+  constructor({ name, pipelineName, pipelineRole }: { name?: string, pipelineName?: string, pipelineRole: iam.Role }) {
+    this.name = name || 'TestStage';
+    this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: pipelineName || 'TestPipeline' });
+    this.pipelineRole = pipelineRole;
+  }
+
+  public grantPipelineBucketReadWrite() {
+    throw new Error('Unsupported');
+  }
+
+  public _attachAction(action: cpapi.Action) {
+    this.actions.push(action);
+  }
+}
+
+class RoleDouble extends iam.Role {
+  public readonly statements = new Array<PolicyStatementJson>();
+
+  constructor(parent: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new cdk.ServicePrincipal('test') }) {
+    super(parent, id, props);
+  }
+
+  public addToPolicy(statement: cdk.PolicyStatement) {
+    super.addToPolicy(statement);
+    this.statements.push(statement.toJson());
+  }
 }

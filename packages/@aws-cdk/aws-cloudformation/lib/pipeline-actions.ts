@@ -89,10 +89,9 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ChangeSetName: props.changeSetName,
     });
 
-    const stackArn = cdk.ArnUtils.fromComponents({ service: 'cloudformation', resource: 'stack', resourceName: `${props.stackName}/*` });
     props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
       .addAction('cloudformation:ExecuteChangeSet')
-      .addResource(stackArn)
+      .addResource(stackArnFromName(props.stackName))
       .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
@@ -253,14 +252,14 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    const stackArn = cdk.ArnUtils.fromComponents({ service: 'cloudformation', resource: 'stack', resourceName: `${props.stackName}/*` });
+    const stackArn = stackArnFromName(props.stackName);
     // Allow the pipeline to check for Stack & ChangeSet existence
     props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
-      .addActions('cloudformation:DescribeChangeSet', 'cloudformation:DescribeStacks')
+      .addAction('cloudformation:DescribeStacks')
       .addResource(stackArn));
     // Allow the pipeline to create & delete the specified ChangeSet
     props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
-      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet')
+      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
       .addResource(stackArn)
       .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
     // Allow the pipeline to pass this actions' role to CloudFormation
@@ -360,4 +359,12 @@ export enum CloudFormationCapabilities {
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
    */
   NamedIAM = 'CAPABILITY_NAMED_IAM'
+}
+
+function stackArnFromName(stackName: string): string {
+  return cdk.ArnUtils.fromComponents({
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${stackName}/*`
+  });
 }
