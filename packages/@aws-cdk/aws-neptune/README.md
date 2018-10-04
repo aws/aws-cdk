@@ -1,2 +1,5 @@
-## CDK Constructs for AWS Neptune
-This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.
+## AWS Neptune Construct Library
+
+```ts
+const neptune = require('@aws-cdk/aws-neptune');
+```
