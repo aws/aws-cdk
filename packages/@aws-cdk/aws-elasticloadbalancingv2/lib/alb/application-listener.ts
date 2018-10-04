@@ -134,7 +134,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
 
-    if (props.open) {
+    if (props.open !== false) {
       this.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), `Allow from anyone on port ${port}`);
     }
   }
