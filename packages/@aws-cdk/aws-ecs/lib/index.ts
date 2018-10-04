@@ -12,6 +12,7 @@ export * from './fargate/fargate-task-definition';
 export * from './container-definition';
 export * from './container-image';
 export * from './linux-parameters';
+export * from './load-balanced-fargate-service';
 
 export * from './log-drivers/log-driver';
 export * from './log-drivers/aws-log-driver';
