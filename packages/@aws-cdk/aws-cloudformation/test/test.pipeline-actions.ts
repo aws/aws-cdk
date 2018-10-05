@@ -19,8 +19,7 @@ export = nodeunit.testCase({
         templatePath: artifact.atPath('path/to/file')
       });
 
-      test.ok(_grantsPermission(pipelineRole.statements, 'iam:PassRole', action.role.roleArn),
-              'The pipelineRole was given permissions to iam:PassRole to the action');
+      _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
       const stackArn = cdk.ArnUtils.fromComponents({
         service: 'cloudformation',
@@ -28,23 +27,19 @@ export = nodeunit.testCase({
         resourceName: 'MyStack/*'
       });
       const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
-      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn),
-              'The pipelineRole was given permissions to describe the stack & it\'s ChangeSets');
-      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition),
-              'The pipelineRole was given permissions to describe the desired ChangeSet');
-      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition),
-              'The pipelineRole was given permissions to create the desired ChangeSet');
-      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition),
-              'The pipelineRole was given permissions to delete the desired ChangeSet');
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn);
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
 
       test.deepEqual(action.inputArtifacts, [artifact],
                      'The inputArtifact was correctly registered');
 
-      test.ok(_hasAction(stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_CREATE_REPLACE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
-      }));
+      });
 
       test.done();
     }
@@ -65,16 +60,14 @@ export = nodeunit.testCase({
         resource: 'stack',
         resourceName: 'MyStack/*'
       });
-      test.ok(_grantsPermission(pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn, {
-                StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' }
-              }),
-              'The pipelineRole was given permissions to execute the desired ChangeSet');
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
+                               { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
-      test.ok(_hasAction(stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
+      _assertActionMatches(test, stage.actions, 'AWS', 'CloudFormation', 'Deploy', {
         ActionMode: 'CHANGE_SET_EXECUTE',
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
-      }));
+      });
 
       test.done();
     }
@@ -86,6 +79,18 @@ interface PolicyStatementJson {
   Action: string | string[];
   Resource: string | string[];
   Condition: any;
+}
+
+function _assertActionMatches(test: nodeunit.Test,
+                              actions: cpapi.Action[],
+                              owner: string,
+                              provider: string,
+                              category: string,
+                              configuration?: { [key: string]: any }) {
+  const configurationStr = configuration ? `configuration including ${JSON.stringify(configuration, null, 2)}` : '';
+  const actionsStr = JSON.stringify(actions, null, 2);
+  test.ok(_hasAction(actions, owner, provider, category, configuration),
+          `Expected to find an action with owner ${owner}, provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
 }
 
 function _hasAction(actions: cpapi.Action[], owner: string, provider: string, category: string, configuration?: { [key: string]: any}) {
@@ -104,6 +109,13 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
     return true;
   }
   return false;
+}
+
+function _assertPermissionGranted(test: nodeunit.Test, statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
+  const conditionStr = conditions ? ` with condition(s) ${JSON.stringify(conditions)}` : '';
+  const statementsStr = JSON.stringify(statements, null, 2);
+  test.ok(_grantsPermission(statements, action, resource, conditions),
+          `Expected to find a statement granting ${action} on ${cdk.resolve(resource)}${conditionStr}, found:\n${statementsStr}`);
 }
 
 function _grantsPermission(statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
