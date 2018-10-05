@@ -92,7 +92,6 @@ class BonjourECS extends cdk.Stack {
             taskDefinition,
             desiredCount: 1,
     });
-    // cluster.runService(taskDefinition);
   }
 }
 
