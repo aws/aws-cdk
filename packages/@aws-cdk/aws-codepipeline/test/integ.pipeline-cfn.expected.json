@@ -90,6 +90,85 @@
                   ]
                 }
               ]
+            },
+            {
+              "Action": "cloudformation:DescribeStacks",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn",
+                    ":",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":",
+                    "cloudformation",
+                    ":",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    "stack",
+                    "/",
+                    "IntegTest-TestActionStack/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "cloudformation:ChangeSetName": "ChangeSetIntegTest"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn",
+                    ":",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":",
+                    "cloudformation",
+                    ":",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    "stack",
+                    "/",
+                    "IntegTest-TestActionStack/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CfnChangeSetRole6F05F6FC",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
