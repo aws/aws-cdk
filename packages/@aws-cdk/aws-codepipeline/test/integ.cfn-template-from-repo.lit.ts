@@ -30,7 +30,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(prodStage, 'PrepareChanges', {
   stackName,
   changeSetName,
   fullPermissions: true,
-  templatePath: source.artifact.subartifact('template.yaml'),
+  templatePath: source.artifact.atPath('template.yaml'),
 });
 
 new codepipeline.ManualApprovalAction(stack, 'ApproveChanges', {

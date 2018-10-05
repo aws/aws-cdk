@@ -88,6 +88,11 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ActionMode: 'CHANGE_SET_EXECUTE',
       ChangeSetName: props.changeSetName,
     });
+
+    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+      .addAction('cloudformation:ExecuteChangeSet')
+      .addResource(stackArnFromName(props.stackName))
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
@@ -243,6 +248,24 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     });
 
     this.addInputArtifact(props.templatePath.artifact);
+    if (props.templateConfiguration && props.templateConfiguration.artifact.name !== props.templatePath.artifact.name) {
+      this.addInputArtifact(props.templateConfiguration.artifact);
+    }
+
+    const stackArn = stackArnFromName(props.stackName);
+    // Allow the pipeline to check for Stack & ChangeSet existence
+    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+      .addAction('cloudformation:DescribeStacks')
+      .addResource(stackArn));
+    // Allow the pipeline to create & delete the specified ChangeSet
+    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
+      .addResource(stackArn)
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+    // Allow the pipeline to pass this actions' role to CloudFormation
+    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+      .addAction('iam:PassRole')
+      .addResource(this.role.roleArn));
   }
 }
 
@@ -336,4 +359,12 @@ export enum CloudFormationCapabilities {
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
    */
   NamedIAM = 'CAPABILITY_NAMED_IAM'
+}
+
+function stackArnFromName(stackName: string): string {
+  return cdk.ArnUtils.fromComponents({
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${stackName}/*`
+  });
 }

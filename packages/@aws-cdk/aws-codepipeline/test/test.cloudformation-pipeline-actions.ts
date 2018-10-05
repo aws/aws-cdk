@@ -203,7 +203,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     fullPermissions: true,
   });
 
@@ -256,7 +256,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
   });
 
@@ -287,7 +287,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     replaceOnFailure: true,
   });
 
@@ -320,7 +320,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }
