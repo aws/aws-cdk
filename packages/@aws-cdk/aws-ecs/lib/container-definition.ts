@@ -242,17 +242,29 @@ export class ContainerDefinition extends cdk.Construct {
     return this._usesEcrImages;
   }
 
-  /**
-   * Return the instance port that the container will be listening on
-   */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
       throw new Error(`Container ${this.id} hasn't defined any ports`);
     }
     const defaultPortMapping = this.portMappings[0];
-    // if (defaultPortMapping.hostPort !== undefined && defaultPortMapping.hostPort !== 0) {
-    //   return defaultPortMapping.hostPort;
-    // }
+
+    if (defaultPortMapping.hostPort !== undefined && defaultPortMapping.hostPort !== 0) {
+      return defaultPortMapping.hostPort;
+    }
+
+    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+      return 0;
+    }
+    return defaultPortMapping.containerPort;
+  }
+  /**
+   * Return the instance port that the container will be listening on
+   */
+  public get containerPort(): number {
+    if (this.portMappings.length === 0) {
+      throw new Error(`Container ${this.id} hasn't defined any ports`);
+    }
+    const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
   }
 

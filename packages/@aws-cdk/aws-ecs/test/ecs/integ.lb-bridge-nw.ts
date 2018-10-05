@@ -19,7 +19,7 @@ const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
 
 const container = taskDefinition.addContainer('web', {
   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
-  memoryLimitMiB: 1024,
+  memoryLimitMiB: 256,
 });
 container.addPortMappings({
   containerPort: 80,

@@ -90,7 +90,7 @@ export abstract class BaseService extends cdk.Construct
 
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
-    const port = this.containerPort;
+    const port = this.taskDef.defaultContainer!.ingressPort;
     const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
     targetGroup.registerConnectable(this, portRange);
 
@@ -133,20 +133,13 @@ export abstract class BaseService extends cdk.Construct
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName: this.taskDef.defaultContainer!.id,
-      containerPort: this.containerPort,
+      containerPort: this.taskDef.defaultContainer!.containerPort,
     });
 
     this.resource.addDependency(targetGroup.listenerDependency());
 
     const targetType = this.taskDef.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
     return { targetType };
-  }
-
-  /**
-   * Return the port on which the load balancer will be listening
-   */
-  private get containerPort() {
-    return this.taskDef.defaultContainer!.ingressPort;
   }
 }
 

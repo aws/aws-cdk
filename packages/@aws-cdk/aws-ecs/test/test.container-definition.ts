@@ -123,7 +123,7 @@ export = {
         container.addPortMappings({
           containerPort: 8080,
         });
-        const actual = container.ingressPort;
+        const actual = container.containerPort;
 
         // THEN
         const expected = 8080;
@@ -148,7 +148,7 @@ export = {
         container.addPortMappings({
           containerPort: 8080,
         });
-        const actual = container.ingressPort;
+        const actual = container.containerPort;
 
         // THEN
         const expected = 8080;
@@ -174,7 +174,7 @@ export = {
           containerPort: 8081,
           hostPort: 8080,
         });
-        const actual = container.ingressPort;
+        const actual = container.containerPort;
 
         // THEN
         const expected = 8080;
@@ -197,7 +197,7 @@ export = {
         container.addPortMappings({
           containerPort: 8081,
         });
-        const actual = container.ingressPort;
+        const actual = container.containerPort;
 
         // THEN
         const expected = 0;
