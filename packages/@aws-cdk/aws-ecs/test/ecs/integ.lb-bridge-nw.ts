@@ -23,6 +23,7 @@ const container = taskDefinition.addContainer('web', {
 });
 container.addPortMappings({
   containerPort: 80,
+  hostPort: 8080,
   protocol: ecs.Protocol.Tcp
 });
 
