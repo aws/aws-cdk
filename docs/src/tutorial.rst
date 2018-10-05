@@ -66,7 +66,7 @@ so for now change it to the following:
       constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
         super(parent, name, props);
 
-	
+
       }
     }
 
@@ -76,7 +76,7 @@ so for now change it to the following:
 
     process.stdout.write(app.run());
 
-Make sure it builds and creates an empty stack.
+Save it and make sure it builds and creates an empty stack.
 
 .. code-block:: sh
 
@@ -118,38 +118,33 @@ in the *resources* directory.
 
     const bucketName = process.env.BUCKET;
 
+    // For now we only handle GET /:
     exports.main = function(event, context, callback) {
-      switch (event.httpMethod) {
-        case "GET":
-          switch (event.path) {
-            case "/":
-              S3.listObjectsV2({ Bucket: bucketName })
-                .promise()
-                .then(function(data) {
-                  var responseBody = { apples: data.Contents.map(function(e) { return e.Key }) };
-                  var response = {
-                    statusCode: 200,
-                    headers: {},
-                    body: JSON.stringify(responseBody)
-                  };
-                  callback(null, response);
-              })
-                .catch(rejectedPromise);
-              break;
-            default:
-              return callback("Unknown path: " + event.path, null);
-          }
-          break;
-        default:
-          return callback("Unknown HTTP method: " + event.httpMethod, null)
+      if (event.httpMethod == "GET") {
+        if (event.path.length == 1) {
+          S3.listObjectsV2({ Bucket: bucketName })
+            .promise()
+            .then(function(data) {
+              var body = { apples: data.Contents.map(function(e) { return e.Key }) };
+              var response = {
+                statusCode: 200,
+                headers: {},
+                body: JSON.stringify(body)
+              };
+              callback(null, response);
+            })
+            .catch(rejectedPromise);
+        }
+      }
+
+      function rejectedPromise(error) {
+        var body = error.stack || JSON.stringify(error, null, 2);
+        var response = makeError(body);
+        callback(null, response);
       }
     }
 
-    function rejectedPromise(error) {
-      callback(error.stack || JSON.stringify(error, null, 2), null);
-    }
-
-Make sure it builds and creates an empty stack.
+Save it and make sure it builds and creates an empty stack.
 Note that since we haven't wired the function to our app,
 the Lambda file does not appear in the output.
 
@@ -218,7 +213,7 @@ in the *lib* directory.
       }
     }
 
-Make sure it builds and creates a (still empty) stack.
+Save it and make sure it builds and creates a (still empty) stack.
 
 .. code-block:: sh
 
@@ -232,11 +227,11 @@ Step 4: Add the Service to the App
 
 To add the service to our app,
 add the following line of code after the existing **import** statement in
-**my_apple_service.ts**.
+*my_apple_service.ts*.
 
 .. code-block:: ts
 
-    import apple_service = require('../lib/apple_service')
+    import apple_service = require('../lib/apple_service');
 
 Add the following line of code at the end of the constructor in *my_apple_service.ts*.
 
@@ -257,143 +252,178 @@ Make sure it builds and creates a stack
 Step 5: Deploy and Test the App
 ===============================
 
+Before you can deploy your app the first time,
+you must bootstrap your deployment,
+which creates some AWS infracture that the |cdk|
+needs.
+
+.. code-block:: sh
+
+    cdk bootstrap
+
 Run the following command to deploy your app.
 
 .. code-block:: sh
 
     cdk deploy
 
-Once your app is deployed (it should take about a minute),
-open the AWS Console,
+If the deployment is successfull,
+save the URL for your server, which appears in the last line in the window,
+where GUID is an alpha-numeric GUID and REGION is your region.
+
+.. code-block:: sh
+
+    https://GUID.execute-REGION.amazonaws.com/prod/
+
+You can get the list of apples (currently empty) by navigating to this URL in a
+browser or use the following **curl** command.
+
+.. code-block:: sh
+
+    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
+
+You can also open the AWS Console,
 navigate to the API Gateway service,
 find **Apple Service** in the list.
 Select **GET** and **Test** to test the function.
-Since we haven't stored any apples yet, the output should be:
+Since we haven't stored any apples yet, the output should be similar to the following
+(there may be some slight differences in whitespace and quotation marks).
 
 .. code-block:: sh
 
     { "apples": [] }
-
-Let's manually store an apple.
-
-1. Create the file *my_groovy_apple.json* and add the following content.
-
-    .. code-block:: sh
-
-        {
-            "key1": "value1"
-        }
-
-2. Navigate to the S3 Console and find your apple bucket
-   (its name should start with the string **myappleservicestack**).
-
-3. Select the bucket, select **Upload file**, and upload *my_groovy_apple.json*.
-4. Navigate to the API Gateway console and test the **GET** method again.
-
-You should get the following response body.
-
-.. code-block:: sh
-
-    {
-      "apples": [
-        "my_groovy_apple.json"
-      ]
-    }
-
-You can also test your function with **curl**,
-which makes it easier to test the **POST** and **DELETE** operations
-we'll add later.
-
-First get the URL of your test server.
-Open the **Stages** section of API Gateway console entry
-for **Apple Service** and note the entry for **Invoke URL:**.
-It should be something like the following,
-where *GUID* is a random alpha-numeric value and *REGION* is the region in which you created the stack.
-If you click the link, you should see the same apples as before.
-
-.. code-block:: sh
-
-    https://GUID.execute-api.REGION.amazonaws.com/prod
-
-Now that you have the URL, use **curl** to list the apples:
-
-.. code-block:: sh
-
-    curl -v -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
 
 .. _adding_functions:
 
 Step 6: Add the Individual Apple Functions
 ==========================================
 
-Adding apples manually to our S3 bucket is a pain.
-Since we want to create, show, and delete individual apples, let's create those
-|LAM| functions.
-Replace the existing **switch** statement with the following code.
+The next step is to create |LAM| functions to create, show, and delete
+individual apples.
+Replace the existing **exports.main** function with the following code.
 
 .. code-block:: js
 
-    switch (event.httpMethod) {
-      case "GET":
-      switch (event.path) {
-        case "/":
-          S3.listObjectsV2({ Bucket: bucketName })
-            .promise()
-            .then(function(data) {
-              var responseBody = { apples: data.Contents.map(function(e) { return e.Key }) };
-              var response = makeResponse(responseBody);
+    exports.main = function(event, context, callback) {
+      if (event.httpMethod != null) {
+        if (event.httpMethod != "") {
+          if (event.httpMethod == "GET") {
+            // GET / or GET /name?
+            var pathLength = event.path.length
+
+            if (pathLength == 1) {
+              // GET /
+              console.log("GET /");
+
+              S3.listObjectsV2({ Bucket: bucketName })
+                .promise()
+                .then(function(data) {
+                  var body = { apples: data.Contents.map(function(e) { return e.Key }) };
+                  console.log("Body for GET /: " + body);
+                  var response = makeResponse(body);
+                    console.log("GET / response: \n" + response);
+                  callback(null, response);
+              })
+                .catch(rejectedPromise);
+            }
+            else {
+              // GET /name
+              name = getName(event.path);
+
+              S3.getObject({ Bucket: bucketName, Key: name})
+                .promise()
+                .then(function(data) {
+                  var body = data.Body.toString('utf-8');
+                  var response = makeResponse(body);
+                  callback(null, response);
+              })
+                .catch(rejectedPromise);
+            }
+          }
+          else if (event.httpMethod == "POST") {
+            // POST /name
+            // Make sure we have a name
+            var pathLength = event.path.length
+
+            if (pathLength == 1) {
+              // Return error
+              var body = "NAME arg missing (/ supplied, not /name)";
+              console.log(body);
+              var response = makeError(body);
               callback(null, response);
-          })
-            .catch(rejectedPromise);
-          break;
-        default:
-          var name = getName();
+            }
+            else {
+              name = getName(event.path);
 
-          S3.getObject({ Bucket: bucketName, Key: name})
-            .promise()
-            .then(function(data) {
-              callback(null, JSON.parse(data.Body.toString('utf-8')));
-          })
-            .catch(rejectedPromise);
+              // Create some dummy data to populate object
+              const now = new Date();
+              var data = name + " created: " + now;
+
+              var base64data = new Buffer(data, 'binary');
+
+              S3.putObject({
+                Bucket: bucketName,
+                Key: name,
+                Body: base64data,
+                ContentType: 'application/json'
+              }).promise()
+                .then(function() {
+                  var response = makeResponse(event.apples);
+                  console.log("POST /name response: " + response);
+                  callback(null, response);
+                })
+                .catch(rejectedPromise);
+            }
+          }
+          else if (event.httpMethod == "DELETE") {
+            // DELETE /name
+            // Make sure we have a name
+            var pathLength = event.path.length
+
+            if (pathLength == 1) {
+              // Return error
+              var body = "NAME arg missing (/ supplied, not /name)";
+              var response = makeError(body);
+              callback(null, response);
+            }
+            else {
+              name = getName(event.path);
+
+              S3.deleteObject({ Bucket: bucketName, Key: name })
+                .promise()
+                .then(function(data) {
+                  var body = { success: true }
+                  var response = makeResponse(body);
+                  callback(null, response);
+              })
+                .catch(rejectedPromise);
+            }
+          }
+          else {
+            // Return error
+            var body = "HTTP method " + event.httpMethod + " not supported";
+            var response = makeError(body);
+            callback(null, response);
+          }
+        }
       }
-      break;
-      case "POST":
-        var name = getName();
 
-        S3.putObject({
-          Bucket: bucketName,
-          Key: name,
-          Body: JSON.stringify(event.apples, null, 2),
-          ContentType: 'application/json'
-        }).promise()
-          .then(function() {
-             callback(null, event.apples);
-            })
-          .catch(rejectedPromise);
-        break;
-      case "DELETE":
-        var name = getName();
-
-        S3.deleteObject({ Bucket: bucketName, Key: name })
-          .promise()
-          .then(function(data) {
-            callback(null, { success: true });
-        })
-          .catch(rejectedPromise);
-        break;
-    default:
-      return callback("Unknown operation: " + event.operation, null);
+      function rejectedPromise(error) {
+        var body = error.stack || JSON.stringify(error, null, 2);
+        var response = makeError(body);
+        callback(null, response);
+      }
     }
 
-You probably noticed we also introduced two new functions:
-**getName** and **makeResponse**.
+You probably noticed we also introduced three new helper functions:
+**getName**, **makeResponse**, and **makeError**.
 Add these to *apples.js*.
 
 .. code-block:: js
 
     // Get name from path /name
     function getName(path) {
-      var name = event.path.substring(1, event.path.length);
+      var name = path.substring(1, path.length);
       return name;
     }
 
@@ -408,8 +438,19 @@ Add these to *apples.js*.
       return response;
     }
 
+    // For bad requests
+    function makeError(body) {
+      var response = {
+        statusCode: 404,
+        headers: {},
+        body: JSON.stringify(body)
+      };
+
+      return response;
+    }
+
 Wire these functions up to our API Gateway code in *apple_service.ts*
-by adding the following code at the end.
+by adding the following code at the end of the constructor.
 
 .. code-block:: ts
 
@@ -417,21 +458,21 @@ by adding the following code at the end.
 
     // Add new apple to bucket with: POST /{name}
     const postAppleIntegration = new apigateway.LambdaIntegration(handler, {
-      requestTemplates: { 
+      requestTemplates: {
         "application/json": '{ "statusCode": "200" }'
-      } 
+      }
     });
 
     // Get a specific apple from bucket with: GET /{name}
     const getAppleIntegration = new apigateway.LambdaIntegration(handler, {
-      requestTemplates: { 
+      requestTemplates: {
         "application/json": '{ "statusCode": "200" }'
       }
     });
 
     // Remove a specific apple from the bucket with: DELETE /{name}
     const deleteAppleIntegration = new apigateway.LambdaIntegration(handler, {
-      requestTemplates: { 
+      requestTemplates: {
         "application/json": '{ "statusCode": "200" }'
       }
     });
@@ -440,15 +481,25 @@ by adding the following code at the end.
     apple.addMethod('GET', getAppleIntegration);       // GET /{name}
     apple.addMethod('DELETE', deleteAppleIntegration); // DELETE /{name}
 
+Save, build, and deploy the app.
+
 Now we should be able to store, show, or delete an individual apple.
-Use the API Gateway console to test these functions.
-You'll have to pass in the name of an apple,
-so set the **name** entry to the name of an apple,
-such as **my_groovy_apple**.
+Use the following **curl** commands to lists the apples,
+creates *dummy*,
+lists all of the apples,
+shows the contents of *dummy*,
+deletes *dummy*,
+and again shows the list of apples.
 
-Or you can use **curl**,
-such in the following example where it shows *my_groovy_apple.json*:
+.. code-block:: sh
 
-.. code-build:: sh
+    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
+    curl -X POST 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
+    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
+    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
+    curl -X DELETE 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
+    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
 
-    curl -v -X GET 'https://GUID.execute-REGION.amazonaws.com/prod' -H 'name: my_groovy_apple.json'
+You can also use the API Gateway console to test these functions.
+You'll have to set the **name** entry to the name of an apple,
+such as **dummy**.
