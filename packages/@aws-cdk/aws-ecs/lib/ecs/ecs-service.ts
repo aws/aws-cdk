@@ -1,3 +1,4 @@
+import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
@@ -56,6 +57,7 @@ export interface EcsServiceProps extends BaseServiceProps {
 
 export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
   public readonly connections: ec2.Connections;
+  public readonly clusterName: string;
   protected readonly taskDef: BaseTaskDefinition;
   private readonly taskDefinition: EcsTaskDefinition;
   private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
@@ -76,6 +78,7 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     });
 
+    this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
     this.daemon = props.daemon || false;
@@ -179,6 +182,36 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
       containerName: this.taskDefinition.defaultContainer!.id,
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
+  }
+
+  /**
+   * Return the given named metric for this Service
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ECS',
+      metricName,
+      dimensions: { ClusterName: this.clusterName, ServiceName: this.serviceName },
+      ...props
+    });
+  }
+
+  /**
+   * Metric for cluster Memory utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('MemoryUtilization', props );
+  }
+
+  /**
+   * Metric for cluster CPU utilization
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('CPUUtilization', props);
   }
 }
 

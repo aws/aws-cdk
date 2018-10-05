@@ -1,4 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
+import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
@@ -94,6 +95,36 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
       vpc: this.vpc.export(),
       securityGroup: this.securityGroup.export(),
     };
+  }
+
+  /**
+   * Metric for cluster CPU reservation
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('CPUReservation', props);
+  }
+
+  /**
+   * Metric for cluster Memory reservation
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryReservation(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return this.metric('MemoryReservation', props );
+  }
+
+  /**
+   * Return the given named metric for this Cluster
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ECS',
+      metricName,
+      dimensions: { ClusterName: this.clusterName },
+      ...props
+    });
   }
 }
 

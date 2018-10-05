@@ -1,3 +1,4 @@
+import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
@@ -59,6 +60,7 @@ export abstract class BaseService extends cdk.Construct
     implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
   public abstract readonly connections: ec2.Connections;
+  public readonly serviceName: string;
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
   protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
   protected readonly abstract taskDef: BaseTaskDefinition;
@@ -83,6 +85,7 @@ export abstract class BaseService extends cdk.Construct
     });
 
     this.dependencyElements = [this.resource];
+    this.serviceName = this.resource.serviceName;
   }
 
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -103,6 +106,18 @@ export abstract class BaseService extends cdk.Construct
 
   public get securityGroup(): ec2.SecurityGroupRef {
     return this._securityGroup!;
+  }
+
+  /**
+   * Return the given named metric for this Service
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ECS',
+      metricName,
+      dimensions: { ServiceName: this.serviceName },
+      ...props
+    });
   }
 
   // tslint:disable-next-line:max-line-length
