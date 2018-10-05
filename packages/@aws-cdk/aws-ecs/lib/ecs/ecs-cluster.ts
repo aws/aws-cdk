@@ -12,8 +12,13 @@ export interface EcsClusterProps extends BaseClusterProps {
   containersAccessInstanceRole?: boolean;
 }
 
-export class EcsCluster extends BaseCluster {
+export class EcsCluster extends BaseCluster implements IEcsCluster {
+  public static import(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps): IEcsCluster {
+    return new ImportedEcsCluster(parent, name, props);
+  }
+
   public readonly autoScalingGroup: autoscaling.AutoScalingGroup;
+  public readonly securityGroup: ec2.SecurityGroupRef;
 
   constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
     super(parent, name, props);
@@ -24,6 +29,8 @@ export class EcsCluster extends BaseCluster {
       machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate
     });
+
+    this.securityGroup = autoScalingGroup.connections.securityGroup!;
 
     // Tie instances to cluster
     autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
@@ -73,13 +80,16 @@ export class EcsCluster extends BaseCluster {
     this.autoScalingGroup = autoScalingGroup;
   }
 
-  // public runService(taskDefinition: EcsTaskDefinition): EcsService {
-  //   return new Service(this, `${taskDefinition.family}Service`, {
-  //     cluster: this,
-  //     taskDefinition,
-  //     // FIXME: additional props? Or set on Service object?
-  //   });
-  // }
+  /**
+   * Export the EcsCluster
+   */
+  public export(): ImportedEcsClusterProps {
+    return {
+      clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
+      vpc: this.vpc.export(),
+      securityGroup: this.securityGroup.export(),
+    };
+  }
 }
 
 /**
@@ -95,5 +105,33 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
     const ami = JSON.parse(json).image_id;
 
     return new ec2.MachineImage(ami, new ec2.LinuxOS());
+  }
+}
+
+export interface IEcsCluster {
+  readonly clusterName: string;
+  readonly vpc: ec2.VpcNetworkRef;
+  readonly securityGroup: ec2.SecurityGroupRef;
+}
+
+export interface ImportedEcsClusterProps {
+  readonly clusterName: string;
+  readonly vpc: ec2.VpcNetworkRefProps;
+  readonly securityGroup: ec2.SecurityGroupRefProps;
+}
+
+// /**
+//  * A EcsCluster that has been imported
+//  */
+class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
+  public readonly clusterName: string;
+  public readonly vpc: ec2.VpcNetworkRef;
+  public readonly securityGroup: ec2.SecurityGroupRef;
+
+  constructor(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps) {
+    super(parent, name);
+    this.clusterName = props.clusterName;
+    this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);
+    this.securityGroup = ec2.SecurityGroupRef.import(this, "securityGroup", props.securityGroup);
   }
 }

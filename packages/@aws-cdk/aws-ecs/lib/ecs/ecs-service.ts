@@ -4,14 +4,14 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
-import { EcsCluster } from './ecs-cluster';
+import { IEcsCluster } from './ecs-cluster';
 import { EcsTaskDefinition } from './ecs-task-definition';
 
 export interface EcsServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: EcsCluster; // should be required? do we assume 'default' exists?
+  cluster: IEcsCluster; // should be required? do we assume 'default' exists?
 
   /**
    * Task Definition used for running tasks in the service
@@ -85,7 +85,7 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
     } else {
       // Either None, Bridge or Host networking. Copy SecurityGroup from ASG.
       validateNoNetworkingProps(props);
-      this._securityGroup = props.cluster.autoScalingGroup.connections.securityGroup!;
+      this._securityGroup = props.cluster.securityGroup!;
     }
 
     this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
