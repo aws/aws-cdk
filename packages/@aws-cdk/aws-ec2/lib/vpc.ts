@@ -486,7 +486,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     this.routeTableId = table.ref;
 
     // Associate the public route table for this subnet, to this subnet
-    const routeAssoc = new cloudformation.SubnetRouteTableAssociationResource(this, 'RouteTableAssociatioin', {
+    const routeAssoc = new cloudformation.SubnetRouteTableAssociationResource(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref
     });
