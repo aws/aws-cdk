@@ -7,6 +7,29 @@
           {
             "AttributeName": "hashKey",
             "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "hashKey",
+            "AttributeType": "S"
+          }
+        ],
+        "GlobalSecondaryIndexes": [],
+        "LocalSecondaryIndexes": []
+      }
+    },
+    "TableWithGlobalAndLocalSecondaryIndexBC540710": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "hashKey",
+            "KeyType": "HASH"
           },
           {
             "AttributeName": "sortKey",
@@ -33,11 +56,15 @@
           {
             "AttributeName": "gsiSortKey",
             "AttributeType": "N"
+          },
+          {
+            "AttributeName": "lsiSortKey",
+            "AttributeType": "N"
           }
         ],
         "GlobalSecondaryIndexes": [
           {
-            "IndexName": "PartitionKeyOnly",
+            "IndexName": "GSI-PartitionKeyOnly",
             "KeySchema": [
               {
                 "AttributeName": "gsiHashKey",
@@ -53,7 +80,7 @@
             }
           },
           {
-            "IndexName": "PartitionAndSortKeyWithReadAndWriteCapacity",
+            "IndexName": "GSI-PartitionAndSortKeyWithReadAndWriteCapacity",
             "KeySchema": [
               {
                 "AttributeName": "gsiHashKey",
@@ -73,7 +100,7 @@
             }
           },
           {
-            "IndexName": "ProjectionTypeKeysOnly",
+            "IndexName": "GSI-ProjectionTypeKeysOnly",
             "KeySchema": [
               {
                 "AttributeName": "gsiHashKey",
@@ -93,7 +120,7 @@
             }
           },
           {
-            "IndexName": "ProjectionTypeInclude",
+            "IndexName": "GSI-ProjectionTypeInclude",
             "KeySchema": [
               {
                 "AttributeName": "gsiHashKey",
@@ -115,17 +142,7 @@
                 "G",
                 "H",
                 "I",
-                "J",
-                "K",
-                "L",
-                "M",
-                "N",
-                "O",
-                "P",
-                "Q",
-                "R",
-                "S",
-                "T"
+                "J"
               ],
               "ProjectionType": "INCLUDE"
             },
@@ -135,7 +152,7 @@
             }
           },
           {
-            "IndexName": "InverseTableKeySchema",
+            "IndexName": "GSI-InverseTableKeySchema",
             "KeySchema": [
               {
                 "AttributeName": "sortKey",
@@ -155,6 +172,84 @@
             }
           }
         ],
+        "LocalSecondaryIndexes": [
+          {
+            "IndexName": "LSI-PartitionAndTableSortKey",
+            "KeySchema": [
+              {
+                "AttributeName": "hashKey",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "lsiSortKey",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "LSI-PartitionAndSortKey",
+            "KeySchema": [
+              {
+                "AttributeName": "hashKey",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "sortKey",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "LSI-ProjectionTypeKeysOnly",
+            "KeySchema": [
+              {
+                "AttributeName": "hashKey",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "lsiSortKey",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "KEYS_ONLY"
+            }
+          },
+          {
+            "IndexName": "LSI-ProjectionTypeInclude",
+            "KeySchema": [
+              {
+                "AttributeName": "hashKey",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "lsiSortKey",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "NonKeyAttributes": [
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T"
+              ],
+              "ProjectionType": "INCLUDE"
+            }
+          }
+        ],
         "PointInTimeRecoverySpecification": {
           "PointInTimeRecoveryEnabled": true
         },
@@ -170,7 +265,7 @@
         }
       }
     },
-    "TableWithoutSecondaryIndex5A9C91D2": {
+    "TableWithGlobalSecondaryIndexCC8E841E": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "KeySchema": [
@@ -187,9 +282,83 @@
           {
             "AttributeName": "hashKey",
             "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsiHashKey",
+            "AttributeType": "S"
           }
         ],
-        "GlobalSecondaryIndexes": []
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "GSI-PartitionKeyOnly",
+            "KeySchema": [
+              {
+                "AttributeName": "gsiHashKey",
+                "KeyType": "HASH"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            },
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 5,
+              "WriteCapacityUnits": 5
+            }
+          }
+        ],
+        "LocalSecondaryIndexes": []
+      }
+    },
+    "TableWithLocalSecondaryIndex4DA3D08F": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "hashKey",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sortKey",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "hashKey",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sortKey",
+            "AttributeType": "N"
+          },
+          {
+            "AttributeName": "lsiSortKey",
+            "AttributeType": "N"
+          }
+        ],
+        "GlobalSecondaryIndexes": [],
+        "LocalSecondaryIndexes": [
+          {
+            "IndexName": "LSI-PartitionAndSortKey",
+            "KeySchema": [
+              {
+                "AttributeName": "hashKey",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "lsiSortKey",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ]
       }
     }
   }

@@ -1,6 +1,14 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Attribute, AttributeType, ProjectionType, SecondaryIndexProps, StreamViewType, Table } from '../lib';
+import {
+  Attribute,
+  AttributeType,
+  GlobalSecondaryIndexProps,
+  LocalSecondaryIndexProps,
+  ProjectionType,
+  StreamViewType,
+  Table
+} from '../lib';
 
 // CDK parameters
 const STACK_NAME = 'MyStack';
@@ -19,7 +27,7 @@ const GSI_NON_KEY = 'gsiNonKey';
 function* GSI_GENERATOR() {
   let n = 0;
   while (true) {
-    const globalSecondaryIndexProps: SecondaryIndexProps = {
+    const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
       indexName: `${GSI_NAME}${n}`,
       partitionKey: { name: `${GSI_PARTITION_KEY.name}${n}`, type: GSI_PARTITION_KEY.type }
     };
@@ -27,10 +35,26 @@ function* GSI_GENERATOR() {
     n++;
   }
 }
-function* GSI_NON_KEY_ATTRIBUTE_GENERATOR() {
+function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string) {
   let n = 0;
   while (true) {
-    yield `${GSI_NON_KEY}${n}`;
+    yield `${nonKeyPrefix}${n}`;
+    n++;
+  }
+}
+
+// DynamoDB local secondary index parameters
+const LSI_NAME = 'MyLSI';
+const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.Number };
+const LSI_NON_KEY = 'lsiNonKey';
+function* LSI_GENERATOR() {
+  let n = 0;
+  while (true) {
+    const localSecondaryIndexProps: LocalSecondaryIndexProps = {
+      indexName: `${LSI_NAME}${n}`,
+      sortKey: { name : `${LSI_SORT_KEY.name}${n}`, type: LSI_SORT_KEY.type }
+    };
+    yield localSecondaryIndexProps;
     n++;
   }
 }
@@ -58,7 +82,8 @@ export = {
               AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
               KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -88,7 +113,8 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -118,7 +144,8 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -148,7 +175,8 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -178,7 +206,8 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -208,7 +237,8 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: []
+              GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -245,6 +275,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
               GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: [],
               TableName: 'MyTable'
             }
           }
@@ -277,6 +308,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
               GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: [],
               AttributeDefinitions: [
                 { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
@@ -314,6 +346,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
               GlobalSecondaryIndexes: [],
+              LocalSecondaryIndexes: [],
               AttributeDefinitions: [
                 { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
@@ -362,6 +395,7 @@ export = {
               WriteCapacityUnits: 1337
             },
             GlobalSecondaryIndexes: [],
+            LocalSecondaryIndexes: [],
             PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
             SSESpecification: { SSEEnabled: true },
             StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
@@ -412,7 +446,8 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
@@ -462,7 +497,8 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
@@ -510,7 +546,8 @@ export = {
                 Projection: { ProjectionType: 'KEYS_ONLY' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
@@ -524,7 +561,7 @@ export = {
     const table = new Table(app.stack, CONSTRUCT_NAME)
       .addPartitionKey(TABLE_PARTITION_KEY)
       .addSortKey(TABLE_SORT_KEY);
-    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
     table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
       partitionKey: GSI_PARTITION_KEY,
@@ -562,7 +599,8 @@ export = {
                 Projection: { NonKeyAttributes: ['gsiNonKey0', 'gsiNonKey1'], ProjectionType: 'INCLUDE' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
@@ -592,7 +630,7 @@ export = {
     const table = new Table(app.stack, CONSTRUCT_NAME)
       .addPartitionKey(TABLE_PARTITION_KEY)
       .addSortKey(TABLE_SORT_KEY);
-    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
     test.throws(() => table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
@@ -608,7 +646,7 @@ export = {
     const table = new Table(app.stack, CONSTRUCT_NAME)
       .addPartitionKey(TABLE_PARTITION_KEY)
       .addSortKey(TABLE_SORT_KEY);
-    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
 
     test.throws(() => table.addGlobalSecondaryIndex({
       indexName: GSI_NAME,
@@ -625,7 +663,7 @@ export = {
     const table = new Table(app.stack, CONSTRUCT_NAME)
       .addPartitionKey(TABLE_PARTITION_KEY)
       .addSortKey(TABLE_SORT_KEY);
-    const gsiNonKeyAttributeGenerator = GSI_NON_KEY_ATTRIBUTE_GENERATOR();
+    const gsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(GSI_NON_KEY);
     const gsiNonKeyAttributes: string[] = [];
     for (let i = 0; i < 21; i++) {
       gsiNonKeyAttributes.push(gsiNonKeyAttributeGenerator.next().value);
@@ -731,7 +769,8 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               },
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
@@ -791,11 +830,216 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
-            ]
+            ],
+            LocalSecondaryIndexes: [],
           }
         }
       }
     });
+
+    test.done();
+  },
+
+  'when adding a local secondary index with hash + range key'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addLocalSecondaryIndex({
+        indexName: LSI_NAME,
+        sortKey: LSI_SORT_KEY,
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [],
+            LocalSecondaryIndexes: [
+              {
+                IndexName: 'MyLSI',
+                KeySchema: [
+                  { AttributeName: 'hashKey', KeyType: 'HASH' },
+                  { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { ProjectionType: 'ALL' },
+              }
+            ],
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when adding a local secondary index with projection type KEYS_ONLY'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY)
+      .addLocalSecondaryIndex({
+        indexName: LSI_NAME,
+        sortKey: LSI_SORT_KEY,
+        projectionType: ProjectionType.KeysOnly
+      });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [],
+            LocalSecondaryIndexes: [
+              {
+                IndexName: 'MyLSI',
+                KeySchema: [
+                  { AttributeName: 'hashKey', KeyType: 'HASH' },
+                  { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { ProjectionType: 'KEYS_ONLY' },
+              }
+            ],
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'when adding a local secondary index with projection type INCLUDE'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const lsiNonKeyAttributeGenerator = NON_KEY_ATTRIBUTE_GENERATOR(LSI_NON_KEY);
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+      projectionType: ProjectionType.Include,
+      nonKeyAttributes: [ lsiNonKeyAttributeGenerator.next().value, lsiNonKeyAttributeGenerator.next().value ]
+    });
+
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'lsiSortKey', AttributeType: 'N' }
+            ],
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            GlobalSecondaryIndexes: [],
+            LocalSecondaryIndexes: [
+              {
+                IndexName: 'MyLSI',
+                KeySchema: [
+                  { AttributeName: 'hashKey', KeyType: 'HASH' },
+                  { AttributeName: 'lsiSortKey', KeyType: 'RANGE' }
+                ],
+                Projection: { NonKeyAttributes: ['lsiNonKey0', 'lsiNonKey1'], ProjectionType: 'INCLUDE' },
+              }
+            ],
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'error when adding more than 5 local secondary indexes'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    const lsiGenerator = LSI_GENERATOR();
+    for (let i = 0; i < 5; i++) {
+      table.addLocalSecondaryIndex(lsiGenerator.next().value);
+    }
+
+    test.throws(() => table.addLocalSecondaryIndex(lsiGenerator.next().value),
+      /a maximum number of local secondary index per table is 5/);
+
+    test.done();
+  },
+
+  'error when adding a local secondary index before specifying a partition key of the table'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addSortKey(TABLE_SORT_KEY);
+
+    test.throws(() => table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY
+    }), /a partition key of the table must be specified first through addPartitionKey()/);
+
+    test.done();
+  },
+
+  'error when adding a local secondary index with the name of a global secondary index'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY)
+      .addSortKey(TABLE_SORT_KEY);
+    table.addGlobalSecondaryIndex({
+      indexName: 'SecondaryIndex',
+      partitionKey: GSI_PARTITION_KEY
+    });
+
+    test.throws(() => table.addLocalSecondaryIndex({
+      indexName: 'SecondaryIndex',
+      sortKey: LSI_SORT_KEY
+    }), /a duplicate index name, SecondaryIndex, is not allowed/);
+
+    test.done();
+  },
+
+  'error when validating construct if a local secondary index exists without a sort key of the table'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME)
+      .addPartitionKey(TABLE_PARTITION_KEY);
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY
+    });
+
+    const errors = table.validate();
+
+    test.strictEqual(1, errors.length);
+    test.strictEqual('a sort key of the table must be specified to add local secondary indexes', errors[0]);
 
     test.done();
   },
@@ -828,6 +1072,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -909,6 +1154,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1018,6 +1264,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1098,6 +1345,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
@@ -1301,6 +1549,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1382,6 +1631,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1491,6 +1741,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1571,6 +1822,7 @@ export = {
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
+          LocalSecondaryIndexes:  [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
