@@ -87,8 +87,12 @@ function _assertActionMatches(test: nodeunit.Test,
                               provider: string,
                               category: string,
                               configuration?: { [key: string]: any }) {
-  const configurationStr = configuration ? `configuration including ${JSON.stringify(configuration, null, 2)}` : '';
-  const actionsStr = JSON.stringify(actions, null, 2);
+  const configurationStr = configuration
+                         ? `configuration including ${JSON.stringify(cdk.resolve(configuration), null, 2)}`
+                         : '';
+  const actionsStr = JSON.stringify(actions.map(a =>
+    ({ owner: a.owner, provider: a.provider, category: a.category, configuration: cdk.resolve(a.configuration) })
+  ), null, 2);
   test.ok(_hasAction(actions, owner, provider, category, configuration),
           `Expected to find an action with owner ${owner}, provider ${provider}, category ${category}${configurationStr}, but found ${actionsStr}`);
 }
@@ -112,8 +116,10 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
 }
 
 function _assertPermissionGranted(test: nodeunit.Test, statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
-  const conditionStr = conditions ? ` with condition(s) ${JSON.stringify(conditions)}` : '';
-  const statementsStr = JSON.stringify(statements, null, 2);
+  const conditionStr = conditions
+                     ? ` with condition(s) ${JSON.stringify(cdk.resolve(conditions))}`
+                     : '';
+  const statementsStr = JSON.stringify(cdk.resolve(statements), null, 2);
   test.ok(_grantsPermission(statements, action, resource, conditions),
           `Expected to find a statement granting ${action} on ${cdk.resolve(resource)}${conditionStr}, found:\n${statementsStr}`);
 }
