@@ -1,8 +1,10 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Stack } from './cloudformation/stack';
 import { Construct } from './core/construct';
 
 const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
+const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 
 /**
  * Base class for the model side of context providers
@@ -16,11 +18,26 @@ const SSM_PARAMETER_PROVIDER = 'ssm';
 export class ContextProvider {
 
   private readonly stack: Stack;
+  private readonly provider: string;
+  private readonly props: {[key: string]: any};
 
-  constructor(private context: Construct) {
+  constructor(private context: Construct, provider: string, props: {[key: string]: any} = {}) {
     this.stack = Stack.find(context);
+    this.provider = provider;
+    this.props = props;
   }
 
+  public get key(): string {
+    const account = this.account;
+    const region = this.region;
+    let keyStr = `${this.provider}:${account}:${region}`;
+    const propStrings: string[] = this.objectToString(this.props);
+    if (propStrings.length > 0) {
+      keyStr += ':';
+      keyStr += propStrings.join(':');
+    }
+    return keyStr;
+  }
   /**
    * Read a provider value, verifying it's a string
    * @param provider The name of the context provider
@@ -28,27 +45,29 @@ export class ContextProvider {
    * @param args Any arguments
    * @param defaultValue The value to return if there is no value defined for this context key
    */
-  public getStringValue(
-    provider: string,
-    scope: undefined | string[],
-    args: string[],
-    defaultValue: string): string {
+  public getStringValue( defaultValue: string): string {
     // if scope is undefined, this is probably a test mode, so we just
     // return the default value
-    if (!scope) {
-      this.context.addError(formatMissingScopeError(provider, args));
+    if (!this.account || !this.region) {
+      this.context.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
-    const key = colonQuote([provider].concat(scope).concat(args)).join(':');
-    const value = this.context.getContext(key);
+
+    const value = this.context.getContext(this.key);
+
     if (value != null) {
       if (typeof value !== 'string') {
-        throw new TypeError(`Expected context parameter '${key}' to be a string, but got '${value}'`);
+        throw new TypeError(`Expected context parameter '${this.key}' to be a string, but got '${value}'`);
       }
       return value;
     }
 
-    this.stack.reportMissingContext(key, { provider, scope, args });
+    this.stack.reportMissingContext(this.key, {
+      provider: this.provider,
+      account: this.account,
+      region: this.region,
+      props: this.props,
+    });
     return defaultValue;
   }
 
@@ -60,50 +79,65 @@ export class ContextProvider {
    * @param defaultValue The value to return if there is no value defined for this context key
    */
   public getStringListValue(
-    provider: string,
-    scope: undefined | string[],
-    args: string[],
     defaultValue: string[]): string[] {
-    // if scope is undefined, this is probably a test mode, so we just
-    // return the default value and report an error so this in not accidentally used
-    // in the toolkit
-    if (!scope) {
-      // tslint:disable-next-line:max-line-length
-      this.context.addError(formatMissingScopeError(provider, args));
+      // if scope is undefined, this is probably a test mode, so we just
+      // return the default value and report an error so this in not accidentally used
+      // in the toolkit
+      if (!this.account || !this.region) {
+        this.context.addError(formatMissingScopeError(this.provider, this.props));
+        return defaultValue;
+      }
+
+      const value = this.context.getContext(this.key);
+
+      if (value != null) {
+        if (!value.map) {
+          throw new Error(`Context value '${this.key}' is supposed to be a list, got '${value}'`);
+        }
+        return value;
+      }
+
+      this.stack.reportMissingContext(this.key, {
+        provider: this.provider,
+        account: this.account,
+        region: this.region,
+        props: this.props,
+      });
+
       return defaultValue;
     }
 
-    const key = colonQuote([provider].concat(scope).concat(args)).join(':');
-    const value = this.context.getContext(key);
-
-    if (value != null) {
-      if (!value.map) {
-        throw new Error(`Context value '${key}' is supposed to be a list, got '${value}'`);
+  private objectToString(obj: any): string[] {
+    const objStr: string[] = [];
+    const keys = Object.keys(obj);
+    keys.sort();
+    for (const key of keys) {
+      switch (typeof obj[key]) {
+        case 'object': {
+          const childObjStrs = this.objectToString(obj[key]);
+          const qualifiedChildStr = childObjStrs.map( child => (`${key}${child}`)).join(':');
+          objStr.push(qualifiedChildStr);
+          break;
+        }
+        case 'string': {
+          objStr.push(`${key}=${colonQuote(obj[key])}`);
+          break;
+        }
+        default: {
+          objStr.push(`${key}=${JSON.stringify(obj[key])}`);
+          break;
+        }
       }
-      return value;
     }
-
-    this.stack.reportMissingContext(key, { provider, scope, args });
-    return defaultValue;
+    return objStr;
   }
 
-  /**
-   * Helper function to wrap up account and region into a scope tuple
-   */
-  public accountRegionScope(providerDescription: string): undefined | string[] {
-    const stack = Stack.find(this.context);
-    if (!stack) {
-      throw new Error(`${providerDescription}: construct must be in a stack`);
-    }
+  private get account(): string | undefined {
+    return this.stack.env.account;
+  }
 
-    const account = stack.env.account;
-    const region = stack.env.region;
-
-    if (account == null || region == null) {
-      return undefined;
-    }
-
-    return [account, region];
+  private get region(): string | undefined {
+    return this.stack.env.region;
   }
 }
 
@@ -113,8 +147,8 @@ export class ContextProvider {
  * We'll use $ as a quoting character, for no particularly good reason other
  * than that \ is going to lead to quoting hell when the keys are stored in JSON.
  */
-function colonQuote(xs: string[]): string[] {
-  return xs.map(x => x.replace('$', '$$').replace(':', '$:'));
+function colonQuote(xs: string): string {
+  return xs.replace('$', '$$').replace(':', '$:');
 }
 
 /**
@@ -124,45 +158,59 @@ export class AvailabilityZoneProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct) {
-    this.provider = new ContextProvider(context);
+    this.provider = new ContextProvider(context, AVAILABILITY_ZONES_PROVIDER);
   }
 
   /**
    * Return the list of AZs for the current account and region
    */
   public get availabilityZones(): string[] {
-    return this.provider.getStringListValue(AVAILABILITY_ZONES_PROVIDER,
-                        this.provider.accountRegionScope('AvailabilityZoneProvider'),
-                        [],
-                        ['dummy1a', 'dummy1b', 'dummy1c']);
+
+    return this.provider.getStringListValue(['dummy1a', 'dummy1b', 'dummy1c']);
   }
 }
 
+export interface SSMParameterProviderProps {
+  parameterName: string;
+}
 /**
  * Context provider that will read values from the SSM parameter store in the indicated account and region
  */
 export class SSMParameterProvider {
   private provider: ContextProvider;
 
-  constructor(context: Construct) {
-    this.provider = new ContextProvider(context);
+  constructor(context: Construct, props: SSMParameterProviderProps) {
+    this.provider = new ContextProvider(context, SSM_PARAMETER_PROVIDER, props);
   }
 
   /**
    * Return the SSM parameter string with the indicated key
    */
-  public getString(parameterName: string): any {
-    const scope = this.provider.accountRegionScope('SSMParameterProvider');
-    return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName], 'dummy');
+  public parameterValue(): any {
+    return this.provider.getStringValue('dummy');
   }
 }
 
-function formatMissingScopeError(provider: string, args: string[]) {
-  let s = `Cannot determine scope for context provider ${provider}`;
-  if (args.length > 0) {
-    s += JSON.stringify(args);
+/**
+ * Context provider that will lookup the Hosted Zone ID for the given arguments
+ */
+export class HostedZoneProvider {
+  private provider: ContextProvider;
+  constructor(context: Construct, props: cxapi.HostedZoneProviderProps) {
+    this.provider = new ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
   }
-  s += '.';
+  /**
+   * Return the hosted zone meeting the filter
+   */
+  public zoneId(): string {
+    return this.provider.getStringValue('dummy-zone');
+  }
+}
+
+function formatMissingScopeError(provider: string, props: {[key: string]: string}) {
+  let s = `Cannot determine scope for context provider ${provider}`;
+  const propsString = Object.keys(props).map( key => (`${key}=${props[key]}`));
+  s += ` with props: ${propsString}.`;
   s += '\n';
   s += 'This usually happens when AWS credentials are not available and the default account/region cannot be determined.';
   return s;

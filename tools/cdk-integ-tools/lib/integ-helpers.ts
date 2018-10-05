@@ -89,7 +89,7 @@ export const STATIC_TEST_CONTEXT = {
   [DEFAULT_ACCOUNT_CONTEXT_KEY]: "12345678",
   [DEFAULT_REGION_CONTEXT_KEY]: "test-region",
   "availability-zones:12345678:test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
-  "ssm:12345678:test-region:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-1234",
+  "ssm:12345678:test-region:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-1234",
 };
 
 /**

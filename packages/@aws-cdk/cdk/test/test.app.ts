@@ -254,16 +254,20 @@ export = {
         super(parent, name, props);
 
         this.reportMissingContext('missing-context-key', {
-          provider: 'ctx-provider',
-          args: [ 'arg1', 'arg2' ],
-          scope: [ 'scope1', 'scope2' ]
-        });
+            provider: 'fake',
+            account: '12345689012',
+            region: 'ab-north-1',
+            props: {},
+          },
+        );
 
         this.reportMissingContext('missing-context-key-2', {
-          provider: 'ctx-provider',
-          args: [ 'arg1', 'arg2' ],
-          scope: [ 'scope1', 'scope2' ]
-        });
+            provider: 'fake2',
+            account: '12345689012',
+            region: 'ab-south-1',
+            props: {foo: 'bar'},
+          },
+        );
       }
     }
 
@@ -275,27 +279,17 @@ export = {
 
     test.deepEqual(response.stacks[0].missing, {
       "missing-context-key": {
-      provider: "ctx-provider",
-      args: [
-        "arg1",
-        "arg2"
-      ],
-      scope: [
-        "scope1",
-        "scope2"
-      ]
+            provider: 'fake',
+            account: '12345689012',
+            region: 'ab-north-1',
+            props: {},
       },
       "missing-context-key-2": {
-      provider: "ctx-provider",
-      args: [
-        "arg1",
-        "arg2"
-      ],
-      scope: [
-        "scope1",
-        "scope2"
-      ]
-      }
+            provider: 'fake2',
+            account: '12345689012',
+            region: 'ab-south-1',
+            props: {foo: 'bar'},
+      },
     });
 
     test.done();

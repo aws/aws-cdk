@@ -106,7 +106,13 @@ export class SDK {
       ...this.defaultClientArgs
     });
   }
-
+  public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
+    return new AWS.Route53({
+      region,
+      credentials: await this.credentialsCache.get(awsAccountId, mode),
+      ...this.defaultClientArgs
+    });
+  }
   public async defaultRegion(): Promise<string | undefined> {
     return await getCLICompatibleDefaultRegion(this.profile);
   }
@@ -132,8 +138,8 @@ class CredentialsCache {
   private readonly cache: {[key: string]: AWS.Credentials} = {};
 
   public constructor(
-      private readonly defaultAwsAccount: DefaultAWSAccount,
-      private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
+    private readonly defaultAwsAccount: DefaultAWSAccount,
+    private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
   }
 
   public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
@@ -306,10 +312,10 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
   const toCheck = [
     {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
     {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
-    ];
+  ];
 
   let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-      process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+    process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
   while (!region && toCheck.length > 0) {
     const configFile = new SharedIniFile(toCheck.shift());

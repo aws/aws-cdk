@@ -24,10 +24,17 @@ export type CXRequest = ListStacksRequest | SynthesizeRequest;
  * Represents a missing piece of context.
  * (should have been an interface, but jsii still doesn't have support for structs).
  */
-export interface MissingContext {
+export interface ContextProviderProps {
   provider: string;
-  scope: string[];
-  args: string[];
+  account: string;
+  region: string;
+  props: {[key: string]: any};
+}
+
+export interface HostedZoneProviderProps {
+  domainName: string;
+  privateZone?: boolean;
+  vpcId?: string;
 }
 
 export interface ListStacksResponse {
@@ -57,7 +64,7 @@ export interface StackInfo extends StackId {
  * A complete synthesized stack
  */
 export interface SynthesizedStack extends StackInfo {
-  missing?: { [key: string]: MissingContext };
+  missing?: { [key: string]: ContextProviderProps };
   metadata: StackMetadata;
   template: any;
 }

@@ -46,6 +46,7 @@
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "^0.10.0",
     "@aws-cdk/cx-api": "^0.10.0",
+    "@aws-cdk/cdk": "^0.10.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",

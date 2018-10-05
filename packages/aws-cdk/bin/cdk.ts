@@ -113,6 +113,7 @@ async function initCommandLine() {
   const availableContextProviders: contextplugins.ProviderMap = {
     'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
     'ssm': new contextplugins.SSMContextProviderPlugin(aws),
+    'hosted-zone': new contextplugins.HostedZoneContextProviderPlugin(aws),
   };
 
   const defaultConfig = new Settings({ versionReporting: true });
