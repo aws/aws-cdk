@@ -10,6 +10,11 @@ export interface EcsClusterProps extends BaseClusterProps {
    * @default false
    */
   containersAccessInstanceRole?: boolean;
+
+  /**
+   * The type of EC2 instance to launch into your Autoscaling Group
+   */
+  instanceType?: ec2.InstanceType;
 }
 
 export class EcsCluster extends BaseCluster implements IEcsCluster {
@@ -25,7 +30,7 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoScalingGroup', {
       vpc: props.vpc,
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+      instanceType: props.instanceType || new ec2.InstanceTypePair(ec2.InstanceClass.T2, ec2.InstanceSize.Micro),
       machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate
     });

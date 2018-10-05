@@ -68,7 +68,7 @@ class BonjourECS extends cdk.Stack {
 
     container.addPortMappings({
       containerPort: 80,
-      hostPort: 80,
+      // hostPort: 80,
       protocol: ecs.Protocol.Tcp,
     });
 

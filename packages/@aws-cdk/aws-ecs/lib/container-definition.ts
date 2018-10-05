@@ -214,6 +214,11 @@ export class ContainerDefinition extends cdk.Construct {
           throw new Error(`Host port ${pm.hostPort} does not match container port ${pm.containerPort}.`);
         }
       }
+      if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
+        if (pm.hostPort === undefined) {
+          pm.hostPort = 0;
+        }
+      }
     }
     this.portMappings.push(...portMappings);
   }
@@ -245,12 +250,9 @@ export class ContainerDefinition extends cdk.Construct {
       throw new Error(`Container ${this.id} hasn't defined any ports`);
     }
     const defaultPortMapping = this.portMappings[0];
-    if (defaultPortMapping.hostPort !== undefined) {
-      return defaultPortMapping.hostPort;
-    }
-    if (this.taskDefinition.networkMode === NetworkMode.Bridge) {
-      return 0;
-    }
+    // if (defaultPortMapping.hostPort !== undefined && defaultPortMapping.hostPort !== 0) {
+    //   return defaultPortMapping.hostPort;
+    // }
     return defaultPortMapping.containerPort;
   }
 
