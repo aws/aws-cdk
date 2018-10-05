@@ -46,7 +46,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet1RouteTableAssociatioin3562612E": {
+    "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -126,7 +126,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet2RouteTableAssociatioin8E74FB35": {
+    "MyVpcPublicSubnet2RouteTableAssociation227DE78D": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -206,7 +206,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet3RouteTableAssociatioinA3FD1B71": {
+    "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -286,7 +286,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet1RouteTableAssociatioin90CF6BAB": {
+    "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -340,7 +340,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet2RouteTableAssociatioin803693C0": {
+    "MyVpcPrivateSubnet2RouteTableAssociation86A610DA": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -394,7 +394,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet3RouteTableAssociatioinFB4A6FE6": {
+    "MyVpcPrivateSubnet3RouteTableAssociationD951741C": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {

@@ -46,7 +46,7 @@
         ]
       }
     },
-    "VPCPublicSubnet1RouteTableAssociatioin249B4093": {
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -126,7 +126,7 @@
         ]
       }
     },
-    "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
