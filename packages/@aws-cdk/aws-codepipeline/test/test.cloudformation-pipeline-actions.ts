@@ -4,8 +4,8 @@ import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Pr
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Pipeline, Stage } from '../lib';
 

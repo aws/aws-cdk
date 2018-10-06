@@ -26,7 +26,7 @@ class RuntimeValueTest extends cdk.Construct {
     const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
 
     const role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
     new lambda.cloudformation.FunctionResource(this, 'Function', {

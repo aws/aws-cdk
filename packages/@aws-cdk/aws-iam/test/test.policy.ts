@@ -1,9 +1,6 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Role } from '../lib';
-import { Group } from '../lib/group';
-import { Policy } from '../lib/policy';
-import { User } from '../lib/user';
+import { Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 import { generatePolicyName } from '../lib/util';
 
 export = {

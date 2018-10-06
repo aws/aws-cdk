@@ -90,7 +90,7 @@ export class Metric {
   public static grantPutMetricData(identity?: iam.IIdentityResource) {
     if (!identity) { return; }
 
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addAllResources()
       .addAction("cloudwatch:PutMetricData"));
   }

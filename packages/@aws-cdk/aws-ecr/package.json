@@ -59,7 +59,8 @@
     "pkglint": "^0.10.0"
   },
   "dependencies": {
-    "@aws-cdk/cdk": "^0.10.0"
+    "@aws-cdk/cdk": "^0.10.0",
+    "@aws-cdk/aws-iam": "^0.10.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
