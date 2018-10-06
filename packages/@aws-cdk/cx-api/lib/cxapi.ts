@@ -4,34 +4,17 @@
 
 import { Environment } from './environment';
 
-export const VERSION = '1';
-export const BASE64_REQ_PREFIX = 'base64:';
-
-export interface ListStacksRequest {
-  type: 'list',
-  context?: any
-}
-
-export interface SynthesizeRequest {
-  type: 'synth',
-  stacks: string[],
-  context?: any,
-}
-
-export type CXRequest = ListStacksRequest | SynthesizeRequest;
+export const OUTFILE_NAME = 'cdk.out';
+export const OUTDIR_ENV = 'CDK_OUTDIR';
+export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
  * Represents a missing piece of context.
- * (should have been an interface, but jsii still doesn't have support for structs).
  */
 export interface MissingContext {
   provider: string;
   scope: string[];
   args: string[];
-}
-
-export interface ListStacksResponse {
-  stacks: StackInfo[]
 }
 
 export interface SynthesizeResponse {
@@ -40,23 +23,11 @@ export interface SynthesizeResponse {
 }
 
 /**
- * Identifies a single stack
- */
-export interface StackId {
-  name: string;
-}
-
-/**
- * Identifies and contains metadata about a stack
- */
-export interface StackInfo extends StackId {
-  environment?: Environment;
-}
-
-/**
  * A complete synthesized stack
  */
-export interface SynthesizedStack extends StackInfo {
+export interface SynthesizedStack {
+  name: string;
+  environment: Environment;
   missing?: { [key: string]: MissingContext };
   metadata: StackMetadata;
   template: any;

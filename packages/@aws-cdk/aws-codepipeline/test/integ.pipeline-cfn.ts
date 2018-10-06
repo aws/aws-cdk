@@ -6,7 +6,7 @@ import cdk = require('@aws-cdk/cdk');
 import { ServicePrincipal } from '@aws-cdk/cdk';
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
@@ -40,4 +40,4 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   templatePath: new ArtifactPath(source.artifact, 'test.yaml')
 });
 
-process.stdout.write(app.run());
+app.run();

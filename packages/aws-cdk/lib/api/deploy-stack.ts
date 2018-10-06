@@ -114,7 +114,7 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
   }
 }
 
-export async function destroyStack(stack: cxapi.StackInfo, sdk: SDK, deployName?: string, quiet: boolean = false) {
+export async function destroyStack(stack: cxapi.SynthesizedStack, sdk: SDK, deployName?: string, quiet: boolean = false) {
   if (!stack.environment) {
     throw new Error(`The stack ${stack.name} does not have an environment`);
   }

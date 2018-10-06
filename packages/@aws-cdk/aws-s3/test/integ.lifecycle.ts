@@ -1,7 +1,7 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Bucket } from '../lib';
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-s3');
 
@@ -12,4 +12,4 @@ new Bucket(stack, 'MyBucket', {
   }]
 });
 
-process.stdout.write(app.run());
+app.run();

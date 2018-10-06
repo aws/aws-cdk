@@ -4,7 +4,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'VPC', {
@@ -33,4 +33,4 @@ listener.addTargets('Target', {
 
 listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-process.stdout.write(app.run());
+app.run();

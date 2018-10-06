@@ -36,7 +36,7 @@ for (let i = 0; i < 10; i++) { // 'K' to 'T'
   LSI_NON_KEY.push(String.fromCharCode(75 + i));
 }
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, STACK_NAME);
 
@@ -117,4 +117,4 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   sortKey: LSI_SORT_KEY
 });
 
-process.stdout.write(app.run());
+app.run();

@@ -3,7 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import s3 = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-s3');
 
@@ -19,4 +19,4 @@ const user = new iam.User(stack, 'MyUser');
 bucket.grantReadWrite(user);
 otherwiseEncryptedBucket.grantRead(user);
 
-process.stdout.write(app.run());
+app.run();

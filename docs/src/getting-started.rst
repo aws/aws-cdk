@@ -203,7 +203,7 @@ class. Let's create our first, empty **App**:
                 }
             }
 
-            process.stdout.write(new MyApp(process.argv).run());
+            new MyApp().run();
 
     .. group-tab:: TypeScript
 
@@ -219,7 +219,7 @@ class. Let's create our first, empty **App**:
                 }
             }
 
-            process.stdout.write(new MyApp(process.argv).run());
+            new MyApp().run();
 
     .. group-tab:: Java
 
@@ -454,7 +454,7 @@ Define a stack and add it to the app.
                 }
             }
 
-            process.stdout.write(new MyApp(process.argv).run());
+            new MyApp().run();
 
     .. group-tab:: TypeScript
 
@@ -472,14 +472,13 @@ Define a stack and add it to the app.
             }
 
             class MyApp extends cdk.App {
-                constructor(argv: string[]) {
-                    super(argv);
-
+                constructor() {
+                    super();
                     new MyStack(this, 'hello-cdk');
                 }
             }
 
-            process.stdout.write(new MyApp(process.argv).run());
+            new MyApp().run();
 
     .. group-tab:: Java
 
