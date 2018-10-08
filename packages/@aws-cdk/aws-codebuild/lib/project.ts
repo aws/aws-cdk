@@ -279,10 +279,10 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
   public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
     if (!this.eventsRole) {
       this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
       });
 
-      this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+      this.eventsRole.addToPolicy(new iam.PolicyStatement()
         .addAction('codebuild:StartBuild')
         .addResource(this.projectArn));
     }
@@ -446,7 +446,7 @@ export class Project extends ProjectRef {
     }
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codebuild.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
 
     let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
@@ -515,7 +515,7 @@ export class Project extends ProjectRef {
    * Add a permission only if there's a policy attached.
    * @param statement The permissions statement to add
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
       this.role.addToPolicy(statement);
     }
@@ -531,7 +531,7 @@ export class Project extends ProjectRef {
 
     const logGroupStarArn = `${logGroupArn}:*`;
 
-    const p = new cdk.PolicyStatement();
+    const p = new iam.PolicyStatement();
     p.allow();
     p.addResource(logGroupArn);
     p.addResource(logGroupStarArn);

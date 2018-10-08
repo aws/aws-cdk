@@ -1,4 +1,5 @@
-import { Construct, IDependable, PolicyDocument } from '@aws-cdk/cdk';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Construct, IDependable } from '@aws-cdk/cdk';
 import { QueueRef } from './queue-ref';
 import { cloudformation } from './sqs.generated';
 

@@ -61,6 +61,7 @@
   "dependencies": {
     "@aws-cdk/aws-codedeploy-api": "^0.10.0",
     "@aws-cdk/aws-ec2": "^0.10.0",
+    "@aws-cdk/aws-iam": "^0.10.0",
     "@aws-cdk/aws-s3": "^0.10.0",
     "@aws-cdk/cdk": "^0.10.0"
   },

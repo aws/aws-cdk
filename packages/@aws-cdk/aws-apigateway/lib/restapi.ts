@@ -66,7 +66,7 @@ export interface RestApiProps extends ResourceOptions {
   /**
    * A policy document that contains the permissions for this RestApi
    */
-  policy?: cdk.PolicyDocument;
+  policy?: iam.PolicyDocument;
 
   /**
    * A description of the purpose of this API Gateway RestApi resource.
@@ -314,7 +314,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
 
   private configureCloudWatchRole(apiResource: cloudformation.RestApiResource) {
     const role = new iam.Role(this, 'CloudWatchRole', {
-      assumedBy: new cdk.ServicePrincipal('apigateway.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicyArns: [ cdk.ArnUtils.fromComponents({
         service: 'iam',
         region: '',

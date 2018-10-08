@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BaseLoadBalancer, BaseLoadBalancerProps } from '../shared/base-load-balancer';
@@ -88,8 +89,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     // FIXME: can't use grantPut() here because that only takes IAM objects, not arbitrary principals
-    bucket.addToResourcePolicy(new cdk.PolicyStatement()
-      .addPrincipal(new cdk.AccountPrincipal(account))
+    bucket.addToResourcePolicy(new iam.PolicyStatement()
+      .addPrincipal(new iam.AccountPrincipal(account))
       .addAction('s3:PutObject')
       .addResource(bucket.arnForObjects(prefix || '', '*')));
   }
