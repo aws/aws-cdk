@@ -1,10 +1,26 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
-import { PolicyStatement, PolicyStatementEffect, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import iam = require('@aws-cdk/aws-iam');
 import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+
+const READ_DATA_ACTIONS = [
+  'dynamodb:BatchGetItem',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
+  'dynamodb:Query',
+  'dynamodb:GetItem',
+  'dynamodb:Scan'
+];
+
+const WRITE_DATA_ACTIONS = [
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PutItem',
+  'dynamodb:UpdateItem',
+  'dynamodb:DeleteItem'
+];
 
 export interface Attribute {
   /**
@@ -315,6 +331,57 @@ export class Table extends Construct {
   }
 
   /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param principal The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    if (!principal) {
+      return;
+    }
+    principal.addToPolicy(new iam.PolicyStatement()
+      .addResource(this.tableArn)
+      .addActions(...actions));
+  }
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param principal The principal to grant access to
+   */
+  public grantReadData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param principal The principal to grant access to
+   */
+  public grantWriteData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param principal The principal to grant access to
+   */
+  public grantReadWriteData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param principal The principal to grant access to
+   */
+  public grantFullAccess(principal?: iam.IPrincipal) {
+    this.grant(principal, 'dynamodb:*');
+  }
+
+  /**
    * Validate the table construct.
    *
    * @returns an array of validation error message
@@ -443,13 +510,13 @@ export class Table extends Construct {
   }
 
   private buildAutoScalingRole(roleResourceName: string) {
-    const autoScalingRole = new Role(this, roleResourceName, {
-      assumedBy: new ServicePrincipal('application-autoscaling.amazonaws.com')
+    const autoScalingRole = new iam.Role(this, roleResourceName, {
+      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
     });
-    autoScalingRole.addToPolicy(new PolicyStatement(PolicyStatementEffect.Allow)
+    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
       .addActions("dynamodb:DescribeTable", "dynamodb:UpdateTable")
       .addResource(this.tableArn));
-    autoScalingRole.addToPolicy(new PolicyStatement(PolicyStatementEffect.Allow)
+    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
       .addActions("cloudwatch:PutMetricAlarm", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricStatistics",
         "cloudwatch:SetAlarmState", "cloudwatch:DeleteAlarms")
       .addAllResources());
@@ -457,7 +524,7 @@ export class Table extends Construct {
   }
 
   private buildScalableTargetResourceProps(scalableDimension: string,
-                                           scalingRole: Role,
+                                           scalingRole: iam.Role,
                                            props: AutoScalingProps) {
     return {
       maxCapacity: props.maxCapacity,

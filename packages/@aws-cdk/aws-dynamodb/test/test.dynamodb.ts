@@ -1,3 +1,5 @@
+import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import {
@@ -9,6 +11,8 @@ import {
   StreamViewType,
   Table
 } from '../lib';
+
+// tslint:disable:object-literal-key-quotes
 
 // CDK parameters
 const STACK_NAME = 'MyStack';
@@ -2024,6 +2028,34 @@ export = {
     }), /minimumCapacity must be greater than or equal to 0; Provided value is: -5/);
 
     test.done();
+  },
+
+  'grants': {
+
+    '"grant" allows adding arbitrary actions associated with this table resource'(test: Test) {
+      testGrant(test,
+        [ 'action1', 'action2' ], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
+    },
+
+    '"grantReadData" allows the principal to read data from the table'(test: Test) {
+      testGrant(test,
+        [ 'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan' ], (p, t) => t.grantReadData(p));
+    },
+
+    '"grantWriteData" allows the principal to write data to the table'(test: Test) {
+      testGrant(test, [
+        'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem' ], (p, t) => t.grantWriteData(p));
+    },
+
+    '"grantReadWriteData" allows the principal to read/write data'(test: Test) {
+      testGrant(test, [
+        'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
+        'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem' ], (p, t) => t.grantReadWriteData(p));
+    },
+
+    '"grantFullAccess" allows the principal to perform any action on the table ("*")'(test: Test) {
+      testGrant(test, [ '*' ], (p, t) => t.grantFullAccess(p));
+    }
   }
 };
 
@@ -2035,4 +2067,39 @@ class TestApp {
   public synthesizeTemplate() {
     return this.app.synthesizeStack(this.stack.name).template;
   }
+}
+
+function testGrant(test: Test, expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
+  // GIVEN
+  const stack = new Stack();
+
+  const table = new Table(stack, 'my-table');
+  table.addPartitionKey({ name: 'ID', type:  AttributeType.String });
+
+  const user = new iam.User(stack, 'user');
+
+  // WHEN
+  invocation(user, table);
+
+  // THEN
+  const action = expectedActions.length > 1 ? expectedActions.map(a => `dynamodb:${a}`) : `dynamodb:${expectedActions[0]}`;
+  expect(stack).to(haveResource('AWS::IAM::Policy', {
+    "PolicyDocument": {
+      "Statement": [
+        {
+          "Action": action,
+          "Effect": "Allow",
+          "Resource": {
+            "Fn::GetAtt": [
+              "mytable0324D45C",
+              "Arn"
+            ]
+          }
+        }
+      ],
+      "Version": "2012-10-17"
+    },
+    "Users": [ { "Ref": "user2C2B57AE" } ]
+  }));
+  test.done();
 }
