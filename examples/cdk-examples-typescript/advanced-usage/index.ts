@@ -188,7 +188,7 @@ class CloudFormationExample extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new PolicyExample(app, 'PolicyExample');
 new IncludeExample(app, 'IncludeExample');
@@ -199,4 +199,4 @@ new CloudFormationExample(app, 'CloudFormationExample');
 new EnvContextExample(app, 'EnvContextExampleNA', { env: { region: 'us-east-1' }});
 new EnvContextExample(app, 'EnvContextExampleEU', { env: { region: 'eu-west-2' }});
 
-process.stdout.write(app.run());
+app.run();

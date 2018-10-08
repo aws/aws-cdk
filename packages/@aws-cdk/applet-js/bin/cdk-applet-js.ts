@@ -24,10 +24,6 @@ async function main() {
   // read applet properties from the provided file
   const props = YAML.load(appletFile);
 
-  // the cx request is expected to be passed as the second parameter for this applet program.
-  // that's how cdk toolkit will use it.
-  const request = process.argv[3] || JSON.stringify({});
-
   // the 'applet' attribute tells us how to load the applet. in the javascript case
   // it will be in the format <module>:<class> where <module> is technically passed to "require"
   // and <class> is expected to be exported from the module.
@@ -57,7 +53,7 @@ async function main() {
   }
 
   // create the CDK app
-  const app = new cdk.App([ progname, request ]);
+  const app = new cdk.App();
 
   const constructName = props.name || className;
 
@@ -65,7 +61,7 @@ async function main() {
   new AppletStack(app, constructName, props);
 
   // transfer control to the app
-  process.stdout.write(app.run());
+  app.run();
 }
 
 function parseApplet(applet: string) {

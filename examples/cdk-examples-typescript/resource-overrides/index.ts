@@ -113,6 +113,6 @@ class ResourceOverridesExample extends cdk.Stack {
     }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 new ResourceOverridesExample(app, 'resource-overrides');
-process.stdout.write(app.run());
+app.run();

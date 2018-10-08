@@ -68,7 +68,7 @@ the |cdk|.
    import { MyStack } from './my-stack'
    import { DeploymentPipeline } from './my-deployment'
 
-   const app = new App(process.argv);
+   const app = new App();
 
    // Use the default environment
    new MyStack(app, { name: 'Dev' });
@@ -107,9 +107,7 @@ the |cdk|.
       prodStages: prod
    });
 
-   app.exec()
-      .then(stdout => process.stdout.write(stdout))
-      .catch(e => { throw e });
+   app.run();
 
 .. _dynamodb_example:
 
@@ -140,11 +138,11 @@ and sort key **Timestamp**.
      }
    }
 
-   const app = new cdk.App(process.argv);
+   const app = new cdk.App();
 
    new MyStack(app, 'MyStack');
 
-   process.stdout.write(app.run());
+    app.run();
 
 .. _creating_rds_example:
 
@@ -183,11 +181,11 @@ The following example creates the Aurora database **MyAuroraDatabase**.
      }
    }
 
-   const app = new cdk.App(process.argv);
+   const app = new cdk.App();
 
    new MyStack(app, 'MyStack');
 
-   process.stdout.write(app.run());
+   app.run();
 
 .. _creating_s3_example:
 
@@ -213,8 +211,8 @@ encryption provided by |S3|.
      }
    }
 
-   const app = new cdk.App(process.argv);
+   const app = new cdk.App();
 
    new MyStack(app, 'MyStack');
 
-   process.stdout.write(app.run());
+   app.run()
