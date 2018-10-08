@@ -4,7 +4,7 @@ import { cloudformation } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
-import { IRestApiResource, Resource, ResourceOptions } from './resource';
+import { IRestApiResource, ProxyResource, Resource, ResourceOptions } from './resource';
 import { RestApiRef } from './restapi-ref';
 import { Stage, StageOptions } from './stage';
 
@@ -212,6 +212,9 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
       },
       addMethod: (httpMethod: string, integration?: Integration, options?: MethodOptions) => {
         return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
+      },
+      addProxy: (options?: ResourceOptions) => {
+        return new ProxyResource(this, '{proxy+}', { parent: this.root, ...options });
       },
       defaultIntegration: props.defaultIntegration,
       defaultMethodOptions: props.defaultMethodOptions,

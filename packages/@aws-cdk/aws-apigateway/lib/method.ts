@@ -117,7 +117,9 @@ export class Method extends cdk.Construct {
    */
   public get methodArn(): string {
     if (!this.restApi.deploymentStage) {
-      throw new Error('There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`');
+      throw new Error(
+        `Unable to determine ARN for method "${this.id}" since there is no stage associated with this API.\n` +
+        'Either use the `deploy` prop or explicitly assign `deploymentStage` on the RestApi');
     }
 
     const stage = this.restApi.deploymentStage.stageName.toString();

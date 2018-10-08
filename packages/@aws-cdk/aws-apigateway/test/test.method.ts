@@ -197,7 +197,7 @@ export = {
 
     // WHEN + THEN
     test.throws(() => method.methodArn,
-      /There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`/);
+      /Unable to determine ARN for method "my-method" since there is no stage associated with this API./);
 
     test.done();
   },

@@ -29,6 +29,45 @@ book.addMethod('GET');
 book.addMethod('DELETE');
 ```
 
+### AWS Lambda-backed APIs
+
+A very common practice is to use Amazon API Gateway with AWS Lambda as the
+backend integration. The `LambdaRestApi` construct makes it easy:
+
+The following code defines a REST API that uses a greedy `{proxy+}` resource
+mounted under `/api/v1` and integrates all methods (`"ANY"`) with the specified
+AWS Lambda function:
+
+```ts
+const backend = new lambda.Function(...);
+new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  proxyPath: '/api/v1'
+});
+```
+
+If `proxyPath` is not defined, you will have to explicitly define the API model:
+
+```ts
+const backend = new lambda.Function(...);
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend
+});
+
+const items = api.root.addResource('items');
+items.addMethod('GET');  // GET /items
+items.addMethod('POST'); // POST /items
+
+const item = items.addResource('{item}');
+item.addMethod('GET');   // GET /items/{item}
+
+// the default integration for methods is "handler", but one can
+// customize this behavior per method or even a sub path.
+item.addMethod('DELETE', {
+  integration: new apigateway.HttpIntegration('http://amazon.com')
+});
+```
+
 ### Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
@@ -93,6 +132,20 @@ books.addMethod('POST'); // integrated with `booksBackend`
 
 const book = books.addResource('{book_id}');
 book.addMethod('GET');   // integrated with `booksBackend`
+```
+
+### Proxy Routes
+
+The `addProxy` method can be used to install a greedy `{proxy+}` resource
+on a path. By default, this also installs an `"ANY"` method:
+
+```ts
+const proxy = resource.addProxy({
+  defaultIntegration: new LambdaIntegration(handler),
+
+  // "false" will require explicitly adding methods on the `proxy` resource
+  anyMethod: true // "true" is the default
+});
 ```
 
 ### Deployments
