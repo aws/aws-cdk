@@ -26,3 +26,5 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   autoScalingGroups: [asg],
   loadBalancer: elb,
 });
+
+app.run();
