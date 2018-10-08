@@ -39,6 +39,11 @@
   "cdk-build": {
     "cloudformation": "AWS::SSM"
   },
+  "cfn2ts": {
+    "rename": {
+      "AWS::SSM::Association/Name": "DocumentName"
+    }
+  },
   "keywords": [
     "aws",
     "cdk",

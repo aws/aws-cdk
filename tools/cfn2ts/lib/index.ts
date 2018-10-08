@@ -14,7 +14,23 @@ export default async function(scope: string, outPath: string, force: boolean) {
   }
   const name = packageName(scope);
 
-  const generator = new CodeGenerator(name, spec);
+  // Read package.json in the current directory to determine renames
+  const renames: {[key: string]: string} = {};
+  let packageJson;
+  try {
+    packageJson = require(path.resolve(process.cwd(), 'package.json'));
+  } catch (e) {
+    // Nothing
+  }
+  if (packageJson && packageJson.cfn2ts && packageJson.cfn2ts.rename) {
+    // tslint:disable-next-line:no-console
+    console.error('Reading renames from package.json');
+    for (const [key, value] of Object.entries(packageJson.cfn2ts.rename)) {
+      renames[key] = value as any;
+    }
+  }
+
+  const generator = new CodeGenerator(name, spec, renames);
 
   if (!force && await generator.upToDate(outPath)) {
     // tslint:disable-next-line:no-console

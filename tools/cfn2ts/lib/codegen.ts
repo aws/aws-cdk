@@ -24,7 +24,7 @@ export default class CodeGenerator {
    * @param moduleName the name of the module (used to determine the file name).
    * @param spec     CloudFormation resource specification
    */
-  constructor(moduleName: string, private readonly spec: schema.Specification) {
+  constructor(moduleName: string, private readonly spec: schema.Specification, private readonly renames: {[key: string]: string}) {
     this.outputFile = `${moduleName}.generated.ts`;
     this.code.openFile(this.outputFile);
 
@@ -117,23 +117,26 @@ export default class CodeGenerator {
     this.code.closeBlock();
   }
 
-  private emitPropsType(resourceName: genspec.CodeName, spec: schema.ResourceType): genspec.CodeName | undefined {
-    if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
-    const name = genspec.CodeName.forResourceProperties(resourceName);
+  /**
+   * Emit the XxxProps interface for a resource
+   */
+  private emitPropsType(resourceName: genspec.CodeName, spec: schema.ResourceType): PropsInterfaceType {
+    if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return { attributesTable: {}}; }
+    const codeName = genspec.CodeName.forResourceProperties(resourceName);
 
     this.docLink(spec.Documentation);
-    this.code.openBlock(`export interface ${name.className}`);
+    this.code.openBlock(`export interface ${codeName.className}`);
 
-    const conversionTable = this.emitPropsTypeProperties(resourceName.specName!, spec.Properties);
+    const attributesTable = this.emitPropsTypeProperties(resourceName.specName!, spec.Properties);
 
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(name, spec.Properties, conversionTable);
+    this.emitValidator(codeName, spec.Properties, attributesTable);
     this.code.line();
-    this.emitCloudFormationMapper(name, spec.Properties, conversionTable);
+    this.emitCloudFormationMapper(codeName, spec.Properties, attributesTable);
 
-    return name;
+    return { codeName, attributesTable };
   }
 
   /**
@@ -143,28 +146,37 @@ export default class CodeGenerator {
    */
   private emitPropsTypeProperties(resourceName: SpecName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
-
-    // Sanity check that our renamed "Name" is not going to conflict with a real property
-    const renamedNameProperty = resourceNameProperty(resourceName);
-    const lowerNames = Object.keys(propertiesSpec).map(s => s.toLowerCase());
-    if (lowerNames.indexOf('name') !== -1 && lowerNames.indexOf(renamedNameProperty.toLowerCase()) !== -1) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Oh gosh, we want to rename ${resourceName.fqn}'s 'Name' property to '${renamedNameProperty}', but that property already exists! We need to find a solution to this problem.`);
-    }
+    const finalNames = new Set<string>();
 
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
       const originalName = propName;
       const propSpec = propertiesSpec[propName];
       const additionalDocs = resourceName.relativeName(propName).fqn;
 
-      if (propName.toLocaleLowerCase() === 'name') {
-        propName = renamedNameProperty;
-        // tslint:disable-next-line:no-console
-        console.error(`Renamed property 'Name' of ${resourceName.fqn} to '${renamedNameProperty}'`);
+      // Apply property renames
+      const renameKey = `${resourceName.fqn}/${propName}`;
+      if (renameKey in this.renames) {
+        // User-defined rename
+        propName = this.renames[renameKey];
       }
+
+      if (propName.toLocaleLowerCase() === 'name') {
+        // We like to include the resource name in the "name" property
+        propName = resourceNameProperty(resourceName);
+      }
+
+      if (originalName !== propName) {
+        // tslint:disable-next-line:no-console
+        console.error(`[${resourceName.fqn}] Renamed property '${originalName}' to '${propName}'`);
+      }
+      if (finalNames.has(propName)) {
+        throw new Error(`Oh gosh, there was already a property named ${propName}!`);
+      }
+      finalNames.add(propName);
 
       const resourceCodeName = genspec.CodeName.forResource(resourceName);
       const newName = this.emitProperty(resourceCodeName, propName, propSpec, quoteCode(additionalDocs));
+
       propertyMap[originalName] = newName;
     });
     return propertyMap;
@@ -265,16 +277,16 @@ export default class CodeGenerator {
     this.code.line(` * @param properties the properties of this ${quoteCode(resourceName.className)}`);
     this.code.line(' */');
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
-    const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
+    const propsArgument = propsType.codeName ? `, properties${optionalProps ? '?' : ''}: ${propsType.codeName.className}` : '';
     this.code.openBlock(`constructor(parent: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
-    this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
+    this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType.codeName ? ', properties' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const pname of Object.keys(spec.Properties)) {
         const prop = spec.Properties[pname];
         if (prop.Required) {
-          const propName = pname.toLocaleLowerCase() === 'name' ? resourceNameProperty(resourceName.specName!) : pname;
-          this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(propName)}', this);`);
+          const attributeName = propsType.attributesTable[pname];
+          this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(attributeName)}', this);`);
         }
       }
     }
@@ -304,9 +316,9 @@ export default class CodeGenerator {
 
     this.code.closeBlock();
 
-    if (propsType) {
+    if (propsType.codeName) {
       this.code.line();
-      this.emitCloudFormationPropertiesOverride(propsType);
+      this.emitCloudFormationPropertiesOverride(propsType.codeName);
     }
 
     this.closeClass(resourceName);
@@ -617,6 +629,25 @@ export default class CodeGenerator {
       throw new Error(`Resource ${name} does not have a RefKind; please annotate this new resources in @aws-cdk/cfnspec`);
     }
   }
+}
+
+/**
+ * Represents a PropsType that has been generated
+ */
+interface PropsInterfaceType {
+  /**
+   * Name in the code of the XxxProps type
+   *
+   * Missing if no type got generated because there were no properties.
+   */
+  codeName?: genspec.CodeName;
+
+  /**
+   * Name conversion table for properties on this props type
+   *
+   * Maps cfn name -> attribute name.
+   */
+  attributesTable: Dictionary<string>;
 }
 
 /**
