@@ -375,7 +375,6 @@ export class Table extends Construct {
     this.grant(principal, 'dynamodb:*');
   }
 
-
   /**
    * Validate the table construct.
    *
