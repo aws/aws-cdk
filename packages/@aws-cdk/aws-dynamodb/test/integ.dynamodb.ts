@@ -47,6 +47,7 @@ const tableWithGlobalAndLocalSecondaryIndex = new Table(stack, TABLE_WITH_GLOBAL
   pitrEnabled: true,
   sseEnabled: true,
   streamSpecification: StreamViewType.KeysOnly,
+  tags: { Environment: 'Production' },
   ttlAttributeName: 'timeToLive'
 });
 

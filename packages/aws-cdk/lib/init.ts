@@ -245,12 +245,12 @@ async function postInstallTypescript(canUseNetwork: boolean) {
 
 async function postInstallJava(canUseNetwork: boolean) {
   if (!canUseNetwork) {
-    print(`Please run ${colors.green(`./mvnw package`)}!`);
+    print(`Please run ${colors.green(`mvn package`)}!`);
     return;
   }
 
-  print(`Executing ${colors.green('./mvnw package')}...`);
-  await execute('./mvnw', 'package');
+  print(`Executing ${colors.green('mvn package')}...`);
+  await execute('mvn', 'package');
 }
 
 /**

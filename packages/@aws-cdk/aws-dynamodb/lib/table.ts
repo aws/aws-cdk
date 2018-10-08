@@ -1,6 +1,6 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
-import { Role } from '@aws-cdk/aws-iam';
-import { Construct, PolicyStatement, PolicyStatementEffect, ServicePrincipal } from '@aws-cdk/cdk';
+import { PolicyStatement, PolicyStatementEffect, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -56,6 +56,12 @@ export interface TableProps {
    * @default undefined, streams are disabled
    */
   streamSpecification?: StreamViewType;
+
+  /**
+   * The AWS resource tags to associate with the table.
+   * @default undefined
+   */
+  tags?: Tags;
 
   /**
    * The name of TTL attribute.
@@ -202,6 +208,7 @@ export class Table extends Construct {
       provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
       streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
+      tags: new TagManager(this, { initialTags: props.tags }),
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 

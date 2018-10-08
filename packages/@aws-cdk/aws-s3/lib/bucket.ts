@@ -137,7 +137,7 @@ export abstract class BucketRef extends cdk.Construct {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: cdk.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
@@ -280,18 +280,18 @@ export abstract class BucketRef extends cdk.Construct {
 
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResources(...resources)
       .addActions(...bucketActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
       // KMS permissions need to be granted both directions
-      identity.addToPolicy(new cdk.PolicyStatement()
+      identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...keyActions));
 
-      this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
+      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
         .addAllResources()
         .addPrincipal(identity.principal)
         .addActions(...keyActions));

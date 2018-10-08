@@ -1,5 +1,5 @@
-import { App, PolicyStatement, ServicePrincipal, Stack } from "@aws-cdk/cdk";
-import { Policy, Role } from "../lib";
+import { App, Stack } from "@aws-cdk/cdk";
+import { Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
 
 const app = new App();
 
