@@ -25,7 +25,7 @@ class ConsumerConstruct extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: ConsumerConstructProps) {
     super(parent, name);
 
-    props.bucket.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
+    props.bucket.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
   }
 }
 

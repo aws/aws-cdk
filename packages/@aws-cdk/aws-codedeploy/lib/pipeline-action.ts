@@ -1,4 +1,5 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -49,7 +50,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: props.applicationName,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(applicationArn)
       .addActions(
         'codedeploy:GetApplicationRevision',
@@ -62,7 +63,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: `${props.applicationName}/${props.deploymentGroupName}`,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(deploymentGroupArn)
       .addActions(
         'codedeploy:CreateDeployment',
@@ -75,7 +76,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: '*',
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(deployConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',

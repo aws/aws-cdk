@@ -1,4 +1,5 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './codebuild.generated';
@@ -43,7 +44,7 @@ export class CodeCommitSource extends BuildSource {
 
   public bind(project: Project) {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-    project.addToRolePolicy(new cdk.PolicyStatement()
+    project.addToRolePolicy(new iam.PolicyStatement()
       .addAction('codecommit:GitPull')
       .addResource(this.repo.repositoryArn));
   }

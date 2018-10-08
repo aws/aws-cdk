@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionRef } from './lambda-ref';
 
@@ -58,19 +59,19 @@ export class PipelineInvokeAction extends codepipeline.Action {
     });
 
     // allow pipeline to list functions
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:ListFunctions')
       .addAllResources());
 
     // allow pipeline to invoke this lambda functionn
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:InvokeFunction')
       .addResource(props.lambda.functionArn));
 
     // allow lambda to put job results for this pipeline.
     const addToPolicy = props.addPutJobResultPolicy !== undefined ? props.addPutJobResultPolicy : true;
     if (addToPolicy) {
-      props.lambda.addToRolePolicy(new cdk.PolicyStatement()
+      props.lambda.addToRolePolicy(new iam.PolicyStatement()
         .addAllResources() // to avoid cycles (see docs)
         .addAction('codepipeline:PutJobSuccessResult')
         .addAction('codepipeline:PutJobFailureResult'));

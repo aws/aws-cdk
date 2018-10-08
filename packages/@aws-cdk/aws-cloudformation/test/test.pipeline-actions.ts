@@ -170,11 +170,11 @@ class StageDouble implements cpapi.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<PolicyStatementJson>();
 
-  constructor(parent: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new cdk.ServicePrincipal('test') }) {
+  constructor(parent: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(parent, id, props);
   }
 
-  public addToPolicy(statement: cdk.PolicyStatement) {
+  public addToPolicy(statement: iam.PolicyStatement) {
     super.addToPolicy(statement);
     this.statements.push(statement.toJson());
   }

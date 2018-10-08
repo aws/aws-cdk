@@ -80,7 +80,7 @@ export class RuntimeValue extends cdk.Construct {
       return;
     }
 
-    principal.addToPolicy(new cdk.PolicyStatement()
+    principal.addToPolicy(new iam.PolicyStatement()
       .addResource(this.parameterArn)
       .addActions(...RuntimeValue.SSM_READ_ACTIONS));
   }

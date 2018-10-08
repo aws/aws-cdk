@@ -1,9 +1,9 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { ServicePrincipal } from '@aws-cdk/cdk';
 import codepipeline = require('../lib');
 
 const app = new cdk.App(process.argv);

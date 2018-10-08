@@ -203,7 +203,7 @@ export = {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
 
       expect(stack).toMatch({
         "Resources": {
@@ -239,7 +239,7 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      const x = new cdk.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const x = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
       test.deepEqual(cdk.resolve(x), {
         Action: 's3:ListBucket',
@@ -255,7 +255,7 @@ export = {
 
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.Unencrypted });
 
-      const p = new cdk.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement().addResource(bucket.arnForObjects('hello/world')).addAction('s3:GetObject');
 
       test.deepEqual(cdk.resolve(p), {
         Action: 's3:GetObject',
@@ -281,7 +281,7 @@ export = {
       const team = new iam.Group(stack, 'MyTeam');
 
       const resource = bucket.arnForObjects('home/', team.groupName, '/', user.userName, '/*');
-      const p = new cdk.PolicyStatement().addResource(resource).addAction('s3:GetObject');
+      const p = new iam.PolicyStatement().addResource(resource).addAction('s3:GetObject');
 
       test.deepEqual(cdk.resolve(p), {
         Action: 's3:GetObject',
@@ -354,9 +354,9 @@ export = {
       const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn });
 
       // this is a no-op since the bucket is external
-      bucket.addToResourcePolicy(new cdk.PolicyStatement().addResource('foo').addAction('bar'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement().addResource('foo').addAction('bar'));
 
-      const p = new cdk.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
+      const p = new iam.PolicyStatement().addResource(bucket.bucketArn).addAction('s3:ListBucket');
 
       // it is possible to obtain a permission statement for a ref
       test.deepEqual(cdk.resolve(p), {
@@ -375,7 +375,7 @@ export = {
     'import can also be used to import arbitrary ARNs'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.import(stack, 'ImportedBucket', { bucketArn: 'arn:aws:s3:::my-bucket' });
-      bucket.addToResourcePolicy(new cdk.PolicyStatement().addAllResources().addAction('*'));
+      bucket.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
 
       // at this point we technically didn't create any resources in the consuming stack.
       expect(stack).toMatch({});
@@ -383,7 +383,7 @@ export = {
       // but now we can reference the bucket
       // you can even use the bucket name, which will be extracted from the arn provided.
       const user = new iam.User(stack, 'MyUser');
-      user.addToPolicy(new cdk.PolicyStatement()
+      user.addToPolicy(new iam.PolicyStatement()
         .addResource(bucket.arnForObjects('my/folder/', bucket.bucketName))
         .addAction('s3:*'));
 

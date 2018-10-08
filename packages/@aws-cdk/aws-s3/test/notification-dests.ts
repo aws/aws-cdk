@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import s3notifications = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 
@@ -7,7 +8,7 @@ import cdk = require('@aws-cdk/cdk');
  */
 export class Topic extends cdk.Construct implements s3notifications.IBucketNotificationDestination {
   public readonly topicArn: string;
-  private readonly policy = new cdk.PolicyDocument();
+  private readonly policy = new iam.PolicyDocument();
   private readonly notifyingBucketPaths = new Set<string>();
 
   constructor(parent: cdk.Construct, id: string) {
@@ -31,7 +32,7 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
 
     // add permission to each source bucket
     if (!this.notifyingBucketPaths.has(bucketId)) {
-      this.policy.addStatement(new cdk.PolicyStatement()
+      this.policy.addStatement(new iam.PolicyStatement()
         .describe(`sid${this.policy.statementCount}`)
         .addServicePrincipal('s3.amazonaws.com')
         .addAction('sns:Publish')

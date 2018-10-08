@@ -132,12 +132,12 @@ export class CloudTrail extends cdk.Construct {
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
 
-    s3bucket.addToResourcePolicy(new cdk.PolicyStatement()
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(s3bucket.bucketArn)
       .addActions('s3:GetBucketAcl')
       .addServicePrincipal(cloudTrailPrincipal));
 
-    s3bucket.addToResourcePolicy(new cdk.PolicyStatement()
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(s3bucket.arnForObjects(new cdk.FnConcat('/AWSLogs/', new cdk.AwsAccountId())))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
@@ -149,10 +149,10 @@ export class CloudTrail extends cdk.Construct {
       });
       this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
-      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new cdk.ServicePrincipal(cloudTrailPrincipal) });
+      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
       const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
-      logsRole.addToPolicy(new cdk.PolicyStatement()
+      logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
         .addResource(streamArn));
       this.cloudWatchLogsRoleArn = logsRole.roleArn;

@@ -1,7 +1,8 @@
-import { ArnPrincipal, Construct, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
+import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface UserProps {

@@ -1,9 +1,9 @@
 import autoscaling = require("@aws-cdk/aws-autoscaling");
 import codedeploylb = require("@aws-cdk/aws-codedeploy-api");
 import ec2 = require("@aws-cdk/aws-ec2");
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require("@aws-cdk/aws-s3");
 import cdk = require("@aws-cdk/cdk");
-import iam = require("../../aws-iam/lib/role");
 import { ServerApplication, ServerApplicationRef } from "./application";
 import { cloudformation } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
@@ -174,7 +174,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     this.application = props.application || new ServerApplication(this, 'Application');
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codedeploy.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
       managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
     });
 

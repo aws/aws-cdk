@@ -1,4 +1,5 @@
-import { App, AwsAccountId, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { PolicyStatement } from '@aws-cdk/aws-iam';
+import { App, AwsAccountId, Stack } from '@aws-cdk/cdk';
 import { EncryptionKey } from '../lib';
 
 const app = new App(process.argv);

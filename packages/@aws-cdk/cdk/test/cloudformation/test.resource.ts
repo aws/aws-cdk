@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement,
+    FnEquals, FnNot, HashedAddressingScheme, IDependable,
     RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
 
 export = {
@@ -100,25 +100,21 @@ export = {
     new Resource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
-        Perm: new PolicyStatement().addResource(res.arn).addActions('counter:add', 'counter:remove')
+        Perm: res.arn
       }
     });
 
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
-      MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
-      MyResource2: {
-        Type: "Type",
-        Properties: {
-        Perm: {
-          Effect: "Allow",
-          Action: [ "counter:add", "counter:remove" ],
-          Resource: {
-          "Fn::GetAtt": [ "MyResource", "Arn" ]
+        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource2: {
+          Type: "Type",
+          Properties: {
+            Perm: {
+              "Fn::GetAtt": [ "MyResource", "Arn" ]
+            }
           }
         }
-        }
-      }
       }
     });
 

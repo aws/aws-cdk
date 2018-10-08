@@ -170,10 +170,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     if (!this.cloudWatchLogsRole) {
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        assumedBy: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
       });
-      this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
-      this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
+      this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
+      this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
     }
 
     // We've now made it possible for CloudWatch events to write to us. In case the LogGroup is in a
@@ -213,7 +213,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
       role: this.cloudWatchLogsRole!
     });
 
-    dest.addToPolicy(new cdk.PolicyStatement()
+    dest.addToPolicy(new iam.PolicyStatement()
       .addAction('logs:PutSubscriptionFilter')
       .addAwsAccountPrincipal(sourceStack.env.account)
       .addAllResources());
@@ -222,13 +222,13 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
   }
 
   private grant(identity: iam.IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.streamArn)
       .addActions(...actions.streamActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
-      identity.addToPolicy(new cdk.PolicyStatement()
+      identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...actions.keyActions));
     }

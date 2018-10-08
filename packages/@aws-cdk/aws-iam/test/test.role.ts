@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { Resource, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Role } from '../lib';
+import { FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export = {
   'default role'(test: Test) {

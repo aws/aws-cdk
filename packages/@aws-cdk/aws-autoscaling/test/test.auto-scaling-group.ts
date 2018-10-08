@@ -1,5 +1,6 @@
 import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
@@ -137,7 +138,7 @@ export = {
       vpc
     });
 
-    fleet.addToRolePolicy(new cdk.PolicyStatement()
+    fleet.addToRolePolicy(new iam.PolicyStatement()
       .addAction('test:SpecialName')
       .addAllResources());
 

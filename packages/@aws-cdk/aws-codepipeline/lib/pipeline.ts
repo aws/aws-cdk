@@ -89,7 +89,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     this.artifactBucket = propsBucket;
 
     this.role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codepipeline.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
     });
 
     const codePipeline = new cloudformation.PipelineResource(this, 'Resource', {
@@ -133,7 +133,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
   /**
    * Adds a statement to the pipeline role.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
   }
 
@@ -154,10 +154,10 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     // role per pipeline.
     if (!this.eventsRole) {
       this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
       });
 
-      this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+      this.eventsRole.addToPolicy(new iam.PolicyStatement()
         .addResource(this.pipelineArn)
         .addAction('codepipeline:StartPipelineExecution'));
     }

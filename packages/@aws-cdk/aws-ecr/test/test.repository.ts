@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
@@ -169,7 +170,7 @@ export = {
     const repo = new ecr.Repository(stack, 'Repo');
 
     // WHEN
-    repo.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
+    repo.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
 
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {

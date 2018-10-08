@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
@@ -45,7 +46,7 @@ export class Repository extends RepositoryRef {
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
-  private policyDocument?: cdk.PolicyDocument;
+  private policyDocument?: iam.PolicyDocument;
 
   constructor(parent: cdk.Construct, id: string, props: RepositoryProps = {}) {
     super(parent, id);
@@ -70,9 +71,9 @@ export class Repository extends RepositoryRef {
     this.repositoryArn = resource.repositoryArn;
   }
 
-  public addToResourcePolicy(statement: cdk.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (this.policyDocument === undefined) {
-      this.policyDocument = new cdk.PolicyDocument();
+      this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatement(statement);
   }

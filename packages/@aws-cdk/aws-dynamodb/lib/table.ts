@@ -1,6 +1,6 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
-import { Role } from '@aws-cdk/aws-iam';
-import { Construct, PolicyStatement, PolicyStatementEffect, ServicePrincipal, TagManager, Tags } from '@aws-cdk/cdk';
+import { PolicyStatement, PolicyStatementEffect, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';

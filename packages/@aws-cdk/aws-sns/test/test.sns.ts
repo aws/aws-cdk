@@ -506,10 +506,10 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new cdk.PolicyStatement()
+    topic.addToResourcePolicy(new iam.PolicyStatement()
       .addAllResources()
       .addActions('sns:*')
-      .addPrincipal(new cdk.ArnPrincipal('arn')));
+      .addPrincipal(new iam.ArnPrincipal('arn')));
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
@@ -618,8 +618,8 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new cdk.PolicyStatement().addAction('statement0'));
-    topic.addToResourcePolicy(new cdk.PolicyStatement().addAction('statement1'));
+    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0'));
+    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement1'));
 
     expect(stack).toMatch({
       "Resources": {

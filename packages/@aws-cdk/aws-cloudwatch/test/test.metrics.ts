@@ -9,7 +9,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new cdk.Anyone()
+      assumedBy: new iam.Anyone()
     });
 
     // WHEN

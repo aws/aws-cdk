@@ -1,6 +1,7 @@
-import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
+import { Construct, IDependable, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation } from './iam.generated';
+import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { Role } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';

@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import lambda = require('../lib');
 
@@ -11,7 +12,7 @@ const fn = new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.NodeJS610,
 });
 
-fn.addToRolePolicy(new cdk.PolicyStatement().addAllResources().addAction('*'));
+fn.addToRolePolicy(new iam.PolicyStatement().addAllResources().addAction('*'));
 
 const version = fn.addVersion('1');
 

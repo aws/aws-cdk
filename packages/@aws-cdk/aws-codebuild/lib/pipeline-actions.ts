@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ProjectRef } from './project';
 
@@ -53,7 +54,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
       'codebuild:StopBuild',
     ];
 
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(props.project.projectArn)
       .addActions(...actions));
 
