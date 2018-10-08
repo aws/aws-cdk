@@ -92,6 +92,12 @@ export interface IStage {
    */
   readonly _internal: IInternalStage;
 
+  /* Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
+   *
+   * @param identity the IAM Identity to grant the permissions to
+   */
+  grantPipelineBucketRead(identity: iam.IPrincipal): void;
+
   /**
    * Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity.
    *
@@ -237,25 +243,6 @@ export abstract class Action extends cdk.Construct {
     return this;
   }
 }
-
-// export class TestAction extends Action {
-//   constructor(parent: Stage, name: string, provider: string, artifactBounds: ActionArtifactBounds, configuration?: any) {
-//     super(parent, name, {
-//       category: ActionCategory.Test,
-//       provider,
-//       artifactBounds,
-//       configuration
-//     });
-//   }
-// }
-
-// export class CodeBuildTest extends TestAction {
-//   constructor(parent: Stage, name: string, project: codebuild.ProjectArnAttribute) {
-//     super(parent, name, 'CodeBuild', { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 1 }, {
-//       ProjectName: project
-//     });
-//   }
-// }
 
 // export class ElasticBeanstalkDeploy extends DeployAction {
 //   constructor(parent: Stage, name: string, applicationName: string, environmentName: string) {
