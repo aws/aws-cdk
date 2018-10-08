@@ -86,10 +86,10 @@ class ChatAppFunction extends lambda.Function {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 // Add the stack to the app
 // (apps can host many stacks, for example, one for each region)
 new MyStack(app, 'ChatAppStack', { env: { region: 'us-west-2' } });
 
-process.stdout.write(app.run());
+app.run();

@@ -47,7 +47,7 @@ And then, add instances of this class to your app:
 
 .. code-block:: js
 
-    const app = new App(process.argv);
+    const app = new App();
 
     new MyStack(app, 'NorthAmerica', { env: { region: 'us-east-1' } });
     new MyStack(app, 'Europe', { env: { region: 'us-west-2' } });

@@ -2,7 +2,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import lambda = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'lambda-bucket-notifications');
 
@@ -19,7 +19,7 @@ const bucketB = new s3.Bucket(stack, 'YourBucket');
 bucketA.onObjectCreated(fn, { suffix: '.png' });
 bucketB.onEvent(s3.EventType.ObjectRemoved, fn);
 
-process.stdout.write(app.run());
+app.run();
 
 // tslint:disable:no-console
 function handler(event: any, _context: any, callback: any) {

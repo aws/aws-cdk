@@ -6,7 +6,7 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-pipeline-event-target');
 
@@ -46,4 +46,4 @@ sourceAction.onStateChange('OnActionStateChange', topic).addEventPattern({
   detail: { state: [ 'STARTED' ] }
 });
 
-process.stdout.write(app.run());
+app.run();

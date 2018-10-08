@@ -4,7 +4,7 @@ import lb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import codedeploy = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-server-dg');
 
@@ -27,4 +27,4 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   loadBalancer: elb,
 });
 
-process.stdout.write(app.run());
+app.run();

@@ -12,8 +12,8 @@ class SNSInteg extends Stack {
   }
 }
 
-const app = new App(process.argv);
+const app = new App();
 
 new SNSInteg(app, 'SNSInteg');
 
-process.stdout.write(app.run());
+app.run();

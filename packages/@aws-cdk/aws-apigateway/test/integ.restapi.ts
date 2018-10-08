@@ -55,8 +55,8 @@ class Test extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new Test(app, 'test-apigateway-restapi');
 
-process.stdout.write(app.run());
+app.run();

@@ -2,7 +2,7 @@ import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, AwsAccountId, Stack } from '@aws-cdk/cdk';
 import { EncryptionKey } from '../lib';
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, `aws-cdk-kms-1`);
 
@@ -15,4 +15,4 @@ key.addToResourcePolicy(new PolicyStatement()
 
 key.addAlias('alias/bar');
 
-process.stdout.write(app.run());
+app.run();

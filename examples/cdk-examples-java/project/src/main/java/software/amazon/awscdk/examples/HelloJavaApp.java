@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 public class HelloJavaApp {
     public static void main(final String[] args) {
-        App app = new App(Arrays.asList(args));
+        App app = new App();
 
         new HelloJavaStack(app, "hello-cdk");
 
-        System.out.println(app.run());
+        app.run();
     }
 }

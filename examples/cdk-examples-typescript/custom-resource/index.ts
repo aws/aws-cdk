@@ -95,10 +95,10 @@ class FailAfterCreatingStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new SucceedingStack(app, 'SucceedingStack');
 new FailCreationStack(app, 'FailCreationStack');
 new FailAfterCreatingStack(app, 'FailAfterCreatingStack');
 
-process.stdout.write(app.run());
+app.run();

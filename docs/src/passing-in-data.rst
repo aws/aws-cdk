@@ -155,7 +155,7 @@ Finally, connect the dots in your app.
 
 .. code-block:: ts
 
-    const app = new cdk.App(process.argv);
+    const app = new cdk.App();
 
     const myStack = new HelloCdkStack(app, "HelloCdkStack");
 
@@ -163,7 +163,7 @@ Finally, connect the dots in your app.
         theBucketRefProps: myStack.myBucketRefProps
     });
 
-    process.stdout.write(app.run());
+    app.run();
 
 .. _using_cfn_parameter:
 

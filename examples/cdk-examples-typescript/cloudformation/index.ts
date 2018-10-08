@@ -11,8 +11,8 @@ class CloudFormationExample extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new CloudFormationExample(app);
 
-process.stdout.write(app.run());
+app.run();

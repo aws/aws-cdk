@@ -18,7 +18,12 @@ export function expect(stack: api.SynthesizedStack | cdk.Stack, skipValidation =
     sstack = {
       name: 'test',
       template: stack.toCloudFormation(),
-      metadata: {}
+      metadata: {},
+      environment: {
+        name: 'test',
+        account: 'test',
+        region: 'test'
+      }
     };
   } else {
     sstack = stack;

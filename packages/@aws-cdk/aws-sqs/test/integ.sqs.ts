@@ -1,7 +1,7 @@
 import { App, Output, Stack } from '@aws-cdk/cdk';
 import { Queue } from '../lib';
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-sqs');
 
@@ -16,4 +16,4 @@ new Queue(stack, 'FifoQueue', {
 
 new Output(stack, 'QueueUrl', { value: queue.queueUrl });
 
-process.stdout.write(app.run());
+app.run();

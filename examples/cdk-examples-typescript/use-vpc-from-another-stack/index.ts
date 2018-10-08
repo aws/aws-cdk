@@ -8,7 +8,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const vpcStack = new cdk.Stack(app, 'VPCStack');
 
 const exportedVpc = new ec2.VpcNetwork(vpcStack, 'VPC', {
@@ -38,4 +38,4 @@ new elb.LoadBalancer(appStack, 'LB', {
   targets: [asg]
 });
 
-process.stdout.write(app.run());
+app.run();

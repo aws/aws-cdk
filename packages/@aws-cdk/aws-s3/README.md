@@ -169,7 +169,7 @@ class Consumer extends Stack {
 Now, let's define our CDK app to bind these together:
 
 ```ts
-const app = new App(process.argv);
+const app = new App();
 
 const producer = new Producer(app, 'produce');
 
@@ -177,7 +177,7 @@ new Consumer(app, 'consume', {
     userBucketRef: producer.myBucketRef
 });
 
-process.stdout.write(app.run());
+app.run();
 ```
 
 ### Bucket Notifications

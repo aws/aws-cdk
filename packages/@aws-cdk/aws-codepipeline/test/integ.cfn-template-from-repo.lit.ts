@@ -3,7 +3,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
 /// !show
@@ -44,4 +44,4 @@ new cfn.PipelineExecuteChangeSetAction(stack, 'ExecuteChanges', {
 });
 /// !hide
 
-process.stdout.write(app.run());
+app.run();
