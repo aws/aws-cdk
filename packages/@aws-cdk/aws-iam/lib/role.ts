@@ -1,6 +1,7 @@
-import { ArnPrincipal, Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement } from '@aws-cdk/cdk';
+import { Construct, IDependable } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
 import { IIdentityResource, IPrincipal, Policy } from './policy';
+import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
 export interface RoleProps {
