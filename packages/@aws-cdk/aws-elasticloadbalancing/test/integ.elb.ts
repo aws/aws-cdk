@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import elb = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-elb-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'VPC', {
@@ -23,4 +23,4 @@ new elb.LoadBalancer(stack, 'LB', {
   targets: []
 });
 
-process.stdout.write(app.run());
+app.run();

@@ -8,7 +8,7 @@ import sns = require('../lib');
 // Connect the topic with a queue. This means that the queue should have
 // a message sent to it every minute.
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target');
 
@@ -22,4 +22,4 @@ topic.subscribeQueue(queue);
 
 event.addTarget(topic);
 
-process.stdout.write(app.run());
+app.run();
