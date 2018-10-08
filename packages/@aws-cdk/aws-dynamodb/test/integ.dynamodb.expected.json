@@ -20,7 +20,8 @@
           }
         ],
         "GlobalSecondaryIndexes": [],
-        "LocalSecondaryIndexes": []
+        "LocalSecondaryIndexes": [],
+        "Tags": []
       }
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
@@ -259,6 +260,12 @@
         "StreamSpecification": {
           "StreamViewType": "KEYS_ONLY"
         },
+        "Tags": [
+          {
+            "Key": "Environment",
+            "Value": "Production"
+          }
+        ],
         "TimeToLiveSpecification": {
           "AttributeName": "timeToLive",
           "Enabled": true
@@ -306,7 +313,8 @@
             }
           }
         ],
-        "LocalSecondaryIndexes": []
+        "LocalSecondaryIndexes": [],
+        "Tags": []
       }
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
@@ -358,7 +366,8 @@
               "ProjectionType": "ALL"
             }
           }
-        ]
+        ],
+        "Tags": []
       }
     }
   }
