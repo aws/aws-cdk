@@ -78,6 +78,20 @@ export interface IStage {
  */
 export interface CommonActionProps {
   /**
+   * The runOrder property for this Action.
+   * RunOrder determines the relative order in which multiple Actions in the same Stage execute.
+   *
+   * @default 1
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html
+   */
+  runOrder?: number;
+}
+
+/**
+ * Common properties shared by all Action Constructs.
+ */
+export interface CommonActionConstructProps {
+  /**
    * The Pipeline Stage to add this Action to.
    */
   stage: IStage;
@@ -86,7 +100,7 @@ export interface CommonActionProps {
 /**
  * Construction properties of the low-level {@link Action Action class}.
  */
-export interface ActionProps extends CommonActionProps {
+export interface ActionProps extends CommonActionProps, CommonActionConstructProps {
   category: ActionCategory;
   provider: string;
   artifactBounds: ActionArtifactBounds;
@@ -127,7 +141,7 @@ export abstract class Action extends cdk.Construct {
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#action-requirements
    */
-  public runOrder: number;
+  public readonly runOrder: number;
 
   public readonly owner: string;
   public readonly version: string;
@@ -148,7 +162,7 @@ export abstract class Action extends cdk.Construct {
     this.provider = props.provider;
     this.configuration = props.configuration;
     this.artifactBounds = props.artifactBounds;
-    this.runOrder = 1;
+    this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
     this.stage = props.stage;
 
     this.stage._attachAction(this);
