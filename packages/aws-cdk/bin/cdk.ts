@@ -5,11 +5,11 @@ import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
+import YAML = require('js-yaml');
 import minimatch = require('minimatch');
 import os = require('os');
 import path = require('path');
 import util = require('util');
-import YAML = require('yamljs');
 import yargs = require('yargs');
 import cdkUtil = require('../lib/util');
 
@@ -676,7 +676,7 @@ async function initCommandLine() {
     /* Attempt to parse YAML, fall back to JSON. */
     function parseTemplate(text: string): any {
       try {
-        return YAML.parse(text);
+        return YAML.safeLoad(text);
       } catch (e) {
         return JSON.parse(text);
       }
@@ -785,7 +785,7 @@ async function initCommandLine() {
     } else {
       const inlineJsonAfterDepth = 16;
       const indentWidth = 4;
-      return YAML.stringify(object, inlineJsonAfterDepth, indentWidth);
+      return YAML.safeDump(object, { indent: indentWidth, flowLevel: inlineJsonAfterDepth });
     }
   }
 }
