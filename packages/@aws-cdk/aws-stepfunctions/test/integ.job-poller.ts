@@ -39,7 +39,7 @@ class JobPollerStack extends cdk.Stack {
 
         new stepfunctions.StateMachine(this, 'StateMachine', {
             definition: chain,
-            timeoutSeconds: 30
+            timeoutSec: 30
         });
     }
 }

@@ -34,29 +34,49 @@ export interface StateMachineProps {
      *
      * @default No timeout
      */
-    timeoutSeconds?: number;
+    timeoutSec?: number;
 }
 
 /**
  * Define a StepFunctions State Machine
  */
-export class StateMachine extends cdk.Construct {
+export class StateMachine extends cdk.Construct implements IStateMachine {
+    /**
+     * Import a state machine
+     */
+    public static import(parent: cdk.Construct, id: string, props: ImportedStateMachineProps) {
+        return new ImportedStateMachine(parent, id, props);
+    }
+
+    /**
+     * Execution role of this state machine
+     */
     public readonly role: iam.Role;
+
+    /**
+     * The name of the state machine
+     */
     public readonly stateMachineName: string;
+
+    /**
+     * The ARN of the state machine
+     */
     public readonly stateMachineArn: string;
 
-    /** A role used by CloudWatch events to trigger a build */
+    /**
+     * A role used by CloudWatch events to start the State Machine
+     */
     private eventsRole?: iam.Role;
 
     constructor(parent: cdk.Construct, id: string, props: StateMachineProps) {
         super(parent, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('states.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+            assumedBy: new cdk.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
-        graph.timeoutSeconds = props.timeoutSeconds;
+        graph.timeoutSeconds = props.timeoutSec;
 
         const resource = new cloudformation.StateMachineResource(this, 'Resource', {
             stateMachineName: props.stateMachineName,
@@ -167,5 +187,42 @@ export class StateMachine extends cdk.Construct {
      */
     public metricStarted(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
         return this.metric('ExecutionsStarted', props);
+    }
+
+    /**
+     * Export this state machine
+     */
+    public export(): ImportedStateMachineProps {
+        return {
+            stateMachineArn: new cdk.Output(this, 'StateMachineArn', { value: this.stateMachineArn }).makeImportValue().toString(),
+        };
+    }
+}
+
+/**
+ * A State Machine
+ */
+export interface IStateMachine {
+    /**
+     * The ARN of the state machine
+     */
+    readonly stateMachineArn: string;
+}
+
+/**
+ * Properties for an imported state machine
+ */
+export interface ImportedStateMachineProps {
+    /**
+     * The ARN of the state machine
+     */
+    stateMachineArn: string;
+}
+
+class ImportedStateMachine extends cdk.Construct implements IStateMachine {
+    public readonly stateMachineArn: string;
+    constructor(parent: cdk.Construct, id: string, props: ImportedStateMachineProps) {
+        super(parent, id);
+        this.stateMachineArn = props.stateMachineArn;
     }
 }

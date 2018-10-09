@@ -18,10 +18,6 @@ export abstract class StateMachineFragment extends cdk.Construct implements ICha
      */
     public abstract readonly endStates: INextable[];
 
-    constructor(parent: cdk.Construct, id: string) {
-        super(parent, id);
-    }
-
     /**
      * Prefix the IDs of all states in this state machine fragment
      *
@@ -46,7 +42,7 @@ export abstract class StateMachineFragment extends cdk.Construct implements ICha
      * your paths accordingly. For example, change 'outputPath' to
      * '$[0]'.
      */
-    public asSingleState(options: SingleStateOptions = {}): Parallel {
+    public toSingleState(options: SingleStateOptions = {}): Parallel {
         const stateId = options.stateId || this.id;
         this.prefixStates(options.prefixStates || `${stateId}: `);
 

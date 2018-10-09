@@ -280,7 +280,7 @@ export = {
             const stack = new cdk.Stack();
 
             const reusable = new SimpleChain(stack, 'Hello');
-            const state = reusable.asSingleState();
+            const state = reusable.toSingleState();
 
             test.deepEqual(render(state), {
                 StartAt: 'Hello',
@@ -467,7 +467,7 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            const chain = task1.next(task2).asSingleState('Wrapped').onError(errorHandler);
+            const chain = task1.next(task2).toSingleState('Wrapped').onError(errorHandler);
 
             // THEN
             test.deepEqual(render(chain), {

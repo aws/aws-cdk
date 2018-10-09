@@ -94,11 +94,13 @@ export class Parallel extends State implements INextable {
     }
 
     /**
-     * Define a branch to run along all other branches
+     * Define one or more branches to run in parallel
      */
-    public branch(branch: IChainable): Parallel {
-        const name = `Parallel '${this.stateId}' branch ${this.branches.length + 1}`;
-        super.addBranch(new StateGraph(branch.startState, name));
+    public branch(...branches: IChainable[]): Parallel {
+        for (const branch of branches) {
+            const name = `Parallel '${this.stateId}' branch ${this.branches.length + 1}`;
+            super.addBranch(new StateGraph(branch.startState, name));
+        }
         return this;
     }
 

@@ -64,7 +64,7 @@ export class Chain implements IChainable {
      * your paths accordingly. For example, change 'outputPath' to
      * '$[0]'.
      */
-    public asSingleState(id: string, props: ParallelProps = {}): Parallel {
+    public toSingleState(id: string, props: ParallelProps = {}): Parallel {
         return new Parallel(this.startState, id, props).branch(this);
     }
 }

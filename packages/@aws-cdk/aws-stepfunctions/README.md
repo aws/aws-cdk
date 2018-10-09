@@ -1,7 +1,9 @@
 ## AWS Step Functions Construct Library
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
-serverless workflows. Using objects. Defining a workflow looks like this:
+serverless workflows. Using objects. Defining a workflow looks like this
+(for the [Step Functions Job Poller
+example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
 ```ts
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
@@ -9,6 +11,7 @@ const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
 
 const submitJob = new stepfunctions.Task(this, 'Submit Job', {
     resource: submitLambda,
+    // Put Lambda's result here in the execution's state object
     resultPath: '$.guid',
 });
 
@@ -16,6 +19,8 @@ const waitX = new stepfunctions.Wait(this, 'Wait X Seconds', { secondsPath: '$.w
 
 const getStatus = new stepfunctions.Task(this, 'Get Job Status', {
     resource: getStatusLambda,
+    // Pass just the field named "guid" into the Lambda, put the
+    // Lambda's result in a field called "status"
     inputPath: '$.guid',
     resultPath: '$.status',
 });
@@ -27,6 +32,8 @@ const jobFailed = new stepfunctions.Fail(this, 'Job Failed', {
 
 const finalStatus = new stepfunctions.Task(this, 'Get Final Job Status', {
     resource: getStatusLambda,
+    // Use "guid" field as input, output of the Lambda becomes the
+    // entire state machine output.
     inputPath: '$.guid',
 });
 
@@ -34,13 +41,14 @@ const definition = submitJob
     .next(waitX)
     .next(getStatus)
     .next(new stepfunctions.Choice(this, 'Job Complete?')
+        // Look at the "status" field
         .on(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
         .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
         .otherwise(waitX));
 
 new stepfunctions.StateMachine(this, 'StateMachine', {
     definition,
-    timeoutSeconds: 300
+    timeoutSec: 300
 });
 ```
 
@@ -85,7 +93,9 @@ information, see the States Language spec.
 ### Task
 
 A `Task` represents some work that needs to be done. It takes a `resource`
-property that is either a Lambda `Function` or a Step Functions `Activity`.
+property that is either a Lambda `Function` or a Step Functions `Activity`
+(A Lambda Function runs your task's code on AWS Lambda, whereas an `Activity`
+is used to run your task's code on an arbitrary compute fleet you manage).
 
 ```ts
 const task = new stepfunctions.Task(this, 'Invoke The Lambda', {
@@ -310,7 +320,49 @@ that you run yourself, probably on EC2, will pull jobs from the Activity and
 submit the results of individual jobs back.
 
 You need the ARN to do so, so if you use Activities be sure to pass the Activity
-ARN into your worker pool.
+ARN into your worker pool:
+
+```ts
+const activity = new stepfunctions.Activity(this, 'Activity');
+
+// Read this Output from your application and use it to poll for work on
+// the activity.
+new cdk.Output(this, 'ActivityArn', { value: activity.activityArn });
+```
+
+## Metrics
+
+`Task` object expose various metrics on the execution of that particular task. For example,
+to create an alarm on a particular task failing:
+
+```ts
+new cloudwatch.Alarm(this, 'TaskAlarm', {
+    metric: task.metricFailed(),
+    threshold: 1,
+    evaluationPeriods: 1,
+});
+```
+
+There are also metrics on the complete state machine:
+
+```ts
+new cloudwatch.Alarm(this, 'StateMachineAlarm', {
+    metric: stateMachine.metricFailed(),
+    threshold: 1,
+    evaluationPeriods: 1,
+});
+```
+
+And there are metrics on the capacity of all state machines in your account:
+
+```ts
+new cloudwatch.Alarm(this, 'ThrottledAlarm', {
+    metric: StateTransitionMetrics.metricThrottledEvents(),
+    threshold: 10,
+    evaluationPeriods: 2,
+});
+```
+
 
 ## Future work
 
