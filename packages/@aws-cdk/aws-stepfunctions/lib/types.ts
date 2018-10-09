@@ -12,8 +12,19 @@ export interface INextable {
  * Interface for objects that can be used in a Chain
  */
 export interface IChainable {
+    /**
+     * Descriptive identifier for this chainable
+     */
     readonly id: string;
+
+    /**
+     * The start state of this chainable
+     */
     readonly startState: State;
+
+    /**
+     * The chainable end state(s) of this chainable
+     */
     readonly endStates: INextable[];
 }
 

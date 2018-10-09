@@ -35,8 +35,20 @@ export class Chain implements IChainable {
      */
     public readonly id: string;
 
-    private constructor(public readonly startState: State, public readonly endStates: INextable[], private readonly lastAdded: IChainable) {
+    /**
+     * The start state of this chain
+     */
+    public readonly startState: State;
+
+    /**
+     * The chainable end state(s) of this chain
+     */
+    public readonly endStates: INextable[];
+
+    private constructor(startState: State, endStates: INextable[], private readonly lastAdded: IChainable) {
         this.id = lastAdded.id;
+        this.startState = startState;
+        this.endStates = endStates;
     }
 
     /**
