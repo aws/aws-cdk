@@ -30,6 +30,13 @@ export interface BucketRefProps {
    * policy, won't work.
    */
   bucketName?: string;
+
+  /**
+   * The domain name of the bucket.
+   *
+   * @default Inferred from bucket name
+   */
+  bucketDomainName?: string;
 }
 
 /**
@@ -73,6 +80,11 @@ export abstract class BucketRef extends cdk.Construct {
   public abstract readonly bucketName: string;
 
   /**
+   * The domain of the bucket.
+   */
+  public abstract readonly domainName: string;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.EncryptionKeyRef;
@@ -98,6 +110,7 @@ export abstract class BucketRef extends cdk.Construct {
     return {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
     };
   }
 
@@ -124,7 +137,7 @@ export abstract class BucketRef extends cdk.Construct {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: cdk.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
@@ -267,18 +280,18 @@ export abstract class BucketRef extends cdk.Construct {
 
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResources(...resources)
       .addActions(...bucketActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
       // KMS permissions need to be granted both directions
-      identity.addToPolicy(new cdk.PolicyStatement()
+      identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...keyActions));
 
-      this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
+      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
         .addAllResources()
         .addPrincipal(identity.principal)
         .addActions(...keyActions));
@@ -701,6 +714,7 @@ export interface NotificationKeyFilter {
 class ImportedBucketRef extends BucketRef {
   public readonly bucketArn: string;
   public readonly bucketName: string;
+  public readonly domainName: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   protected policy?: BucketPolicy;
@@ -716,7 +730,12 @@ class ImportedBucketRef extends BucketRef {
 
     this.bucketArn = parseBucketArn(props);
     this.bucketName = bucketName;
+    this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;
     this.policy = undefined;
+  }
+
+  private generateDomainName() {
+    return `${this.bucketName}.s3.amazonaws.com`;
   }
 }

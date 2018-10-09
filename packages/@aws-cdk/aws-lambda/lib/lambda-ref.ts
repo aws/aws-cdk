@@ -182,7 +182,7 @@ export abstract class FunctionRef extends cdk.Construct
     });
   }
 
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
     }
@@ -221,7 +221,7 @@ export abstract class FunctionRef extends cdk.Construct
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
-        principal: new cdk.ServicePrincipal('events.amazonaws.com'),
+        principal: new iam.ServicePrincipal('events.amazonaws.com'),
         sourceArn: ruleArn
       });
     }
@@ -289,7 +289,7 @@ export abstract class FunctionRef extends cdk.Construct
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        principal: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -318,7 +318,7 @@ export abstract class FunctionRef extends cdk.Construct
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         sourceAccount: new cdk.AwsAccountId().toString(),
-        principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
+        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });
     }
@@ -340,14 +340,14 @@ export abstract class FunctionRef extends cdk.Construct
       metricPrefixSingular: 'LambdaFunction',
       metricPrefixPlural: 'LambdaFunctions',
       metricDimensions: { LambdaFunctionArn: this.functionArn },
-      policyStatements: [new cdk.PolicyStatement()
+      policyStatements: [new iam.PolicyStatement()
         .addResource(this.functionArn)
         .addActions("lambda:InvokeFunction")
       ]
     };
   }
 
-  private parsePermissionPrincipal(principal?: cdk.PolicyPrincipal) {
+  private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
     if (!principal) {
       return undefined;
     }
@@ -355,11 +355,11 @@ export abstract class FunctionRef extends cdk.Construct
     // use duck-typing, not instance of
 
     if ('accountId' in principal) {
-      return (principal as cdk.AccountPrincipal).accountId;
+      return (principal as iam.AccountPrincipal).accountId;
     }
 
     if (`service` in principal) {
-      return (principal as cdk.ServicePrincipal).service;
+      return (principal as iam.ServicePrincipal).service;
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +

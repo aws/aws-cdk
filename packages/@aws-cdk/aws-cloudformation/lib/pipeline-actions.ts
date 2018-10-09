@@ -88,6 +88,11 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ActionMode: 'CHANGE_SET_EXECUTE',
       ChangeSetName: props.changeSetName,
     });
+
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('cloudformation:ExecuteChangeSet')
+      .addResource(stackArnFromName(props.stackName))
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
@@ -196,11 +201,11 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       this.role = props.role;
     } else {
       this.role = new iam.Role(this, 'Role', {
-        assumedBy: new cdk.ServicePrincipal('cloudformation.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
       });
 
       if (props.fullPermissions) {
-        this.role.addToPolicy(new cdk.PolicyStatement().addAction('*').addAllResources());
+        this.role.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
       }
     }
   }
@@ -208,7 +213,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
   /**
    * Add statement to the service role assumed by CloudFormation while executing this action.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     return this.role.addToPolicy(statement);
   }
 }
@@ -243,6 +248,24 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     });
 
     this.addInputArtifact(props.templatePath.artifact);
+    if (props.templateConfiguration && props.templateConfiguration.artifact.name !== props.templatePath.artifact.name) {
+      this.addInputArtifact(props.templateConfiguration.artifact);
+    }
+
+    const stackArn = stackArnFromName(props.stackName);
+    // Allow the pipeline to check for Stack & ChangeSet existence
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('cloudformation:DescribeStacks')
+      .addResource(stackArn));
+    // Allow the pipeline to create & delete the specified ChangeSet
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
+      .addResource(stackArn)
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+    // Allow the pipeline to pass this actions' role to CloudFormation
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('iam:PassRole')
+      .addResource(this.role.roleArn));
   }
 }
 
@@ -336,4 +359,12 @@ export enum CloudFormationCapabilities {
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
    */
   NamedIAM = 'CAPABILITY_NAMED_IAM'
+}
+
+function stackArnFromName(stackName: string): string {
+  return cdk.ArnUtils.fromComponents({
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${stackName}/*`
+  });
 }

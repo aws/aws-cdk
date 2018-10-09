@@ -48,7 +48,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
     super(parent, id);
 
     const role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns: [
         cdk.ArnUtils.fromComponents({
           service: 'iam',
@@ -61,7 +61,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
     });
 
     // handler allows to put bucket notification on s3 buckets.
-    role.addToPolicy(new cdk.PolicyStatement()
+    role.addToPolicy(new iam.PolicyStatement()
       .addAction('s3:PutBucketNotification')
       .addAllResources());
 

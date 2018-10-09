@@ -1,4 +1,5 @@
-import { Construct, IDependable, PolicyDocument } from '@aws-cdk/cdk';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Construct, IDependable } from '@aws-cdk/cdk';
 import { cloudformation } from './sns.generated';
 import { TopicRef } from './topic-ref';
 

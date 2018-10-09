@@ -25,7 +25,7 @@ class ConsumerConstruct extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: ConsumerConstructProps) {
     super(parent, name);
 
-    props.bucket.addToResourcePolicy(new cdk.PolicyStatement().addAction('*'));
+    props.bucket.addToResourcePolicy(new iam.PolicyStatement().addAction('*'));
   }
 }
 
@@ -57,7 +57,7 @@ class Consumer extends cdk.Stack {
 // first. In the future the toolkit will be able to understand the relationships
 // between the stacks and will deploy them in order.
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const producer = new Producer(app, 'produce');
 
@@ -65,4 +65,4 @@ new Consumer(app, 'consume', {
   userBucketRef: producer.myBucketRef
 });
 
-process.stdout.write(app.run());
+app.run();

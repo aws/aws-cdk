@@ -16,7 +16,7 @@ class PolicyExample extends cdk.Stack {
     // here's how to create an IAM Role with an assume policy for the Lambda
     // service principal.
     const role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('lambda.amazon.aws.com')
     });
 
     // when you call `addToPolicy`, a default policy is defined and attached
@@ -24,7 +24,7 @@ class PolicyExample extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'MyBucket');
 
     // the role also has a policy attached to it.
-    role.addToPolicy(new cdk.PolicyStatement()
+    role.addToPolicy(new iam.PolicyStatement()
       .addResource(bucket.arnForObjects('*'))
       .addResource(bucket.bucketArn)
       .addActions('s3:*'));
@@ -188,7 +188,7 @@ class CloudFormationExample extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new PolicyExample(app, 'PolicyExample');
 new IncludeExample(app, 'IncludeExample');
@@ -199,4 +199,4 @@ new CloudFormationExample(app, 'CloudFormationExample');
 new EnvContextExample(app, 'EnvContextExampleNA', { env: { region: 'us-east-1' }});
 new EnvContextExample(app, 'EnvContextExampleEU', { env: { region: 'eu-west-2' }});
 
-process.stdout.write(app.run());
+app.run();

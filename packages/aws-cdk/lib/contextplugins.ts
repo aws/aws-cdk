@@ -64,5 +64,6 @@ export async function provideContextValues(missingValues: { [key: string]: Missi
 
     const value = await provider.getValue(query.scope, query.args);
     projectConfig.set(['context', key], value);
+    debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
   }
 }

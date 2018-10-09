@@ -46,8 +46,8 @@ class BookStack extends cdk.Stack {
 }
 
 class BookApp extends cdk.App {
-  constructor(argv: string[]) {
-    super(argv);
+  constructor() {
+    super();
 
     new BookStack(this, 'restapi-books-example');
   }
@@ -69,4 +69,4 @@ function helloCode(_event: any, _context: any, callback: any) {
   });
 }
 
-process.stdout.write(new BookApp(process.argv).run());
+new BookApp().run();

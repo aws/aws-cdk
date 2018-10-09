@@ -46,6 +46,12 @@ export interface IRestApiResource {
   addResource(pathPart: string, options?: ResourceOptions): Resource;
 
   /**
+   * Adds a greedy proxy resource ("{proxy+}") and an ANY method to this route.
+   * @param options Default integration and method options.
+   */
+  addProxy(options?: ResourceOptions): ProxyResource;
+
+  /**
    * Defines a new method for this resource.
    * @param httpMethod The HTTP method
    * @param target The target backend integration for this method
@@ -131,6 +137,52 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
+  }
+
+  public addProxy(options?: ResourceOptions): ProxyResource {
+    return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
+  }
+}
+
+export interface ProxyResourceProps extends ResourceOptions {
+  /**
+   * The parent resource of this resource. You can either pass another
+   * `Resource` object or a `RestApi` object here.
+   */
+  parent: IRestApiResource;
+
+  /**
+   * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
+   * add methods to this resource after it's created.
+   *
+   * @default true
+   */
+  anyMethod?: boolean;
+}
+
+/**
+ * Defines a {proxy+} greedy resource and an ANY method on a route.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html
+ */
+export class ProxyResource extends Resource {
+  /**
+   * If `props.anyMethod` is `true`, this will be the reference to the 'ANY'
+   * method associated with this proxy resource.
+   */
+  public readonly anyMethod?: Method;
+
+  constructor(parent: cdk.Construct, id: string, props: ProxyResourceProps) {
+    super(parent, id, {
+      parent: props.parent,
+      pathPart: '{proxy+}',
+      defaultIntegration: props.defaultIntegration,
+      defaultMethodOptions: props.defaultMethodOptions,
+    });
+
+    const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
+    if (anyMethod) {
+      this.anyMethod = this.addMethod('ANY');
+    }
   }
 }
 

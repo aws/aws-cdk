@@ -1,8 +1,8 @@
-import { App, PolicyStatement, Stack } from "@aws-cdk/cdk";
-import { Policy } from "../lib";
+import { App, Stack } from "@aws-cdk/cdk";
+import { Policy, PolicyStatement } from "../lib";
 import { User } from "../lib/user";
 
-const app = new App(process.argv);
+const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-iam-policy');
 
@@ -16,4 +16,4 @@ const policy2 = new Policy(stack, 'GoodbyePolicy');
 policy2.addStatement(new PolicyStatement().addResource('*').addAction('lambda:InvokeFunction'));
 policy2.attachToUser(user);
 
-process.stdout.write(app.run());
+app.run();

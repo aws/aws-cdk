@@ -4,8 +4,8 @@ import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Pr
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Pipeline, Stage } from '../lib';
 
@@ -203,7 +203,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     fullPermissions: true,
   });
 
@@ -256,7 +256,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
   });
 
@@ -287,7 +287,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     replaceOnFailure: true,
   });
 
@@ -320,7 +320,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.artifact.atPath('template.yaml'),
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }

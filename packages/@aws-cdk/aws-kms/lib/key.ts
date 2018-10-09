@@ -1,4 +1,5 @@
-import { Construct, DeletionPolicy, Output, PolicyDocument, PolicyStatement, resolve } from '@aws-cdk/cdk';
+import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
 import { cloudformation } from './kms.generated';
 

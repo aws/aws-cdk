@@ -1,4 +1,5 @@
-import { Construct, PolicyDocument } from '@aws-cdk/cdk';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Construct } from '@aws-cdk/cdk';
 import { BucketRef } from './bucket';
 import { cloudformation } from './s3.generated';
 
