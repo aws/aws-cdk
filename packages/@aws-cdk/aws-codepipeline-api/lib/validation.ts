@@ -7,17 +7,17 @@ import { Artifact } from "./artifact";
 export function validateArtifactBounds( type: string, artifacts: Artifact[],
                                         min: number, max: number,
                                         category: string, provider: string): string[] {
-    const ret: string[] = [];
+  const ret: string[] = [];
 
-    if (artifacts.length < min) {
-        ret.push(`${category}/${provider} must have at least ${min} ${type} artifacts`);
-    }
+  if (artifacts.length < min) {
+    ret.push(`${category}/${provider} must have at least ${min} ${type} artifacts`);
+  }
 
-    if (artifacts.length > max) {
-        ret.push(`${category}/${provider} cannot have more than ${max} ${type} artifacts`);
-    }
+  if (artifacts.length > max) {
+    ret.push(`${category}/${provider} cannot have more than ${max} ${type} artifacts`);
+  }
 
-    return ret;
+  return ret;
 }
 
 /**
@@ -25,11 +25,11 @@ export function validateArtifactBounds( type: string, artifacts: Artifact[],
  * in the first stage of a pipeline, and the first stage can only contain source actions.
  */
 export function validateSourceAction(mustBeSource: boolean, category: string, actionName: string, stageName: string): string[] {
-    if (mustBeSource !== (category === ActionCategory.Source)) {
-        return [`Action ${actionName} in stage ${stageName}: ` + (mustBeSource ? 'first stage may only contain Source actions'
-            : 'Source actions may only occur in first stage')];
-    }
-    return [];
+  if (mustBeSource !== (category === ActionCategory.Source)) {
+    return [`Action ${actionName} in stage ${stageName}: ` + (mustBeSource ? 'first stage may only contain Source actions'
+      : 'Source actions may only occur in first stage')];
+  }
+  return [];
 }
 
 /**
@@ -44,7 +44,7 @@ const VALID_IDENTIFIER_REGEX = /^[a-zA-Z0-9.@_-]{1,100}$/;
  * This can be used to validate the name of all components of a pipeline.
  */
 export function validateName(thing: string, name: string | undefined) {
-    if (name !== undefined && !VALID_IDENTIFIER_REGEX.test(name)) {
-        throw new Error(`${thing} name must match regular expression: ${VALID_IDENTIFIER_REGEX.toString()}, got '${name}'`);
-    }
+  if (name !== undefined && !VALID_IDENTIFIER_REGEX.test(name)) {
+    throw new Error(`${thing} name must match regular expression: ${VALID_IDENTIFIER_REGEX.toString()}, got '${name}'`);
+  }
 }

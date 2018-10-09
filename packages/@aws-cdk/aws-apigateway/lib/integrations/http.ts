@@ -1,26 +1,26 @@
 import { Integration, IntegrationOptions, IntegrationType } from '../integration';
 
 export interface HttpIntegrationProps {
-    /**
-     * Determines whether to use proxy integration or custom integration.
-     *
-     * @default true
-     */
-    proxy?: boolean;
+  /**
+   * Determines whether to use proxy integration or custom integration.
+   *
+   * @default true
+   */
+  proxy?: boolean;
 
-    /**
-     * HTTP method to use when invoking the backend URL.
-     * @default GET
-     */
-    httpMethod?: string;
+  /**
+   * HTTP method to use when invoking the backend URL.
+   * @default GET
+   */
+  httpMethod?: string;
 
-    /**
-     * Integration options, such as request/resopnse mapping, content handling,
-     * etc.
-     *
-     * @default defaults based on `IntegrationOptions` defaults
-     */
-    options?: IntegrationOptions;
+  /**
+   * Integration options, such as request/resopnse mapping, content handling,
+   * etc.
+   *
+   * @default defaults based on `IntegrationOptions` defaults
+   */
+  options?: IntegrationOptions;
 }
 
 /**
@@ -37,14 +37,14 @@ export interface HttpIntegrationProps {
  * response data is mapped to the method response.
  */
 export class HttpIntegration extends Integration {
-    constructor(url: string, props: HttpIntegrationProps = { }) {
-        const proxy = props.proxy !== undefined ? props.proxy : true;
-        const method = props.httpMethod || 'GET';
-        super({
-            type: proxy ? IntegrationType.HttpProxy : IntegrationType.Http,
-            integrationHttpMethod: method,
-            uri: url,
-            options: props.options,
-        });
-    }
+  constructor(url: string, props: HttpIntegrationProps = { }) {
+    const proxy = props.proxy !== undefined ? props.proxy : true;
+    const method = props.httpMethod || 'GET';
+    super({
+      type: proxy ? IntegrationType.HttpProxy : IntegrationType.Http,
+      integrationHttpMethod: method,
+      uri: url,
+      options: props.options,
+    });
+  }
 }

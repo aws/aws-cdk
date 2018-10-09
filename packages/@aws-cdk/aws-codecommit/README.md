@@ -40,8 +40,8 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 });
 const sourceStage = new codepipeline.Stage(this, 'Source', {
     pipeline,
-}));
-const sourceAction = new codecommit.PipelineSource(this, 'CodeCommit', {
+});
+const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
     stage: sourceStage,
     artifactName: 'SourceOutput', // name can be arbitrary
     repository,

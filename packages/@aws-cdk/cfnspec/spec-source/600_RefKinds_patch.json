@@ -2304,6 +2304,42 @@
         "description": "Set RefKind of AWS::IoT::TopicRule to Name"
       }
     },
+    "AWS::IoT1Click::Device": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoT1Click::Device to Arn"
+      }
+    },
+    "AWS::IoT1Click::Placement": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Path"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoT1Click::Placement to Path"
+      }
+    },
+    "AWS::IoT1Click::Project": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoT1Click::Project to Arn"
+      }
+    },
     "AWS::KMS::Alias": {
       "patch": {
         "operations": [

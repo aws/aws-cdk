@@ -315,6 +315,53 @@
         }
       }
     },
+    "DbSecurity381C2C15": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": [
+                "kms:Create*",
+                "kms:Describe*",
+                "kms:Enable*",
+                "kms:List*",
+                "kms:Put*",
+                "kms:Update*",
+                "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
+                "kms:ScheduleKeyDeletion",
+                "kms:CancelKeyDeletion"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DeletionPolicy": "Retain"
+    },
     "DatabaseSubnets56F17B9A": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
@@ -335,12 +382,13 @@
         "GroupDescription": "RDS security group",
         "SecurityGroupEgress": [],
         "SecurityGroupIngress": [],
+        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }
       }
     },
-    "DatabaseSecurityGroupOpentotheworld94E9606E": {
+    "DatabaseSecurityGroupfrom00000IndirectPortF24F2E03": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -376,9 +424,15 @@
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },
+        "KmsKeyId": {
+          "Fn::GetAtt": [
+            "DbSecurity381C2C15",
+            "Arn"
+          ]
+        },
         "MasterUsername": "admin",
         "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
-        "StorageEncrypted": false,
+        "StorageEncrypted": true,
         "VpcSecurityGroupIds": [
           {
             "Fn::GetAtt": [
