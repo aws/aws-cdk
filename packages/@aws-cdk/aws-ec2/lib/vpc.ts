@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, subnetId } from './util';
+import { DEFAULT_SUBNET_NAME, subnetId, subnetName } from './util';
 import { SubnetType, VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
 
 /**
@@ -61,16 +61,9 @@ export interface VpcNetworkProps {
   maxAZs?: number;
 
   /**
-   * Define the maximum number of NAT Gateways for this VPC
-   *
-   * Setting this number enables a VPC to trade availability for the cost of
-   * running a NAT Gateway. For example, if set this to 1 and your subnet
-   * configuration is for 3 Public subnets with natGateway = `true` then only
-   * one of the Public subnets will have a gateway and all Private subnets
-   * will route to this NAT Gateway.
-   * @default maxAZs
+   * Define the NAT Gateway Configuration for this VPC
    */
-  natGateways?: number;
+  natGateways?: NatGatewayConfiguration;
 
   /**
    * Configure the subnets to build for each AZ
@@ -121,6 +114,27 @@ export enum DefaultInstanceTenancy {
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
   Dedicated = 'dedicated'
+}
+
+export interface NatGatewayConfiguration {
+  /**
+   * The number of NAT Gateways to create.
+   *
+   * For example, if set this to 1 and your subnet configuration is for 3 Public subnets then only
+   * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
+   * @default maxAZs
+   */
+  gatewayCount?: number;
+
+  /**
+   * The names of the subnets that will have NAT Gateways
+   *
+   * The names of the corresponding subnets in `SubnetConfiguration` that will
+   * have a NAT Gateway. If a corresponding subnet name is not found this will
+   * throw an error. By default the first public subnets will receive NAT
+   * Gateways until the `gatewayCount` is reached.
+   */
+  subnetName?: string;
 }
 
 /**
@@ -232,13 +246,6 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   public readonly tags: cdk.TagManager;
 
   /**
-   * Maximum Number of NAT Gateways used to control cost
-   *
-   * @default {VpcNetworkProps.maxAZs}
-   */
-  private readonly natGateways: number;
-
-  /**
    * The VPC resource
    */
   private resource: cloudformation.VPCResource;
@@ -303,8 +310,6 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
     const useNatGateway = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
-    this.natGateways = ifUndefined(props.natGateways,
-      useNatGateway ? this.availabilityZones.length : 0);
 
     // subnetConfiguration and natGateways must be set before calling createSubnets
     this.createSubnets();
@@ -321,11 +326,32 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref
       });
+      this.dependencyElements.push(igw, att);
+
+      const natConfig = ifUndefined(props.natGateways, {
+        gatewayCount: undefined,
+        subnetName: undefined,
+      });
+      const natCount = ifUndefined(natConfig.gatewayCount,
+        useNatGateway ? this.availabilityZones.length : 0);
+      const natSubnet = natConfig.subnetName;
+
+      if (natSubnet !== undefined) {
+        const subnetNames = (this.publicSubnets as VpcPublicSubnet[]).map( subnet  => {
+          return subnetName(subnet);
+        });
+        if (!subnetNames.includes(natSubnet)) {
+          throw new Error(`NatGatewayConfiguration contains subnet name ${natSubnet} which is not a Public Subnet in SubnetConfiguration`);
+        }
+      }
+
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
         publicSubnet.addDefaultIGWRouteEntry(igw.ref);
+        const currentNatCount = Object.values(this.natGatewayByAZ).length;
+        if (addNatGatewy(publicSubnet, natSubnet, natCount, currentNatCount)) {
+          this.natGatewayByAZ[publicSubnet.availabilityZone] = publicSubnet.addNatGateway();
+        }
       });
-
-      this.dependencyElements.push(igw, att);
 
       (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
         let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
@@ -386,12 +412,6 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       switch (subnetConfig.subnetType) {
         case SubnetType.Public:
           const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
-          if (this.natGateways > 0) {
-            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-            if (ngwArray.length < this.natGateways) {
-              this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
-            }
-          }
           this.publicSubnets.push(publicSubnet);
           break;
         case SubnetType.Private:
@@ -561,5 +581,16 @@ export class VpcPrivateSubnet extends VpcSubnet {
 }
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
-     return value !== undefined ? value : defaultValue;
+  return value !== undefined ? value : defaultValue;
+}
+
+function addNatGatewy(subnet: VpcPublicSubnet, natSubnet: string | undefined, maxNats: number, natsCreated: number): boolean {
+  const name = subnetName(subnet);
+  if (natSubnet !== undefined && natSubnet !== name) {
+    return false;
+  }
+  if (natsCreated >= maxNats) {
+    return false;
+  }
+  return true;
 }
