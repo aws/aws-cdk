@@ -77,6 +77,16 @@
               }
             },
             {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployPrepareChangesRoleD28C853C",
+                  "Arn"
+                ]
+              }
+            },
+            {
               "Action": "cloudformation:DescribeStacks",
               "Effect": "Allow",
               "Resource": {
@@ -142,16 +152,6 @@
                     "/",
                     "OurStack/*"
                   ]
-                ]
-              }
-            },
-            {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineDeployPrepareChangesRoleD28C853C",
-                  "Arn"
                 ]
               }
             },
