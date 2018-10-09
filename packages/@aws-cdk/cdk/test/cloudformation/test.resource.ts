@@ -170,7 +170,7 @@ export = {
 
     r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
-    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true } };
+    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true }, useOnlineResharding: true };
     r1.options.deletionPolicy = DeletionPolicy.Retain;
 
     test.deepEqual(stack.toCloudFormation(), {
@@ -180,7 +180,8 @@ export = {
           CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
-            AutoScalingReplacingUpdate: { WillReplace: true }
+            AutoScalingReplacingUpdate: { WillReplace: true },
+            UseOnlineResharding: true,
           },
           DeletionPolicy: 'Retain'
         }
