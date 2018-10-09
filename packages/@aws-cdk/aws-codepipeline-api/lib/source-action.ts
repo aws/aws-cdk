@@ -1,11 +1,11 @@
 import cdk = require("@aws-cdk/cdk");
-import { Action, ActionCategory, CommonActionProps } from "./action";
+import { Action, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
 import { Artifact } from "./artifact";
 
 /**
  * Construction properties of the low-level {@link SourceAction source Action}.
  */
-export interface SourceActionProps extends CommonActionProps {
+export interface SourceActionProps extends CommonActionProps, CommonActionConstructProps {
   /**
    * The source action owner (could be "AWS", "ThirdParty" or "Custom").
    *
@@ -53,6 +53,7 @@ export abstract class SourceAction extends Action {
   constructor(parent: cdk.Construct, name: string, props: SourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       category: ActionCategory.Source,
       owner: props.owner,
       provider: props.provider,

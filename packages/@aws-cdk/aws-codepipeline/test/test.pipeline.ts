@@ -51,6 +51,7 @@ export = {
     const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
     new codepipeline.GitHubSourceAction(stack, 'GH', {
       stage: s1,
+      runOrder: 8,
       artifactName: 'A',
       branch: 'branch',
       oauthToken: secret.value,
@@ -100,7 +101,7 @@ export = {
             "Name": "A"
           }
           ],
-          "RunOrder": 1
+          "RunOrder": 8
         }
         ],
         "Name": "Source"

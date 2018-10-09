@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -7,6 +8,7 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
+import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
 /**
  * Represents a Lambda function defined outside of this stack.
@@ -178,6 +180,23 @@ export abstract class FunctionRef extends cdk.Construct
       eventSourceToken: permission.eventSourceToken,
       sourceAccount: permission.sourceAccount,
       sourceArn: permission.sourceArn,
+    });
+  }
+
+  /**
+   * Convenience method for creating a new {@link PipelineInvokeAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineInvokeAction}
+   */
+  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineInvokeActionProps = {}): PipelineInvokeAction {
+    return new PipelineInvokeAction(this, name, {
+      stage,
+      lambda: this,
+      ...props,
     });
   }
 

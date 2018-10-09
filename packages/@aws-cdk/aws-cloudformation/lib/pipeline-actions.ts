@@ -5,7 +5,8 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Properties common to all CloudFormation actions
  */
-export interface PipelineCloudFormationActionProps extends codepipeline.CommonActionProps {
+export interface PipelineCloudFormationActionProps extends codepipeline.CommonActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The name of the stack to apply this action to
    */
@@ -48,6 +49,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.DeployAc
   constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
     super(parent, id, {
       stage: props.stage,
+      runOrder: props.runOrder,
       artifactBounds: {
         minInputs: 0,
         maxInputs: 10,

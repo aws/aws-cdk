@@ -4,14 +4,11 @@ import cdk = require('@aws-cdk/cdk');
 import { FunctionRef } from './lambda-ref';
 
 /**
- * Construction properties of the {@link PipelineInvokeAction Lambda invoke CodePipeline Action}.
+ * Common properties for creating a {@link PipelineInvokeAction} -
+ * either directly, through its constructor,
+ * or through {@link FunctionRef#addToPipeline}.
  */
-export interface PipelineInvokeActionProps extends codepipeline.CommonActionProps {
-  /**
-   * The lambda function to invoke.
-   */
-  lambda: FunctionRef;
-
+export interface CommonPipelineInvokeActionProps extends codepipeline.CommonActionProps {
   /**
    * String to be used in the event data parameter passed to the Lambda
    * function
@@ -41,6 +38,17 @@ export interface PipelineInvokeActionProps extends codepipeline.CommonActionProp
 }
 
 /**
+ * Construction properties of the {@link PipelineInvokeAction Lambda invoke CodePipeline Action}.
+ */
+export interface PipelineInvokeActionProps extends CommonPipelineInvokeActionProps,
+    codepipeline.CommonActionConstructProps {
+  /**
+   * The lambda function to invoke.
+   */
+  lambda: FunctionRef;
+}
+
+/**
  * CodePipeline invoke Action that is provided by an AWS Lambda function.
  *
  * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
@@ -49,6 +57,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
   constructor(parent: cdk.Construct, name: string, props: PipelineInvokeActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       category: codepipeline.ActionCategory.Invoke,
       provider: 'Lambda',
       artifactBounds: codepipeline.defaultBounds(),

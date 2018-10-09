@@ -8,7 +8,7 @@ import { RepositoryRef } from './repository';
  * either directly, through its constructor,
  * or through {@link RepositoryRef#addToPipeline}.
  */
-export interface CommonPipelineSourceActionProps {
+export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
    * The name of the source's output artifact.
    * Output artifacts are used by CodePipeline as inputs into other actions.
@@ -32,7 +32,8 @@ export interface CommonPipelineSourceActionProps {
 /**
  * Construction properties of the {@link PipelineSourceAction CodeCommit source CodePipeline Action}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, codepipeline.CommonActionProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The CodeCommit repository.
    */
@@ -46,6 +47,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       provider: 'CodeCommit',
       configuration: {
         RepositoryName: props.repository.repositoryName,
