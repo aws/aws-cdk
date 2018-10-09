@@ -44,7 +44,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Import a state machine
      */
-    public static import(parent: cdk.Construct, id: string, props: ImportedStateMachineProps) {
+    public static import(parent: cdk.Construct, id: string, props: ImportedStateMachineProps): IStateMachine {
         return new ImportedStateMachine(parent, id, props);
     }
 
@@ -72,7 +72,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         super(parent, id);
 
         this.role = props.role || new iam.Role(this, 'Role', {
-            assumedBy: new cdk.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
+            assumedBy: new iam.ServicePrincipal(`states.${new cdk.AwsRegion()}.amazonaws.com`),
         });
 
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
@@ -95,7 +95,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     /**
      * Add the given statement to the role's policy
      */
-    public addToRolePolicy(statement: cdk.PolicyStatement) {
+    public addToRolePolicy(statement: iam.PolicyStatement) {
         this.role.addToPolicy(statement);
     }
 
@@ -105,10 +105,10 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
     public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
         if (!this.eventsRole) {
             this.eventsRole = new iam.Role(this, 'EventsRole', {
-                assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+                assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
             });
 
-            this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+            this.eventsRole.addToPolicy(new iam.PolicyStatement()
                 .addAction('states:StartExecution')
                 .addResource(this.stateMachineArn));
         }

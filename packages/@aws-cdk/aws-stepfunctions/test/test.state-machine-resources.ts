@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import stepfunctions = require('../lib');
@@ -98,7 +99,7 @@ class FakeResource implements stepfunctions.IStepFunctionsTaskResource {
 
         return {
             resourceArn,
-            policyStatements: [new cdk.PolicyStatement()
+            policyStatements: [new iam.PolicyStatement()
                 .addAction('resource:Everything')
                 .addResource('resource')
             ],

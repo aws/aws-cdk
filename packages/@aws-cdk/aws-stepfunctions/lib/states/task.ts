@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Chain } from '../chain';
 import { StateGraph } from '../state-graph';
@@ -277,7 +278,7 @@ export interface StepFunctionsTaskResourceProps {
      *
      * @default No policy roles
      */
-    policyStatements?: cdk.PolicyStatement[];
+    policyStatements?: iam.PolicyStatement[];
 
     /**
      * Prefix for singular metric names of activity actions

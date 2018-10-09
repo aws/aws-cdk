@@ -1,4 +1,4 @@
-import cdk = require('@aws-cdk/cdk');
+import iam = require('@aws-cdk/aws-iam');
 import { State } from "./states/state";
 
 /**
@@ -37,7 +37,7 @@ export class StateGraph {
     /**
      * The accumulated policy statements
      */
-    public readonly policyStatements = new Array<cdk.PolicyStatement>();
+    public readonly policyStatements = new Array<iam.PolicyStatement>();
 
     /**
      * All states in this graph
@@ -72,7 +72,7 @@ export class StateGraph {
     /**
      * Register a Policy Statement used by states in this graph
      */
-    public registerPolicyStatement(statement: cdk.PolicyStatement) {
+    public registerPolicyStatement(statement: iam.PolicyStatement) {
         if (this.superGraph) {
             this.superGraph.registerPolicyStatement(statement);
         } else {
