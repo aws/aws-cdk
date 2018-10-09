@@ -171,7 +171,7 @@ export = {
       const stack = getTestStack();
       new VpcNetwork(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
-        natGateways: { gatewayCount: 2},
+        natGateways: 2,
         subnetConfiguration: [
           {
             cidrMask: 24,
@@ -252,7 +252,7 @@ export = {
     "with natGateway set to 1"(test: Test) {
       const stack = getTestStack();
       new VpcNetwork(stack, 'VPC', {
-        natGateways: { gatewayCount: 1 }
+        natGateways: 1,
       });
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       expect(stack).to(countResources("AWS::EC2::Route", 6));
@@ -283,8 +283,8 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGateways: {
-          subnetName: 'egress',
+        natGatewayPlacement: {
+          subnetName: 'egress'
         },
       });
       expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
@@ -315,7 +315,7 @@ export = {
             subnetType: SubnetType.Private,
           },
         ],
-        natGateways: {
+        natGatewayPlacement: {
           subnetName: 'notthere',
         },
       }));
