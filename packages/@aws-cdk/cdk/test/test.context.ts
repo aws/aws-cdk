@@ -53,6 +53,19 @@ export = {
     test.done();
   },
 
+  'SSM parameter provider has configurable default'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+
+    // WHEN
+    const customizedDefault = new SSMParameterProvider(stack).getString('test', 'some-value');
+
+    // THEN
+    test.equals(customizedDefault, 'some-value');
+
+    test.done();
+  },
+
   'Return default values if "env" is undefined to facilitate unit tests, but also expect metadata to include "error" messages'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'test-stack');
