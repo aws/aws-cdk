@@ -35,6 +35,8 @@
     "jsii": "^0.7.6",
     "jsii-pacmak": "^0.7.6",
     "merkle-build": "^0.10.0",
+    "nodeunit": "^0.11.3",
+    "nyc": "^13.0.1",
     "typescript": "^3.0.1",
     "yargs": "^9.0.1"
   },
