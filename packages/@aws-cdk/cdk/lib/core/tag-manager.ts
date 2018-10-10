@@ -265,6 +265,9 @@ export class TagManager extends Token {
   protected tagFormatResolve(tagGroups: TagGroups): any {
     const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
     for (const key of this.blockedTags) { delete tags[key]; }
+    if (Object.keys(tags).length === 0) {
+      return undefined;
+    }
     return Object.keys(tags).map( key => ({key, value: tags[key]}));
   }
 }

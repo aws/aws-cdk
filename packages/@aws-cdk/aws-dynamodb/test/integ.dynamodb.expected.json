@@ -20,8 +20,7 @@
           }
         ],
         "GlobalSecondaryIndexes": [],
-        "LocalSecondaryIndexes": [],
-        "Tags": []
+        "LocalSecondaryIndexes": []
       }
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
@@ -313,8 +312,7 @@
             }
           }
         ],
-        "LocalSecondaryIndexes": [],
-        "Tags": []
+        "LocalSecondaryIndexes": []
       }
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
@@ -366,8 +364,7 @@
               "ProjectionType": "ALL"
             }
           }
-        ],
-        "Tags": []
+        ]
       }
     }
   }

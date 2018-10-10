@@ -87,8 +87,7 @@ export = {
               KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -119,8 +118,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -151,8 +149,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -183,8 +180,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -215,8 +211,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -247,8 +242,7 @@ export = {
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
               GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
-              Tags: []
+              LocalSecondaryIndexes: []
             }
           }
         }
@@ -286,8 +280,7 @@ export = {
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
               GlobalSecondaryIndexes: [],
               LocalSecondaryIndexes: [],
-              TableName: 'MyTable',
-              Tags: []
+              TableName: 'MyTable'
             }
           }
         }
@@ -325,8 +318,7 @@ export = {
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               StreamSpecification: { StreamViewType: 'NEW_IMAGE' },
-              TableName: 'MyTable',
-              Tags: []
+              TableName: 'MyTable'
             }
           }
         }
@@ -364,8 +356,7 @@ export = {
                 { AttributeName: 'sortKey', AttributeType: 'N' }
               ],
               StreamSpecification: { StreamViewType: 'OLD_IMAGE' },
-              TableName: 'MyTable',
-              Tags: []
+              TableName: 'MyTable'
             }
           }
         }
@@ -462,8 +453,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -514,8 +504,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -564,8 +553,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -618,8 +606,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -789,8 +776,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               },
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -851,8 +837,7 @@ export = {
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
             ],
-            LocalSecondaryIndexes: [],
-            Tags: []
+            LocalSecondaryIndexes: []
           }
         }
       }
@@ -897,8 +882,7 @@ export = {
                 ],
                 Projection: { ProjectionType: 'ALL' },
               }
-            ],
-            Tags: []
+            ]
           }
         }
       }
@@ -944,8 +928,7 @@ export = {
                 ],
                 Projection: { ProjectionType: 'KEYS_ONLY' },
               }
-            ],
-            Tags: []
+            ]
           }
         }
       }
@@ -994,8 +977,7 @@ export = {
                 ],
                 Projection: { NonKeyAttributes: ['lsiNonKey0', 'lsiNonKey1'], ProjectionType: 'INCLUDE' },
               }
-            ],
-            Tags: []
+            ]
           }
         }
       }
@@ -1100,8 +1082,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1183,8 +1164,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1294,8 +1274,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableReadAutoScalingRoleFEE68E49:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1373,7 +1352,6 @@ export = {
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
           LocalSecondaryIndexes: [],
-          Tags: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
@@ -1581,8 +1559,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1664,8 +1641,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1775,8 +1751,7 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
-          TableName: 'MyTable',
-          Tags: [] } },
+          TableName: 'MyTable' } },
         MyTableWriteAutoScalingRoleDF7775DE:
          { Type: 'AWS::IAM::Role',
          Properties:
@@ -1854,7 +1829,6 @@ export = {
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
           GlobalSecondaryIndexes: [],
           LocalSecondaryIndexes:  [],
-          Tags: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
