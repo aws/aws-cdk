@@ -11,8 +11,8 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
   /**
    * Import an existing queue
    */
-  public static import(parent: cdk.Construct, name: string, props: QueueRefProps) {
-    new ImportedQueue(parent, name, props);
+  public static import(parent: cdk.Construct, name: string, props: QueueRefProps): QueueRef {
+    return new ImportedQueue(parent, name, props);
   }
 
   /**
