@@ -170,7 +170,7 @@ export = {
 
     r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
-    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true } };
+    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true }};
     r1.options.deletionPolicy = DeletionPolicy.Retain;
 
     test.deepEqual(stack.toCloudFormation(), {
@@ -180,9 +180,29 @@ export = {
           CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
-            AutoScalingReplacingUpdate: { WillReplace: true }
+            AutoScalingReplacingUpdate: { WillReplace: true },
           },
           DeletionPolicy: 'Retain'
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'update policies UseOnlineResharding flag'(test: Test) {
+    const stack = new Stack();
+    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+
+    r1.options.updatePolicy = { useOnlineResharding: true };
+
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            UseOnlineResharding: true,
+          },
         }
       }
     });

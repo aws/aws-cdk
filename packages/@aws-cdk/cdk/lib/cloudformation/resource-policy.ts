@@ -124,6 +124,12 @@ export interface UpdatePolicy {
    */
   autoScalingScheduledAction?: AutoScalingScheduledAction;
 
+  /**
+   * To modify a replication group's shards by adding or removing shards, rather than replacing the entire
+   * AWS::ElastiCache::ReplicationGroup resource, use the UseOnlineResharding update policy.
+   */
+  useOnlineResharding?: boolean;
+
 }
 
 /**
