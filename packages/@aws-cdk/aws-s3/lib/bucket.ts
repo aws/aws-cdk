@@ -269,6 +269,41 @@ export abstract class BucketRef extends cdk.Construct {
       this.arnForObjects(objectsKeyPattern));
   }
 
+  /**
+   * Allows unrestricted access to objects from this bucket.
+   *
+   * IMPORTANT: This permission allows anyone to perform actions on S3 objects
+   * in this bucket, which is useful for when you configure your bucket as a
+   * website and want everyone to be able to read objects in the bucket without
+   * needing to authenticate.
+   *
+   * Without arguments, this method will grant read ("s3:GetObject") access to
+   * all objects ("*") in the bucket.
+   *
+   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * as needed. For example, you can add a condition that will restrict access only
+   * to an IPv4 range like this:
+   *
+   *     const statement = bucket.grantPublicAccess();
+   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *
+   *
+   * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
+   * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
+   * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
+   */
+  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+
+    const statement = new iam.PolicyStatement()
+      .addActions(...allowedActions)
+      .addResource(this.arnForObjects(keyPrefix))
+      .addPrincipal(new iam.Anyone());
+
+    this.addToResourcePolicy(statement);
+    return statement;
+  }
+
   private grant(identity: iam.IPrincipal | undefined,
                 bucketActions: string[],
                 keyActions: string[],

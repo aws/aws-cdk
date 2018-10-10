@@ -1,10 +1,9 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import s3 = require('../lib');
-import { Bucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 // tslint:disable:object-literal-key-quotes
@@ -963,7 +962,7 @@ export = {
 
   'urlForObject returns a token with the S3 URL of the token'(test: Test) {
     const stack = new cdk.Stack();
-    const bucket = new Bucket(stack, 'MyBucket');
+    const bucket = new s3.Bucket(stack, 'MyBucket');
 
     new cdk.Output(stack, 'BucketURL', { value: bucket.bucketUrl });
     new cdk.Output(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
@@ -1059,5 +1058,111 @@ export = {
     });
 
     test.done();
+  },
+
+  'grantPublicAccess': {
+    'by default, grants s3:GetObject to all objects'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'b');
+
+      // WHEN
+      bucket.grantPublicAccess();
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+      test.done();
+    },
+
+    '"keyPrefix" can be used to only grant access to certain objects'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'b');
+
+      // WHEN
+      bucket.grantPublicAccess('only/access/these/*');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "only/access/these/*" ] ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+      test.done();
+    },
+
+    '"allowedActions" can be used to specify actions explicitly'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'b');
+
+      // WHEN
+      bucket.grantPublicAccess('*', 's3:GetObject', 's3:PutObject');
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [ "s3:GetObject", "s3:PutObject" ],
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+      test.done();
+    },
+
+    'returns the PolicyStatement which can be then customized'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'b');
+
+      // WHEN
+      const statement = bucket.grantPublicAccess();
+      statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] },
+              "Condition": {
+                "IpAddress": { "aws:SourceIp": "54.240.143.0/24" }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+      test.done();
+    }
   }
 };
