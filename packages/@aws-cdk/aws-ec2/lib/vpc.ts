@@ -72,10 +72,10 @@ export interface VpcNetworkProps {
   /**
    * Configures the subnets which will have NAT Gateways
    *
-   * The names of the corresponding subnets in `SubnetConfiguration` that will
-   * have a NAT Gateway. If a corresponding subnet name is not found this will
-   * throw an error. By default the first public subnets will receive NAT
-   * Gateways until the `natGateways` is reached.
+   * You can pick a specific group of subnets by specifying the group name;
+   * the picked subnets must be public subnets.
+   *
+   * @default All public subnets
    */
   natGatewayPlacement?: VpcPlacementStrategy;
 
