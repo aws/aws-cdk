@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -42,6 +42,33 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80
+    }));
+
+    test.done();
+  },
+
+  'Listener default  to open'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    loadBalancer.addListener('MyListener', {
+      port: 80,
+      defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })]
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          FromPort: 80,
+          IpProtocol: "tcp",
+          ToPort: 80
+        }
+      ]
     }));
 
     test.done();
@@ -306,4 +333,33 @@ export = {
 
     test.done();
   },
+
+  'Can depend on eventual listener via TargetGroup'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+
+    // WHEN
+    const resource = new cdk.Resource(stack, 'SomeResource', { type: 'Test::Resource' });
+    resource.addDependency(group.listenerDependency());
+
+    loadBalancer.addListener('Listener', {
+      port: 80,
+      defaultTargetGroups: [group]
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        SomeResource: {
+          Type: "Test::Resource",
+          DependsOn: ["LoadBalancerListenerE1A099B9"]
+        }
+      }
+    }, MatchStyle.SUPERSET);
+
+    test.done();
+  }
 };
