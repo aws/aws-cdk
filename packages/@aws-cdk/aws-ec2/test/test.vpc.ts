@@ -251,17 +251,76 @@ export = {
     },
     "with natGateway set to 1"(test: Test) {
       const stack = getTestStack();
-      new VpcNetwork(stack, 'VPC', { natGateways: 1 });
+      new VpcNetwork(stack, 'VPC', {
+        natGateways: 1,
+      });
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       expect(stack).to(countResources("AWS::EC2::Route", 6));
-      expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       expect(stack).to(countResources("AWS::EC2::NatGateway", 1));
       expect(stack).to(haveResource("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
         NatGatewayId: { },
       }));
       test.done();
-    }
+    },
+    'with natGateway subnets defined'(test: Test) {
+      const stack = getTestStack();
+      new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Public,
+          },
+          {
+            cidrMask: 24,
+            name: 'egress',
+            subnetType: SubnetType.Public,
+          },
+          {
+            cidrMask: 24,
+            name: 'private',
+            subnetType: SubnetType.Private,
+          },
+        ],
+        natGatewayPlacement: {
+          subnetName: 'egress'
+        },
+      });
+      expect(stack).to(countResources("AWS::EC2::NatGateway", 3));
+      for (let i = 1; i < 4; i++) {
+        expect(stack).to(haveResource("AWS::EC2::NatGateway", {
+          Tags: [
+            {
+              Key: 'Name',
+              Value: `VPC/egressSubnet${i}`,
+            }
+          ]
+        }));
+      }
+      test.done();
+    },
+    'with mis-matched nat and subnet configs it throws'(test: Test) {
+      const stack = getTestStack();
+      test.throws(() => new VpcNetwork(stack, 'VPC', {
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Public,
+          },
+          {
+            cidrMask: 24,
+            name: 'private',
+            subnetType: SubnetType.Private,
+          },
+        ],
+        natGatewayPlacement: {
+          subnetName: 'notthere',
+        },
+      }));
+      test.done();
+    },
 
   },
 
