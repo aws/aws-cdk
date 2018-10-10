@@ -151,9 +151,9 @@ export class SSMParameterProvider {
   /**
    * Return the SSM parameter string with the indicated key
    */
-  public getString(parameterName: string): any {
+  public getString(parameterName: string, defaultValue: string = "dummy"): any {
     const scope = this.provider.accountRegionScope('SSMParameterProvider');
-    return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName], 'dummy');
+    return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName], defaultValue);
   }
 }
 
