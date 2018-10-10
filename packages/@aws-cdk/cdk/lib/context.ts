@@ -18,25 +18,20 @@ const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 export class ContextProvider {
 
   private readonly stack: Stack;
-  private readonly provider: string;
-  private readonly props: {[key: string]: any};
 
-  constructor(private context: Construct, provider: string, props: {[key: string]: any} = {}) {
+  constructor(
+    private readonly context: Construct,
+    private readonly provider: string,
+    private readonly props: {[key: string]: any} = {}) {
     this.stack = Stack.find(context);
-    this.provider = provider;
-    this.props = props;
   }
 
   public get key(): string {
-    const account = this.account;
-    const region = this.region;
-    let keyStr = `${this.provider}:${account}:${region}`;
-    const propStrings: string[] = this.objectToString(this.props);
-    if (propStrings.length > 0) {
-      keyStr += ':';
-      keyStr += propStrings.join(':');
-    }
-    return keyStr;
+    const propStrings: string[] = propsToArray({
+      ...this.props,
+      ...{account: this.account, region: this.region},
+    });
+    return `${this.provider}:${propStrings.join(':')}`;
   }
   /**
    * Read a provider value, verifying it's a string
@@ -64,9 +59,7 @@ export class ContextProvider {
 
     this.stack.reportMissingContext(this.key, {
       provider: this.provider,
-      account: this.account,
-      region: this.region,
-      props: this.props,
+      props: { ...this.props, ...{region: this.region, account: this.account} },
     });
     return defaultValue;
   }
@@ -99,38 +92,11 @@ export class ContextProvider {
 
       this.stack.reportMissingContext(this.key, {
         provider: this.provider,
-        account: this.account,
-        region: this.region,
-        props: this.props,
+        props: { ...this.props, ...{region: this.region, account: this.account} },
       });
 
       return defaultValue;
     }
-
-  private objectToString(obj: any): string[] {
-    const objStr: string[] = [];
-    const keys = Object.keys(obj);
-    keys.sort();
-    for (const key of keys) {
-      switch (typeof obj[key]) {
-        case 'object': {
-          const childObjStrs = this.objectToString(obj[key]);
-          const qualifiedChildStr = childObjStrs.map( child => (`${key}${child}`)).join(':');
-          objStr.push(qualifiedChildStr);
-          break;
-        }
-        case 'string': {
-          objStr.push(`${key}=${colonQuote(obj[key])}`);
-          break;
-        }
-        default: {
-          objStr.push(`${key}=${JSON.stringify(obj[key])}`);
-          break;
-        }
-      }
-    }
-    return objStr;
-  }
 
   private get account(): string | undefined {
     return this.stack.env.account;
@@ -214,4 +180,29 @@ function formatMissingScopeError(provider: string, props: {[key: string]: string
   s += '\n';
   s += 'This usually happens when AWS credentials are not available and the default account/region cannot be determined.';
   return s;
+}
+
+function propsToArray(props: {[key: string]: any}): string[] {
+  const propArray: string[] = [];
+  const keys = Object.keys(props);
+  keys.sort();
+  for (const key of keys) {
+    switch (typeof props[key]) {
+      case 'object': {
+        const childObjStrs = propsToArray(props[key]);
+        const qualifiedChildStr = childObjStrs.map( child => (`${key}.${child}`)).join(':');
+        propArray.push(qualifiedChildStr);
+        break;
+      }
+      case 'string': {
+        propArray.push(`${key}=${colonQuote(props[key])}`);
+        break;
+      }
+      default: {
+        propArray.push(`${key}=${JSON.stringify(props[key])}`);
+        break;
+      }
+    }
+  }
+  return propArray;
 }

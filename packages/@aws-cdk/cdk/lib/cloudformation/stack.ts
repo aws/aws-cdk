@@ -65,7 +65,7 @@ export class Stack extends Construct {
    * This is returned when the stack is synthesized under the 'missing' attribute
    * and allows tooling to obtain the context and re-synthesize.
    */
-  public readonly missingContext: { [key: string]: cxapi.ContextProviderProps } = { };
+  public readonly missingContext: { [key: string]: cxapi.MissingContext } = { };
 
   /**
    * The environment in which this stack is deployed.
@@ -181,7 +181,7 @@ export class Stack extends Construct {
    * @param key Key that uniquely identifies this missing context.
    * @param details The set of parameters needed to obtain the context (specific to context provider).
    */
-  public reportMissingContext(key: string, details: cxapi.ContextProviderProps) {
+  public reportMissingContext(key: string, details: cxapi.MissingContext) {
     this.missingContext[key] = details;
   }
 

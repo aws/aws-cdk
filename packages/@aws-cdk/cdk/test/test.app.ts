@@ -254,19 +254,22 @@ export = {
         super(parent, name, props);
 
         this.reportMissingContext('missing-context-key', {
-            provider: 'fake',
+          provider: 'fake',
+          props: {
             account: '12345689012',
             region: 'ab-north-1',
-            props: {},
           },
+        },
         );
 
         this.reportMissingContext('missing-context-key-2', {
-            provider: 'fake2',
+          provider: 'fake2',
+          props: {
+            foo: 'bar',
             account: '12345689012',
             region: 'ab-south-1',
-            props: {foo: 'bar'},
           },
+        },
         );
       }
     }
@@ -279,16 +282,19 @@ export = {
 
     test.deepEqual(response.stacks[0].missing, {
       "missing-context-key": {
-            provider: 'fake',
-            account: '12345689012',
-            region: 'ab-north-1',
-            props: {},
+        provider: 'fake',
+        props: {
+          account: '12345689012',
+          region: 'ab-north-1',
+        },
       },
       "missing-context-key-2": {
-            provider: 'fake2',
-            account: '12345689012',
-            region: 'ab-south-1',
-            props: {foo: 'bar'},
+        provider: 'fake2',
+        props: {
+          account: '12345689012',
+          region: 'ab-south-1',
+          foo: 'bar',
+        },
       },
     });
 
@@ -303,15 +309,15 @@ export = {
     test.deepEqual(resp, {
       stacks: [
         {
-        name: "stack1",
-        environment: {
-          name: "12345/us-east-1",
-          account: "12345",
-          region: "us-east-1"
-        }
+          name: "stack1",
+          environment: {
+            name: "12345/us-east-1",
+            account: "12345",
+            region: "us-east-1"
+          }
         },
         {
-        name: "stack2"
+          name: "stack2"
         }
       ]
     });

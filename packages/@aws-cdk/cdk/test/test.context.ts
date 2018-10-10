@@ -48,7 +48,7 @@ export = {
       anyStringParam: 'bar',
     });
     const key = provider.key;
-    test.deepEqual(key, 'ssm:12345:us-east-1:anyStringParam=bar:parameterName=foo');
+    test.deepEqual(key, 'ssm:account=12345:anyStringParam=bar:parameterName=foo:region=us-east-1');
     const complex = new ContextProvider(stack, 'vpc', {
       cidrBlock: '192.168.0.16',
       tags: { Name: 'MyVPC', Env: 'Preprod' },
@@ -56,7 +56,7 @@ export = {
     });
     const complexKey = complex.key;
     test.deepEqual(complexKey,
-      'vpc:12345:us-east-1:cidrBlock=192.168.0.16:igw=false:tagsEnv=Preprod:tagsName=MyVPC');
+      'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC');
     test.done();
   },
   'SSM parameter provider will return context values if available'(test: Test) {
