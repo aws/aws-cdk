@@ -23,6 +23,8 @@ export interface DeployStackResult {
   readonly stackArn: string;
 }
 
+const LARGE_TEMPLATE_SIZE_KB = 50;
+
 export async function deployStack(stack: cxapi.SynthesizedStack,
                                   sdk: SDK,
                                   toolkitInfo?: ToolkitInfo,
@@ -104,11 +106,14 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
     const templateURL = `${toolkitInfo.bucketUrl}/${key}`;
     debug('Stored template in S3 at:', templateURL);
     return { TemplateURL: templateURL };
-  } else if (templateJson.length > 51_200) {
-    error('The template for stack %s is %d bytes long, a CDK Toolkit stack is required for deployment of templates larger than 51,200 bytes. ' +
-        'A CDK Toolkit stack can be created using %s',
-        stack.name, templateJson.length, colors.blue(`cdk bootstrap '${stack.environment!.name}'`));
-    throw new Error(`The template for stack ${stack.name} is larger than 50,200 bytes, and no CDK Toolkit info was provided`);
+  } else if (templateJson.length > LARGE_TEMPLATE_SIZE_KB * 1024) {
+    error(
+      `The template for stack "${stack.name}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
+      `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
+      'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
+      colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
+
+    throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
   } else {
     return { TemplateBody: templateJson };
   }
