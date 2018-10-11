@@ -526,6 +526,7 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetType": "instance",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
