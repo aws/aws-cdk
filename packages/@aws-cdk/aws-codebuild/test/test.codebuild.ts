@@ -53,35 +53,14 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
+                        "arn:", { "Ref": "AWS::Partition" },
+                        ":logs:",
+                        { "Ref": "AWS::Region" },
                         ":",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":",
-                        "logs",
-                        ":",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":",
-                        "log-group",
-                        ":",
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
-                        }
+                        { "Ref": "AWS::AccountId" },
+                        ":log-group:",
+                        { "Fn::Join": [ "", [ "/aws/codebuild/", { "Ref": "MyProject39F7B0AE" } ] ] },
+                        ":*"
                       ]
                     ]
                   },
@@ -89,36 +68,14 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
+                        "arn:",
+                        { "Ref": "AWS::Partition" },
+                        ":logs:",
+                        { "Ref": "AWS::Region" },
                         ":",
-                        {
-                          "Ref": "AWS::Partition"
-                        },
-                        ":",
-                        "logs",
-                        ":",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":",
-                        "log-group",
-                        ":",
-                        {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
-                        },
-                        ":*"
+                        { "Ref": "AWS::AccountId" },
+                        ":log-group:",
+                        { "Fn::Join": [ "", [ "/aws/codebuild/", { "Ref": "MyProject39F7B0AE" } ] ] }
                       ]
                     ]
                   }
@@ -217,9 +174,9 @@ export = {
             },
             {
               "Action": [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -227,14 +184,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -242,45 +196,7 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
-                  }
-                ]
-                ]
-              },
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn",
-                  ":",
-                  {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":",
-                  "logs",
-                  ":",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:",
                   {
                   "Fn::Join": [
                     "",
@@ -293,6 +209,37 @@ export = {
                   ]
                   },
                   ":*"
+                ]
+                ]
+              },
+              {
+                "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                  "Ref": "AWS::Partition"
+                  },
+                  ":logs:",
+                  {
+                  "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                  "Ref": "AWS::AccountId"
+                  },
+                  ":log-group:",
+                  {
+                  "Fn::Join": [
+                    "",
+                    [
+                    "/aws/codebuild/",
+                    {
+                      "Ref": "MyProject39F7B0AE"
+                    }
+                    ]
+                  ]
+                  }
                 ]
                 ]
               }
@@ -382,9 +329,9 @@ export = {
             "Statement": [
             {
               "Action": [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -404,8 +351,7 @@ export = {
                     "Arn"
                   ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                 ]
                 ]
               }
@@ -413,9 +359,9 @@ export = {
             },
             {
               "Action": [
-              "logs:CreateLogGroup",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -423,14 +369,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -438,45 +381,7 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
-                  }
-                ]
-                ]
-              },
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn",
-                  ":",
-                  {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":",
-                  "logs",
-                  ":",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:",
                   {
                   "Fn::Join": [
                     "",
@@ -489,6 +394,37 @@ export = {
                   ]
                   },
                   ":*"
+                ]
+                ]
+              },
+              {
+                "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                  "Ref": "AWS::Partition"
+                  },
+                  ":logs:",
+                  {
+                  "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                  "Ref": "AWS::AccountId"
+                  },
+                  ":log-group:",
+                  {
+                  "Fn::Join": [
+                    "",
+                    [
+                    "/aws/codebuild/",
+                    {
+                      "Ref": "MyProject39F7B0AE"
+                    }
+                    ]
+                  ]
+                  }
                 ]
                 ]
               }
@@ -531,8 +467,7 @@ export = {
               {
                 "Ref": "MyBucketF68F3FF0"
               },
-              "/",
-              "path/to/source.zip"
+              "/path/to/source.zip"
               ]
             ]
             },
@@ -788,15 +723,7 @@ export = {
         },
         {
         "Type": "PARAMETER_STORE",
-        "Value": {
-          "Fn::Join": [
-          "",
-          [
-            "111",
-            "222"
-          ]
-          ]
-        },
+        "Value": "111222",
         "Name": "BAR"
         },
         {

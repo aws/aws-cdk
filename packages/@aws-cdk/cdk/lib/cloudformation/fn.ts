@@ -1,3 +1,4 @@
+import { unresolved } from '../core/tokens';
 import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
 // tslint:disable:max-line-length
 
@@ -123,14 +124,28 @@ export class FnConcat extends FnJoin {
       } else if (isConcatIntrinsic(el)) {
         const values = concatIntrinsicValues(el);
         listOfValues.splice(i, 1, ...values);
-        i += values;
+        i += values.length;
+      } else if (i > 0
+              && typeof listOfValues[i - 1] === 'string'
+              && typeof listOfValues[i] === 'string'
+              && !unresolved(listOfValues[i - 1])
+              && !unresolved(listOfValues[i])) {
+        // Previous & current both are plain strings, concatenating them right here...
+        listOfValues[i - 1] += listOfValues[i];
+        listOfValues.splice(i, 1);
       } else {
         i++;
       }
     }
-
     super('', listOfValues);
     this.listOfValues = listOfValues;
+  }
+
+  public resolve() {
+    if (this.listOfValues.length === 1) {
+      return this.listOfValues[0];
+    }
+    return FnJoin.prototype.resolve.call(this);
   }
 }
 
@@ -144,7 +159,7 @@ function isConcatIntrinsic(x: any) {
 /**
  * Return the concatted values of the concat intrinsic
  */
-function concatIntrinsicValues(x: any) {
+function concatIntrinsicValues(x: any): any[] {
   return x['Fn::Join'][1];
 }
 

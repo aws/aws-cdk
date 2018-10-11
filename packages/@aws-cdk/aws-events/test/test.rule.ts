@@ -276,15 +276,10 @@ export = {
             "Id": "T1",
             "InputTransformer": {
               "InputTemplate": {
-              "Fn::Join": [
-                "",
-                [
-                "\"",
-                "a",
-                "b",
-                "\""
+                'Fn::Join': [
+                  '',
+                  ['"', 'ab"']
                 ]
-              ]
               }
             },
             "KinesisParameters": {

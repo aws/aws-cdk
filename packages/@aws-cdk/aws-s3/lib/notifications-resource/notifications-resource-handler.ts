@@ -57,13 +57,15 @@ export class NotificationsResourceHandler extends cdk.Construct {
           resource: 'policy',
           resourceName: 'service-role/AWSLambdaBasicExecutionRole',
         })
-      ]
+      ],
+      policies: {
+        // handler allows to put bucket notification on s3 buckets.
+        allowPutBucketNotification: new iam.PolicyDocument()
+          .addStatement(new iam.PolicyStatement()
+            .addAction('s3:PutBucketNotification')
+            .addAllResources())
+      }
     });
-
-    // handler allows to put bucket notification on s3 buckets.
-    role.addToPolicy(new iam.PolicyStatement()
-      .addAction('s3:PutBucketNotification')
-      .addAllResources());
 
     const resource = new cdk.Resource(this, 'Resource', {
       type: 'AWS::Lambda::Function',

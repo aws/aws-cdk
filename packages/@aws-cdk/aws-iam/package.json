@@ -55,8 +55,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.12.0",
+    "@types/fs-extra": "^5.0.4",
+    "@types/js-yaml": "^3.11.2",
     "cdk-build-tools": "^0.12.0",
     "cdk-integ-tools": "^0.12.0",
+    "fs-extra": "^7.0.0",
+    "js-yaml": "^3.12.0",
     "cfn2ts": "^0.12.0",
     "pkglint": "^0.12.0"
   },

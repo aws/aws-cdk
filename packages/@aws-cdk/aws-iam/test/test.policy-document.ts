@@ -18,17 +18,15 @@ export = {
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
-       Resource: [ 'myQueue', 'yourQueue', '*' ],
+       Resource: ['myQueue', 'yourQueue', '*'],
        Effect: 'Allow',
        Principal:
-      { AWS:
+      { AWS: [
          { 'Fn::Join':
           [ '',
           [ 'arn:',
             { Ref: 'AWS::Partition' },
-            ':iam::',
-            { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
-            ':root' ] ] } },
+            ':iam::myaccountname:root' ] ] } ] },
        Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
     test.done();
@@ -61,8 +59,8 @@ export = {
       Version: 'Foo',
       Something: 123,
       Statement: [
-        { Statement1: 1 },
-        { Statement2: 2 }
+        { Effect: 'Allow' },
+        { Effect: 'Deny' },
       ]
     };
     const doc = new PolicyDocument(base);
@@ -71,8 +69,7 @@ export = {
     test.deepEqual(resolve(doc), { Version: 'Foo',
     Something: 123,
     Statement:
-     [ { Statement1: 1 },
-       { Statement2: 2 },
+     [ ...base.Statement,
        { Effect: 'Allow', Action: 'action', Resource: 'resource' } ] });
     test.done();
   },
@@ -99,7 +96,7 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        CanonicalUser: canoncialUser
+        CanonicalUser: [canoncialUser]
       }
     });
     test.done();
@@ -111,7 +108,7 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        AWS: {
+        AWS: [{
         "Fn::Join": [
           "",
           [
@@ -122,7 +119,7 @@ export = {
           ":root"
           ]
         ]
-        }
+        }]
       }
     });
     test.done();
@@ -134,7 +131,7 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        Federated: "com.amazon.cognito"
+        Federated: ["com.amazon.cognito"]
       },
       Condition: {
         StringEquals: { key: 'value' }
