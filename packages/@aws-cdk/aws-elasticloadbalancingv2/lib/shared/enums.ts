@@ -109,9 +109,4 @@ export enum TargetType {
    * Targets identified by IP address
    */
   Ip = 'ip',
-
-  /**
-   * A target that will register itself with the target group
-   */
-  SelfRegistering = 'self-registering',
 }
