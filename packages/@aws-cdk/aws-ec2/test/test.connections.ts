@@ -1,8 +1,28 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { AllConnections, AnyIPv4, AnyIPv6, Connections, IConnectable, PrefixList, SecurityGroup, SecurityGroupRef,
-  TcpAllPorts, TcpPort, TcpPortFromAttribute, TcpPortRange, UdpAllPorts, UdpPort, UdpPortFromAttribute, UdpPortRange, VpcNetwork } from '../lib';
+import {
+  AllConnections,
+  AnyIPv4,
+  AnyIPv6,
+  Connections,
+  IcmpAllTypeCodes,
+  IcmpAllTypesAndCodes,
+  IcmpTypeAndCode,
+  IConnectable,
+  PrefixList,
+  SecurityGroup,
+  SecurityGroupRef,
+  TcpAllPorts,
+  TcpPort,
+  TcpPortFromAttribute,
+  TcpPortRange,
+  UdpAllPorts,
+  UdpPort,
+  UdpPortFromAttribute,
+  UdpPortRange,
+  VpcNetwork
+} from "../lib";
 
 export = {
   'peering between two security groups does not recursive infinitely'(test: Test) {
@@ -80,6 +100,9 @@ export = {
       new UdpPortFromAttribute("udp-test-port!"),
       new UdpAllPorts(),
       new UdpPortRange(85, 95),
+      new IcmpTypeAndCode(5, 1),
+      new IcmpAllTypeCodes(8),
+      new IcmpAllTypesAndCodes(),
       new AllConnections()
     ];
 
