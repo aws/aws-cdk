@@ -92,6 +92,16 @@
               ]
             },
             {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CfnChangeSetRole6F05F6FC",
+                  "Arn"
+                ]
+              }
+            },
+            {
               "Action": "cloudformation:DescribeStacks",
               "Effect": "Allow",
               "Resource": {
@@ -157,16 +167,6 @@
                     "/",
                     "IntegTest-TestActionStack/*"
                   ]
-                ]
-              }
-            },
-            {
-              "Action": "iam:PassRole",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "CfnChangeSetRole6F05F6FC",
-                  "Arn"
                 ]
               }
             }
