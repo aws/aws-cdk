@@ -92,18 +92,20 @@ export class GitHubSource extends BuildSource {
 }
 
 /**
- * GitHub Enterprice Source definition for a CodeBuild project
+ * GitHub Enterprise Source definition for a CodeBuild project
  */
 export class GitHubEnterpriseSource extends BuildSource {
-  constructor(private readonly cloneUrl: string) {
+  constructor(private readonly cloneUrl: string, private readonly oauthToken: any) {
     super();
     this.cloneUrl = cloneUrl;
+    this.oauthToken = oauthToken;
   }
 
   public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
     return {
       type: SourceType.GitHubEnterPrise,
       location: this.cloneUrl,
+      auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
     };
   }
 }
