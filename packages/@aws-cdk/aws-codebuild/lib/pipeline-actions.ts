@@ -10,14 +10,18 @@ import { ProjectRef } from './project';
  */
 export interface CommonPipelineBuildActionProps extends codepipeline.CommonActionProps {
   /**
-   * The source to use as input for this build
+   * The source to use as input for this build.
+   *
+   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact: codepipeline.Artifact;
+  inputArtifact?: codepipeline.Artifact;
 
   /**
-   * The name of the build's output artifact
+   * The name of the build's output artifact.
+   *
+   * @default an auto-generated name will be used
    */
-  artifactName?: string;
+  outputArtifactName?: string;
 }
 
 /**
@@ -44,7 +48,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
       runOrder: props.runOrder,
       provider: 'CodeBuild',
       inputArtifact: props.inputArtifact,
-      artifactName: props.artifactName,
+      outputArtifactName: props.outputArtifactName,
       configuration: {
         ProjectName: props.project.projectName
       }

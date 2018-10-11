@@ -38,13 +38,13 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
 /**
  * Base class for Actions that execute CloudFormation
  */
-export abstract class PipelineCloudFormationAction extends codepipeline.DeployAction {
+export abstract class PipelineCloudFormationAction extends codepipeline.Action {
   /**
    * Output artifact containing the CloudFormation call response
    *
    * Only present if configured by passing `outputFileName`.
    */
-  public artifact?: codepipeline.Artifact;
+  public outputArtifact?: codepipeline.Artifact;
 
   constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
     super(parent, id, {
@@ -57,6 +57,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.DeployAc
         maxOutputs: 1,
       },
       provider: 'CloudFormation',
+      category: codepipeline.ActionCategory.Deploy,
       configuration: {
         StackName: props.stackName,
         OutputFileName: props.outputFileName,
@@ -65,7 +66,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.DeployAc
     });
 
     if (props.outputFileName) {
-      this.artifact = this.addOutputArtifact(props.outputArtifactName ||
+      this.outputArtifact = this.addOutputArtifact(props.outputArtifactName ||
         (props.stage.name + this.id + 'Artifact'));
     }
   }

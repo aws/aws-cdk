@@ -23,8 +23,10 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
   /**
    * The name of the source's output artifact.
    * Output artifacts are used by CodePipeline as inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * The service provider that the action calls.
@@ -48,20 +50,15 @@ export interface SourceActionProps extends CommonActionProps, CommonActionConstr
  * {@link codecommit.PipelineSourceAction}.
  */
 export abstract class SourceAction extends Action {
-  public readonly artifact: Artifact;
+  public readonly outputArtifact: Artifact;
 
   constructor(parent: cdk.Construct, name: string, props: SourceActionProps) {
     super(parent, name, {
-      stage: props.stage,
-      runOrder: props.runOrder,
       category: ActionCategory.Source,
-      owner: props.owner,
-      provider: props.provider,
-      version: props.version,
       artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
-      configuration: props.configuration
+      ...props,
     });
 
-    this.artifact = this.addOutputArtifact(props.artifactName);
+    this.outputArtifact = this.addOutputArtifact(props.outputArtifactName);
   }
 }

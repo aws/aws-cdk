@@ -17,7 +17,7 @@ const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const source = new codecommit.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
   repository: repo,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
 });
 
 // Deployment stage: create and deploy changeset with manual approval
@@ -30,7 +30,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(prodStage, 'PrepareChanges', {
   stackName,
   changeSetName,
   fullPermissions: true,
-  templatePath: source.artifact.atPath('template.yaml'),
+  templatePath: source.outputArtifact.atPath('template.yaml'),
 });
 
 new codepipeline.ManualApprovalAction(stack, 'ApproveChanges', {

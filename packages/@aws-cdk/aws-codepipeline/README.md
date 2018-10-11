@@ -1,14 +1,26 @@
-## AWS CodePipeline construct library
+## AWS CodePipeline Construct Library
 
-Construct an empty Pipeline:
+### Pipeline
+
+To construct an empty Pipeline:
 
 ```ts
-const pipeline = new Pipeline(this, 'MyFirstPipeline', {
-    pipelineName: 'MyFirstPipeline',
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
+```
+
+To give the Pipeline a nice, human-readable name:
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  pipelineName: 'MyPipeline',
 });
 ```
 
-Append a Stage to the Pipeline:
+### Stages
+
+To append a Stage to a Pipeline:
 
 ```ts
 const sourceStage = pipeline.addStage('Source');
@@ -21,26 +33,45 @@ You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
 const sourceStage = pipeline.addStage('Source', {
-    placement: {
-        // note: you can only specify one of the below properties
-        rightBefore: anotherStage,
-        justAfter: anotherStage,
-        atIndex: 3, // indexing starts at 0
-                    // pipeline.stageCount returns the number of Stages currently in the Pipeline
-    }
+  placement: {
+    // note: you can only specify one of the below properties
+    rightBefore: anotherStage,
+    justAfter: anotherStage,
+    atIndex: 3, // indexing starts at 0
+                // pipeline.stageCount returns the number of Stages currently in the Pipeline
+  }
 });
 ```
 
-Add an Action to a Stage:
+### Actions
+
+To add an Action to a Stage:
 
 ```ts
-new codecommit.PipelineSourceAction(this, 'Source', {
-    stage: sourceStage,
-    artifactName: 'MyPackageSourceArtifact',
-    repository: codecommit.RepositoryRef.import(this, 'MyExistingRepository', {
-        repositoryName: new codecommit.RepositoryName('MyExistingRepository'),
-    }),
+new codepipeline.GitHubSourceAction(this, 'GitHub_Source', {
+  stage: sourceStage,
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  branch: 'develop', // default: 'master'
+  oauthToken: ...,
 })
+```
+
+The Pipeline construct will automatically generate and wire together the artifact names CodePipeline uses.
+If you need, you can also name the artifacts explicitly:
+
+```ts
+const sourceAction = new codepipeline.GitHubSourceAction(this, 'GitHub_Source', {
+  // other properties as above...
+  outputArtifactName: 'SourceOutput', // this will be the name of the output artifact in the Pipeline
+});
+
+// in a build Action later...
+
+new codepipeline.JenkinsBuildAction(this, 'Jenkins_Build', {
+  // other properties...
+  inputArtifact: sourceAction.outputArtifact,
+});
 ```
 
 ### Events
