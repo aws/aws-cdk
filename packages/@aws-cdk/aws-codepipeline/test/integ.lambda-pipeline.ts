@@ -15,7 +15,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   bucket,
   bucketKey: 'key',
 });

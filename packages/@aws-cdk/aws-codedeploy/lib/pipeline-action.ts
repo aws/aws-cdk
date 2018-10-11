@@ -25,8 +25,10 @@ export interface PipelineDeployActionProps extends codepipeline.CommonActionProp
 
   /**
    * The source to use as input for deployment.
+   *
+   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact: codepipeline.Artifact;
+  inputArtifact?: codepipeline.Artifact;
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {

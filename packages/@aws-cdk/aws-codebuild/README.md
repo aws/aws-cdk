@@ -50,21 +50,12 @@ const project = new codebuild.PipelineProject(this, 'MyProject');
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
-const sourceStage = new codepipeline.Stage(this, 'Source', {
-    pipeline,
-});
-const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
-    stage: sourceStage,
-    artifactName: 'SourceOutput',
-    repository,
-});
+const sourceStage = pipeline.addStage('Source');
+repository.addToPipeline(sourceStage, 'CodeCommit');
 
-const buildStage = new codepipeline.Stage(this, 'Build', {
-    pipeline,
-});
+const buildStage = pipeline.addStage('Build');
 new codebuild.PipelineBuildAction(this, 'CodeBuild', {
     stage: buildStage,
-    inputArtifact: sourceAction.artifact,
     project,
 });
 ```
@@ -84,9 +75,7 @@ You can also add the Project to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-project.addBuildToPipeline(buildStage, 'CodeBuild', {
-    inputArtifact: sourceAction.artifact,
-})
+project.addBuildToPipeline(buildStage, 'CodeBuild');
 ```
 
 ### Using Project as an event target

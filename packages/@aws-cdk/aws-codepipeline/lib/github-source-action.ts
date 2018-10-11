@@ -9,8 +9,10 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
   /**
    * The name of the source's output artifact. Output artifacts are used by CodePipeline as
    * inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * The GitHub account/user that owns the repo.
@@ -66,7 +68,7 @@ export class GitHubSourceAction extends actions.SourceAction {
         OAuthToken: props.oauthToken,
         PollForSourceChanges: props.pollForSourceChanges || true
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
   }
 }
