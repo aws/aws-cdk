@@ -68,8 +68,8 @@ export abstract class RepositoryRef extends cdk.Construct {
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineSourceAction}
    */
-  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction(this.parent!, name, {
+  public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps = {}): PipelineSourceAction {
+    return new PipelineSourceAction(this, name, {
       stage,
       repository: this,
       ...props,

@@ -72,12 +72,18 @@ export interface StageProps extends CommonStageProps {
  *     pipeline: myPipeline,
  *   });
  */
-export class Stage extends cdk.Construct implements actions.IStage {
+export class Stage extends cdk.Construct implements actions.IStage, actions.IInternalStage {
   /**
    * The Pipeline this Stage is a part of.
    */
   public readonly pipeline: Pipeline;
   public readonly name: string;
+
+  /**
+   * The API of Stage used internally by the CodePipeline Construct.
+   * You should never need to call any of the methods inside of it yourself.
+   */
+  public readonly _internal = this;
 
   private readonly _actions = new Array<actions.Action>();
 
@@ -146,10 +152,18 @@ export class Stage extends cdk.Construct implements actions.IStage {
     }
   }
 
+  public _generateOutputArtifactName(action: actions.Action): string {
+    return (this.pipeline as any)._generateOutputArtifactName(this, action);
+  }
+
+  public _findInputArtifact(action: actions.Action): actions.Artifact {
+    return (this.pipeline as any)._findInputArtifact(this, action);
+  }
+
   private renderAction(action: actions.Action): cloudformation.PipelineResource.ActionDeclarationProperty {
     return {
       name: action.id,
-      inputArtifacts: action.inputArtifacts.map(a => ({ name: a.name })),
+      inputArtifacts: action._inputArtifacts.map(a => ({ name: a.name })),
       actionTypeId: {
         category: action.category.toString(),
         version: action.version,
@@ -157,7 +171,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
-      outputArtifacts: action.outputArtifacts.map(a => ({ name: a.name })),
+      outputArtifacts: action._outputArtifacts.map(a => ({ name: a.name })),
       runOrder: action.runOrder,
     };
   }

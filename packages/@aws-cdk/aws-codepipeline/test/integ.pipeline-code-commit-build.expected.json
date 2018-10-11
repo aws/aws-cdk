@@ -175,7 +175,11 @@
                   }
                 ],
                 "Name": "build",
-                "OutputArtifacts": [],
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_awscdkcodepipelinecodecommitcodebuildMyBuildProjectbuild61B48DC4"
+                  }
+                ],
                 "RunOrder": 1
               }
             ],

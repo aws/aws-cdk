@@ -5,22 +5,17 @@ To add a CodeCommit Repository to your stack:
 ```ts
 import codecommit = require('@aws-cdk/aws-codecommit');
 
-const repository = new codecommit.Repository(this, 'Repository' ,{
-    repositoryName: 'MyRepositoryName'
+const repo = new codecommit.Repository(this, 'Repository' ,{
+    repositoryName: 'MyRepositoryName',
+    description: 'Some description.', // optional property
 });
 ```
 
 To add an SNS trigger to your repository:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
-
-const repository = new codecommit.Repository(this, 'Repository', {
-    repositoryName: 'MyRepositoryName'
-});
-
 // trigger is established for all repository actions on all branches by default.
-repository.notify('arn:aws:sns:*:123456789012:my_topic');
+repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
 ### CodePipeline
@@ -28,34 +23,23 @@ repository.notify('arn:aws:sns:*:123456789012:my_topic');
 To use a CodeCommit Repository in a CodePipeline:
 
 ```ts
-import codecommit = require('@aws-cdk/aws-codecommit');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-
-// see above for the details...
-const repository = new codecommit.Repository( // ...
-);
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
     pipelineName: 'MyPipeline',
 });
-const sourceStage = new codepipeline.Stage(this, 'Source', {
-    pipeline,
-});
+const sourceStage = pipeline.addStage('Source');
 const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
     stage: sourceStage,
-    artifactName: 'SourceOutput', // name can be arbitrary
-    repository,
+    repository: repo,
 });
-// use sourceAction.artifact as the inputArtifact to later Actions...
 ```
 
 You can also add the Repository to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = repository.addToPipeline(sourceStage, 'CodeCommit', {
-    artifactName: 'SourceOutput',
-});
+const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
 ```
 
 ### Events

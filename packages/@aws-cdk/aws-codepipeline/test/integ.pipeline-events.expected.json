@@ -168,7 +168,11 @@
                   }
                 ],
                 "Name": "CodeBuildAction",
-                "OutputArtifacts": [],
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_awscdkpipelineeventtargetCodeBuildAction37D411C2"
+                  }
+                ],
                 "RunOrder": 1
               }
             ],

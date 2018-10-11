@@ -86,13 +86,4 @@ export class PipelineInvokeAction extends codepipeline.Action {
         .addAction('codepipeline:PutJobFailureResult'));
     }
   }
-
-  /**
-   * Add an input artifact
-   * @param artifact
-   */
-  protected addInputArtifact(artifact: codepipeline.Artifact): codepipeline.Action {
-    super.addInputArtifact(artifact);
-    return this;
-  }
 }

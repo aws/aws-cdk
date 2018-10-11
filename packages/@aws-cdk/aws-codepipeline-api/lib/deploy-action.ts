@@ -5,6 +5,8 @@ import { Artifact } from './artifact';
 export interface DeployActionProps extends CommonActionProps, CommonActionConstructProps {
   provider: string;
 
+  owner?: string;
+
   artifactBounds: ActionArtifactBounds;
 
   inputArtifact?: Artifact;
@@ -15,16 +17,10 @@ export interface DeployActionProps extends CommonActionProps, CommonActionConstr
 export abstract class DeployAction extends Action {
   constructor(parent: cdk.Construct, name: string, props: DeployActionProps) {
     super(parent, name, {
-      stage: props.stage,
-      runOrder: props.runOrder,
       category: ActionCategory.Deploy,
-      provider: props.provider,
-      artifactBounds: props.artifactBounds,
-      configuration: props.configuration,
+      ...props,
     });
 
-    if (props.inputArtifact) {
-      this.addInputArtifact(props.inputArtifact);
-    }
+    this.addInputArtifact(props.inputArtifact);
   }
 }

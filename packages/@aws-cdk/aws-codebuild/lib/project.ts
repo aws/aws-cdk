@@ -89,8 +89,8 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineBuildAction} build Action
    */
-  public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps): PipelineBuildAction {
-    return new PipelineBuildAction(this.parent!, name, {
+  public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps = {}): PipelineBuildAction {
+    return new PipelineBuildAction(this, name, {
       stage,
       project: this,
       ...props,

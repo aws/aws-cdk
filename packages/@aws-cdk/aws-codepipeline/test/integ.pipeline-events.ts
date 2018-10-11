@@ -21,12 +21,12 @@ const project = new codebuild.PipelineProject(stack, 'BuildProject');
 
 const sourceAction = new codecommit.PipelineSourceAction(pipeline, 'CodeCommitSource', {
   stage: sourceStage,
-  artifactName: 'Source',
+  outputArtifactName: 'Source',
   repository,
 });
 new codebuild.PipelineBuildAction(stack, 'CodeBuildAction', {
   stage: buildStage,
-  inputArtifact: sourceAction.artifact,
+  inputArtifact: sourceAction.outputArtifact,
   project
 });
 

@@ -11,8 +11,10 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
   /**
    * The name of the source's output artifact. Output artifacts are used by CodePipeline as
    * inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * The key within the S3 bucket that stores the source code.
@@ -47,15 +49,13 @@ export interface PipelineSourceActionProps extends CommonPipelineSourceActionPro
 export class PipelineSourceAction extends codepipeline.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
     super(parent, name, {
-      stage: props.stage,
-      runOrder: props.runOrder,
       provider: 'S3',
       configuration: {
         S3Bucket: props.bucket.bucketName,
         S3ObjectKey: props.bucketKey,
         PollForSourceChanges: props.pollForSourceChanges || true
       },
-      artifactName: props.artifactName
+      ...props,
     });
 
     // pipeline needs permissions to read from the S3 bucket
