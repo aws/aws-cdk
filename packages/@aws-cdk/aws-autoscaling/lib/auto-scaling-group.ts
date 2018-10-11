@@ -276,7 +276,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 
   /**
@@ -284,7 +284,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 
   /**

@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
+import { Attributes, LazyDependable, renderAttributes } from './util';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -147,6 +147,11 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   protected readonly defaultPort: string;
 
   /**
+   * List of listeners routing to this target group
+   */
+  protected readonly dependableListeners = new Array<cdk.IDependable>();
+
+  /**
    * Attributes of this target group
    */
   private readonly attributes: Attributes = {};
@@ -243,18 +248,20 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   }
 
   /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  public listenerDependency(): cdk.IDependable {
+    return new LazyDependable(this.dependableListeners);
+  }
+
+  /**
    * Register the given load balancing target as part of this group
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
-    if ((props.targetType === TargetType.SelfRegistering) !== (props.targetJson === undefined)) {
-      throw new Error('Load balancing target should specify targetJson if and only if TargetType is not SelfRegistering');
+    if (this.targetType !== undefined && this.targetType !== props.targetType) {
+      throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
     }
-    if (props.targetType !== TargetType.SelfRegistering) {
-      if (this.targetType !== undefined && this.targetType !== props.targetType) {
-        throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
-      }
-      this.targetType = props.targetType;
-    }
+    this.targetType = props.targetType;
 
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
@@ -285,6 +292,11 @@ export interface ITargetGroup {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
+
+  /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  listenerDependency(): cdk.IDependable;
 }
 
 /**
@@ -298,6 +310,8 @@ export interface LoadBalancerTargetProps {
 
   /**
    * JSON representing the target's direct addition to the TargetGroup list
+   *
+   * May be omitted if the target is going to register itself later.
    */
   targetJson?: any;
 }

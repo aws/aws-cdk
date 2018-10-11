@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
 import { BaseImportedTargetGroup } from '../shared/imported';
-import { determineProtocolAndPort } from '../shared/util';
+import { determineProtocolAndPort, LazyDependable } from '../shared/util';
 import { IApplicationListener } from './application-listener';
 
 /**
@@ -144,6 +144,7 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
+    this.dependableListeners.push(listener);
   }
 }
 
@@ -180,6 +181,10 @@ export interface IApplicationTargetGroup extends ITargetGroup {
 class ImportedApplicationTargetGroup extends BaseImportedTargetGroup implements IApplicationTargetGroup {
   public registerListener(_listener: IApplicationListener) {
     // Nothing to do, we know nothing of our members
+  }
+
+  public listenerDependency(): cdk.IDependable {
+    return new LazyDependable([]);
   }
 }
 

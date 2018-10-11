@@ -470,7 +470,7 @@
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Open to the world",
+            "Description": "Allow from anyone on port 80",
             "FromPort": 80,
             "IpProtocol": "tcp",
             "ToPort": 80
@@ -526,6 +526,7 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetType": "instance",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },

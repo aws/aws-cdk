@@ -31,6 +31,4 @@ listener.addTargets('ConditionalTarget', {
   targets: [new elbv2.IpTarget('10.0.1.2')]
 });
 
-listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
-
 app.run();
