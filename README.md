@@ -17,9 +17,9 @@ and efficient manner.
 
 The following languages are currently supported:
 
-* Java
-* JavaScript, TypeScript
-* .NET
+* Java ![](docs/src/_images/java.png)
+* JavaScript ![](docs/src/_images/js.png), TypeScript ![](docs/src/_images/ts.png)
+* .NET ![](docs/src/_images/dotnet.png)
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
@@ -28,7 +28,7 @@ The CDK is currently in developer preview and we look forward to community feedb
 [API Reference](https://awslabs.github.io/aws-cdk/reference.html) |
 [Getting Help](#getting-help)
 
-![Example usage of CDK](screencast.gif)
+![Example usage of CDK](docs/src/_images/screencast.gif)
 
 Developers can use one of the supported programming languages to define reusable
 cloud components called [constructs], which are composed together into
