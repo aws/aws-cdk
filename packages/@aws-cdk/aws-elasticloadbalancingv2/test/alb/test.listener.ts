@@ -47,7 +47,7 @@ export = {
     test.done();
   },
 
-  'Listener default  to open'(test: Test) {
+  'Listener default to open'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'Stack');
