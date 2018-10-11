@@ -30,9 +30,6 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
   runtime: lambda.Runtime.NodeJS610,
 });
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda', { pipeline });
-new lambda.PipelineInvokeAction(stack, 'Lambda', {
-  stage: lambdaStage,
-  lambda: lambdaFun,
-});
+lambdaFun.addToPipeline(lambdaStage, 'Lambda');
 
 app.run();

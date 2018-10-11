@@ -91,12 +91,24 @@ export = {
   },
 
   'exporting and importing works'(test: Test) {
+    // GIVEN
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'Queue');
 
+    // WHEN
     const ref = queue.export();
+    const imports = sqs.QueueRef.import(stack, 'Imported', ref);
 
-    sqs.QueueRef.import(stack, 'Imported', ref);
+    // THEN
+
+    // "import" returns a a QueueRef bound to `Fn::ImportValue`s.
+    test.deepEqual(resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
+    test.deepEqual(resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
+
+    // the exporting stack has Outputs for QueueARN and QueueURL
+    const outputs = stack.toCloudFormation().Outputs;
+    test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'QueueQueueArn8CF496D5' } });
+    test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'QueueQueueUrlC30FF916' } });
 
     test.done();
   },
