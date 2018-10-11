@@ -6,7 +6,7 @@ import nodeunit = require('nodeunit');
 import cloudformation = require('../lib');
 
 export = nodeunit.testCase({
-  CreateReplaceChangeSet: {
+  'CreateReplaceChangeSet': {
     works(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -21,11 +21,7 @@ export = nodeunit.testCase({
 
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
-      const stackArn = cdk.ArnUtils.fromComponents({
-        service: 'cloudformation',
-        resource: 'stack',
-        resourceName: 'MyStack/*'
-      });
+      const stackArn = _stackArn('MyStack');
       const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
@@ -44,7 +40,7 @@ export = nodeunit.testCase({
       test.done();
     }
   },
-  ExecuteChangeSet: {
+  'ExecuteChangeSet': {
     works(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -55,11 +51,7 @@ export = nodeunit.testCase({
         stackName: 'MyStack',
       });
 
-      const stackArn = cdk.ArnUtils.fromComponents({
-        service: 'cloudformation',
-        resource: 'stack',
-        resourceName: 'MyStack/*'
-      });
+      const stackArn = _stackArn('MyStack');
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:ExecuteChangeSet', stackArn,
                                { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } });
 
@@ -71,7 +63,44 @@ export = nodeunit.testCase({
 
       test.done();
     }
-  }
+  },
+
+  'the CreateUpdateStack Action sets the DescribeStack*, Create/Update/DeleteStack & PassRole permissions'(test: nodeunit.Test) {
+    const stack = new cdk.Stack();
+    const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+    const action = new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action', {
+      stage: new StageDouble({ pipelineRole }),
+      templatePath: new cpapi.Artifact(stack as any, 'TestArtifact').atPath('some/file'),
+      stackName: 'MyStack',
+    });
+    const stackArn = _stackArn('MyStack');
+
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateStack', stackArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:UpdateStack', stackArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
+
+    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
+
+    test.done();
+  },
+
+  'the DeleteStack Action sets the DescribeStack*, DeleteStack & PassRole permissions'(test: nodeunit.Test) {
+    const stack = new cdk.Stack();
+    const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+    const action = new cloudformation.PipelineDeleteStackAction(stack, 'Action', {
+      stage: new StageDouble({ pipelineRole }),
+      stackName: 'MyStack',
+    });
+    const stackArn = _stackArn('MyStack');
+
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStack*', stackArn);
+    _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteStack', stackArn);
+
+    _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
+
+    test.done();
+  },
 });
 
 interface PolicyStatementJson {
@@ -121,7 +150,7 @@ function _assertPermissionGranted(test: nodeunit.Test, statements: PolicyStateme
                      : '';
   const statementsStr = JSON.stringify(cdk.resolve(statements), null, 2);
   test.ok(_grantsPermission(statements, action, resource, conditions),
-          `Expected to find a statement granting ${action} on ${cdk.resolve(resource)}${conditionStr}, found:\n${statementsStr}`);
+          `Expected to find a statement granting ${action} on ${JSON.stringify(cdk.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
 }
 
 function _grantsPermission(statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
@@ -143,6 +172,14 @@ function _isOrContains(entity: string | string[], value: string): boolean {
     if (_.isEqual(tested, resolvedValue)) { return true; }
   }
   return false;
+}
+
+function _stackArn(stackName: string): string {
+  return cdk.ArnUtils.fromComponents({
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${stackName}/*`,
+  });
 }
 
 class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
