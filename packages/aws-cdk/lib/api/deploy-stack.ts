@@ -107,14 +107,13 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
     debug('Stored template in S3 at:', templateURL);
     return { TemplateURL: templateURL };
   } else if (templateJson.length > LARGE_TEMPLATE_SIZE_KB * 1024) {
-
     error(
       `The template for stack "${stack.name}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
       'Run the following command in order to setup an S3 bucket in this environment, and then re-deploy:\n\n',
-      colors.blue(`    $ cdk bootstrap ${stack.environment!.name}\n`));
+      colors.blue(`\t$ cdk bootstrap ${stack.environment!.name}\n`));
 
-    throw new Error(`Template for stack "${stack.name}" > ${LARGE_TEMPLATE_SIZE_KB}KiB`);
+    throw new Error(`Template too large to deploy ("cdk bootstrap" is required)`);
   } else {
     return { TemplateBody: templateJson };
   }
