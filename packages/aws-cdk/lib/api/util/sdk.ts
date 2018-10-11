@@ -48,7 +48,6 @@ export interface SDKOptions {
 export class SDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
-  private readonly defaultClientArgs: any = {};
   private readonly profile?: string;
 
   constructor(options: SDKOptions) {
@@ -58,7 +57,9 @@ export class SDK {
 
     // Find the package.json from the main toolkit
     const pkg = (require.main as any).require('../package.json');
-    this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
+    AWS.config.update({
+        customUserAgent: `${pkg.name}/${pkg.version}`
+    });
 
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
     if (options.proxyAddress === undefined) {
@@ -71,39 +72,35 @@ export class SDK {
       });
     }
 
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, this.defaultClientArgs);
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
   public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
     return new AWS.CloudFormation({
       region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
   public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
     return new AWS.EC2({
       region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
   }
 
   public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
     return new AWS.SSM({
       region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
   }
 
   public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
     return new AWS.S3({
       region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
@@ -195,7 +192,7 @@ class DefaultAWSAccount {
   private defaultAccountId?: string = undefined;
   private readonly accountCache = new AccountAccessKeyCache();
 
-  constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>, private readonly defaultClientArgs: any) {
+  constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>) {
   }
 
   /**
@@ -223,7 +220,7 @@ class DefaultAWSAccount {
       const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ credentials: creds, ...this.defaultClientArgs }).getCallerIdentity().promise();
+        const result = await new AWS.STS({ credentials: creds }).getCallerIdentity().promise();
         const aid = result.Account;
         if (!aid) {
           debug('STS didn\'t return an account ID');
