@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
-    "jsii": "^0.7.6",
-    "jsii-pacmak": "^0.7.6",
+    "jsii": "^0.7.7",
+    "jsii-pacmak": "^0.7.7",
     "merkle-build": "^0.10.0",
     "nodeunit": "^0.11.3",
     "nyc": "^13.0.1",
