@@ -173,18 +173,21 @@ Application subnets will route to the NAT Gateway.
 
 ### Allowing Connections
 
-In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
-is controlled by **Security Groups**. You can think of Security Groups as a
-firewall with a set of rules. The Security Groups start out empty (that is,
-no network traffic is allowed by default) and rules need to be added to them
-to explicitly allow certain types of traffic.
+In AWS, all network traffic in and out of **Elastic Network Interfaces**
+(ENIs) is controlled by **Security Groups**. You can think of Security Groups
+as a firewall with a set of rules. By default, Security Groups allow no
+incoming (ingress) traffic and all outgoing (egress) traffic. You can add
+ingress rules to them to allow incoming traffic streams, and the same goes for
+egress rules. As soon as you add at least one egress rule to a security
+group, only the rules will be honored and the default "all outgoing traffic"
+rule no longer applies.
 
 You can manipulate Security Groups directly:
 
 ```ts
 const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
-    vpc,
-    description: 'Allow ssh access to ec2 instances',
+  vpc,
+  description: 'Allow ssh access to ec2 instances',
 });
 mySecurityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
 ```
