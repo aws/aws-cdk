@@ -319,6 +319,69 @@ export class UdpAllPorts implements IPortRange {
 }
 
 /**
+ * A set of matching ICMP Type & Code
+ */
+export class IcmpTypeAndCode implements IPortRange {
+  public readonly canInlineRule = true;
+
+  constructor(private readonly type: number, private readonly code: number) {
+  }
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Icmp,
+      fromPort: this.type,
+      toPort: this.code
+    };
+  }
+
+  public toString() {
+    return `ICMP Type ${this.type} Code ${this.code}`;
+  }
+}
+
+/**
+ * All ICMP Codes for a given ICMP Type
+ */
+export class IcmpAllTypeCodes implements IPortRange {
+  public readonly canInlineRule = true;
+
+  constructor(private readonly type: number) {
+  }
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Icmp,
+      fromPort: this.type,
+      toPort: -1
+    };
+  }
+
+  public toString() {
+    return `ICMP Type ${this.type}`;
+  }
+}
+
+/**
+ * All ICMP Types & Codes
+ */
+export class IcmpAllTypesAndCodes implements IPortRange {
+  public readonly canInlineRule = true;
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Icmp,
+      fromPort: -1,
+      toPort: -1
+    };
+  }
+
+  public toString() {
+    return 'ALL ICMP';
+  }
+}
+
+/**
  * All Traffic
  */
 export class AllConnections implements IPortRange {
