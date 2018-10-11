@@ -66,9 +66,9 @@ export class SDK {
     }
     if (options.proxyAddress) { // Ignore empty string on purpose
       debug('Using proxy server: %s', options.proxyAddress);
-      this.defaultClientArgs.httpOptions = {
-        agent: require('proxy-agent')(options.proxyAddress)
-      };
+      AWS.config.update({
+        httpOptions: { agent: require('proxy-agent')(options.proxyAddress) }
+      });
     }
 
     this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, this.defaultClientArgs);
