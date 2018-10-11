@@ -336,7 +336,7 @@ export class IcmpTypeAndCode implements IPortRange {
   }
 
   public toString() {
-    return `ICMP TYPE ${this.type} AND ICMP CODE ${this.code}`;
+    return `ICMP Type ${this.type} Code ${this.code}`;
   }
 }
 
@@ -358,7 +358,7 @@ export class IcmpAllTypeCodes implements IPortRange {
   }
 
   public toString() {
-    return `ICMP TYPE ${this.type} AND ALL IT'S CODES`;
+    return `ICMP Type ${this.type}`;
   }
 }
 
@@ -377,7 +377,7 @@ export class IcmpAllTypesAndCodes implements IPortRange {
   }
 
   public toString() {
-    return 'ICMP ALL TYPES AND CODES';
+    return 'ALL ICMP';
   }
 }
 
