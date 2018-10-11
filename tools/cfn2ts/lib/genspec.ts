@@ -118,7 +118,7 @@ export class AttributeTypeDeclaration {
 }
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
-export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'CloudFormationToken');
+export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
 
 /**
  * Resource attribute
