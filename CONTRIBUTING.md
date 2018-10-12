@@ -108,7 +108,7 @@ Or:
 
 After you've bootstrapped the repo, you would probably want to work on individual packages.
 
-All packages in the repo have a two useful scripts: `prepare` and `watch`. In order to execute
+All packages in the repo have `watch`, `build` and `test` scripts. In order to execute
 these scripts, use `lerna run --stream --scope <package> <script>`.
 
 > The reason you can't use "npm" is because dev tools are installed at the repository level
@@ -122,14 +122,15 @@ alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name
 
 # more sugar
 alias lw='lr watch &'
-alias lp='lr prepare'
+alias lb='lr build'
+alias lt='lr test'
 ```
 
 Then, you could just go into any of the package directories and use "lr" to run scripts. For example:
 
 ```bash
 cd packages/aws-cdk-s3
-lr watch
+lr build
 ```
 
 ### Linking against this repository
