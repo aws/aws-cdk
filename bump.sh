@@ -17,5 +17,5 @@ cat > /tmp/context.json <<HERE
 }
 HERE
 
-conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
+./node_modules/.bin/conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
 
