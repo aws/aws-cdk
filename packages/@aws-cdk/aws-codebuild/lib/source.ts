@@ -76,7 +76,7 @@ export class CodePipelineSource extends BuildSource {
  * GitHub Source definition for a CodeBuild project
  */
 export class GitHubSource extends BuildSource {
-  constructor(private readonly httpscloneUrl: string, private readonly oauthToken: any) {
+  constructor(private readonly httpscloneUrl: string, private readonly oauthToken: cdk.Secret) {
     super();
     this.httpscloneUrl = httpscloneUrl;
     this.oauthToken = oauthToken;
@@ -95,7 +95,7 @@ export class GitHubSource extends BuildSource {
  * GitHub Enterprise Source definition for a CodeBuild project
  */
 export class GitHubEnterpriseSource extends BuildSource {
-  constructor(private readonly cloneUrl: string, private readonly oauthToken: any) {
+  constructor(private readonly cloneUrl: string, private readonly oauthToken: cdk.Secret) {
     super();
     this.cloneUrl = cloneUrl;
     this.oauthToken = oauthToken;
