@@ -34,10 +34,10 @@ Like always, you will also need to update your project's library versions:
 ### BREAKING CHANGES
 
 * **aws-codepipeline:** this commit contains the following breaking changes:
-* Rename 'artifactName' in Action construction properties to 'outputArtifactName'
-* Rename the 'artifact' property of Actions to 'outputArtifact'
-* No longer allow adding output artifacts to Actions by instantiating the Artifact class
-* Rename Action#input/outputArtifacts properties to _input/_outputArtifacts
+  + Rename 'artifactName' in Action construction properties to 'outputArtifactName'
+  + Rename the 'artifact' property of Actions to 'outputArtifact'
+  + No longer allow adding output artifacts to Actions by instantiating the Artifact class
+  + Rename Action#input/outputArtifacts properties to _input/_outputArtifacts
 
 Previously, we always required customers to explicitly name the output artifacts the Actions used in the Pipeline,
 and to explicitly "wire together" the outputs of one Action as inputs to another.
