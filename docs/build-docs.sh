@@ -10,7 +10,25 @@ if [ ! -d ${PYTHON_DEPS} ]; then
     pip install --ignore-installed --install-option="--prefix=${PYTHON_DEPS}" -r requirements.txt
 fi
 
-export PYTHONPATH=${PYTHON_DEPS}/lib/python3.6/site-packages:${PYTHON_DEPS}/lib/python3.7/site-packages
+# Overwrite any templates in
+#   ${PYTHON_DEPS}/lib/python2.7/site-packages/sphinx_rtd_theme
+#   ${PYTHON_DEPS}/lib/python3.6/site-packages/sphinx_rtd_theme
+#   ${PYTHON_DEPS}/lib/python3.7/site-packages/sphinx_rtd_theme
+# with those in
+#   _templates
+if [ -d ${PYTHON_DEPS}/lib/python2.7/site-packages/sphinx_rtd_theme ]; then
+    cp _templates/* ${PYTHON_DEPS}/lib/python2.7/site-packages/sphinx_rtd_theme
+fi
+
+if [ -d ${PYTHON_DEPS}/lib/python3.6/site-packages/sphinx_rtd_theme ]; then
+    cp _templates/* ${PYTHON_DEPS}/lib/python3.6/site-packages/sphinx_rtd_theme
+fi
+
+if [ -d ${PYTHON_DEPS}/lib/python3.7/site-packages/sphinx_rtd_theme ]; then
+    cp _templates/* ${PYTHON_DEPS}/lib/python3.7/site-packages/sphinx_rtd_theme
+fi
+
+export PYTHONPATH=${PYTHON_DEPS}/lib/python2.7/site-packages:${PYTHON_DEPS}/lib/python3.6/site-packages:${PYTHON_DEPS}/lib/python3.7/site-packages
 export PATH=${PYTHON_DEPS}/bin:$PATH
 
 #----------------------------------------------------------------------
