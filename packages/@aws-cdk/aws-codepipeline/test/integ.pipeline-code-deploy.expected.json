@@ -48,6 +48,12 @@
             "Arn"
           ]
         },
+        "AutoRollbackConfiguration": {
+          "Enabled": true,
+          "Events": [
+            "DEPLOYMENT_FAILURE"
+          ]
+        },
         "DeploymentConfigName": {
           "Ref": "CustomDeployConfig52EEBC13"
         },

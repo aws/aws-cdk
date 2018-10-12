@@ -36,6 +36,10 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
       evaluationPeriods: 1,
     }),
   ],
+  autoRollback: {
+    failedDeployment: false,
+    deploymentInAlarm: false,
+  },
 });
 
 app.run();
