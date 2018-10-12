@@ -13,7 +13,10 @@ function cleanup() {
 
 function setup() {
   cleanup
-  cd app
+  rm -rf /tmp/cdk-integ-test
+  mkdir -p /tmp/cdk-integ-test
+  cp -R app/* /tmp/cdk-integ-test
+  cd /tmp/cdk-integ-test
 
   npm i --no-save @aws-cdk/cdk @aws-cdk/aws-sns
 }
