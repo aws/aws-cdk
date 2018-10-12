@@ -32,6 +32,27 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
     // adds User Data that installs the CodeDeploy agent on your auto-scaling groups hosts
     // default: true
     installAgent: true,
+    // adds EC2 instances matching tags
+    ec2InstanceTags: new codedeploy.InstanceTagSet(
+        {
+            // any instance with tags satisfying
+            // key1=v1 or key1=v2 or key2 (any value) or value v3 (any key)
+            // will match this group
+            'key1': ['v1', 'v2'],
+            'key2': [],
+            '': ['v3'],
+        },
+    ),
+    // adds on-premise instances matching tags
+    onPremiseInstanceTags: new codedeploy.InstanceTagSet(
+        // only instances with tags (key1=v1 or key1=v2) AND key2=v3 will match this set
+        {
+            'key1': ['v1', 'v2'],
+        },
+        {
+            'key2': ['v3'],
+        },
+    ),
 });
 ```
 

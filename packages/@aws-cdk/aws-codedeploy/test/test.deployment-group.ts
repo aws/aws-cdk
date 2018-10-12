@@ -157,5 +157,112 @@ export = {
 
       test.done();
     },
+
+    'can be created with a single EC2 instance tag set with a single or no value'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        ec2InstanceTags: new codedeploy.InstanceTagSet(
+          {
+            'some-key': ['some-value'],
+            'other-key': [],
+          },
+        ),
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "Ec2TagSet": {
+          "Ec2TagSetList": [
+            {
+              "Ec2TagGroup": [
+                {
+                  "Key": "some-key",
+                  "Value": "some-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+                {
+                  "Key": "other-key",
+                  "Type": "KEY_ONLY",
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'can be created with two on-premise instance tag sets with multiple values or without a key'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        onPremiseInstanceTags: new codedeploy.InstanceTagSet(
+          {
+            'some-key': ['some-value', 'another-value'],
+          },
+          {
+            '': ['keyless-value'],
+          },
+        ),
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "OnPremisesTagSet": {
+          "OnPremisesTagSetList": [
+            {
+              "OnPremisesTagGroup": [
+                {
+                  "Key": "some-key",
+                  "Value": "some-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+                {
+                  "Key": "some-key",
+                  "Value": "another-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+              ],
+            },
+            {
+              "OnPremisesTagGroup": [
+                {
+                  "Value": "keyless-value",
+                  "Type": "VALUE_ONLY",
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'cannot be created with an instance tag set containing a keyless, valueless filter'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+          onPremiseInstanceTags: new codedeploy.InstanceTagSet({
+            '': [],
+          }),
+        });
+      });
+
+      test.done();
+    },
+
+    'cannot be created with an instance tag set containing 4 instance tag groups'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+          onPremiseInstanceTags: new codedeploy.InstanceTagSet({}, {}, {}, {}),
+        });
+      }, /3/);
+
+      test.done();
+    },
   },
 };
