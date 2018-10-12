@@ -1,3 +1,51 @@
+<a name="0.12.0"></a>
+## [0.12.0](https://github.com/awslabs/aws-cdk/compare/v0.11.0...v0.12.0) (2018-10-12)
+
+__IMPORTANT NOTE__: This release includes a [fix](https://github.com/awslabs/aws-cdk/pull/911) for a bug
+that would make the toolkit unusable for multi-stack applications. In order to benefit from
+this fix, a globally installed CDK toolkit must also be updated:
+
+```shell
+$ npm i -g aws-cdk
+$ cdk --version
+0.12.0 (build ...)
+```
+
+Like always, you will also need to update your project's library versions:
+
+|Language|Update?|
+|--------|-------|
+|JavaScript/TypeScript (npm)|[`npx npm-check-updates -u`](https://www.npmjs.com/package/npm-check-updates)|
+|Java (maven)|[`mvn versions:use-latest-versions`](https://www.mojohaus.org/versions-maven-plugin/use-latest-versions-mojo.html)
+|.NET (NuGet)|[`nuget update`](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-update)
+
+### Bug Fixes
+
+* **aws-codebuild:** allow passing oauth token to GitHubEnterpriseSource ([#908](https://github.com/awslabs/aws-cdk/issues/908)) ([c23da91](https://github.com/awslabs/aws-cdk/commit/c23da91))
+* **toolkit:** multi-stack apps cannot be synthesized or deployed ([#911](https://github.com/awslabs/aws-cdk/issues/911)) ([5511076](https://github.com/awslabs/aws-cdk/commit/5511076)), closes [#868](https://github.com/awslabs/aws-cdk/issues/868) [#294](https://github.com/awslabs/aws-cdk/issues/294) [#910](https://github.com/awslabs/aws-cdk/issues/910)
+
+
+### Features
+
+* **aws-cloudformation:** add permission management to CreateUpdate and Delete Stack CodePipeline Actions. ([#880](https://github.com/awslabs/aws-cdk/issues/880)) ([8b3ae43](https://github.com/awslabs/aws-cdk/commit/8b3ae43))
+* **aws-codepipeline:** make input and output artifact names optional when creating Actions. ([#845](https://github.com/awslabs/aws-cdk/issues/845)) ([3d91c93](https://github.com/awslabs/aws-cdk/commit/3d91c93))
+
+
+### BREAKING CHANGES
+
+* **aws-codepipeline:** this commit contains the following breaking changes:
+  + Rename 'artifactName' in Action construction properties to 'outputArtifactName'
+  + Rename the 'artifact' property of Actions to 'outputArtifact'
+  + No longer allow adding output artifacts to Actions by instantiating the Artifact class
+  + Rename Action#input/outputArtifacts properties to _input/_outputArtifacts
+
+Previously, we always required customers to explicitly name the output artifacts the Actions used in the Pipeline,
+and to explicitly "wire together" the outputs of one Action as inputs to another.
+With this change, the CodePipeline Construct generates artifact names,
+if the customer didn't provide one explicitly,
+and tries to find the first available output artifact to use as input to a newly created Action that needs it,
+thus turning both the input and output artifacts from required to optional properties.
+
 <a name="0.11.0"></a>
 ## [0.11.0](https://github.com/awslabs/aws-cdk/compare/v0.10.0...v0.11.0) (2018-10-11)
 
