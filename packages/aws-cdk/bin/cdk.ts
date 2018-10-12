@@ -270,8 +270,8 @@ async function initCommandLine() {
     if (environmentGlobs.length === 0) {
       environmentGlobs = [ '**' ]; // default to ALL
     }
-    const stackInfos = await selectStacks();
-    const availableEnvironments = distinct(stackInfos.map(stack => stack.environment)
+    const stacks = await selectStacks();
+    const availableEnvironments = distinct(stacks.map(stack => stack.environment)
                              .filter(env => env !== undefined) as cxapi.Environment[]);
     const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
     if (environments.length === 0) {
@@ -324,31 +324,28 @@ async function initCommandLine() {
                                doInteractive: boolean,
                                outputDir: string|undefined,
                                json: boolean): Promise<void> {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+    const stacks = await selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
-      if (stackIds.length !== 1) {
-        throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stackIds)}`);
+      if (stacks.length !== 1) {
+        throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stacks)}`);
       }
-      return await interactive(stackIds[0], argv.verbose, (stack) => synthesizeStack(stack));
+      return await interactive(stacks[0], argv.verbose, (stack) => synthesizeStack(stack));
     }
 
-    if (stackIds.length > 1 && outputDir == null) {
+    if (stacks.length > 1 && outputDir == null) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Multiple stacks selected (${listStackNames(stackIds)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
+      throw new Error(`Multiple stacks selected (${listStackNames(stacks)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
     }
-
-    const response = await synthesizeStacks();
-    const synthesizedStacks = response.stacks;
 
     if (outputDir == null) {
-      return synthesizedStacks[0].template;  // Will be printed in main()
+      return stacks[0].template;  // Will be printed in main()
     }
 
     fs.mkdirpSync(outputDir);
 
-    for (const stack of synthesizedStacks) {
+    for (const stack of stacks) {
       const finalName = renames.finalName(stack.name);
       const fileName = `${outputDir}/${finalName}.template.${json ? 'json' : 'yaml'}`;
       highlight(fileName);
@@ -579,13 +576,11 @@ async function initCommandLine() {
   }
 
   async function cliDeploy(stackNames: string[], toolkitStackName: string) {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+    const stacks = await selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
-    const response = await synthesizeStacks();
-
-    for (const stack of response.stacks) {
-      if (stackIds.length !== 1) { highlight(stack.name); }
+    for (const stack of stacks) {
+      if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -603,6 +598,7 @@ async function initCommandLine() {
         const result = await deployStack(stack, aws, toolkitInfo, deployName);
         const message = result.noOp ? ` ✅  Stack was already up-to-date, it has ARN ${colors.blue(result.stackArn)}`
                       : ` ✅  Deployment of stack %s completed successfully, it has ARN ${colors.blue(result.stackArn)}`;
+        data(result.stackArn);
         success(message, colors.blue(stack.name));
         for (const name of Object.keys(result.outputs)) {
           const value = result.outputs[name];
@@ -616,18 +612,18 @@ async function initCommandLine() {
   }
 
   async function cliDestroy(stackNames: string[], force: boolean) {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+    const stacks = await selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await util.promisify(promptly.confirm)(`Are you sure you want to delete: ${colors.blue(stackIds.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await util.promisify(promptly.confirm)(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
     }
 
-    for (const stack of stackIds) {
+    for (const stack of stacks) {
       const deployName = renames.finalName(stack.name);
 
       success(' ⏳  Starting destruction of stack %s...', colors.blue(deployName));
@@ -687,14 +683,14 @@ async function initCommandLine() {
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stackIds = await selectStacks(name);
+    const stacks = await selectStacks(name);
 
     // Could have been a glob so check that we evaluated to exactly one
-    if (stackIds.length > 1) {
-      throw new Error(`This command requires exactly one stack and we matched more than one: ${stackIds.map(x => x.name)}`);
+    if (stacks.length > 1) {
+      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.name)}`);
     }
 
-    return stackIds[0].name;
+    return stacks[0].name;
   }
 
   function logDefaults() {
