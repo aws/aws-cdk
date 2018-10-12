@@ -7,7 +7,7 @@ import { prepareAssets } from '../assets';
 import { debug, error } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
-import { describeStack, stackExists, waitForChangeSet, waitForStack } from './util/cloudformation';
+import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './util/cloudformation';
 import { StackActivityMonitor } from './util/cloudformation/stack-activity-monitor';
 import { StackStatus } from './util/cloudformation/stack-status';
 import { SDK } from './util/sdk';
@@ -42,6 +42,15 @@ export async function deployStack(stack: cxapi.SynthesizedStack,
 
   const cfn = await sdk.cloudFormation(stack.environment, Mode.ForWriting);
   const bodyParameter = await makeBodyParameter(stack, toolkitInfo);
+
+  if (await stackFailedCreating(cfn, deployName)) {
+    debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
+    await cfn.deleteStack({ StackName: deployName }).promise();
+    const deletedStack = await waitForStack(cfn, deployName, false);
+    if (deletedStack && deletedStack.StackStatus !== 'DELETE_COMPLETE') {
+      throw new Error(`Failed deleting stack ${deployName} that had previously failed creation (current state: ${deletedStack.StackStatus})`);
+    }
+  }
 
   const update = await stackExists(cfn, deployName);
 
