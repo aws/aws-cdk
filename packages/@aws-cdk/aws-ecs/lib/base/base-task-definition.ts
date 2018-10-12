@@ -64,7 +64,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
     this.executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
-        assumedBy: new cdk.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
     const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
@@ -81,7 +81,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   /**
    * Add a policy statement to the Task Role
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     this.taskRole.addToPolicy(statement);
   }
 
@@ -112,7 +112,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   private generateExecutionRole() {
     if (!this.executionRole) {
       this.executionRole = new iam.Role(this, 'ExecutionRole', {
-        assumedBy: new cdk.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
       this.executionRole.attachManagedPolicy(new iam.AwsManagedPolicy("service-role/AmazonECSTaskExecutionRolePolicy").policyArn);
     }

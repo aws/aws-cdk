@@ -1,6 +1,7 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
 
@@ -67,7 +68,7 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
 
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-    autoScalingGroup.addToRolePolicy(new cdk.PolicyStatement().addActions(
+    autoScalingGroup.addToRolePolicy(new iam.PolicyStatement().addActions(
       "ecs:CreateCluster",
       "ecs:DeregisterContainerInstance",
       "ecs:DiscoverPollEndpoint",
