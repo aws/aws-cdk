@@ -1,0 +1,14 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "app for cdk integration tests",
+  "main": "app.js",
+  "repository": {
+    "type": "git"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-cdk/aws-sns": "*",
+    "@aws-cdk/cdk": "*"
+  }
+}

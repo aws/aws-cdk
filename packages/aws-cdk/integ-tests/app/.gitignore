@@ -1,0 +1,4 @@
+!*.js
+
+# since we want the latest cdk version, don't store package-lock
+package-lock.json
