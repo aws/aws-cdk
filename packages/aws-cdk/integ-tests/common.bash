@@ -12,11 +12,10 @@ function cleanup() {
 }
 
 function setup() {
-  cd app
-  echo "| preparing test app"
-  npm i
-
   cleanup
+  cd app
+
+  npm i --no-save @aws-cdk/cdk @aws-cdk/aws-sns
 }
 
 function fail() {
