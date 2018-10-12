@@ -47,6 +47,33 @@ export = {
     test.done();
   },
 
+  'github auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.GitHubSource({
+        cloneUrl: "https://github.com/testowner/testrepo",
+        oauthToken: new cdk.Secret("test_oauth_token")
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      Source: {
+        Type: "GITHUB",
+        Auth: {
+          Type: 'OAUTH',
+          Resource: 'test_oauth_token'
+        },
+        Location: 'https://github.com/testowner/testrepo'
+      }
+    }));
+
+    test.done();
+  },
+
   'github enterprise auth test'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -54,8 +81,8 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.GitHubEnterpriseSource({
-        cloneUrl: "https://mycompany.github.com",
-        oauthToken: new cdk.Secret("my_oauth_token")
+        cloneUrl: "https://github.testcompany.com/testowner/testrepo",
+        oauthToken: new cdk.Secret("test_oauth_token")
       })
     });
 
@@ -65,9 +92,9 @@ export = {
         Type: "GITHUB_ENTERPRISE",
         Auth: {
           Type: 'OAUTH',
-          Resource: 'my_oauth_token'
+          Resource: 'test_oauth_token'
         },
-        Location: 'https://mycompany.github.com'
+        Location: 'https://github.testcompany.com/testowner/testrepo'
       }
     }));
 
