@@ -1,15 +1,15 @@
 import cdk = require("@aws-cdk/cdk");
-import { Action, ActionCategory, CommonActionProps } from "./action";
+import { Action, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
 import { Artifact } from "./artifact";
 
 /**
  * Construction properties of the low level {@link BuildAction build action}.
  */
-export interface BuildActionProps extends CommonActionProps {
+export interface BuildActionProps extends CommonActionProps, CommonActionConstructProps {
   /**
    * The source to use as input for this build.
    */
-  inputArtifact: Artifact;
+  inputArtifact?: Artifact;
 
   /**
    * The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild.
@@ -17,9 +17,16 @@ export interface BuildActionProps extends CommonActionProps {
   provider: string;
 
   /**
+   * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
+   *
+   * @default 'AWS'
+   */
+  owner?: string;
+
+  /**
    * The name of the build's output artifact.
    */
-  artifactName?: string;
+  outputArtifactName?: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -36,20 +43,16 @@ export interface BuildActionProps extends CommonActionProps {
  * such as {@link codebuild.PipelineBuildAction}.
  */
 export abstract class BuildAction extends Action {
-  public readonly artifact?: Artifact;
+  public readonly outputArtifact: Artifact;
 
   constructor(parent: cdk.Construct, name: string, props: BuildActionProps) {
     super(parent, name, {
-      stage: props.stage,
-      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 1 },
       category: ActionCategory.Build,
-      provider: props.provider,
-      configuration: props.configuration
+      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 1 },
+      ...props,
     });
 
     this.addInputArtifact(props.inputArtifact);
-    if (props.artifactName) {
-      this.artifact = this.addOutputArtifact(props.artifactName);
-    }
+    this.outputArtifact = this.addOutputArtifact(props.outputArtifactName);
   }
 }

@@ -1,5 +1,6 @@
+import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, FnConcat, PolicyDocument, PolicyStatement, resolve } from '../../lib';
+import { CanonicalUserPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {

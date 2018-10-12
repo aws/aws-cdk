@@ -1,4 +1,5 @@
 import codecommit = require('@aws-cdk/aws-codecommit');
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './codebuild.generated';
@@ -43,7 +44,7 @@ export class CodeCommitSource extends BuildSource {
 
   public bind(project: Project) {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
-    project.addToRolePolicy(new cdk.PolicyStatement()
+    project.addToRolePolicy(new iam.PolicyStatement()
       .addAction('codecommit:GitPull')
       .addResource(this.repo.repositoryArn));
   }
@@ -71,38 +72,57 @@ export class CodePipelineSource extends BuildSource {
   }
 }
 
+export interface GithubSourceProps {
+  /**
+   * The git url to clone for this code build project.
+   */
+  cloneUrl: string;
+
+  /**
+   * The oAuthToken used to authenticate when cloning source git repo.
+   */
+  oauthToken: cdk.Secret;
+
+}
+
 /**
  * GitHub Source definition for a CodeBuild project
  */
 export class GitHubSource extends BuildSource {
-  constructor(private readonly httpscloneUrl: string, private readonly oauthToken: any) {
+  private cloneUrl: string;
+  private oauthToken: cdk.Secret;
+  constructor(props: GithubSourceProps) {
     super();
-    this.httpscloneUrl = httpscloneUrl;
-    this.oauthToken = oauthToken;
+    this.cloneUrl = props.cloneUrl;
+    this.oauthToken = props.oauthToken;
   }
 
   public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
     return {
       type: SourceType.GitHub,
       auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
-      location: this.httpscloneUrl
+      location: this.cloneUrl
     };
   }
 }
 
 /**
- * GitHub Enterprice Source definition for a CodeBuild project
+ * GitHub Enterprise Source definition for a CodeBuild project
  */
 export class GitHubEnterpriseSource extends BuildSource {
-  constructor(private readonly cloneUrl: string) {
+  private cloneUrl: string;
+  private oauthToken: cdk.Secret;
+  constructor(props: GithubSourceProps) {
     super();
-    this.cloneUrl = cloneUrl;
+    this.cloneUrl = props.cloneUrl;
+    this.oauthToken = props.oauthToken;
   }
 
   public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
     return {
       type: SourceType.GitHubEnterPrise,
       location: this.cloneUrl,
+      auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
     };
   }
 }

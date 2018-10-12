@@ -13,8 +13,13 @@ infrastructure [constructs], you can easily encapsulate AWS best practices in yo
 infrastructure definition and share it without worrying about boilerplate logic. The
 CDK improves the end-to-end development experience because you get to use the power
 of modern programming languages to define your AWS infrastructure in a predictable
-and efficient manner. The CDK is currently available for Java, JavaScript, and
-TypeScript. 
+and efficient manner.
+
+The following languages are currently supported:
+
+* Java
+* JavaScript, TypeScript
+* .NET
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 

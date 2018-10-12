@@ -39,7 +39,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   /**
    * Policy object of this CrossAccountDestination object
    */
-  public readonly policyDocument: cdk.PolicyDocument = new cdk.PolicyDocument();
+  public readonly policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
 
   /**
    * The name of this CrossAccountDestination object
@@ -74,7 +74,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.destinationName = this.resource.destinationName;
   }
 
-  public addToPolicy(statement: cdk.PolicyStatement) {
+  public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatement(statement);
   }
 

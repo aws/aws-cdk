@@ -24,8 +24,8 @@ class SnsToSqs extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new SnsToSqs(app, 'aws-cdk-sns-lambda');
 
-process.stdout.write(app.run());
+app.run();

@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
@@ -28,8 +29,8 @@ class CFN extends cdk.Stack {
       protocol: 'sqs'
     });
 
-    const policyDocument = new cdk.PolicyDocument();
-    policyDocument.addStatement(new cdk.PolicyStatement()
+    const policyDocument = new iam.PolicyDocument();
+    policyDocument.addStatement(new iam.PolicyStatement()
       .addResource(queue.queueArn)
       .addAction('sqs:SendMessage')
       .addServicePrincipal('sns.amazonaws.com')
@@ -42,7 +43,7 @@ class CFN extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 new ACL(app, 'acl');
 new CFN(app, 'cfn');
-process.stdout.write(app.run());
+app.run();

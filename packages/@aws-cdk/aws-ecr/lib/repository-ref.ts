@@ -1,4 +1,5 @@
 import ecs = require('@aws-cdk/aws-ecs');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 
 /**
@@ -25,7 +26,7 @@ export abstract class RepositoryRef extends cdk.Construct {
   /**
    * Add a policy statement to the repository's resource policy
    */
-  public abstract addToResourcePolicy(statement: cdk.PolicyStatement): void;
+  public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
    * Export this repository from the stack
@@ -70,7 +71,7 @@ class ImportedRepository extends RepositoryRef {
     this.repositoryName = cdk.ArnUtils.parse(props.repositoryArn).resourceName!;
   }
 
-  public addToResourcePolicy(_statement: cdk.PolicyStatement) {
+  public addToResourcePolicy(_statement: iam.PolicyStatement) {
     // FIXME: Add annotation about policy we dropped on the floor
   }
 }

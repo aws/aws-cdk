@@ -1,6 +1,6 @@
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement,
+    FnEquals, FnNot, HashedAddressingScheme, IDependable,
     RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
 
 export = {
@@ -100,25 +100,21 @@ export = {
     new Resource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
-        Perm: new PolicyStatement().addResource(res.arn).addActions('counter:add', 'counter:remove')
+        Perm: res.arn
       }
     });
 
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
-      MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
-      MyResource2: {
-        Type: "Type",
-        Properties: {
-        Perm: {
-          Effect: "Allow",
-          Action: [ "counter:add", "counter:remove" ],
-          Resource: {
-          "Fn::GetAtt": [ "MyResource", "Arn" ]
+        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource2: {
+          Type: "Type",
+          Properties: {
+            Perm: {
+              "Fn::GetAtt": [ "MyResource", "Arn" ]
+            }
           }
         }
-        }
-      }
       }
     });
 
@@ -174,7 +170,7 @@ export = {
 
     r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
-    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true } };
+    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true }};
     r1.options.deletionPolicy = DeletionPolicy.Retain;
 
     test.deepEqual(stack.toCloudFormation(), {
@@ -184,9 +180,29 @@ export = {
           CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
-            AutoScalingReplacingUpdate: { WillReplace: true }
+            AutoScalingReplacingUpdate: { WillReplace: true },
           },
           DeletionPolicy: 'Retain'
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'update policies UseOnlineResharding flag'(test: Test) {
+    const stack = new Stack();
+    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+
+    r1.options.updatePolicy = { useOnlineResharding: true };
+
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            UseOnlineResharding: true,
+          },
         }
       }
     });

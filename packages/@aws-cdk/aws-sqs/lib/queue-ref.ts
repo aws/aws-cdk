@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import cdk = require('@aws-cdk/cdk');
@@ -10,8 +11,8 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
   /**
    * Import an existing queue
    */
-  public static import(parent: cdk.Construct, name: string, props: QueueRefProps) {
-    new ImportedQueue(parent, name, props);
+  public static import(parent: cdk.Construct, name: string, props: QueueRefProps): QueueRef {
+    return new ImportedQueue(parent, name, props);
   }
 
   /**
@@ -63,7 +64,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
    * will be automatically created upon the first call to `addToPolicy`. If
    * the queue is improted (`Queue.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: cdk.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new QueuePolicy(this, 'Policy', { queues: [ this ] });
     }
@@ -81,7 +82,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
    */
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     if (!this.notifyingBuckets.has(bucketId)) {
-      this.addToResourcePolicy(new cdk.PolicyStatement()
+      this.addToResourcePolicy(new iam.PolicyStatement()
         .addServicePrincipal('s3.amazonaws.com')
         .addAction('sqs:SendMessage')
         .addResource(this.queueArn)
@@ -93,7 +94,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
       // control access to can be used here as described in:
       // https://docs.aws.amazon.com/AmazonS3/latest/dev/ways-to-add-notification-config-to-bucket.html
       if (this.encryptionMasterKey) {
-        this.encryptionMasterKey.addToResourcePolicy(new cdk.PolicyStatement()
+        this.encryptionMasterKey.addToResourcePolicy(new iam.PolicyStatement()
           .addServicePrincipal('s3.amazonaws.com')
           .addAction('kms:GenerateDataKey')
           .addAction('kms:Decrypt')

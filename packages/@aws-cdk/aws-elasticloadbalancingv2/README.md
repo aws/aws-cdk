@@ -192,3 +192,14 @@ optionally a `port` or `availabilityZone` override.
 Application load balancer targets can call `registerConnectable()` on the
 target group to register themselves for addition to the load balancer's security
 group rules.
+
+If your load balancer target requires that the TargetGroup has been
+associated with a LoadBalancer before registration can happen (such as is the
+case for ECS Services for example), take a resource dependency on
+`targetGroup.listenerDependency()` as follows:
+
+```ts
+// Make sure that the listener has been created, and so the TargetGroup
+// has been associated with the LoadBalancer, before 'resource' is created.
+resourced.addDependency(targetGroup.listenerDependency());
+```

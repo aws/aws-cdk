@@ -4,8 +4,8 @@ import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Pr
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Pipeline, Stage } from '../lib';
 
@@ -28,7 +28,7 @@ export = {
 
   const source = new PipelineSourceAction(stack, 'source', {
     stage: sourceStage,
-    artifactName: 'SourceArtifact',
+    outputArtifactName: 'SourceArtifact',
     repository: repo,
   });
 
@@ -44,8 +44,8 @@ export = {
   const buildAction = new PipelineBuildAction(stack, 'build', {
     stage: buildStage,
     project,
-    inputArtifact: source.artifact,
-    artifactName: "OutputYo"
+    inputArtifact: source.outputArtifact,
+    outputArtifactName: "OutputYo"
   });
 
   /** Deploy! */
@@ -62,8 +62,8 @@ export = {
     stackName,
     changeSetName,
     role: changeSetExecRole,
-    templatePath: new ArtifactPath(buildAction.artifact!, 'template.yaml'),
-    templateConfiguration: new ArtifactPath(buildAction.artifact!, 'templateConfig.json')
+    templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
+    templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json')
   });
 
   new PipelineExecuteChangeSetAction(stack, 'ExecuteChangeSetProd', {
@@ -203,7 +203,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     fullPermissions: true,
   });
 
@@ -256,7 +256,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
   });
 
@@ -287,7 +287,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     replaceOnFailure: true,
   });
 
@@ -320,7 +320,7 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }
@@ -371,7 +371,7 @@ class TestFixture extends cdk.Stack {
   this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
   this.source = new PipelineSourceAction(this, 'Source', {
     stage: this.sourceStage,
-    artifactName: 'SourceArtifact',
+    outputArtifactName: 'SourceArtifact',
     repository: this.repo,
   });
   }

@@ -46,7 +46,7 @@
         ]
       }
     },
-    "VPCPublicSubnet1RouteTableAssociatioin249B4093": {
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -126,7 +126,7 @@
         ]
       }
     },
-    "VPCPublicSubnet2RouteTableAssociatioin766225D7": {
+    "VPCPublicSubnet2RouteTableAssociation5A808732": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -206,7 +206,7 @@
         ]
       }
     },
-    "VPCPrivateSubnet1RouteTableAssociatioin77F7CA18": {
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -260,7 +260,7 @@
         ]
       }
     },
-    "VPCPrivateSubnet2RouteTableAssociatioinC31995B4": {
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -337,13 +337,12 @@
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Open to the world",
+            "Description": "Allow from anyone on port 80",
             "FromPort": 80,
             "IpProtocol": "tcp",
             "ToPort": 80
           }
         ],
-        "Tags": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         }

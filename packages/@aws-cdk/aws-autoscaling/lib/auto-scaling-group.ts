@@ -190,7 +190,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     }
 
     this.role = new iam.Role(this, 'InstanceRole', {
-      assumedBy: new cdk.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
     const iamProfile = new iam.cloudformation.InstanceProfileResource(this, 'InstanceProfile', {
@@ -302,7 +302,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
   /**
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
   }
 

@@ -1,10 +1,38 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
-import { Role } from '@aws-cdk/aws-iam';
-import { Construct, PolicyStatement, PolicyStatementEffect, ServicePrincipal } from '@aws-cdk/cdk';
+import iam = require('@aws-cdk/aws-iam');
+import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
+
+const READ_DATA_ACTIONS = [
+  'dynamodb:BatchGetItem',
+  'dynamodb:GetRecords',
+  'dynamodb:GetShardIterator',
+  'dynamodb:Query',
+  'dynamodb:GetItem',
+  'dynamodb:Scan'
+];
+
+const WRITE_DATA_ACTIONS = [
+  'dynamodb:BatchWriteItem',
+  'dynamodb:PutItem',
+  'dynamodb:UpdateItem',
+  'dynamodb:DeleteItem'
+];
+
+export interface Attribute {
+  /**
+   * The name of an attribute.
+   */
+  name: string;
+
+  /**
+   * The data type of an attribute.
+   */
+  type: AttributeType;
+}
 
 export interface TableProps {
   /**
@@ -46,6 +74,12 @@ export interface TableProps {
   streamSpecification?: StreamViewType;
 
   /**
+   * The AWS resource tags to associate with the table.
+   * @default undefined
+   */
+  tags?: Tags;
+
+  /**
    * The name of TTL attribute.
    * @default undefined, TTL is disabled
    */
@@ -66,16 +100,55 @@ export interface TableProps {
   writeAutoScaling?: AutoScalingProps;
 }
 
-export interface Attribute {
+export interface SecondaryIndexProps {
   /**
-   * The name of an attribute.
+   * The name of the secondary index.
    */
-  name: string;
+  indexName: string;
 
   /**
-   * The data type of an attribute.
+   * The set of attributes that are projected into the secondary index.
+   * @default ALL
    */
-  type: AttributeType;
+  projectionType?: ProjectionType;
+
+  /**
+   * The non-key attributes that are projected into the secondary index.
+   * @default undefined
+   */
+  nonKeyAttributes?: string[];
+}
+
+export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
+  /**
+   * The attribute of a partition key for the global secondary index.
+   */
+  partitionKey: Attribute;
+
+  /**
+   * The attribute of a sort key for the global secondary index.
+   * @default undefined
+   */
+  sortKey?: Attribute;
+
+  /**
+   * The read capacity for the global secondary index.
+   * @default 5
+   */
+  readCapacity?: number;
+
+  /**
+   * The write capacity for the global secondary index.
+   * @default 5
+   */
+  writeCapacity?: number;
+}
+
+export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
+  /**
+   * The attribute of a sort key for the local secondary index.
+   */
+  sortKey: Attribute;
 }
 
 /* tslint:disable:max-line-length */
@@ -126,6 +199,14 @@ export class Table extends Construct {
 
   private readonly keySchema = new Array<dynamodb.TableResource.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<dynamodb.TableResource.AttributeDefinitionProperty>();
+  private readonly globalSecondaryIndexes = new Array<dynamodb.TableResource.GlobalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Array<dynamodb.TableResource.LocalSecondaryIndexProperty>();
+
+  private readonly secondaryIndexNames: string[] = [];
+  private readonly nonKeyAttributes: string[] = [];
+
+  private tablePartitionKey: Attribute | undefined = undefined;
+  private tableSortKey: Attribute | undefined = undefined;
 
   private readScalingPolicyResource?: applicationautoscaling.ScalingPolicyResource;
   private writeScalingPolicyResource?: applicationautoscaling.ScalingPolicyResource;
@@ -133,17 +214,17 @@ export class Table extends Construct {
   constructor(parent: Construct, name: string, props: TableProps = {}) {
     super(parent, name);
 
-    const readCapacityUnits = props.readCapacity || 5;
-    const writeCapacityUnits = props.writeCapacity || 5;
-
     this.table = new dynamodb.TableResource(this, 'Resource', {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
+      globalSecondaryIndexes: this.globalSecondaryIndexes,
+      localSecondaryIndexes: this.localSecondaryIndexes,
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
-      provisionedThroughput: { readCapacityUnits, writeCapacityUnits },
+      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
       streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
+      tags: new TagManager(this, { initialTags: props.tags }),
       timeToLiveSpecification: props.ttlAttributeName ? { attributeName: props.ttlAttributeName, enabled: true } : undefined
     });
 
@@ -162,14 +243,83 @@ export class Table extends Construct {
     }
   }
 
+  /**
+   * Add a partition key of table.
+   *
+   * @param attribute the partition key attribute of table
+   * @returns a reference to this object so that method calls can be chained together
+   */
   public addPartitionKey(attribute: Attribute): this {
-    this.addKey(attribute.name, attribute.type, HASH_KEY_TYPE);
+    this.addKey(attribute, HASH_KEY_TYPE);
+    this.tablePartitionKey = attribute;
     return this;
   }
 
+  /**
+   * Add a sort key of table.
+   *
+   * @param attribute the sort key of table
+   * @returns a reference to this object so that method calls can be chained together
+   */
   public addSortKey(attribute: Attribute): this {
-    this.addKey(attribute.name, attribute.type, RANGE_KEY_TYPE);
+    this.addKey(attribute, RANGE_KEY_TYPE);
+    this.tableSortKey = attribute;
     return this;
+  }
+
+  /**
+   * Add a global secondary index of table.
+   *
+   * @param props the property of global secondary index
+   */
+  public addGlobalSecondaryIndex(props: GlobalSecondaryIndexProps) {
+    if (this.globalSecondaryIndexes.length === 5) {
+      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+      throw new RangeError('a maximum number of global secondary index per table is 5');
+    }
+
+    this.validateIndexName(props.indexName);
+
+    // build key schema and projection for index
+    const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
+    const gsiProjection = this.buildIndexProjection(props);
+
+    this.secondaryIndexNames.push(props.indexName);
+    this.globalSecondaryIndexes.push({
+      indexName: props.indexName,
+      keySchema: gsiKeySchema,
+      projection: gsiProjection,
+      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 }
+    });
+  }
+
+  /**
+   * Add a local secondary index of table.
+   *
+   * @param props the property of local secondary index
+   */
+  public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
+    if (this.localSecondaryIndexes.length === 5) {
+      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+      throw new RangeError('a maximum number of local secondary index per table is 5');
+    }
+
+    if (!this.tablePartitionKey) {
+      throw new Error('a partition key of the table must be specified first through addPartitionKey()');
+    }
+
+    this.validateIndexName(props.indexName);
+
+    // build key schema and projection for index
+    const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
+    const lsiProjection = this.buildIndexProjection(props);
+
+    this.secondaryIndexNames.push(props.indexName);
+    this.localSecondaryIndexes.push({
+      indexName: props.indexName,
+      keySchema: lsiKeySchema,
+      projection: lsiProjection
+    });
   }
 
   public addReadAutoScaling(props: AutoScalingProps) {
@@ -180,12 +330,109 @@ export class Table extends Construct {
     this.writeScalingPolicyResource = this.buildAutoScaling(this.writeScalingPolicyResource, 'Write', props);
   }
 
+  /**
+   * Adds an IAM policy statement associated with this table to an IAM
+   * principal's policy.
+   * @param principal The principal (no-op if undefined)
+   * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
+   */
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    if (!principal) {
+      return;
+    }
+    principal.addToPolicy(new iam.PolicyStatement()
+      .addResource(this.tableArn)
+      .addActions(...actions));
+  }
+
+  /**
+   * Permits an IAM principal all data read operations from this table:
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan.
+   * @param principal The principal to grant access to
+   */
+  public grantReadData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...READ_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal all data write operations to this table:
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem.
+   * @param principal The principal to grant access to
+   */
+  public grantWriteData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits an IAM principal to all data read/write operations to this table.
+   * BatchGetItem, GetRecords, GetShardIterator, Query, GetItem, Scan,
+   * BatchWriteItem, PutItem, UpdateItem, DeleteItem
+   * @param principal The principal to grant access to
+   */
+  public grantReadWriteData(principal?: iam.IPrincipal) {
+    this.grant(principal, ...READ_DATA_ACTIONS, ...WRITE_DATA_ACTIONS);
+  }
+
+  /**
+   * Permits all DynamoDB operations ("dynamodb:*") to an IAM principal.
+   * @param principal The principal to grant access to
+   */
+  public grantFullAccess(principal?: iam.IPrincipal) {
+    this.grant(principal, 'dynamodb:*');
+  }
+
+  /**
+   * Validate the table construct.
+   *
+   * @returns an array of validation error message
+   */
   public validate(): string[] {
     const errors = new Array<string>();
-    if (!this.findKey(HASH_KEY_TYPE)) {
+
+    if (!this.tablePartitionKey) {
       errors.push('a partition key must be specified');
     }
+    if (this.localSecondaryIndexes.length > 0 && !this.tableSortKey) {
+      errors.push('a sort key of the table must be specified to add local secondary indexes');
+    }
+
     return errors;
+  }
+
+  /**
+   * Validate index name to check if a duplicate name already exists.
+   *
+   * @param indexName a name of global or local secondary index
+   */
+  private validateIndexName(indexName: string) {
+    if (this.secondaryIndexNames.includes(indexName)) {
+      // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
+      throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
+    }
+    this.secondaryIndexNames.push(indexName);
+  }
+
+  /**
+   * Validate non-key attributes by checking limits within secondary index, which may vary in future.
+   *
+   * @param nonKeyAttributes a list of non-key attribute names
+   */
+  private validateNonKeyAttributes(nonKeyAttributes: string[]) {
+    if (this.nonKeyAttributes.length + nonKeyAttributes.length > 20) {
+      // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
+      throw new RangeError('a maximum number of nonKeyAttributes across all of secondary indexes is 20');
+    }
+
+    // store all non-key attributes
+    this.nonKeyAttributes.push(...nonKeyAttributes);
+
+    // throw error if key attribute is part of non-key attributes
+    this.attributeDefinitions.forEach(keyAttribute => {
+      if (typeof keyAttribute.attributeName === 'string' && this.nonKeyAttributes.includes(keyAttribute.attributeName)) {
+        throw new Error(`a key attribute, ${keyAttribute.attributeName}, is part of a list of non-key attributes, ${this.nonKeyAttributes}` +
+          ', which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure');
+      }
+    });
   }
 
   private validateAutoScalingProps(props: AutoScalingProps) {
@@ -205,6 +452,41 @@ export class Table extends Construct {
     if (props.minCapacity < 0) {
       throw new RangeError("minimumCapacity must be greater than or equal to 0; Provided value is: " + props.minCapacity);
     }
+  }
+
+  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): dynamodb.TableResource.KeySchemaProperty[] {
+    this.registerAttribute(partitionKey);
+    const indexKeySchema: dynamodb.TableResource.KeySchemaProperty[] = [
+      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE }
+    ];
+
+    if (sortKey) {
+      this.registerAttribute(sortKey);
+      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+    }
+
+    return indexKeySchema;
+  }
+
+  private buildIndexProjection(props: SecondaryIndexProps): dynamodb.TableResource.ProjectionProperty {
+    if (props.projectionType === ProjectionType.Include && !props.nonKeyAttributes) {
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
+      throw new Error(`non-key attributes should be specified when using ${ProjectionType.Include} projection type`);
+    }
+
+    if (props.projectionType !== ProjectionType.Include && props.nonKeyAttributes) {
+      // this combination causes validation exception, status code 400, while trying to create CFN stack
+      throw new Error(`non-key attributes should not be specified when not using ${ProjectionType.Include} projection type`);
+    }
+
+    if (props.nonKeyAttributes) {
+      this.validateNonKeyAttributes(props.nonKeyAttributes);
+    }
+
+    return {
+      projectionType: props.projectionType ? props.projectionType : ProjectionType.All,
+      nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined
+    };
   }
 
   private buildAutoScaling(scalingPolicyResource: applicationautoscaling.ScalingPolicyResource | undefined,
@@ -228,13 +510,13 @@ export class Table extends Construct {
   }
 
   private buildAutoScalingRole(roleResourceName: string) {
-    const autoScalingRole = new Role(this, roleResourceName, {
-      assumedBy: new ServicePrincipal('application-autoscaling.amazonaws.com')
+    const autoScalingRole = new iam.Role(this, roleResourceName, {
+      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
     });
-    autoScalingRole.addToPolicy(new PolicyStatement(PolicyStatementEffect.Allow)
+    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
       .addActions("dynamodb:DescribeTable", "dynamodb:UpdateTable")
       .addResource(this.tableArn));
-    autoScalingRole.addToPolicy(new PolicyStatement(PolicyStatementEffect.Allow)
+    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
       .addActions("cloudwatch:PutMetricAlarm", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricStatistics",
         "cloudwatch:SetAlarmState", "cloudwatch:DeleteAlarms")
       .addAllResources());
@@ -242,7 +524,7 @@ export class Table extends Construct {
   }
 
   private buildScalableTargetResourceProps(scalableDimension: string,
-                                           scalingRole: Role,
+                                           scalingRole: iam.Role,
                                            props: AutoScalingProps) {
     return {
       maxCapacity: props.maxCapacity,
@@ -278,20 +560,27 @@ export class Table extends Construct {
     return this.keySchema.find(prop => prop.keyType === keyType);
   }
 
-  private addKey(name: string, type: AttributeType, keyType: string) {
+  private addKey(attribute: Attribute, keyType: string) {
     const existingProp = this.findKey(keyType);
     if (existingProp) {
-      throw new Error(`Unable to set ${name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`);
+      throw new Error(`Unable to set ${attribute.name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`);
     }
-    this.registerAttribute(name, type);
+    this.registerAttribute(attribute);
     this.keySchema.push({
-      attributeName: name,
+      attributeName: attribute.name,
       keyType
     });
     return this;
   }
 
-  private registerAttribute(name: string, type: AttributeType) {
+  /**
+   * Register the key attribute of table or secondary index to assemble attribute definitions of TableResourceProps.
+   *
+   * @param attribute the key attribute of table or secondary index
+   */
+  private registerAttribute(attribute: Attribute) {
+    const name = attribute.name;
+    const type = attribute.type;
     const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingDef && existingDef.attributeType !== type) {
       throw new Error(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`);
@@ -309,6 +598,12 @@ export enum AttributeType {
   Binary = 'B',
   Number = 'N',
   String = 'S',
+}
+
+export enum ProjectionType {
+  KeysOnly = 'KEYS_ONLY',
+  Include = 'INCLUDE',
+  All = 'ALL'
 }
 
 /**

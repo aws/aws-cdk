@@ -42,20 +42,20 @@ This module also contains an Action that allows you to invoke a Lambda function 
 
 ```ts
 import codepipeline = require('@aws-cdk/aws-codepipeline');
-import lambda = require('@aws-cdk/aws-lambda');
-
-const lambdaFun = new lambda.Function(this, 'MyLambda', {
-    // some lambda parameters here...
-});
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const lambdaStage = new codepipeline.Stage(this, 'Lambda', {
-    pipeline,
-});
+const lambdaStage = pipeline.addStage('Lambda');
 new lambda.PipelineInvokeAction(this, 'Lambda', {
     stage: lambdaStage,
-    lambda: lambdaFun,
+    lambda: fn,
 });
+```
+
+You can also add the Lambda to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+fn.addToPipeline(lambdaStage, 'Lambda');
 ```
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)

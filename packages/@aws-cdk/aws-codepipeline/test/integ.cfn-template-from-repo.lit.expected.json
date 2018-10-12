@@ -75,6 +75,120 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineDeployPrepareChangesRoleD28C853C",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "cloudformation:DescribeStacks",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn",
+                    ":",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":",
+                    "cloudformation",
+                    ":",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    "stack",
+                    "/",
+                    "OurStack/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "cloudformation:ChangeSetName": "StagedChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn",
+                    ":",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":",
+                    "cloudformation",
+                    ":",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    "stack",
+                    "/",
+                    "OurStack/*"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "cloudformation:ExecuteChangeSet",
+              "Condition": {
+                "StringEquals": {
+                  "cloudformation:ChangeSetName": "StagedChangeSet"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn",
+                    ":",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":",
+                    "cloudformation",
+                    ":",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    "stack",
+                    "/",
+                    "OurStack/*"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

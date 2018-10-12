@@ -3,7 +3,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-lambda');
 
@@ -15,7 +15,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   bucket,
   bucketKey: 'key',
 });
@@ -30,9 +30,6 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
   runtime: lambda.Runtime.NodeJS610,
 });
 const lambdaStage = new codepipeline.Stage(pipeline, 'Lambda', { pipeline });
-new lambda.PipelineInvokeAction(stack, 'Lambda', {
-  stage: lambdaStage,
-  lambda: lambdaFun,
-});
+lambdaFun.addToPipeline(lambdaStage, 'Lambda');
 
-process.stdout.write(app.run());
+app.run();
