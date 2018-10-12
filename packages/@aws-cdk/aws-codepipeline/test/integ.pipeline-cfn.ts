@@ -1,5 +1,4 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
-import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
@@ -18,7 +17,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 const source = new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   bucket,
   bucketKey: 'key',
 });
@@ -37,7 +36,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   changeSetName,
   stackName,
   role,
-  templatePath: new ArtifactPath(source.artifact, 'test.yaml')
+  templatePath: source.outputArtifact.atPath('test.yaml'),
 });
 
 app.run();

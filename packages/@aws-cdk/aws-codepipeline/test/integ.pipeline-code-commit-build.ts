@@ -14,9 +14,9 @@ const repository = new codecommit.Repository(stack, 'MyRepo', {
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
-const source = new codecommit.PipelineSourceAction(stack, 'source', {
+new codecommit.PipelineSourceAction(stack, 'source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   repository,
 });
 
@@ -25,8 +25,6 @@ const project = new codebuild.Project(stack, 'MyBuildProject', {
 });
 
 const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
-project.addBuildToPipeline(buildStage, 'build', {
-  inputArtifact: source.artifact,
-});
+project.addBuildToPipeline(buildStage, 'build');
 
 app.run();

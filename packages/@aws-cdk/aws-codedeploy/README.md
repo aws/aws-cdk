@@ -137,12 +137,9 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 
 // add the source and build Stages to the Pipeline...
 
-const deployStage = new codepipeline.Stage(this, 'Deploy', {
-    pipeline,
-}));
+const deployStage = pipeline.addStage('Deploy');
 new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
     stage: deployStage,
-    inputArtifact: buildAction.artifact, // taken from a build Action in a previous Stage
     applicationName: 'YourCodeDeployApplicationName',
     deploymentGroupName: 'YourCodeDeployDeploymentGroupName',
 });

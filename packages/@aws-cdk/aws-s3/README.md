@@ -87,25 +87,20 @@ const sourceBucket = new s3.Bucket(this, 'MyBucket', {
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = new codepipeline.Stage(this, 'Source', {
-    pipeline,
-});
+const sourceStage = pipeline.addStage('Source');
 const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
     stage: sourceStage,
     bucket: sourceBucket,
     bucketKey: 'path/to/file.zip',
-    artifactName: 'SourceOuptut', //name can be arbitrary
 });
-// use sourceAction.artifact as the inputArtifact to later Actions...
 ```
 
 You can also add the Bucket to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'CodeCommit', {
+const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
     bucketKey: 'path/to/file.zip',
-    artifactName: 'SourceOutput',
 });
 ```
 

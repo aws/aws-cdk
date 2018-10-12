@@ -2,6 +2,8 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { BaseImportedTargetGroup } from '../shared/imported';
+import { LazyDependable } from '../shared/util';
+import { INetworkListener } from './network-listener';
 
 /**
  * Properties for a new Network Target Group
@@ -62,6 +64,15 @@ export class NetworkTargetGroup extends BaseTargetGroup {
       this.addLoadBalancerTarget(result);
     }
   }
+
+  /**
+   * Register a listener that is load balancing to this target group.
+   *
+   * Don't call this directly. It will be called by listeners.
+   */
+  public registerListener(listener: INetworkListener) {
+    this.dependableListeners.push(listener);
+  }
 }
 
 /**
@@ -75,6 +86,9 @@ export interface INetworkTargetGroup extends ITargetGroup {
  * An imported network target group
  */
 class ImportedNetworkTargetGroup extends BaseImportedTargetGroup implements INetworkTargetGroup {
+  public listenerDependency(): cdk.IDependable {
+    return new LazyDependable([]);
+  }
 }
 
 /**

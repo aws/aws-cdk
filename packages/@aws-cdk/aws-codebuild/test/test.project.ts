@@ -34,13 +34,67 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
-      buildSpec: { phases: [ 'say hi' ] }
+      buildSpec: { phases: ['say hi'] }
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
+      }
+    }));
+
+    test.done();
+  },
+
+  'github auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.GitHubSource({
+        cloneUrl: "https://github.com/testowner/testrepo",
+        oauthToken: new cdk.Secret("test_oauth_token")
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      Source: {
+        Type: "GITHUB",
+        Auth: {
+          Type: 'OAUTH',
+          Resource: 'test_oauth_token'
+        },
+        Location: 'https://github.com/testowner/testrepo'
+      }
+    }));
+
+    test.done();
+  },
+
+  'github enterprise auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.GitHubEnterpriseSource({
+        cloneUrl: "https://github.testcompany.com/testowner/testrepo",
+        oauthToken: new cdk.Secret("test_oauth_token")
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      Source: {
+        Type: "GITHUB_ENTERPRISE",
+        Auth: {
+          Type: 'OAUTH',
+          Resource: 'test_oauth_token'
+        },
+        Location: 'https://github.testcompany.com/testowner/testrepo'
       }
     }));
 
@@ -70,10 +124,12 @@ export = {
           {
             Name: "SCRIPT_S3_KEY",
             Type: "PLAINTEXT",
-            Value: { "Fn::Join": [ "", [
-              { "Fn::Select": [ 0, { "Fn::Split": [ "||", { Ref: "AssetS3VersionKeyA852DDAE" } ] } ] },
-              { "Fn::Select": [ 1, { "Fn::Split": [ "||", { Ref: "AssetS3VersionKeyA852DDAE" } ] } ] }
-            ] ] }
+            Value: {
+              "Fn::Join": ["", [
+                { "Fn::Select": [0, { "Fn::Split": ["||", { Ref: "AssetS3VersionKeyA852DDAE" }] }] },
+                { "Fn::Select": [1, { "Fn::Split": ["||", { Ref: "AssetS3VersionKeyA852DDAE" }] }] }
+              ]]
+            }
           }
         ],
       },
