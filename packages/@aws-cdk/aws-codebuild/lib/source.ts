@@ -72,21 +72,36 @@ export class CodePipelineSource extends BuildSource {
   }
 }
 
+export interface GithubSourceProps {
+  /**
+   * The git url to clone for this code build project.
+   */
+  cloneUrl: string;
+
+  /**
+   * The oAuthToken used to authenticate when cloning source git repo.
+   */
+  oauthToken: cdk.Secret;
+
+}
+
 /**
  * GitHub Source definition for a CodeBuild project
  */
 export class GitHubSource extends BuildSource {
-  constructor(private readonly httpscloneUrl: string, private readonly oauthToken: cdk.Secret) {
+  private cloneUrl: string;
+  private oauthToken: cdk.Secret;
+  constructor(props: GithubSourceProps) {
     super();
-    this.httpscloneUrl = httpscloneUrl;
-    this.oauthToken = oauthToken;
+    this.cloneUrl = props.cloneUrl;
+    this.oauthToken = props.oauthToken;
   }
 
   public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
     return {
       type: SourceType.GitHub,
       auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
-      location: this.httpscloneUrl
+      location: this.cloneUrl
     };
   }
 }
@@ -95,10 +110,12 @@ export class GitHubSource extends BuildSource {
  * GitHub Enterprise Source definition for a CodeBuild project
  */
 export class GitHubEnterpriseSource extends BuildSource {
-  constructor(private readonly cloneUrl: string, private readonly oauthToken: cdk.Secret) {
+  private cloneUrl: string;
+  private oauthToken: cdk.Secret;
+  constructor(props: GithubSourceProps) {
     super();
-    this.cloneUrl = cloneUrl;
-    this.oauthToken = oauthToken;
+    this.cloneUrl = props.cloneUrl;
+    this.oauthToken = props.oauthToken;
   }
 
   public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {

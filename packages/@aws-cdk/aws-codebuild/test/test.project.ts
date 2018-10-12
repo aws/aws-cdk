@@ -53,7 +53,10 @@ export = {
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
-      source: new codebuild.GitHubEnterpriseSource("https://mycompany.github.com", "my_oauth_token")
+      source: new codebuild.GitHubEnterpriseSource({
+        cloneUrl: "https://mycompany.github.com",
+        oauthToken: new cdk.Secret("my_oauth_token")
+      })
     });
 
     // THEN
