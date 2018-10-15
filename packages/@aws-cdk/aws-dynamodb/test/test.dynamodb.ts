@@ -85,9 +85,7 @@ export = {
             Properties: {
               AttributeDefinitions: [{ AttributeName: 'hashKey', AttributeType: 'S' }],
               KeySchema: [{ AttributeName: 'hashKey', KeyType: 'HASH' }],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -116,9 +114,7 @@ export = {
                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -147,9 +143,7 @@ export = {
                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -178,9 +172,7 @@ export = {
                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -209,9 +201,7 @@ export = {
                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -240,9 +230,7 @@ export = {
                 { AttributeName: 'hashKey', KeyType: 'HASH' },
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
-              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: []
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
             }
           }
         }
@@ -278,8 +266,6 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
               TableName: 'MyTable'
             }
           }
@@ -311,8 +297,6 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
               AttributeDefinitions: [
                 { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
@@ -349,8 +333,6 @@ export = {
                 { AttributeName: 'sortKey', KeyType: 'RANGE' }
               ],
               ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-              GlobalSecondaryIndexes: [],
-              LocalSecondaryIndexes: [],
               AttributeDefinitions: [
                 { AttributeName: 'hashKey', AttributeType: 'S' },
                 { AttributeName: 'sortKey', AttributeType: 'N' }
@@ -399,8 +381,6 @@ export = {
               ReadCapacityUnits: 42,
               WriteCapacityUnits: 1337
             },
-            GlobalSecondaryIndexes: [],
-            LocalSecondaryIndexes: [],
             PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
             SSESpecification: { SSEEnabled: true },
             StreamSpecification: { StreamViewType: 'KEYS_ONLY' },
@@ -452,8 +432,7 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -503,8 +482,7 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -552,8 +530,7 @@ export = {
                 Projection: { ProjectionType: 'KEYS_ONLY' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -605,8 +582,7 @@ export = {
                 Projection: { NonKeyAttributes: ['gsiNonKey0', 'gsiNonKey1'], ProjectionType: 'INCLUDE' },
                 ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 }
               }
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -775,8 +751,7 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               },
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -836,8 +811,7 @@ export = {
                 Projection: { ProjectionType: 'ALL' },
                 ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 }
               }
-            ],
-            LocalSecondaryIndexes: []
+            ]
           }
         }
       }
@@ -872,7 +846,6 @@ export = {
               { AttributeName: 'sortKey', KeyType: 'RANGE' }
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-            GlobalSecondaryIndexes: [],
             LocalSecondaryIndexes: [
               {
                 IndexName: 'MyLSI',
@@ -918,7 +891,6 @@ export = {
               { AttributeName: 'sortKey', KeyType: 'RANGE' }
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-            GlobalSecondaryIndexes: [],
             LocalSecondaryIndexes: [
               {
                 IndexName: 'MyLSI',
@@ -967,7 +939,6 @@ export = {
               { AttributeName: 'sortKey', KeyType: 'RANGE' }
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
-            GlobalSecondaryIndexes: [],
             LocalSecondaryIndexes: [
               {
                 IndexName: 'MyLSI',
@@ -1077,8 +1048,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1159,8 +1128,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1269,8 +1236,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1350,8 +1315,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
@@ -1554,8 +1517,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1636,8 +1597,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1746,8 +1705,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes: [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
@@ -1827,8 +1784,6 @@ export = {
            [ { AttributeName: 'hashKey', KeyType: 'HASH' },
              { AttributeName: 'sortKey', KeyType: 'RANGE' } ],
           ProvisionedThroughput: { ReadCapacityUnits: 42, WriteCapacityUnits: 1337 },
-          GlobalSecondaryIndexes: [],
-          LocalSecondaryIndexes:  [],
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
