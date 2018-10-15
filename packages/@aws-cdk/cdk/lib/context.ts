@@ -153,12 +153,10 @@ export class SSMParameterProvider {
   /**
    * Return the SSM parameter string with the indicated key
    */
-  public getString(parameterName: string, defaultValue: string = "dummy"): any {
-    const scope = this.provider.accountRegionScope('SSMParameterProvider');
-    return this.provider.getStringValue(SSM_PARAMETER_PROVIDER, scope, [parameterName], defaultValue);
+  public parameterValue(): any {
+    return this.provider.getStringValue('dummy');
   }
 }
-
 export interface HostedZoneProviderProps {
   domainName: string;
   privateZone?: boolean;
