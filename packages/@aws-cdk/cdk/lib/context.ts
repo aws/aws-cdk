@@ -1,4 +1,3 @@
-import cxapi = require('@aws-cdk/cx-api');
 import { Stack } from './cloudformation/stack';
 import { Construct } from './core/construct';
 
@@ -6,6 +5,11 @@ const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
 const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 
+export interface ContextProviderProps {
+  account?: string;
+  region?: string;
+  [key: string]: any;
+}
 /**
  * Base class for the model side of context providers
  *
@@ -18,18 +22,23 @@ const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 export class ContextProvider {
 
   private readonly stack: Stack;
+  private readonly props: ContextProviderProps;
 
   constructor(
     private readonly context: Construct,
     private readonly provider: string,
-    private readonly props: {[key: string]: any} = {}) {
+    props: {[key: string]: any} = {}) {
     this.stack = Stack.find(context);
+    this.props = {
+      account: this.stack.env.account,
+      region: this.stack.env.region,
+      ...props,
+    };
   }
 
   public get key(): string {
     const propStrings: string[] = propsToArray({
       ...this.props,
-      ...{account: this.account, region: this.region},
     });
     return `${this.provider}:${propStrings.join(':')}`;
   }
@@ -43,7 +52,7 @@ export class ContextProvider {
   public getStringValue( defaultValue: string): string {
     // if scope is undefined, this is probably a test mode, so we just
     // return the default value
-    if (!this.account || !this.region) {
+    if (!this.props.account || !this.props.region) {
       this.context.addError(formatMissingScopeError(this.provider, this.props));
       return defaultValue;
     }
@@ -59,7 +68,7 @@ export class ContextProvider {
 
     this.stack.reportMissingContext(this.key, {
       provider: this.provider,
-      props: { ...this.props, ...{region: this.region, account: this.account} },
+      props: this.props,
     });
     return defaultValue;
   }
@@ -76,7 +85,7 @@ export class ContextProvider {
       // if scope is undefined, this is probably a test mode, so we just
       // return the default value and report an error so this in not accidentally used
       // in the toolkit
-      if (!this.account || !this.region) {
+      if (!this.props.account || !this.props.region) {
         this.context.addError(formatMissingScopeError(this.provider, this.props));
         return defaultValue;
       }
@@ -92,19 +101,11 @@ export class ContextProvider {
 
       this.stack.reportMissingContext(this.key, {
         provider: this.provider,
-        props: { ...this.props, ...{region: this.region, account: this.account} },
+        props: this.props,
       });
 
       return defaultValue;
     }
-
-  private get account(): string | undefined {
-    return this.stack.env.account;
-  }
-
-  private get region(): string | undefined {
-    return this.stack.env.region;
-  }
 }
 
 /**
@@ -157,12 +158,18 @@ export class SSMParameterProvider {
   }
 }
 
+export interface HostedZoneProviderProps {
+  domainName: string;
+  privateZone?: boolean;
+  vpcId?: string;
+}
+
 /**
  * Context provider that will lookup the Hosted Zone ID for the given arguments
  */
 export class HostedZoneProvider {
   private provider: ContextProvider;
-  constructor(context: Construct, props: cxapi.HostedZoneProviderProps) {
+  constructor(context: Construct, props: HostedZoneProviderProps) {
     this.provider = new ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
   }
   /**

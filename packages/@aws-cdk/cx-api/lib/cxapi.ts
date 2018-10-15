@@ -27,16 +27,10 @@ export type CXRequest = ListStacksRequest | SynthesizeRequest;
 export interface MissingContext {
   provider: string;
   props: {
-    account: string;
-    region: string;
+    account?: string;
+    region?: string;
     [key: string]: any;
   };
-}
-
-export interface HostedZoneProviderProps {
-  domainName: string;
-  privateZone?: boolean;
-  vpcId?: string;
 }
 
 export interface ListStacksResponse {

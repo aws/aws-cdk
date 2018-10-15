@@ -53,6 +53,12 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
   }
 }
 
+export interface HostedZoneProviderProps {
+  domainName: string;
+  privateZone?: boolean;
+  vpcId?: string;
+}
+
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
   constructor(private readonly aws: SDK) {
@@ -94,26 +100,22 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
       if (vpcId) {
         const vpcZones: AWS.Route53.HostedZone[] = [];
         for (const zone of candidates) {
-          await r53.getHostedZone({Id: zone.Id}, (err, data) => {
-            if (err) {
-              throw new Error(err.message);
-            }
-            if (!data.VPCs) {
-              debug(`Expected VPC for private zone but no VPC found ${zone.Id}`);
-              return;
-            }
-            if (data.VPCs.map(vpc => vpc.VPCId).includes(vpcId)) {
-              vpcZones.push(zone);
-            }
-          });
+          const data = await r53.getHostedZone({ Id: zone. Id }).promise();
+          if (!data.VPCs) {
+            debug(`Expected VPC for private zone but no VPC found ${zone.Id}`);
+            continue;
+          }
+          if (data.VPCs.map(vpc => vpc.VPCId).includes(vpcId)) {
+            vpcZones.push(zone);
+          }
         }
         return vpcZones;
       }
       return candidates;
     }
 
-  private isHostedZoneProps(props: cxapi.HostedZoneProviderProps | any): props is cxapi.HostedZoneProviderProps {
-    return (props as cxapi.HostedZoneProviderProps).domainName !== undefined;
+  private isHostedZoneProps(props: HostedZoneProviderProps | any): props is HostedZoneProviderProps {
+    return (props as HostedZoneProviderProps).domainName !== undefined;
   }
 }
 /**
