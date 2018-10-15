@@ -122,6 +122,11 @@ export class Alarm extends Construct {
   public readonly alarmArn: string;
 
   /**
+   * Name of this alarm.
+   */
+  public readonly alarmName: string;
+
+  /**
    * The metric object this alarm was based on
    */
   public readonly metric: Metric;
@@ -163,6 +168,7 @@ export class Alarm extends Construct {
     });
 
     this.alarmArn = alarm.alarmArn;
+    this.alarmName = alarm.alarmName;
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
