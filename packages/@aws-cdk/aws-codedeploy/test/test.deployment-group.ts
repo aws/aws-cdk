@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
@@ -261,6 +262,37 @@ export = {
           onPremiseInstanceTags: new codedeploy.InstanceTagSet({}, {}, {}, {}),
         });
       }, /3/);
+
+      test.done();
+    },
+
+    'can have alarms added to it after being created'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const alarm = new cloudwatch.Alarm(stack, 'Alarm1', {
+        metric: new cloudwatch.Metric({
+          metricName: 'Errors',
+          namespace: 'my.namespace',
+        }),
+        threshold: 1,
+        evaluationPeriods: 1,
+      });
+
+      const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
+      deploymentGroup.addAlarm(alarm);
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "AlarmConfiguration": {
+          "Alarms": [
+            {
+              "Name": {
+                "Ref": "Alarm1F9009D71",
+              },
+            },
+          ],
+          "Enabled": true,
+        },
+      }));
 
       test.done();
     },

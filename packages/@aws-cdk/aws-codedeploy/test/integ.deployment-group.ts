@@ -1,4 +1,5 @@
 import autoscaling = require('@aws-cdk/aws-autoscaling');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import lb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
@@ -25,6 +26,16 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   deploymentConfig: codedeploy.ServerDeploymentConfig.AllAtOnce,
   autoScalingGroups: [asg],
   loadBalancer: elb,
+  alarms: [
+    new cloudwatch.Alarm(stack, 'Alarm1', {
+      metric: new cloudwatch.Metric({
+        metricName: 'Errors',
+        namespace: 'my.namespace',
+      }),
+      threshold: 1,
+      evaluationPeriods: 1,
+    }),
+  ],
 });
 
 app.run();

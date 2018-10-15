@@ -57,6 +57,18 @@
         }
       }
     },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -81,18 +93,6 @@
             "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet1"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
@@ -137,6 +137,18 @@
         }
       }
     },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -161,18 +173,6 @@
             "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet2"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPublicSubnet3Subnet631C5E25": {
@@ -217,6 +217,18 @@
         }
       }
     },
+    "VPCPublicSubnet3DefaultRouteA0D29D46": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      }
+    },
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -241,18 +253,6 @@
             "Value": "aws-cdk-codedeploy-server-dg/VPC/PublicSubnet3"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet3DefaultRouteA0D29D46": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet3RouteTable98AE0E14"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -712,6 +712,18 @@
         ]
       }
     },
+    "Alarm1F9009D71": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 1,
+        "MetricName": "Errors",
+        "Namespace": "my.namespace",
+        "Period": 300,
+        "Threshold": 1,
+        "Statistic": "Average"
+      }
+    },
     "CodeDeployGroupApplication13EFBDA6": {
       "Type": "AWS::CodeDeploy::Application",
       "Properties": {
@@ -749,6 +761,16 @@
             "CodeDeployGroupRole1D304F7A",
             "Arn"
           ]
+        },
+        "AlarmConfiguration": {
+          "Alarms": [
+            {
+              "Name": {
+                "Ref": "Alarm1F9009D71"
+              }
+            }
+          ],
+          "Enabled": true
         },
         "AutoScalingGroups": [
           {

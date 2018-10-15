@@ -1,4 +1,5 @@
 import autoscaling = require("@aws-cdk/aws-autoscaling");
+import cloudwatch = require("@aws-cdk/aws-cloudwatch");
 import codedeploylb = require("@aws-cdk/aws-codedeploy-api");
 import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require('@aws-cdk/aws-iam');
@@ -167,6 +168,8 @@ export interface ServerDeploymentGroupProps {
   /**
    * The auto-scaling groups belonging to this Deployment Group.
    *
+   * Auto-scaling groups can also be added after the Deployment Group is created using the {@link #addAutoScalingGroup} method.
+   *
    * @default []
    */
   autoScalingGroups?: autoscaling.AutoScalingGroup[];
@@ -189,7 +192,7 @@ export interface ServerDeploymentGroupProps {
    */
   loadBalancer?: codedeploylb.ILoadBalancer;
 
-  /*
+  /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default no additional EC2 instances will be added to the Deployment Group
@@ -202,6 +205,25 @@ export interface ServerDeploymentGroupProps {
    * @default no additional on-premise instances will be added to the Deployment Group
    */
   onPremiseInstanceTags?: InstanceTagSet;
+
+  /**
+   * The CloudWatch alarms associated with this Deployment Group.
+   * CodeDeploy will stop (and optionally roll back)
+   * a deployment if during it any of the alarms trigger.
+   *
+   * Alarms can also be added after the Deployment Group is created using the {@link #addAlarm} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
+   */
+  alarms?: cloudwatch.Alarm[];
+
+  /**
+   * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
+   *
+   * @default false
+   */
+  ignorePollAlarmsFailure?: boolean;
 }
 
 /**
@@ -216,6 +238,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   private readonly _autoScalingGroups: autoscaling.AutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.BucketRef;
+  private readonly alarms: cloudwatch.Alarm[];
 
   constructor(parent: cdk.Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(parent, id, props.deploymentConfig);
@@ -237,6 +260,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
       this.addCodeDeployAgentInstallUserData(asg);
     }
 
+    this.alarms = props.alarms || [];
+
     const resource = new cloudformation.DeploymentGroupResource(this, 'Resource', {
       applicationName: this.application.applicationName,
       deploymentGroupName: props.deploymentGroupName,
@@ -255,6 +280,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
+      alarmConfiguration: new cdk.Token(() => this.renderAlarmConfiguration(props.ignorePollAlarmsFailure)),
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
@@ -262,9 +288,23 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
       this.deploymentGroupName);
   }
 
+  /**
+   * Adds an additional auto-scaling group to this Deployment Group.
+   *
+   * @param asg the auto-scaling group to add to this Deployment Group
+   */
   public addAutoScalingGroup(asg: autoscaling.AutoScalingGroup): void {
     this._autoScalingGroups.push(asg);
     this.addCodeDeployAgentInstallUserData(asg);
+  }
+
+  /**
+   * Associates an additional alarm with this Deployment Group.
+   *
+   * @param alarm the alarm to associate with this Deployment Group
+   */
+  public addAlarm(alarm: cloudwatch.Alarm): void {
+    this.alarms.push(alarm);
   }
 
   public get autoScalingGroups(): autoscaling.AutoScalingGroup[] | undefined {
@@ -403,6 +443,17 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
       }
     }
     return tagsInGroup;
+  }
+
+  private renderAlarmConfiguration(ignorePollAlarmFailure?: boolean):
+      cloudformation.DeploymentGroupResource.AlarmConfigurationProperty | undefined {
+    return this.alarms.length === 0
+      ? undefined
+      : {
+        alarms: this.alarms.map(a => ({ name: a.alarmName })),
+        enabled: true,
+        ignorePollAlarmFailure,
+      };
   }
 }
 

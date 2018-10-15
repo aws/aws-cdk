@@ -53,6 +53,13 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
             'key2': ['v3'],
         },
     ),
+    // CloudWatch alarms
+    alarms: [
+        new cloudwatch.Alarm(/* ... */),
+    ],
+    // whether to ignore failure to fetch the status of alarms from CloudWatch
+    // default: false
+    ignorePollAlarmsFailure: false,
 });
 ```
 
