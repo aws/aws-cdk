@@ -89,7 +89,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     this.artifactBucket = propsBucket;
 
     this.role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codepipeline.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
     });
 
     const codePipeline = new cloudformation.PipelineResource(this, 'Resource', {
@@ -133,7 +133,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
   /**
    * Adds a statement to the pipeline role.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
   }
 
@@ -154,10 +154,10 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     // role per pipeline.
     if (!this.eventsRole) {
       this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
       });
 
-      this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+      this.eventsRole.addToPolicy(new iam.PolicyStatement()
         .addResource(this.pipelineArn)
         .addAction('codepipeline:StartPipelineExecution'));
     }
@@ -243,6 +243,47 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
       : this.stageCount;
 
     this.stages.splice(index, 0, stage);
+  }
+
+  // ignore unused private method (it's actually used in Stage)
+  // @ts-ignore
+  private _generateOutputArtifactName(stage: actions.IStage, action: actions.Action): string {
+    // generate the artifact name based on the Action's full logical ID,
+    // thus guaranteeing uniqueness
+    return 'Artifact_' + action.uniqueId;
+  }
+
+  /**
+   * Finds an input artifact for the given Action.
+   * The chosen artifact will be the output artifact of the
+   * last Action in the Pipeline
+   * (up to the Stage this Action belongs to),
+   * with the highest runOrder, that has an output artifact.
+   *
+   * @param stage the Stage `action` belongs to
+   * @param action the Action to find the input artifact for
+   */
+  // ignore unused private method (it's actually used in Stage)
+  // @ts-ignore
+  private _findInputArtifact(stage: actions.IStage, action: actions.Action): actions.Artifact {
+    // search for the first Action that has an outputArtifact,
+    // and return that
+    const startIndex = this.stages.findIndex(s => s === stage);
+    for (let i = startIndex; i >= 0; i--) {
+      const currentStage = this.stages[i];
+
+      // get all of the Actions in the Stage, sorted by runOrder, descending
+      const currentActions = currentStage.actions.sort((a1, a2) => -(a1.runOrder - a2.runOrder));
+      for (const currentAction of currentActions) {
+        // for the first Stage (the one that `action` belongs to)
+        // we need to only take into account Actions with a smaller runOrder than `action`
+        if ((i !== startIndex || currentAction.runOrder < action.runOrder) && currentAction._outputArtifacts.length > 0) {
+          return currentAction._outputArtifacts[0];
+        }
+      }
+    }
+    throw new Error(`Could not determine the input artifact for Action with name '${action.id}'. ` +
+      'Please provide it explicitly with the inputArtifact property.');
   }
 
   private calculateInsertIndexFromPlacement(placement: StagePlacement): number {

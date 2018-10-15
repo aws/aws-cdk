@@ -190,7 +190,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     }
 
     this.role = new iam.Role(this, 'InstanceRole', {
-      assumedBy: new cdk.ServicePrincipal('ec2.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
     const iamProfile = new iam.cloudformation.InstanceProfileResource(this, 'InstanceProfile', {
@@ -276,7 +276,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 
   /**
@@ -284,7 +284,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 
   /**
@@ -302,7 +302,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
   /**
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
   }
 

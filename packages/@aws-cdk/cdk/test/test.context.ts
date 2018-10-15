@@ -83,6 +83,7 @@ export = {
     test.deepEqual(zone, 'HOSTEDZONEID');
     test.done();
   },
+
   'Return default values if "env" is undefined to facilitate unit tests, but also expect metadata to include "error" messages'(test: Test) {
     const app = new App();
     const stack = new Stack(app, 'test-stack');

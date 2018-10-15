@@ -14,7 +14,7 @@ export class Artifact extends Construct {
    * Output is in the form "<artifact-name>::<file-name>"
    * @param fileName The name of the file
    */
-  public subartifact(fileName: string) {
+  public atPath(fileName: string) {
     return new ArtifactPath(this, fileName);
   }
 

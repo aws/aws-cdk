@@ -1,10 +1,12 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 
 /**
  * Construction properties of the {@link PipelineDeployAction CodeDeploy deploy CodePipeline Action}.
  */
-export interface PipelineDeployActionProps extends actions.CommonActionProps {
+export interface PipelineDeployActionProps extends codepipeline.CommonActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The name of the CodeDeploy application to deploy to.
    *
@@ -23,14 +25,17 @@ export interface PipelineDeployActionProps extends actions.CommonActionProps {
 
   /**
    * The source to use as input for deployment.
+   *
+   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact: actions.Artifact;
+  inputArtifact?: codepipeline.Artifact;
 }
 
-export class PipelineDeployAction extends actions.DeployAction {
+export class PipelineDeployAction extends codepipeline.DeployAction {
   constructor(parent: cdk.Construct, id: string, props: PipelineDeployActionProps) {
     super(parent, id, {
       stage: props.stage,
+      runOrder: props.runOrder,
       artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 0 },
       provider: 'CodeDeploy',
       inputArtifact: props.inputArtifact,
@@ -49,7 +54,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: props.applicationName,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(applicationArn)
       .addActions(
         'codedeploy:GetApplicationRevision',
@@ -62,7 +67,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: `${props.applicationName}/${props.deploymentGroupName}`,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(deploymentGroupArn)
       .addActions(
         'codedeploy:CreateDeployment',
@@ -75,7 +80,7 @@ export class PipelineDeployAction extends actions.DeployAction {
       resourceName: '*',
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(deployConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',

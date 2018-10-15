@@ -1,8 +1,9 @@
 import autoscaling = require("@aws-cdk/aws-autoscaling");
+import codedeploylb = require("@aws-cdk/aws-codedeploy-api");
 import ec2 = require("@aws-cdk/aws-ec2");
+import iam = require('@aws-cdk/aws-iam');
 import s3 = require("@aws-cdk/aws-s3");
 import cdk = require("@aws-cdk/cdk");
-import iam = require("../../aws-iam/lib/role");
 import { ServerApplication, ServerApplicationRef } from "./application";
 import { cloudformation } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
@@ -99,6 +100,41 @@ class ImportedServerDeploymentGroupRef extends ServerDeploymentGroupRef {
 }
 
 /**
+ * Represents a group of instance tags.
+ * An instance will match a group if it has a tag matching
+ * any of the group's tags by key and any of the provided values -
+ * in other words, tag groups follow 'or' semantics.
+ * If the value for a given key is an empty array,
+ * an instance will match when it has a tag with the given key,
+ * regardless of the value.
+ * If the key is an empty string, any tag,
+ * regardless of its key, with any of the given values, will match.
+ */
+export type InstanceTagGroup = {[key: string]: string[]};
+
+/**
+ * Represents a set of instance tag groups.
+ * An instance will match a set if it matches all of the groups in the set -
+ * in other words, sets follow 'and' semantics.
+ * You can have a maximum of 3 tag groups inside a set.
+ */
+export class InstanceTagSet {
+  private readonly _instanceTagGroups: InstanceTagGroup[];
+
+  constructor(...instanceTagGroups: InstanceTagGroup[]) {
+    if (instanceTagGroups.length > 3) {
+      throw new Error('An instance tag set can have a maximum of 3 instance tag groups, ' +
+        `but ${instanceTagGroups.length} were provided`);
+    }
+    this._instanceTagGroups = instanceTagGroups;
+  }
+
+  public get instanceTagGroups(): InstanceTagGroup[] {
+    return this._instanceTagGroups.slice();
+  }
+}
+
+/**
  * Construction properties for {@link ServerDeploymentGroup}.
  */
 export interface ServerDeploymentGroupProps {
@@ -143,6 +179,29 @@ export interface ServerDeploymentGroupProps {
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install.html
    */
   installAgent?: boolean;
+
+  /**
+   * The load balancer to place in front of this Deployment Group.
+   * Can be either a classic Elastic Load Balancer,
+   * or an Application Load Balancer / Network Load Balancer Target Group.
+   *
+   * @default the Deployment Group will not have a load balancer defined
+   */
+  loadBalancer?: codedeploylb.ILoadBalancer;
+
+  /*
+   * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
+   *
+   * @default no additional EC2 instances will be added to the Deployment Group
+   */
+  ec2InstanceTags?: InstanceTagSet;
+
+  /**
+   * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
+   *
+   * @default no additional on-premise instances will be added to the Deployment Group
+   */
+  onPremiseInstanceTags?: InstanceTagSet;
 }
 
 /**
@@ -164,7 +223,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
     this.application = props.application || new ServerApplication(this, 'Application');
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codedeploy.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
       managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole'],
     });
 
@@ -188,6 +247,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
         this._autoScalingGroups.length === 0
           ? undefined
           : this._autoScalingGroups.map(asg => asg.autoScalingGroupName())),
+      loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
+      deploymentStyle: props.loadBalancer === undefined
+        ? undefined
+        : {
+          deploymentOption: 'WITH_TRAFFIC_CONTROL',
+        },
+      ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
+      onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
     });
 
     this.deploymentGroupName = resource.deploymentGroupName;
@@ -243,6 +310,99 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
         );
         break;
     }
+  }
+
+  private loadBalancerInfo(lbProvider?: codedeploylb.ILoadBalancer):
+      cloudformation.DeploymentGroupResource.LoadBalancerInfoProperty | undefined {
+    if (!lbProvider) {
+      return undefined;
+    }
+
+    const lb = lbProvider.asCodeDeployLoadBalancer();
+
+    switch (lb.generation) {
+      case codedeploylb.LoadBalancerGeneration.First:
+        return {
+          elbInfoList: [
+            { name: lb.name },
+          ],
+        };
+      case codedeploylb.LoadBalancerGeneration.Second:
+        return {
+          targetGroupInfoList: [
+            { name: lb.name },
+          ]
+        };
+    }
+  }
+
+  private ec2TagSet(tagSet?: InstanceTagSet):
+      cloudformation.DeploymentGroupResource.EC2TagSetProperty | undefined {
+    if (!tagSet || tagSet.instanceTagGroups.length === 0) {
+      return undefined;
+    }
+
+    return {
+      ec2TagSetList: tagSet.instanceTagGroups.map(tagGroup => {
+        return {
+          ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as
+            cloudformation.DeploymentGroupResource.EC2TagFilterProperty[],
+        };
+      }),
+    };
+  }
+
+  private onPremiseTagSet(tagSet?: InstanceTagSet):
+      cloudformation.DeploymentGroupResource.OnPremisesTagSetProperty | undefined {
+    if (!tagSet || tagSet.instanceTagGroups.length === 0) {
+      return undefined;
+    }
+
+    return {
+      onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
+        return {
+          onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup) as
+            cloudformation.DeploymentGroupResource.TagFilterProperty[],
+        };
+      }),
+    };
+  }
+
+  private tagGroup2TagsArray(tagGroup: InstanceTagGroup): any[] {
+    const tagsInGroup = [];
+    for (const tagKey in tagGroup) {
+      if (tagGroup.hasOwnProperty(tagKey)) {
+        const tagValues = tagGroup[tagKey];
+        if (tagKey.length > 0) {
+          if (tagValues.length > 0) {
+            for (const tagValue of tagValues) {
+              tagsInGroup.push({
+                key: tagKey,
+                value: tagValue,
+                type: 'KEY_AND_VALUE',
+              });
+            }
+          } else {
+            tagsInGroup.push({
+              key: tagKey,
+              type: 'KEY_ONLY',
+            });
+          }
+        } else {
+          if (tagValues.length > 0) {
+            for (const tagValue of tagValues) {
+              tagsInGroup.push({
+                value: tagValue,
+                type: 'VALUE_ONLY',
+              });
+            }
+          } else {
+            throw new Error('Cannot specify both an empty key and no values for an instance tag filter');
+          }
+        }
+      }
+    }
+    return tagsInGroup;
   }
 }
 

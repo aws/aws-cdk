@@ -134,7 +134,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     (props.defaultTargetGroups || []).forEach(this.addDefaultTargetGroup.bind(this));
 
-    if (props.open) {
+    if (props.open !== false) {
       this.connections.allowDefaultPortFrom(new ec2.AnyIPv4(), `Allow from anyone on port ${port}`);
     }
   }
@@ -258,7 +258,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 /**
  * Properties to reference an existing listener
  */
-export interface IApplicationListener extends ec2.IConnectable {
+export interface IApplicationListener extends ec2.IConnectable, cdk.IDependable {
   /**
    * ARN of the listener
    */
@@ -319,6 +319,7 @@ export interface ApplicationListenerRefProps {
 }
 
 class ImportedApplicationListener extends cdk.Construct implements IApplicationListener {
+  public readonly dependencyElements: cdk.IDependable[] = [];
   public readonly connections: ec2.Connections;
 
   /**

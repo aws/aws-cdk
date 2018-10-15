@@ -4,7 +4,7 @@ import cdk = require('@aws-cdk/cdk');
 import { DatabaseCluster, DatabaseClusterEngine } from '../lib';
 import { ClusterParameterGroup } from '../lib/cluster-parameter-group';
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'VPC', { maxAZs: 2 });
@@ -33,4 +33,4 @@ const cluster = new DatabaseCluster(stack, 'Database', {
 
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 
-process.stdout.write(app.run());
+app.run();

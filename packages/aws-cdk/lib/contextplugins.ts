@@ -135,5 +135,6 @@ export async function provideContextValues(
 
     const value = await provider.getValue(missingContext.props);
     projectConfig.set(['context', key], value);
+    debug(`Setting "${key}" context to ${JSON.stringify(value)}`);
   }
 }

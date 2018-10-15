@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { RepositoryRef } from './repository';
 
@@ -7,12 +8,14 @@ import { RepositoryRef } from './repository';
  * either directly, through its constructor,
  * or through {@link RepositoryRef#addToPipeline}.
  */
-export interface CommonPipelineSourceActionProps {
+export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
    * The name of the source's output artifact.
    * Output artifacts are used by CodePipeline as inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * @default 'master'
@@ -31,7 +34,8 @@ export interface CommonPipelineSourceActionProps {
 /**
  * Construction properties of the {@link PipelineSourceAction CodeCommit source CodePipeline Action}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, codepipeline.CommonActionProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The CodeCommit repository.
    */
@@ -45,13 +49,14 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       provider: 'CodeCommit',
       configuration: {
         RepositoryName: props.repository.repositoryName,
         BranchName: props.branch || 'master',
         PollForSourceChanges: props.pollForSourceChanges !== undefined ? props.pollForSourceChanges : true
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
@@ -63,7 +68,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       'codecommit:CancelUploadArchive',
     ];
 
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(props.repository.repositoryArn)
       .addActions(...actions));
   }

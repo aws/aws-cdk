@@ -30,6 +30,13 @@ export interface BucketRefProps {
    * policy, won't work.
    */
   bucketName?: string;
+
+  /**
+   * The domain name of the bucket.
+   *
+   * @default Inferred from bucket name
+   */
+  bucketDomainName?: string;
 }
 
 /**
@@ -73,6 +80,11 @@ export abstract class BucketRef extends cdk.Construct {
   public abstract readonly bucketName: string;
 
   /**
+   * The domain of the bucket.
+   */
+  public abstract readonly domainName: string;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   public abstract readonly encryptionKey?: kms.EncryptionKeyRef;
@@ -98,6 +110,7 @@ export abstract class BucketRef extends cdk.Construct {
     return {
       bucketArn: new cdk.Output(this, 'BucketArn', { value: this.bucketArn }).makeImportValue().toString(),
       bucketName: new cdk.Output(this, 'BucketName', { value: this.bucketName }).makeImportValue().toString(),
+      bucketDomainName: new cdk.Output(this, 'DomainName', { value: this.domainName }).makeImportValue().toString(),
     };
   }
 
@@ -111,7 +124,7 @@ export abstract class BucketRef extends cdk.Construct {
    * @returns the newly created {@link PipelineSourceAction}
    */
   public addToPipeline(stage: actions.IStage, name: string, props: CommonPipelineSourceActionProps): PipelineSourceAction {
-    return new PipelineSourceAction(this.parent!, name, {
+    return new PipelineSourceAction(this, name, {
       stage,
       bucket: this,
       ...props,
@@ -124,7 +137,7 @@ export abstract class BucketRef extends cdk.Construct {
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
    */
-  public addToResourcePolicy(permission: cdk.PolicyStatement) {
+  public addToResourcePolicy(permission: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
     }
@@ -256,6 +269,41 @@ export abstract class BucketRef extends cdk.Construct {
       this.arnForObjects(objectsKeyPattern));
   }
 
+  /**
+   * Allows unrestricted access to objects from this bucket.
+   *
+   * IMPORTANT: This permission allows anyone to perform actions on S3 objects
+   * in this bucket, which is useful for when you configure your bucket as a
+   * website and want everyone to be able to read objects in the bucket without
+   * needing to authenticate.
+   *
+   * Without arguments, this method will grant read ("s3:GetObject") access to
+   * all objects ("*") in the bucket.
+   *
+   * The method returns the `iam.PolicyStatement` object, which can then be modified
+   * as needed. For example, you can add a condition that will restrict access only
+   * to an IPv4 range like this:
+   *
+   *     const statement = bucket.grantPublicAccess();
+   *     statement.addCondition('IpAddress', { "aws:SourceIp": "54.240.143.0/24" });
+   *
+   *
+   * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
+   * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
+   * @returns The `iam.PolicyStatement` object, which can be used to apply e.g. conditions.
+   */
+  public grantPublicAccess(keyPrefix = '*', ...allowedActions: string[]): iam.PolicyStatement {
+    allowedActions = allowedActions.length > 0 ? allowedActions : [ 's3:GetObject' ];
+
+    const statement = new iam.PolicyStatement()
+      .addActions(...allowedActions)
+      .addResource(this.arnForObjects(keyPrefix))
+      .addPrincipal(new iam.Anyone());
+
+    this.addToResourcePolicy(statement);
+    return statement;
+  }
+
   private grant(identity: iam.IPrincipal | undefined,
                 bucketActions: string[],
                 keyActions: string[],
@@ -267,18 +315,18 @@ export abstract class BucketRef extends cdk.Construct {
 
     const resources = [ resourceArn, ...otherResourceArns ];
 
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResources(...resources)
       .addActions(...bucketActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
       // KMS permissions need to be granted both directions
-      identity.addToPolicy(new cdk.PolicyStatement()
+      identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...keyActions));
 
-      this.encryptionKey.addToResourcePolicy(new cdk.PolicyStatement()
+      this.encryptionKey.addToResourcePolicy(new iam.PolicyStatement()
         .addAllResources()
         .addPrincipal(identity.principal)
         .addActions(...keyActions));
@@ -701,6 +749,7 @@ export interface NotificationKeyFilter {
 class ImportedBucketRef extends BucketRef {
   public readonly bucketArn: string;
   public readonly bucketName: string;
+  public readonly domainName: string;
   public readonly encryptionKey?: kms.EncryptionKey;
 
   protected policy?: BucketPolicy;
@@ -716,7 +765,12 @@ class ImportedBucketRef extends BucketRef {
 
     this.bucketArn = parseBucketArn(props);
     this.bucketName = bucketName;
+    this.domainName = props.bucketDomainName || this.generateDomainName();
     this.autoCreatePolicy = false;
     this.policy = undefined;
+  }
+
+  private generateDomainName() {
+    return `${this.bucketName}.s3.amazonaws.com`;
   }
 }

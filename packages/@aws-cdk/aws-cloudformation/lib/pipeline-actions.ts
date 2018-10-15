@@ -5,7 +5,8 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Properties common to all CloudFormation actions
  */
-export interface PipelineCloudFormationActionProps extends codepipeline.CommonActionProps {
+export interface PipelineCloudFormationActionProps extends codepipeline.CommonActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The name of the stack to apply this action to
    */
@@ -37,17 +38,18 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
 /**
  * Base class for Actions that execute CloudFormation
  */
-export abstract class PipelineCloudFormationAction extends codepipeline.DeployAction {
+export abstract class PipelineCloudFormationAction extends codepipeline.Action {
   /**
    * Output artifact containing the CloudFormation call response
    *
    * Only present if configured by passing `outputFileName`.
    */
-  public artifact?: codepipeline.Artifact;
+  public outputArtifact?: codepipeline.Artifact;
 
   constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
     super(parent, id, {
       stage: props.stage,
+      runOrder: props.runOrder,
       artifactBounds: {
         minInputs: 0,
         maxInputs: 10,
@@ -55,6 +57,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.DeployAc
         maxOutputs: 1,
       },
       provider: 'CloudFormation',
+      category: codepipeline.ActionCategory.Deploy,
       configuration: {
         StackName: props.stackName,
         OutputFileName: props.outputFileName,
@@ -63,7 +66,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.DeployAc
     });
 
     if (props.outputFileName) {
-      this.artifact = this.addOutputArtifact(props.outputArtifactName ||
+      this.outputArtifact = this.addOutputArtifact(props.outputArtifactName ||
         (props.stage.name + this.id + 'Artifact'));
     }
   }
@@ -88,6 +91,11 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ActionMode: 'CHANGE_SET_EXECUTE',
       ChangeSetName: props.changeSetName,
     });
+
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('cloudformation:ExecuteChangeSet')
+      .addResource(stackArnFromName(props.stackName))
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
@@ -196,19 +204,25 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       this.role = props.role;
     } else {
       this.role = new iam.Role(this, 'Role', {
-        assumedBy: new cdk.ServicePrincipal('cloudformation.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
       });
 
       if (props.fullPermissions) {
-        this.role.addToPolicy(new cdk.PolicyStatement().addAction('*').addAllResources());
+        this.role.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
       }
     }
+
+    // Allow the pipeline to pass this actions' role to CloudFormation
+    // Required by all Actions that perform CFN deployments
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('iam:PassRole')
+      .addResource(this.role.roleArn));
   }
 
   /**
    * Add statement to the service role assumed by CloudFormation while executing this action.
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     return this.role.addToPolicy(statement);
   }
 }
@@ -243,6 +257,20 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     });
 
     this.addInputArtifact(props.templatePath.artifact);
+    if (props.templateConfiguration && props.templateConfiguration.artifact.name !== props.templatePath.artifact.name) {
+      this.addInputArtifact(props.templateConfiguration.artifact);
+    }
+
+    const stackArn = stackArnFromName(props.stackName);
+    // Allow the pipeline to check for Stack & ChangeSet existence
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addAction('cloudformation:DescribeStacks')
+      .addResource(stackArn));
+    // Allow the pipeline to create & delete the specified ChangeSet
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
+      .addResource(stackArn)
+      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
@@ -292,6 +320,23 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
       TemplatePath: props.templatePath.location
     });
     this.addInputArtifact(props.templatePath.artifact);
+
+    // permissions are based on best-guess from
+    // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html
+    // and https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awscloudformation.html
+    const stackArn = stackArnFromName(props.stackName);
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addActions(
+        'cloudformation:DescribeStack*',
+        'cloudformation:CreateStack',
+        'cloudformation:UpdateStack',
+        'cloudformation:DeleteStack', // needed when props.replaceOnFailure is true
+        'cloudformation:GetTemplate*',
+        'cloudformation:ValidateTemplate',
+        'cloudformation:GetStackPolicy',
+        'cloudformation:SetStackPolicy',
+      )
+      .addResource(stackArn));
   }
 }
 
@@ -313,6 +358,13 @@ export class PipelineDeleteStackAction extends PipelineCloudFormationDeployActio
     super(parent, id, props, {
       ActionMode: 'DELETE_ONLY',
     });
+    const stackArn = stackArnFromName(props.stackName);
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+      .addActions(
+        'cloudformation:DescribeStack*',
+        'cloudformation:DeleteStack',
+      )
+      .addResource(stackArn));
   }
 }
 
@@ -336,4 +388,12 @@ export enum CloudFormationCapabilities {
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
    */
   NamedIAM = 'CAPABILITY_NAMED_IAM'
+}
+
+function stackArnFromName(stackName: string): string {
+  return cdk.ArnUtils.fromComponents({
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${stackName}/*`
+  });
 }

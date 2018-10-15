@@ -1,6 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
+import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codedeploy = require('../lib');
@@ -85,6 +86,181 @@ export = {
           },
         ]
       }));
+
+      test.done();
+    },
+
+    'can be created with an ALB Target Group as the load balancer'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
+        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+      });
+      const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.Http });
+      const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.Http });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        loadBalancer: targetGroup,
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [
+            {
+              "Name": {
+                "Fn::GetAtt": [
+                  "ALBListenerFleetGroup008CEEE4",
+                  "TargetGroupName",
+                ],
+              },
+            },
+          ],
+        },
+        "DeploymentStyle": {
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
+      }));
+
+      test.done();
+    },
+
+    'can be created with an NLB Target Group as the load balancer'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc: new ec2.VpcNetwork(stack, 'VPC'),
+      });
+      const listener = nlb.addListener('Listener', { port: 80 });
+      const targetGroup = listener.addTargets('Fleet', { port: 80 });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        loadBalancer: targetGroup,
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [
+            {
+              "Name": {
+                "Fn::GetAtt": [
+                  "NLBListenerFleetGroupB882EC86",
+                  "TargetGroupName",
+                ],
+              },
+            },
+          ],
+        },
+        "DeploymentStyle": {
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+        },
+      }));
+
+      test.done();
+    },
+
+    'can be created with a single EC2 instance tag set with a single or no value'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        ec2InstanceTags: new codedeploy.InstanceTagSet(
+          {
+            'some-key': ['some-value'],
+            'other-key': [],
+          },
+        ),
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "Ec2TagSet": {
+          "Ec2TagSetList": [
+            {
+              "Ec2TagGroup": [
+                {
+                  "Key": "some-key",
+                  "Value": "some-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+                {
+                  "Key": "other-key",
+                  "Type": "KEY_ONLY",
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'can be created with two on-premise instance tag sets with multiple values or without a key'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        onPremiseInstanceTags: new codedeploy.InstanceTagSet(
+          {
+            'some-key': ['some-value', 'another-value'],
+          },
+          {
+            '': ['keyless-value'],
+          },
+        ),
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
+        "OnPremisesTagSet": {
+          "OnPremisesTagSetList": [
+            {
+              "OnPremisesTagGroup": [
+                {
+                  "Key": "some-key",
+                  "Value": "some-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+                {
+                  "Key": "some-key",
+                  "Value": "another-value",
+                  "Type": "KEY_AND_VALUE",
+                },
+              ],
+            },
+            {
+              "OnPremisesTagGroup": [
+                {
+                  "Value": "keyless-value",
+                  "Type": "VALUE_ONLY",
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'cannot be created with an instance tag set containing a keyless, valueless filter'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+          onPremiseInstanceTags: new codedeploy.InstanceTagSet({
+            '': [],
+          }),
+        });
+      });
+
+      test.done();
+    },
+
+    'cannot be created with an instance tag set containing 4 instance tag groups'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+          onPremiseInstanceTags: new codedeploy.InstanceTagSet({}, {}, {}, {}),
+        });
+      }, /3/);
 
       test.done();
     },

@@ -4,12 +4,15 @@ import cdk = require('@aws-cdk/cdk');
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
-export interface GitHubSourceActionProps extends actions.CommonActionProps {
+export interface GitHubSourceActionProps extends actions.CommonActionProps,
+    actions.CommonActionConstructProps {
   /**
    * The name of the source's output artifact. Output artifacts are used by CodePipeline as
    * inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * The GitHub account/user that owns the repo.
@@ -55,6 +58,7 @@ export class GitHubSourceAction extends actions.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: GitHubSourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       owner: 'ThirdParty',
       provider: 'GitHub',
       configuration: {
@@ -64,7 +68,7 @@ export class GitHubSourceAction extends actions.SourceAction {
         OAuthToken: props.oauthToken,
         PollForSourceChanges: props.pollForSourceChanges || true
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
   }
 }

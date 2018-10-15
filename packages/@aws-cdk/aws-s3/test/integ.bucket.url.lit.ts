@@ -14,6 +14,6 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 new TestStack(app, 'aws-cdk-s3-urls');
-process.stdout.write(app.run());
+app.run();

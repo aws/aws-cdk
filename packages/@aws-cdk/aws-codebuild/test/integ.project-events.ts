@@ -4,7 +4,7 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { CodeCommitSource, Project } from '../lib';
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
 
@@ -38,4 +38,4 @@ onCommitRule.addTarget(topic, {
   }
 });
 
-process.stdout.write(app.run());
+app.run();

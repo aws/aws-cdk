@@ -1,5 +1,4 @@
-import { Token } from '../core/tokens';
-import { AwsAccountId, AwsPartition } from './pseudo';
+import { AwsAccountId, AwsPartition, Token } from '@aws-cdk/cdk';
 
 export class PolicyDocument extends Token {
   private statements = new Array<PolicyStatement>();

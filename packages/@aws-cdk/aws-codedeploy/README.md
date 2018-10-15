@@ -32,6 +32,27 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
     // adds User Data that installs the CodeDeploy agent on your auto-scaling groups hosts
     // default: true
     installAgent: true,
+    // adds EC2 instances matching tags
+    ec2InstanceTags: new codedeploy.InstanceTagSet(
+        {
+            // any instance with tags satisfying
+            // key1=v1 or key1=v2 or key2 (any value) or value v3 (any key)
+            // will match this group
+            'key1': ['v1', 'v2'],
+            'key2': [],
+            '': ['v3'],
+        },
+    ),
+    // adds on-premise instances matching tags
+    onPremiseInstanceTags: new codedeploy.InstanceTagSet(
+        // only instances with tags (key1=v1 or key1=v2) AND key2=v3 will match this set
+        {
+            'key1': ['v1', 'v2'],
+        },
+        {
+            'key2': ['v3'],
+        },
+    ),
 });
 ```
 
@@ -44,6 +65,50 @@ To import an already existing Deployment Group:
 const deploymentGroup = codedeploy.ServerDeploymentGroupRef.import(this, 'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
+});
+```
+
+#### Load balancers
+
+You can [specify a load balancer](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html)
+with the `loadBalancer` property when creating a Deployment Group.
+
+With Classic Elastic Load Balancer, you provide it directly:
+
+```ts
+import lb = require('@aws-cdk/aws-elasticloadbalancing');
+
+const elb = new lb.LoadBalancer(this, 'ELB', {
+    // ...
+});
+elb.addTarget(/* ... */);
+elb.addListener({
+    // ...
+});
+
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
+    loadBalancer: elb,
+});
+```
+
+With Application Load Balancer or Network Load Balancer,
+you provide a Target Group as the load balancer:
+
+```ts
+import lbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
+const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
+    // ...
+});
+const listener = alb.addListener('Listener', {
+    // ...
+});
+const targetGroup = listener.addTargets('Fleet', {
+    // ...
+});
+
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
+    loadBalancer: targetGroup,
 });
 ```
 
@@ -93,12 +158,9 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 
 // add the source and build Stages to the Pipeline...
 
-const deployStage = new codepipeline.Stage(this, 'Deploy', {
-    pipeline,
-}));
+const deployStage = pipeline.addStage('Deploy');
 new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
     stage: deployStage,
-    inputArtifact: buildAction.artifact, // taken from a build Action in a previous Stage
     applicationName: 'YourCodeDeployApplicationName',
     deploymentGroupName: 'YourCodeDeployDeploymentGroupName',
 });

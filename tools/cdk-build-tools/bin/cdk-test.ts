@@ -27,6 +27,18 @@ async function main() {
       desc: 'Specify a different tsc executable',
       defaultDescription: 'tsc provided by node dependencies'
     })
+    .option('nyc', {
+      type: 'string',
+      desc: 'Specify a different nyc executable',
+      default: require.resolve('nyc/bin/nyc'),
+      defaultDescription: 'nyc provided by node dependencies'
+    })
+    .option('nodeunit', {
+      type: 'string',
+      desc: 'Specify a different nodeunit executable',
+      default: require.resolve('nodeunit/bin/nodeunit'),
+      defaultDescription: 'nodeunit provided by node dependencies'
+    })
     .argv as any;
 
   // Always recompile before running tests, so it's impossible to forget.
@@ -53,9 +65,9 @@ async function main() {
         // It's okay if the symlink already exists
         if (e.code !== 'EEXIST') { throw e; }
       }
-      testCommand.push(...['nyc', '--clean']);
+      testCommand.push(...[args.nyc, '--clean']);
     }
-    testCommand.push('nodeunit');
+    testCommand.push(args.nodeunit);
     testCommand.push(...testFiles.map(f => f.path));
 
     await shell(testCommand, timers);

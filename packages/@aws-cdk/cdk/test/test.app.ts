@@ -1,120 +1,94 @@
 import cxapi = require('@aws-cdk/cx-api');
+import fs = require('fs');
 import { Test } from 'nodeunit';
+import os = require('os');
+import path = require('path');
 import { Construct, Resource, Stack, StackProps } from '../lib';
 import { App } from '../lib/app';
 
-//
-// this is the idiomatic way we want our apps to look like:
+function withApp(context: { [key: string]: any } | undefined, block: (app: App) => void) {
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-app-test'));
+  process.env[cxapi.OUTDIR_ENV] = outdir;
 
-function main(...argv: string[]): any {
-  const app = new App([ 'myprog', ...argv ]);
+  if (context) {
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
+  } else {
+    delete process.env[cxapi.CONTEXT_ENV];
+  }
 
-  // stacks are children of the program
+  const app = new App();
+  block(app);
 
-  const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
-  new Resource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
-  const r2 = new Resource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
+  app.run();
 
-  const stack2 = new Stack(app, 'stack2');
-  new Resource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
-  const c1 = new MyConstruct(stack2, 's1c2');
-
-  // add some metadata
-  stack1.addMetadata('meta', 111);
-  r2.addWarning('warning1');
-  r2.addWarning('warning2');
-  c1.addMetadata('meta', { key: 'value' });
-  app.addMetadata('applevel', 123); // apps can also have metadata
-
-  return JSON.parse(app.run());
+  const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
+  const response = JSON.parse(fs.readFileSync(outfile).toString());
+  fs.unlinkSync(outfile);
+  fs.rmdirSync(outdir);
+  return response;
 }
 
-function runMain(object: cxapi.CXRequest) {
-  return main(JSON.stringify(object));
+function synth(context?: { [key: string]: any }): cxapi.SynthesizeResponse {
+  return withApp(context, app => {
+    const stack1 = new Stack(app, 'stack1', { env: { account: '12345', region: 'us-east-1' } });
+    new Resource(stack1, 's1c1', { type: 'DummyResource', properties: { Prop1: 'Prop1' } });
+    const r2 = new Resource(stack1, 's1c2', { type: 'DummyResource', properties: { Foo: 123 } });
+
+    const stack2 = new Stack(app, 'stack2');
+    new Resource(stack2, 's2c1', { type: 'DummyResource', properties: { Prog2: 'Prog2' } });
+    const c1 = new MyConstruct(stack2, 's1c2');
+
+    // add some metadata
+    stack1.addMetadata('meta', 111);
+    r2.addWarning('warning1');
+    r2.addWarning('warning2');
+    c1.addMetadata('meta', { key: 'value' });
+    app.addMetadata('applevel', 123); // apps can also have metadata
+  });
 }
 
-function runList() {
-  return (main(JSON.stringify({type: 'list'})) as cxapi.ListStacksResponse).stacks;
-}
+function synthStack(name: string, includeMetadata: boolean = false, context?: any): cxapi.SynthesizedStack {
+  const response = synth(context);
+  const stack = response.stacks.find(s => s.name === name);
+  if (!stack) {
+    throw new Error(`Stack ${name} not found`);
+  }
 
-function runConsNoMeta1(stack: string, context?: any): cxapi.SynthesizedStack {
-  const response = main(JSON.stringify({
-    type: 'synth',
-    stacks: [stack],
-    context
-  }));
-  delete response.stacks[0].metadata;
-  return response.stacks[0];
+  if (!includeMetadata) {
+    delete stack.metadata;
+  }
+
+  return stack;
 }
 
 export = {
-  'first line is the version of the cx interface'(test: Test) {
-    const prog = new App();
-    test.ok((prog.run()).indexOf('CloudExecutable/1.0') === 0);
-    test.done();
-  },
+  'synthesizes all stacks and returns synthesis result'(test: Test) {
+    const response = synth();
 
-  'when executed without arguments, shows interface version and usage usage'(test: Test) {
-    const output = new App([ 'myprog' ]).run();
+    // clean up metadata so assertion will be sane
+    response.stacks.forEach(s => delete s.metadata);
+    delete response.runtime;
 
-    test.notEqual(output.indexOf('myprog'), -1, 'Output should contain program name');
-    test.notEqual(output.indexOf('Usage'), -1, 'Output should contain usage');
-    test.done();
-  },
-
-  async 'unknown command will throw an error'(test: Test) {
-    test.throws(
-      () => { main('foo'); }
-    );
-    test.done();
-  },
-
-  '"list" with no stacks returns with an empty array'(test: Test) {
-    const output = new App([ 'myprog', JSON.stringify({type: 'list'}) ]).run();
-    test.deepEqual(JSON.parse(output).stacks, []);
-    test.done();
-  },
-
-  '"list" returns a list of all stacks, with region information if exists'(test: Test) {
-    // tslint:disable-next-line:max-line-length
-    test.deepEqual(runList(), [ { name: 'stack1', environment: { name: '12345/us-east-1', region: 'us-east-1', account: '12345' } }, { name: 'stack2' } ]);
-    test.done();
-  },
-
-  'list() can be used programmatically'(test: Test) {
-    const prog = new App();
-    test.deepEqual(prog.listStacks(), []);
-    test.done();
-  },
-
-  '"cons" throws if the stack do not exist'(test: Test) {
-    test.throws(
-      () => { runMain({type: 'synth', stacks: ['stack99'] }); }
-    );
-    test.done();
-  },
-
-  '"cons" will return region info for the required stack'(test: Test) {
-    const out = (runConsNoMeta1('stack1'));
-    test.equal('stack1', out.name);
-    test.equal('12345', out.environment!.account);
-    test.equal('us-east-1', out.environment!.region);
-    test.done();
-  },
-
-  '"cons" will return the cloudformation template for the required stack'(test: Test) {
-    const out1 = (runConsNoMeta1('stack1')).template;
-    test.deepEqual(out1, { Resources:
-      { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
-        s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } });
-
-    const out2 = (runConsNoMeta1('stack2')).template;
-    test.deepEqual(out2,
-      { Resources:
-      { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
-        s1c2r1D1791C01: { Type: 'ResourceType1' },
-        s1c2r25F685FFF: { Type: 'ResourceType2' } } });
-
+    test.deepEqual(response, { stacks:
+      [ { name: 'stack1',
+          environment:
+           { name: '12345/us-east-1',
+             account: '12345',
+             region: 'us-east-1' },
+          template:
+           { Resources:
+              { s1c1: { Type: 'DummyResource', Properties: { Prop1: 'Prop1' } },
+                s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } } } } },
+        { name: 'stack2',
+          environment:
+           { name: 'unknown-account/unknown-region',
+             account: 'unknown-account',
+             region: 'unknown-region' },
+          template:
+           { Resources:
+              { s2c1: { Type: 'DummyResource', Properties: { Prog2: 'Prog2' } },
+                s1c2r1D1791C01: { Type: 'ResourceType1' },
+                s1c2r25F685FFF: { Type: 'ResourceType2' } } } } ] });
     test.done();
   },
 
@@ -137,9 +111,9 @@ export = {
   },
 
   'synth(name) also collects metadata from all constructs in the stack'(test: Test) {
-    const response = runMain({type: 'synth', stacks: ['stack1']}) as cxapi.SynthesizeResponse;
+    const stack = synthStack('stack1', true);
 
-    const output = response.stacks[0].metadata;
+    const output = stack.metadata;
     stripStackTraces(output);
 
     test.ok(output['/'], 'app-level metadata is included under "."');
@@ -155,8 +129,8 @@ export = {
     test.equal(output['/stack1/s1c2'].length, 2, 'two entries');
     test.equal(output['/stack1/s1c2'][0].data, 'warning1');
 
-    const response2 = runMain({type: 'synth', stacks: ['stack2']}) as cxapi.SynthesizeResponse;
-    const output2 = response2.stacks[0].metadata;
+    const stack2 = synthStack('stack2', true);
+    const output2 = stack2.metadata;
 
     test.ok(output2['/stack2/s1c2']);
     test.equal(output2['/stack2/s1c2'][0].type, 'meta');
@@ -165,22 +139,19 @@ export = {
     test.done();
   },
 
-  'context can be passed using the -c option'(test: Test) {
-    const prog = new App([ 'myprog', JSON.stringify({
-      type: 'synth',
-      stackName: 'stack',
-      context: {
-        key1: 'val1',
-        key2: 'val2'
-      }
-    })]);
+  'context can be passed through CDK_CONTEXT'(test: Test) {
+    process.env[cxapi.CONTEXT_ENV] = JSON.stringify({
+      key1: 'val1',
+      key2: 'val2'
+    });
+    const prog = new App();
     test.deepEqual(prog.getContext('key1'), 'val1');
     test.deepEqual(prog.getContext('key2'), 'val2');
     test.done();
   },
 
   'context from the command line can be used when creating the stack'(test: Test) {
-    const output = runConsNoMeta1('stack2', { ctx1: 'HELLO' });
+    const output = synthStack('stack2', false, { ctx1: 'HELLO' });
 
     test.deepEqual(output.template, {
       Resources: {
@@ -244,11 +215,6 @@ export = {
   },
 
   'app.synthesizeStack(stack) will return a list of missing contextual information'(test: Test) {
-    const command: cxapi.CXRequest = {
-      type: 'synth',
-      stacks: ['MyStack']
-    };
-
     class MyStack extends Stack {
       constructor(parent: App, name: string, props?: StackProps) {
         super(parent, name, props);
@@ -274,11 +240,9 @@ export = {
       }
     }
 
-    const app = new App([ 'prog', JSON.stringify(command) ]);
-
-    new MyStack(app, 'MyStack');
-
-    const response = JSON.parse(app.run()) as cxapi.SynthesizeResponse;
+    const response = withApp(undefined, app => {
+      new MyStack(app, 'MyStack');
+    });
 
     test.deepEqual(response.stacks[0].missing, {
       "missing-context-key": {

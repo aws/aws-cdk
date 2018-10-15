@@ -22,7 +22,7 @@ export = {
     const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
     const source = new codecommit.PipelineSourceAction(stack, 'source', {
       stage: sourceStage,
-      artifactName: 'SourceArtifact',
+      outputArtifactName: 'SourceArtifact',
       repository,
     });
 
@@ -32,7 +32,7 @@ export = {
     });
     new codebuild.PipelineBuildAction(stack, 'build', {
       stage: buildStage,
-      inputArtifact: source.artifact,
+      inputArtifact: source.outputArtifact,
       project,
     });
 
@@ -51,7 +51,8 @@ export = {
     const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
     new codepipeline.GitHubSourceAction(stack, 'GH', {
       stage: s1,
-      artifactName: 'A',
+      runOrder: 8,
+      outputArtifactName: 'A',
       branch: 'branch',
       oauthToken: secret.value,
       owner: 'foo',
@@ -100,7 +101,7 @@ export = {
             "Name": "A"
           }
           ],
-          "RunOrder": 1
+          "RunOrder": 8
         }
         ],
         "Name": "Source"
@@ -139,7 +140,7 @@ export = {
     const stage1 = new codepipeline.Stage(stack, 'S1', { pipeline });
     new s3.PipelineSourceAction(stack, 'A1', {
       stage: stage1,
-      artifactName: 'Artifact',
+      outputArtifactName: 'Artifact',
       bucket: new s3.Bucket(stack, 'Bucket'),
       bucketKey: 'Key'
     });
@@ -342,7 +343,7 @@ export = {
 
       const result = new codecommit.PipelineSourceAction(stack, 'stage', {
         stage: stageForTesting(stack),
-        artifactName: 'SomeArtifact',
+        outputArtifactName: 'SomeArtifact',
         repository: repositoryForTesting(stack),
         pollForSourceChanges: false,
       });
@@ -355,7 +356,7 @@ export = {
 
       const result = new codecommit.PipelineSourceAction(stack, 'stage', {
         stage: stageForTesting(stack),
-        artifactName: 'SomeArtifact',
+        outputArtifactName: 'SomeArtifact',
         repository: repositoryForTesting(stack),
         pollForSourceChanges: true,
       });

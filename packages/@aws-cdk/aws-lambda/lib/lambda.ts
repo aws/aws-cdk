@@ -98,7 +98,7 @@ export interface FunctionProps {
    *
    * You can call `addToRolePolicy` to the created lambda to add statements post creation.
    */
-  initialPolicy?: cdk.PolicyStatement[];
+  initialPolicy?: iam.PolicyStatement[];
 
   /**
    * Lambda execution role.
@@ -223,7 +223,7 @@ export class Function extends FunctionRef {
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
 
@@ -352,7 +352,7 @@ export class Function extends FunctionRef {
       retentionPeriodSec: 1209600
     });
 
-    this.addToRolePolicy(new cdk.PolicyStatement()
+    this.addToRolePolicy(new iam.PolicyStatement()
       .addAction('sqs:SendMessage')
       .addResource(deadLetterQueue.queueArn));
 
@@ -366,7 +366,7 @@ export class Function extends FunctionRef {
       return undefined;
     }
 
-    this.addToRolePolicy(new cdk.PolicyStatement()
+    this.addToRolePolicy(new iam.PolicyStatement()
       .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
       .addAllResources());
 

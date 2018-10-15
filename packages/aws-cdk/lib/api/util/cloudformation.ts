@@ -50,6 +50,20 @@ export async function stackExists(cfn: CloudFormation, stackName: string): Promi
 }
 
 /**
+ * Checks whether a stack has failed creation in CloudFormation. This is identified by the current stack Status being
+ * ``ROLLBACK_COMPLETE``.
+ *
+ * @param cfn       a CloudFormation client
+ * @param stackName the name of the stack to be checked for
+ *
+ * @returns +true+ if the stack exists and is in failed-creation state.
+ */
+export async function stackFailedCreating(cfn: CloudFormation, stackName: string): Promise<boolean> {
+  const description = await describeStack(cfn, stackName);
+  return description != null && description.StackStatus === 'ROLLBACK_COMPLETE';
+}
+
+/**
  * Waits for a function to return non-+undefined+ before returning.
  *
  * @param valueProvider a function that will return a value that is not +undefined+ once the wait should be over

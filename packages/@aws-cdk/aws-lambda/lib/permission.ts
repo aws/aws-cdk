@@ -1,4 +1,4 @@
-import { PolicyPrincipal } from '@aws-cdk/cdk';
+import { PolicyPrincipal } from '@aws-cdk/aws-iam';
 
 /**
  * Represents a permission statement that can be added to a Lambda's resource policy

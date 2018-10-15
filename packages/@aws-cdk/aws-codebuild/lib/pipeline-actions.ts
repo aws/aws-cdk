@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ProjectRef } from './project';
 
@@ -7,22 +8,27 @@ import { ProjectRef } from './project';
  * either directly, through its constructor,
  * or through {@link ProjectRef#addBuildToPipeline}.
  */
-export interface CommonPipelineBuildActionProps {
+export interface CommonPipelineBuildActionProps extends codepipeline.CommonActionProps {
   /**
-   * The source to use as input for this build
+   * The source to use as input for this build.
+   *
+   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact: codepipeline.Artifact;
+  inputArtifact?: codepipeline.Artifact;
 
   /**
-   * The name of the build's output artifact
+   * The name of the build's output artifact.
+   *
+   * @default an auto-generated name will be used
    */
-  artifactName?: string;
+  outputArtifactName?: string;
 }
 
 /**
  * Construction properties of the {@link PipelineBuildAction CodeBuild build CodePipeline Action}.
  */
-export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps, codepipeline.CommonActionProps {
+export interface PipelineBuildActionProps extends CommonPipelineBuildActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The build project
    */
@@ -39,9 +45,10 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
 
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       provider: 'CodeBuild',
       inputArtifact: props.inputArtifact,
-      artifactName: props.artifactName,
+      outputArtifactName: props.outputArtifactName,
       configuration: {
         ProjectName: props.project.projectName
       }
@@ -53,7 +60,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
       'codebuild:StopBuild',
     ];
 
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
       .addResource(props.project.projectArn)
       .addActions(...actions));
 

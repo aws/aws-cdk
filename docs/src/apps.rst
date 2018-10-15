@@ -27,11 +27,11 @@ as shown in the following example.
 
    import { App } from '@aws-cdk/cdk'
 
-   const app = new App(process.argv); // input: ARGV
+   const app = new App(); // input: ARGV
 
    // <add stacks here>
 
-   process.stdout.write(app.run());
+   app.run();
 
 An |app-construct| is a collection of |stack| objects, as shown in the following
 example.
@@ -41,7 +41,7 @@ example.
    import { App } from '@aws-cdk/cdk'
    import { MyStack } from './my-stack'
 
-   const app = new App(process.argv);
+   const app = new App();
 
    const dev = new MyStack(app, { name: 'Dev', region: 'us-west-2', dev: true })
    const preProd = new MyStack(app, { name: 'PreProd', region: 'us-west-2', preProd: true })
@@ -58,7 +58,7 @@ example.
        prodStages: prod
    });
 
-   process.stdout.write(app.run());
+   app.run();
 
 Use the |toolkit| to list the stacks in this executable,
 as shown in the following example.

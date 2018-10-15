@@ -197,7 +197,7 @@ export = {
 
     // WHEN + THEN
     test.throws(() => method.methodArn,
-      /There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`/);
+      /Unable to determine ARN for method "my-method" since there is no stage associated with this API./);
 
     test.done();
   },
@@ -206,7 +206,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
+    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
@@ -251,7 +251,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
+    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // WHEN
     const integration = new apigateway.Integration({
