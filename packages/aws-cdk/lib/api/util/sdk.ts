@@ -107,7 +107,6 @@ export class SDK {
     return new AWS.Route53({
       region,
       credentials: await this.credentialsCache.get(awsAccountId, mode),
-      ...this.defaultClientArgs
     });
   }
   public async defaultRegion(): Promise<string | undefined> {

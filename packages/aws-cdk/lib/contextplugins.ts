@@ -77,27 +77,29 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
     if (!response.HostedZones) {
       throw new Error(`Hosted Zone not found in account ${account}, region ${region}: ${domainName}`);
     }
-    const candidateZones = await this.filterZones(r53, response.HostedZones,
-      !!args.privateZone, args.vpcId);
-    if (candidateZones.length > 1) {
+    const candidateZones = await this.filterZones(r53, response.HostedZones, args);
+    if (candidateZones.length !== 1) {
       const filteProps = `dns:${domainName}, privateZone:${args.privateZone}, vpcId:${args.vpcId}`;
-      throw new Error(`Found more than one matching HostedZone ${candidateZones} for ${filteProps}`);
+      throw new Error(`Found zones: ${JSON.stringify(candidateZones)} for ${filteProps}, but wanted exactly 1 zone`);
     }
     return candidateZones[0];
   }
 
   private async filterZones(
     r53: AWS.Route53, zones: AWS.Route53.HostedZone[],
-    privateZone: boolean,
-    vpcId: string | undefined): Promise<AWS.Route53.HostedZone[]> {
+    props: HostedZoneProviderProps): Promise<AWS.Route53.HostedZone[]> {
 
       let candidates: AWS.Route53.HostedZone[] = [];
-      if (privateZone) {
-        candidates = zones.filter(zone => zone.Config && zone.Config.PrivateZone);
+      const domainName = props.domainName.endsWith('.') ? props.domainName : `${props.domainName}.`;
+      debug(`Found the following zones ${JSON.stringify(zones)}`);
+      candidates = zones.filter( zone => zone.Name === domainName);
+      debug(`Found the following matched name zones ${JSON.stringify(candidates)}`);
+      if (props.privateZone) {
+        candidates = candidates.filter(zone => zone.Config && zone.Config.PrivateZone);
       } else {
-        candidates = zones.filter(zone => !zone.Config || !zone.Config.PrivateZone);
+        candidates = candidates.filter(zone => !zone.Config || !zone.Config.PrivateZone);
       }
-      if (vpcId) {
+      if (props.vpcId) {
         const vpcZones: AWS.Route53.HostedZone[] = [];
         for (const zone of candidates) {
           const data = await r53.getHostedZone({ Id: zone. Id }).promise();
@@ -105,7 +107,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
             debug(`Expected VPC for private zone but no VPC found ${zone.Id}`);
             continue;
           }
-          if (data.VPCs.map(vpc => vpc.VPCId).includes(vpcId)) {
+          if (data.VPCs.map(vpc => vpc.VPCId).includes(props.vpcId)) {
             vpcZones.push(zone);
           }
         }

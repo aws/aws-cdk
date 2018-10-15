@@ -3,7 +3,7 @@ import { Construct } from './core/construct';
 
 const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
-const HOSTED_ZONE_PROVIDER = 'hosted-zone';
+// const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 
 export interface ContextProviderProps {
   account?: string;
@@ -42,11 +42,32 @@ export class ContextProvider {
     });
     return `${this.provider}:${propStrings.join(':')}`;
   }
+
+  /**
+   * Read a provider value and verify it is not `null`
+   */
+  public getValue(defaultValue: any): any {
+    // if account or region is not defined this is probably a test mode, so we just
+    // return the default value
+    if (!this.props.account || !this.props.region) {
+      this.context.addError(formatMissingScopeError(this.provider, this.props));
+      return defaultValue;
+    }
+
+    const value = this.context.getContext(this.key);
+
+    if (value != null) {
+      return value;
+    }
+
+    this.stack.reportMissingContext(this.key, {
+      provider: this.provider,
+      props: this.props,
+    });
+    return defaultValue;
+  }
   /**
    * Read a provider value, verifying it's a string
-   * @param provider The name of the context provider
-   * @param scope The scope (e.g. account/region) for the value
-   * @param args Any arguments
    * @param defaultValue The value to return if there is no value defined for this context key
    */
   public getStringValue( defaultValue: string): string {
@@ -61,7 +82,7 @@ export class ContextProvider {
 
     if (value != null) {
       if (typeof value !== 'string') {
-        throw new TypeError(`Expected context parameter '${this.key}' to be a string, but got '${value}'`);
+        throw new TypeError(`Expected context parameter '${this.key}' to be a string, but got '${JSON.stringify(value)}'`);
       }
       return value;
     }
@@ -75,9 +96,6 @@ export class ContextProvider {
 
   /**
    * Read a provider value, verifying it's a list
-   * @param provider The name of the context provider
-   * @param scope The scope (e.g. account/region) for the value
-   * @param args Any arguments
    * @param defaultValue The value to return if there is no value defined for this context key
    */
   public getStringListValue(
@@ -94,7 +112,7 @@ export class ContextProvider {
 
       if (value != null) {
         if (!value.map) {
-          throw new Error(`Context value '${this.key}' is supposed to be a list, got '${value}'`);
+          throw new Error(`Context value '${this.key}' is supposed to be a list, got '${JSON.stringify(value)}'`);
         }
         return value;
       }
@@ -157,27 +175,28 @@ export class SSMParameterProvider {
     return this.provider.getStringValue('dummy');
   }
 }
-export interface HostedZoneProviderProps {
-  domainName: string;
-  privateZone?: boolean;
-  vpcId?: string;
-}
 
-/**
- * Context provider that will lookup the Hosted Zone ID for the given arguments
- */
-export class HostedZoneProvider {
-  private provider: ContextProvider;
-  constructor(context: Construct, props: HostedZoneProviderProps) {
-    this.provider = new ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
-  }
-  /**
-   * Return the hosted zone meeting the filter
-   */
-  public zoneId(): string {
-    return this.provider.getStringValue('dummy-zone');
-  }
-}
+// export interface HostedZoneProviderProps {
+//   domainName: string;
+//   privateZone?: boolean;
+//   vpcId?: string;
+// }
+//
+// /**
+//  * Context provider that will lookup the Hosted Zone ID for the given arguments
+//  */
+// export class HostedZoneProvider {
+//   private provider: ContextProvider;
+//   constructor(context: Construct, props: HostedZoneProviderProps) {
+//     this.provider = new ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
+//   }
+//   /**
+//    * Return the hosted zone meeting the filter
+//    */
+//   public zoneId(): string {
+//     return this.provider.getStringValue('dummy-zone');
+//   }
+// }
 
 function formatMissingScopeError(provider: string, props: {[key: string]: string}) {
   let s = `Cannot determine scope for context provider ${provider}`;

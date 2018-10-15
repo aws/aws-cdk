@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { App, AvailabilityZoneProvider, Construct, ContextProvider,
-  HostedZoneProvider, MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
+  MetadataEntry, resolve, SSMParameterProvider, Stack } from '../lib';
 
 export = {
   'AvailabilityZoneProvider returns a list with dummy values if the context is not available'(test: Test) {
@@ -72,17 +72,17 @@ export = {
 
     test.done();
   },
-  'HostedZoneProvider will return context values if availble'(test: Test) {
-    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
-    const filter = {domainName: 'test.com'};
-    new HostedZoneProvider(stack, filter).zoneId();
-    const key = expectedContextKey(stack);
-
-    stack.setContext(key, 'HOSTEDZONEID');
-    const zone = resolve(new HostedZoneProvider(stack, filter).zoneId());
-    test.deepEqual(zone, 'HOSTEDZONEID');
-    test.done();
-  },
+  // 'HostedZoneProvider will return context values if availble'(test: Test) {
+  //   const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+  //   const filter = {domainName: 'test.com'};
+  //   new HostedZoneProvider(stack, filter).zoneId();
+  //   const key = expectedContextKey(stack);
+  //
+  //   stack.setContext(key, 'HOSTEDZONEID');
+  //   const zone = resolve(new HostedZoneProvider(stack, filter).zoneId());
+  //   test.deepEqual(zone, 'HOSTEDZONEID');
+  //   test.done();
+  // },
 
   'Return default values if "env" is undefined to facilitate unit tests, but also expect metadata to include "error" messages'(test: Test) {
     const app = new App();
