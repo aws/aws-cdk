@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
-import { parseStatistic } from './util.statistic';
+import { normalizeStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
 
@@ -115,13 +115,11 @@ export class Metric {
     this.namespace = props.namespace;
     this.metricName = props.metricName;
     this.periodSec = props.periodSec !== undefined ? props.periodSec : 300;
-    this.statistic = props.statistic || "Average";
+    // Try parsing, this will throw if it's not a valid stat
+    this.statistic = normalizeStatistic(props.statistic || "Average");
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
-
-    // Try parsing, this will throw if it's not a valid stat
-    parseStatistic(this.statistic);
   }
 
   /**

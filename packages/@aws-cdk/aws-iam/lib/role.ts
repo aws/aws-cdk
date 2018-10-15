@@ -71,7 +71,14 @@ export interface RoleProps {
  * Defines an IAM role. The role is created with an assume policy document associated with
  * the specified AWS service principal defined in `serviceAssumeRole`.
  */
-export class Role extends Construct implements IIdentityResource, IPrincipal, IDependable {
+export class Role extends Construct implements IRole {
+  /**
+   * Import a role that already exists
+   */
+  public static import(parent: Construct, id: string, props: ImportedRoleProps): IRole {
+    return new ImportedRole(parent, id, props);
+  }
+
   /**
    * The assume role policy document associated with this role.
    */
@@ -155,6 +162,16 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
   }
 }
 
+/**
+ * A Role object
+ */
+export interface IRole extends IIdentityResource, IPrincipal, IDependable {
+  /**
+   * Returns the ARN of this role.
+   */
+  readonly roleArn: string;
+}
+
 function createAssumeRolePolicy(principal: PolicyPrincipal) {
   return new PolicyDocument()
     .addStatement(new PolicyStatement()
@@ -169,5 +186,42 @@ function validateMaxSessionDuration(duration?: number) {
 
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
+  }
+}
+
+/**
+ * Properties to import a Role
+ */
+export interface ImportedRoleProps {
+  /**
+   * The role's ARN
+   */
+  roleArn: string;
+}
+
+/**
+ * A role that already exists
+ */
+class ImportedRole extends Construct implements IRole {
+  public readonly roleArn: string;
+  public readonly principal: PolicyPrincipal;
+  public readonly dependencyElements: IDependable[] = [];
+
+  constructor(parent: Construct, id: string, props: ImportedRoleProps) {
+    super(parent, id);
+    this.roleArn = props.roleArn;
+    this.principal = new ArnPrincipal(this.roleArn);
+  }
+
+  public addToPolicy(_statement: PolicyStatement): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  public attachInlinePolicy(_policy: Policy): void {
+    // FIXME: Add warning that we're ignoring this
+  }
+
+  public attachManagedPolicy(_arn: string): void {
+    // FIXME: Add warning that we're ignoring this
   }
 }
