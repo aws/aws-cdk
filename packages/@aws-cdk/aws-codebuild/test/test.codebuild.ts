@@ -822,7 +822,7 @@ export = {
     const metricBuilds = project.metricBuilds();
     test.same(metricBuilds.dimensions!.ProjectName, project.projectName);
     test.deepEqual(metricBuilds.namespace, 'AWS/CodeBuild');
-    test.deepEqual(metricBuilds.statistic, 'sum', 'default stat is SUM');
+    test.deepEqual(metricBuilds.statistic, 'Sum', 'default stat is SUM');
     test.deepEqual(metricBuilds.metricName, 'Builds');
 
     const metricDuration = project.metricDuration({ label: 'hello' });
