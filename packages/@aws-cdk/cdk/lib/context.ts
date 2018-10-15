@@ -3,7 +3,6 @@ import { Construct } from './core/construct';
 
 const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
-// const HOSTED_ZONE_PROVIDER = 'hosted-zone';
 
 export interface ContextProviderProps {
   account?: string;
