@@ -9,6 +9,7 @@ const TABLE = 'Table';
 const TABLE_WITH_GLOBAL_AND_LOCAL_SECONDARY_INDEX = 'TableWithGlobalAndLocalSecondaryIndex';
 const TABLE_WITH_GLOBAL_SECONDARY_INDEX = 'TableWithGlobalSecondaryIndex';
 const TABLE_WITH_LOCAL_SECONDARY_INDEX = 'TableWithLocalSecondaryIndex';
+const TABLE_WITH_AUTOSCALING = 'TableWithAutoScaling';
 const TABLE_PARTITION_KEY: Attribute = { name: 'hashKey', type: AttributeType.String };
 const TABLE_SORT_KEY: Attribute = { name: 'sortKey', type: AttributeType.Number };
 
@@ -116,6 +117,24 @@ tableWithLocalSecondaryIndex.addSortKey(TABLE_SORT_KEY);
 tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY
+});
+
+const tableWithAutoScaling = new Table(stack, TABLE_WITH_AUTOSCALING, {});
+tableWithAutoScaling.addPartitionKey(TABLE_PARTITION_KEY);
+tableWithAutoScaling.addSortKey(TABLE_SORT_KEY);
+tableWithAutoScaling.addReadAutoScaling({
+  minCapacity: 5,
+  maxCapacity: 20,
+  targetValue: 50,
+  scaleInCooldown: 300,
+  scaleOutCooldown: 300,
+});
+tableWithAutoScaling.addWriteAutoScaling({
+  minCapacity: 5,
+  maxCapacity: 10,
+  targetValue: 50,
+  scaleInCooldown: 300,
+  scaleOutCooldown: 300,
 });
 
 app.run();
