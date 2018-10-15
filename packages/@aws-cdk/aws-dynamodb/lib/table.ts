@@ -1,6 +1,6 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
+import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -218,8 +218,8 @@ export class Table extends Construct {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: this.globalSecondaryIndexes,
-      localSecondaryIndexes: this.localSecondaryIndexes,
+      globalSecondaryIndexes: new Token(() => this.globalSecondaryIndexes.length > 0 ? this.globalSecondaryIndexes : undefined),
+      localSecondaryIndexes: new Token(() => this.localSecondaryIndexes.length > 0 ? this.localSecondaryIndexes : undefined),
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
       provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
