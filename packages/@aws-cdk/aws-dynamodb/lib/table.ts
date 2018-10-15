@@ -1,6 +1,6 @@
 import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
 import iam = require('@aws-cdk/aws-iam');
-import { Construct, TagManager, Tags } from '@aws-cdk/cdk';
+import { ArnUtils, Construct, TagManager, Tags } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
 
 const HASH_KEY_TYPE = 'HASH';
@@ -497,11 +497,10 @@ export class Table extends Construct {
     }
 
     this.validateAutoScalingProps(props);
-    const autoScalingRole = this.buildAutoScalingRole(`${scalingType}AutoScalingRole`);
 
     const scalableTargetResource = new applicationautoscaling.ScalableTargetResource(
       this, `${scalingType}CapacityScalableTarget`, this.buildScalableTargetResourceProps(
-        `dynamodb:table:${scalingType}CapacityUnits`, autoScalingRole, props));
+        `dynamodb:table:${scalingType}CapacityUnits`, props));
 
     return new applicationautoscaling.ScalingPolicyResource(
       this, `${scalingType}CapacityScalingPolicy`,
@@ -509,28 +508,18 @@ export class Table extends Construct {
       scalableTargetResource, props));
   }
 
-  private buildAutoScalingRole(roleResourceName: string) {
-    const autoScalingRole = new iam.Role(this, roleResourceName, {
-      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
-    });
-    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
-      .addActions("dynamodb:DescribeTable", "dynamodb:UpdateTable")
-      .addResource(this.tableArn));
-    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
-      .addActions("cloudwatch:PutMetricAlarm", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricStatistics",
-        "cloudwatch:SetAlarmState", "cloudwatch:DeleteAlarms")
-      .addAllResources());
-    return autoScalingRole;
-  }
-
-  private buildScalableTargetResourceProps(scalableDimension: string,
-                                           scalingRole: iam.Role,
-                                           props: AutoScalingProps) {
+  private buildScalableTargetResourceProps(scalableDimension: string, props: AutoScalingProps) {
     return {
       maxCapacity: props.maxCapacity,
       minCapacity: props.minCapacity,
       resourceId: `table/${this.tableName}`,
-      roleArn: scalingRole.roleArn,
+      // this service-linked role is created automatically if it does not exist.
+      roleArn: ArnUtils.fromComponents({
+        // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+        service: 'iam',
+        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+      }),
       scalableDimension,
       serviceNamespace: 'dynamodb'
     };

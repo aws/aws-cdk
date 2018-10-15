@@ -1083,29 +1083,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableReadAutoScalingRoleFEE68E49:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableReadAutoScalingRoleDefaultPolicyF6A1975F:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableReadAutoScalingRoleDefaultPolicyF6A1975F',
-          Roles: [ { Ref: 'MyTableReadAutoScalingRoleFEE68E49' } ] } },
         MyTableReadCapacityScalableTarget72B0B3BF:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1114,7 +1091,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableReadAutoScalingRoleFEE68E49', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableReadCapacityScalingPolicyCC18E396:
@@ -1165,29 +1156,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableReadAutoScalingRoleFEE68E49:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableReadAutoScalingRoleDefaultPolicyF6A1975F:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableReadAutoScalingRoleDefaultPolicyF6A1975F',
-          Roles: [ { Ref: 'MyTableReadAutoScalingRoleFEE68E49' } ] } },
         MyTableReadCapacityScalableTarget72B0B3BF:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1196,7 +1164,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableReadAutoScalingRoleFEE68E49', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableReadCapacityScalingPolicyCC18E396:
@@ -1275,29 +1257,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableReadAutoScalingRoleFEE68E49:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableReadAutoScalingRoleDefaultPolicyF6A1975F:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableReadAutoScalingRoleDefaultPolicyF6A1975F',
-          Roles: [ { Ref: 'MyTableReadAutoScalingRoleFEE68E49' } ] } },
         MyTableReadCapacityScalableTarget72B0B3BF:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1306,7 +1265,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableReadAutoScalingRoleFEE68E49', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableReadCapacityScalingPolicyCC18E396:
@@ -1355,29 +1328,6 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
-        MyTableReadAutoScalingRoleFEE68E49:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableReadAutoScalingRoleDefaultPolicyF6A1975F:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableReadAutoScalingRoleDefaultPolicyF6A1975F',
-          Roles: [ { Ref: 'MyTableReadAutoScalingRoleFEE68E49' } ] } },
         MyTableReadCapacityScalableTarget72B0B3BF:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1386,7 +1336,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableReadAutoScalingRoleFEE68E49', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:ReadCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableReadCapacityScalingPolicyCC18E396:
@@ -1560,29 +1524,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableWriteAutoScalingRoleDF7775DE:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB',
-          Roles: [ { Ref: 'MyTableWriteAutoScalingRoleDF7775DE' } ] } },
         MyTableWriteCapacityScalableTarget56F9809A:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1591,7 +1532,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableWriteAutoScalingRoleDF7775DE', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableWriteCapacityScalingPolicy766EAD7A:
@@ -1642,29 +1597,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableWriteAutoScalingRoleDF7775DE:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB',
-          Roles: [ { Ref: 'MyTableWriteAutoScalingRoleDF7775DE' } ] } },
         MyTableWriteCapacityScalableTarget56F9809A:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1673,7 +1605,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableWriteAutoScalingRoleDF7775DE', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableWriteCapacityScalingPolicy766EAD7A:
@@ -1752,29 +1698,6 @@ export = {
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ],
           TableName: 'MyTable' } },
-        MyTableWriteAutoScalingRoleDF7775DE:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB',
-          Roles: [ { Ref: 'MyTableWriteAutoScalingRoleDF7775DE' } ] } },
         MyTableWriteCapacityScalableTarget56F9809A:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1783,7 +1706,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableWriteAutoScalingRoleDF7775DE', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableWriteCapacityScalingPolicy766EAD7A:
@@ -1832,29 +1769,6 @@ export = {
           AttributeDefinitions:
            [ { AttributeName: 'hashKey', AttributeType: 'S' },
              { AttributeName: 'sortKey', AttributeType: 'N' } ] } },
-        MyTableWriteAutoScalingRoleDF7775DE:
-         { Type: 'AWS::IAM::Role',
-         Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: { Service: 'application-autoscaling.amazonaws.com' } } ],
-             Version: '2012-10-17' } } },
-        MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB:
-         { Type: 'AWS::IAM::Policy',
-         Properties:
-          { PolicyDocument:
-           { Statement:
-            [ { Action: [ 'dynamodb:DescribeTable', 'dynamodb:UpdateTable' ],
-              Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': [ 'MyTable794EDED1', 'Arn' ] } },
-              { Action: [ 'cloudwatch:PutMetricAlarm', 'cloudwatch:DescribeAlarms', 'cloudwatch:GetMetricStatistics',
-              'cloudwatch:SetAlarmState', 'cloudwatch:DeleteAlarms' ],
-              Effect: 'Allow', Resource: '*' } ],
-             Version: '2012-10-17' },
-          PolicyName: 'MyTableWriteAutoScalingRoleDefaultPolicyBF1A7EBB',
-          Roles: [ { Ref: 'MyTableWriteAutoScalingRoleDF7775DE' } ] } },
         MyTableWriteCapacityScalableTarget56F9809A:
          { Type: 'AWS::ApplicationAutoScaling::ScalableTarget',
          Properties:
@@ -1863,7 +1777,21 @@ export = {
           ResourceId:
            { 'Fn::Join': [ '', [ 'table/', { Ref: 'MyTable794EDED1' } ] ] },
           RoleARN:
-           { 'Fn::GetAtt': [ 'MyTableWriteAutoScalingRoleDF7775DE', 'Arn' ] },
+            { 'Fn::Join':
+                [ '',
+                  [ 'arn',
+                    ':',
+                    { Ref: 'AWS::Partition' },
+                    ':',
+                    'iam',
+                    ':',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+                    '/',
+                    'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable' ] ] },
           ScalableDimension: 'dynamodb:table:WriteCapacityUnits',
           ServiceNamespace: 'dynamodb' } },
         MyTableWriteCapacityScalingPolicy766EAD7A:

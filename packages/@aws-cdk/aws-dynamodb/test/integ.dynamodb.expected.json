@@ -366,6 +366,185 @@
           }
         ]
       }
+    },
+    "TableWithAutoScaling32541DD3": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "hashKey",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sortKey",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "hashKey",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sortKey",
+            "AttributeType": "N"
+          }
+        ],
+        "GlobalSecondaryIndexes": [],
+        "LocalSecondaryIndexes": []
+      }
+    },
+    "TableWithAutoScalingReadCapacityScalableTarget7BBB2483": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Properties": {
+        "MaxCapacity": 20,
+        "MinCapacity": 5,
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "table/",
+              {
+                "Ref": "TableWithAutoScaling32541DD3"
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "iam",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              "role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com",
+              "/",
+              "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+            ]
+          ]
+        },
+        "ScalableDimension": "dynamodb:table:ReadCapacityUnits",
+        "ServiceNamespace": "dynamodb"
+      }
+    },
+    "TableWithAutoScalingReadCapacityScalingPolicyEED9DCAD": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "Properties": {
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "TableWithAutoScaling32541DD3"
+              },
+              "ReadCapacityScalingPolicy"
+            ]
+          ]
+        },
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "TableWithAutoScalingReadCapacityScalableTarget7BBB2483"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBReadCapacityUtilization"
+          },
+          "ScaleInCooldown": 300,
+          "ScaleOutCooldown": 300,
+          "TargetValue": 50
+        }
+      }
+    },
+    "TableWithAutoScalingWriteCapacityScalableTarget7A47988C": {
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+      "Properties": {
+        "MaxCapacity": 10,
+        "MinCapacity": 5,
+        "ResourceId": {
+          "Fn::Join": [
+            "",
+            [
+              "table/",
+              {
+                "Ref": "TableWithAutoScaling32541DD3"
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Fn::Join": [
+            "",
+            [
+              "arn",
+              ":",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":",
+              "iam",
+              ":",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              "role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com",
+              "/",
+              "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+            ]
+          ]
+        },
+        "ScalableDimension": "dynamodb:table:WriteCapacityUnits",
+        "ServiceNamespace": "dynamodb"
+      }
+    },
+    "TableWithAutoScalingWriteCapacityScalingPolicy68C97FF6": {
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+      "Properties": {
+        "PolicyName": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "TableWithAutoScaling32541DD3"
+              },
+              "WriteCapacityScalingPolicy"
+            ]
+          ]
+        },
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "TableWithAutoScalingWriteCapacityScalableTarget7A47988C"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "DynamoDBWriteCapacityUtilization"
+          },
+          "ScaleInCooldown": 300,
+          "ScaleOutCooldown": 300,
+          "TargetValue": 50
+        }
+      }
     }
   }
 }
