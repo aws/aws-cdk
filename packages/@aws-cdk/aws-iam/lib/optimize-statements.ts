@@ -251,7 +251,7 @@ function _deepEqual(e1: unknown, e2: unknown): boolean {
   if (Array.isArray(e1)) {
     if (!Array.isArray(e2)) { return false; }
     if (e1.length !== e2.length) { return false; }
-    return e1.find(e => e2.find(c => _deepEqual(e, c)) != null) == null;
+    return e1.find(e => e2.find(c => _deepEqual(e, c)) == null) == null;
   }
   if (typeof e1 === 'object' && typeof e2 === 'object') {
     if (e1 == null || e2 == null) { return e1 === e2; }

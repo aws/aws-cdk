@@ -249,8 +249,7 @@
                             }
                           ]
                         ]
-                      },
-                      ":*"
+                      }
                     ]
                   ]
                 },
@@ -270,18 +269,11 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyBuildProject30DB9D6E"
-                            }
-                          ]
-                        ]
-                      }
+                        "Ref": "MyBuildProject30DB9D6E"
+                      },
+                      ":*"
                     ]
                   ]
                 }

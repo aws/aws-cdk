@@ -19,102 +19,127 @@ export = {
 
       expect(stack).toMatch({
         "Resources": {
-        "MyProjectRole9BBE5233": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-              "Service": "codebuild.amazonaws.com"
-              }
-            }
-            ],
-            "Version": "2012-10-17"
-          }
-          }
-        },
-        "MyProjectRoleDefaultPolicyB19B7C29": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-          "PolicyDocument": {
-            "Statement": [
-              {
-                "Action": [
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                  "logs:PutLogEvents"
-                ],
-                "Effect": "Allow",
-                "Resource": [
+          "MyProjectRole9BBE5233": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
                   {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:", { "Ref": "AWS::Partition" },
-                        ":logs:",
-                        { "Ref": "AWS::Region" },
-                        ":",
-                        { "Ref": "AWS::AccountId" },
-                        ":log-group:",
-                        { "Fn::Join": [ "", [ "/aws/codebuild/", { "Ref": "MyProject39F7B0AE" } ] ] },
-                        ":*"
-                      ]
-                    ]
-                  },
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:",
-                        { "Ref": "AWS::Partition" },
-                        ":logs:",
-                        { "Ref": "AWS::Region" },
-                        ":",
-                        { "Ref": "AWS::AccountId" },
-                        ":log-group:",
-                        { "Fn::Join": [ "", [ "/aws/codebuild/", { "Ref": "MyProject39F7B0AE" } ] ] }
-                      ]
-                    ]
+                    "Effect": "Allow",
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                      "Service": "codebuild.amazonaws.com"
+                    }
                   }
                 ]
               }
-            ],
-            "Version": "2012-10-17"
-          },
-          "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
-          "Roles": [
-            {
-            "Ref": "MyProjectRole9BBE5233"
             }
-          ]
-          }
-        },
-        "MyProject39F7B0AE": {
-          "Type": "AWS::CodeBuild::Project",
-          "Properties": {
-          "Source": {
-            "Type": "CODEPIPELINE"
           },
-          "Artifacts": {
-            "Type": "CODEPIPELINE"
+          "MyProjectRoleDefaultPolicyB19B7C29": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "/aws/codebuild/",
+                                  {
+                                    "Ref": "MyProject39F7B0AE"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:/aws/codebuild/",
+                            {
+                              "Ref": "MyProject39F7B0AE"
+                            },
+                            ":*"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
+              "Roles": [
+                {
+                  "Ref": "MyProjectRole9BBE5233"
+                }
+              ]
+            }
           },
-          "ServiceRole": {
-            "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
-            "Arn"
-            ]
-          },
-          "Environment": {
-            "Type": "LINUX_CONTAINER",
-            "PrivilegedMode": false,
-            "Image": "aws/codebuild/ubuntu-base:14.04",
-            "ComputeType": "BUILD_GENERAL1_SMALL"
+          "MyProject39F7B0AE": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+              "Artifacts": {
+                "Type": "CODEPIPELINE"
+              },
+              "Environment": {
+                "ComputeType": "BUILD_GENERAL1_SMALL",
+                "Image": "aws/codebuild/ubuntu-base:14.04",
+                "PrivilegedMode": false,
+                "Type": "LINUX_CONTAINER"
+              },
+              "ServiceRole": {
+                "Fn::GetAtt": [
+                  "MyProjectRole9BBE5233",
+                  "Arn"
+                ]
+              },
+              "Source": {
+                "Type": "CODEPIPELINE"
+              }
+            }
           }
-          }
-        }
         }
       });
 
@@ -133,158 +158,150 @@ export = {
 
       expect(stack).toMatch({
         "Resources": {
-        "MyRepoF4F48043": {
-          "Type": "AWS::CodeCommit::Repository",
-          "Properties": {
-          "RepositoryName": "hello-cdk",
-          "Triggers": []
-          }
-        },
-        "MyProjectRole9BBE5233": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-              "Service": "codebuild.amazonaws.com"
-              }
+          "MyRepoF4F48043": {
+            "Type": "AWS::CodeCommit::Repository",
+            "Properties": {
+              "RepositoryName": "hello-cdk",
+              "Triggers": []
             }
-            ],
-            "Version": "2012-10-17"
-          }
-          }
-        },
-        "MyProjectRoleDefaultPolicyB19B7C29": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-          "PolicyDocument": {
-            "Statement": [
-            {
-              "Action": "codecommit:GitPull",
-              "Effect": "Allow",
-              "Resource": {
-              "Fn::GetAtt": [
-                "MyRepoF4F48043",
-                "Arn"
-              ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn:",
+          },
+          "MyProjectRole9BBE5233": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
                   {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
+                    "Effect": "Allow",
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                      "Service": "codebuild.amazonaws.com"
                     }
-                    ]
-                  ]
-                  },
-                  ":*"
-                ]
-                ]
-              },
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
                   }
                 ]
-                ]
               }
+            }
+          },
+          "MyProjectRoleDefaultPolicyB19B7C29": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": "codecommit:GitPull",
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "MyRepoF4F48043",
+                        "Arn"
+                      ]
+                    }
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "/aws/codebuild/",
+                                  {
+                                    "Ref": "MyProject39F7B0AE"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:/aws/codebuild/",
+                            {
+                              "Ref": "MyProject39F7B0AE"
+                            },
+                            ":*"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
+              "Roles": [
+                {
+                  "Ref": "MyProjectRole9BBE5233"
+                }
               ]
             }
-            ],
-            "Version": "2012-10-17"
           },
-          "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
-          "Roles": [
-            {
-            "Ref": "MyProjectRole9BBE5233"
+          "MyProject39F7B0AE": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+              "Artifacts": {
+                "Type": "NO_ARTIFACTS"
+              },
+              "Environment": {
+                "ComputeType": "BUILD_GENERAL1_SMALL",
+                "Image": "aws/codebuild/ubuntu-base:14.04",
+                "PrivilegedMode": false,
+                "Type": "LINUX_CONTAINER"
+              },
+              "ServiceRole": {
+                "Fn::GetAtt": [
+                  "MyProjectRole9BBE5233",
+                  "Arn"
+                ]
+              },
+              "Source": {
+                "Location": {
+                  "Fn::GetAtt": [
+                    "MyRepoF4F48043",
+                    "CloneUrlHttp"
+                  ]
+                },
+                "Type": "CODECOMMIT"
+              }
             }
-          ]
           }
-        },
-        "MyProject39F7B0AE": {
-          "Type": "AWS::CodeBuild::Project",
-          "Properties": {
-          "Artifacts": {
-            "Type": "NO_ARTIFACTS"
-          },
-          "Environment": {
-            "ComputeType": "BUILD_GENERAL1_SMALL",
-            "Image": "aws/codebuild/ubuntu-base:14.04",
-            "PrivilegedMode": false,
-            "Type": "LINUX_CONTAINER"
-          },
-          "ServiceRole": {
-            "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
-            "Arn"
-            ]
-          },
-          "Source": {
-            "Location": {
-            "Fn::GetAtt": [
-              "MyRepoF4F48043",
-              "CloneUrlHttp"
-            ]
-            },
-            "Type": "CODECOMMIT"
-          }
-          }
-        }
         }
       });
       test.done();
@@ -302,179 +319,171 @@ export = {
 
       expect(stack).toMatch({
         "Resources": {
-        "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
-        },
-        "MyProjectRole9BBE5233": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-              "Service": "codebuild.amazonaws.com"
-              }
-            }
-            ],
-            "Version": "2012-10-17"
-          }
-          }
-        },
-        "MyProjectRoleDefaultPolicyB19B7C29": {
-          "Type": "AWS::IAM::Policy",
-          "Properties": {
-          "PolicyDocument": {
-            "Statement": [
-            {
-              "Action": [
-                "s3:GetBucket*",
-                "s3:GetObject*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-              {
-                "Fn::GetAtt": [
-                "MyBucketF68F3FF0",
-                "Arn"
-                ]
-              },
-              {
-                "Fn::Join": [
-                "",
-                [
+          "MyBucketF68F3FF0": {
+            "Type": "AWS::S3::Bucket"
+          },
+          "MyProjectRole9BBE5233": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
                   {
-                  "Fn::GetAtt": [
-                    "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                  },
-                  "/*"
-                ]
-                ]
-              }
-              ]
-            },
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": [
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
+                    "Effect": "Allow",
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                      "Service": "codebuild.amazonaws.com"
                     }
-                    ]
-                  ]
-                  },
-                  ":*"
-                ]
-                ]
-              },
-              {
-                "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                  "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                  "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                  "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:",
-                  {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
                   }
                 ]
-                ]
               }
-              ]
             }
-            ],
-            "Version": "2012-10-17"
           },
-          "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
-          "Roles": [
-            {
-            "Ref": "MyProjectRole9BBE5233"
-            }
-          ]
-          }
-        },
-        "MyProject39F7B0AE": {
-          "Type": "AWS::CodeBuild::Project",
-          "Properties": {
-          "Artifacts": {
-            "Type": "NO_ARTIFACTS"
-          },
-          "Environment": {
-            "ComputeType": "BUILD_GENERAL1_MEDIUM",
-            "Image": "aws/codebuild/windows-base:1.0",
-            "PrivilegedMode": false,
-            "Type": "WINDOWS_CONTAINER"
-          },
-          "ServiceRole": {
-            "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
-            "Arn"
-            ]
-          },
-          "Source": {
-            "Location": {
-            "Fn::Join": [
-              "",
-              [
-              {
-                "Ref": "MyBucketF68F3FF0"
+          "MyProjectRoleDefaultPolicyB19B7C29": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "s3:GetBucket*",
+                      "s3:GetObject*",
+                      "s3:List*"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::GetAtt": [
+                          "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::GetAtt": [
+                                "MyBucketF68F3FF0",
+                                "Arn"
+                              ]
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Effect": "Allow",
+                    "Action": [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "/aws/codebuild/",
+                                  {
+                                    "Ref": "MyProject39F7B0AE"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":logs:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":log-group:/aws/codebuild/",
+                            {
+                              "Ref": "MyProject39F7B0AE"
+                            },
+                            ":*"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                ]
               },
-              "/path/to/source.zip"
+              "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
+              "Roles": [
+                {
+                  "Ref": "MyProjectRole9BBE5233"
+                }
               ]
-            ]
-            },
-            "Type": "S3"
+            }
+          },
+          "MyProject39F7B0AE": {
+            "Type": "AWS::CodeBuild::Project",
+            "Properties": {
+              "Artifacts": {
+                "Type": "NO_ARTIFACTS"
+              },
+              "Environment": {
+                "ComputeType": "BUILD_GENERAL1_MEDIUM",
+                "Image": "aws/codebuild/windows-base:1.0",
+                "PrivilegedMode": false,
+                "Type": "WINDOWS_CONTAINER"
+              },
+              "ServiceRole": {
+                "Fn::GetAtt": [
+                  "MyProjectRole9BBE5233",
+                  "Arn"
+                ]
+              },
+              "Source": {
+                "Location": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Ref": "MyBucketF68F3FF0"
+                      },
+                      "/path/to/source.zip"
+                    ]
+                  ]
+                },
+                "Type": "S3"
+              }
+            }
           }
-          }
-        }
         }
       });
       test.done();
