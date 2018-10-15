@@ -58,7 +58,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
           resourceName: 'service-role/AWSLambdaBasicExecutionRole',
         })
       ],
-      policies: {
+      inlinePolicies: {
         // handler allows to put bucket notification on s3 buckets.
         allowPutBucketNotification: new iam.PolicyDocument()
           .addStatement(new iam.PolicyStatement()

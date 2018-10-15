@@ -28,7 +28,7 @@ export interface RoleProps {
    * cicrular dependencies that could otherwise be introduced).
    * @default No inline policies.
    */
-  policies?: { [name: string]: PolicyDocument };
+  inlinePolicies?: { [name: string]: PolicyDocument };
 
   /**
    * The path associated with this role. For information about IAM paths, see
@@ -121,7 +121,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
     const role = new cloudformation.RoleResource(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
-      policies: _flatten(props.policies),
+      policies: _flatten(props.inlinePolicies),
       path: props.path,
       roleName: props.roleName,
       maxSessionDuration: props.maxSessionDurationSec,

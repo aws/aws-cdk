@@ -134,7 +134,7 @@ export class FnJoin extends Fn {
     if (this.listOfValues.length === 1) {
       return this.listOfValues[0];
     }
-    return Fn.prototype.resolve.call(this);
+    return super.resolve();
   }
 }
 

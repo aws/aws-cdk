@@ -20,7 +20,7 @@ export function optimizeStatements(statements: any[]): any[] {
 /**
  * A Policy statement, with convenience functions make it easier to de-duplicate, normalize, ...
  */
-class Statement implements Deduplicable, Mergeable {
+class Statement implements Deduplicable {
   private readonly sid?: string;
 
   private readonly effect: 'Allow' | 'Deny';
@@ -54,18 +54,13 @@ class Statement implements Deduplicable, Mergeable {
     }
   }
 
-  public mergeable(other: Statement, allowSid = false): boolean {
-    return (allowSid || this.sid == null)
+  public subsumes(other: Statement): boolean {
+    return this.sid == null
       && this.sid === other.sid
       && this.effect === other.effect
-      && this._allSuperceded(other.actions, this.actions)
+      && _allSuperceded(other.actions, this.actions)
       && _deepEqual(this.condition, other.condition)
       && _deepEqual(this.principal, other.principal);
-  }
-
-  public supercedes(other: Statement): boolean {
-    return this.mergeable(other, true /* allow Sid to be present, if equal */)
-      && this._allSuperceded(other.resources, this.resources);
   }
 
   public merge(other: Statement): void {
@@ -143,17 +138,6 @@ class Statement implements Deduplicable, Mergeable {
       return compact;
     }
   }
-
-  /**
-   * Verifies if a list of entities is entirely covered by another.
-   * @param left  a list of de-duplicable entities
-   * @param right a list of de-duplicable entities.
-   * @returns ``true`` if all entries from ``left`` are superceded by at least one entry from ``right``.
-   */
-  private _allSuperceded<T extends Deduplicable>(left: T[], right: T[]): boolean {
-    if (left.length === 0) { return right.length === 0; }
-    return left.find(item => right.find(e => e.supercedes(item)) == null) == null;
-  }
 }
 
 /**
@@ -169,7 +153,7 @@ class Glob implements Deduplicable {
     this.regexp = _toRegExp(this.expression);
   }
 
-  public supercedes(other: Glob): boolean {
+  public subsumes(other: Glob): boolean {
     if (!this.regexp || typeof other.expression !== 'string') {
       return _deepEqual(this.expression, other.expression);
     }
@@ -177,6 +161,8 @@ class Glob implements Deduplicable {
       // Use the shortest expression (** matches what * does, and * is better)
       && (this.expression as string).length <= other.expression.length;
   }
+
+  public merge(_other: Glob): void { /* Nothing to do here */ }
 }
 
 /**
@@ -188,19 +174,8 @@ interface Deduplicable {
    * @param other the other entity to check.
    * @returns ``true`` if this entry supercedes (can safely replace) ``other``.
    */
-  supercedes(other: this): boolean;
-}
+  subsumes(other: this): boolean;
 
-/**
- * Entities that can be merged.
- */
-interface Mergeable {
-  /**
-   * Checks whether an entity is compatible for merging in this one.
-   * @param other the other entity to check.
-   * @returns ``true`` if ``other`` can safely be merged into this entity.
-   */
-  mergeable(other: this): boolean;
   /**
    * Merges ``other`` in this entity. It is the caller's responsibility to have
    * verified the safety of doing so by having called ``mergeable`` before.
@@ -208,10 +183,16 @@ interface Mergeable {
    */
   merge(other: this): void;
 }
-function _isMergeable<T>(x: T): x is T & Mergeable {
-  return x != null
-    && typeof (x as any).mergeable === 'function'
-    && typeof (x as any).merge === 'function';
+
+/**
+ * Verifies if a list of entities is entirely covered by another.
+ * @param left  a list of de-duplicable entities
+ * @param right a list of de-duplicable entities.
+ * @returns ``true`` if all entries from ``left`` are superceded by at least one entry from ``right``.
+ */
+function _allSuperceded<T extends Deduplicable>(left: T[], right: T[]): boolean {
+  if (left.length === 0) { return right.length === 0; }
+  return left.find(item => right.find(e => e.subsumes(item)) == null) == null;
 }
 
 /**
@@ -221,21 +202,16 @@ function _isMergeable<T>(x: T): x is T & Mergeable {
  */
 function _deduplicate<T extends Deduplicable>(array: T[]): T[] {
   const result = new Array<T>();
-  for (let i = 0 ; i < array.length ; i++) {
-    const element = array[i];
-    let redundant = false;
-    for (let j = i + 1 ; j < array.length ; j++) {
-      const candidate = array[j];
-      if (candidate.supercedes(element)) {
-        redundant = true;
-        break;
-      } else if (_isMergeable(candidate) && _isMergeable(element) && candidate.mergeable(element)) {
-        candidate.merge(element);
-        redundant = true;
-        break;
+  while (array.length > 0) {
+    result.push(array.splice(0, 1)[0]);
+    const last = result[result.length - 1];
+    for (let i = 0 ; i < array.length ; ) {
+      if (last.subsumes(array[i])) {
+        last.merge(array.splice(i, 1)[0]);
+      } else {
+        i++;
       }
     }
-    if (!redundant) { result.push(element); }
   }
   return result;
 }
@@ -277,7 +253,7 @@ function _deepEqual(e1: unknown, e2: unknown): boolean {
 function _toRegExp(glob: unknown): RegExp | undefined {
   if (typeof glob !== 'string') { return undefined; }
   const parts = glob.split('*');
-  return new RegExp(`^${parts.map(_quote).join('.*')}\$`);
+  return new RegExp('^' + parts.map(_quote).join('[^:]*') + '$');
 
   function _quote(text: string): string {
     // RegExp special characters: \ ^$ . | ? * + ( ) [ ] { }
