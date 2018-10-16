@@ -18,9 +18,7 @@
             "AttributeName": "hashKey",
             "AttributeType": "S"
           }
-        ],
-        "GlobalSecondaryIndexes": [],
-        "LocalSecondaryIndexes": []
+        ]
       }
     },
     "TableWithGlobalAndLocalSecondaryIndexBC540710": {
@@ -311,8 +309,7 @@
               "WriteCapacityUnits": 5
             }
           }
-        ],
-        "LocalSecondaryIndexes": []
+        ]
       }
     },
     "TableWithLocalSecondaryIndex4DA3D08F": {
@@ -346,7 +343,6 @@
             "AttributeType": "N"
           }
         ],
-        "GlobalSecondaryIndexes": [],
         "LocalSecondaryIndexes": [
           {
             "IndexName": "LSI-PartitionAndSortKey",
