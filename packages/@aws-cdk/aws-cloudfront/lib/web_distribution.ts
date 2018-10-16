@@ -492,6 +492,11 @@ export class CloudFrontWebDistribution extends cdk.Construct {
   public readonly domainName: string;
 
   /**
+   * The distribution ID for this distribution.
+   */
+  public readonly distributionId: string;
+
+  /**
    * Maps our methods to the string arrays they are
    */
   private readonly METHOD_LOOKUP_MAP = {
@@ -644,7 +649,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
 
     const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
     this.domainName = distribution.distributionDomainName;
-
+    this.distributionId = distribution.distributionId;
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
