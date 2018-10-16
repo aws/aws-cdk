@@ -33,8 +33,8 @@ class JobPollerStack extends cdk.Stack {
             .next(waitX)
             .next(getStatus)
             .next(isComplete
-                .on(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-                .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+                .when(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+                .when(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
                 .otherwise(waitX));
 
         new stepfunctions.StateMachine(this, 'StateMachine', {

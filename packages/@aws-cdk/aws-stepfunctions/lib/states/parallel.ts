@@ -69,8 +69,8 @@ export class Parallel extends State implements INextable {
      * This controls if and how the execution will be retried if a particular
      * error occurs.
      */
-    public retry(props: RetryProps = {}): Parallel {
-        super.addRetry(props);
+    public addRetry(props: RetryProps = {}): Parallel {
+        super._addRetry(props);
         return this;
     }
 
@@ -80,8 +80,8 @@ export class Parallel extends State implements INextable {
      * When a particular error occurs, execution will continue at the error
      * handler instead of failing the state machine execution.
      */
-    public onError(handler: IChainable, props: CatchProps = {}): Parallel {
-        super.addCatch(handler.startState, props);
+    public addCatch(handler: IChainable, props: CatchProps = {}): Parallel {
+        super._addCatch(handler.startState, props);
         return this;
     }
 

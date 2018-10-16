@@ -42,8 +42,8 @@ const definition = submitJob
     .next(getStatus)
     .next(new stepfunctions.Choice(this, 'Job Complete?')
         // Look at the "status" field
-        .on(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-        .on(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+        .when(stepfunctions.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+        .when(stepfunctions.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
         .otherwise(waitX));
 
 new stepfunctions.StateMachine(this, 'StateMachine', {
@@ -105,13 +105,13 @@ const task = new stepfunctions.Task(this, 'Invoke The Lambda', {
 });
 
 // Add a retry policy
-task.retry({
+task.addRetry({
     intervalSeconds: 5,
     maxAttempts: 10
 });
 
 // Add an error handler
-task.onError(errorHandlerState);
+task.addCatch(errorHandlerState);
 
 // Set the next state
 task.next(nextState);
@@ -158,9 +158,9 @@ values in the execution's JSON state:
 ```ts
 const choice = new stepfunctions.Choice(this, 'Did it work?');
 
-// Add conditions with .on()
-choice.on(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);
-choice.on(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);
+// Add conditions with .when()
+choice.when(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);
+choice.when(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
 choice.otherwise(tryAgainState);
@@ -172,8 +172,8 @@ then ... else` works in a programming language), use the `.afterwards()` method:
 
 ```ts
 const choice = new stepfunctions.Choice(this, 'What color is it?');
-choice.on(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);
-choice.on(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);
+choice.when(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);
+choice.when(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);
 choice.otherwise(handleOtherItemColor);
 
 // Use .afterwards() to join all possible paths back together and continue
@@ -198,10 +198,10 @@ parallel.branch(sendInvoice);
 parallel.branch(restock);
 
 // Retry the whole workflow if something goes wrong
-parallel.retry({ maxAttempts: 1 });
+parallel.addRetry({ maxAttempts: 1 });
 
 // How to recover from errors
-parallel.onError(sendFailureNotification);
+parallel.addCatch(sendFailureNotification);
 
 // What to do in case everything succeeded
 parallel.next(closeOrder);
@@ -241,7 +241,7 @@ targets of `Choice.on` or `Parallel.branch`:
 const definition = step1
     .next(step2)
     .next(choice
-        .on(condition1, step3.next(step4).next(step5))
+        .when(condition1, step3.next(step4).next(step5))
         .otherwise(step6)
         .afterwards())
     .next(parallel

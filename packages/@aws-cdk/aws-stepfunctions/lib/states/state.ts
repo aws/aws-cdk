@@ -200,7 +200,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     /**
      * Add a retrier to the retry list of this state
      */
-    protected addRetry(props: RetryProps = {}) {
+    protected _addRetry(props: RetryProps = {}) {
         this.retries.push({
             ...props,
             errors: props.errors ? props.errors : [Errors.All],
@@ -210,7 +210,7 @@ export abstract class State extends cdk.Construct implements IChainable {
     /**
      * Add an error handler to the catch list of this state
      */
-    protected addCatch(handler: State, props: CatchProps = {}) {
+    protected _addCatch(handler: State, props: CatchProps = {}) {
         this.catches.push({
             next: handler,
             props: {

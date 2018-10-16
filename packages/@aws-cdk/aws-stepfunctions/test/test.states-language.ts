@@ -312,7 +312,7 @@ export = {
             const no = new stepfunctions.Fail(stack, 'No', { error: 'Failure', cause: 'Wrong branch' });
             const enfin = new stepfunctions.Pass(stack, 'Finally');
             const choice = new stepfunctions.Choice(stack, 'Choice')
-                .on(stepfunctions.Condition.stringEquals('$.foo', 'bar'), yes)
+                .when(stepfunctions.Condition.stringEquals('$.foo', 'bar'), yes)
                 .otherwise(no);
 
             // WHEN
@@ -344,7 +344,7 @@ export = {
 
             // WHEN
             const chain = new stepfunctions.Choice(stack, 'Choice')
-                .on(stepfunctions.Condition.stringEquals('$.foo', 'bar'),
+                .when(stepfunctions.Condition.stringEquals('$.foo', 'bar'),
                     new stepfunctions.Pass(stack, 'Yes'))
                 .afterwards({ includeOtherwise: true })
                 .next(new stepfunctions.Pass(stack, 'Finally'));
@@ -401,7 +401,7 @@ export = {
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
-            const chain = task1.onError(failure);
+            const chain = task1.addCatch(failure);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -433,7 +433,7 @@ export = {
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
-            const chain = task1.retry({ errors: ['HTTPError'], maxAttempts: 2 }).onError(failure, { resultPath: '$.some_error' }).next(failure);
+            const chain = task1.addRetry({ errors: ['HTTPError'], maxAttempts: 2 }).addCatch(failure, { resultPath: '$.some_error' }).next(failure);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -467,7 +467,7 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            const chain = task1.next(task2).toSingleState('Wrapped').onError(errorHandler);
+            const chain = task1.next(task2).toSingleState('Wrapped').addCatch(errorHandler);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -513,7 +513,7 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            const chain = task1.onError(errorHandler).next(task2);
+            const chain = task1.addCatch(errorHandler).next(task2);
 
             // THEN
             test.deepEqual(render(chain), {
@@ -545,9 +545,9 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            const chain = task1.onError(errorHandler)
-                .next(task2.onError(errorHandler))
-                .next(task3.onError(errorHandler));
+            const chain = task1.addCatch(errorHandler)
+                .next(task2.addCatch(errorHandler))
+                .next(task3.addCatch(errorHandler));
 
             // THEN
             const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' } ] };
@@ -573,9 +573,9 @@ export = {
             const errorHandler = new stepfunctions.Pass(stack, 'ErrorHandler');
 
             // WHEN
-            task1.onError(errorHandler)
+            task1.addCatch(errorHandler)
                 .next(new SimpleChain(stack, 'Chain').catch(errorHandler))
-                .next(task2.onError(errorHandler));
+                .next(task2.addCatch(errorHandler));
 
             test.done();
         },
@@ -589,8 +589,8 @@ export = {
             const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
             // WHEN
-            task1.onError(failure);
-            task2.onError(failure);
+            task1.addCatch(failure);
+            task2.addCatch(failure);
 
             task1.next(task2);
 
@@ -689,8 +689,8 @@ class ReusableStateMachine extends stepfunctions.StateMachineFragment {
         super(parent, id);
 
         const choice = new stepfunctions.Choice(this, 'Choice')
-            .on(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
-            .on(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
+            .when(stepfunctions.Condition.stringEquals('$.branch', 'left'), new stepfunctions.Pass(this, 'Left Branch'))
+            .when(stepfunctions.Condition.stringEquals('$.branch', 'right'), new stepfunctions.Pass(this, 'Right Branch'));
 
         this.startState = choice;
         this.endStates = choice.afterwards().endStates;
@@ -715,7 +715,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
     }
 
     public catch(state: stepfunctions.IChainable, props?: stepfunctions.CatchProps): SimpleChain {
-        this.task2.onError(state, props);
+        this.task2.addCatch(state, props);
         return this;
     }
 }
