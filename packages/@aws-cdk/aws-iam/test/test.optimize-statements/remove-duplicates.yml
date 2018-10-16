@@ -1,0 +1,15 @@
+---
+name: removes duplicated statements
+input:
+  - Effect: Allow
+    # Intentionally non-canonical:
+    Action: ['iam:PassRole']
+    Resource: ['some::role::arn']
+    Principal: { AWS: '123456789012' }
+  - &normal
+    Effect: Allow
+    Action: 'iam:PassRole'
+    Resource: 'some::role::arn'
+    Principal: { AWS: '123456789012' }
+expectedOutput:
+  - <<: *normal
