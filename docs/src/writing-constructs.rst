@@ -162,20 +162,19 @@ Code Organization
 
 Your package will roughly look like this:
 
-```
-your-package
-├── package.json
-├── README.md
-├── lib
-│   ├── index.ts
-│   ├── some-resource.ts
-│   └── some-other-resource.ts
-└── test
-    ├── integ.everything.lit.ts
-    ├── test.some-resource.ts
-    └── test.some-other-resource.ts
+.. code::
 
-```
+   your-package
+   ├── package.json
+   ├── README.md
+   ├── lib
+   │   ├── index.ts
+   │   ├── some-resource.ts
+   │   └── some-other-resource.ts
+   └── test
+       ├── integ.everything.lit.ts
+       ├── test.some-resource.ts
+       └── test.some-other-resource.ts
 
 * Your package is named ``@aws-cdk/aws-xxx`` if it represents the canonical AWS
   Construct Library for this service; otherwise we recommend starting with
