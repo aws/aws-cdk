@@ -5,6 +5,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
+import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
@@ -39,7 +40,7 @@ export interface FunctionRefProps {
 
 export abstract class FunctionRef extends cdk.Construct
   implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination,
-         ec2.IConnectable {
+         ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource  {
 
   /**
    * Creates a Lambda function object which represents a function not defined
@@ -349,6 +350,19 @@ export abstract class FunctionRef extends cdk.Construct
       type: s3n.BucketNotificationDestinationType.Lambda,
       arn: this.functionArn,
       dependencies: permission ? [ permission ] : undefined
+    };
+  }
+
+  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
+    return {
+      resourceArn: this.functionArn,
+      metricPrefixSingular: 'LambdaFunction',
+      metricPrefixPlural: 'LambdaFunctions',
+      metricDimensions: { LambdaFunctionArn: this.functionArn },
+      policyStatements: [new iam.PolicyStatement()
+        .addResource(this.functionArn)
+        .addActions("lambda:InvokeFunction")
+      ]
     };
   }
 

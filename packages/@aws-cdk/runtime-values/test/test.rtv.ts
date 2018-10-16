@@ -11,9 +11,10 @@ export = {
   'RuntimeValue is awesome'(test: Test) {
     const stack = new cdk.Stack();
 
-    new RuntimeValueTest(stack, 'RuntimeValue');
-
-    console.log(JSON.stringify(stack.toCloudFormation(), undefined, 2));
+    test.doesNotThrow(() => {
+      new RuntimeValueTest(stack, 'RuntimeValue');
+      console.log(JSON.stringify(stack.toCloudFormation(), undefined, 2));
+    });
     test.done();
   }
 };
