@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373": {
+    "myapiDeployment92F2CB49b0e416d9836c2cb90a9e2244b6360281": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -37,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373"
+          "Ref": "myapiDeployment92F2CB49b0e416d9836c2cb90a9e2244b6360281"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -60,37 +60,27 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
               "Effect": "Allow",
+              "Action": "sts:AssumeRole",
               "Principal": {
                 "Service": "apigateway.amazonaws.com"
               }
             }
-          ],
-          "Version": "2012-10-17"
+          ]
         },
         "ManagedPolicyArns": [
           {
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
               ]
             ]
           }
@@ -156,22 +146,15 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/",
                 {
                   "Fn::Join": [
                     "",
@@ -283,22 +266,15 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/",
                 {
                   "Fn::Join": [
                     "",
@@ -338,22 +314,15 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/",
                 {
                   "Fn::Join": [
                     "",
@@ -379,37 +348,27 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
               "Effect": "Allow",
+              "Action": "sts:AssumeRole",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ],
-          "Version": "2012-10-17"
+          ]
         },
         "ManagedPolicyArns": [
           {
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -447,14 +406,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -495,14 +451,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -514,8 +467,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/GET/v1/toys"
+              "/test-invoke-stage/GET/v1/toys"
             ]
           ]
         }
@@ -533,14 +485,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -581,14 +530,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -600,8 +546,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/GET/v1/books"
+              "/test-invoke-stage/GET/v1/books"
             ]
           ]
         }
@@ -619,14 +564,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -667,14 +609,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -686,8 +625,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/POST/v1/books"
+              "/test-invoke-stage/POST/v1/books"
             ]
           ]
         }

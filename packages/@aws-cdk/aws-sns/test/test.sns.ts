@@ -265,8 +265,7 @@ export = {
             "Version": "2012-10-17"
           },
           "ManagedPolicyArns": [
-            { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
-              "service-role/AWSLambdaBasicExecutionRole"]]}
+            { "Fn::Join": ["", ["arn:", {"Ref": "AWS::Partition"}, ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]]}
           ]
           }
         },
@@ -455,8 +454,7 @@ export = {
             "Version": "2012-10-17"
           },
           "ManagedPolicyArns": [
-            { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
-              "service-role/AWSLambdaBasicExecutionRole"]]}
+            { "Fn::Join": ["", ["arn:", {"Ref": "AWS::Partition"}, ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]]}
           ]
           }
         },

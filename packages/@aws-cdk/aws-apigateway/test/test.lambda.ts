@@ -28,22 +28,15 @@ export = {
           "Fn::Join": [
           "",
           [
-            "arn",
-            ":",
+            "arn:",
             {
             Ref: "AWS::Partition"
             },
-            ":",
-            "apigateway",
-            ":",
+            ":apigateway:",
             {
             Ref: "AWS::Region"
             },
-            ":",
-            "lambda",
-            ":",
-            "path",
-            "/",
+            ":lambda:path/",
             {
             "Fn::Join": [
               "",
@@ -88,7 +81,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn", ":", { Ref: "AWS::Partition" }, ":", "execute-api", ":", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":",
+          "arn:", { Ref: "AWS::Partition" }, ":execute-api:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":",
           { Ref: "apiC8550315" }, "/", { "Fn::Join": [ "", [ { Ref: "apiDeploymentStageprod896C8101" }, "/GET/" ] ] }
           ]
         ]
@@ -100,19 +93,15 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn",
-          ":",
+          "arn:",
           { Ref: "AWS::Partition" },
-          ":",
-          "execute-api",
-          ":",
+          ":execute-api:",
           { Ref: "AWS::Region" },
           ":",
           { Ref: "AWS::AccountId" },
           ":",
           { Ref: "apiC8550315" },
-          "/",
-          "test-invoke-stage/GET/"
+          "/test-invoke-stage/GET/"
           ]
         ]
       }
@@ -165,18 +154,15 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn", ":",
+          "arn:",
           { Ref: "AWS::Partition" },
-          ":",
-          "execute-api",
-          ":",
+          ":execute-api:",
           { Ref: "AWS::Region" },
           ":",
           { Ref: "AWS::AccountId" },
           ":",
           { Ref: "testapiD6451F70" },
-          "/",
-          "test-invoke-stage/*/"
+          "/test-invoke-stage/*/"
           ]
         ]
         }
@@ -187,14 +173,11 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn",
-          ":",
+          "arn:",
           {
             Ref: "AWS::Partition"
           },
-          ":",
-          "execute-api",
-          ":",
+          ":execute-api:",
           {
             Ref: "AWS::Region"
           },

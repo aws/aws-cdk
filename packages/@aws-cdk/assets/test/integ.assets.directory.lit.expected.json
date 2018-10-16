@@ -17,31 +17,25 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
+          "Version": "2012-10-17",
           "Statement": [
             {
+              "Effect": "Allow",
               "Action": [
-                "s3:GetObject*",
                 "s3:GetBucket*",
+                "s3:GetObject*",
                 "s3:List*"
               ],
-              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "SampleAssetS3BucketE6B2908E"
                       }
@@ -56,18 +50,11 @@
                         "Fn::Join": [
                           "",
                           [
-                            "arn",
-                            ":",
+                            "arn:",
                             {
                               "Ref": "AWS::Partition"
                             },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
+                            ":s3:::",
                             {
                               "Ref": "SampleAssetS3BucketE6B2908E"
                             }
@@ -101,8 +88,7 @@
                 }
               ]
             }
-          ],
-          "Version": "2012-10-17"
+          ]
         },
         "PolicyName": "MyUserDefaultPolicy7B897426",
         "Users": [

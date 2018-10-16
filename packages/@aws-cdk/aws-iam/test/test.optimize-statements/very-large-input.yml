@@ -1,0 +1,1007 @@
+---
+name: significantly reduces extremely repetitive statements
+input:
+  - Action:
+      - s3:GetObject*
+      - s3:GetBucket*
+      - s3:List*
+      - s3:DeleteObject*
+      - s3:PutObject*
+      - s3:Abort*
+    Effect: Allow
+    Resource:
+      - Fn::GetAtt:
+        - ArtifactBucket7410C9EF
+        - Arn
+      - Fn::Join:
+        - ''
+        - - Fn::GetAtt:
+            - ArtifactBucket7410C9EF
+            - Arn
+          - /
+          - '*'
+  - Action:
+      - codebuild:BatchGetBuilds
+      - codebuild:StartBuild
+      - codebuild:StopBuild
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - ProjectC78D97AD
+        - Arn
+  - Action:
+      - codebuild:BatchGetBuilds
+      - codebuild:StartBuild
+      - codebuild:StopBuild
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - CDKSynthSynthesizerE2B03922
+        - Arn
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/MetaPipeline/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - SelfUpdatePrepareSelfUpdateRole27F83A32
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/MetaPipeline/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-master/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiimasterPrepareDeployjsiimasterRole06A5505C
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-master/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-master/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkmasterPrepareDeploycdkmasterRole4BB0C3BA
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-master/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-rmuller/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevrmullerPrepareDeployjsiidevrmullerRole5E35A68F
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-rmuller/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-rmuller/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevrmullerPrepareDeploycdkdevrmullerRoleCCE27FE2
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-rmuller/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-benisrae/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevbenisraePrepareDeployjsiidevbenisraeRole14DB0442
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-benisrae/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-benisrae/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevbenisraePrepareDeploycdkdevbenisraeRole197244B9
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-benisrae/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-huijbers/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevhuijbersPrepareDeployjsiidevhuijbersRoleC932EF87
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-huijbers/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-huijbers/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevhuijbersPrepareDeploycdkdevhuijbersRole7C55591C
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-huijbers/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-brelandm/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevbrelandmPrepareDeployjsiidevbrelandmRole2CF6DCA9
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-brelandm/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-brelandm/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevbrelandmPrepareDeploycdkdevbrelandmRoleD3672586
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-brelandm/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-pirocchi/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevpirocchiPrepareDeployjsiidevpirocchiRoleF7963214
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-pirocchi/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-pirocchi/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevpirocchiPrepareDeploycdkdevpirocchiRoleA498977A
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-pirocchi/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-costleya/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeployjsiidevcostleyaPrepareDeployjsiidevcostleyaRole58E786FE
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/jsii-dev-costleya/*
+  - Action:
+      - cloudformation:CreateChangeSet
+      - cloudformation:DeleteChangeSet
+      - cloudformation:DescribeChangeSet
+      - cloudformation:DescribeStacks
+    Condition:
+      StringEqualsIfExists:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-costleya/*
+  - Action: iam:PassRole
+    Effect: Allow
+    Resource:
+      Fn::GetAtt:
+        - DeploycdkdevcostleyaPrepareDeploycdkdevcostleyaRoleD602396C
+        - Arn
+  - Action: cloudformation:ExecuteChangeSet
+    Condition:
+      StringEquals:
+        cloudformation:ChangeSetName: Provided-ChangeSet-Name
+    Effect: Allow
+    Resource:
+      Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ':cloudformation:'
+          - Ref: AWS::Region
+          - ':'
+          - Ref: AWS::AccountId
+          - :stack/cdk-dev-costleya/*
+
+expectedOutput:
+  - Effect: Allow
+    Action:
+      - 's3:Abort*'
+      - 's3:DeleteObject*'
+      - 's3:GetBucket*'
+      - 's3:GetObject*'
+      - 's3:List*'
+      - 's3:PutObject*'
+    Resource:
+      - 'Fn::GetAtt':
+          - ArtifactBucket7410C9EF
+          - Arn
+      - 'Fn::Join':
+          - ''
+          - - 'Fn::GetAtt':
+                - ArtifactBucket7410C9EF
+                - Arn
+            - /
+            - '*'
+  - Effect: Allow
+    Action:
+      - 'codebuild:BatchGetBuilds'
+      - 'codebuild:StartBuild'
+      - 'codebuild:StopBuild'
+    Resource:
+      - 'Fn::GetAtt':
+          - CDKSynthSynthesizerE2B03922
+          - Arn
+      - 'Fn::GetAtt':
+          - ProjectC78D97AD
+          - Arn
+  - Effect: Allow
+    Action:
+      - 'cloudformation:CreateChangeSet'
+      - 'cloudformation:DeleteChangeSet'
+      - 'cloudformation:DescribeChangeSet'
+      - 'cloudformation:DescribeStacks'
+    Resource:
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-benisrae/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-brelandm/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-costleya/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-huijbers/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-pirocchi/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-rmuller/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-master/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-benisrae/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-brelandm/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-costleya/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-huijbers/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-pirocchi/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-rmuller/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-master/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/MetaPipeline/*'
+    Condition:
+      StringEqualsIfExists:
+        'cloudformation:ChangeSetName': Provided-ChangeSet-Name
+  - Effect: Allow
+    Action: 'iam:PassRole'
+    Resource:
+      - 'Fn::GetAtt':
+          - DeploycdkdevbenisraePrepareDeploycdkdevbenisraeRole197244B9
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkdevbrelandmPrepareDeploycdkdevbrelandmRoleD3672586
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkdevcostleyaPrepareDeploycdkdevcostleyaRoleD602396C
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkdevhuijbersPrepareDeploycdkdevhuijbersRole7C55591C
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkdevpirocchiPrepareDeploycdkdevpirocchiRoleA498977A
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkdevrmullerPrepareDeploycdkdevrmullerRoleCCE27FE2
+          - Arn
+      - 'Fn::GetAtt':
+          - DeploycdkmasterPrepareDeploycdkmasterRole4BB0C3BA
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevbenisraePrepareDeployjsiidevbenisraeRole14DB0442
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevbrelandmPrepareDeployjsiidevbrelandmRole2CF6DCA9
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevcostleyaPrepareDeployjsiidevcostleyaRole58E786FE
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevhuijbersPrepareDeployjsiidevhuijbersRoleC932EF87
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevpirocchiPrepareDeployjsiidevpirocchiRoleF7963214
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiidevrmullerPrepareDeployjsiidevrmullerRole5E35A68F
+          - Arn
+      - 'Fn::GetAtt':
+          - DeployjsiimasterPrepareDeployjsiimasterRole06A5505C
+          - Arn
+      - 'Fn::GetAtt':
+          - SelfUpdatePrepareSelfUpdateRole27F83A32
+          - Arn
+  - Effect: Allow
+    Action: 'cloudformation:ExecuteChangeSet'
+    Resource:
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-benisrae/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-brelandm/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-costleya/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-huijbers/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-pirocchi/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-dev-rmuller/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/cdk-master/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-benisrae/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-brelandm/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-costleya/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-huijbers/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-pirocchi/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-dev-rmuller/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/jsii-master/*'
+      - 'Fn::Join':
+          - ''
+          - - 'arn:'
+            - Ref: 'AWS::Partition'
+            - ':cloudformation:'
+            - Ref: 'AWS::Region'
+            - ':'
+            - Ref: 'AWS::AccountId'
+            - ':stack/MetaPipeline/*'
+    Condition:
+      StringEquals:
+        'cloudformation:ChangeSetName': Provided-ChangeSet-Name

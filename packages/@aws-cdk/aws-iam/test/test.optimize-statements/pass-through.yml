@@ -1,0 +1,10 @@
+---
+name: passes statements through when no optimization is possible
+input: &input
+  - Sid: FooStatement
+    Effect: Allow
+    Action: '*'
+    Resource: '*'
+    Principal: '*'
+expectedOutput:
+  - <<: *input

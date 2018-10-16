@@ -71,17 +71,17 @@ export = {
       PolicyDocument: {
       Statement: [
         {
-        Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+        Action: ["s3:GetBucket*", "s3:GetObject*", "s3:List*"],
         Resource: [
-          {"Fn::Join": ["", ["arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
+          {"Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"}]]},
           {"Fn::Join": [ "", [
-          {"Fn::Join": ["", [ "arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
-          "/",
-          {"Fn::Join": ["", [
-            {"Fn::Select": [
-              0,
-              {"Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D"}]}
-            ]},
+            {"Fn::Join": ["", [ "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"}]]},
+            "/",
+            {"Fn::Join": ["", [
+              {"Fn::Select": [
+                0,
+                {"Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D"}]}
+              ]},
             "*"
           ]]}
           ]]}

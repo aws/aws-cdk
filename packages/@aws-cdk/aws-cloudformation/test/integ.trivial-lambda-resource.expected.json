@@ -16,37 +16,27 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
           "Statement": [
             {
-              "Action": "sts:AssumeRole",
               "Effect": "Allow",
+              "Action": "sts:AssumeRole",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ],
-          "Version": "2012-10-17"
+          ]
         },
         "ManagedPolicyArns": [
           {
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }

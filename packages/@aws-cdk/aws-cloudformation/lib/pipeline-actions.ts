@@ -262,15 +262,14 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     }
 
     const stackArn = stackArnFromName(props.stackName);
-    // Allow the pipeline to check for Stack & ChangeSet existence
+    // Allow the pipeline to check for Stack & ChangeSet existence, and to create & delete the specified ChangeSet
     props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addAction('cloudformation:DescribeStacks')
-      .addResource(stackArn));
-    // Allow the pipeline to create & delete the specified ChangeSet
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
+      .addActions('cloudformation:CreateChangeSet',
+                  'cloudformation:DeleteChangeSet',
+                  'cloudformation:DescribeChangeSet',
+                  'cloudformation:DescribeStacks')
       .addResource(stackArn)
-      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+      .addCondition('StringEqualsIfExists', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
