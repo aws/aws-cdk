@@ -23,25 +23,30 @@ export interface DeployStackResult {
   readonly stackArn: string;
 }
 
+export interface DeployStackOptions {
+  stack: cxapi.SynthesizedStack;
+  sdk: SDK;
+  toolkitInfo?: ToolkitInfo;
+  roleArn?: string;
+  deployName?: string;
+  quiet?: boolean;
+}
+
 const LARGE_TEMPLATE_SIZE_KB = 50;
 
-export async function deployStack(stack: cxapi.SynthesizedStack,
-                                  sdk: SDK,
-                                  toolkitInfo?: ToolkitInfo,
-                                  deployName?: string,
-                                  quiet: boolean = false): Promise<DeployStackResult> {
-  if (!stack.environment) {
-    throw new Error(`The stack ${stack.name} does not have an environment`);
+export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
+  if (!options.stack.environment) {
+    throw new Error(`The stack ${options.stack.name} does not have an environment`);
   }
 
-  const params = await prepareAssets(stack, toolkitInfo);
+  const params = await prepareAssets(options.stack, options.toolkitInfo);
 
-  deployName = deployName || stack.name;
+  const deployName = options.deployName || options.stack.name;
 
   const executionId = uuid.v4();
 
-  const cfn = await sdk.cloudFormation(stack.environment, Mode.ForWriting);
-  const bodyParameter = await makeBodyParameter(stack, toolkitInfo);
+  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
+  const bodyParameter = await makeBodyParameter(options.stack, options.toolkitInfo);
 
   if (await stackFailedCreating(cfn, deployName)) {
     debug(`Found existing stack ${deployName} that had previously failed creation. Deleting it before attempting to re-create it.`);
@@ -64,6 +69,7 @@ export async function deployStack(stack: cxapi.SynthesizedStack,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,
     Parameters: params,
+    RoleARN: options.roleArn,
     Capabilities: [ 'CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM' ]
   }).promise();
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
@@ -76,7 +82,8 @@ export async function deployStack(stack: cxapi.SynthesizedStack,
 
   debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
   await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
-  const monitor = quiet ? undefined : new StackActivityMonitor(cfn, deployName, stack.metadata, changeSetDescription.Changes.length).start();
+  // tslint:disable-next-line:max-line-length
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack.metadata, changeSetDescription.Changes.length).start();
   debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
   await waitForStack(cfn, deployName);
   if (monitor) { await monitor.stop(); }
@@ -128,18 +135,26 @@ async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: To
   }
 }
 
-export async function destroyStack(stack: cxapi.SynthesizedStack, sdk: SDK, deployName?: string, quiet: boolean = false) {
-  if (!stack.environment) {
-    throw new Error(`The stack ${stack.name} does not have an environment`);
+export interface DestroyStackOptions {
+  stack: cxapi.SynthesizedStack;
+  sdk: SDK;
+  roleArn?: string;
+  deployName?: string;
+  quiet?: boolean;
+}
+
+export async function destroyStack(options: DestroyStackOptions) {
+  if (!options.stack.environment) {
+    throw new Error(`The stack ${options.stack.name} does not have an environment`);
   }
 
-  deployName = deployName || stack.name;
-  const cfn = await sdk.cloudFormation(stack.environment, Mode.ForWriting);
+  const deployName = options.deployName || options.stack.name;
+  const cfn = await options.sdk.cloudFormation(options.stack.environment, Mode.ForWriting);
   if (!await stackExists(cfn, deployName)) {
     return;
   }
-  const monitor = quiet ? undefined : new StackActivityMonitor(cfn, deployName).start();
-  await cfn.deleteStack({ StackName: deployName }).promise().catch(e => { throw e; });
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName).start();
+  await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise().catch(e => { throw e; });
   const destroyedStack = await waitForStack(cfn, deployName, false);
   if (monitor) { await monitor.stop(); }
   if (destroyedStack && destroyedStack.StackStatus !== 'DELETE_COMPLETE') {
