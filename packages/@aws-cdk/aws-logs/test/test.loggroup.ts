@@ -100,7 +100,7 @@ export = {
     const lg = new LogGroup(stack, 'LogGroup');
 
     // WHEN
-    lg.extractMetric('$.myField', 'MyService', 'Field');
+    const metric = lg.extractMetric('$.myField', 'MyService', 'Field');
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
@@ -114,6 +114,8 @@ export = {
         }
       ]
     }));
+    test.equal(metric.namespace, 'MyService');
+    test.equal(metric.metricName, 'Field');
 
     test.done();
   }
