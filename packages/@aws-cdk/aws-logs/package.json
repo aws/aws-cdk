@@ -59,6 +59,7 @@
     "pkglint": "^0.12.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "^0.12.0",
     "@aws-cdk/aws-iam": "^0.12.0",
     "@aws-cdk/cdk": "^0.12.0"
   },
