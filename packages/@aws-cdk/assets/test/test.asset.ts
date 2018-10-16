@@ -134,5 +134,6 @@ export = {
     test.equal(nonZipAsset.isZipArchive, false);
     test.equal(zipDirectoryAsset.isZipArchive, true);
     test.equal(zipFileAsset.isZipArchive, true);
+    test.done();
   }
 };
