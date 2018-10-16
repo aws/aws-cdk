@@ -140,6 +140,22 @@ export = {
     test.done();
   },
 
+  'addAccountPrincipal can be used multiple times'(test: Test) {
+    const p = new PolicyStatement();
+    p.addAwsAccountPrincipal('1234');
+    p.addAwsAccountPrincipal('5678'),
+    test.deepEqual(resolve(p), {
+      Effect: 'Allow',
+      Principal: {
+        AWS: [
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] }
+        ]
+      }
+    });
+    test.done();
+  },
+
   'hasResource': {
     'false if there are no resources'(test: Test) {
       test.equal(new PolicyStatement().hasResource, false, 'hasResource should be false for an empty permission');

@@ -121,36 +121,6 @@
             {
               "Effect": "Allow",
               "Action": [
-                "s3:GetBucket*",
-                "s3:GetObject*",
-                "s3:List*"
-              ],
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "CodeDeployPipelineIntegTest9F618D61",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "CodeDeployPipelineIntegTest9F618D61",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
                 "codedeploy:GetApplicationRevision",
                 "codedeploy:RegisterApplicationRevision"
               ],

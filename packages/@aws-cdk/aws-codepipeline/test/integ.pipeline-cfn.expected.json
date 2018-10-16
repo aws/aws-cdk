@@ -45,6 +45,12 @@
                   ]
                 },
                 {
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
@@ -56,22 +62,6 @@
                       },
                       "/*"
                     ]
-                  ]
-                }
-              ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetBucket*",
-                "s3:GetObject*",
-                "s3:List*"
-              ],
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineBucketB967BD35",
-                    "Arn"
                   ]
                 },
                 {
