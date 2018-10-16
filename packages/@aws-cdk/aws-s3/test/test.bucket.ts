@@ -110,18 +110,18 @@ export = {
           "Statement": [
             {
             "Action": [
+              "kms:CancelKeyDeletion",
               "kms:Create*",
+              "kms:Delete*",
               "kms:Describe*",
+              "kms:Disable*",
               "kms:Enable*",
+              "kms:Get*",
               "kms:List*",
               "kms:Put*",
-              "kms:Update*",
               "kms:Revoke*",
-              "kms:Disable*",
-              "kms:Get*",
-              "kms:Delete*",
               "kms:ScheduleKeyDeletion",
-              "kms:CancelKeyDeletion"
+              "kms:Update*",
             ],
             "Effect": "Allow",
             "Principal": {
@@ -262,7 +262,7 @@ export = {
         Resource: {
           'Fn::Join': [
             '',
-            [ { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }, '/', 'hello/world' ]
+            [ { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }, '/hello/world' ]
           ]
         }
       });
@@ -290,8 +290,7 @@ export = {
             '',
             [
               { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] },
-              '/',
-              'home/',
+              '/home/',
               { Ref: 'MyTeam01DD6685' },
               '/',
               { Ref: 'MyUserDC45028B' },
@@ -399,17 +398,7 @@ export = {
             {
               "Action": "s3:*",
               "Effect": "Allow",
-              "Resource": {
-              "Fn::Join": [
-                "",
-                [
-                "arn:aws:s3:::my-bucket",
-                "/",
-                "my/folder/",
-                "my-bucket"
-                ]
-              ]
-              }
+              "Resource": "arn:aws:s3:::my-bucket/my/folder/my-bucket"
             }
             ],
             "Version": "2012-10-17"
@@ -490,9 +479,9 @@ export = {
             "Statement": [
             {
               "Action": [
-              "s3:GetObject*",
-              "s3:GetBucket*",
-              "s3:List*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -506,8 +495,7 @@ export = {
                   {
                   "Fn::ImportValue": "S1:MyBucketBucketArnE260558C"
                   },
-                  "/",
-                  "*"
+                  "/*"
                 ]
                 ]
               }
@@ -548,9 +536,9 @@ export = {
           "Statement": [
           {
             "Action": [
-            "s3:GetObject*",
-            "s3:GetBucket*",
-            "s3:List*"
+              "s3:GetBucket*",
+              "s3:GetObject*",
+              "s3:List*"
             ],
             "Effect": "Allow",
             "Resource": [
@@ -570,8 +558,7 @@ export = {
                   "Arn"
                 ]
                 },
-                "/",
-                "*"
+                "/*"
               ]
               ]
             }
@@ -618,12 +605,12 @@ export = {
             "Statement": [
               {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject*",
-                "s3:Abort*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -643,8 +630,7 @@ export = {
                     "Arn"
                     ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                   ]
                 ]
                 }
@@ -683,18 +669,18 @@ export = {
             "Statement": [
               {
               "Action": [
+                "kms:CancelKeyDeletion",
                 "kms:Create*",
+                "kms:Delete*",
                 "kms:Describe*",
+                "kms:Disable*",
                 "kms:Enable*",
+                "kms:Get*",
                 "kms:List*",
                 "kms:Put*",
-                "kms:Update*",
                 "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion"
+                "kms:Update*",
               ],
               "Effect": "Allow",
               "Principal": {
@@ -722,8 +708,8 @@ export = {
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
                 "kms:GenerateDataKey*",
+                "kms:ReEncrypt*",
               ],
               "Effect": "Allow",
               "Principal": {
@@ -772,12 +758,12 @@ export = {
             "Statement": [
               {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
                 "s3:PutObject*",
-                "s3:Abort*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -797,8 +783,7 @@ export = {
                     "Arn"
                     ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                   ]
                 ]
                 }
@@ -809,8 +794,8 @@ export = {
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:ReEncrypt*",
                 "kms:GenerateDataKey*",
+                "kms:ReEncrypt*",
               ],
               "Effect": "Allow",
               "Resource": {
@@ -852,8 +837,8 @@ export = {
     const resources = stack.toCloudFormation().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
-    test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:DeleteObject*', 's3:PutObject*', 's3:Abort*' ]);
-    test.deepEqual(actions('PutterDefaultPolicyAB138DD3'), [ 's3:PutObject*', 's3:Abort*' ]);
+    test.deepEqual(actions('WriterDefaultPolicyDC585BCE'), [ 's3:Abort*', 's3:DeleteObject*', 's3:PutObject*' ]);
+    test.deepEqual(actions('PutterDefaultPolicyAB138DD3'), [ 's3:Abort*', 's3:PutObject*' ]);
     test.deepEqual(actions('DeleterDefaultPolicyCD33B8A0'), 's3:DeleteObject*');
     test.done();
   },
@@ -920,9 +905,9 @@ export = {
           "Statement": [
           {
             "Action": [
-            "s3:GetObject*",
-            "s3:GetBucket*",
-            "s3:List*"
+              "s3:GetBucket*",
+              "s3:GetObject*",
+              "s3:List*"
             ],
             "Effect": "Allow",
             "Resource": [
@@ -936,8 +921,7 @@ export = {
                 {
                 "Fn::ImportValue": "MyBucketBucketArnE260558C"
                 },
-                "/",
-                "*"
+                "/*"
               ]
               ]
             }
@@ -980,8 +964,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1005,8 +988,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1018,8 +1000,7 @@ export = {
           {
             "Ref": "MyBucketF68F3FF0"
           },
-          "/",
-          "my/file.txt"
+          "/my/file.txt"
           ]
         ]
         },
@@ -1032,8 +1013,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1045,8 +1025,7 @@ export = {
           {
             "Ref": "MyBucketF68F3FF0"
           },
-          "/",
-          "your/file.txt"
+          "/your/file.txt"
           ]
         ]
         },
@@ -1077,7 +1056,7 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1102,7 +1081,7 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "only/access/these/*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/only/access/these/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1127,7 +1106,7 @@ export = {
               "Action": [ "s3:GetObject", "s3:PutObject" ],
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1153,7 +1132,7 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] },
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] },
               "Condition": {
                 "IpAddress": { "aws:SourceIp": "54.240.143.0/24" }
               }

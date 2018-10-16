@@ -107,18 +107,18 @@ export = {
               "Statement": [
                 {
                 "Action": [
+                  "kms:CancelKeyDeletion",
                   "kms:Create*",
+                  "kms:Delete*",
                   "kms:Describe*",
+                  "kms:Disable*",
                   "kms:Enable*",
+                  "kms:Get*",
                   "kms:List*",
                   "kms:Put*",
-                  "kms:Update*",
                   "kms:Revoke*",
-                  "kms:Disable*",
-                  "kms:Get*",
-                  "kms:Delete*",
                   "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
+                  "kms:Update*",
                 ],
                 "Effect": "Allow",
                 "Principal": {
@@ -190,18 +190,18 @@ export = {
               "Statement": [
                 {
                 "Action": [
+                  "kms:CancelKeyDeletion",
                   "kms:Create*",
+                  "kms:Delete*",
                   "kms:Describe*",
+                  "kms:Disable*",
                   "kms:Enable*",
+                  "kms:Get*",
                   "kms:List*",
                   "kms:Put*",
-                  "kms:Update*",
                   "kms:Revoke*",
-                  "kms:Disable*",
-                  "kms:Get*",
-                  "kms:Delete*",
                   "kms:ScheduleKeyDeletion",
-                  "kms:CancelKeyDeletion"
+                  "kms:Update*",
                 ],
                 "Effect": "Allow",
                 "Principal": {
@@ -272,18 +272,18 @@ export = {
                   "Statement": [
                     {
                       "Action": [
+                        "kms:CancelKeyDeletion",
                         "kms:Create*",
+                        "kms:Delete*",
                         "kms:Describe*",
+                        "kms:Disable*",
                         "kms:Enable*",
+                        "kms:Get*",
                         "kms:List*",
                         "kms:Put*",
-                        "kms:Update*",
                         "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:Update*",
                       ],
                       "Effect": "Allow",
                       "Principal": {
@@ -390,25 +390,26 @@ export = {
             "MyStreamKey76F3300E": {
               "Type": "AWS::KMS::Key",
               "Properties": {
-                "Description": "Created by MyStream",
                 "KeyPolicy": {
+                  "Version": "2012-10-17",
                   "Statement": [
                     {
+                      "Effect": "Allow",
                       "Action": [
+                        "kms:CancelKeyDeletion",
                         "kms:Create*",
+                        "kms:Delete*",
                         "kms:Describe*",
+                        "kms:Disable*",
                         "kms:Enable*",
+                        "kms:Get*",
                         "kms:List*",
                         "kms:Put*",
-                        "kms:Update*",
                         "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:Update*"
                       ],
-                      "Effect": "Allow",
+                      "Resource": "*",
                       "Principal": {
                         "AWS": {
                           "Fn::Join": [
@@ -426,20 +427,19 @@ export = {
                             ]
                           ]
                         }
-                      },
-                      "Resource": "*"
+                      }
                     }
-                  ],
-                  "Version": "2012-10-17"
-                }
+                  ]
+                },
+                "Description": "Created by MyStream"
               },
               "DeletionPolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
               "Properties": {
-                "RetentionPeriodHours": 24,
                 "ShardCount": 1,
+                "RetentionPeriodHours": 24,
                 "StreamEncryption": {
                   "EncryptionType": "KMS",
                   "KeyId": {
@@ -458,14 +458,15 @@ export = {
               "Type": "AWS::IAM::Policy",
               "Properties": {
                 "PolicyDocument": {
+                  "Version": "2012-10-17",
                   "Statement": [
                     {
+                      "Effect": "Allow",
                       "Action": [
                         "kinesis:DescribeStream",
                         "kinesis:PutRecord",
                         "kinesis:PutRecords"
                       ],
-                      "Effect": "Allow",
                       "Resource": {
                         "Fn::GetAtt": [
                           "MyStream5C050E93",
@@ -474,11 +475,11 @@ export = {
                       }
                     },
                     {
-                      "Action": [
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
-                      ],
                       "Effect": "Allow",
+                      "Action": [
+                        "kms:Encrypt",
+                        "kms:GenerateDataKey"
+                      ],
                       "Resource": {
                         "Fn::GetAtt": [
                           "MyStreamKey76F3300E",
@@ -486,8 +487,7 @@ export = {
                         ]
                       }
                     }
-                  ],
-                  "Version": "2012-10-17"
+                  ]
                 },
                 "PolicyName": "MyUserDefaultPolicy7B897426",
                 "Users": [
@@ -516,25 +516,26 @@ export = {
             "MyStreamKey76F3300E": {
               "Type": "AWS::KMS::Key",
               "Properties": {
-                "Description": "Created by MyStream",
                 "KeyPolicy": {
+                  "Version": "2012-10-17",
                   "Statement": [
                     {
+                      "Effect": "Allow",
                       "Action": [
+                        "kms:CancelKeyDeletion",
                         "kms:Create*",
+                        "kms:Delete*",
                         "kms:Describe*",
+                        "kms:Disable*",
                         "kms:Enable*",
+                        "kms:Get*",
                         "kms:List*",
                         "kms:Put*",
-                        "kms:Update*",
                         "kms:Revoke*",
-                        "kms:Disable*",
-                        "kms:Get*",
-                        "kms:Delete*",
                         "kms:ScheduleKeyDeletion",
-                        "kms:CancelKeyDeletion"
+                        "kms:Update*"
                       ],
-                      "Effect": "Allow",
+                      "Resource": "*",
                       "Principal": {
                         "AWS": {
                           "Fn::Join": [
@@ -552,20 +553,19 @@ export = {
                             ]
                           ]
                         }
-                      },
-                      "Resource": "*"
+                      }
                     }
-                  ],
-                  "Version": "2012-10-17"
-                }
+                  ]
+                },
+                "Description": "Created by MyStream"
               },
               "DeletionPolicy": "Retain"
             },
             "MyStream5C050E93": {
               "Type": "AWS::Kinesis::Stream",
               "Properties": {
-                "RetentionPeriodHours": 24,
                 "ShardCount": 1,
+                "RetentionPeriodHours": 24,
                 "StreamEncryption": {
                   "EncryptionType": "KMS",
                   "KeyId": {
@@ -584,8 +584,10 @@ export = {
               "Type": "AWS::IAM::Policy",
               "Properties": {
                 "PolicyDocument": {
+                  "Version": "2012-10-17",
                   "Statement": [
                     {
+                      "Effect": "Allow",
                       "Action": [
                         "kinesis:DescribeStream",
                         "kinesis:GetRecords",
@@ -593,7 +595,6 @@ export = {
                         "kinesis:PutRecord",
                         "kinesis:PutRecords"
                       ],
-                      "Effect": "Allow",
                       "Resource": {
                         "Fn::GetAtt": [
                           "MyStream5C050E93",
@@ -602,12 +603,12 @@ export = {
                       }
                     },
                     {
+                      "Effect": "Allow",
                       "Action": [
                         "kms:Decrypt",
-                        "kms:GenerateDataKey",
-                        "kms:Encrypt"
+                        "kms:Encrypt",
+                        "kms:GenerateDataKey"
                       ],
-                      "Effect": "Allow",
                       "Resource": {
                         "Fn::GetAtt": [
                           "MyStreamKey76F3300E",
@@ -615,8 +616,7 @@ export = {
                         ]
                       }
                     }
-                  ],
-                  "Version": "2012-10-17"
+                  ]
                 },
                 "PolicyName": "MyUserDefaultPolicy7B897426",
                 "Users": [
@@ -889,25 +889,26 @@ export = {
           "MyStreamKey76F3300E": {
             "Type": "AWS::KMS::Key",
             "Properties": {
-              "Description": "Created by MyStream",
               "KeyPolicy": {
+                "Version": "2012-10-17",
                 "Statement": [
                   {
+                    "Effect": "Allow",
                     "Action": [
+                      "kms:CancelKeyDeletion",
                       "kms:Create*",
+                      "kms:Delete*",
                       "kms:Describe*",
+                      "kms:Disable*",
                       "kms:Enable*",
+                      "kms:Get*",
                       "kms:List*",
                       "kms:Put*",
-                      "kms:Update*",
                       "kms:Revoke*",
-                      "kms:Disable*",
-                      "kms:Get*",
-                      "kms:Delete*",
                       "kms:ScheduleKeyDeletion",
-                      "kms:CancelKeyDeletion"
+                      "kms:Update*"
                     ],
-                    "Effect": "Allow",
+                    "Resource": "*",
                     "Principal": {
                       "AWS": {
                         "Fn::Join": [
@@ -925,30 +926,29 @@ export = {
                           ]
                         ]
                       }
-                    },
-                    "Resource": "*"
+                    }
                   }
-                ],
-                "Version": "2012-10-17"
-              }
+                ]
+              },
+              "Description": "Created by MyStream"
             },
             "DeletionPolicy": "Retain"
           },
           "MyStream5C050E93": {
-          "Type": "AWS::Kinesis::Stream",
-          "Properties": {
-            "RetentionPeriodHours": 24,
-            "ShardCount": 1,
-            "StreamEncryption": {
-              "EncryptionType": "KMS",
-              "KeyId": {
-                "Fn::GetAtt": [
-                  "MyStreamKey76F3300E",
-                  "Arn"
-                ]
+            "Type": "AWS::Kinesis::Stream",
+            "Properties": {
+              "ShardCount": 1,
+              "RetentionPeriodHours": 24,
+              "StreamEncryption": {
+                "EncryptionType": "KMS",
+                "KeyId": {
+                  "Fn::GetAtt": [
+                    "MyStreamKey76F3300E",
+                    "Arn"
+                  ]
+                }
               }
             }
-          }
           }
         },
         "Outputs": {

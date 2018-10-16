@@ -85,21 +85,11 @@ export = {
             "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
               Ref: "AWS::Partition"
               },
-              ":",
-              "iam",
-              ":",
-              "",
-              ":",
-              "aws",
-              ":",
-              "policy",
-              "/",
-              "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
             ]
             ]
           }
@@ -469,19 +459,15 @@ export = {
     // THEN
     test.deepEqual(cdk.resolve(arn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'execute-api',
-      ':',
+      ':execute-api:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },
       ':',
       { Ref: 'apiC8550315' },
-      '/',
-      'stage/method/path' ] ] });
+      '/stage/method/path' ] ] });
     test.done();
   },
 
@@ -506,12 +492,9 @@ export = {
     // THEN
     test.deepEqual(cdk.resolve(method.methodArn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'execute-api',
-      ':',
+      ':execute-api:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },

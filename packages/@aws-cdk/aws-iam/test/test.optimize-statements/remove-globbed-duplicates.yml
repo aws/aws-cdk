@@ -1,0 +1,12 @@
+---
+name: removes entries that are redundant due to globbing stars
+input:
+  - Effect: Allow
+    Action: ['s3:GetObject', 's3:Get*']
+    Resource: ['aws:s3:bucket:arn', '*']
+    Principal: '*'
+expectedOutput:
+  - Effect: Allow
+    Action: s3:Get*
+    Resource: '*'
+    Principal: '*'

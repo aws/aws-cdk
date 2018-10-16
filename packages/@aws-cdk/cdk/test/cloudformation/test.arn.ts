@@ -10,17 +10,13 @@ export = {
 
     test.deepEqual(resolve(arn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'sqs',
-      ':',
+      ':sqs:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },
-      ':',
-      'myqueuename' ] ] });
+      ':myqueuename' ] ] });
     test.done();
   },
 
@@ -34,21 +30,7 @@ export = {
       resourceName: 'mytable/stream/label'
     });
 
-    test.deepEqual(resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn',
-      ':',
-      'aws-cn',
-      ':',
-      'dynamodb',
-      ':',
-      'us-east-1',
-      ':',
-      '123456789012',
-      ':',
-      'table',
-      '/',
-      'mytable/stream/label' ] ] });
+    test.deepEqual(resolve(arn), 'arn:aws-cn:dynamodb:us-east-1:123456789012:table/mytable/stream/label');
     test.done();
   },
 
@@ -61,24 +43,7 @@ export = {
       partition: 'aws-cn',
     });
 
-    test.deepEqual(resolve(arn), {
-      'Fn::Join': [
-        '',
-        [
-          'arn',
-          ':',
-          'aws-cn',
-          ':',
-          's3',
-          ':',
-          '',
-          ':',
-          '',
-          ':',
-          'my-bucket',
-        ]
-      ]
-    });
+    test.deepEqual(resolve(arn), 'arn:aws-cn:s3:::my-bucket');
 
     test.done();
   },
@@ -93,19 +58,13 @@ export = {
 
     test.deepEqual(resolve(arn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'codedeploy',
-      ':',
+      ':codedeploy:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },
-      ':',
-      'application',
-      ':',
-      'WordPress_App' ] ] });
+      ':application:WordPress_App' ] ] });
     test.done();
   },
 
