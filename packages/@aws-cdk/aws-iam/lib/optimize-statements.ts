@@ -40,17 +40,17 @@ class Statement implements Deduplicable {
     }
     this.effect = statement.Effect;
 
-    this.actions = _makeGlobs(statement.Action);
-    this.resources = _makeGlobs(statement.Resource);
+    this.actions = _makeGlobs(statement.Action, false);
+    this.resources = _makeGlobs(statement.Resource, true);
 
     this.principal = statement.Principal || {};
 
     this.condition = statement.Condition || {};
 
-    function _makeGlobs(expressions: unknown): Glob[] {
+    function _makeGlobs(expressions: unknown, arnGlob: boolean): Glob[] {
       if (!expressions) { return []; }
-      if (!Array.isArray(expressions)) { return _makeGlobs([expressions]); }
-      return expressions.map(expression => new Glob(expression));
+      if (!Array.isArray(expressions)) { return _makeGlobs([expressions], arnGlob); }
+      return expressions.map(expression => new Glob(expression, arnGlob));
     }
   }
 
@@ -63,8 +63,10 @@ class Statement implements Deduplicable {
       && _deepEqual(this.principal, other.principal);
   }
 
-  public merge(other: Statement): void {
+  public merge(other: Statement): this {
+    this.actions.push(...other.actions);
     this.resources.push(...other.resources);
+    return this;
   }
 
   /**
@@ -148,9 +150,10 @@ class Glob implements Deduplicable {
 
   /**
    * @param expression the expression from the policy statement.
+   * @param arnGlob defines whether globs matches ARNs or not.
    */
-  constructor(public readonly expression: unknown) {
-    this.regexp = _toRegExp(this.expression);
+  constructor(public expression: unknown, arnGlob: boolean) {
+    this.regexp = _toRegExp(this.expression, arnGlob);
   }
 
   public subsumes(other: Glob): boolean {
@@ -162,7 +165,10 @@ class Glob implements Deduplicable {
       && (this.expression as string).length <= other.expression.length;
   }
 
-  public merge(_other: Glob): void { /* Nothing to do here */ }
+  public merge(_other: Glob): this {
+    // Nothing to do - subsumance here means this is a more compact expression of other
+    return this;
+  }
 }
 
 /**
@@ -181,7 +187,7 @@ interface Deduplicable {
    * verified the safety of doing so by having called ``mergeable`` before.
    * @param other the entity to merge in.
    */
-  merge(other: this): void;
+  merge(other: this): this;
 }
 
 /**
@@ -201,16 +207,23 @@ function _allSuperceded<T extends Deduplicable>(left: T[], right: T[]): boolean 
  * @returns a new list containing the minimum set of entities.
  */
 function _deduplicate<T extends Deduplicable>(array: T[]): T[] {
-  const result = new Array<T>();
-  while (array.length > 0) {
-    result.push(array.splice(0, 1)[0]);
-    const last = result[result.length - 1];
-    for (let i = 0 ; i < array.length ; ) {
-      if (last.subsumes(array[i])) {
-        last.merge(array.splice(i, 1)[0]);
+  if (array.length <= 1) { return array; }
+  const result = [...array];
+  for (let i = 0 ; i < result.length ; ) {
+    const current = result[i];
+    for (let j = i + 1 ; j < result.length ; ) {
+      if (result[i].subsumes(result[j])) {
+        result[i] = result[i].merge(result.splice(j, 1)[0]);
+      } else if (result[j].subsumes(result[i])) {
+        result[i] = result.splice(j, 1)[0].merge(result[i]);
       } else {
-        i++;
+        j++;
       }
+    }
+    // If we haven't replaced the current element, we can move on to the next,
+    // otherwise we need to re-assess the current element.
+    if (current === result[i]) {
+      i++;
     }
   }
   return result;
@@ -247,13 +260,22 @@ function _deepEqual(e1: unknown, e2: unknown): boolean {
  * Makes a regular expression from a glob pattern.
  *
  * @param glob a glob pattern that uses '*' to denote wild cards.
+ * @param arnGlob defines whether the glob is for ARNs (wild-cards cannot span across segments) or not.
  *
  * @returns ``undefined`` if ``glob`` is not a string, otherwise a ``RegExp`` corresponding to the glob pattern.
  */
-function _toRegExp(glob: unknown): RegExp | undefined {
+function _toRegExp(glob: unknown, arnGlob: boolean): RegExp | undefined {
   if (typeof glob !== 'string') { return undefined; }
+  // Special-case for the '*' glob, as it always matches everything.
+  if (glob === '*') { return /^.*$/; }
   const parts = glob.split('*');
-  return new RegExp('^' + parts.map(_quote).join('[^:]*') + '$');
+  return new RegExp('^' + parts.map(_globQuestionMark).join(arnGlob ? '[^:]*' : '.*') + '$');
+
+  function _globQuestionMark(text: string): string {
+    if (!arnGlob) { return text; }
+    const segments = text.split('?');
+    return segments.map(_quote).join('[^:]');
+  }
 
   function _quote(text: string): string {
     // RegExp special characters: \ ^$ . | ? * + ( ) [ ] { }

@@ -128,12 +128,32 @@
                   ]
                 },
                 {
+                  "Fn::GetAtt": [
+                    "MyOtherBucket543F3540",
+                    "Arn"
+                  ]
+                },
+                {
                   "Fn::Join": [
                     "",
                     [
                       {
                         "Fn::GetAtt": [
                           "MyBucketF68F3FF0",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyOtherBucket543F3540",
                           "Arn"
                         ]
                       },
@@ -158,36 +178,6 @@
                   "Arn"
                 ]
               }
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetBucket*",
-                "s3:GetObject*",
-                "s3:List*"
-              ],
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "MyOtherBucket543F3540",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "MyOtherBucket543F3540",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
             }
           ]
         },

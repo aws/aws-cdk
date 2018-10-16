@@ -22,8 +22,8 @@ function asyncTest(cb: (test: nodeunit.Test) => void | Promise<void>): (test: n
   };
 }
 
-// Stuff that should be valid in a policy document, excluding *
-const safeCharacters = fc.ascii().filter(c => /^[a-z0-9:/-]$/i.test(c));
+// Stuff that should be valid in a policy document, excluding * and :
+const safeCharacters = fc.ascii().filter(c => /^[a-z0-9/-]$/i.test(c));
 const safeString = fc.stringOf(safeCharacters, 1, 16);
 
 const tests: { [name: string]: { [name: string]: (test: nodeunit.Test) => void } } = {
@@ -142,7 +142,7 @@ for (const file of fs.readdirSync(EXAMPLES_DIR)) {
   if (example.name in tests.optimizeStatements) {
     throw new Error(`Attempted to overwrite test function ${example.name} with example ${file}!`);
   }
-  tests.optimizeStatements[example.name] = async (test: nodeunit.Test) => {
+  tests.optimizeStatements[`${example.name} (${file})`] = async (test: nodeunit.Test) => {
     try {
       const sizeBefore = JSON.stringify(example.input).length;
       const optimized = optimizeStatements(example.input);

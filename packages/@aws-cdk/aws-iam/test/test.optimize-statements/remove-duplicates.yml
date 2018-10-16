@@ -1,14 +1,12 @@
 ---
 name: removes duplicated statements
 input:
-  - Sid: FooStatement
-    Effect: Allow
-    Action: 'iam:PassRole'
+  - Effect: Allow
     # Intentionally non-canonical:
+    Action: ['iam:PassRole']
     Resource: ['some::role::arn']
     Principal: { AWS: '123456789012' }
   - &normal
-    Sid: FooStatement
     Effect: Allow
     Action: 'iam:PassRole'
     Resource: 'some::role::arn'
