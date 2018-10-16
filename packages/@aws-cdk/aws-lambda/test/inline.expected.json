@@ -19,7 +19,7 @@
           "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
-          {"Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/", "service-role/AWSLambdaBasicExecutionRole"]]}
+          {"Fn::Join": ["", ["arn:", {"Ref": "AWS::Partition"}, ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]]}
 
         ]
       }
@@ -31,12 +31,12 @@
           "Statement": [
             {
               "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
+                "s3:Abort*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
-                "s3:Abort*"
+                "s3:GetBucket*",
+                "s3:GetObject*",
+                "s3:List*",
+                "s3:PutObject*"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -56,8 +56,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

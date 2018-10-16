@@ -10,8 +10,7 @@
         "Fn::Join": [
           "",
           [
-            "https://",
-            "s3.",
+            "https://s3.",
             {
               "Ref": "AWS::Region"
             },
@@ -35,8 +34,7 @@
         "Fn::Join": [
           "",
           [
-            "https://",
-            "s3.",
+            "https://s3.",
             {
               "Ref": "AWS::Region"
             },
@@ -48,8 +46,7 @@
             {
               "Ref": "MyBucketF68F3FF0"
             },
-            "/",
-            "myfolder/myfile.txt"
+            "/myfolder/myfile.txt"
           ]
         ]
       },

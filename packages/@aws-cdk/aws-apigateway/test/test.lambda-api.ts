@@ -41,22 +41,15 @@ export = {
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "apigateway",
-              ":",
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
-              ":",
-              "lambda",
-              ":",
-              "path",
-              "/",
+              ":lambda:path/",
               {
                 "Fn::Join": [
                   "",
