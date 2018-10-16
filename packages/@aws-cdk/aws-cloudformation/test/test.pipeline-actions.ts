@@ -22,7 +22,7 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
       const stackArn = _stackArn('MyStack');
-      const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
+      const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
