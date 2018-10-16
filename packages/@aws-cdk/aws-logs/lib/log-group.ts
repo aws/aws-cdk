@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
 import { cloudformation } from './logs.generated';
@@ -96,6 +97,7 @@ export abstract class LogGroupRef extends cdk.Construct {
    * @param jsonField JSON field to extract (example: '$.myfield')
    * @param metricNamespace Namespace to emit the metric under
    * @param metricName Name to emit the metric under
+   * @returns A Metric object representing the extracted metric
    */
   public extractMetric(jsonField: string, metricNamespace: string, metricName: string) {
     new MetricFilter(this, `${metricNamespace}_${metricName}`, {
@@ -105,6 +107,8 @@ export abstract class LogGroupRef extends cdk.Construct {
       filterPattern: FilterPattern.exists(jsonField),
       metricValue: jsonField
     });
+
+    return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
   }
 }
 
