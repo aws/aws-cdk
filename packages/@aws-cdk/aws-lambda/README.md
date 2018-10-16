@@ -8,7 +8,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 const fn = new lambda.Function(this, 'MyFunction', {
     runtime: lambda.Runtime.NodeJS810,
     handler: 'index.handler',
-    code: lambda.Code.inline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.asset('./lambda-handler'),
 });
 ```
 
@@ -17,18 +17,15 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The `lambda.Code` class includes static convenience methods for various types of
 runtime code.
 
- * `lambda.Code.bucket(bucket, key[, objectVersion])` - specify an S3 object that
-   contains the archive of your runtime code.
+ * `lambda.Code.bucket(bucket, key[, objectVersion])` - specify an S3 object
+   that contains the archive of your runtime code.
  * `lambda.Code.inline(code)` - inline the handle code as a string. This is
-   limited to 4KB. The class `InlineJavaScriptLambda` can be used to simplify
-   inlining JavaScript functions.
- * `lambda.Code.directory(directory)` - specify a directory in the local filesystem
-   which will be zipped and uploaded to S3 before deployment.
- * `lambda.Code.file(path)` - specify a file to be used for Lambda code. This can
-   be, for example a JAR or a ZIP file, based on the runtime used.
+   limited to 4KB.
+ * `lambda.Code.asset(path)` - specify a directory or a .zip file in the local
+   filesystem which will be zipped and uploaded to S3 before deployment.
 
-The following example shows how to define a Python function and deploy the code from the
-local directory `my-lambda-handler` to it:
+The following example shows how to define a Python function and deploy the code
+from the local directory `my-lambda-handler` to it:
 
 [Example of Lambda Code from Local Assets](test/integ.assets.lit.ts)
 
