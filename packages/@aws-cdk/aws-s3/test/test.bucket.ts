@@ -1164,5 +1164,43 @@ export = {
       }));
       test.done();
     }
+  },
+
+  'website configuration': {
+    'only index doc'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index2.html'
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          IndexDocument: "index2.html"
+        }
+      }));
+      test.done();
+    },
+    'fails if only error doc is specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteErrorDocument: 'error.html'
+        });
+      }, /"websiteIndexDocument" is required if "websiteErrorDocument" is set/);
+      test.done();
+    },
+    'error and index docs'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index2.html',
+        websiteErrorDocument: 'error.html',
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          IndexDocument: "index2.html",
+          ErrorDocument: "error.html"
+        }
+      }));
+      test.done();
+    }
   }
 };
