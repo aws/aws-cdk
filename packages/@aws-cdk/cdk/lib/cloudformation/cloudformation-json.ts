@@ -37,6 +37,8 @@ export class CloudFormationJSON {
      * Recurse into a structure, replace all intrinsics with IntrinsicTokens.
      */
     function deepReplaceIntrinsics(x: any): any {
+      if (x == null) { return x; }
+
       if (isIntrinsic(x)) {
         return wrapIntrinsic(x);
       }
