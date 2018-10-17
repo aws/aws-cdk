@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { HostedZoneRefProps } from './hosted-zone-ref';
+import { HostedZoneRef, HostedZoneRefProps } from './hosted-zone-ref';
 
 export interface HostedZoneProviderProps {
   domainName: string;
@@ -26,6 +26,13 @@ export class HostedZoneProvider {
   private provider: cdk.ContextProvider;
   constructor(context: cdk.Construct, props: HostedZoneProviderProps) {
     this.provider = new cdk.ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
+  }
+
+  /**
+   * This method calls `findHostedZone` and returns the imported `HostedZoneRef`
+   */
+  public findAndImport(parent: cdk.Construct, id: string): HostedZoneRef {
+    return HostedZoneRef.import(parent, id, this.findHostedZone());
   }
   /**
    * Return the hosted zone meeting the filter
