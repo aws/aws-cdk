@@ -4,11 +4,7 @@ import { Construct } from './core/construct';
 const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
 const SSM_PARAMETER_PROVIDER = 'ssm';
 
-export interface ContextProviderProps {
-  account?: string;
-  region?: string;
-  [key: string]: any;
-}
+type ContextProviderProps = {[key: string]: any};
 /**
  * Base class for the model side of context providers
  *
@@ -26,7 +22,7 @@ export class ContextProvider {
   constructor(
     private readonly context: Construct,
     private readonly provider: string,
-    props: {[key: string]: any} = {}) {
+    props: ContextProviderProps = {}) {
     this.stack = Stack.find(context);
     this.props = {
       account: this.stack.env.account,

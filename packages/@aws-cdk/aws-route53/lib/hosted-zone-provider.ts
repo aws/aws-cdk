@@ -1,9 +1,23 @@
 import cdk = require('@aws-cdk/cdk');
 import { HostedZoneRef, HostedZoneRefProps } from './hosted-zone-ref';
 
+/**
+ * Zone properties for looking up the Hosted Zone
+ */
 export interface HostedZoneProviderProps {
+  /**
+   * The zone domain e.g. example.com
+   */
   domainName: string;
+
+  /**
+   * Is this a private zone
+   */
   privateZone?: boolean;
+
+  /**
+   * If this is a private zone which VPC is assocaitated
+   */
   vpcId?: string;
 }
 
