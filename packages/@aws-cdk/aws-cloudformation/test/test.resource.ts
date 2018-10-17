@@ -1,5 +1,6 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
+import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import { CustomResource } from '../lib';
@@ -85,7 +86,59 @@ export = {
       }
     });
     test.done();
-  }
+  },
+
+  'custom resources can specify a resource type that starts with Custom::'(test: Test) {
+    const stack = new cdk.Stack();
+    new CustomResource(stack, 'MyCustomResource', {
+      resourceType: 'Custom::MyCustomResourceType',
+      topicProvider: new sns.Topic(stack, 'Provider')
+    });
+    expect(stack).to(haveResource('Custom::MyCustomResourceType'));
+    test.done();
+  },
+
+  'fails if custom resource type is invalid': {
+    'does not start with "Custom::"'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new CustomResource(stack, 'MyCustomResource', {
+          resourceType: 'NoCustom::MyCustomResourceType',
+          topicProvider: new sns.Topic(stack, 'Provider')
+        });
+      }, /Custom resource type must begin with "Custom::"/);
+
+      test.done();
+    },
+
+    'has invalid characters'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new CustomResource(stack, 'MyCustomResource', {
+          resourceType: 'Custom::My Custom?ResourceType',
+          topicProvider: new sns.Topic(stack, 'Provider')
+        });
+      }, /Custom resource type name can only include alphanumeric characters and/);
+
+      test.done();
+    },
+
+    'is longer than 60 characters'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new CustomResource(stack, 'MyCustomResource', {
+          resourceType: 'Custom::0123456789012345678901234567890123456789012345678901234567891',
+          topicProvider: new sns.Topic(stack, 'Provider')
+        });
+      }, /Custom resource type length > 60/);
+
+      test.done();
+    },
+
+  },
 };
 
 class TestCustomResource extends cdk.Construct {
