@@ -95,8 +95,8 @@ class BonjourECS extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new BonjourECS(app, 'Bonjour');
 
-process.stdout.write(app.run());
+app.run();
