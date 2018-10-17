@@ -9,7 +9,6 @@ export = {
     'fails if used with unsupported runtimes'(test: Test) {
       test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.Go1x), /Inline source not allowed for go1\.x/);
       test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.Java8), /Inline source not allowed for java8/);
-      test.throws(() => defineFunction(lambda.Code.inline('boom'), lambda.Runtime.NodeJS810), /Inline source not allowed for nodejs8\.10/);
       test.done();
     },
     'fails if larger than 4096 bytes'(test: Test) {
