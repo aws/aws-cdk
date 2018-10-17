@@ -31,91 +31,6 @@
         ]
       }
     },
-    "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:GetBucket*",
-                "s3:GetObject*",
-                "s3:List*"
-              ],
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":s3:::",
-                      {
-                        "Ref": "MyLambdaCodeS3BucketC82A5870"
-                      }
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":s3:::",
-                            {
-                              "Ref": "MyLambdaCodeS3BucketC82A5870"
-                            }
-                          ]
-                        ]
-                      },
-                      "/",
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "MyLambdaCodeS3VersionKey47762537"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
-                        ]
-                      }
-                    ]
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
-        "Roles": [
-          {
-            "Ref": "MyLambdaServiceRole4539ECB6"
-          }
-        ]
-      }
-    },
     "MyLambdaCCE802FB": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -167,8 +82,7 @@
         "Runtime": "python3.6"
       },
       "DependsOn": [
-        "MyLambdaServiceRole4539ECB6",
-        "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+        "MyLambdaServiceRole4539ECB6"
       ]
     }
   },

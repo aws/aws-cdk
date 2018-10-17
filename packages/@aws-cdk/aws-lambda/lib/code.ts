@@ -1,5 +1,6 @@
 import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
+import fs = require('fs');
 import { Function as Func } from './lambda';
 import { cloudformation } from './lambda.generated';
 
@@ -23,9 +24,18 @@ export abstract class Code {
   }
 
   /**
+   * Loads the function code from a local disk asset.
+   * @param path Either a directory with the Lambda code bundle or a .zip file
+   */
+  public static asset(path: string) {
+    return new AssetCode(path);
+  }
+
+  /**
    * @returns Zip archives the contents of a directory on disk and uses this
    * as the lambda handler's code.
    * @param directoryToZip The directory to zip
+   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
    */
   public static directory(directoryToZip: string) {
     return new AssetCode(directoryToZip, assets.AssetPackaging.ZipDirectory);
@@ -34,6 +44,7 @@ export abstract class Code {
   /**
    * @returns Uses a file on disk as a lambda handler's code.
    * @param filePath The file path
+   * @deprecated use `lambda.Code.asset(path)` (no need to specify if it's a file or a directory)
    */
   public static file(filePath: string) {
     return new AssetCode(filePath, assets.AssetPackaging.File);
@@ -108,16 +119,27 @@ export class InlineCode extends Code {
  * Lambda code from a local directory.
  */
 export class AssetCode extends Code {
+  /**
+   * The asset packaging.
+   */
+  public readonly packaging: assets.AssetPackaging;
+
   private asset?: assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
-   * @param packaging The asset packaging format
+   * @param packaging The asset packaging format (optional, determined automatically)
    */
-  constructor(
-    private readonly path: string,
-    private readonly packaging: assets.AssetPackaging) {
+  constructor(public readonly path: string, packaging?: assets.AssetPackaging) {
     super();
+
+    if (packaging !== undefined) {
+      this.packaging = packaging;
+    } else {
+      this.packaging = fs.lstatSync(path).isDirectory()
+      ? assets.AssetPackaging.ZipDirectory
+      : assets.AssetPackaging.File;
+    }
   }
 
   public bind(lambda: Func) {
@@ -126,7 +148,9 @@ export class AssetCode extends Code {
       packaging: this.packaging
     });
 
-    this.asset.grantRead(lambda.role);
+    if (!this.asset.isZipArchive) {
+      throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
+    }
   }
 
   public toJSON(): cloudformation.FunctionResource.CodeProperty {

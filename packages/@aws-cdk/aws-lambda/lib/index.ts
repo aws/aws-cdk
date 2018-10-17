@@ -5,7 +5,6 @@ export * from './permission';
 export * from './pipeline-action';
 export * from './runtime';
 export * from './code';
-export * from './inline';
 export * from './lambda-version';
 export * from './singleton-lambda';
 
