@@ -4,6 +4,7 @@ import 'source-map-support/register';
 import cxapi = require('@aws-cdk/cx-api');
 import childProcess = require('child_process');
 import colors = require('colors/safe');
+import crypto = require('crypto');
 import fs = require('fs-extra');
 import YAML = require('js-yaml');
 import minimatch = require('minimatch');
@@ -347,14 +348,78 @@ async function initCommandLine() {
 
     fs.mkdirpSync(outputDir);
 
+    const extension = json ? 'json' : 'yaml';
+    const hashCache: { [path: string]: string } = {};
     for (const stack of stacks) {
       const finalName = renames.finalName(stack.name);
-      const fileName = `${outputDir}/${finalName}.template.${json ? 'json' : 'yaml'}`;
+      const fileName = path.join(outputDir, `${finalName}.template.${extension}`);
       highlight(fileName);
       await fs.writeFile(fileName, toJsonOrYaml(stack.template));
+      const manifestName = path.join(outputDir, `${finalName}.manifest.${extension}`);
+      await fs.writeFile(manifestName, toJsonOrYaml(await prepareManifest(stack, outputDir, hashCache)));
     }
 
     return undefined; // Nothing to print
+
+    /**
+     * Prepares an asset manifest document, staging assets in a specified directory.
+     * @param stack the stack for which assets are to be manifested.
+     * @param stackName the name of the stack (accounting for renames)
+     * @param dir the directory under which to stage the assets (an assets sub-directory will be used).
+     * @param cache a cache for asset files hashes, improving performance when the same assets are used across multiple stacks
+     */
+    async function prepareManifest(stack: cxapi.SynthesizedStack, dir: string, cache: { [path: string]: string }) {
+      const manifest = { version: '1', assets: {} as any };
+      for (const key of Object.keys(stack.metadata)) {
+        const entries = stack.metadata[key].filter(entry => entry.type === cxapi.ASSET_METADATA);
+        for (const entry of entries) {
+          const asset = entry.data! as cxapi.AssetMetadataEntry;
+          const basePath = path.join('assets', await hash(asset.path), path.basename(asset.path));
+          const fullPath = path.join(dir, basePath);
+          if (!await fs.pathExists(fullPath)) {
+            await fs.copy(asset.path, fullPath);
+          }
+          manifest.assets[asset.id] = {
+            constructPath: key,
+            packaging: asset.packaging,
+            parameters: {
+              s3bucket: asset.s3BucketParameter,
+              s3key: asset.s3KeyParameter,
+            },
+            path: basePath,
+          };
+        }
+      }
+      return manifest;
+
+      function hash(filePath: string): Promise<string> {
+        return new Promise<string>(async (ok, ko) => {
+          if (filePath in cache) { return ok(cache[filePath]); }
+          debug(`Hashing asset file ${filePath}`);
+          const stat = await fs.stat(filePath);
+          const digest = crypto.createHash('sha256');
+          digest.once('readable', () => {
+            const binaryHash = digest.read() as Buffer;
+            if (binaryHash) {
+              const strHash = binaryHash.toString('hex');
+              debug(`Hash of asset file ${filePath}: ${strHash}`);
+              return ok(cache[filePath] = strHash);
+            }
+            ko(new Error('No hash was generated!'));
+          });
+          if (stat.isDirectory()) {
+            for (const element of (await fs.readdir(filePath)).sort()) {
+              digest.write(await hash(path.join(filePath, element)) + '\0');
+            }
+            digest.end();
+          } else {
+            const reader = fs.createReadStream(filePath);
+            digest.write(path.basename(filePath) + '\0');
+            reader.pipe(digest);
+          }
+        });
+      }
+    }
   }
 
   /**
