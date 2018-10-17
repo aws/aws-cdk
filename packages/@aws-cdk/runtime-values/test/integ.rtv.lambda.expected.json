@@ -110,8 +110,7 @@
               "Ref": "AWS::StackName"
             }
           }
-        },
-        "Timeout": 30
+        }
       },
       "DependsOn": [
         "MyFunctionServiceRole3C357FF2",

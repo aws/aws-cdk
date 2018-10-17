@@ -12,8 +12,10 @@ class TestStack extends cdk.Stack {
     super(parent, name);
 
     const queue = new sqs.Queue(this, 'MyQueue');
-    const fn = new lambda.InlineJavaScriptFunction(this, 'MyFunction', {
-      handler: { fn: runtimeCode },
+    const fn = new lambda.Function(this, 'MyFunction', {
+      code: lambda.Code.inline(`exports.handler = ${runtimeCode.toString()}`),
+      runtime: lambda.Runtime.NodeJS610,
+      handler: 'index.handler'
     });
 
     // this line defines an AWS::SSM::Parameter resource with the
