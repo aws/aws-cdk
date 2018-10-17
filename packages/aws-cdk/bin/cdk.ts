@@ -111,6 +111,7 @@ async function initCommandLine() {
     setVerbose();
   }
 
+  debug('CDK toolkit version:', VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
