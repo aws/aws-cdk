@@ -108,10 +108,10 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * IAM role to assume when deploying changes.
    *
    * If not specified, a fresh role is created. The role is created with zero
-   * permissions unless `trustTemplate` is true, in which case the role will have
+   * permissions unless `fullPermissions` is true, in which case the role will have
    * full permissions.
    *
-   * @default A fresh role with full or no permissions (depending on the value of `trustTemplate`).
+   * @default A fresh role with full or no permissions (depending on the value of `fullPermissions`).
    */
   role?: iam.Role;
 
@@ -123,7 +123,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * stack template contains AWS Identity and Access Management (IAM) resources. For more
    * information, see [Acknowledging IAM Resources in AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities).
    *
-   * @default No capabitilities passed, unless `trustTemplate` is true
+   * @default No capabitilities passed, unless `fullPermissions` is true
    */
   capabilities?: CloudFormationCapabilities[];
 
@@ -262,15 +262,14 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
     }
 
     const stackArn = stackArnFromName(props.stackName);
-    // Allow the pipeline to check for Stack & ChangeSet existence
+    // Allow the pipeline to check for Stack & ChangeSet existence, and to create & delete the specified ChangeSet
     props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addAction('cloudformation:DescribeStacks')
-      .addResource(stackArn));
-    // Allow the pipeline to create & delete the specified ChangeSet
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
+      .addActions('cloudformation:CreateChangeSet',
+                  'cloudformation:DeleteChangeSet',
+                  'cloudformation:DescribeChangeSet',
+                  'cloudformation:DescribeStacks')
       .addResource(stackArn)
-      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+      .addCondition('StringEqualsIfExists', { 'cloudformation:ChangeSetName': props.changeSetName }));
   }
 }
 
@@ -319,7 +318,11 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
       ActionMode: props.replaceOnFailure ? 'REPLACE_ON_FAILURE' : 'CREATE_UPDATE',
       TemplatePath: props.templatePath.location
     });
+
     this.addInputArtifact(props.templatePath.artifact);
+    if (props.templateConfiguration && props.templateConfiguration.artifact.name !== props.templatePath.artifact.name) {
+      this.addInputArtifact(props.templateConfiguration.artifact);
+    }
 
     // permissions are based on best-guess from
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html
