@@ -384,6 +384,24 @@ export interface BucketProps {
    * @default No lifecycle rules
    */
   lifecycleRules?: LifecycleRule[];
+
+  /**
+   * The name of the index document (e.g. "index.html") for the website. Enables static website
+   * hosting for this bucket.
+   */
+  websiteIndexDocument?: string;
+
+  /**
+   * The name of the error document (e.g. "404.html") for the website.
+   * `websiteIndexDocument` must also be set if this is set.
+   */
+  websiteErrorDocument?: string;
+
+  /**
+   * Grants public read access to all objects in the bucket.
+   * Similar to calling `bucket.grantPublicAccess()`
+   */
+  publicReadAccess?: boolean;
 }
 
 /**
@@ -414,6 +432,7 @@ export class Bucket extends BucketRef {
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
       lifecycleConfiguration: new cdk.Token(() => this.parseLifecycleConfiguration()),
+      websiteConfiguration: this.renderWebsiteConfiguration(props)
     });
 
     cdk.applyRemovalPolicy(resource, props.removalPolicy);
@@ -431,6 +450,10 @@ export class Bucket extends BucketRef {
     // defines a BucketNotifications construct. Notice that an actual resource will only
     // be added if there are notifications added, so we don't need to condition this.
     this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
+
+    if (props.publicReadAccess) {
+      this.grantPublicAccess();
+    }
   }
 
   /**
@@ -597,6 +620,21 @@ export class Bucket extends BucketRef {
         value: tagFilters[tag]
       }));
     }
+  }
+
+  private renderWebsiteConfiguration(props: BucketProps): cloudformation.BucketResource.WebsiteConfigurationProperty | undefined {
+    if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
+      return undefined;
+    }
+
+    if (props.websiteErrorDocument && !props.websiteIndexDocument) {
+      throw new Error(`"websiteIndexDocument" is required if "websiteErrorDocument" is set`);
+    }
+
+    return {
+      indexDocument: props.websiteIndexDocument,
+      errorDocument: props.websiteErrorDocument
+    };
   }
 }
 
