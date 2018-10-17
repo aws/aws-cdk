@@ -16,16 +16,18 @@ export enum RuntimeFamily {
 
 /**
  * Lambda function runtime environment.
+ *
+ * If you need to use a runtime name that doesn't exist as a static member, you
+ * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
   public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS43Edge = new Runtime('nodejs4.3-edge', RuntimeFamily.NodeJS);
   public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
-  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS);
-  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
+  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
   public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
+  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
   public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DotNetCore);
   public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
   public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
@@ -45,9 +47,9 @@ export class Runtime {
   /**
    * The runtime family.
    */
-  public readonly family: RuntimeFamily;
+  public readonly family?: RuntimeFamily;
 
-  constructor(name: string, family: RuntimeFamily, props: LambdaRuntimeProps = { }) {
+  constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
