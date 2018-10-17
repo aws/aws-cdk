@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -114,6 +115,46 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       loadBalancerArn: new cdk.Output(this, 'LoadBalancerArn', { value: this.loadBalancerArn }).makeImportValue().toString(),
       securityGroupId: this.securityGroup.export().securityGroupId,
     };
+  }
+
+  /**
+   * Return the given named metric for this Application Load Balancer
+   *
+   * @default Average over 5 minutes
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApplicationELB',
+      metricName,
+      dimensions: { LoadBalancer: this.loadBalancerName },
+      ...props
+    });
+  }
+
+  /**
+   * The total number of concurrent TCP connections active from clients to the load balancer and from the load balancer to targets.
+   *
+   * @default Sum over 5 minutes
+   */
+  public metricActiveConnectionCount(props?: cloudwatch.MetricCustomization) {
+    return this.metric('ActiveConnectionCount', {
+      statistic: 'sum',
+      ...props
+    });
+  }
+
+  /**
+   * The number of TLS connections initiated by the client that did not
+   * establish a session with the load balancer. Possible causes include a
+   * mismatch of ciphers or protocols.
+   *
+   * @default Sum over 5 minutes
+   */
+  public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricCustomization) {
+    return this.metric('ClientTLSNegotiationErrorCount', {
+      statistic: 'sum',
+      ...props
+    });
   }
 }
 
