@@ -74,13 +74,13 @@ export interface IClusterRefProps {
    * Reeference the vpc placement for placing nodes into ASG subnets
    */
   vpcPlacement: ec2.VpcPlacementStrategy;
-  securityGroup: ec2.SecurityGroupRef;
 }
 
 /**
  * A SecurityGroup Reference, object not created with this template.
  */
-export abstract class ClusterRef extends cdk.Construct {
+export abstract class ClusterRef extends cdk.Construct
+  implements ec2.IConnectable {
   /**
    * Import an existing cluster
    *
@@ -100,7 +100,8 @@ export abstract class ClusterRef extends cdk.Construct {
   public abstract readonly clusterArn: string;
   public abstract readonly clusterEndpoint: string;
   public abstract readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  public abstract readonly securityGroup: ec2.SecurityGroupRef;
+  public readonly securityGroup: ec2.SecurityGroupRef;
+  public readonly connections: ec2.Connections;
 
   /**
    * Export cluster references to use in other stacks
@@ -110,8 +111,7 @@ export abstract class ClusterRef extends cdk.Construct {
       clusterName: this.makeOutput("ClusterName", this.clusterName),
       clusterArn: this.makeOutput("ClusterArn", this.clusterArn),
       clusterEndpoint: this.makeOutput("ClusterEndpoint", this.clusterEndpoint),
-      vpcPlacement: this.vpcPlacement,
-      securityGroup: this.securityGroup
+      vpcPlacement: this.vpcPlacement
     };
   }
 
@@ -164,6 +164,7 @@ export class Cluster extends ClusterRef {
    * @memberof Cluster
    */
   public readonly securityGroup: ec2.SecurityGroupRef;
+  public readonly connections: ec2.Connections;
 
   private readonly vpc: ec2.VpcNetworkRef;
   private readonly cluster: cloudformation.ClusterResource;
@@ -181,6 +182,9 @@ export class Cluster extends ClusterRef {
 
     this.securityGroup = this.createSecurityGroup();
     const sgId = this.securityGroup.securityGroupId;
+    this.connections = new ec2.Connections({
+      securityGroup: this.securityGroup
+    });
 
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
@@ -204,12 +208,12 @@ export class Cluster extends ClusterRef {
   }
 
   private createSecurityGroup() {
-    return new ec2.SecurityGroup(this, "securityGroup", {
+    return new ec2.SecurityGroup(this, "ClusterSecurityGroup", {
       vpc: this.vpc,
       description: "Cluster API Server Security Group.",
       tags: {
-        Name: "DefaultsecurityGroup",
-        Description: "Default Security group for EKS Cluster"
+        Name: "Cluster SecurityGroup",
+        Description: "The security group assigned to the cluster"
       }
     });
   }
@@ -239,7 +243,6 @@ class ImportedCluster extends ClusterRef {
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  public readonly securityGroup: ec2.SecurityGroupRef;
 
   constructor(parent: cdk.Construct, name: string, props: IClusterRefProps) {
     super(parent, name);
@@ -248,6 +251,5 @@ class ImportedCluster extends ClusterRef {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.vpcPlacement = props.vpcPlacement;
-    this.securityGroup = props.securityGroup;
   }
 }
