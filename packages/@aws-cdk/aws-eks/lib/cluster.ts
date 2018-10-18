@@ -74,7 +74,7 @@ export interface IClusterRefProps {
    * Reeference the vpc placement for placing nodes into ASG subnets
    */
   vpcPlacement: ec2.VpcPlacementStrategy;
-  clusterSecurityGroup: ec2.SecurityGroup;
+  securityGroup: ec2.SecurityGroupRef;
 }
 
 /**
@@ -100,7 +100,7 @@ export abstract class ClusterRef extends cdk.Construct {
   public abstract readonly clusterArn: string;
   public abstract readonly clusterEndpoint: string;
   public abstract readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  public abstract readonly clusterSecurityGroup: ec2.SecurityGroup;
+  public abstract readonly securityGroup: ec2.SecurityGroupRef;
 
   /**
    * Export cluster references to use in other stacks
@@ -111,7 +111,7 @@ export abstract class ClusterRef extends cdk.Construct {
       clusterArn: this.makeOutput("ClusterArn", this.clusterArn),
       clusterEndpoint: this.makeOutput("ClusterEndpoint", this.clusterEndpoint),
       vpcPlacement: this.vpcPlacement,
-      clusterSecurityGroup: this.clusterSecurityGroup
+      securityGroup: this.securityGroup
     };
   }
 
@@ -163,7 +163,7 @@ export class Cluster extends ClusterRef {
    * @type {ec2.SecurityGroup}
    * @memberof Cluster
    */
-  public readonly clusterSecurityGroup: ec2.SecurityGroup;
+  public readonly securityGroup: ec2.SecurityGroupRef;
 
   private readonly vpc: ec2.VpcNetworkRef;
   private readonly cluster: cloudformation.ClusterResource;
@@ -178,8 +178,9 @@ export class Cluster extends ClusterRef {
     subnets.map(s => this.clusterSubnetIds.push(s.subnetId));
 
     const role = this.createRole();
-    this.clusterSecurityGroup = this.addDefaultSecurityGroup();
-    const sgId = this.clusterSecurityGroup.securityGroupId;
+
+    this.securityGroup = this.createSecurityGroup();
+    const sgId = this.securityGroup.securityGroupId;
 
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
@@ -202,6 +203,17 @@ export class Cluster extends ClusterRef {
     return cluster;
   }
 
+  private createSecurityGroup() {
+    return new ec2.SecurityGroup(this, "securityGroup", {
+      vpc: this.vpc,
+      description: "Cluster API Server Security Group.",
+      tags: {
+        Name: "DefaultsecurityGroup",
+        Description: "Default Security group for EKS Cluster"
+      }
+    });
+  }
+
   private createRole() {
     const role = new iam.Role(this, "ClusterRole", {
       assumedBy: new iam.ServicePrincipal("eks.amazonaws.com"),
@@ -212,17 +224,6 @@ export class Cluster extends ClusterRef {
     });
 
     return role;
-  }
-
-  private addDefaultSecurityGroup() {
-    return new ec2.SecurityGroup(this, "ClusterSecurityGroup", {
-      vpc: this.vpc,
-      description: "Cluster API Server Security Group.",
-      tags: {
-        Name: "DefaultClusterSecurityGroup",
-        Description: "Default Security group for EKS Cluster"
-      }
-    });
   }
 }
 
@@ -238,7 +239,7 @@ class ImportedCluster extends ClusterRef {
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  public readonly clusterSecurityGroup: ec2.SecurityGroup;
+  public readonly securityGroup: ec2.SecurityGroupRef;
 
   constructor(parent: cdk.Construct, name: string, props: IClusterRefProps) {
     super(parent, name);
@@ -247,6 +248,6 @@ class ImportedCluster extends ClusterRef {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.vpcPlacement = props.vpcPlacement;
-    this.clusterSecurityGroup = props.clusterSecurityGroup;
+    this.securityGroup = props.securityGroup;
   }
 }
