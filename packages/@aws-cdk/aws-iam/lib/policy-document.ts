@@ -65,7 +65,7 @@ export abstract class PolicyPrincipal {
  */
 export class PrincipalPolicyFragment {
   constructor(
-    public readonly principalJson: any,
+    public readonly principalJson: { [key: string]: any },
     public readonly conditions: {[key: string]: any} = {}) {
   }
 }
@@ -155,7 +155,7 @@ export class Anyone extends PolicyPrincipal {
   public readonly accountId = '*';
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment('*');
+    return new PrincipalPolicyFragment({ AWS: this.accountId });
   }
 }
 
@@ -164,7 +164,7 @@ export class Anyone extends PolicyPrincipal {
  */
 export class PolicyStatement extends Token {
   private action = new Array<any>();
-  private principal = new Array<any>();
+  private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
   private condition: { [key: string]: any } = { };
   private effect?: PolicyStatementEffect;
@@ -197,12 +197,20 @@ export class PolicyStatement extends Token {
    * Indicates if this permission has a "Principal" section.
    */
   public get hasPrincipal() {
-    return this.principal && this.principal.length > 0;
+    return Object.keys(this.principal).length > 0;
   }
 
   public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
     const fragment = principal.policyFragment();
-    this.principal.push(fragment.principalJson);
+    for (const key of Object.keys(fragment.principalJson)) {
+      this.principal[key] = this.principal[key] || [];
+      const value = fragment.principalJson[key];
+      if (Array.isArray(value)) {
+        this.principal[key].push(...value);
+      } else {
+        this.principal[key].push(value);
+      }
+    }
     this.addConditions(fragment.conditions);
     return this;
   }
@@ -330,7 +338,7 @@ export class PolicyStatement extends Token {
       Action: _norm(this.action),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
-      Principal: _norm(this.principal),
+      Principal: _normPrincipal(this.principal),
       Resource: _norm(this.resource),
       Sid: _norm(this.sid),
     };
@@ -360,6 +368,22 @@ export class PolicyStatement extends Token {
       }
 
       return values;
+    }
+
+    function _normPrincipal(principal: { [key: string]: any[] }) {
+      const keys = Object.keys(principal);
+      if (keys.length === 0) { return undefined; }
+      const result: any = {};
+      for (const key of keys) {
+        const normVal = _norm(principal[key]);
+        if (normVal) {
+          result[key] = normVal;
+        }
+      }
+      if (Object.keys(result).length === 1 && result.AWS === '*') {
+        return '*';
+      }
+      return result;
     }
   }
 }
