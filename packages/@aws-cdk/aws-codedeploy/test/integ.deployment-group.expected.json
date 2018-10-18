@@ -498,28 +498,13 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::aws-codedeploy-",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "aws-codedeploy-",
-                            {
-                              "Ref": "AWS::Region"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Region"
                       }
                     ]
                   ]
@@ -528,38 +513,15 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "aws-codedeploy-",
-                                  {
-                                    "Ref": "AWS::Region"
-                                  }
-                                ]
-                              ]
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
                       },
-                      "/",
-                      "latest/*"
+                      ":s3:::aws-codedeploy-",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "/latest/*"
                     ]
                   ]
                 }

@@ -1,3 +1,4 @@
+import { resolve, Token, unresolved } from '../core/tokens';
 import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
 // tslint:disable:max-line-length
 
@@ -82,6 +83,11 @@ export class FnImportValue extends Fn {
  * with no delimiter.
  */
 export class FnJoin extends Fn {
+  private readonly delimiter: string;
+  private readonly listOfValues: any[];
+  // Cache for the result of resolveValues() - since it otherwise would be computed several times
+  private _resolvedValues?: any[];
+
   /**
    * Creates an ``Fn::Join`` function.
    * @param delimiter The value you want to occur between fragments. The delimiter will occur between fragments only.
@@ -92,7 +98,53 @@ export class FnJoin extends Fn {
     if (listOfValues.length === 0) {
       throw new Error(`FnJoin requires at least one value to be provided`);
     }
-    super('Fn::Join', [ delimiter, listOfValues ]);
+    // Passing the values as a token, optimization requires resolving stringified tokens, we should be deferred until
+    // this token is itself being resolved.
+    super('Fn::Join', [ delimiter, new Token(() => this.resolveValues()) ]);
+    this.delimiter = delimiter;
+    this.listOfValues = listOfValues;
+  }
+
+  public resolve(): any {
+    if (this.resolveValues().length === 1) {
+      return this.resolveValues()[0];
+    }
+    return super.resolve();
+  }
+
+  /**
+   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
+   * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
+   * generate shorter output.
+   */
+  private resolveValues() {
+    if (this._resolvedValues) { return this._resolvedValues; }
+
+    this._resolvedValues = [...this.listOfValues.map(e => resolve(e))];
+    let i = 0;
+    while (i < this._resolvedValues.length) {
+      const el = this._resolvedValues[i];
+      if (isFnJoinIntrinsicWithSameDelimiter.call(this, el)) {
+        this._resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
+      } else if (i > 0 && isPlainString(this._resolvedValues[i - 1]) && isPlainString(this._resolvedValues[i])) {
+        this._resolvedValues[i - 1] += this.delimiter + this._resolvedValues[i];
+        this._resolvedValues.splice(i, 1);
+      } else {
+        i += 1;
+      }
+    }
+
+    return this._resolvedValues;
+
+    function isFnJoinIntrinsicWithSameDelimiter(this: FnJoin, obj: any): boolean {
+      return isIntrinsic(obj)
+        && Object.keys(obj)[0] === 'Fn::Join'
+        && obj['Fn::Join'][0] === this.delimiter;
+    }
+
+    function isPlainString(obj: any): boolean {
+      return typeof obj === 'string' && !unresolved(obj);
+    }
   }
 }
 
@@ -100,52 +152,13 @@ export class FnJoin extends Fn {
  * Alias for ``FnJoin('', listOfValues)``.
  */
 export class FnConcat extends FnJoin {
-  private readonly listOfValues: any[];
-
   /**
    * Creates an ``Fn::Join`` function with an empty delimiter.
    * @param listOfValues The list of values to concatenate.
    */
   constructor(...listOfValues: any[]) {
-    // Optimization: if any of the input arguments is also a FnConcat,
-    // splice their list of values into the current FnConcat. 'instanceof'
-    // can fail, but we do not depend depend on this for correctness.
-    //
-    // Do the same for resolved intrinsics, so we can detect this
-    // happening both at Token as well as at CloudFormation level.
-
-    let i = 0;
-    while (i < listOfValues.length) {
-      const el = listOfValues[i];
-      if (el instanceof FnConcat) {
-        listOfValues.splice(i, 1, ...el.listOfValues);
-        i += el.listOfValues.length;
-      } else if (isConcatIntrinsic(el)) {
-        const values = concatIntrinsicValues(el);
-        listOfValues.splice(i, 1, ...values);
-        i += values;
-      } else {
-        i++;
-      }
-    }
-
     super('', listOfValues);
-    this.listOfValues = listOfValues;
   }
-}
-
-/**
- * Return whether the given object represents a CloudFormation intrinsic that is the result of a FnConcat resolution
- */
-function isConcatIntrinsic(x: any) {
-  return isIntrinsic(x) && Object.keys(x)[0] === 'Fn::Join' && x['Fn::Join'][0] === '';
-}
-
-/**
- * Return the concatted values of the concat intrinsic
- */
-function concatIntrinsicValues(x: any) {
-  return x['Fn::Join'][1];
 }
 
 /**
