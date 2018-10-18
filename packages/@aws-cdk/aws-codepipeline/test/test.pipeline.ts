@@ -177,11 +177,14 @@ export = {
           "Fn::Join": [
           "",
           [
-            "arn:",
+            "arn",
+            ":",
             {
             "Ref": "AWS::Partition"
             },
-            ":codepipeline:",
+            ":",
+            "codepipeline",
+            ":",
             {
             "Ref": "AWS::Region"
             },
@@ -314,8 +317,8 @@ export = {
         "Statement": [
         {
           "Action": [
-            "codepipeline:PutJobFailureResult",
-            "codepipeline:PutJobSuccessResult",
+          "codepipeline:PutJobSuccessResult",
+          "codepipeline:PutJobFailureResult"
           ],
           "Effect": "Allow",
           "Resource": "*"

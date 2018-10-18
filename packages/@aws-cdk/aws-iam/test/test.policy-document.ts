@@ -18,15 +18,17 @@ export = {
       [ 'sqs:SendMessage',
         'dynamodb:CreateTable',
         'dynamodb:DeleteTable' ],
-       Resource: ['myQueue', 'yourQueue', '*'],
+       Resource: [ 'myQueue', 'yourQueue', '*' ],
        Effect: 'Allow',
        Principal:
-      { AWS: [
+      { AWS:
          { 'Fn::Join':
           [ '',
           [ 'arn:',
             { Ref: 'AWS::Partition' },
-            ':iam::myaccountname:root' ] ] } ] },
+            ':iam::',
+            { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
+            ':root' ] ] } },
        Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
     test.done();
@@ -59,8 +61,8 @@ export = {
       Version: 'Foo',
       Something: 123,
       Statement: [
-        { Effect: 'Allow' },
-        { Effect: 'Deny' },
+        { Statement1: 1 },
+        { Statement2: 2 }
       ]
     };
     const doc = new PolicyDocument(base);
@@ -69,7 +71,8 @@ export = {
     test.deepEqual(resolve(doc), { Version: 'Foo',
     Something: 123,
     Statement:
-     [ ...base.Statement,
+     [ { Statement1: 1 },
+       { Statement2: 2 },
        { Effect: 'Allow', Action: 'action', Resource: 'resource' } ] });
     test.done();
   },
@@ -96,7 +99,7 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        CanonicalUser: [canoncialUser]
+        CanonicalUser: canoncialUser
       }
     });
     test.done();
@@ -108,7 +111,7 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        AWS: [{
+        AWS: {
         "Fn::Join": [
           "",
           [
@@ -119,7 +122,7 @@ export = {
           ":root"
           ]
         ]
-        }]
+        }
       }
     });
     test.done();
@@ -131,26 +134,10 @@ export = {
     test.deepEqual(resolve(p), {
       Effect: "Allow",
       Principal: {
-        Federated: ["com.amazon.cognito"]
+        Federated: "com.amazon.cognito"
       },
       Condition: {
         StringEquals: { key: 'value' }
-      }
-    });
-    test.done();
-  },
-
-  'addAccountPrincipal can be used multiple times'(test: Test) {
-    const p = new PolicyStatement();
-    p.addAwsAccountPrincipal('1234');
-    p.addAwsAccountPrincipal('5678'),
-    test.deepEqual(resolve(p), {
-      Effect: 'Allow',
-      Principal: {
-        AWS: [
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
-          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] }
-        ]
       }
     });
     test.done();

@@ -14,9 +14,17 @@ export = {
       const bucketName = 'hello';
       test.deepEqual(cdk.resolve(parseBucketArn({ bucketName })), { 'Fn::Join':
       [ '',
-        [ 'arn:',
+        [ 'arn',
+        ':',
         { Ref: 'AWS::Partition' },
-        ':s3:::hello' ] ] });
+        ':',
+        's3',
+        ':',
+        '',
+        ':',
+        '',
+        ':',
+        'hello' ] ] });
       test.done();
     },
 
@@ -41,7 +49,7 @@ export = {
     },
 
     'undefined if cannot extract name from a non-string arn'(test: Test) {
-      const bucketArn = new cdk.FnConcat('arn:aws:s3:::', { Ref: 'BucketName' }).toString();
+      const bucketArn = new cdk.FnConcat('arn:aws:s3:::', 'my-bucket').toString();
       test.deepEqual(cdk.resolve(parseBucketName({ bucketArn })), undefined);
       test.done();
     },

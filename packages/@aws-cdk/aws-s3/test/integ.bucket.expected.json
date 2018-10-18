@@ -4,25 +4,23 @@
       "Type": "AWS::KMS::Key",
       "Properties": {
         "KeyPolicy": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "kms:CancelKeyDeletion",
                 "kms:Create*",
-                "kms:Delete*",
                 "kms:Describe*",
-                "kms:Disable*",
                 "kms:Enable*",
-                "kms:Get*",
                 "kms:List*",
                 "kms:Put*",
+                "kms:Update*",
                 "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:Update*"
+                "kms:CancelKeyDeletion"
               ],
-              "Resource": "*",
+              "Effect": "Allow",
               "Principal": {
                 "AWS": {
                   "Fn::Join": [
@@ -40,18 +38,18 @@
                     ]
                   ]
                 }
-              }
+              },
+              "Resource": "*"
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "kms:Decrypt",
                 "kms:DescribeKey",
                 "kms:Encrypt",
-                "kms:GenerateDataKey*",
-                "kms:ReEncrypt*"
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
               ],
-              "Resource": "*",
+              "Effect": "Allow",
               "Principal": {
                 "AWS": {
                   "Fn::GetAtt": [
@@ -59,9 +57,11 @@
                     "Arn"
                   ]
                 }
-              }
+              },
+              "Resource": "*"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Description": "Created by aws-cdk-s3/MyBucket"
       },
@@ -108,28 +108,21 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
                     "MyBucketF68F3FF0",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "MyOtherBucket543F3540",
                     "Arn"
                   ]
                 },
@@ -143,8 +136,41 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyBucketKeyC17130CF",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyOtherBucket543F3540",
+                    "Arn"
                   ]
                 },
                 {
@@ -157,29 +183,15 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:GenerateDataKey*",
-                "kms:ReEncrypt*"
-              ],
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyBucketKeyC17130CF",
-                  "Arn"
-                ]
-              }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyUserDefaultPolicy7B897426",
         "Users": [

@@ -116,7 +116,7 @@ export = {
           {
             Action: "s3:PutObject",
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
-            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
+            Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/", "", "*" ] ] }
           }
         ]
       }
