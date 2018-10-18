@@ -20,16 +20,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codedeploy.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
@@ -72,16 +72,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -89,18 +89,17 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -118,27 +117,62 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
             },
             {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
               "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "CodeDeployPipelineIntegTest9F618D61",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "CodeDeployPipelineIntegTest9F618D61",
+                          "Arn"
+                        ]
+                      },
+                      "/",
+                      "*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
               "Action": [
                 "codedeploy:GetApplicationRevision",
                 "codedeploy:RegisterApplicationRevision"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:",
+                    "arn",
+                    ":",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codedeploy:",
+                    ":",
+                    "codedeploy",
+                    ":",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -146,26 +180,32 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":application:IntegTestDeployApp"
+                    ":",
+                    "application",
+                    ":",
+                    "IntegTestDeployApp"
                   ]
                 ]
               }
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "codedeploy:CreateDeployment",
                 "codedeploy:GetDeployment"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:",
+                    "arn",
+                    ":",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codedeploy:",
+                    ":",
+                    "codedeploy",
+                    ":",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -173,23 +213,29 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":deploymentgroup:IntegTestDeployApp/IntegTestDeploymentGroup"
+                    ":",
+                    "deploymentgroup",
+                    ":",
+                    "IntegTestDeployApp/IntegTestDeploymentGroup"
                   ]
                 ]
               }
             },
             {
-              "Effect": "Allow",
               "Action": "codedeploy:GetDeploymentConfig",
+              "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:",
+                    "arn",
+                    ":",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":codedeploy:",
+                    ":",
+                    "codedeploy",
+                    ":",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -197,12 +243,16 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":deploymentconfig:*"
+                    ":",
+                    "deploymentconfig",
+                    ":",
+                    "*"
                   ]
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
