@@ -1,4 +1,5 @@
 import cxapi = require('@aws-cdk/cx-api');
+import { IAspect } from '../aspects/aspect';
 import { CloudFormationJSON } from '../cloudformation/cloudformation-json';
 import { makeUniqueId } from '../util/uniqueid';
 import { Token, unresolved } from './tokens';
@@ -30,6 +31,11 @@ export class ConstructNode {
    * To obtain a global unique id for this construct, use `uniqueId`.
    */
   public readonly id: string;
+
+  /**
+   * An array of aspects applied to this node
+   */
+  public readonly aspects: IAspect[] = [];
 
   /**
    * List of children and their names
@@ -505,6 +511,14 @@ export class Construct implements IConstruct {
   }
 
   /**
+   * Applies the aspect to this Constructs node
+   */
+  public apply(aspect: IAspect): void {
+    this.node.aspects.push(aspect);
+    return;
+  }
+
+  /**
    * Validate the current construct.
    *
    * This method can be implemented by derived constructs in order to perform
@@ -528,6 +542,18 @@ export class Construct implements IConstruct {
    */
   protected prepare(): void {
     // Intentionally left blank
+  }
+
+  /**
+   * Triggers each aspect to invoke visit
+   */
+  protected invokeAspects(): void {
+    for (const aspect of this.node.aspects) {
+      aspect.visit(this);
+    }
+    for (const child of this.node.children) {
+      (child as Construct).invokeAspects();
+    }
   }
 }
 

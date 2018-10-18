@@ -47,7 +47,7 @@ export = {
 
   'autoscaling group has recommended updatepolicy for scheduled actions'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = getTestStack();
     const asg = makeAutoScalingGroup(stack);
 
     // WHEN
@@ -56,6 +56,7 @@ export = {
       minCapacity: 10,
     });
 
+    stack.testInvokeAspects();
     // THEN
     expect(stack).toMatch({
       Resources: {
@@ -111,4 +112,13 @@ function makeAutoScalingGroup(scope: cdk.Construct) {
     machineImage: new ec2.AmazonLinuxImage(),
     updateType: autoscaling.UpdateType.RollingUpdate,
   });
+}
+
+class TestStack extends cdk.Stack {
+  public testInvokeAspects(): void {
+    this.invokeAspects();
+  }
+}
+function getTestStack(): TestStack {
+  return new TestStack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }

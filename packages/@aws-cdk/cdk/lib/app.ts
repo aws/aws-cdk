@@ -41,6 +41,9 @@ export class App extends Root {
       return;
     }
 
+    // invoke all aspects before rendering
+    this.invokeAspects();
+
     const result: cxapi.SynthesizeResponse = {
       version: cxapi.PROTO_RESPONSE_VERSION,
       stacks: this.synthesizeStacks(Object.keys(this.stacks)),

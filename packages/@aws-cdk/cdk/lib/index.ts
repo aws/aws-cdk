@@ -1,3 +1,6 @@
+export * from './aspects/aspect';
+export * from './aspects/tag-aspect';
+
 export * from './core/construct';
 export * from './core/tokens';
 export * from './core/tag-manager';

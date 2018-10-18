@@ -9,7 +9,7 @@ import autoscaling = require('../lib');
 
 export = {
   'default fleet'(test: Test) {
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const stack = getTestStack();
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
@@ -17,6 +17,8 @@ export = {
       machineImage: new ec2.AmazonLinuxImage(),
       vpc
     });
+
+    stack.testInvokeAspects();
 
     expect(stack).toMatch({
       "Resources": {
@@ -365,7 +367,8 @@ export = {
   },
   'can set tags'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const stack = getTestStack();
+      // new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
     // WHEN
@@ -378,27 +381,28 @@ export = {
         minSuccessfulInstancesPercent: 50,
         pauseTimeSec: 345
       },
-      tags: {superfood: 'acai'},
     });
-    asg.tags.setTag('notsuper', 'caramel', {propagate: false});
+    asg.apply( new cdk.Tag('superfood', 'acai'));
+    asg.apply( new cdk.Tag('notsuper', 'caramel', { applyToLaunchInstances: false }));
 
+    stack.testInvokeAspects();
     // THEN
     expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
       Tags: [
         {
-          Key: 'superfood',
-          Value: 'acai',
+          Key: 'Name',
           PropagateAtLaunch: true,
+          Value: 'MyFleet',
         },
         {
-          Key: 'Name',
-          Value: 'MyFleet',
+          Key: 'superfood',
           PropagateAtLaunch: true,
+          Value: 'acai',
         },
         {
           Key: 'notsuper',
-          Value: 'caramel',
           PropagateAtLaunch: false,
+          Value: 'caramel',
         },
       ]
     }));
@@ -420,4 +424,13 @@ function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.import(stack, 'MySG', {
     securityGroupId: 'most-secure',
   });
+}
+
+class TestStack extends cdk.Stack {
+  public testInvokeAspects(): void {
+    this.invokeAspects();
+  }
+}
+function getTestStack(): TestStack {
+  return new TestStack(undefined, 'TestStack', { env: { account: '1234', region: 'us-east-1' } });
 }

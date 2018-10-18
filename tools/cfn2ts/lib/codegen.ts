@@ -8,6 +8,8 @@ import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from 
 const CORE = genspec.CORE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.Resource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
+const TAG_TYPE = `${CORE}.TagType`;
+const TAG_MANAGER = `${CORE}.TagManager`;
 
 interface Dictionary<T> { [key: string]: T; }
 
@@ -230,6 +232,20 @@ export default class CodeGenerator {
         this.code.line(`public readonly ${refAttribute.propertyName}: ${refAttribute.attributeType};`);
         attributes.push(refAttribute);
       }
+    }
+    // set the TagType to help format tags later
+    const tagEnum = tagType(spec);
+    if (tagEnum !== `${TAG_TYPE}.NotTaggable`) {
+      this.code.line();
+      this.code.line('/**');
+      this.code.line(' * The ``TagManager`` handles setting, removing and formatting tags');
+      this.code.line(' *');
+      this.code.line(' * Tags should be managed either passing them as properties during');
+      this.code.line(' * initiation or by calling methods on this object. If both techniques are');
+      this.code.line(' * used only the tags from the TagManager will be used. ``TagAspects``');
+      this.code.line(' * will use the manager.');
+      this.code.line(' */');
+      this.code.line(`public readonly tags = new ${TAG_MANAGER}(${tagEnum});`);
     }
 
     //
@@ -633,4 +649,20 @@ function tokenizableType(alternatives: string[]) {
   // TODO: number
 
   return false;
+}
+
+function tagType(resource: schema.ResourceType): string {
+  if (schema.isTaggableResource(resource)) {
+    const prop = resource.Properties.Tags;
+    if (schema.isTagPropertyStandard(prop)) {
+      return `${TAG_TYPE}.Standard`;
+    }
+    if (schema.isTagPropertyAutoScalingGroup(prop)) {
+      return `${TAG_TYPE}.AutoScalingGroup`;
+    }
+    if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
+      return `${TAG_TYPE}.Map`;
+    }
+  }
+  return `${TAG_TYPE}.NotTaggable`;
 }
