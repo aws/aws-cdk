@@ -119,6 +119,7 @@ export class AttributeTypeDeclaration {
 
 export const TAG_NAME = new CodeName('', CORE_NAMESPACE, 'Tag');
 export const TOKEN_NAME = new CodeName('', CORE_NAMESPACE, 'Token');
+export const TAG_MANAGER_NAME = new CodeName('', CORE_NAMESPACE, 'TagManager');
 
 /**
  * Resource attribute

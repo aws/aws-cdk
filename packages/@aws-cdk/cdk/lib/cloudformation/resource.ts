@@ -1,4 +1,5 @@
 import { Construct } from '../core/construct';
+import { ITagFormatter, ITaggable, TagGroups, TagManager } from '../core/tag-manager';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
@@ -226,6 +227,129 @@ export class Resource extends Referenceable {
         d.dependencyElements.forEach(dep => addDependency(dep));
       }
     }
+  }
+}
+
+export enum TagType {
+  Standard = "StandardTag",
+  AutoScalingGroup = "AutoScalingGroupTag",
+  Map = "StringToStringMap",
+}
+
+/**
+ * Represents a CloudFormation resource which supports Tags
+ *
+ * The resource exposes `tags` property as the `TagManager` for this resource. The
+ * developer can set and remove tags from this location in the construct tree using
+ * the tags object. For example:
+ *
+ * ```
+ * const myResource = new MyTaggableResource(parent, id, props: {});
+ * myResource.setTag('Mykey, 'MyValue');
+ * // you can also configure behavior with `TagProps`
+ * myResource.setTag('MyKey', 'MyValue', { propagate: false });
+ * ```
+ */
+export class TaggableResource extends Resource implements ITaggable {
+  /**
+   * TagManager to manage the propagation and assignment of tags
+   */
+  public readonly tags: TagManager;
+
+  protected readonly tagType: TagType = TagType.Standard;
+
+  constructor(parent: Construct, id: string, props: ResourceProps) {
+    super(parent, id, props);
+    if (props.properties && props.properties.tags instanceof TagManager) {
+      this.tags = props.properties.tags;
+    } else {
+      this.tags = new TagManager(this);
+      if (!!props.properties && props.properties.tags) {
+        this.addCloudFormationTags(props.properties.tags);
+      }
+    }
+  }
+
+  /**
+   * Emits CloudFormation for this resource.
+   *
+   * This method calls super after resolving the cloudformation tags.
+   */
+  public toCloudFormation(): object {
+    // typescript initializes child second so this can't be dont in the constructor
+    this.tags.tagFormatter = this.tagFormatterForType();
+    this.properties.tags = this.tags;
+    return super.toCloudFormation();
+  }
+
+  private tagFormatterForType(): ITagFormatter {
+    switch (this.tagType) {
+      case TagType.Standard: {
+        return new StandardTagFormatter();
+      }
+      case TagType.AutoScalingGroup: {
+        return new AutoScalingGroupTagFormatter();
+      }
+      case TagType.Map: {
+        return new MapTagFormatter();
+      }
+    }
+  }
+
+  /**
+   * Add any of the supported CloudFormatiom Tag Types to be managed
+   *
+   * @param tags: The tag(s) to add
+   */
+  private addCloudFormationTags(tags: any) {
+    if (tags === undefined) { return; }
+    if (tags.map) {
+      for (const tag of tags) {
+        const propagate = tag.propagateAtLaunch !== false;
+        this.tags.setTag(tag.key, tag.value, {propagate});
+      }
+    } else {
+      for (const key of Object.keys(tags)) {
+        this.tags.setTag(key, tags[key]);
+      }
+    }
+  }
+}
+
+/**
+ * Handles converting TagManager tags to AutoScalingGroupTags
+ */
+export class AutoScalingGroupTagFormatter implements ITagFormatter {
+  public toCloudFormationTags(tagGroups: TagGroups): any {
+    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+    return Object.keys(tags).map( (key) => {
+      const propagateAtLaunch = !!tagGroups.propagateTags[key] || !!tagGroups.ancestorTags[key];
+      return {key, value: tags[key], propagateAtLaunch};
+    });
+  }
+}
+
+/**
+ * Handles converting TagManager tags to a map of string to string tags
+ */
+export class MapTagFormatter implements ITagFormatter {
+  public toCloudFormationTags(tagGroups: TagGroups): any {
+    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+    return Object.keys(tags).length === 0 ? undefined : tags;
+  }
+}
+
+/**
+ * Handles converting TagManager tags to a standard array of key value pairs
+ */
+export class StandardTagFormatter implements ITagFormatter {
+  public toCloudFormationTags(tagGroups: TagGroups): any {
+    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
+    const cfnTags = Object.keys(tags).map( key => ({key, value: tags[key]}));
+    if (cfnTags.length === 0) {
+      return undefined;
+    }
+    return cfnTags;
   }
 }
 

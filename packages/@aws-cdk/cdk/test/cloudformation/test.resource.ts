@@ -1,7 +1,14 @@
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    FnEquals, FnNot, HashedAddressingScheme, IDependable,
-    RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
+  FnEquals, FnNot, HashedAddressingScheme, IDependable,
+  RemovalPolicy, resolve, Resource, Root, Stack, TaggableResource } from '../../lib';
+
+// class AsgTaggable extends TaggableResource {
+//   protected readonly tagType: TagType =  TagType.AutoScalingGroup;
+// }
+// class MapTaggable extends TaggableResource {
+//   protected readonly tagType: TagType =  TagType.Map;
+// }
 
 export = {
   'all resources derive from Resource, which derives from Entity'(test: Test) {
@@ -332,12 +339,12 @@ export = {
         MyC3C2R2F213BD26: { Type: 'T2' },
         MyC3C2R38CE6F9F7: { Type: 'T3' },
         MyResource:
-         { Type: 'R',
-         DependsOn:
+        { Type: 'R',
+          DependsOn:
           [ 'MyC1R1FB2A562F',
-          'MyC1R2AE2B5066',
-          'MyC2R3809EEAD6',
-          'MyC3C2R38CE6F9F7' ] } } });
+            'MyC1R2AE2B5066',
+            'MyC2R3809EEAD6',
+            'MyC3C2R38CE6F9F7' ] } } });
     test.done();
   },
 
@@ -349,6 +356,43 @@ export = {
     test.done();
   },
 
+  'TaggableResource': {
+    'TaggableResource with tags from an L1 constructor are initial tags '(test: Test) {
+      const stack = new Stack();
+      const tagResource = new TaggableResource(stack, 'TaggableGuy', {
+        type: 'SomeTaggableResource',
+        properties: {
+          tags: [
+            {key: 'tagKey', value: 'tagValue'},
+            {key: 'tagKey1', value: 'tagValue1'},
+          ],
+        },
+      });
+      tagResource.tags.setTag('tagKey', 'newValue');
+      test.deepEqual(
+        tagResource.toCloudFormation(),
+        {
+          Resources:
+          { TaggableGuy: {
+            Properties: {
+              tags: [
+                {key: 'tagKey', value: 'newValue'},
+                {key: 'tagKey1', value: 'tagValue1'},
+              ]
+            },
+            Type: 'SomeTaggableResource',
+            DependsOn: undefined,
+            CreationPolicy: undefined,
+            UpdatePolicy: undefined,
+            DeletionPolicy: undefined,
+            Metadata: undefined,
+            Condition: undefined,
+          }
+          }
+        });
+      test.done();
+    },
+  },
   'overrides': {
     'addOverride(p, v) allows assigning arbitrary values to synthesized resource definitions'(test: Test) {
       // GIVEN
@@ -363,9 +407,9 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'YouCanEvenOverrideTheType',
-           Use: { Dot: { Notation: 'To create subtrees' } },
-           Metadata: { Key: 12 } } } });
+          { Type: 'YouCanEvenOverrideTheType',
+            Use: { Dot: { Notation: 'To create subtrees' } },
+            Metadata: { Key: 12 } } } });
 
       test.done();
     },
@@ -392,8 +436,8 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
+          { Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello', Value2: null } } } } } });
 
       test.done();
     },
@@ -420,8 +464,8 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+          { Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
 
       test.done();
     },
@@ -439,8 +483,8 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties: { Tree: { Exists: 42 } } } } });
+          { Type: 'AWS::Resource::Type',
+            Properties: { Tree: { Exists: 42 } } } } });
 
       test.done();
     },
@@ -469,8 +513,8 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
+          { Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Value1: 'Hello' } } } } } });
 
       test.done();
     },
@@ -495,12 +539,12 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties:
+          { Type: 'AWS::Resource::Type',
+            Properties:
             { Hello: { World: { Foo: { Bar: 42 } } },
-            Override1: {
-              Override2: { Heyy: [ 1] }
-            } } } } });
+              Override1: {
+                Override2: { Heyy: [ 1] }
+              } } } } });
       test.done();
     },
 
@@ -518,8 +562,8 @@ export = {
       // THEN
       test.deepEqual(stack.toCloudFormation(), { Resources:
         { MyResource:
-           { Type: 'AWS::Resource::Type',
-           Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
+          { Type: 'AWS::Resource::Type',
+            Properties: { Hello: { World: { Hey: 'Jude' } } } } } });
       test.done();
     },
 
@@ -536,8 +580,8 @@ export = {
 
         test.deepEqual(stack.toCloudFormation(), { Resources:
           { MyResource:
-             { Type: 'MyResourceType',
-               Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
+            { Type: 'MyResourceType',
+              Properties: { PROP1: 'foo', PROP2: 'bar' } } } });
         test.done();
       },
 
@@ -550,8 +594,8 @@ export = {
 
         test.deepEqual(stack.toCloudFormation(), { Resources:
           { MyResource:
-             { Type: 'MyResourceType',
-               Properties: { PROP3: 'zoo' } } } });
+            { Type: 'MyResourceType',
+              Properties: { PROP3: 'zoo' } } } });
         test.done();
       },
 
@@ -565,10 +609,10 @@ export = {
 
         test.deepEqual(stack.toCloudFormation(), { Resources:
           { MyResource:
-             { Type: 'MyResourceType',
-               Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
+            { Type: 'MyResourceType',
+              Properties: { PROP2: 'hey', PROP3: 'zoo' } } } });
         test.done();
-      }
+      },
     }
   }
 };

@@ -3,7 +3,7 @@ import { Construct, Root } from '../../lib/core/construct';
 import { ITaggable, TagManager } from '../../lib/core/tag-manager';
 
 class ChildTagger extends Construct implements ITaggable {
-  public readonly tags: TagManager;
+  public tags: TagManager;
   constructor(parent: Construct, name: string) {
     super(parent, name);
     this.tags = new TagManager(parent);
@@ -53,8 +53,9 @@ export = {
       for (const construct of [ctagger1, ctagger2]) {
         test.deepEqual(construct.tags.resolve(), undefined);
       }
-      test.deepEqual(ctagger.tags.resolve()[0].key, 'Name');
-      test.deepEqual(ctagger.tags.resolve()[0].value, 'TheCakeIsALie');
+      const cfnTags = ctagger.tags.resolve() || [];
+      test.deepEqual(cfnTags[0].key, 'Name');
+      test.deepEqual(cfnTags[0].value, 'TheCakeIsALie');
       test.done();
     },
     'setTag with overwrite false does not overwrite a tag'(test: Test) {
@@ -145,7 +146,7 @@ export = {
       test.deepEqual(childTags, [tag2]);
       test.done();
     },
-    'resolve() returns all tags'(test: Test) {
+    'toCloudFormation() returns all tags'(test: Test) {
       const root = new Root();
       const ctagger = new ChildTagger(root, 'one');
       const ctagChild = new ChildTagger(ctagger, 'one');
@@ -167,11 +168,11 @@ export = {
       const cAll = ctagger.tags;
       const cProp = ctagChild.tags;
 
-      for (const tag of cAll.resolve()) {
+      for (const tag of cAll.resolve() || []) {
         const expectedTag = allTags.filter( (t) => (t.key === tag.key));
         test.deepEqual(expectedTag[0].value, tag.value);
       }
-      for (const tag of cProp.resolve()) {
+      for (const tag of cProp.resolve() || []) {
         const expectedTag = tagsProp.filter( (t) => (t.key === tag.key));
         test.deepEqual(expectedTag[0].value, tag.value);
       }

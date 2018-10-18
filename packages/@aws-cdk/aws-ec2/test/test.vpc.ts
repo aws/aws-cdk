@@ -28,8 +28,10 @@ export = {
       'the Name tag is defaulted to path'(test: Test) {
         const stack = getTestStack();
         new VpcNetwork(stack, 'TheVPC');
-        expect(stack).to(haveResource('AWS::EC2::VPC',
-          hasTags( [ {Key: 'Name', Value: 'TheVPC'} ])));
+        expect(stack).to(
+          haveResource('AWS::EC2::VPC',
+            hasTags( [ {Key: 'Name', Value: 'TheVPC'} ]))
+        );
         test.done();
       },
 
@@ -124,25 +126,25 @@ export = {
       new VpcNetwork(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
         subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'ingress',
-          subnetType: SubnetType.Public,
-          tags: {
-            type: 'Public',
-            init: 'No',
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.Public,
+            tags: {
+              type: 'Public',
+              init: 'No',
+            },
           },
-        },
-        {
-          cidrMask: 24,
-          name: 'application',
-          subnetType: SubnetType.Private,
-        },
-        {
-          cidrMask: 28,
-          name: 'rds',
-          subnetType: SubnetType.Isolated,
-        }
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.Private,
+          },
+          {
+            cidrMask: 28,
+            name: 'rds',
+            subnetType: SubnetType.Isolated,
+          }
         ],
         maxAZs: 3
       });
@@ -151,12 +153,12 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Subnet", 9));
       for (let i = 0; i < 6; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.${i}.0/24`
+          CidrBlock: `10.0.${i}.0/24`
         }));
       }
       for (let i = 0; i < 3; i++) {
         expect(stack).to(haveResource("AWS::EC2::Subnet", {
-        CidrBlock: `10.0.6.${i * 16}/28`
+          CidrBlock: `10.0.6.${i * 16}/28`
         }));
       }
       expect(stack).to(haveResource("AWS::EC2::Subnet", hasTags(

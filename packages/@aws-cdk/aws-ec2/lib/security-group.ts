@@ -176,7 +176,6 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
       securityGroupIngress: new Token(() => this.directIngressRules),
       securityGroupEgress: new Token(() => this.directEgressRules),
       vpcId: props.vpc.vpcId,
-      tags: this.tags,
     });
 
     this.securityGroupId = this.securityGroup.securityGroupId;

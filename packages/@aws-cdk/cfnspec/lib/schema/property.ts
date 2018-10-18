@@ -5,6 +5,7 @@ export type ScalarProperty = PrimitiveProperty | ComplexProperty | UnionProperty
 export type CollectionProperty = ListProperty | MapProperty | UnionProperty;
 export type ListProperty = PrimitiveListProperty | ComplexListProperty;
 export type MapProperty = PrimitiveMapProperty | ComplexMapProperty;
+export type TagProperty = TagPropertyStandard | TagPropertyAutoScalingGroup | TagPropertyJson | TagPropertyStringMap;
 
 export interface PropertyBase extends Documented {
   /** Indicates whether the property is required. */
@@ -70,6 +71,22 @@ export interface PrimitiveMapProperty extends MapPropertyBase {
 export interface ComplexMapProperty extends MapPropertyBase {
   /** Valid values for the property */
   ItemType: string;
+}
+
+export interface TagPropertyStandard extends PropertyBase {
+  ItemType: 'Tag';
+}
+
+export interface TagPropertyAutoScalingGroup extends PropertyBase {
+  ItemType: 'TagProperty';
+}
+
+export interface TagPropertyJson extends PropertyBase {
+  PrimitiveType: PrimitiveType.Json;
+}
+
+export interface TagPropertyStringMap extends PropertyBase {
+  PrimitiveItemType: 'String';
 }
 
 /**
@@ -153,4 +170,35 @@ export function isComplexMapProperty(prop: Property): prop is ComplexMapProperty
 export function isUnionProperty(prop: Property): prop is UnionProperty {
   const castProp = prop as UnionProperty;
   return !!(castProp.ItemTypes || castProp.PrimitiveTypes || castProp.Types);
+}
+
+/**
+ * This function validates that the property **can** be a Tag Property
+ *
+ * The property is only a Tag if the name of this property is Tags, which is
+ * validated using `ResourceType.isTaggable(resource)`.
+ */
+export function isTagProperty(prop: Property): prop is TagProperty {
+  return (
+    isTagPropertyStandard(prop) ||
+    isTagPropertyAutoScalingGroup(prop) ||
+    isTagPropertyJson(prop) ||
+    isTagPropertyStringMap(prop)
+  );
+}
+
+export function isTagPropertyStandard(prop: Property): prop is TagPropertyStandard {
+  return (prop as TagPropertyStandard).ItemType === 'Tag';
+}
+
+export function isTagPropertyAutoScalingGroup(prop: Property): prop is TagPropertyAutoScalingGroup {
+  return (prop as TagPropertyAutoScalingGroup).ItemType === 'TagProperty';
+}
+
+export function isTagPropertyJson(prop: Property): prop is TagPropertyJson {
+  return (prop as TagPropertyJson).PrimitiveType === PrimitiveType.Json;
+}
+
+export function isTagPropertyStringMap(prop: Property): prop is TagPropertyStringMap {
+  return (prop as TagPropertyStringMap).PrimitiveItemType === 'String';
 }

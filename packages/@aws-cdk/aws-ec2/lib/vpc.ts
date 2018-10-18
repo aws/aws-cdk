@@ -290,6 +290,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       instanceTenancy,
       tags: this.tags,
     });
+    // this.resource.tags = this.tags;
 
     this.availabilityZones = new cdk.AvailabilityZoneProvider(this).availabilityZones;
     this.availabilityZones.sort();
@@ -309,9 +310,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
-      const igw = new cloudformation.InternetGatewayResource(this, 'IGW', {
-        tags: new cdk.TagManager(this),
-      });
+      const igw = new cloudformation.InternetGatewayResource(this, 'IGW');
       const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref
@@ -494,12 +493,10 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
       cidrBlock: props.cidrBlock,
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
-      tags: this.tags,
     });
     this.subnetId = subnet.subnetId;
     const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
       vpcId: props.vpcId,
-      tags: new cdk.TagManager(this),
     });
     this.routeTableId = table.ref;
 
@@ -556,7 +553,6 @@ export class VpcPublicSubnet extends VpcSubnet {
       allocationId: new cloudformation.EIPResource(this, `EIP`, {
         domain: 'vpc'
       }).eipAllocationId,
-      tags: new cdk.TagManager(this),
     });
     return ngw.natGatewayId;
   }

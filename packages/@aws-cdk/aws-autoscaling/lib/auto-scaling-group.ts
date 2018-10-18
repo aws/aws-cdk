@@ -185,7 +185,8 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     });
     this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
     this.securityGroups.push(this.securityGroup);
-    this.tags = new TagManager(this, {initialTags: props.tags});
+    this.tags = new cdk.TagManager(this, {initialTags: props.tags,
+      tagFormatter: new cdk.AutoScalingGroupTagFormatter()});
     this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
 
     this.role = new iam.Role(this, 'InstanceRole', {
@@ -487,16 +488,6 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): cdk
       [ScalingProcess.HealthCheck, ScalingProcess.ReplaceUnhealthy, ScalingProcess.AZRebalance,
         ScalingProcess.AlarmNotification, ScalingProcess.ScheduledActions],
   };
-}
-
-class TagManager extends cdk.TagManager {
-  protected tagFormatResolve(tagGroups: cdk.TagGroups): any {
-    const tags = {...tagGroups.nonStickyTags, ...tagGroups.ancestorTags, ...tagGroups.stickyTags};
-    return Object.keys(tags).map( (key) => {
-      const propagateAtLaunch = !!tagGroups.propagateTags[key] || !!tagGroups.ancestorTags[key];
-      return {key, value: tags[key], propagateAtLaunch};
-    });
-  }
 }
 
 /**

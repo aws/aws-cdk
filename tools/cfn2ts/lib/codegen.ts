@@ -8,6 +8,9 @@ import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from 
 const CORE = genspec.CORE_NAMESPACE;
 const RESOURCE_BASE_CLASS = `${CORE}.Resource`; // base class for all resources
 const CONSTRUCT_CLASS = `${CORE}.Construct`;
+const TAGGABLE_RESOURCE_BASE_CLASS = `${CORE}.TaggableResource`;
+const TAG_TYPE = 'TagType';
+const NOT_TAGGABLE = 'NOT_TAGGABLE';
 
 interface Dictionary<T> { [key: string]: T; }
 
@@ -183,7 +186,9 @@ export default class CodeGenerator {
     if (propsType) {
       this.code.line();
     }
-    this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS);
+
+    const baseClass: string = schema.isTaggableResource(spec) ? TAGGABLE_RESOURCE_BASE_CLASS : RESOURCE_BASE_CLASS;
+    this.openClass(resourceName, spec.Documentation, baseClass);
 
     //
     // Static inspectors.
@@ -238,6 +243,12 @@ export default class CodeGenerator {
       }
     }
 
+    // set the TagType to help TagManager format tags later
+    if (schema.isTaggableResource(spec)) {
+      const tagEnum = tagType(spec.Properties!.Tags);
+      this.code.line(`protected readonly tagType = ${tagEnum};`);
+    }
+
     //
     // Constructor
     //
@@ -252,7 +263,17 @@ export default class CodeGenerator {
     const optionalProps = spec.Properties && !Object.values(spec.Properties).some(p => p.Required);
     const propsArgument = propsType ? `, properties${optionalProps ? '?' : ''}: ${propsType.className}` : '';
     this.code.openBlock(`constructor(parent: ${CONSTRUCT_CLASS}, name: string${propsArgument})`);
-    this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
+
+    //
+    // Configure properties for super call
+    //
+    const superProps: string[] = [];
+    superProps.push(`type: ${resourceName.className}.resourceTypeName`);
+    if (propsType) {
+      superProps.push('properties');
+    }
+
+    this.code.line(`super(parent, name, { ${superProps.join(', ')} });`);
     // verify all required properties
     if (spec.Properties) {
       for (const propName of Object.keys(spec.Properties)) {
@@ -334,9 +355,10 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitCloudFormationMapper(typeName: genspec.CodeName,
-                                   propSpecs: { [name: string]: schema.Property },
-                                   nameConversionTable: Dictionary<string>) {
+  private emitCloudFormationMapper(
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>) {
     const mapperName = genspec.cfnMapperName(typeName);
 
     this.code.line('/**');
@@ -405,9 +427,10 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(typeName: genspec.CodeName,
-                        propSpecs: { [name: string]: schema.Property },
-                        nameConversionTable: Dictionary<string>) {
+  private emitValidator(
+    typeName: genspec.CodeName,
+    propSpecs: { [name: string]: schema.Property },
+    nameConversionTable: Dictionary<string>) {
     const validatorName = genspec.validatorName(typeName);
 
     this.code.line('/**');
@@ -490,7 +513,15 @@ export default class CodeGenerator {
     const javascriptPropertyName = genspec.cloudFormationToScriptName(propName);
 
     this.docLink(spec.Documentation, additionalDocs);
-    this.code.line(`${javascriptPropertyName}${question}: ${this.findNativeType(context, spec)};`);
+    const nativeTypes = this.findNativeType(context, spec);
+    if (propName === 'Tags' && schema.isTagProperty(spec)) {
+      // allow tags to use special TagManagerToken
+      nativeTypes.push(genspec.TAG_MANAGER_NAME.fqn);
+    } else {
+      // any other type can use the alternative of a Token
+      nativeTypes.push(genspec.TOKEN_NAME.fqn);
+    }
+    this.code.line(`${javascriptPropertyName}${question}: ${nativeTypes.join(' | ')};`);
 
     return javascriptPropertyName;
   }
@@ -543,26 +574,27 @@ export default class CodeGenerator {
   /**
    * Return the native type expression for the given propSpec
    */
-  private findNativeType(resource: genspec.CodeName, propSpec: schema.Property): string {
+  private findNativeType(resource: genspec.CodeName, propSpec: schema.Property): string[] {
     const alternatives: string[] = [];
 
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
       const itemTypes = genspec.specTypesToCodeTypes(resource.specName!, itemTypeNames(propSpec));
-      // Always accept a token in place of any list element
-      itemTypes.push(genspec.TOKEN_NAME);
 
+      if (itemTypes.indexOf(genspec.TAG_NAME) === -1) {
+        // Always accept a token in place of any list element that is not a Tag
+        itemTypes.push(genspec.TOKEN_NAME);
+      }
       const union = this.renderTypeUnion(resource, itemTypes);
 
       if (schema.isMapProperty(propSpec)) {
         alternatives.push(`{ [key: string]: (${union}) }`);
       } else {
         // To make TSLint happy, we have to either emit: SingleType[] or Array<Alt1 | Alt2>
-
         if (union.indexOf('|') !== -1) {
           alternatives.push(`Array<${union}>`);
         } else {
-          alternatives.push(`(${union})[]`);
+          alternatives.push(`${union}[]`);
         }
       }
     }
@@ -574,11 +606,7 @@ export default class CodeGenerator {
       const types = genspec.specTypesToCodeTypes(resource.specName!, typeNames);
       alternatives.push(this.renderTypeUnion(resource, types));
     }
-
-    // Always
-    alternatives.push(genspec.TOKEN_NAME.fqn);
-
-    return alternatives.join(' | ');
+    return alternatives;
   }
 
   private renderTypeUnion(context: genspec.CodeName, types: genspec.CodeName[]) {
@@ -627,4 +655,17 @@ function mapperNames(types: genspec.CodeName[]): string {
  */
 function quoteCode(code: string): string {
   return '``' + code + '``';
+}
+
+function tagType(prop: schema.TagProperty): string {
+  if (schema.isTagPropertyStandard(prop)) {
+    return `${CORE}.${TAG_TYPE}.Standard`;
+  }
+  if (schema.isTagPropertyAutoScalingGroup(prop)) {
+    return `${CORE}.${TAG_TYPE}.AutoScalingGroup`;
+  }
+  if (schema.isTagPropertyJson(prop) || schema.isTagPropertyStringMap(prop)) {
+    return `${CORE}.${TAG_TYPE}.Map`;
+  }
+  return NOT_TAGGABLE;
 }
