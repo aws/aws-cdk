@@ -1,6 +1,8 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { LambdaIntegration } from './integrations';
+import { Method } from './method';
+import { Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
 
 export interface LambdaRestApiProps {
@@ -13,15 +15,14 @@ export interface LambdaRestApiProps {
   handler: lambda.Function;
 
   /**
-   * An API path for a greedy proxy with an "ANY" method, which will route all
-   * requests under that path to the defined handler.
+   * If true, route all requests to the Lambda Function
    *
-   * If not defined, you will need to explicitly define the API model using
+   * If not set to true, you will need to explicitly define the API model using
    * `addResource` and `addMethod` (or `addProxy`).
    *
-   * @default undefined
+   * @default false
    */
-  proxyPath?: string;
+  proxyAll?: boolean;
 
   /**
    * Further customization of the REST API.
@@ -49,16 +50,26 @@ export class LambdaRestApi extends RestApi {
       ...props.options
     });
 
-    // if proxyPath is specified, add a proxy at the specified path
-    // we will need to create all resources along the path.
-    const proxyPath = props.proxyPath;
-    if (proxyPath) {
-      const route = proxyPath.split('/').filter(x => x);
-      let curr = this.root;
-      for (const part of route) {
-        curr = curr.addResource(part);
-      }
-      curr.addProxy();
+    if (props.proxyAll) {
+      this.root.addProxy();
+      this.root.addMethod('ANY');
+
+      // Make sure users cannot call any other resource adding function
+      this.root.addResource = addResourceThrows;
+      this.root.addMethod = addMethodThrows;
+      this.root.addProxy = addProxyThrows;
     }
   }
+}
+
+function addResourceThrows(): Resource {
+  throw new Error(`Cannot call 'addResource' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
+}
+
+function addMethodThrows(): Method {
+  throw new Error(`Cannot call 'addMethod' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
+}
+
+function addProxyThrows(): Resource {
+  throw new Error(`Cannot call 'addProxy' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
 }
