@@ -13,7 +13,9 @@ export * from './container-definition';
 export * from './container-image';
 export * from './linux-parameters';
 export * from './load-balanced-fargate-service';
+export * from './load-balanced-ecs-service';
 export * from './load-balanced-fargate-service-applet';
+export * from './asset-image';
 
 export * from './log-drivers/log-driver';
 export * from './log-drivers/aws-log-driver';

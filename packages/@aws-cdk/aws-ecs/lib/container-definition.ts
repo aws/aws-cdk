@@ -1,6 +1,7 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { BaseTaskDefinition, NetworkMode } from './base/base-task-definition';
-import { ContainerImage } from './container-image';
+import { IContainerImage } from './container-image';
 import { cloudformation } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
@@ -11,9 +12,9 @@ export interface ContainerDefinitionProps {
    *
    * You can use images in the Docker Hub registry or specify other
    * repositories (repository-url/image:tag).
-   * TODO: Update these to specify using classes of ContainerImage
+   * TODO: Update these to specify using classes of IContainerImage
    */
-  image: ContainerImage;
+  image: IContainerImage;
 
   /**
    * The CMD value to pass to the container.
@@ -182,16 +183,18 @@ export class ContainerDefinition extends cdk.Construct {
 
   public readonly essential: boolean;
 
+  public readonly memoryLimitSpecified: boolean;
+
   private readonly links = new Array<string>();
 
   private readonly taskDefinition: BaseTaskDefinition;
-
-  private _usesEcrImages: boolean = false;
 
   constructor(parent: cdk.Construct, id: string, taskDefinition: BaseTaskDefinition, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = taskDefinition;
+    this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
+
     props.image.bind(this);
   }
 
@@ -232,14 +235,10 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Mark this ContainerDefinition as using an ECR image
+   * Add a statement to the Task Definition's Execution policy
    */
-  public useEcrImage() {
-    this._usesEcrImages = true;
-  }
-
-  public get usesEcrImages() {
-    return this._usesEcrImages;
+  public addToExecutionPolicy(statement: iam.PolicyStatement) {
+    this.taskDefinition.addToExecutionRolePolicy(statement);
   }
 
   /**

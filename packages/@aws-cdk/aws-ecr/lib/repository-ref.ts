@@ -49,7 +49,7 @@ export abstract class RepositoryRef extends cdk.Construct {
   /**
    * Refer to a particular image tag from this repository
    */
-  public getImage(tag: string = "latest"): ecs.ContainerImage {
+  public getImage(tag: string = "latest"): ecs.IContainerImage {
     return new EcrImage(this, tag);
   }
 }
@@ -76,15 +76,23 @@ class ImportedRepository extends RepositoryRef {
   }
 }
 
-class EcrImage extends ecs.ContainerImage {
+class EcrImage implements ecs.IContainerImage {
   public readonly imageName: string;
+  private readonly repositoryArn: string;
 
   constructor(repository: RepositoryRef, tag: string) {
-    super();
     this.imageName = `${repository.repositoryUri}:${tag}`;
+    this.repositoryArn = repository.repositoryArn;
   }
 
   public bind(containerDefinition: ecs.ContainerDefinition): void {
-    containerDefinition.useEcrImage();
+    // This image will be in ECR, so we need appropriate permissions.
+    containerDefinition.addToExecutionPolicy(new iam.PolicyStatement()
+      .addActions("ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage")
+      .addResource(this.repositoryArn));
+
+    containerDefinition.addToExecutionPolicy(new iam.PolicyStatement()
+      .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
+      .addAllResources());
   }
 }

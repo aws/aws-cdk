@@ -104,6 +104,13 @@ export class SDK {
     });
   }
 
+  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+    return new AWS.ECR({
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
+    });
+  }
+
   public async defaultRegion(): Promise<string | undefined> {
     return await getCLICompatibleDefaultRegion(this.profile);
   }

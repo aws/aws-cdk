@@ -48,7 +48,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
    * container.
    */
   public defaultContainer?: ContainerDefinition;
-  private readonly containers = new Array<ContainerDefinition>();
+  protected readonly containers = new Array<ContainerDefinition>();
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
   private executionRole?: iam.Role;
 
@@ -81,8 +81,17 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   /**
    * Add a policy statement to the Task Role
    */
-  public addToRolePolicy(statement: iam.PolicyStatement) {
+  public addToTaskRolePolicy(statement: iam.PolicyStatement) {
     this.taskRole.addToPolicy(statement);
+  }
+
+  public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
+    if (!this.executionRole) {
+      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+    }
+    this.executionRole.addToPolicy(statement);
   }
 
   /**
@@ -91,9 +100,6 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   public addContainer(id: string, props: ContainerDefinitionProps) {
     const container = new ContainerDefinition(this, id, this, props);
     this.containers.push(container);
-    if (container.usesEcrImages) {
-      this.generateExecutionRole();
-    }
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
@@ -104,18 +110,6 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   private addVolume(volume: Volume) {
     // const v = this.renderVolume(volume);
     this.volumes.push(volume);
-  }
-
-  /**
-   * Generate a default execution role that allows pulling from ECR
-   */
-  private generateExecutionRole() {
-    if (!this.executionRole) {
-      this.executionRole = new iam.Role(this, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
-      this.executionRole.attachManagedPolicy(new iam.AwsManagedPolicy("service-role/AmazonECSTaskExecutionRolePolicy").policyArn);
-    }
   }
 }
 

@@ -54,13 +54,17 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.12.0",
     "cdk-build-tools": "^0.12.0",
+    "cdk-integ-tools": "^0.12.0",
     "cfn2ts": "^0.12.0",
     "pkglint": "^0.12.0"
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.12.0",
+    "@aws-cdk/cx-api": "^0.12.0",
     "@aws-cdk/aws-autoscaling": "^0.12.0",
     "@aws-cdk/aws-cloudwatch": "^0.12.0",
+    "@aws-cdk/aws-lambda": "^0.12.0",
+    "@aws-cdk/aws-cloudformation": "^0.12.0",
     "@aws-cdk/aws-ec2": "^0.12.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.12.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.12.0",

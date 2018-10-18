@@ -1,6 +1,6 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerImage } from './container-image';
+import { IContainerImage } from './container-image';
 import { IFargateCluster } from './fargate/fargate-cluster';
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
@@ -11,7 +11,7 @@ export interface LoadBalancedFargateServiceProps {
    */
   cluster: IFargateCluster;
 
-  image: ContainerImage;
+  image: IContainerImage;
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
