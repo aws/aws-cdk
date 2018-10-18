@@ -25,29 +25,29 @@
       "Type": "AWS::SQS::QueuePolicy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sqs:SendMessage",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyQueueE6CA6235",
-                  "Arn"
-                ]
-              },
-              "Principal": {
-                "Service": "sns.amazonaws.com"
-              },
               "Condition": {
                 "ArnEquals": {
                   "aws:SourceArn": {
                     "Ref": "MyTopic86869434"
                   }
                 }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "sns.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyQueueE6CA6235",
+                  "Arn"
+                ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Queues": [
           {

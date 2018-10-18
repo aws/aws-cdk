@@ -348,18 +348,18 @@ export = {
         "Statement": [
           {
           "Action": [
-            "kms:CancelKeyDeletion",
             "kms:Create*",
-            "kms:Delete*",
             "kms:Describe*",
-            "kms:Disable*",
             "kms:Enable*",
-            "kms:Get*",
             "kms:List*",
             "kms:Put*",
-            "kms:Revoke*",
-            "kms:ScheduleKeyDeletion",
             "kms:Update*",
+            "kms:Revoke*",
+            "kms:Disable*",
+            "kms:Get*",
+            "kms:Delete*",
+            "kms:ScheduleKeyDeletion",
+            "kms:CancelKeyDeletion"
           ],
           "Effect": "Allow",
           "Principal": {
@@ -384,8 +384,8 @@ export = {
           },
           {
           "Action": [
-            "kms:Decrypt",
             "kms:GenerateDataKey",
+            "kms:Decrypt"
           ],
           "Effect": "Allow",
           "Principal": {

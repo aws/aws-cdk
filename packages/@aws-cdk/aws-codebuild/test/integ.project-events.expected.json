@@ -71,16 +71,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -88,11 +88,10 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "codecommit:GitPull",
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyRepoF4F48043",
@@ -101,22 +100,25 @@
               }
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -124,7 +126,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":",
+                      "log-group",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
@@ -143,11 +147,14 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -155,9 +162,19 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:/aws/codebuild/",
+                      ":",
+                      "log-group",
+                      ":",
                       {
-                        "Ref": "MyProject39F7B0AE"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "/aws/codebuild/",
+                            {
+                              "Ref": "MyProject39F7B0AE"
+                            }
+                          ]
+                        ]
                       },
                       ":*"
                     ]
@@ -165,7 +182,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
         "Roles": [
@@ -272,16 +290,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "events.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -289,11 +307,10 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "codebuild:StartBuild",
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyProject39F7B0AE",
@@ -301,7 +318,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyProjectEventsRoleDefaultPolicy397DCBF8",
         "Roles": [
@@ -328,20 +346,20 @@
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
-              "Sid": "0",
               "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
               "Resource": {
                 "Ref": "MyTopic86869434"
               },
-              "Principal": {
-                "Service": "events.amazonaws.com"
-              }
+              "Sid": "0"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Topics": [
           {

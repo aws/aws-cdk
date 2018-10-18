@@ -1,15 +1,14 @@
-import cdk = require('@aws-cdk/cdk');
-import { optimizeStatements } from './optimize-statements';
+import { AwsAccountId, AwsPartition, Token } from '@aws-cdk/cdk';
 
-export class PolicyDocument extends cdk.Token {
-  private readonly statements = new Array<PolicyStatement>();
+export class PolicyDocument extends Token {
+  private statements = new Array<PolicyStatement>();
 
   /**
    * Creates a new IAM policy document.
    * @param defaultDocument An IAM policy document to use as an initial
    * policy. All statements of this document will be copied in.
    */
-  constructor(private readonly baseDocument: any = {}) {
+  constructor(private readonly baseDocument?: any) {
     super();
   }
 
@@ -18,9 +17,10 @@ export class PolicyDocument extends cdk.Token {
       return undefined;
     }
 
-    const doc = { ...this.baseDocument };
+    const doc = this.baseDocument || { };
+    doc.Statement = doc.Statement || [ ];
     doc.Version = doc.Version || '2012-10-17';
-    doc.Statement = optimizeStatements(cdk.resolve([...(doc.Statement || []), ...this.statements.map(s => s.resolve())]));
+    doc.Statement = doc.Statement.concat(this.statements);
     return doc;
   }
 
@@ -65,7 +65,7 @@ export abstract class PolicyPrincipal {
  */
 export class PrincipalPolicyFragment {
   constructor(
-    public readonly principalJson: { [key: string]: any },
+    public readonly principalJson: any,
     public readonly conditions: {[key: string]: any} = {}) {
   }
 }
@@ -82,7 +82,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
-    super(`arn:${new cdk.AwsPartition()}:iam::${accountId}:root`);
+    super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
   }
 }
 
@@ -137,7 +137,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new cdk.AwsAccountId());
+    super(new AwsAccountId());
   }
 }
 
@@ -155,19 +155,19 @@ export class Anyone extends PolicyPrincipal {
   public readonly accountId = '*';
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: '*' });
+    return new PrincipalPolicyFragment('*');
   }
 }
 
 /**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement extends cdk.Token {
-  private readonly action = new Array<any>();
-  private readonly resource = new Array<any>();
-  private readonly principal: { [key: string]: any[] } = {};
-  private readonly condition: { [key: string]: any } = {};
-  private effect: PolicyStatementEffect;
+export class PolicyStatement extends Token {
+  private action = new Array<any>();
+  private principal = new Array<any>();
+  private resource = new Array<any>();
+  private condition: { [key: string]: any } = { };
+  private effect?: PolicyStatementEffect;
   private sid?: any;
 
   constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
@@ -197,20 +197,12 @@ export class PolicyStatement extends cdk.Token {
    * Indicates if this permission has a "Principal" section.
    */
   public get hasPrincipal() {
-    return this.principal != null && Object.keys(this.principal).length > 0;
+    return this.principal && this.principal.length > 0;
   }
 
   public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
     const fragment = principal.policyFragment();
-    for (const key of Object.keys(fragment.principalJson)) {
-      this.principal[key] = this.principal[key] || [];
-      const value = fragment.principalJson[key];
-      if (Array.isArray(value)) {
-        this.principal[key].push(...value);
-      } else {
-        this.principal[key].push(value);
-      }
-    }
+    this.principal.push(fragment.principalJson);
     this.addConditions(fragment.conditions);
     return this;
   }
@@ -320,7 +312,7 @@ export class PolicyStatement extends cdk.Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new cdk.Token(() => {
+    return this.addCondition('StringEquals', new Token(() => {
       return { 'sts:ExternalId': accountId };
     }));
   }

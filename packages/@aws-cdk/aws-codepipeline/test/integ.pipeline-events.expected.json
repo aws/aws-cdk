@@ -8,16 +8,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -25,18 +25,17 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -54,21 +53,22 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
+                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:UploadArchive"
+                "codecommit:CancelUploadArchive"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "CodeCommitRepoDC6A41F9",
@@ -77,12 +77,12 @@
               }
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild",
                 "codebuild:StopBuild"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "BuildProject097C5DB7",
@@ -90,7 +90,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyPipelineRoleDefaultPolicy34F09EFA",
         "Roles": [
@@ -199,11 +200,14 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn:",
+                  "arn",
+                  ":",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":codepipeline:",
+                  ":",
+                  "codepipeline",
+                  ":",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -253,11 +257,14 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn:",
+                  "arn",
+                  ":",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":codepipeline:",
+                  ":",
+                  "codepipeline",
+                  ":",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -305,11 +312,14 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn:",
+                  "arn",
+                  ":",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":codepipeline:",
+                  ":",
+                  "codepipeline",
+                  ":",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -359,16 +369,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -376,25 +386,27 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -402,7 +414,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":",
+                      "log-group",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
@@ -421,11 +435,14 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -433,9 +450,19 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:/aws/codebuild/",
+                      ":",
+                      "log-group",
+                      ":",
                       {
-                        "Ref": "BuildProject097C5DB7"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "/aws/codebuild/",
+                            {
+                              "Ref": "BuildProject097C5DB7"
+                            }
+                          ]
+                        ]
                       },
                       ":*"
                     ]
@@ -444,15 +471,15 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -470,13 +497,15 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "BuildProjectRoleDefaultPolicy3E9F248C",
         "Roles": [
@@ -516,20 +545,20 @@
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
-              "Sid": "0",
               "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
               "Resource": {
                 "Ref": "MyTopic86869434"
               },
-              "Principal": {
-                "Service": "events.amazonaws.com"
-              }
+              "Sid": "0"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Topics": [
           {

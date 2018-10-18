@@ -468,16 +468,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "ec2.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -485,25 +485,31 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":s3:::",
+                      ":",
+                      "s3",
+                      ":",
+                      "",
+                      ":",
+                      "",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
@@ -526,11 +532,18 @@
                         "Fn::Join": [
                           "",
                           [
-                            "arn:",
+                            "arn",
+                            ":",
                             {
                               "Ref": "AWS::Partition"
                             },
-                            ":s3:::",
+                            ":",
+                            "s3",
+                            ":",
+                            "",
+                            ":",
+                            "",
+                            ":",
                             {
                               "Fn::Join": [
                                 "",
@@ -545,13 +558,15 @@
                           ]
                         ]
                       },
-                      "/latest/*"
+                      "/",
+                      "latest/*"
                     ]
                   ]
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "ASGInstanceRoleDefaultPolicy7636D8BF",
         "Roles": [
@@ -719,16 +734,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codedeploy.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
