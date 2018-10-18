@@ -1081,6 +1081,35 @@ export = {
     test.done();
   },
 
+  'grantInvoke adds iam:InvokeFunction'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.AccountPrincipal('1234'),
+    });
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    // WHEN
+    fn.grantInvoke(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Resource: { "Fn::GetAtt": [ "Function76856677", "Arn" ] }
+          }
+        ]
+      }
+    }));
+
+    test.done();
+  },
 };
 
 function newTestLambda(parent: cdk.Construct) {
