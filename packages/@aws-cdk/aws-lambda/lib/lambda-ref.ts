@@ -252,6 +252,17 @@ export abstract class FunctionRef extends cdk.Construct
   }
 
   /**
+   * Grant the given identity permissions to invoke this Lambda
+   */
+  public grantInvoke(identity?: iam.IPrincipal) {
+    if (identity) {
+      identity.addToPolicy(new iam.PolicyStatement()
+        .addAction('lambda:InvokeFunction')
+        .addResource(this.functionArn));
+    }
+  }
+
+  /**
    * Return the given named metric for this Lambda
    */
   public metric(metricName: string, props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
