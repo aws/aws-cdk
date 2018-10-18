@@ -127,11 +127,42 @@ export abstract class ClusterRef extends cdk.Construct {
  * The user is still required to create the worker nodes.
  */
 export class Cluster extends ClusterRef {
+  /**
+   * The Name of the created EKS Cluster
+   *
+   * @type {string}
+   * @memberof Cluster
+   */
   public readonly clusterName: string;
+  /**
+   * The AWS generated ARN for the Cluster resource
+   *
+   * @type {string}
+   * @memberof Cluster
+   */
   public readonly clusterArn: string;
+  /**
+   * The endpoint URL for the Cluster
+   * This is the URL inside the kubeconfig file to use with kubectl
+   *
+   * @type {string}
+   * @memberof Cluster
+   */
   public readonly clusterEndpoint: string;
-  public readonly clusterSubnets: ec2.VpcSubnetRef[];
+  /**
+   * The VPC Placement strategy for the given cluster
+   * PublicSubnets? PrivateSubnets?
+   *
+   * @type {ec2.VpcPlacementStrategy}
+   * @memberof Cluster
+   */
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
+  /**
+   * The security group attached to the given cluster
+   *
+   * @type {ec2.SecurityGroup}
+   * @memberof Cluster
+   */
   public readonly clusterSecurityGroup: ec2.SecurityGroup;
 
   private readonly vpc: ec2.VpcNetworkRef;
@@ -141,18 +172,13 @@ export class Cluster extends ClusterRef {
   constructor(parent: cdk.Construct, name: string, props: IClusterProps) {
     super(parent, name);
 
-    if (!props.vpc) {
-      throw new Error("You must supply a VPC in which to place the cluster.");
-    }
-
     this.vpc = props.vpc;
     this.vpcPlacement = props.vpcPlacement;
-    this.clusterSubnets = this.vpc.subnets(this.vpcPlacement);
-    this.clusterSubnets.map(s => this.clusterSubnetIds.push(s.subnetId));
+    const subnets = this.vpc.subnets(this.vpcPlacement);
+    subnets.map(s => this.clusterSubnetIds.push(s.subnetId));
 
     const role = this.createRole();
     this.clusterSecurityGroup = this.addDefaultSecurityGroup();
-
     const sgId = this.clusterSecurityGroup.securityGroupId;
 
     const clusterProps: cloudformation.ClusterResourceProps = {
