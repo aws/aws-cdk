@@ -7,27 +7,37 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
             "Fn::Join": [
               "",
               [
-                "arn:",
+                "arn",
+                ":",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ":",
+                "iam",
+                ":",
+                "",
+                ":",
+                "aws",
+                ":",
+                "policy",
+                "/",
+                "service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -38,24 +48,26 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
                 "ssm:DescribeParameters",
-                "ssm:GetParameter",
-                "ssm:GetParameters"
+                "ssm:GetParameters",
+                "ssm:GetParameter"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
                   [
-                    "arn:",
+                    "arn",
+                    ":",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":ssm:",
+                    ":",
+                    "ssm",
+                    ":",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -63,7 +75,9 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/",
+                    ":",
+                    "parameter",
+                    "/",
                     {
                       "Fn::Join": [
                         "",
@@ -80,7 +94,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyFunctionServiceRoleDefaultPolicyB705ABD4",
         "Roles": [
