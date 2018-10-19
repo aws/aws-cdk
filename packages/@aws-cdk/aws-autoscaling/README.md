@@ -9,14 +9,17 @@ An `AutoScalingGroup` represents a number of instances on which you run your cod
 pick the size of the fleet, the instance type and the OS image:
 
 ```ts
+import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 
-new ec2.AutoScalingGroup(stack, 'ASG', {
+const vpc = new ec2.VpcNetwork(stack, 'VPC', {
+    maxAZs: 3
+});
+
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
     vpc,
     instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
-    machineImage: new ec2.LinuxImage({
-        'us-east-1': 'ami-97785bed'
-    })
+    machineImage: new ec2.AmazonLinuxImage()
 });
 ```
 
