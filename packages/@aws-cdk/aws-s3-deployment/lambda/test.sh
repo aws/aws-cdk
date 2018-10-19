@@ -15,9 +15,6 @@ cd ${staging}
 cp -f ${scriptdir}/src/* $PWD
 cp -f ${scriptdir}/test/* $PWD
 
-# make sure the "aws" mock is executable (codebuild loses file permissions)
-chmod +x ./aws
-
 # install deps
 pip3 install -r requirements.txt -t .
 
