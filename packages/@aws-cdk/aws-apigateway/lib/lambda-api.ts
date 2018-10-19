@@ -17,12 +17,12 @@ export interface LambdaRestApiProps {
   /**
    * If true, route all requests to the Lambda Function
    *
-   * If not set to true, you will need to explicitly define the API model using
+   * If set to false, you will need to explicitly define the API model using
    * `addResource` and `addMethod` (or `addProxy`).
    *
-   * @default false
+   * @default true
    */
-  proxyAll?: boolean;
+  proxy?: boolean;
 
   /**
    * Further customization of the REST API.
@@ -50,9 +50,8 @@ export class LambdaRestApi extends RestApi {
       ...props.options
     });
 
-    if (props.proxyAll) {
+    if (props.proxy !== false) {
       this.root.addProxy();
-      this.root.addMethod('ANY');
 
       // Make sure users cannot call any other resource adding function
       this.root.addResource = addResourceThrows;
@@ -63,13 +62,13 @@ export class LambdaRestApi extends RestApi {
 }
 
 function addResourceThrows(): Resource {
-  throw new Error(`Cannot call 'addResource' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
+  throw new Error(`Cannot call 'addResource' on a proxying LambdaRestApi; set 'proxy' to false`);
 }
 
 function addMethodThrows(): Method {
-  throw new Error(`Cannot call 'addMethod' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
+  throw new Error(`Cannot call 'addMethod' on a proxying LambdaRestApi; set 'proxy' to false`);
 }
 
 function addProxyThrows(): Resource {
-  throw new Error(`Cannot call 'addProxy' on a proyxing LambdaRestApi; set 'proxyAll' to false`);
+  throw new Error(`Cannot call 'addProxy' on a proxying LambdaRestApi; set 'proxy' to false`);
 }

@@ -18,7 +18,7 @@ export = {
     });
 
     // WHEN
-    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler, proxyAll: true });
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler });
 
     // THEN -- can't customize further
     test.throws(() => {
@@ -86,7 +86,7 @@ export = {
     test.done();
   },
 
-  'when "proxyPath" is not specified, users need to define the model'(test: Test) {
+  'when "proxy" is set to false, users need to define the model'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -97,7 +97,7 @@ export = {
     });
 
     // WHEN
-    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler });
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler, proxy: false });
 
     const tasks = api.root.addResource('tasks');
     tasks.addMethod('GET');
