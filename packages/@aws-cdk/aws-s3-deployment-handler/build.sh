@@ -15,6 +15,9 @@ echo "staging: ${staging}"
 # install python requirements
 pip3 install -r requirements.txt -t "${staging}"
 
+# print all installed files
+find ${staging}
+
 # copy sources
 rsync -av src/ "${staging}"
 

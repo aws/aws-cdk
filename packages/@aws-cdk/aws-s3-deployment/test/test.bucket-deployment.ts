@@ -123,15 +123,14 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
-        "Version": "2012-10-17",
         "Statement": [
           {
-            "Effect": "Allow",
             "Action": [
-              "s3:GetBucket*",
               "s3:GetObject*",
+              "s3:GetBucket*",
               "s3:List*"
             ],
+            "Effect": "Allow",
             "Resource": [
               {
                 "Fn::GetAtt": [
@@ -156,15 +155,15 @@ export = {
             ]
           },
           {
-            "Effect": "Allow",
             "Action": [
-              "s3:Abort*",
-              "s3:DeleteObject*",
-              "s3:GetBucket*",
               "s3:GetObject*",
+              "s3:GetBucket*",
               "s3:List*",
-              "s3:PutObject*"
+              "s3:DeleteObject*",
+              "s3:PutObject*",
+              "s3:Abort*"
             ],
+            "Effect": "Allow",
             "Resource": [
               {
                 "Fn::GetAtt": [
@@ -188,8 +187,15 @@ export = {
               }
             ]
           }
-        ]
-      }
+        ],
+        "Version": "2012-10-17"
+      },
+      "PolicyName": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5",
+      "Roles": [
+        {
+          "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4"
+        }
+      ]
     }));
     test.done();
   },
