@@ -121,19 +121,8 @@ def invoke_handler(requestType, resourceProps, expected_status='SUCCESS'):
         'ResourceProperties': resourceProps
     }
 
-    class ContextMock:
-        log_stream_name = 'log_stream'
-
-    class ResponseMock:
-        reason = 'OK'
-
-
-    # def http_put(url, data, headers):
-    #     if url != response_url:
-    #         raise Exception("Expected response URL to be %s but got %s\n%s" % (response_url % url, response))
-
-    #     response.append(data)
-    #     return ResponseMock()
+    class ContextMock: log_stream_name = 'log_stream'
+    class ResponseMock: reason = 'OK'
 
     context = ContextMock()
     requests.put = MagicMock(return_value=ResponseMock())
