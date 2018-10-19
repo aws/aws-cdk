@@ -1,3 +1,5 @@
+# unit tests for the s3 bucket deployment lambda handler
+
 import index
 import os
 import unittest
@@ -11,10 +13,9 @@ class TestHandler(unittest.TestCase):
         logger = logging.getLogger()
         logger.addHandler(logging.NullHandler())
 
-        try:
-            os.remove("aws.out")
-        except OSError:
-            pass
+        # clean up old aws.out file (from previous runs)
+        try: os.remove("aws.out")
+        except OSError: pass
 
     def test_invalid_request(self):
         resp = invoke_handler("Create", {}, "FAILED")
@@ -85,8 +86,6 @@ class TestHandler(unittest.TestCase):
 
         self.assertAwsCommands("s3 rm s3://<dest-bucket-name>/ --recursive")
 
-
-
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):
         argvs = read_aws_out()
@@ -96,6 +95,8 @@ class TestHandler(unittest.TestCase):
 # ==================================================================================================
 # helpers
 
+#
+# reads "aws.out" and returns a list of "aws" commands (as strings)
 def read_aws_out():
     if not os.path.exists("aws.out"):
         return []
@@ -108,6 +109,11 @@ def read_aws_out():
             traceback.print_exc()
             raise Exception("Unable to parse aws.out as JSON.\n%s" % '\n'.join(lines))
 
+#
+# invokes the handler under test
+#   requestType: CloudFormation request type ("Create", "Update", "Delete")
+#   resourceProps: map to pass to "ResourceProperties"
+#   expected_status: "SUCCESS" or "FAILED"
 def invoke_handler(requestType, resourceProps, expected_status='SUCCESS'):
     response_url = '<response-url>'
 

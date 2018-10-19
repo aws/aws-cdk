@@ -1,5 +1,13 @@
 #!/usr/bin/env python
-# mock for aws-cli
+#===================================================================================================
+# mock for the "aws" cli
+#
+# the mock behaves as follows:
+# - argvs are going to be written to "aws.out" (one command in each line)
+# - if "aws s3 cp" is invoked, the destination will be populated with a test zip file.
+# - for "cp" and "sync", "aws.out" argv[4] is replaced by "archive.zip" and "contents.zip"
+#   becuase the actual value is a full path of a temporary directory
+#
 import sys
 import json
 import os
