@@ -19,7 +19,7 @@ class TestHandler(unittest.TestCase):
         except OSError: pass
 
     def test_invalid_request(self):
-        resp = invoke_handler("Create", {}, "FAILED")
+        resp = invoke_handler("Create", {}, expected_status="FAILED")
         self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketName'")
 
     def test_create_update(self):
@@ -85,7 +85,91 @@ class TestHandler(unittest.TestCase):
             "RetainOnDelete": "false"
         })
 
-        self.assertAwsCommands("s3 rm s3://<dest-bucket-name>/ --recursive")
+        self.assertAwsCommands(
+            "s3 rm s3://<dest-bucket-name>/ --recursive"
+        )
+
+    #
+    # update
+    #
+
+    def test_update_same_dest(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        })
+
+        self.assertAwsCommands(
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
+        )
+
+    def test_update_new_dest_retain(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+            "RetainOnDelete": "true"
+        })
+
+        self.assertAwsCommands(
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
+        )
+
+    def test_update_new_dest_no_retain_explicit(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<new-dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<old-dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "<old-dest-prefix>",
+            "RetainOnDelete": "false"
+        })
+
+        self.assertAwsCommands(
+            "s3 rm s3://<old-dest-bucket-name>/<old-dest-prefix> --recursive",
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<new-dest-bucket-name>/"
+        )
+
+    def test_update_new_dest_no_retain_implicit(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<new-dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<old-dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "<old-dest-prefix>"
+        })
+
+        self.assertAwsCommands(
+            "s3 rm s3://<old-dest-bucket-name>/<old-dest-prefix> --recursive",
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<new-dest-bucket-name>/"
+        )
+
+    def test_update_new_dest_prefix_no_retain_implicit(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "<new-dest-prefix>"
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        })
+
+        self.assertAwsCommands(
+            "s3 rm s3://<dest-bucket-name>/ --recursive",
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/<new-dest-prefix>"
+        )
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):
@@ -109,7 +193,7 @@ def read_aws_out():
 #   requestType: CloudFormation request type ("Create", "Update", "Delete")
 #   resourceProps: map to pass to "ResourceProperties"
 #   expected_status: "SUCCESS" or "FAILED"
-def invoke_handler(requestType, resourceProps, expected_status='SUCCESS'):
+def invoke_handler(requestType, resourceProps, old_resource_props=None, expected_status='SUCCESS'):
     response_url = '<response-url>'
 
     event={
@@ -120,6 +204,9 @@ def invoke_handler(requestType, resourceProps, expected_status='SUCCESS'):
         'RequestType': requestType,
         'ResourceProperties': resourceProps
     }
+
+    if old_resource_props:
+        event['OldResourceProperties'] = old_resource_props
 
     class ContextMock: log_stream_name = 'log_stream'
     class ResponseMock: reason = 'OK'

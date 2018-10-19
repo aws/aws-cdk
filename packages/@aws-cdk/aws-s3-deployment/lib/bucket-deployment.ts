@@ -42,7 +42,7 @@ export class BucketDeployment extends cdk.Construct {
       code: lambda.Code.file(handlerCodeBundle),
       runtime: lambda.Runtime.Python36,
       handler: 'index.handler',
-      lambdaPurpose: 'Handler for the Custom::CDKBucketDeployment custom resource (aws-s3-deployment)',
+      lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: 15 * 60
     });
 

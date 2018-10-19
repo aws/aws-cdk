@@ -5,6 +5,7 @@ import { Test } from 'nodeunit';
 import path = require('path');
 import s3deploy = require('../lib');
 
+// tslint:disable:max-line-length
 // tslint:disable:object-literal-key-quotes
 
 export = {
@@ -21,8 +22,15 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('Custom::CDKBucketDeployment', {
-      "ServiceToken": { "Fn::GetAtt": [ "SingletonLambda8693BB64968944B69AAFB0CC9EB8756C4C2FE6DD", "Arn" ] },
-      "SourceBucketName": { "Ref": "DeployAssetS3BucketB84349C9" },
+      "ServiceToken": {
+        "Fn::GetAtt": [
+          "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+          "Arn"
+        ]
+      },
+      "SourceBucketName": {
+        "Ref": "DeployAssetS3BucketB84349C9"
+      },
       "SourceObjectKey": {
         "Fn::Join": [
           "",
@@ -56,7 +64,9 @@ export = {
           ]
         ]
       },
-      "DestinationBucketName": { "Ref": "DestC383B82A" }
+      "DestinationBucketName": {
+        "Ref": "DestC383B82A"
+      }
     }));
     test.done();
   },
@@ -192,10 +202,10 @@ export = {
         ],
         "Version": "2012-10-17"
       },
-      "PolicyName": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5",
+      "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
       "Roles": [
         {
-          "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4"
+          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
         }
       ]
     }));

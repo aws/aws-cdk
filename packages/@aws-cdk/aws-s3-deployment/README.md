@@ -44,8 +44,9 @@ The following source types are supported for bucket deployments:
 ## Retain on Delete
 
 By default, the contents of the destination bucket will be deleted when the
-`BucketDeployment` resource is removed from the stack. You can use the option
-`retainOnDelete: true` to disable this behavior.
+`BucketDeployment` resource is removed from the stack or when the destination is
+changed. You can use the option `retainOnDelete: true` to disable this behavior,
+in which case the contents will be retained.
 
 ## Notes
 

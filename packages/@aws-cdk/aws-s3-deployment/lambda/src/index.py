@@ -28,6 +28,7 @@ def handler(event, context):
 
         # extract resource properties
         props = event['ResourceProperties']
+        old_props = event.get('OldResourceProperties', {})
 
         try:
             source_bucket_name = props['SourceBucketName']
@@ -41,14 +42,20 @@ def handler(event, context):
 
         s3_source_zip = "s3://%s/%s" % (source_bucket_name, source_object_key)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
-        logger.info("| s3_dest: %s" % s3_dest)
 
-        # delete or create/update
-        if request_type == "Delete":
-            # delete only if "retain_on_delete" is false
-            if not retain_on_delete:
-                aws_command("s3", "rm", s3_dest, "--recursive")
-        else:
+        old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
+        logger.info("| s3_dest: %s" % s3_dest)
+        logger.info("| old_s3_dest: %s" % old_s3_dest)
+
+        # delete or create/update (only if "retain_on_delete" is false)
+        if request_type == "Delete" and not retain_on_delete:
+            aws_command("s3", "rm", s3_dest, "--recursive")
+
+        # if we are updating without retention and the destination changed, delete first
+        if request_type == "Update" and not retain_on_delete and old_s3_dest != s3_dest:
+            aws_command("s3", "rm", old_s3_dest, "--recursive")
+
+        if request_type == "Update" or request_type == "Create":
             s3_deploy(s3_source_zip, s3_dest)
 
         cfn_send(event, context, CFN_SUCCESS)

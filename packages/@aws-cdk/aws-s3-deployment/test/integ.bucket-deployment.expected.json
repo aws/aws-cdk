@@ -46,7 +46,7 @@
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "SingletonLambda8693BB64968944B69AAFB0CC9EB8756C4C2FE6DD",
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
             "Arn"
           ]
         },
@@ -91,7 +91,7 @@
         }
       }
     },
-    "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -132,7 +132,7 @@
         ]
       }
     },
-    "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -334,20 +334,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5",
+        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
         "Roles": [
           {
-            "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4"
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ]
       }
     },
-    "SingletonLambda8693BB64968944B69AAFB0CC9EB8756C4C2FE6DD": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket514C4610"
+            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -360,7 +360,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKeyC2B9A1E7"
+                          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0"
                         }
                       ]
                     }
@@ -373,7 +373,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKeyC2B9A1E7"
+                          "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0"
                         }
                       ]
                     }
@@ -386,7 +386,7 @@
         "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
-            "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4",
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
             "Arn"
           ]
         },
@@ -394,8 +394,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRole489D78C4",
-        "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5"
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
       ]
     },
     "Destination281A09BDF": {
@@ -406,7 +406,7 @@
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
-            "SingletonLambda8693BB64968944B69AAFB0CC9EB8756C4C2FE6DD",
+            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
             "Arn"
           ]
         },
@@ -457,27 +457,27 @@
   "Parameters": {
     "DeployMeAssetS3Bucket646A811D": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments/DeployMe/Asset\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployMe/Asset\""
     },
     "DeployMeAssetS3VersionKey5A12D51F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments/DeployMe/Asset\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployMe/Asset\""
     },
-    "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket514C4610": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3Bucket6E5FB2B7": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments/SingletonLambda8693BB64968944B69AAFB0CC9EB8756C/Code\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
-    "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKeyC2B9A1E7": {
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CCodeS3VersionKey426156C0": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments/SingletonLambda8693BB64968944B69AAFB0CC9EB8756C/Code\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code\""
     },
     "DeployWithPrefixAssetS3Bucket8B33F071": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"test-bucket-deployments/DeployWithPrefix/Asset\""
+      "Description": "S3 bucket for asset \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
     },
     "DeployWithPrefixAssetS3VersionKey45049418": {
       "Type": "String",
-      "Description": "S3 key for asset version \"test-bucket-deployments/DeployWithPrefix/Asset\""
+      "Description": "S3 key for asset version \"test-bucket-deployments-1/DeployWithPrefix/Asset\""
     }
   }
 }

@@ -30,6 +30,6 @@ class TestBucketDeployment extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestBucketDeployment(app, 'test-bucket-deployments');
+new TestBucketDeployment(app, 'test-bucket-deployments-1');
 
 app.run();
