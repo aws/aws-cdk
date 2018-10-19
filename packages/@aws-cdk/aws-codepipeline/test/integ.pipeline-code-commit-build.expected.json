@@ -15,16 +15,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -32,18 +32,17 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -61,21 +60,22 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
+                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:UploadArchive"
+                "codecommit:CancelUploadArchive"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyRepoF4F48043",
@@ -84,12 +84,12 @@
               }
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild",
                 "codebuild:StopBuild"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyBuildProject30DB9D6E",
@@ -97,7 +97,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
@@ -195,16 +196,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -212,25 +213,27 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -238,7 +241,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":",
+                      "log-group",
+                      ":",
                       {
                         "Fn::Join": [
                           "",
@@ -257,11 +262,14 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn:",
+                      "arn",
+                      ":",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":logs:",
+                      ":",
+                      "logs",
+                      ":",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -269,9 +277,19 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:/aws/codebuild/",
+                      ":",
+                      "log-group",
+                      ":",
                       {
-                        "Ref": "MyBuildProject30DB9D6E"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "/aws/codebuild/",
+                            {
+                              "Ref": "MyBuildProject30DB9D6E"
+                            }
+                          ]
+                        ]
                       },
                       ":*"
                     ]
@@ -280,15 +298,15 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -306,13 +324,15 @@
                           "Arn"
                         ]
                       },
-                      "/*"
+                      "/",
+                      "*"
                     ]
                   ]
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyBuildProjectRoleDefaultPolicy5604AA87",
         "Roles": [

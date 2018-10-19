@@ -258,48 +258,68 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "EventRule5A491D2C": {
-          "Type": "AWS::Events::Rule",
-          "Properties": {
-            "ScheduleExpression": "rate(1 minute)",
-            "State": "ENABLED",
-            "Targets": [
-              {
-                "Arn": "ARN2",
-                "Id": "T2",
-                "InputTransformer": {
-                  "InputTemplate": "\"Hello, \\\"world\\\"\""
-                },
-                "RoleArn": "IAM-ROLE-ARN"
-              },
-              {
-                "Arn": "ARN1",
-                "Id": "T1",
-                "InputTransformer": {
-                  "InputTemplate": "\"ab\""
-                },
-                "KinesisParameters": {
-                  "PartitionKeyPath": "partitionKeyPath"
-                }
-              },
-              {
-                "Arn": "ARN3",
-                "Id": "T3",
-                "InputTransformer": {
-                  "InputPathsMap": {
-                    "bar": "$.detail.bar"
-                  },
-                  "InputTemplate": "{ \"foo\": <bar> }"
-                }
-              },
-              {
-                "Arn": "ARN4",
-                "Id": "T4",
-                "InputTransformer": {
-                  "InputTemplate": "\" hello \"world\" \""
-                }
+        "Type": "AWS::Events::Rule",
+        "Properties": {
+          "State": "ENABLED",
+          "ScheduleExpression": "rate(1 minute)",
+          "Targets": [
+            {
+            "Arn": "ARN2",
+            "Id": "T2",
+            "InputTransformer": {
+              "InputTemplate": "\"Hello, \\\"world\\\"\""
+            },
+            "RoleArn": "IAM-ROLE-ARN"
+            },
+            {
+            "Arn": "ARN1",
+            "Id": "T1",
+            "InputTransformer": {
+              "InputTemplate": {
+              "Fn::Join": [
+                "",
+                [
+                "\"",
+                "a",
+                "b",
+                "\""
+                ]
+              ]
               }
-            ]
-          }
+            },
+            "KinesisParameters": {
+              "PartitionKeyPath": "partitionKeyPath"
+            }
+            },
+            {
+            "Arn": "ARN3",
+            "Id": "T3",
+            "InputTransformer": {
+              "InputPathsMap": {
+              "bar": "$.detail.bar"
+              },
+              "InputTemplate": "{ \"foo\": <bar> }"
+            }
+            },
+            {
+            "Arn": "ARN4",
+            "Id": "T4",
+            "InputTransformer": {
+              "InputTemplate": {
+              "Fn::Join": [
+                " ",
+                [
+                "\"",
+                "hello",
+                "\"world\"",
+                "\""
+                ]
+              ]
+              }
+            }
+            }
+          ]
+        }
         }
       }
     });
