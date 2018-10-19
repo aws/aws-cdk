@@ -58,7 +58,7 @@ export const maxPods = Object.freeze(
   ])
 );
 
-export const enum nodeType {
+export const enum NodeType {
   normal = "normal",
   gpu = "gpuSupport"
 }
