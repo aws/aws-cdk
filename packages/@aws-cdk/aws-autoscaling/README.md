@@ -12,14 +12,10 @@ pick the size of the fleet, the instance type and the OS image:
 import autoscaling = require('@aws-cdk/aws-autoscaling');
 import ec2 = require('@aws-cdk/aws-ec2');
 
-const vpc = new ec2.VpcNetwork(stack, 'VPC', {
-    maxAZs: 3
-});
-
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
     vpc,
     instanceType: new ec2.InstanceTypePair(InstanceClass.Burstable2, InstanceSize.Micro),
-    machineImage: new ec2.AmazonLinuxImage()
+    machineImage: new ec2.AmazonLinuxImage() // get the latest Amazon Linux image
 });
 ```
 
