@@ -1,8 +1,15 @@
-language: node_js
-install: ./install.sh
-script: ./build.sh
-node_js: 8.11.3
+language: python
+
+# python is needed for the aws-s3-deployment-handler package
 python:
   - "3.6"
 
+env:
+  - NODE_VERSION="8.11.3"
+
+before_install:
+  - nvm install $NODE_VERSION
+
+install: ./install.sh
+script: ./build.sh
 
