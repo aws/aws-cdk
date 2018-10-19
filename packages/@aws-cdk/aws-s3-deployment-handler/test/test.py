@@ -88,8 +88,7 @@ class TestHandler(unittest.TestCase):
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):
-        argvs = read_aws_out()
-        actual = map(lambda argv: ' '.join(argv[1:]), argvs)
+        actual = read_aws_out()
         self.assertEqual(actual, list(expected))
 
 # ==================================================================================================
@@ -102,12 +101,7 @@ def read_aws_out():
         return []
 
     with open("aws.out") as f:
-        lines = f.readlines()
-        try:
-            return map(lambda line: json.loads(line), lines)
-        except ValueError:
-            traceback.print_exc()
-            raise Exception("Unable to parse aws.out as JSON.\n%s" % '\n'.join(lines))
+        return f.read().splitlines()
 
 #
 # invokes the handler under test
