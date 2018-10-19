@@ -41,9 +41,5 @@ export = {
       test.deepEqual(zoneRef.hostedZoneId, cdkZone.hostedZoneId);
       test.done();
     },
-    'findAndImport will return a HostedZoneRef'(test: Test) {
-
-      test.done();
-    },
   }
 };

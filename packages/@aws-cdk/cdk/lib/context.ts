@@ -32,9 +32,7 @@ export class ContextProvider {
   }
 
   public get key(): string {
-    const propStrings: string[] = propsToArray({
-      ...this.props,
-    });
+    const propStrings: string[] = propsToArray(this.props);
     return `${this.provider}:${propStrings.join(':')}`;
   }
 
@@ -151,6 +149,9 @@ export class AvailabilityZoneProvider {
 }
 
 export interface SSMParameterProviderProps {
+  /**
+   * The name of the parameter to lookup
+   */
   parameterName: string;
 }
 /**
@@ -170,28 +171,6 @@ export class SSMParameterProvider {
     return this.provider.getStringValue('dummy');
   }
 }
-
-// export interface HostedZoneProviderProps {
-//   domainName: string;
-//   privateZone?: boolean;
-//   vpcId?: string;
-// }
-//
-// /**
-//  * Context provider that will lookup the Hosted Zone ID for the given arguments
-//  */
-// export class HostedZoneProvider {
-//   private provider: ContextProvider;
-//   constructor(context: Construct, props: HostedZoneProviderProps) {
-//     this.provider = new ContextProvider(context, HOSTED_ZONE_PROVIDER, props);
-//   }
-//   /**
-//    * Return the hosted zone meeting the filter
-//    */
-//   public zoneId(): string {
-//     return this.provider.getStringValue('dummy-zone');
-//   }
-// }
 
 function formatMissingScopeError(provider: string, props: {[key: string]: string}) {
   let s = `Cannot determine scope for context provider ${provider}`;

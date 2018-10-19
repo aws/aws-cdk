@@ -54,8 +54,22 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
 }
 
 export interface HostedZoneProviderProps {
+  /**
+   * The domain name e.g. example.com to lookup
+   */
   domainName: string;
+
+  /**
+   * True if the zone you want to find is a private hosted zone
+   */
   privateZone?: boolean;
+
+  /**
+   * The VPC ID to that the private zone must be associated with
+   *
+   * If you provide VPC ID and privateZone is false, this will return no results
+   * and raise an error.
+   */
   vpcId?: string;
 }
 
