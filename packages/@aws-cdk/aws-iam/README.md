@@ -7,7 +7,7 @@ attach an IAM policy to the role:
 const role = new Role(this, 'MyRole', {
   assumedBy: new ServicePrincipal('sns.amazonaws.com')
 });
-role.addPermission(new Permission('*', 'lambda:InvokeFunction'));
+role.addToPolicy(new Permission('*', 'lambda:InvokeFunction'));
 ```
 
 Define a policy and attach it to groups, users and roles. Note that it is possible to attach
