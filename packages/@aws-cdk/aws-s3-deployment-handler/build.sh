@@ -15,14 +15,8 @@ echo "staging: ${staging}"
 # install python requirements
 pip3 install -r requirements.txt -t "${staging}"
 
-# print all installed files
-find ${staging}
-
 # copy sources
 rsync -av src/ "${staging}"
-
-# move bin/aws one level up so it can "import" awscli
-cp ${staging}/bin/aws ${staging}
 
 echo "creating lambda.zip bundle..."
 cd ${staging}
