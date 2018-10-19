@@ -69,6 +69,7 @@ In addition to this guide, the following are other resources available to |cdk| 
   * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
 
 * `AWS CDK Sample for Cloud9 <https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-cdk.html>`_
+* `AWS CloudFormation Concepts <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html>`_
   
 .. _about_aws:
 
