@@ -1,17 +1,16 @@
+import asg = require("@aws-cdk/aws-autoscaling");
 import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require("@aws-cdk/aws-iam");
 import cdk = require("@aws-cdk/cdk");
 import { cloudformation } from "./eks.generated";
+import { maxPods, nodeAmi, nodeType } from "./instance-data";
 
-// TODO: Option to deploy nodes on creation.
-// TODO: Add ability to edit security group rules after nodes are created
-//       Such as the rule to allow API traffic from the nodes
-// TODO: Add Construct to simplify node creation (see eks example)
+// TODO: Option to deploy nodes on Cluster creation.
 
 /**
  * Properties to instantiate the Cluster
  */
-export interface IClusterProps {
+export interface IClusterProps extends cdk.StackProps {
   /**
    * The VPC in which to create the Cluster
    */
@@ -127,6 +126,7 @@ export abstract class ClusterRef extends cdk.Construct
  * The user is still required to create the worker nodes.
  */
 export class Cluster extends ClusterRef {
+  public readonly vpc: ec2.VpcNetworkRef;
   /**
    * The Name of the created EKS Cluster
    *
@@ -149,6 +149,7 @@ export class Cluster extends ClusterRef {
    * @memberof Cluster
    */
   public readonly clusterEndpoint: string;
+  public readonly clusterCA: string;
   /**
    * The VPC Placement strategy for the given cluster
    * PublicSubnets? PrivateSubnets?
@@ -166,7 +167,6 @@ export class Cluster extends ClusterRef {
   public readonly securityGroup: ec2.SecurityGroupRef;
   public readonly connections: ec2.Connections;
 
-  private readonly vpc: ec2.VpcNetworkRef;
   private readonly cluster: cloudformation.ClusterResource;
   private readonly clusterSubnetIds: string[] = [];
 
@@ -178,7 +178,7 @@ export class Cluster extends ClusterRef {
     const subnets = this.vpc.subnets(this.vpcPlacement);
     subnets.map(s => this.clusterSubnetIds.push(s.subnetId));
 
-    const role = this.createRole();
+    const role = this.addClusterRole();
 
     this.securityGroup = this.createSecurityGroup();
     const sgId = this.securityGroup.securityGroupId;
@@ -199,6 +199,7 @@ export class Cluster extends ClusterRef {
     this.clusterName = this.cluster.clusterName;
     this.clusterArn = this.cluster.clusterArn;
     this.clusterEndpoint = this.cluster.clusterEndpoint;
+    this.clusterCA = this.cluster.clusterCertificateAuthorityData;
   }
 
   private createCluster(props: cloudformation.ClusterResourceProps) {
@@ -218,7 +219,7 @@ export class Cluster extends ClusterRef {
     });
   }
 
-  private createRole() {
+  private addClusterRole() {
     const role = new iam.Role(this, "ClusterRole", {
       assumedBy: new iam.ServicePrincipal("eks.amazonaws.com"),
       managedPolicyArns: [
@@ -226,6 +227,120 @@ export class Cluster extends ClusterRef {
         "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
       ]
     });
+
+    return role;
+  }
+}
+
+export interface INodeProps {
+  nodeClass: ec2.InstanceClass;
+  nodeSize: ec2.InstanceSize;
+  nodeType: nodeType;
+  minNodes?: number;
+  maxNodes?: number;
+  sshKeyName?: string;
+  updateType?: asg.UpdateType;
+  tags?: cdk.Tags;
+}
+export class Nodes extends cdk.Construct {
+  public readonly nodeGroup: asg.AutoScalingGroup;
+  public readonly tags: cdk.TagManager;
+  public readonly vpc: ec2.VpcNetworkRef;
+  public readonly nodeGroups: asg.AutoScalingGroup[] = [];
+
+  private readonly vpcPlacement: ec2.VpcPlacementStrategy;
+  private readonly clusterName: string;
+  private readonly clusterEndpoint: string;
+  private readonly clusterCA: string;
+  private readonly clusterSecurityGroup: ec2.SecurityGroupRef;
+
+  constructor(parent: Cluster, name: string, props: INodeProps) {
+    super(parent, name);
+
+    this.clusterName = parent.clusterName;
+    this.clusterEndpoint = parent.clusterEndpoint;
+    this.clusterCA = parent.clusterCA;
+    this.clusterSecurityGroup = parent.securityGroup;
+    this.vpc = parent.vpc;
+    this.vpcPlacement = parent.vpcPlacement;
+
+    this.tags = new cdk.TagManager(this, { initialTags: props.tags });
+    // EKS Required tags
+    this.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
+      overwrite: false
+    });
+
+    this.nodeGroup = this.addNodes(props);
+  }
+
+  public addNodes(props: INodeProps) {
+    const type = new ec2.InstanceTypePair(props.nodeClass, props.nodeSize);
+
+    const nodeProps: asg.AutoScalingGroupProps = {
+      vpc: this.vpc,
+      instanceType: type,
+      machineImage: new ec2.GenericLinuxImage(nodeAmi[props.nodeType]),
+      minSize: props.minNodes || 1,
+      maxSize: props.maxNodes || 1,
+      desiredCapacity: props.minNodes || 1,
+      updateType: props.updateType,
+      keyName: props.sshKeyName,
+      vpcPlacement: this.vpcPlacement,
+      tags: this.tags.resolve()
+    };
+    const nodes = new asg.AutoScalingGroup(
+      this,
+      `NodeGroup-${type}`,
+      nodeProps
+    );
+    this.addRole(nodes.role);
+
+    // bootstrap nodes
+    this.addUserData({ nodes, type: type.toString() });
+    this.addDefaultRules({ nodes });
+
+    this.nodeGroups.push(nodes);
+
+    return nodes;
+  }
+
+  private addDefaultRules(props: { nodes: asg.AutoScalingGroup }) {
+    // self rules
+    props.nodes.connections.allowInternally(new ec2.TcpAllPorts());
+    props.nodes.connections.allowInternally(new ec2.UdpAllPorts());
+    props.nodes.connections.allowInternally(new ec2.IcmpAllTypesAndCodes());
+
+    // Cluster to:from rules
+    props.nodes.connections.allowFrom(
+      this.clusterSecurityGroup,
+      new ec2.TcpPort(443)
+    );
+    props.nodes.connections.allowFrom(
+      this.clusterSecurityGroup,
+      new ec2.TcpPortRange(1025, 65535)
+    );
+  }
+
+  private addUserData(props: { nodes: asg.AutoScalingGroup; type: string }) {
+    const max = maxPods.get(props.type);
+    props.nodes.addUserData(
+      "set -o xtrace",
+      `/etc/eks/bootstrap.sh ${
+        this.clusterName
+      } --use-max-pods ${max} --apiserver-endpoint ${
+        this.clusterEndpoint
+      } --b64-cluster-ca ${this.clusterCA}`
+    );
+  }
+
+  private addRole(role: iam.Role) {
+    role.attachManagedPolicy(
+      "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+    );
+    role.attachManagedPolicy("arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy");
+    role.attachManagedPolicy(
+      "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+    );
 
     return role;
   }
