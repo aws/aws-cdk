@@ -113,6 +113,11 @@ export interface CDKBuildOptions {
    * (Typically a code generator)
    */
   pre?: string[];
+
+  /**
+   * An optional command (formatted as a list of strings) to run before testing.
+   */
+  test?: string[];
 }
 
 /**
