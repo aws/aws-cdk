@@ -171,6 +171,8 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
+  private readonly parentResource: IRestApiResource;
+
   constructor(parent: cdk.Construct, id: string, props: ProxyResourceProps) {
     super(parent, id, {
       parent: props.parent,
@@ -179,10 +181,21 @@ export class ProxyResource extends Resource {
       defaultMethodOptions: props.defaultMethodOptions,
     });
 
+    this.parentResource = props.parent;
+
     const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
     if (anyMethod) {
       this.anyMethod = this.addMethod('ANY');
     }
+  }
+
+  public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    // In case this proxy is mounted under the root, also add this method to
+    // the root so that empty paths are proxied as well.
+    if (this.parentResource.resourcePath === '/') {
+      this.parentResource.addMethod(httpMethod);
+    }
+    return super.addMethod(httpMethod, integration, options);
   }
 }
 

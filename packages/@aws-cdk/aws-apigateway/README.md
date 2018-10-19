@@ -34,24 +34,24 @@ book.addMethod('DELETE');
 A very common practice is to use Amazon API Gateway with AWS Lambda as the
 backend integration. The `LambdaRestApi` construct makes it easy:
 
-The following code defines a REST API that uses a greedy `{proxy+}` resource
-mounted under `/api/v1` and integrates all methods (`"ANY"`) with the specified
-AWS Lambda function:
+The following code defines a REST API that routes all requests to the
+specified AWS Lambda function:
 
 ```ts
 const backend = new lambda.Function(...);
 new apigateway.LambdaRestApi(this, 'myapi', {
   handler: backend,
-  proxyPath: '/api/v1'
 });
 ```
 
-If `proxyPath` is not defined, you will have to explicitly define the API model:
+You can also supply `proxy: false`, in which case you will have to explicitly
+define the API model:
 
 ```ts
 const backend = new lambda.Function(...);
 const api = new apigateway.LambdaRestApi(this, 'myapi', {
-  handler: backend
+  handler: backend,
+  proxy: false
 });
 
 const items = api.root.addResource('items');
