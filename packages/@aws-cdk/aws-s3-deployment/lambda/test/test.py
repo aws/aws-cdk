@@ -1,5 +1,4 @@
 # unit tests for the s3 bucket deployment lambda handler
-
 import index
 import os
 import unittest
@@ -7,6 +6,8 @@ import json
 import sys
 import traceback
 import logging
+from botocore.vendored import requests
+from unittest.mock import MagicMock
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
@@ -126,22 +127,32 @@ def invoke_handler(requestType, resourceProps, expected_status='SUCCESS'):
     class ResponseMock:
         reason = 'OK'
 
-    response=[]
 
-    def http_put(url, data, headers):
-        if url != response_url:
-            raise Exception("Expected response URL to be %s but got %s\n%s" % (response_url % url, response))
+    # def http_put(url, data, headers):
+    #     if url != response_url:
+    #         raise Exception("Expected response URL to be %s but got %s\n%s" % (response_url % url, response))
 
-        response.append(data)
-        return ResponseMock()
+    #     response.append(data)
+    #     return ResponseMock()
 
-    context=ContextMock()
-    index.handler(event, context, http_put=http_put)
+    context = ContextMock()
+    requests.put = MagicMock(return_value=ResponseMock())
 
-    if len(response) != 1:
-        raise Exception("Expecting exactly one CloudFormation response to be sent back (got %d)" % len(response))
+    #--------------------
+    # invoke the handler
+    #--------------------
+    index.handler(event, context)
 
-    resp = json.loads(response[0])
+    requests.put.assert_called_once()
+    (pos_args, kw_args) = requests.put.call_args
+
+    actual_url = pos_args[0]
+    actual_data = kw_args['data']
+
+    if actual_url != response_url:
+        raise Exception("Invalid url used for sending CFN response. expected=%s actual=%s" % (response_url, actual_url))
+
+    resp = json.loads(actual_data)
 
     def assert_field(name, expect=None):
         value=resp.get(name)

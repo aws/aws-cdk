@@ -14,11 +14,11 @@ logger.setLevel(logging.INFO)
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
 
-def handler(event, context, http_put=None):
+def handler(event, context):
 
     def cfn_error(message=None):
         logger.info("| cfn_error: %s" % message)
-        cfn_send(http_put, event, context, CFN_FAILED, reason=message)
+        cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
         logger.info(event)
@@ -51,7 +51,7 @@ def handler(event, context, http_put=None):
         else:
             s3_deploy(s3_source_zip, s3_dest)
 
-        cfn_send(http_put, event, context, CFN_SUCCESS)
+        cfn_send(event, context, CFN_SUCCESS)
     except KeyError as e:
         cfn_error("invalid request. Missing key %s" % str(e))
     except Exception as e:
@@ -89,9 +89,7 @@ def aws_command(*args):
 
 #---------------------------------------------------------------------------------------------------
 # sends a response to cloudformation
-def cfn_send(http_put, event, context, responseStatus, responseData={}, physicalResourceId=None, noEcho=False, reason=None):
-    if not http_put:
-        http_put = lambda url, data, headers: requests.put(url, data=data, headers=headers)
+def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId=None, noEcho=False, reason=None):
 
     responseUrl = event['ResponseURL']
     logger.info(responseUrl)
@@ -115,7 +113,7 @@ def cfn_send(http_put, event, context, responseStatus, responseData={}, physical
     }
 
     try:
-        response = http_put(responseUrl, data=body, headers=headers)
+        response = requests.put(responseUrl, data=body, headers=headers)
         logger.info("| status code: " + response.reason)
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
