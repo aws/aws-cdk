@@ -50,5 +50,6 @@ main().then(() => {
   buildTimer.end();
   process.stderr.write(`${e.toString()}\n`);
   process.stderr.write(`Build failed. ${timers.display()}\n`);
+  process.stderr.write(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n`);
   process.exit(1);
 });

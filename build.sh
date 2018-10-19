@@ -27,7 +27,7 @@ if [ ! -d node_modules ]; then
 fi
 
 fail() {
-  echo "❌  Last command failed. Scroll up to see errors in log."
+  echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
   exit 1
 }
 
