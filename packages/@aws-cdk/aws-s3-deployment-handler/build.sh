@@ -3,6 +3,7 @@
 # builds a python-lambda deployment package
 #
 set -euo pipefail
+set -x
 
 # prepare staging and output directory
 dist=$PWD/dist
