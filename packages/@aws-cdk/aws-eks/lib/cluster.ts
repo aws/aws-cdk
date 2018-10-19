@@ -3,7 +3,7 @@ import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require("@aws-cdk/aws-iam");
 import cdk = require("@aws-cdk/cdk");
 import { cloudformation } from "./eks.generated";
-import { maxPods, nodeAmi, nodeType } from "./instance-data";
+import { maxPods, nodeAmi, NodeType } from "./instance-data";
 
 // TODO: Option to deploy nodes on Cluster creation.
 
@@ -73,13 +73,14 @@ export interface IClusterRefProps {
    * Reeference the vpc placement for placing nodes into ASG subnets
    */
   vpcPlacement: ec2.VpcPlacementStrategy;
+  securityGroupId: string;
 }
 
 /**
  * A SecurityGroup Reference, object not created with this template.
  */
 export abstract class ClusterRef extends cdk.Construct
-  implements ec2.IConnectable {
+  implements ec2.IConnectable, ec2.ISecurityGroupRule {
   /**
    * Import an existing cluster
    *
@@ -99,8 +100,12 @@ export abstract class ClusterRef extends cdk.Construct
   public abstract readonly clusterArn: string;
   public abstract readonly clusterEndpoint: string;
   public abstract readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  public readonly securityGroup: ec2.SecurityGroupRef;
-  public readonly connections: ec2.Connections;
+  public abstract readonly securityGroupId: string;
+
+  public readonly canInlineRule = false;
+  public readonly connections: ec2.Connections = new ec2.Connections({
+    securityGroup: this
+  });
 
   /**
    * Export cluster references to use in other stacks
@@ -110,8 +115,61 @@ export abstract class ClusterRef extends cdk.Construct
       clusterName: this.makeOutput("ClusterName", this.clusterName),
       clusterArn: this.makeOutput("ClusterArn", this.clusterArn),
       clusterEndpoint: this.makeOutput("ClusterEndpoint", this.clusterEndpoint),
-      vpcPlacement: this.vpcPlacement
+      vpcPlacement: this.vpcPlacement,
+      securityGroupId: this.securityGroupId
     };
+  }
+
+  public addIngressRule(
+    peer: ec2.ISecurityGroupRule,
+    connection: ec2.IPortRange,
+    description?: string
+  ) {
+    let id = `from ${peer.uniqueId}:${connection}`;
+    if (description === undefined) {
+      description = id;
+    }
+    id = id.replace("/", "_");
+
+    // Skip duplicates
+    if (this.tryFindChild(id) === undefined) {
+      new ec2.cloudformation.SecurityGroupIngressResource(this, id, {
+        groupId: this.securityGroupId,
+        ...peer.toIngressRuleJSON(),
+        ...connection.toRuleJSON(),
+        description
+      });
+    }
+  }
+
+  public addEgressRule(
+    peer: ec2.ISecurityGroupRule,
+    connection: ec2.IPortRange,
+    description?: string
+  ) {
+    let id = `to ${peer.uniqueId}:${connection}`;
+    if (description === undefined) {
+      description = id;
+    }
+    id = id.replace("/", "_");
+
+    // Skip duplicates
+    if (this.tryFindChild(id) === undefined) {
+      new ec2.cloudformation.SecurityGroupEgressResource(this, id, {
+        groupId: this.securityGroupId,
+        ...peer.toEgressRuleJSON(),
+        ...connection.toRuleJSON(),
+        description
+      });
+    }
+  }
+
+  public toIngressRuleJSON(): any {
+    return { sourceSecurityGroupId: this.securityGroupId };
+  }
+
+  public toEgressRuleJSON(): any {
+    return { destinationSecurityGroupId: this.securityGroupId };
   }
 
   private makeOutput(name: string, value: any): string {
@@ -158,14 +216,8 @@ export class Cluster extends ClusterRef {
    * @memberof Cluster
    */
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
-  /**
-   * The security group attached to the given cluster
-   *
-   * @type {ec2.SecurityGroup}
-   * @memberof Cluster
-   */
   public readonly securityGroup: ec2.SecurityGroupRef;
-  public readonly connections: ec2.Connections;
+  public readonly securityGroupId: string;
 
   private readonly cluster: cloudformation.ClusterResource;
   private readonly clusterSubnetIds: string[] = [];
@@ -181,10 +233,8 @@ export class Cluster extends ClusterRef {
     const role = this.addClusterRole();
 
     this.securityGroup = this.createSecurityGroup();
+    this.securityGroupId = this.securityGroup.securityGroupId;
     const sgId = this.securityGroup.securityGroupId;
-    this.connections = new ec2.Connections({
-      securityGroup: this.securityGroup
-    });
 
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
@@ -235,7 +285,7 @@ export class Cluster extends ClusterRef {
 export interface INodeProps {
   nodeClass: ec2.InstanceClass;
   nodeSize: ec2.InstanceSize;
-  nodeType: nodeType;
+  nodeType: NodeType;
   minNodes?: number;
   maxNodes?: number;
   sshKeyName?: string;
@@ -358,6 +408,7 @@ class ImportedCluster extends ClusterRef {
   public readonly clusterArn: string;
   public readonly clusterEndpoint: string;
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
+  public readonly securityGroupId: string;
 
   constructor(parent: cdk.Construct, name: string, props: IClusterRefProps) {
     super(parent, name);
@@ -366,5 +417,6 @@ class ImportedCluster extends ClusterRef {
     this.clusterEndpoint = props.clusterEndpoint;
     this.clusterArn = props.clusterArn;
     this.vpcPlacement = props.vpcPlacement;
+    this.securityGroupId = props.securityGroupId;
   }
 }
