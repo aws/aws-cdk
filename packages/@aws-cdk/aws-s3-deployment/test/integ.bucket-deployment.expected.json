@@ -15,11 +15,11 @@
           "Ref": "Destination920A3C57"
         },
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": "*",
               "Resource": {
                 "Fn::Join": [
                   "",
@@ -33,10 +33,10 @@
                     "/*"
                   ]
                 ]
-              },
-              "Principal": "*"
+              }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -94,16 +94,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -125,15 +125,14 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
@@ -176,15 +175,15 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -209,12 +208,12 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
@@ -257,15 +256,15 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -289,7 +288,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "SingletonLambda8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicyEE6AD1E5",
         "Roles": [
