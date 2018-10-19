@@ -62,6 +62,16 @@ By default, the contents of the destination bucket will be deleted when the
    happen automatically whenever you modify the asset, since the S3 key is based
    on a hash of the asset contents.
 
+## Development
+
+The custom resource is implemented in Python 3.6 in order to be able to leverage
+the AWS CLI for "aws sync". The code is under [`lambda/src`](./lambda/src) and
+unit tests are under [`lambda/test`](./lambda/test).
+
+This package requires Python 3.6 during build time in order to create the custom
+resource Lambda bundle and test it. It also relies on a few bash scripts, so
+might be tricky to build on Windows.
+
 ## Roadmap
 
  - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/awslabs/aws-cdk/issues/953))

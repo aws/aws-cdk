@@ -10,11 +10,12 @@ scriptdir=$(cd $(dirname $0) && pwd)
 staging=$(mktemp -d)
 mkdir -p ${staging}
 cd ${staging}
-cp -f ${scriptdir}/* .
-cp -f ${scriptdir}/../src/index.py .
-cp -f ${scriptdir}/../requirements.txt .
 
-# make sure the "aws" mock is executable (code build loses file permissions)
+# copy src and overlay with test
+cp -f ${scriptdir}/src/* $PWD
+cp -f ${scriptdir}/test/* $PWD
+
+# make sure the "aws" mock is executable (codebuild loses file permissions)
 chmod +x ./aws
 
 # install deps

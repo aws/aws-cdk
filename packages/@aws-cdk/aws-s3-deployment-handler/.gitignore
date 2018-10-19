@@ -1,7 +1,0 @@
-*.js
-*.js.map
-dist
-staging
-
-.LAST_BUILD
-.LAST_PACKAGE

@@ -2,9 +2,10 @@ import cloudformation = require('@aws-cdk/aws-cloudformation');
 import lambda = require('@aws-cdk/aws-lambda');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
+import path = require('path');
 import { ISource } from './source';
 
-const handlerCodeBundle = require.resolve('@aws-cdk/aws-s3-deployment-handler/dist/lambda.zip');
+const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
 
 export interface BucketDeploymentProps {
   /**
