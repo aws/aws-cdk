@@ -9,6 +9,7 @@
       "us-east-1e",
       "us-east-1f"
     ],
-    "ssm:413174413047:us-east-1:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-0ff8a91507f77f867"
+    "ssm:413174413047:us-east-1:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2": "ami-0ff8a91507f77f867",
+    "ssm:413174413047:us-east-1:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2": "ami-0922553b7b0369273"
   }
 }
