@@ -2,7 +2,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { LambdaIntegration } from './integrations';
 import { Method } from './method';
-import { Resource } from './resource';
+import { ProxyResource, Resource } from './resource';
 import { RestApi, RestApiProps } from './restapi';
 
 export interface LambdaRestApiProps {
@@ -69,6 +69,6 @@ function addMethodThrows(): Method {
   throw new Error(`Cannot call 'addMethod' on a proxying LambdaRestApi; set 'proxy' to false`);
 }
 
-function addProxyThrows(): Resource {
+function addProxyThrows(): ProxyResource {
   throw new Error(`Cannot call 'addProxy' on a proxying LambdaRestApi; set 'proxy' to false`);
 }
