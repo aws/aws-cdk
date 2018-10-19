@@ -179,6 +179,11 @@ export class ProxyResource extends Resource {
       defaultMethodOptions: props.defaultMethodOptions,
     });
 
+    // Add ANY method to parent but only if it's the root
+    if (props.parent.resourcePath === '/') {
+      props.parent.addMethod('ANY');
+    }
+
     const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
     if (anyMethod) {
       this.anyMethod = this.addMethod('ANY');

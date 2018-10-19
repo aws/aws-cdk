@@ -214,8 +214,6 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
         return new Method(this, httpMethod, { resource: this.root, httpMethod, integration, options });
       },
       addProxy: (options?: ResourceOptions) => {
-        // Must have ANY method on the root when doing this
-        this.root.addMethod('ANY');
         return new ProxyResource(this, '{proxy+}', { parent: this.root, ...options });
       },
       defaultIntegration: props.defaultIntegration,
