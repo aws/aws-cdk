@@ -3,5 +3,6 @@ install: ./install.sh
 script: ./build.sh
 node_js: 8.11.3
 python:
-  - "3.4"
+  - "3.6"
+
 
