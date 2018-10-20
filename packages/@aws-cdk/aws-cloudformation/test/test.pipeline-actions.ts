@@ -196,6 +196,10 @@ class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
     this.pipelineRole = pipelineRole;
   }
 
+  public grantPipelineBucketRead() {
+    throw new Error('Unsupported');
+  }
+
   public grantPipelineBucketReadWrite() {
     throw new Error('Unsupported');
   }
