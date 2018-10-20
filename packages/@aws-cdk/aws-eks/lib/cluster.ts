@@ -3,7 +3,7 @@ import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require("@aws-cdk/aws-iam");
 import cdk = require("@aws-cdk/cdk");
 import { cloudformation } from "./eks.generated";
-import { maxPods, nodeAmi, NodeType } from "./instance-data";
+import { maxPods, nodeAmi, NodeType, UpdateType } from "./instance-data";
 
 // TODO: Option to deploy nodes on Cluster creation.
 
@@ -36,19 +36,6 @@ export interface IClusterProps extends cdk.StackProps {
    * @default If not supplied, will use Amazon default version (1.10.3)
    */
   k8sVersion?: string;
-  /**
-   * Whether to create the worker nodes with the cluster stack.
-   * This is not recommended for production as deleting the stack
-   * will delete cluster and nodes, and intent may be to just remove
-   * worker nodes from the cluster.
-   * This ability is added for development and production clusters
-   * to tear down and create full workable clusters easily.
-   *
-   * @default false
-   *
-   * Not implemented yet.
-   */
-  createNodes?: boolean;
 }
 
 /**
@@ -222,6 +209,13 @@ export class Cluster extends ClusterRef {
   private readonly cluster: cloudformation.ClusterResource;
   private readonly clusterSubnetIds: string[] = [];
 
+  /**
+   * Initiates an EKS Cluster with the supplied arguments
+   *
+   * @param parent a Construct, most likely a cdk.Stack created
+   * @param name the name of the Construct to create
+   * @param props properties in the IClusterProps interface
+   */
   constructor(parent: cdk.Construct, name: string, props: IClusterProps) {
     super(parent, name);
 
@@ -232,10 +226,10 @@ export class Cluster extends ClusterRef {
 
     const role = this.addClusterRole();
 
-    this.securityGroup = this.createSecurityGroup();
+    this.securityGroup = this.addSecurityGroup();
     this.securityGroupId = this.securityGroup.securityGroupId;
-    const sgId = this.securityGroup.securityGroupId;
 
+    const sgId = this.securityGroup.securityGroupId;
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
       roleArn: role.roleArn,
@@ -258,7 +252,13 @@ export class Cluster extends ClusterRef {
     return cluster;
   }
 
-  private createSecurityGroup() {
+  /**
+   * This is private because for now the EKS API is limited
+   * Once the security groups are assigned, one can modify the groups
+   * but any additional groups or removal of groups destroys and
+   * creates a brand new cluster
+   */
+  private addSecurityGroup() {
     return new ec2.SecurityGroup(this, "ClusterSecurityGroup", {
       vpc: this.vpc,
       description: "Cluster API Server Security Group.",
@@ -282,21 +282,41 @@ export class Cluster extends ClusterRef {
   }
 }
 
+/**
+ * Properties for instantiating an Autoscaling Group of worker nodes
+ * The options are limited on purpose, though moe can be added.
+ * The requirements for Kubernetes scaling and updated configurations
+ * are a bit different.
+ *
+ * More properties will be added to match those in the future.
+ */
 export interface INodeProps {
+  /**
+   * The ec2 InstanceClass to use on the worker nodes
+   * Note, not all instance classes are supported
+   * ref: https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yaml
+   *
+   * example: ec2.InstanceClass.M5
+   */
   nodeClass: ec2.InstanceClass;
+  /**
+   * The size of the chosen instance class.
+   * Note, not all instancer sizes are supported per class.
+   * ref: https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yaml
+   *
+   * example: ec2.InstanceSize.Large
+   */
   nodeSize: ec2.InstanceSize;
   nodeType: NodeType;
   minNodes?: number;
   maxNodes?: number;
   sshKeyName?: string;
-  updateType?: asg.UpdateType;
+  updateType?: UpdateType;
   tags?: cdk.Tags;
 }
 export class Nodes extends cdk.Construct {
-  public readonly nodeGroup: asg.AutoScalingGroup;
-  public readonly tags: cdk.TagManager;
   public readonly vpc: ec2.VpcNetworkRef;
-  public readonly nodeGroups: asg.AutoScalingGroup[] = [];
+  public readonly nodeGroup: asg.AutoScalingGroup;
 
   private readonly vpcPlacement: ec2.VpcPlacementStrategy;
   private readonly clusterName: string;
@@ -314,16 +334,10 @@ export class Nodes extends cdk.Construct {
     this.vpc = parent.vpc;
     this.vpcPlacement = parent.vpcPlacement;
 
-    this.tags = new cdk.TagManager(this, { initialTags: props.tags });
-    // EKS Required tags
-    this.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
-      overwrite: false
-    });
-
     this.nodeGroup = this.addNodes(props);
   }
 
-  public addNodes(props: INodeProps) {
+  private addNodes(props: INodeProps) {
     const type = new ec2.InstanceTypePair(props.nodeClass, props.nodeSize);
 
     const nodeProps: asg.AutoScalingGroupProps = {
@@ -336,20 +350,23 @@ export class Nodes extends cdk.Construct {
       updateType: props.updateType,
       keyName: props.sshKeyName,
       vpcPlacement: this.vpcPlacement,
-      tags: this.tags.resolve()
+      tags: props.tags
     };
     const nodes = new asg.AutoScalingGroup(
       this,
-      `NodeGroup-${type}`,
+      `NodeGroup-${type.toString()}`,
       nodeProps
     );
+    // EKS Required Tags
+    nodes.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
+      overwrite: false
+    });
+
     this.addRole(nodes.role);
 
     // bootstrap nodes
     this.addUserData({ nodes, type: type.toString() });
     this.addDefaultRules({ nodes });
-
-    this.nodeGroups.push(nodes);
 
     return nodes;
   }
