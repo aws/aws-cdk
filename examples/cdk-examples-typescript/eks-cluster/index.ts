@@ -1,8 +1,8 @@
-import { UpdateType } from "@aws-cdk/aws-autoscaling";
 import ec2 = require("@aws-cdk/aws-ec2");
 import eks = require("@aws-cdk/aws-eks");
 import cdk = require("@aws-cdk/cdk");
 
+const ENV = "dev";
 const app = new cdk.App();
 
 /**
@@ -28,7 +28,7 @@ const vpc = new ec2.VpcNetwork(networkStack, "VPC", {
     }
   ],
   tags: {
-    env: "${env}"
+    env: `${ENV}`
   }
 });
 const vpcExport = vpc.export();
@@ -56,39 +56,29 @@ const cluster = new eks.Cluster(clusterStack, "Cluster", {
 });
 cluster.connections.allowFromAnyIPv4(new ec2.TcpPort(443));
 
-const grp1 = new eks.Nodes(cluster, "NodeGroup1");
-
-grp1.addNodes({
-  vpc: clusterVpc,
-  instanceType: new ec2.InstanceTypePair(
-    ec2.InstanceClass.M5,
-    ec2.InstanceSize.Large
-  ),
-  machineImage: new ec2.GenericLinuxImage(eks.nodeAmi.normal),
-  minSize: 3,
-  desiredCapacity: 3,
-  maxSize: 6,
-  updateType: UpdateType.RollingUpdate,
-  keyName: "aws-dev-key",
-  vpcPlacement: cluster.vpcPlacement
+/**
+ * This section creates worker node clusters
+ * Two are shown just to illustrate that different
+ * ones can be spun up or down
+ */
+const grp1 = new eks.Nodes(cluster, "NodeGroup1", {
+  nodeClass: ec2.InstanceClass.M5,
+  nodeSize: ec2.InstanceSize.Large,
+  nodeType: eks.NodeType.Normal,
+  minNodes: 3,
+  maxNodes: 6,
+  sshKeyName: "aws-dev-key"
 });
 grp1.nodeGroup.connections.allowFromAnyIPv4(new ec2.TcpPort(22));
 
-// const grp2 = new eks.Nodes(cluster, "NodeGroup2");
-// grp2.addNodes({
-//   vpc: clusterVpc,
-//   instanceType: new ec2.InstanceTypePair(
-//     ec2.InstanceClass.T2,
-//     ec2.InstanceSize.Large
-//   ),
-//   machineImage: new ec2.GenericLinuxImage(eks.nodeAmi.normal),
-//   minSize: 2,
-//   desiredCapacity: 4,
-//   maxSize: 8,
-//   updateType: UpdateType.RollingUpdate,
-//   keyName: "aws-dev-key",
-//   vpcPlacement: cluster.vpcPlacement
-// });
-// grp2.nodeGroup.connections.allowFromAnyIPv4(new ec2.TcpPort(22));
+const grp2 = new eks.Nodes(cluster, "NodeGroup2", {
+  nodeClass: ec2.InstanceClass.T2,
+  nodeSize: ec2.InstanceSize.Medium,
+  nodeType: eks.NodeType.Normal,
+  minNodes: 2,
+  maxNodes: 4,
+  sshKeyName: "aws-dev-key"
+});
+grp2.nodeGroup.connections.allowFromAnyIPv4(new ec2.TcpPort(22));
 
 app.run();
