@@ -62,9 +62,6 @@ cluster.connections.allowFromAnyIPv4(new ec2.TcpPort(443));
  * ones can be spun up or down
  */
 const grp1 = new eks.Nodes(cluster, "NodeGroup1", {
-  nodeClass: ec2.InstanceClass.M5,
-  nodeSize: ec2.InstanceSize.Large,
-  nodeType: eks.NodeType.Normal,
   minNodes: 3,
   maxNodes: 6,
   sshKeyName: "aws-dev-key"

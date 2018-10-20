@@ -297,17 +297,21 @@ export interface INodeProps {
    * ref: https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yaml
    *
    * example: ec2.InstanceClass.M5
+   *
+   * @default M5
    */
-  nodeClass: ec2.InstanceClass;
+  nodeClass?: ec2.InstanceClass;
   /**
    * The size of the chosen instance class.
    * Note, not all instancer sizes are supported per class.
    * ref: https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yaml
    *
    * example: ec2.InstanceSize.Large
+   *
+   * @default Medium
    */
-  nodeSize: ec2.InstanceSize;
-  nodeType: NodeType;
+  nodeSize?: ec2.InstanceSize;
+  nodeType?: NodeType;
   minNodes?: number;
   maxNodes?: number;
   sshKeyName?: string;
@@ -334,16 +338,15 @@ export class Nodes extends cdk.Construct {
     this.vpc = parent.vpc;
     this.vpcPlacement = parent.vpcPlacement;
 
-    this.nodeGroup = this.addNodes(props);
-  }
+    const nodeClass = props.nodeClass || ec2.InstanceClass.M5;
+    const nodeSize = props.nodeSize || ec2.InstanceSize.Medium;
+    const nodeType = props.nodeType || NodeType.Normal;
 
-  private addNodes(props: INodeProps) {
-    const type = new ec2.InstanceTypePair(props.nodeClass, props.nodeSize);
-
+    const type = new ec2.InstanceTypePair(nodeClass, nodeSize);
     const nodeProps: asg.AutoScalingGroupProps = {
       vpc: this.vpc,
       instanceType: type,
-      machineImage: new ec2.GenericLinuxImage(nodeAmi[props.nodeType]),
+      machineImage: new ec2.GenericLinuxImage(nodeAmi[nodeType]),
       minSize: props.minNodes || 1,
       maxSize: props.maxNodes || 1,
       desiredCapacity: props.minNodes || 1,
@@ -352,10 +355,17 @@ export class Nodes extends cdk.Construct {
       vpcPlacement: this.vpcPlacement,
       tags: props.tags
     };
+    this.nodeGroup = this.addNodes(nodeProps, type);
+  }
+
+  private addNodes(
+    props: asg.AutoScalingGroupProps,
+    type: ec2.InstanceTypePair
+  ) {
     const nodes = new asg.AutoScalingGroup(
       this,
       `NodeGroup-${type.toString()}`,
-      nodeProps
+      props
     );
     // EKS Required Tags
     nodes.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
