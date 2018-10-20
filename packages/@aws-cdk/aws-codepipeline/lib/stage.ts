@@ -110,6 +110,10 @@ export class Stage extends cdk.Construct implements actions.IStage, actions.IInt
     return this.validateHasActions();
   }
 
+  public grantPipelineBucketRead(identity: iam.IPrincipal): void {
+    this.pipeline.artifactBucket.grantRead(identity);
+  }
+
   public grantPipelineBucketReadWrite(identity: iam.IPrincipal): void {
     this.pipeline.artifactBucket.grantReadWrite(identity);
   }

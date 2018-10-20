@@ -96,6 +96,20 @@
                   "Arn"
                 ]
               }
+            },
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyBuildProject30DB9D6E",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -180,6 +194,27 @@
                     "Name": "Artifact_awscdkcodepipelinecodecommitcodebuildMyBuildProjectbuild61B48DC4"
                   }
                 ],
+                "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Test",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "MyBuildProject30DB9D6E"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "SourceArtifact"
+                  }
+                ],
+                "Name": "test",
+                "OutputArtifacts": [],
                 "RunOrder": 1
               }
             ],
@@ -305,6 +340,37 @@
                 "s3:DeleteObject*",
                 "s3:PutObject*",
                 "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/",
+                      "*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
               ],
               "Effect": "Allow",
               "Resource": [

@@ -44,33 +44,84 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
     // https://qiita.com/ikeisuke/items/2fbc0b80b9bbd981b41f
 
     super(parent, name, {
-      stage: props.stage,
-      runOrder: props.runOrder,
       provider: 'CodeBuild',
-      inputArtifact: props.inputArtifact,
-      outputArtifactName: props.outputArtifactName,
       configuration: {
-        ProjectName: props.project.projectName
-      }
+        ProjectName: props.project.projectName,
+      },
+      ...props,
     });
 
-    const actions = [
+    setCodeBuildNeededPermissions(props.stage, props.project, true);
+  }
+}
+
+/**
+ * Common properties for creating {@link PipelineTestAction} -
+ * either directly, through its constructor,
+ * or through {@link ProjectRef#addTestToPipeline}.
+ */
+export interface CommonPipelineTestActionProps extends codepipeline.CommonActionProps {
+  /**
+   * The source to use as input for this test.
+   *
+   * @default CodePipeline will use the output of the last Action from a previous Stage as input
+   */
+  inputArtifact?: codepipeline.Artifact;
+
+  /**
+   * The optional name of the output artifact.
+   * If you provide a value here,
+   * then the `outputArtifact` property of your Action will be non-null.
+   * If you don't, `outputArtifact` will be `null`.
+   *
+   * @default the Action will not have an output artifact
+   */
+  outputArtifactName?: string;
+}
+
+/**
+ * Construction properties of the {@link PipelineTestAction CodeBuild test CodePipeline Action}.
+ */
+export interface PipelineTestActionProps extends CommonPipelineTestActionProps,
+    codepipeline.CommonActionConstructProps {
+  /**
+   * The build Project.
+   */
+  project: ProjectRef;
+}
+
+export class PipelineTestAction extends codepipeline.TestAction {
+  constructor(parent: cdk.Construct, name: string, props: PipelineTestActionProps) {
+    super(parent, name, {
+      provider: 'CodeBuild',
+      configuration: {
+        ProjectName: props.project.projectName,
+      },
+      ...props,
+    });
+
+    // the Action needs write permissions only if it's producing an output artifact
+    setCodeBuildNeededPermissions(props.stage, props.project, !!props.outputArtifactName);
+  }
+}
+
+function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: ProjectRef,
+                                       needsPipelineBucketWrite: boolean) {
+  // grant the Pipeline role the required permissions to this Project
+  stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    .addResource(project.projectArn)
+    .addActions(
       'codebuild:BatchGetBuilds',
       'codebuild:StartBuild',
       'codebuild:StopBuild',
-    ];
+    ));
 
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.project.projectArn)
-      .addActions(...actions));
-
-    // allow codebuild to read and write artifacts to the pipline's artifact bucket.
-    if (props.project.role) {
-      props.stage.grantPipelineBucketReadWrite(props.project.role);
+  // allow the Project access to the Pipline's artifact Bucket
+  if (project.role) {
+    if (needsPipelineBucketWrite) {
+      stage.grantPipelineBucketReadWrite(project.role);
+    } else {
+      stage.grantPipelineBucketRead(project.role);
     }
-
-    // policy must be added as a dependency to the pipeline!!
-    // TODO: grants - build.addResourcePermission() and also make sure permission
-    // includes the pipeline role AWS principal.
   }
 }

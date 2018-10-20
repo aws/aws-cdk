@@ -75,7 +75,30 @@ You can also add the Project to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-project.addBuildToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.addBuildToPipeline(buildStage, 'CodeBuild');
+```
+
+In addition to the build Action,
+there is also a test Action.
+It works very similarly to the build Action,
+the only difference is that the test Action does not always produce an output artifact.
+
+Examples:
+
+```ts
+new codebuild.PipelineTestAction(this, 'IntegrationTest', {
+    stage: buildStage,
+    project,
+    // outputArtifactName is optional - if you don't specify it,
+    // the Action will have an undefined `outputArtifact` property
+    outputArtifactName: 'IntegrationTestOutput',
+});
+
+// equivalent to the code above:
+project.addTestToPipeline(buildStage, 'IntegrationTest', {
+    // of course, this property is optional here as well
+    outputArtifactName: 'IntegrationTestOutput',
+});
 ```
 
 ### Using Project as an event target
