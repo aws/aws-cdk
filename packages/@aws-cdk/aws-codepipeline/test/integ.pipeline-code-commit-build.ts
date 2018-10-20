@@ -26,5 +26,6 @@ const project = new codebuild.Project(stack, 'MyBuildProject', {
 
 const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
 project.addBuildToPipeline(buildStage, 'build');
+project.addTestToPipeline(buildStage, 'test');
 
 app.run();

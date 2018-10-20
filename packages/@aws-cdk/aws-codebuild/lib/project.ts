@@ -8,7 +8,10 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
 import { cloudformation } from './codebuild.generated';
-import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
+import {
+  CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
+  PipelineBuildAction, PipelineTestAction
+} from './pipeline-actions';
 import { BuildSource, NoSource } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
@@ -91,6 +94,23 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
    */
   public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps = {}): PipelineBuildAction {
     return new PipelineBuildAction(this, name, {
+      stage,
+      project: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Convenience method for creating a new {@link PipelineTestAction} test Action,
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineBuildAction} test Action
+   */
+  public addTestToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineTestActionProps = {}): PipelineTestAction {
+    return new PipelineTestAction(this, name, {
       stage,
       project: this,
       ...props,
