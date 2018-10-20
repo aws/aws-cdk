@@ -3,7 +3,7 @@ import ec2 = require("@aws-cdk/aws-ec2");
 import iam = require("@aws-cdk/aws-iam");
 import cdk = require("@aws-cdk/cdk");
 import { cloudformation } from "./eks.generated";
-import { maxPods, nodeAmi, NodeType, UpdateType } from "./instance-data";
+import { maxPods, nodeAmi, NodeType } from "./instance-data";
 
 // TODO: Option to deploy nodes on Cluster creation.
 
@@ -311,11 +311,32 @@ export interface INodeProps {
    * @default Medium
    */
   nodeSize?: ec2.InstanceSize;
+  /**
+   * The instance type for EKS to support
+   * Whether to support GPU optimized EKS or Normal instances
+   *
+   * @default Normal
+   */
   nodeType?: NodeType;
+  /**
+   * Minimum number of instances in the worker group
+   *
+   * @default 1
+   */
   minNodes?: number;
+  /**
+   * Maximum number of instances in the worker group
+   *
+   * @default 1
+   */
   maxNodes?: number;
+  /**
+   * The name of the SSH keypair to grant access to the worker nodes
+   * This must be created in the AWS Console first
+   *
+   * @default No SSH access granted
+   */
   sshKeyName?: string;
-  updateType?: UpdateType;
   tags?: cdk.Tags;
 }
 export class Nodes extends cdk.Construct {
@@ -350,7 +371,6 @@ export class Nodes extends cdk.Construct {
       minSize: props.minNodes || 1,
       maxSize: props.maxNodes || 1,
       desiredCapacity: props.minNodes || 1,
-      updateType: props.updateType,
       keyName: props.sshKeyName,
       vpcPlacement: this.vpcPlacement,
       tags: props.tags
