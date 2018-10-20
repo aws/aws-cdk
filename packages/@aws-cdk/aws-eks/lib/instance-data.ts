@@ -1,3 +1,8 @@
+/**
+ * Used internally to bootstrap the worker nodes
+ * This sets the max pods based on the instanceType created
+ * ref: https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yamls
+ */
 export const maxPods = Object.freeze(
   new Map([
     ["c4.large", 29],
@@ -58,20 +63,50 @@ export const maxPods = Object.freeze(
   ])
 );
 
+/**
+ * Whether the worker nodes should support GPU or just normal instances
+ */
 export const enum NodeType {
-  normal = "normal",
-  gpu = "gpuSupport"
+  Normal = "Normal",
+  GPU = "GPUSupport"
 }
 
+/**
+ * Select AMI to use based on the AWS Region being deployed
+ *
+ * TODO: Create dynamic mappign by searching SSM Store
+ */
 export const nodeAmi = Object.freeze({
-  normal: {
+  Normal: {
     ["us-east-1"]: "ami-0440e4f6b9713faf6",
     ["us-west-2"]: "ami-0a54c984b9f908c81",
     ["eu-west-1"]: "ami-0c7a4976cb6fafd3a"
   },
-  gpuSupport: {
+  GPUSupport: {
     ["us-east-1"]: "ami-058bfb8c236caae89",
     ["us-west-2"]: "ami-0731694d53ef9604b",
     ["eu-west-1"]: "ami-0706dc8a5eed2eed9"
   }
 });
+
+/**
+ * The type of update to perform on instances in this AutoScalingGroup
+ */
+export enum UpdateType {
+  /**
+   * Don't do anything
+   */
+  None = "None",
+
+  /**
+   * Replace the entire AutoScalingGroup
+   *
+   * Builds a new AutoScalingGroup first, then delete the old one.
+   */
+  ReplacingUpdate = "Replace",
+
+  /**
+   * Replace the instances in the AutoScalingGroup.
+   */
+  RollingUpdate = "RollingUpdate"
+}
