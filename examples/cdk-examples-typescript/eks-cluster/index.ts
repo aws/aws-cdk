@@ -35,11 +35,14 @@ const vpcExport = vpc.export();
 
 /**
  * This stack creates the EKS Cluster with the imported VPC
- * above, and puts the cluster inside the chosen placemnt
+ * above, and puts the cluster inside the chosen placement
  *
  * clusterName can be set (not recommended), let cfn generate
  * version can be specified, only 1.10 supported now
  * will become useful when more versions are supported
+ *
+ * It also creates a group of 3 worker nodes with default types
+ * and given min, max and sshKeys
  */
 const clusterStack = new cdk.Stack(app, "Cluster");
 
@@ -54,21 +57,31 @@ const cluster = new eks.Cluster(clusterStack, "Cluster", {
     subnetsToUse: ec2.SubnetType.Public
   }
 });
-cluster.connections.allowFromAnyIPv4(new ec2.TcpPort(443));
 
 /**
- * This section creates worker node clusters
- * Two are shown just to illustrate that different
- * ones can be spun up or down
+ * This is optional and should be more specific to given
+ * corparate CIDRS for access from the outside, maybe
+ * even a bastion host inside AWS.
  */
-const grp1 = new eks.Nodes(cluster, "NodeGroup1", {
+cluster.connections.allowFromAnyIPv4(new ec2.TcpPort(443));
+
+const grp1 = new eks.Nodes(clusterStack, "NodeGroup1", {
+  vpc: clusterVpc,
+  cluster,
   minNodes: 3,
   maxNodes: 6,
   sshKeyName: "aws-dev-key"
 });
 grp1.nodeGroup.connections.allowFromAnyIPv4(new ec2.TcpPort(22));
 
-const grp2 = new eks.Nodes(cluster, "NodeGroup2", {
+/**
+ * This adds a second group of worker nodes of different
+ * InstanceClass and InstanceSize
+ * This gets pushed into an Array of Nodes
+ */
+const grp2 = new eks.Nodes(clusterStack, "NodeGroup2", {
+  vpc: clusterVpc,
+  cluster,
   nodeClass: ec2.InstanceClass.T2,
   nodeSize: ec2.InstanceSize.Medium,
   nodeType: eks.NodeType.Normal,
@@ -76,6 +89,11 @@ const grp2 = new eks.Nodes(cluster, "NodeGroup2", {
   maxNodes: 4,
   sshKeyName: "aws-dev-key"
 });
+/**
+ * This is optional and should be more specific to given
+ * corparate CIDRS for access from the outside, maybe
+ * even a bastion host inside AWS.
+ */
 grp2.nodeGroup.connections.allowFromAnyIPv4(new ec2.TcpPort(22));
 
 app.run();
