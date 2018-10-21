@@ -367,6 +367,8 @@ export class Nodes extends cdk.Construct {
     this.addUserData({ nodes, type: type.toString() });
     this.addDefaultRules({ nodes });
 
+    this.nodeGroups.push(nodes);
+
     return nodes;
   }
 
