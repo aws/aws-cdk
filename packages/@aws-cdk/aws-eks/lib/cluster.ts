@@ -35,7 +35,7 @@ export interface IClusterProps extends cdk.StackProps {
    *
    * @default If not supplied, will use Amazon default version (1.10.3)
    */
-  k8sVersion?: string;
+  version?: string;
 }
 
 /**
@@ -218,7 +218,7 @@ export class Cluster extends ClusterRef {
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
       roleArn: role.roleArn,
-      version: props.k8sVersion,
+      version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: new Array(this.securityGroupId),
         subnetIds
