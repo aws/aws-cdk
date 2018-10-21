@@ -1,5 +1,5 @@
-import {Construct} from '@aws-cdk/cdk';
-import {cloudformation} from './efs.generated';
+import { Construct } from '@aws-cdk/cdk';
+import { cloudformation} from './efs.generated';
 
 /**
  * Properties of a reference to an Elastic File System.
