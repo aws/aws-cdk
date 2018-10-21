@@ -112,14 +112,6 @@ export abstract class ClusterRef extends cdk.Construct
     };
   }
 
-  public toIngressRuleJSON(): any {
-    return { sourceSecurityGroupId: this.securityGroupId };
-  }
-
-  public toEgressRuleJSON(): any {
-    return { destinationSecurityGroupId: this.securityGroupId };
-  }
-
   private makeOutput(name: string, value: any): string {
     return new cdk.Output(this, name, { value }).makeImportValue().toString();
   }
@@ -229,14 +221,6 @@ export class Cluster extends ClusterRef {
     this.clusterArn = this.cluster.clusterArn;
     this.clusterEndpoint = this.cluster.clusterEndpoint;
     this.clusterCA = this.cluster.clusterCertificateAuthorityData;
-  }
-
-  public toIngressRuleJSON(): any {
-    return { sourceSecurityGroupId: this.securityGroupId };
-  }
-
-  public toEgressRuleJSON(): any {
-    return { destinationSecurityGroupId: this.securityGroupId };
   }
 
   private createCluster(props: cloudformation.ClusterResourceProps) {
