@@ -60,7 +60,14 @@ export interface IClusterRefProps {
    * Reeference the vpc placement for placing nodes into ASG subnets
    */
   vpcPlacement: ec2.VpcPlacementStrategy;
+  /**
+   * The security group ID used by the cluster for it's rules
+   */
   securityGroupId: string;
+  /**
+   * The IConnectable interface implementation for updating
+   * security group rules
+   */
   connections: ec2.Connections;
 }
 
@@ -157,12 +164,32 @@ export class Cluster extends ClusterRef {
    * @memberof Cluster
    */
   public readonly vpcPlacement: ec2.VpcPlacementStrategy;
+  /**
+   * The security group used by the cluster, currently only one supported
+   * Updating the cluster by adding resources causes a destruction and
+   * re-creation. This is a limitation of the EKS API itself.
+   *
+   * @type {ec2.SecurityGroup}
+   * @memberof Cluster
+   */
   public readonly securityGroup: ec2.SecurityGroup;
+  /**
+   * The security group ID attached to the security group of the cluster
+   * Used within the IConnectable implementation
+   *
+   * @type {string}
+   * @memberof Cluster
+   */
   public readonly securityGroupId: string;
+  /**
+   *Manages connection rules (Security Group Rules) for the cluster
+   *
+   * @type {ec2.Connections}
+   * @memberof Cluster
+   */
   public readonly connections: ec2.Connections;
 
   private readonly cluster: cloudformation.ClusterResource;
-  private readonly clusterSubnetIds: string[] = [];
 
   /**
    * Initiates an EKS Cluster with the supplied arguments
@@ -177,7 +204,8 @@ export class Cluster extends ClusterRef {
     this.vpc = props.vpc;
     this.vpcPlacement = props.vpcPlacement;
     const subnets = this.vpc.subnets(this.vpcPlacement);
-    subnets.map(s => this.clusterSubnetIds.push(s.subnetId));
+    const subnetIds: string[] = [];
+    subnets.map(s => subnetIds.push(s.subnetId));
 
     const role = this.addClusterRole();
 
@@ -187,14 +215,13 @@ export class Cluster extends ClusterRef {
       securityGroup: this.securityGroup
     });
 
-    const sgId = this.securityGroup.securityGroupId;
     const clusterProps: cloudformation.ClusterResourceProps = {
       clusterName: props.clusterName,
       roleArn: role.roleArn,
       version: props.k8sVersion,
       resourcesVpcConfig: {
-        securityGroupIds: new Array(sgId),
-        subnetIds: this.clusterSubnetIds
+        securityGroupIds: new Array(this.securityGroupId),
+        subnetIds
       }
     };
     this.cluster = this.createCluster(clusterProps);
@@ -313,7 +340,7 @@ export interface INodeProps {
 export class Nodes extends cdk.Construct {
   public readonly vpc: ec2.VpcNetworkRef;
   public readonly nodeGroup: asg.AutoScalingGroup;
-  public readonly nodeGroups: asg.AutoScalingGroup[];
+  public readonly nodeGroups: asg.AutoScalingGroup[] = [];
 
   private readonly vpcPlacement: ec2.VpcPlacementStrategy;
   private readonly clusterName: string;
