@@ -338,15 +338,41 @@ export interface INodeProps {
   tags?: cdk.Tags;
 }
 export class Nodes extends cdk.Construct {
+  /**
+   * A VPC reference to place the autoscaling group of nodes inside
+   *
+   * @type {ec2.VpcNetworkRef}
+   * @memberof Nodes
+   */
   public readonly vpc: ec2.VpcNetworkRef;
+  /**
+   * The autoscaling group used to setup the worker nodes
+   *
+   * @type {asg.AutoScalingGroup}
+   * @memberof Nodes
+   */
   public readonly nodeGroup: asg.AutoScalingGroup;
+  /**
+   * An array of worker nodes as multiple groups can be deployed
+   * within a Stack. This is mainly to track and can be read from
+   *
+   * @type {asg.AutoScalingGroup[]}
+   * @memberof Nodes
+   */
   public readonly nodeGroups: asg.AutoScalingGroup[] = [];
 
   private readonly vpcPlacement: ec2.VpcPlacementStrategy;
   private readonly clusterName: string;
-  // private readonly clusterSecurityGroup: ec2.SecurityGroupRef;
   private readonly cluster: ClusterRef;
 
+  /**
+   * Creates an instance of Nodes.
+   *
+   * @param {cdk.Construct} parent
+   * @param {string} name
+   * @param {INodeProps} props
+   * @memberof Nodes
+   */
   constructor(parent: cdk.Construct, name: string, props: INodeProps) {
     super(parent, name);
 
@@ -436,10 +462,12 @@ export class Nodes extends cdk.Construct {
 
 /**
  * Import a cluster to use in another stack
- * This cluster was not create here
+ * This cluster was not created here
  *
- * @default has not been tested, will be when
- * node creation is active implemented.
+ * @default NO
+ *
+ * Cross stack currently runs into an issue with references
+ * to security groups that are in stacks not yet deployed
  */
 class ImportedCluster extends ClusterRef {
   public readonly clusterName: string;
