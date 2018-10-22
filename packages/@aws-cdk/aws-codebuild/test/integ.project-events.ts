@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import codecommit = require('@aws-cdk/aws-codecommit');
 import sns = require('@aws-cdk/aws-sns');
+import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
 import { CodeCommitSource, Project } from '../lib';
 
@@ -11,8 +12,10 @@ const stack = new cdk.Stack(app, 'aws-cdk-codebuild-events');
 const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'aws-cdk-codebuild-events' });
 const project = new Project(stack, 'MyProject', { source: new CodeCommitSource(repo) });
 
+const queue = new sqs.Queue(stack, 'MyQueue');
+
 const topic = new sns.Topic(stack, 'MyTopic');
-topic.subscribeEmail('Personal', 'benisrae@amazon.com');
+topic.subscribeQueue(queue);
 
 // this will send an email with the JSON event for every state change of this
 // build project.
