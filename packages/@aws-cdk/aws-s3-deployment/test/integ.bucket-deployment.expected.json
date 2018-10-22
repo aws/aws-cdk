@@ -30,8 +30,7 @@
                         "Arn"
                       ]
                     },
-                    "/",
-                    "*"
+                    "/*"
                   ]
                 ]
               }
@@ -111,21 +110,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -149,18 +138,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "DeployMeAssetS3Bucket646A811D"
                       }
@@ -171,30 +153,15 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "DeployMeAssetS3Bucket646A811D"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
                       },
-                      "/",
-                      "*"
+                      ":s3:::",
+                      {
+                        "Ref": "DeployMeAssetS3Bucket646A811D"
+                      },
+                      "/*"
                     ]
                   ]
                 }
@@ -227,8 +194,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -246,18 +212,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
                       }
@@ -268,30 +227,15 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
                       },
-                      "/",
-                      "*"
+                      ":s3:::",
+                      {
+                        "Ref": "DeployWithPrefixAssetS3Bucket8B33F071"
+                      },
+                      "/*"
                     ]
                   ]
                 }
@@ -324,8 +268,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

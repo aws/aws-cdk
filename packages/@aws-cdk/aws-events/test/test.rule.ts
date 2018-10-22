@@ -275,17 +275,7 @@ export = {
             "Arn": "ARN1",
             "Id": "T1",
             "InputTransformer": {
-              "InputTemplate": {
-              "Fn::Join": [
-                "",
-                [
-                "\"",
-                "a",
-                "b",
-                "\""
-                ]
-              ]
-              }
+              "InputTemplate": "\"ab\""
             },
             "KinesisParameters": {
               "PartitionKeyPath": "partitionKeyPath"
@@ -305,17 +295,7 @@ export = {
             "Arn": "ARN4",
             "Id": "T4",
             "InputTransformer": {
-              "InputTemplate": {
-              "Fn::Join": [
-                " ",
-                [
-                "\"",
-                "hello",
-                "\"world\"",
-                "\""
-                ]
-              ]
-              }
+              "InputTemplate": "\" hello \"world\" \""
             }
             }
           ]

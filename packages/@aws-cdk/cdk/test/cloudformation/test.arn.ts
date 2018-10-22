@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { ArnComponents, ArnUtils, resolve, Token } from '../../lib';
+import { ArnComponents, ArnUtils, FnConcat, resolve, Token } from '../../lib';
 
 export = {
   'create from components with defaults'(test: Test) {
@@ -8,19 +8,18 @@ export = {
       resource: 'myqueuename'
     });
 
-    test.deepEqual(resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn',
-      ':',
-      { Ref: 'AWS::Partition' },
-      ':',
-      'sqs',
-      ':',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':',
-      'myqueuename' ] ] });
+    test.deepEqual(resolve(arn),
+                   resolve(new FnConcat('arn',
+                                        ':',
+                                        { Ref: 'AWS::Partition' },
+                                        ':',
+                                        'sqs',
+                                        ':',
+                                        { Ref: 'AWS::Region' },
+                                        ':',
+                                        { Ref: 'AWS::AccountId' },
+                                        ':',
+                                        'myqueuename')));
     test.done();
   },
 
@@ -34,21 +33,20 @@ export = {
       resourceName: 'mytable/stream/label'
     });
 
-    test.deepEqual(resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn',
-      ':',
-      'aws-cn',
-      ':',
-      'dynamodb',
-      ':',
-      'us-east-1',
-      ':',
-      '123456789012',
-      ':',
-      'table',
-      '/',
-      'mytable/stream/label' ] ] });
+    test.deepEqual(resolve(arn),
+                   resolve(new FnConcat('arn',
+                                        ':',
+                                        'aws-cn',
+                                        ':',
+                                        'dynamodb',
+                                        ':',
+                                        'us-east-1',
+                                        ':',
+                                        '123456789012',
+                                        ':',
+                                        'table',
+                                        '/',
+                                        'mytable/stream/label')));
     test.done();
   },
 
@@ -61,24 +59,18 @@ export = {
       partition: 'aws-cn',
     });
 
-    test.deepEqual(resolve(arn), {
-      'Fn::Join': [
-        '',
-        [
-          'arn',
-          ':',
-          'aws-cn',
-          ':',
-          's3',
-          ':',
-          '',
-          ':',
-          '',
-          ':',
-          'my-bucket',
-        ]
-      ]
-    });
+    test.deepEqual(resolve(arn),
+                   resolve(new FnConcat('arn',
+                                        ':',
+                                        'aws-cn',
+                                        ':',
+                                        's3',
+                                        ':',
+                                        '',
+                                        ':',
+                                        '',
+                                        ':',
+                                        'my-bucket')));
 
     test.done();
   },
@@ -91,21 +83,20 @@ export = {
       resourceName: 'WordPress_App'
     });
 
-    test.deepEqual(resolve(arn), { 'Fn::Join':
-    [ '',
-      [ 'arn',
-      ':',
-      { Ref: 'AWS::Partition' },
-      ':',
-      'codedeploy',
-      ':',
-      { Ref: 'AWS::Region' },
-      ':',
-      { Ref: 'AWS::AccountId' },
-      ':',
-      'application',
-      ':',
-      'WordPress_App' ] ] });
+    test.deepEqual(resolve(arn),
+                   resolve(new FnConcat('arn',
+                                        ':',
+                                        { Ref: 'AWS::Partition' },
+                                        ':',
+                                        'codedeploy',
+                                        ':',
+                                        { Ref: 'AWS::Region' },
+                                        ':',
+                                        { Ref: 'AWS::AccountId' },
+                                        ':',
+                                        'application',
+                                        ':',
+                                        'WordPress_App')));
     test.done();
   },
 

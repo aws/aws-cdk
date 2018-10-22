@@ -159,7 +159,7 @@ export = {
 
   'Tokens stringification and reversing of CloudFormation Tokens is implemented using Fn::Join'(test: Test) {
     // GIVEN
-    const token = new CloudFormationToken(() => 'woof woof');
+    const token = new CloudFormationToken(() => ({ woof: 'woof' }));
 
     // WHEN
     const stringified = `The dog says: ${token}`;
@@ -167,7 +167,7 @@ export = {
 
     // THEN
     test.deepEqual(resolved, {
-      'Fn::Join': ['', ['The dog says: ', 'woof woof']]
+      'Fn::Join': ['', ['The dog says: ', { woof: 'woof' }]]
     });
     test.done();
   },

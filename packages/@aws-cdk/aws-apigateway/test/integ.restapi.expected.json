@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373": {
+    "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -37,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB49f9d1ede876fcb76aa1d523f34f91d373"
+          "Ref": "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -76,21 +76,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
               ]
             ]
           }
@@ -156,37 +146,22 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -283,37 +258,22 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -338,37 +298,22 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "apigateway",
-                ":",
+                ":apigateway:",
                 {
                   "Ref": "AWS::Region"
                 },
-                ":",
-                "lambda",
-                ":",
-                "path",
-                "/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -395,21 +340,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -447,14 +382,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -468,16 +400,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/GET/v1/toys"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/GET/v1/toys"
             ]
           ]
         }
@@ -495,14 +420,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -514,8 +436,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/GET/v1/toys"
+              "/test-invoke-stage/GET/v1/toys"
             ]
           ]
         }
@@ -533,14 +454,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -554,16 +472,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/GET/v1/books"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/GET/v1/books"
             ]
           ]
         }
@@ -581,14 +492,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -600,8 +508,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/GET/v1/books"
+              "/test-invoke-stage/GET/v1/books"
             ]
           ]
         }
@@ -619,14 +526,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -640,16 +544,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/POST/v1/books"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/POST/v1/books"
             ]
           ]
         }
@@ -667,14 +564,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "execute-api",
-              ":",
+              ":execute-api:",
               {
                 "Ref": "AWS::Region"
               },
@@ -686,8 +580,7 @@
               {
                 "Ref": "myapi4C7BF186"
               },
-              "/",
-              "test-invoke-stage/POST/v1/books"
+              "/test-invoke-stage/POST/v1/books"
             ]
           ]
         }

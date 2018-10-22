@@ -50,21 +50,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
               ]
             ]
           }

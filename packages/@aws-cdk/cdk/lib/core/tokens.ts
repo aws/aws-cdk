@@ -106,7 +106,7 @@ export class Token {
  * that includes token markers).
  * @param obj The object to test.
  */
-export function unresolved(obj: any): obj is Token {
+export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
     return TOKEN_STRING_MAP.createTokenString(obj).test();
   } else {

@@ -11,7 +11,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name').toString());
+    p.addAwsAccountPrincipal(new FnConcat('my', { account: 'account' }, 'name').toString());
     p.limitToAccount('12221121221');
 
     test.deepEqual(resolve(p), { Action:
@@ -26,9 +26,9 @@ export = {
           [ '',
           [ 'arn:',
             { Ref: 'AWS::Partition' },
-            ':iam::',
-            { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
-            ':root' ] ] } },
+            ':iam::my',
+            { account: 'account' },
+            'name:root' ] ] } },
        Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
     test.done();

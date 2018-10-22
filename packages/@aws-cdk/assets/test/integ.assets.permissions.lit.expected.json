@@ -30,18 +30,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "MyFileS3BucketACE13C36"
                       }
@@ -52,50 +45,29 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "MyFileS3BucketACE13C36"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "MyFileS3BucketACE13C36"
                       },
                       "/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "MyFileS3VersionKey568C3C9F"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
+                        "Fn::Select": [
+                          0,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "MyFileS3VersionKey568C3C9F"
+                              }
+                            ]
+                          }
                         ]
-                      }
+                      },
+                      "*"
                     ]
                   ]
                 }

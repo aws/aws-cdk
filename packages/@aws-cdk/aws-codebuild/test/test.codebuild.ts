@@ -53,14 +53,11 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
-                        ":",
+                        "arn:",
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":",
-                        "logs",
-                        ":",
+                        ":logs:",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -68,19 +65,9 @@ export = {
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":",
-                        "log-group",
-                        ":",
+                        ":log-group:/aws/codebuild/",
                         {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
+                          "Ref": "MyProject39F7B0AE"
                         }
                       ]
                     ]
@@ -89,14 +76,11 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
-                        ":",
+                        "arn:",
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":",
-                        "logs",
-                        ":",
+                        ":logs:",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -104,19 +88,9 @@ export = {
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":",
-                        "log-group",
-                        ":",
+                        ":log-group:/aws/codebuild/",
                         {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
+                          "Ref": "MyProject39F7B0AE"
                         },
                         ":*"
                       ]
@@ -227,14 +201,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -242,19 +213,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   }
                 ]
                 ]
@@ -263,14 +224,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -278,19 +236,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   },
                   ":*"
                 ]
@@ -404,8 +352,7 @@ export = {
                     "Arn"
                   ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                 ]
                 ]
               }
@@ -423,14 +370,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -438,19 +382,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   }
                 ]
                 ]
@@ -459,14 +393,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -474,19 +405,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   },
                   ":*"
                 ]
@@ -531,8 +452,7 @@ export = {
               {
                 "Ref": "MyBucketF68F3FF0"
               },
-              "/",
-              "path/to/source.zip"
+              "/path/to/source.zip"
               ]
             ]
             },
@@ -756,7 +676,7 @@ export = {
       environment: {
       environmentVariables: {
         FOO: { value: '1234' },
-        BAR: { value: new cdk.FnConcat('111', '222'), type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+        BAR: { value: new cdk.FnConcat('111', { twotwotwo: '222' }), type: codebuild.BuildEnvironmentVariableType.ParameterStore }
       }
       },
       environmentVariables: {
@@ -793,7 +713,7 @@ export = {
           "",
           [
             "111",
-            "222"
+            { twotwotwo: "222" }
           ]
           ]
         },

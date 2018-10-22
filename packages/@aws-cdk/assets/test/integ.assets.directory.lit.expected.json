@@ -30,18 +30,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "SampleAssetS3BucketE6B2908E"
                       }
@@ -52,50 +45,29 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "SampleAssetS3BucketE6B2908E"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "SampleAssetS3BucketE6B2908E"
                       },
                       "/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "SampleAssetS3VersionKey3E106D34"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
+                        "Fn::Select": [
+                          0,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "SampleAssetS3VersionKey3E106D34"
+                              }
+                            ]
+                          }
                         ]
-                      }
+                      },
+                      "*"
                     ]
                   ]
                 }
