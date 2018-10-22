@@ -32,8 +32,7 @@ export class Topic extends cdk.Construct implements s3notifications.IBucketNotif
 
     // add permission to each source bucket
     if (!this.notifyingBucketPaths.has(bucketId)) {
-      this.policy.addStatement(new iam.PolicyStatement()
-        .describe(`sid${this.policy.statementCount}`)
+      this.policy.addStatement(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, `sid${this.policy.statementCount}`)
         .addServicePrincipal('s3.amazonaws.com')
         .addAction('sns:Publish')
         .addResource(this.topicArn)

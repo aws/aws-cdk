@@ -7,7 +7,7 @@ import cloudformation = require('../lib');
 
 export = nodeunit.testCase({
   'CreateReplaceChangeSet': {
-    works(test: nodeunit.Test) {
+    'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       const stage = new StageDouble({ pipelineRole });
@@ -22,8 +22,8 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
       const stackArn = _stackArn('MyStack');
-      const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
-      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn);
+      const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
+      _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DeleteChangeSet', stackArn, changeSetCondition);
@@ -38,10 +38,65 @@ export = nodeunit.testCase({
       });
 
       test.done();
+    },
+
+    'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
+      const stack = new cdk.Stack();
+      const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+      const stage = new StageDouble({ pipelineRole });
+      const artifact = new cpapi.Artifact(stack as any, 'TestArtifact');
+      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'ActionA', {
+        stage,
+        changeSetName: 'MyChangeSet',
+        stackName: 'StackA',
+        templatePath: artifact.atPath('path/to/file')
+      });
+
+      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'ActionB', {
+        stage,
+        changeSetName: 'MyChangeSet',
+        stackName: 'StackB',
+        templatePath: artifact.atPath('path/to/other/file')
+      });
+
+      test.deepEqual(
+        cdk.resolve(pipelineRole.statements),
+        [
+          {
+            Action: 'iam:PassRole',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': [ 'ActionARole72759154', 'Arn' ] },
+              { 'Fn::GetAtt': [ 'ActionBRole6A2F6804', 'Arn' ] }
+            ],
+            Sid: '735a3c36e2835a0ccdcb53352ff11ca8f958b3fb0781d87bfa79c4b77136cb96'
+          },
+          {
+            Action: [
+              'cloudformation:CreateChangeSet',
+              'cloudformation:DeleteChangeSet',
+              'cloudformation:DescribeChangeSet',
+              'cloudformation:DescribeStacks'
+            ],
+            Condition: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
+            Effect: 'Allow',
+            Resource: [
+              // tslint:disable-next-line:max-line-length
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
+              // tslint:disable-next-line:max-line-length
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
+            ],
+            Sid: 'c4638deb1c21970f8fdac7bce05a8ab4821cddc3b9f804de543d3ad60bd49a2b'
+          }
+        ]
+      );
+
+      test.done();
     }
   },
+
   'ExecuteChangeSet': {
-    works(test: nodeunit.Test) {
+    'works'(test: nodeunit.Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       const stage = new StageDouble({ pipelineRole });
@@ -60,6 +115,43 @@ export = nodeunit.testCase({
         StackName: 'MyStack',
         ChangeSetName: 'MyChangeSet'
       });
+
+      test.done();
+    },
+
+    'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
+      const stack = new cdk.Stack();
+      const pipelineRole = new RoleDouble(stack, 'PipelineRole');
+      const stage = new StageDouble({ pipelineRole });
+      new cloudformation.PipelineExecuteChangeSetAction(stack, 'ActionA', {
+        stage,
+        changeSetName: 'MyChangeSet',
+        stackName: 'StackA',
+      });
+
+      new cloudformation.PipelineExecuteChangeSetAction(stack, 'ActionB', {
+        stage,
+        changeSetName: 'MyChangeSet',
+        stackName: 'StackB',
+      });
+
+      test.deepEqual(
+        cdk.resolve(pipelineRole.statements),
+        [
+          {
+            Action: 'cloudformation:ExecuteChangeSet',
+            Condition: { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } },
+            Effect: 'Allow',
+            Resource: [
+              // tslint:disable-next-line:max-line-length
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackA/*' ] ] },
+              // tslint:disable-next-line:max-line-length
+              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
+            ],
+            Sid: 'd65a418665cdf14ac5d3afc79357d41211b05b9eb3ed799f6ad8992c2f2a4964'
+          }
+        ]
+      );
 
       test.done();
     }
@@ -144,12 +236,13 @@ function _hasAction(actions: cpapi.Action[], owner: string, provider: string, ca
   return false;
 }
 
-function _assertPermissionGranted(test: nodeunit.Test, statements: PolicyStatementJson[], action: string, resource: string, conditions?: any) {
+function _assertPermissionGranted(test: nodeunit.Test, statements: iam.PolicyStatement[], action: string, resource: string, conditions?: any) {
   const conditionStr = conditions
                      ? ` with condition(s) ${JSON.stringify(cdk.resolve(conditions))}`
                      : '';
-  const statementsStr = JSON.stringify(cdk.resolve(statements), null, 2);
-  test.ok(_grantsPermission(statements, action, resource, conditions),
+  const resolvedStatements = cdk.resolve(statements);
+  const statementsStr = JSON.stringify(resolvedStatements, null, 2);
+  test.ok(_grantsPermission(resolvedStatements, action, resource, conditions),
           `Expected to find a statement granting ${action} on ${JSON.stringify(cdk.resolve(resource))}${conditionStr}, found:\n${statementsStr}`);
 }
 
@@ -218,7 +311,7 @@ class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
 }
 
 class RoleDouble extends iam.Role {
-  public readonly statements = new Array<PolicyStatementJson>();
+  public readonly statements = new Array<iam.PolicyStatement>();
 
   constructor(parent: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(parent, id, props);
@@ -226,6 +319,6 @@ class RoleDouble extends iam.Role {
 
   public addToPolicy(statement: iam.PolicyStatement) {
     super.addToPolicy(statement);
-    this.statements.push(statement.toJson());
+    this.statements.push(statement);
   }
 }

@@ -513,7 +513,7 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new iam.PolicyStatement()
+    topic.addToResourcePolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, 'Foo')
       .addAllResources()
       .addActions('sns:*')
       .addPrincipal(new iam.ArnPrincipal('arn')));
@@ -522,6 +522,7 @@ export = {
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
       Statement: [{
+        "Sid": "Foo",
         "Action": "sns:*",
         "Effect": "Allow",
         "Principal": { "AWS": "arn" },
@@ -620,46 +621,26 @@ export = {
 
     test.done();
   },
-  'topic resource policy includes unique SIDs'(test: Test) {
+
+  'addToResourcePolicy refuses statements without an Sid'(test: Test) {
     const stack = new cdk.Stack();
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0'));
-    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement1'));
+    test.throws(() => topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0')),
+                /unique Sid/);
 
-    expect(stack).toMatch({
-      "Resources": {
-      "MyTopic86869434": {
-        "Type": "AWS::SNS::Topic"
-      },
-      "MyTopicPolicy12A5EC17": {
-        "Type": "AWS::SNS::TopicPolicy",
-        "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-          {
-            "Action": "statement0",
-            "Effect": "Allow",
-            "Sid": "0"
-          },
-          {
-            "Action": "statement1",
-            "Effect": "Allow",
-            "Sid": "1"
-          }
-          ],
-          "Version": "2012-10-17"
-        },
-        "Topics": [
-          {
-          "Ref": "MyTopic86869434"
-          }
-        ]
-        }
-      }
-      }
-    });
+    test.done();
+  },
+
+  'addToResourcePolicy refuses statements with an already-in-use SID'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    topic.addToResourcePolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, 'Foo').addAction('statement0'));
+    test.throws(() => topic.addToResourcePolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, 'Foo').addAction('statement1')),
+                /There is already a statement with Sid=Foo/);
 
     test.done();
   },

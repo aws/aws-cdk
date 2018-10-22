@@ -1,6 +1,7 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, PrincipalPolicyFragment } from '../lib';
+import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal,
+         PolicyStatement, PolicyStatementEffect, PrincipalPolicyFragment } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -239,4 +240,21 @@ export = {
     });
     test.done();
   },
+
+  'tryFindStatement returns the statement if it is found'(test: Test) {
+    const p = new PolicyDocument();
+    const sid = 'FooStatememnt';
+    const s = new PolicyStatement(PolicyStatementEffect.Allow, sid);
+    p.addStatement(s);
+    test.strictEqual(s, p.tryFindStatement(sid));
+    test.done();
+  },
+
+  'tryFindStatement returns the undefined if it is not found'(test: Test) {
+    const p = new PolicyDocument();
+    const sid = 'FooStatememnt';
+    p.addStatement(new PolicyStatement(PolicyStatementEffect.Allow, sid));
+    test.strictEqual(undefined, p.tryFindStatement(sid + ' - or not'));
+    test.done();
+  }
 };

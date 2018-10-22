@@ -1,6 +1,7 @@
 import codepipeline  = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import crypto = require('crypto');
 
 /**
  * Properties common to all CloudFormation actions
@@ -92,10 +93,12 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ChangeSetName: props.changeSetName,
     });
 
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addAction('cloudformation:ExecuteChangeSet')
-      .addResource(stackArnFromName(props.stackName))
-      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+    const sid = uuid(`PipelineExecuteChangeSetAction-${props.changeSetName}`);
+    props.stage.pipelineRole.findOrAddStatement(
+      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid)
+        .addAction('cloudformation:ExecuteChangeSet')
+        .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName })
+    ).addResource(stackArnFromName(props.stackName));
   }
 }
 
@@ -214,9 +217,10 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
 
     // Allow the pipeline to pass this actions' role to CloudFormation
     // Required by all Actions that perform CFN deployments
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addAction('iam:PassRole')
-      .addResource(this.role.roleArn));
+    const sid = uuid(`PipelineCloudFormationDeployAction-PassRole`);
+    props.stage.pipelineRole.findOrAddStatement(
+      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid).addAction('iam:PassRole')
+    ).addResource(this.role.roleArn);
   }
 
   /**
@@ -261,16 +265,16 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    const stackArn = stackArnFromName(props.stackName);
-    // Allow the pipeline to check for Stack & ChangeSet existence
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addAction('cloudformation:DescribeStacks')
-      .addResource(stackArn));
-    // Allow the pipeline to create & delete the specified ChangeSet
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addActions('cloudformation:CreateChangeSet', 'cloudformation:DeleteChangeSet', 'cloudformation:DescribeChangeSet')
-      .addResource(stackArn)
-      .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName }));
+    const sid = uuid(`PipelineCreateReplaceChangeSetAction-${props.changeSetName}`);
+    // Allow the pipeline to Stack & ChangeSet existence, and to create & delete the specified ChangeSet
+    props.stage.pipelineRole.findOrAddStatement(
+      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid)
+        .addActions('cloudformation:CreateChangeSet',
+                    'cloudformation:DeleteChangeSet',
+                    'cloudformation:DescribeChangeSet',
+                    'cloudformation:DescribeStacks')
+        .addCondition('StringEqualsIfExists', { 'cloudformation:ChangeSetName': props.changeSetName })
+    ).addResource(stackArnFromName(props.stackName));
   }
 }
 
@@ -400,4 +404,12 @@ function stackArnFromName(stackName: string): string {
     resource: 'stack',
     resourceName: `${stackName}/*`
   });
+}
+
+function uuid(label: string): string {
+  return crypto.createHash('sha256')
+               // Making sure those hashes are in a "unique" namespace
+               .update('8389e75f-0810-4838-bf64-d6f85a95cf83\0')
+               .update(label)
+               .digest('hex');
 }
