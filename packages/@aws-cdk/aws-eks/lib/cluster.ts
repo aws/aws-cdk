@@ -174,7 +174,7 @@ export class Cluster extends ClusterRef {
    */
   public readonly securityGroupId: string;
   /**
-   *Manages connection rules (Security Group Rules) for the cluster
+   * Manages connection rules (Security Group Rules) for the cluster
    *
    * @type {ec2.Connections}
    * @memberof Cluster
