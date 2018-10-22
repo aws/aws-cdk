@@ -125,9 +125,9 @@ function toVpcProperty(vpc: ec2.VpcNetworkRef): cloudformation.HostedZoneResourc
 }
 
 function determineHostedZoneProps(props: PublicHostedZoneProps) {
-  const hostedZoneName = props.zoneName + '.';
+  const name = props.zoneName + '.';
   const hostedZoneConfig = props.comment ? { comment: props.comment } : undefined;
   const queryLoggingConfig = props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined;
 
-  return { hostedZoneName, hostedZoneConfig, queryLoggingConfig };
+  return { name, hostedZoneConfig, queryLoggingConfig };
 }
