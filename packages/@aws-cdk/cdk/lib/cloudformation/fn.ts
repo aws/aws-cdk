@@ -120,21 +120,21 @@ export class FnJoin extends Fn {
   private resolveValues() {
     if (this._resolvedValues) { return this._resolvedValues; }
 
-    this._resolvedValues = [...this.listOfValues.map(e => resolve(e))];
+    const resolvedValues = [...this.listOfValues.map(e => resolve(e))];
     let i = 0;
-    while (i < this._resolvedValues.length) {
-      const el = this._resolvedValues[i];
+    while (i < resolvedValues.length) {
+      const el = resolvedValues[i];
       if (isFnJoinIntrinsicWithSameDelimiter.call(this, el)) {
-        this._resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
-      } else if (i > 0 && isPlainString(this._resolvedValues[i - 1]) && isPlainString(this._resolvedValues[i])) {
-        this._resolvedValues[i - 1] += this.delimiter + this._resolvedValues[i];
-        this._resolvedValues.splice(i, 1);
+        resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
+      } else if (i > 0 && isPlainString(resolvedValues[i - 1]) && isPlainString(resolvedValues[i])) {
+        resolvedValues[i - 1] += this.delimiter + resolvedValues[i];
+        resolvedValues.splice(i, 1);
       } else {
         i += 1;
       }
     }
 
-    return this._resolvedValues;
+    return this._resolvedValues = resolvedValues;
 
     function isFnJoinIntrinsicWithSameDelimiter(this: FnJoin, obj: any): boolean {
       return isIntrinsic(obj)
