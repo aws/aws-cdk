@@ -117,8 +117,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -148,8 +147,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -165,14 +163,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -180,10 +175,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "application",
-                    ":",
-                    "IntegTestDeployApp"
+                    ":application:IntegTestDeployApp"
                   ]
                 ]
               }
@@ -198,14 +190,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -213,10 +202,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "deploymentgroup",
-                    ":",
-                    "IntegTestDeployApp/IntegTestDeploymentGroup"
+                    ":deploymentgroup:IntegTestDeployApp/IntegTestDeploymentGroup"
                   ]
                 ]
               }
@@ -228,14 +214,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -243,10 +226,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "deploymentconfig",
-                    ":",
-                    "*"
+                    ":deploymentconfig:*"
                   ]
                 ]
               }

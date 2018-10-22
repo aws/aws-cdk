@@ -53,8 +53,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -200,14 +199,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -257,14 +253,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -312,14 +305,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -399,14 +389,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -414,19 +401,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "BuildProject097C5DB7"
-                            }
-                          ]
-                        ]
+                        "Ref": "BuildProject097C5DB7"
                       }
                     ]
                   ]
@@ -435,14 +412,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -450,19 +424,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "BuildProject097C5DB7"
-                            }
-                          ]
-                        ]
+                        "Ref": "BuildProject097C5DB7"
                       },
                       ":*"
                     ]
@@ -497,8 +461,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

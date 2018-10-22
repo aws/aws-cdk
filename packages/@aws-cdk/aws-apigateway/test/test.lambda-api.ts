@@ -46,37 +46,22 @@ export = {
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "apigateway",
-              ":",
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
-              ":",
-              "lambda",
-              ":",
-              "path",
-              "/",
+              ":lambda:path/2015-03-31/functions/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    "2015-03-31/functions/",
-                    {
-                      "Fn::GetAtt": [
-                        "handlerE1533BD5",
-                        "Arn"
-                      ]
-                    },
-                    "/invocations"
-                  ]
+                "Fn::GetAtt": [
+                  "handlerE1533BD5",
+                  "Arn"
                 ]
-              }
+              },
+              "/invocations"
             ]
           ]
         }

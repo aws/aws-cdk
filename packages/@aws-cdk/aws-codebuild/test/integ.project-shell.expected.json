@@ -44,18 +44,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "s3",
-                      ":",
-                      "",
-                      ":",
-                      "",
-                      ":",
+                      ":s3:::",
                       {
                         "Ref": "BundleS3Bucket0EFC11B0"
                       }
@@ -66,50 +59,29 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn",
-                            ":",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":",
-                            "s3",
-                            ":",
-                            "",
-                            ":",
-                            "",
-                            ":",
-                            {
-                              "Ref": "BundleS3Bucket0EFC11B0"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "BundleS3Bucket0EFC11B0"
                       },
                       "/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "BundleS3VersionKey720F2199"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
+                        "Fn::Select": [
+                          0,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "BundleS3VersionKey720F2199"
+                              }
+                            ]
+                          }
                         ]
-                      }
+                      },
+                      "*"
                     ]
                   ]
                 }
@@ -127,14 +99,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -142,19 +111,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyProject39F7B0AE"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyProject39F7B0AE"
                       }
                     ]
                   ]
@@ -163,14 +122,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -178,19 +134,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyProject39F7B0AE"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyProject39F7B0AE"
                       },
                       ":*"
                     ]
