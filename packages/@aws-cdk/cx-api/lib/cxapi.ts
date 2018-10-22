@@ -13,8 +13,11 @@ export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
  */
 export interface MissingContext {
   provider: string;
-  scope: string[];
-  args: string[];
+  props: {
+    account?: string;
+    region?: string;
+    [key: string]: any;
+  };
 }
 
 export interface SynthesizeResponse {
