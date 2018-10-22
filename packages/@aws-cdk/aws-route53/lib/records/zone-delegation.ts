@@ -40,7 +40,7 @@ export class ZoneDelegationRecord extends Construct {
 
     new cloudformation.RecordSetResource(this, 'Resource', {
       hostedZoneId: parent.hostedZoneId,
-      recordSetName: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
+      name: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
       type: 'NS',
       ttl: ttl.toString(),
       comment: props.comment,
