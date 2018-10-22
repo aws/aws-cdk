@@ -18,9 +18,14 @@ export = {
     });
 
     // WHEN
-    new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler, proxyPath: '/' });
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler });
 
-    // THEN
+    // THEN -- can't customize further
+    test.throws(() => {
+      api.root.addResource('cant-touch-this');
+    });
+
+    // THEN -- template proxies everything
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       "PathPart": "{proxy+}"
     }));
@@ -66,7 +71,7 @@ export = {
     test.done();
   },
 
-  'proxyPath can be used to attach the proxy to any route'(test: Test) {
+  'when "proxy" is set to false, users need to define the model'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -77,33 +82,7 @@ export = {
     });
 
     // WHEN
-    new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
-      handler,
-      proxyPath: '/backend/v2'
-    });
-
-    // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      "ResourceId": {
-        "Ref": "lambdarestapibackendv2proxyC4980BD5"
-      }
-    }));
-
-    test.done();
-  },
-
-  'when "proxyPath" is not specified, users need to define the model'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    const handler = new lambda.Function(stack, 'handler', {
-      handler: 'index.handler',
-      code: lambda.Code.inline('boom'),
-      runtime: lambda.Runtime.NodeJS610,
-    });
-
-    // WHEN
-    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler });
+    const api = new apigw.LambdaRestApi(stack, 'lambda-rest-api', { handler, proxy: false });
 
     const tasks = api.root.addResource('tasks');
     tasks.addMethod('GET');
@@ -147,5 +126,5 @@ export = {
     }), /Cannot specify \"options\.defaultIntegration\" since Lambda integration is automatically defined/);
 
     test.done();
-  }
+  },
 };
