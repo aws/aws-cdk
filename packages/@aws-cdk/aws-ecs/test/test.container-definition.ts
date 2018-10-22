@@ -123,7 +123,7 @@ export = {
         container.addPortMappings({
           containerPort: 8080,
         });
-        const actual = container.containerPort;
+        const actual = container.ingressPort;
 
         // THEN
         const expected = 8080;
@@ -148,7 +148,7 @@ export = {
         container.addPortMappings({
           containerPort: 8080,
         });
-        const actual = container.containerPort;
+        const actual = container.ingressPort;
 
         // THEN
         const expected = 8080;
@@ -171,17 +171,17 @@ export = {
 
         // WHEN
         container.addPortMappings({
-          containerPort: 8081,
-          hostPort: 8080,
+          containerPort: 8080,
+          hostPort: 8081,
         });
-        const actual = container.containerPort;
+        const actual = container.ingressPort;
 
         // THEN
-        const expected = 8080;
+        const expected = 8081;
         test.equal(actual, expected);
         test.done();
       },
-      "Ingress port should be the 0 if not supplied"(test: Test) {
+      "Ingress port should be 0 if not supplied"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
@@ -197,7 +197,7 @@ export = {
         container.addPortMappings({
           containerPort: 8081,
         });
-        const actual = container.containerPort;
+        const actual = container.ingressPort;
 
         // THEN
         const expected = 0;

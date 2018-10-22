@@ -1,4 +1,4 @@
-import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
@@ -57,7 +57,7 @@ export interface BaseServiceProps {
 }
 
 export abstract class BaseService extends cdk.Construct
-    implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
+  implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
   public abstract readonly connections: ec2.Connections;
   public readonly serviceName: string;
@@ -88,6 +88,9 @@ export abstract class BaseService extends cdk.Construct
     this.serviceName = this.resource.serviceName;
   }
 
+  /**
+   * FIXME How to reconcile this with the fact ECS registers service with target group automatically?
+   */
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     const ret = this.attachToELBv2(targetGroup);
 
@@ -133,7 +136,7 @@ export abstract class BaseService extends cdk.Construct
 
     this.networkConfiguration = {
       awsvpcConfiguration: {
-        assignPublicIp : assignPublicIp ? 'ENABLED' : 'DISABLED',
+        assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: subnets.map(x => x.subnetId),
         securityGroups: new cdk.Token(() => [securityGroup!.securityGroupId]),
       }

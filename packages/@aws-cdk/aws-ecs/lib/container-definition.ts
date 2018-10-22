@@ -242,6 +242,9 @@ export class ContainerDefinition extends cdk.Construct {
     return this._usesEcrImages;
   }
 
+  /**
+   * Ingress Port is needed to set the security group ingress for the task/service.
+   */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
       throw new Error(`Container ${this.id} hasn't defined any ports`);
@@ -258,7 +261,7 @@ export class ContainerDefinition extends cdk.Construct {
     return defaultPortMapping.containerPort;
   }
   /**
-   * Return the instance port that the container will be listening on
+   * Return the port that the container will be listening on by default
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
