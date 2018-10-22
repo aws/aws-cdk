@@ -89,7 +89,7 @@ There's an `Array` of autoscaling groups that tracks the creation of nodes.
 
 ### Roadmap
 
-- [] Add ability to create worker nodes by passing a IClusterProp with creation details (faster for testing)
+- [ ] Add ability to create worker nodes by passing a IClusterProp with creation details (faster for testing)
   - More dangerous for production
-- [] Make worker nodes `connections` implementation details native, so that no need to access through the `autoscaling` group `nodeGroup` public field
-- [] Make able to create nodes in separate stack
+- [ ] Make worker nodes `connections` implementation details native, so that no need to access through the `autoscaling` group `nodeGroup` public field
+- [ ] Make able to create nodes in separate stack
