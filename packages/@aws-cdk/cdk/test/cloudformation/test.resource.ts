@@ -240,22 +240,6 @@ export = {
     test.done();
   },
 
-  'the "name" property is deleted when synthesizing into a CloudFormation resource'(test: Test) {
-    const stack = new Stack();
-
-    new Resource(stack, 'Bla', {
-      type: 'MyResource',
-      properties: {
-        Prop1: 'value1',
-        name: 'Bla'
-      }
-    });
-
-    test.deepEqual(stack.toCloudFormation(), { Resources:
-      { Bla: { Type: 'MyResource', Properties: { Prop1: 'value1' } } } });
-    test.done();
-  },
-
   'removal policy is a high level abstraction of deletion policy used by l2'(test: Test) {
     const stack = new Stack();
 

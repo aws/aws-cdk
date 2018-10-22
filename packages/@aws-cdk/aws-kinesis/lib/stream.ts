@@ -297,7 +297,7 @@ export class Stream extends StreamRef {
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.stream = new cloudformation.StreamResource(this, "Resource", {
-      streamName: props.streamName,
+      name: props.streamName,
       retentionPeriodHours,
       shardCount,
       streamEncryption

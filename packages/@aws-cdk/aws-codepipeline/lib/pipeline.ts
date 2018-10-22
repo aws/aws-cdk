@@ -97,7 +97,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
       stages: new cdk.Token(() => this.renderStages()) as any,
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      pipelineName: props && props.pipelineName,
+      name: props && props.pipelineName,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.

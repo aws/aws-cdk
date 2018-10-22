@@ -176,7 +176,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
     super(parent, id);
 
     const resource = new cloudformation.RestApiResource(this, 'Resource', {
-      restApiName: props.restApiName || id,
+      name: props.restApiName || id,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,

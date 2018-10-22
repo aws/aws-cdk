@@ -522,7 +522,7 @@ export class Project extends ProjectRef {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache,
-      projectName: props.projectName,
+      name: props.projectName,
     });
 
     this.projectArn = resource.projectArn;

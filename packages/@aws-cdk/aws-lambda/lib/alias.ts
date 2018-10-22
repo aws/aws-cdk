@@ -86,7 +86,7 @@ export class Alias extends FunctionRef {
     this.underlyingLambda = props.version.lambda;
 
     const alias = new cloudformation.AliasResource(this, 'Resource', {
-      aliasName: props.aliasName,
+      name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,
       functionVersion: props.version.functionVersion,

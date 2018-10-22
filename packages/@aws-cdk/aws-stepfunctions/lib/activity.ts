@@ -23,7 +23,7 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
         super(parent, id);
 
         const resource = new cloudformation.ActivityResource(this, 'Resource', {
-            activityName: props.activityName || this.generateName()
+            name: props.activityName || this.generateName()
         });
 
         this.activityArn = resource.activityArn;
