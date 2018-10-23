@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyStatement } from '../lib';
+import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, PrincipalPolicyFragment } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -219,5 +219,24 @@ export = {
     test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); },
                 /Attempted to add principal key Federated/);
     test.done();
-  }
+  },
+
+  'addPrincipal correctly merges array in'(test: Test) {
+    const arrayPrincipal: PolicyPrincipal = {
+      assumeRoleAction: 'sts:AssumeRole',
+      policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+    };
+    const s = new PolicyStatement().addAccountRootPrincipal()
+                                   .addPrincipal(arrayPrincipal);
+    test.deepEqual(resolve(s), {
+      Effect: 'Allow',
+      Principal: {
+        AWS: [
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+          'foo', 'bar'
+        ]
+      }
+    });
+    test.done();
+  },
 };
