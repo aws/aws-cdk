@@ -206,7 +206,7 @@ export class Cluster extends ClusterRef {
     });
 
     const clusterProps: cloudformation.ClusterResourceProps = {
-      clusterName: props.clusterName,
+      // clusterName: props.clusterName,
       roleArn: role.roleArn,
       version: props.version,
       resourcesVpcConfig: {
