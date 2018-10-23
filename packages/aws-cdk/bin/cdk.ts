@@ -523,6 +523,9 @@ async function initCommandLine() {
     const frameworkVersion = semver.coerce(response.version);
     const toolkitVersion = semver.coerce(cxapi.PROTO_RESPONSE_VERSION);
 
+    // Should not happen, but I don't trust this library 100% either, so let's check for it to be safe
+    if (!frameworkVersion || !toolkitVersion) { throw new Error('SemVer library could not parse versions'); }
+
     if (semver.gt(frameworkVersion, toolkitVersion)) {
       throw new Error(`CDK Toolkit >= ${response.version} is required in order to interact with this program.`);
     }
@@ -530,7 +533,7 @@ async function initCommandLine() {
     if (semver.lt(frameworkVersion, toolkitVersion)) {
       // Toolkit protocol is newer than the framework version, and we KNOW the
       // version. This is a scenario in which we could potentially do some
-      // upgrading of the request in the future.
+      // upgrading of the response in the future.
       //
       // For now though, we simply reject old responses.
       throw new Error(`CDK Framework >= ${cxapi.PROTO_RESPONSE_VERSION} is required in order to interact with this version of the Toolkit.`);
