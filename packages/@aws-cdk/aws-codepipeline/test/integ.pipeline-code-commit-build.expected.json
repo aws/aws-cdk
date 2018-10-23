@@ -60,8 +60,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -261,14 +260,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -276,19 +272,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyBuildProject30DB9D6E"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyBuildProject30DB9D6E"
                       }
                     ]
                   ]
@@ -297,14 +283,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -312,19 +295,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyBuildProject30DB9D6E"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyBuildProject30DB9D6E"
                       },
                       ":*"
                     ]
@@ -359,8 +332,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -390,8 +362,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

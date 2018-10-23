@@ -100,12 +100,12 @@ import ec2 = require('@aws-cdk/aws-ec2');
 
 const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
+  natGateways: 1,
   subnetConfiguration: [
     {
       cidrMask: 26,
       name: 'Public',
       subnetType: SubnetType.Public,
-      natGateway: true,
     },
     {
       name: 'Application',
@@ -147,6 +147,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
+  natGatewayPlacement: {subnetName: 'Public'},
   subnetConfiguration: [
     {
       cidrMask: 26,

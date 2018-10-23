@@ -25,10 +25,11 @@ export class WindowsImage implements IMachineImageSource  {
    * Return the image to use in the given context
    */
   public getImage(parent: Construct): MachineImage {
-    const ssmProvider = new SSMParameterProvider(parent);
+    const ssmProvider = new SSMParameterProvider(parent, {
+      parameterName: this.imageParameterName(this.version),
+    });
 
-    const parameterName = this.imageParameterName(this.version);
-    const ami = ssmProvider.getString(parameterName);
+    const ami = ssmProvider.parameterValue();
     return new MachineImage(ami, new WindowsOS());
   }
 
@@ -98,8 +99,10 @@ export class AmazonLinuxImage implements IMachineImageSource {
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
 
-    const ssmProvider = new SSMParameterProvider(parent);
-    const ami = ssmProvider.getString(parameterName);
+    const ssmProvider = new SSMParameterProvider(parent, {
+      parameterName,
+    });
+    const ami = ssmProvider.parameterValue();
     return new MachineImage(ami, new LinuxOS());
   }
 }
