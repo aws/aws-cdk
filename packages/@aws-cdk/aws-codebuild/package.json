@@ -58,7 +58,7 @@
     "@aws-cdk/assert": "^0.13.0",
     "@aws-cdk/aws-sns": "^0.13.0",
     "@aws-cdk/aws-sqs": "^0.13.0",
-    "aws-sdk": "^2.259.1",
+    "aws-sdk": "^^2.339.0",
     "cdk-build-tools": "^0.13.0",
     "cdk-integ-tools": "^0.13.0",
     "cfn2ts": "^0.13.0",
