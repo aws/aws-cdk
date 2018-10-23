@@ -1,211 +1,190 @@
 # Contributing to the AWS Cloud Development Kit
 
+Thanks for your interest in contibuting to the AWS CDK! ❤️
+
 This document describes how to set up a development environment and submit
-contributions to this project.
+your contributions. Please read it carefully and let us know if it's not up-to-date (even better, submit a PR with your corrections ;-)).
 
-## Development Workflow
+## Pull Requests
 
-1. Setup a [Development Environment](#development-environment)
+1. If there isn't one already, open an issue describing what you intend to contribute. It's usful to communicate
+   in advance, because sometimes, someone is already working in this space, so maybe it's worth
+   collaborating with them instead of duplicating the efforts.
 1. Work your magic. Here are some guidelines:
     * Every change requires a unit test
-    * Make sure you update [CHANGELOG] under “[Unreleased]” if the feature/bug is
-      worthy of a mention
-    * Make sure to indicate both in the [CHANGELOG] and in the commit message if
-      the change is BREAKING. A good indication that a change is breaking is if
-      you had to change old tests to “work” after this change.
+    * If you change APIs, make sure to update the module's README file
     * Try to maintain a single feature/bugfix per pull request. It's okay to
       introduce a little bit of housekeeping changes along the way, but try to
       avoid conflating multiple features. Eventually all these are going to go
       into a single commit, so you can use that to frame your scope.
-2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
-3. Submit a Pull Requests on GitHub. When authoring your pull request
-   description:
-    * Think about your code reviewers and what information they need in order to
-      have fun with your changes. If it's a big commit (hopefully not), try to
-      provide some good entry points so it will be easier to follow.
-    * Ideally, associate with an issue (`fixes #<issue>`), which describes more
-      details about motivation and the design process.
+1. Create a commit with the proposed change changes:
+    * Commit title and message (and PR title and description) must adhere to [conventionalcommits].
+    * The title must begin with `feat(module): title`, `fix(module): title`, 
+      `reactor(module): title` or `chore(module): title`.
+    * Title should be lowercase.
+    * No period at the end of the title.
+    * Commit message should describe _motivation_. Think about your code reviewers and what 
+      information they need in order to understand what you did. If it's a big commit (hopefully not), 
+      try to provide some good entry points so it will be easier to follow.
+    * Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
     * Shout out to collaborators.
     * If not obvious (i.e. from unit tests), describe how you verified that your
       change works.
-4. Assign the PR for a review to the "awslabs/aws-cdk" team.
+    * If this commit includes a breaking change, the commit message must end with a
+      a single pragraph 
+      `BREAKING CHANGE: description of what broke and how to achieve this beahvior now`.
+2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
+3. Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
 5. Discuss review comments and iterate until you get at least one “Approve”. When
    iterating, push new commits to the same branch. Usually all these are going
    to be squashed when you merge to master. The commit messages should be hints
    for you when you finalize your merge commit message.
+7. Make sure to update the PR title/description if things change. The PR title/description are going
+   to be used as the commit title/message and will appear in the CHANGELOG, so maintain them all
+   the way throughout the process.
 6. Make sure your PR builds successfully (we have CodeBuild setup to
    automatically build all PRs)
-7. Once approved and tested, squash-merge to master __via GitHub__. This is your
-   opportunity to author a beautiful commit message which describes __the
-   motivation__ and __design considerations__ of your change. Here are some
-   [tips](https://chris.beams.io/posts/git-commit/#separate) from Chris Beams.
+7. Once approved and tested, a maintainer will squash-merge to master and will use your PR
+   title/description as the commit message.
 
-## Development Environment
+## Tools
 
-This is a monorepo which uses [lerna](https://github.com/lerna/lerna).
+The CDK is a big project, and, at the moment, all of the CDK modules are mastered in a single monolithic
+repository (uses [lerna](https://github.com/lerna/lerna)). There are pros and cons to this approach, 
+and it's especially valuable to maintain integrity in the early stage of thr project where things constantly change across the stack. In the future we believe many of these modules will be extracted to their own repositories.
 
-The CDK depends on [jsii](https://github.com/awslabs/jsii), which is still not
-published to npm. Therefore, the jsii tarballs are checked-in to this repository
-under `./local-npm` and the install script will install them in the repo-global
-`node_modules` directory.
+Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple
+programming languages. This means that when a full build is complete, there will be a version of each
+module for each supported language.
 
-### Prerequisites
+However, in many cases, you can probably get away with just building a portion of the
+project, based on areas that you want to work on. 
 
-Since this repo produces artifacts for multiple programming languages using
-__jsii__, it relies on the following toolchains:
+### Main build scripts
 
- - [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
- - [Java OpenJDK 8](http://openjdk.java.net/install/)
- - [.NET Core 2.0](https://www.microsoft.com/net/download)
- - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
- - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
+The build process is divided into stages, so you can invoke them as needed:
 
-When building on CodeBuild, these toolchains are all included in the
-[superchain](https://github.com/awslabs/superchain) docker image. This image can
-also be used locally as follows:
+- __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
+- __`build.sh`__: runs `npm build` and `npm test` in all modules (in topological order).
+- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory 
+  with all the outputs (running this script requires that you installed the [toolchains](#Toolchains) 
+  for all target languages on your system).
 
-```shell
-eval $(aws ecr get-login --no-include-email)
-IMAGE=260708760616.dkr.ecr.us-east-1.amazonaws.com/superchain:latest
-docker pull ${IMAGE}
-docker run --net=host -it -v $PWD:$PWD -w $PWD ${IMAGE}
-```
+### Partial build tools
 
-This will get you into an interactive docker shell. You can then run
-`./install.sh` and `./build.sh` as described below.
+There are also two useful scripts in the `scripts` directory that can help you build part of the repo:
 
-Also install the [git-secrets](https://github.com/awslabs/git-secrets) tool
-and activate it on your working copy of the `aws-cdk` repository.
+- __`scripts/buildup`__: builds the current module and all of it's dependencies (in topological order).
+- __`scripts/builddown`__: builds the current module and all of it's consumers (in topological order).
 
-### Bootstrapping
+### Useful aliases
 
-1. Clone this repository (or run `git clean -fdx` to clean up all build artifacts).
-2. Run `./install.sh` - this will install all repo-level dependencies, including
-   `lerna` and the unpublished modules from local-npm.
-3. Run `./build.sh` - this will invoke `lerna bootstrap` and `lerna run test`.
-   All external dependencies will be installed and internal deps will be
-   cross-linked.
-
-### buildup/builddown
-
-If you only want to work on a subset of the repo, you can use `scripts/buildup` and
-`scripts/builddown` to build a package and all it's dependencies (up) or 
-dependents (down).
-
-Make sure to run `./install.sh` from the root to make sure all modules are installed.
-
-It is useful to add the `./scripts` directory to your PATH.
-
-Then, change the working directory to any package in the repo and run:
-
-    buildup # will also build all dependencies
-
-Or:
-
-    builddown # will also build all consumers
-
-### Development Iteration
-
-After you've bootstrapped the repo, you would probably want to work on individual packages.
-
-All packages in the repo have a two useful scripts: `prepare` and `watch`. In order to execute
-these scripts, use `lerna run --stream --scope <package> <script>`.
-
-> The reason you can't use "npm" is because dev tools are installed at the repository level
-> and they are needed in the PATH when executing most of the package scripts.
-
-A useful shell alias would use the directory name as a scope:
+You can also add a few useful aliases to your shell profile:
 
 ```bash
-# add to your ~/.zshrc or ~/.bashrc
+# runs an npm script via lerna for a the current module
 alias lr='lerna run --stream --scope $(node -p "require(\"./package.json\").name")'
 
-# more sugar
-alias lw='lr watch &'
-alias lp='lr prepare'
+# runs "npm run build" (build + test) for the current module
+alias lb='lr build'
+alias lt='lr test'
+
+# runs "npm run watch" for the current module (recommended to run in a separate terminal session):
+alias lw='lr watch'
 ```
 
-Then, you could just go into any of the package directories and use "lr" to run scripts. For example:
+### pkglint
 
-```bash
-cd packages/aws-cdk-s3
-lr watch
-```
+The `pkglint` tool "lints" package.json files across the repo according 
+to [rules.ts](tools/pkglint/lib/rules.ts).
 
-### Linking against this repository
-
-The script `./link-all.sh` can be used to generate symlinks to all modules in
-this repository under some `node_module` directory. This can be used to develop
-against this repo as a local dependency.
-
-One can use the `postinstall` script to symlink this repo:
-
-```json
-{
-  "scripts": {
-    "postinstall": "../aws-cdk/link-all.sh"
-  }
-}
-```
-
-This assumes this repo is a sibling of the target repo and will install the CDK
-as a linked dependency during __npm install__.
-
-
-### Package Linter
-
-The `pkglint` tool normalizes all packages in the repo. It verifies package.json
-is normalized and adheres to the set of rules. To evaluate (and potentially fix)
-all package linting issues in the repo, run the following command from the root
+To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root
 of the repository (after boostrapping):
 
-```bash
-npm run pkglint
+```console
+$ lerna run pkglint
 ```
 
-## jsii
+You can also do that per package:
 
-The CDK uses [jsii](https://github.com/awslabs/jsii) to vend the framework to
-multiple programming languages. Since jsii is still not published to npm, we
-consume it as a bundled dependency.
+```console
+$ lr pkglint
+```
 
-### Updating to a new version
+## Development Workflows
 
-Download an official jsii zip bundle and replace the file under `./vendor`.
-Any added dependencies, they will need to be added to the root `package.json`.
+### Full clean build
 
-### Linking against a local jsii repository
+Clone the repo:
 
-If you are making changes locally to jsii itself and wish to bind this repository to
-a local jsii repository, the best way we currently have is to use `npm link` to link
-various jsii modules from the other repository into the root of this repository.
+```console
+$ git clone git@github.com/awslabs/aws-cdk
+$ cd aws-cdk
+```
 
-For example, if you wish to link against the `jsii` module:
+If you already have a local repo and you want a fresh build, run `git clean -fdx` from the root.
 
-1. Go to `jsii/packages/jsii`
-2. Run `npm link .`
-3. Go to `aws-cdk/`
-4. Run `npm link jsii`.
+Install and build:
 
-## Adding Language Support
+```console
+$ ./install.sh
+$ ./build.sh
+```
 
-The CDK uses [jsii](https://github.com/awslabs/jsii) to generate language
-bindings for CDK classes, which proxy interaction to a node.js child process in
-runtime.
+If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains] 
+and now run:
 
-To vend another language for the CDK (given there's jsii support for it):
+```
+$ ./pack.sh
+```
 
-1. Create a directory `packages/aws-cdk-xxx` (where "xxx" is the language).
-2. Look at [`aws-cdk-java/package.json`](packages/aws-cdk-java/package.json) as a reference
-   on how to setup npm build that uses pacmak to generate the code for all CDK modules and
-   then compile and wrap the package up.
-3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
-   your language under `repo/xxx`
-4. Add a **cdk init** template for your language (see
-   [packages/aws-cdk/lib/init-templates](packages/aws-cdk/lib/init-templates)).
-5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
-   make there there's a getting started sections and examples for the new
-   language.
+### Partial build
+
+In many cases, you don't really need to build the entire project. Say you want to work 
+on the `@aws-cdk/aws-ec2` module:
+
+```console
+$ ./install.sh
+$ cd packages/@aws-cdk/aws-ec2
+$ ../../../scripts/buildup
+```
+
+### Quick Iteration
+
+After you've built the modules you want to work on once, use `lr watch` for each module that
+you are modifying.
+
+Watch the EC2 and IAM modules in a second terminal session:
+
+```console
+$ cd packages/@aws-cdk/aws-ec2
+$ lr watch & # runs in the background
+$ cd packages/@aws-cdk/aws-iam
+$ lr watch & # runs in the background
+```
+
+Code...
+
+Now to test, you can either use `lr test` or invoke nodeunit directory (faster, since "test" will also build):
+
+```console
+$ cd packages/@aws-cdk/aws-iam
+$ nodeunit test/test.*.js
+<BOOM>
+```
+
+### Build Documentation Only
+
+The CDK documentation source is hosted under [`./docs/src`](./docs/src). 
+Module reference documentation is gathered after build from the `dist/sphinx` directory (generated by jsii from source via the `./pack.sh` script).
+
+To build the docs even if reference docs are not present:
+
+
+```shell
+$ cd docs
+$ BUILD_DOCS_DEV=1 ./build-docs.sh
+```
 
 ## Dependencies
 
@@ -260,16 +239,55 @@ We use `npm update` to
 5. Now, run `./build.sh` again to verify all tests pass.
 6. Submit a Pull Request.
 
-## Documentation
+## Toolchains
 
-The CDK documentation source is hosted under [`./docs/src`](./docs/src). 
-Module reference documentation is gathered after build from the `dist/sphinx` directory (generated by jsii from source via the `./pack.sh` script).
+If you wish to use `pack.sh` to package the project to all supported languages, you will need the
+following toolchains installed:
 
-To build the docs even if reference docs are not present:
+ - [Node.js 8.11.0](https://nodejs.org/download/release/v8.11.0/)
+ - [Java OpenJDK 8](http://openjdk.java.net/install/)
+ - [.NET Core 2.0](https://www.microsoft.com/net/download)
+ - [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+ - [Ruby 2.5.1](https://www.ruby-lang.org/en/news/2018/03/28/ruby-2-5-1-released/)
 
+## Linking against this repository
 
-```shell
-$ cd docs
-$ BUILD_DOCS_DEV=1 ./build-docs.sh
+The script `./link-all.sh` can be used to generate symlinks to all modules in
+this repository under some `node_module` directory. This can be used to develop
+against this repo as a local dependency.
+
+One can use the `postinstall` script to symlink this repo:
+
+```json
+{
+  "scripts": {
+    "postinstall": "../aws-cdk/link-all.sh"
+  }
+}
 ```
 
+This assumes this repo is a sibling of the target repo and will install the CDK
+as a linked dependency during __npm install__.
+
+## Adding Language Support
+
+The CDK uses [jsii](https://github.com/awslabs/jsii) to generate language
+bindings for CDK classes, which proxy interaction to a node.js child process in
+runtime.
+
+To vend another language for the CDK (given there's jsii support for it):
+
+1. Create a directory `packages/aws-cdk-xxx` (where "xxx" is the language).
+2. Look at [`aws-cdk-java/package.json`](packages/aws-cdk-java/package.json) as a reference
+   on how to setup npm build that uses pacmak to generate the code for all CDK modules and
+   then compile and wrap the package up.
+3. Edit [bundle-beta.sh](./bundle-beta.sh) and add CDK and jsii artifacts for
+   your language under `repo/xxx`
+4. Add a **cdk init** template for your language (see
+   [packages/aws-cdk/lib/init-templates](packages/aws-cdk/lib/init-templates)).
+5. Edit [getting-started.rst](packages/aws-cdk-docs/src/getting-started.rst) and
+   make there there's a getting started sections and examples for the new
+   language.
+
+
+[conventionalcommits]: https://www.conventionalcommits.org
