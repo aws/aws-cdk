@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, PolicyDocument, PolicyStatement } from '../lib';
+import { CanonicalUserPrincipal, PolicyDocument, PolicyStatement, Anyone } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -203,6 +203,12 @@ export = {
     test.equal(p.statementCount, 1);
     p.addStatement(new PolicyStatement());
     test.equal(p.statementCount, 2);
+    test.done();
+  },
+
+  'the { AWS: "*" } principal is represented as "*"'(test: Test) {
+    const p = new PolicyDocument().addStatement(new PolicyStatement().addPrincipal(new Anyone()));
+    test.deepEqual(resolve(p), { Statement: [{ Effect: 'Allow', Principal: '*' }], Version: '2012-10-17' });
     test.done();
   }
 };
