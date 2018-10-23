@@ -144,18 +144,9 @@ export class AccountRootPrincipal extends AccountPrincipal {
 /**
  * A principal representing all identities in all accounts
  */
-export class Anyone extends PolicyPrincipal {
-  /**
-   * Interface compatibility with AccountPrincipal for the purposes of the Lambda library
-   *
-   * The Lambda's addPermission() call works differently from regular
-   * statements, and will use the value of this property directly if present
-   * (which leads to the correct statement ultimately).
-   */
-  public readonly accountId = '*';
-
-  public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: this.accountId });
+export class Anyone extends ArnPrincipal {
+  constructor() {
+    super('*');
   }
 }
 
@@ -203,6 +194,9 @@ export class PolicyStatement extends Token {
   public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
     const fragment = principal.policyFragment();
     for (const key of Object.keys(fragment.principalJson)) {
+      if (Object.keys(this.principal).length > 0 && !(key in this.principal)) {
+        throw new Error(`Attempted to add principal key ${key} in principal of type ${Object.keys(this.principal)[0]}`);
+      }
       this.principal[key] = this.principal[key] || [];
       const value = fragment.principalJson[key];
       if (Array.isArray(value)) {
