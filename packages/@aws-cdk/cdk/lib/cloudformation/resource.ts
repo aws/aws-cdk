@@ -86,12 +86,6 @@ export class Resource extends Referenceable {
 
     this.resourceType = props.type;
     this.properties = props.properties || { };
-
-    // 'name' is a special property included for resource constructs and passed
-    // as 'name', but we don't want it to be serialized into the template.
-    if (this.properties.name) {
-      delete this.properties.name;
-    }
   }
 
   /**

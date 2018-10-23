@@ -53,8 +53,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -93,14 +92,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "cloudformation",
-                    ":",
+                    ":cloudformation:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -108,10 +104,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "stack",
-                    "/",
-                    "OurStack/*"
+                    ":stack/OurStack/*"
                   ]
                 ]
               }
@@ -132,14 +125,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "cloudformation",
-                    ":",
+                    ":cloudformation:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -147,10 +137,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "stack",
-                    "/",
-                    "OurStack/*"
+                    ":stack/OurStack/*"
                   ]
                 ]
               }
@@ -167,14 +154,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "cloudformation",
-                    ":",
+                    ":cloudformation:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -182,10 +166,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "stack",
-                    "/",
-                    "OurStack/*"
+                    ":stack/OurStack/*"
                   ]
                 ]
               }

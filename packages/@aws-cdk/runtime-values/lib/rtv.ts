@@ -57,7 +57,7 @@ export class RuntimeValue extends cdk.Construct {
     this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${name}`;
 
     new ssm.cloudformation.ParameterResource(this, 'Parameter', {
-      parameterName: this.parameterName,
+      name: this.parameterName,
       type: 'String',
       value: props.value,
     });

@@ -144,28 +144,13 @@ export default class CodeGenerator {
   private emitPropsTypeProperties(resourceName: SpecName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
-    // Sanity check that our renamed "Name" is not going to conflict with a real property
-    const renamedNameProperty = resourceNameProperty(resourceName);
-    const lowerNames = Object.keys(propertiesSpec).map(s => s.toLowerCase());
-    if (lowerNames.indexOf('name') !== -1 && lowerNames.indexOf(renamedNameProperty.toLowerCase()) !== -1) {
-      // tslint:disable-next-line:max-line-length
-      throw new Error(`Oh gosh, we want to rename ${resourceName.fqn}'s 'Name' property to '${renamedNameProperty}', but that property already exists! We need to find a solution to this problem.`);
-    }
-
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
-      const originalName = propName;
       const propSpec = propertiesSpec[propName];
       const additionalDocs = resourceName.relativeName(propName).fqn;
 
-      if (propName.toLocaleLowerCase() === 'name') {
-        propName = renamedNameProperty;
-        // tslint:disable-next-line:no-console
-        console.error(`Renamed property 'Name' of ${resourceName.fqn} to '${renamedNameProperty}'`);
-      }
-
       const resourceCodeName = genspec.CodeName.forResource(resourceName);
       const newName = this.emitProperty(resourceCodeName, propName, propSpec, quoteCode(additionalDocs));
-      propertyMap[originalName] = newName;
+      propertyMap[propName] = newName;
     });
     return propertyMap;
 
@@ -270,10 +255,9 @@ export default class CodeGenerator {
     this.code.line(`super(parent, name, { type: ${resourceName.className}.resourceTypeName${propsType ? ', properties' : ''} });`);
     // verify all required properties
     if (spec.Properties) {
-      for (const pname of Object.keys(spec.Properties)) {
-        const prop = spec.Properties[pname];
+      for (const propName of Object.keys(spec.Properties)) {
+        const prop = spec.Properties[propName];
         if (prop.Required) {
-          const propName = pname.toLocaleLowerCase() === 'name' ? resourceNameProperty(resourceName.specName!) : pname;
           this.code.line(`${CORE}.requireProperty(properties, '${genspec.cloudFormationToScriptName(propName)}', this);`);
         }
       }
@@ -631,20 +615,6 @@ function validatorNames(types: genspec.CodeName[]): string {
  */
 function mapperNames(types: genspec.CodeName[]): string {
   return types.map(type => genspec.cfnMapperName(type).fqn).join(', ');
-}
-
-/**
- * Return the name of the literal "name" property of a resource
- *
- * A number of resources have a "Name" property. Since Constructs already have a "Name" property
- * (which means something different), we must call the original property something else.
- *
- * We name it after the resource, so for a bucket the "Name" property gets renamed to "BucketName".
- *
- * (We can leave the name PascalCased, as it's going to be camelCased later).
- */
-function resourceNameProperty(resourceName: SpecName) {
-  return `${resourceName.resourceName}Name`;
 }
 
 /**

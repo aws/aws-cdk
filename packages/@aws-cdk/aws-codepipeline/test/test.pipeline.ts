@@ -177,14 +177,11 @@ export = {
           "Fn::Join": [
           "",
           [
-            "arn",
-            ":",
+            "arn:",
             {
             "Ref": "AWS::Partition"
             },
-            ":",
-            "codepipeline",
-            ":",
+            ":codepipeline:",
             {
             "Ref": "AWS::Region"
             },

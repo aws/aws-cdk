@@ -53,8 +53,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -84,8 +83,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -108,14 +106,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "cloudformation",
-                    ":",
+                    ":cloudformation:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -123,10 +118,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "stack",
-                    "/",
-                    "IntegTest-TestActionStack/*"
+                    ":stack/IntegTest-TestActionStack/*"
                   ]
                 ]
               }
@@ -147,14 +139,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "cloudformation",
-                    ":",
+                    ":cloudformation:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -162,10 +151,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "stack",
-                    "/",
-                    "IntegTest-TestActionStack/*"
+                    ":stack/IntegTest-TestActionStack/*"
                   ]
                 ]
               }
