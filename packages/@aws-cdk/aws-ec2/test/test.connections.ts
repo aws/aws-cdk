@@ -25,6 +25,100 @@ import {
 } from "../lib";
 
 export = {
+  'security group can allows all outbound traffic by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        }
+      ],
+    }));
+
+    test.done();
+  },
+
+  'no new outbound rule is added if we are allowing all traffic anyway'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: true });
+    sg.addEgressRule(new AnyIPv4(), new TcpPort(86), 'This does not show up');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "Allow all outbound traffic by default",
+          IpProtocol: "-1"
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'security group disallow outbound traffic by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "255.255.255.255/32",
+          Description: "Disallow all traffic",
+          FromPort: 252,
+          IpProtocol: "icmp",
+          ToPort: 86
+        }
+      ],
+    }));
+
+    test.done();
+  },
+
+  'bogus outbound rule disappears if another rule is added'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc });
+    sg.addEgressRule(new AnyIPv4(), new TcpPort(86), 'This replaces the other one');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: "0.0.0.0/0",
+          Description: "This replaces the other one",
+          FromPort: 86,
+          IpProtocol: "tcp",
+          ToPort: 86
+        }
+      ],
+    }));
+
+    test.done();
+  },
+
   'peering between two security groups does not recursive infinitely'(test: Test) {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
@@ -47,7 +141,7 @@ export = {
     // GIVEN
     const stack = new Stack();
     const vpc = new VpcNetwork(stack, 'VPC');
-    const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc });
+    const sg1 = new SecurityGroup(stack, 'SomeSecurityGroup', { vpc, allowAllOutbound: false });
     const somethingConnectable = new SomethingConnectable(new Connections({ securityGroup: sg1 }));
 
     const securityGroup = SecurityGroupRef.import(stack, 'ImportedSG', { securityGroupId: 'sg-12345' });
