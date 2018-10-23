@@ -5,39 +5,6 @@ import cdk = require("@aws-cdk/cdk");
 import { cloudformation } from "./eks.generated";
 import { maxPods, nodeAmi, NodeType } from "./instance-data";
 
-// TODO: Option to deploy nodes on Cluster creation.
-
-/**
- * Properties to instantiate the Cluster
- */
-export interface IClusterProps extends cdk.StackProps {
-  /**
-   * The VPC in which to create the Cluster
-   */
-  vpc: ec2.VpcNetworkRef;
-  /**
-   * Where to place the cluster within the VPC
-   * Which SubnetType this placement falls in
-   * @default If not supplied, defaults to public
-   * subnets if available otherwise private subnets
-   */
-  vpcPlacement: ec2.VpcPlacementStrategy;
-  /**
-   * This provides the physical cfn name of the Cluster.
-   * It is not recommended to use an explicit name.
-   *
-   * @default If you don't specify a clusterName, AWS CloudFormation
-   * generates a unique physical ID and uses that ID for the name.
-   */
-  clusterName?: string;
-  /**
-   * The Kubernetes version to run in the cluster only 1.10 support today
-   *
-   * @default If not supplied, will use Amazon default version (1.10.3)
-   */
-  version?: string;
-}
-
 /**
  * Reference properties used when a cluster is exported or imported
  * with the const a = ClusterRef.import | export methodes
@@ -115,6 +82,37 @@ export abstract class ClusterRef extends cdk.Construct
   private makeOutput(name: string, value: any): string {
     return new cdk.Output(this, name, { value }).makeImportValue().toString();
   }
+}
+
+/**
+ * Properties to instantiate the Cluster
+ */
+export interface IClusterProps extends cdk.StackProps {
+  /**
+   * The VPC in which to create the Cluster
+   */
+  vpc: ec2.VpcNetworkRef;
+  /**
+   * Where to place the cluster within the VPC
+   * Which SubnetType this placement falls in
+   * @default If not supplied, defaults to public
+   * subnets if available otherwise private subnets
+   */
+  vpcPlacement: ec2.VpcPlacementStrategy;
+  /**
+   * This provides the physical cfn name of the Cluster.
+   * It is not recommended to use an explicit name.
+   *
+   * @default If you don't specify a clusterName, AWS CloudFormation
+   * generates a unique physical ID and uses that ID for the name.
+   */
+  clusterName?: string;
+  /**
+   * The Kubernetes version to run in the cluster only 1.10 support today
+   *
+   * @default If not supplied, will use Amazon default version (1.10.3)
+   */
+  version?: string;
 }
 
 /**
