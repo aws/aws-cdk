@@ -210,5 +210,12 @@ export = {
     const p = new PolicyDocument().addStatement(new PolicyStatement().addPrincipal(new Anyone()));
     test.deepEqual(resolve(p), { Statement: [{ Effect: 'Allow', Principal: '*' }], Version: '2012-10-17' });
     test.done();
+  },
+
+  'addPrincipal prohibits mixing principal types'(test: Test) {
+    const s = new PolicyStatement().addAccountRootPrincipal();
+    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); });
+    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); });
+    test.done();
   }
 };
