@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, PolicyDocument, PolicyStatement, Anyone } from '../lib';
+import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyStatement } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -214,8 +214,10 @@ export = {
 
   'addPrincipal prohibits mixing principal types'(test: Test) {
     const s = new PolicyStatement().addAccountRootPrincipal();
-    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); });
-    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); });
+    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); },
+                /Attempted to add principal key Service/);
+    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); },
+                /Attempted to add principal key Federated/);
     test.done();
   }
 };
