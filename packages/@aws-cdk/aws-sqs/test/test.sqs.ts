@@ -118,7 +118,7 @@ export = {
       const stack = new Stack();
       const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
       const queue = new sqs.Queue(stack, 'Queue');
-      queue.grantConsume(role);
+      queue.grantConsumeMessages(role);
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
