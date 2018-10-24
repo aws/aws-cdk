@@ -1,8 +1,8 @@
 import cdk = require('@aws-cdk/cdk');
 import fc = require('fast-check');
 import appscaling = require('../lib');
-import { normalizeIntervals } from '../lib/interval-utils';
 import { ServiceNamespace } from '../lib';
+import { normalizeIntervals } from '../lib/interval-utils';
 
 /**
  * Arbitrary (valid) array of intervals
