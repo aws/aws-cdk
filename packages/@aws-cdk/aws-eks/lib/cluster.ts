@@ -397,9 +397,7 @@ export class Nodes extends cdk.Construct {
 
   private addDefaultRules(props: { nodes: asg.AutoScalingGroup }) {
     // self rules
-    props.nodes.connections.allowInternally(new ec2.TcpAllPorts());
-    props.nodes.connections.allowInternally(new ec2.UdpAllPorts());
-    props.nodes.connections.allowInternally(new ec2.IcmpAllTypesAndCodes());
+    props.nodes.connections.allowInternally(new ec2.AllConnections());
 
     // Cluster to:nodes rules
     props.nodes.connections.allowFrom(this.cluster, new ec2.TcpPort(443));
