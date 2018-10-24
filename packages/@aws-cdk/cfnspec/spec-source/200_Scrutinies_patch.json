@@ -1,0 +1,33 @@
+{
+    "ResourceTypes": {
+        "AWS::SNS::Subscription": {
+            "patch": {
+                "description": "These are not IAM policies",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/DeliveryPolicy/ScrutinyType",
+                        "value": "None"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/FilterPolicy/ScrutinyType",
+                        "value": "None"
+                    }
+                ]
+            }
+        },
+        "AWS::SQS::RedrivePolicy": {
+            "patch": {
+                "description": "These are not IAM policies",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/RedrivePolicy/ScrutinyType",
+                        "value": "None"
+                    }
+                ]
+            }
+        }
+    }
+}
