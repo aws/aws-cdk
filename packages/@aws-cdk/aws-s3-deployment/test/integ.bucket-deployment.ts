@@ -15,6 +15,7 @@ class TestBucketDeployment extends cdk.Stack {
     new s3deploy.BucketDeployment(this, 'DeployMe', {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
       destinationBucket,
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
     const bucket2 = new s3.Bucket(this, 'Destination2');
@@ -23,7 +24,7 @@ class TestBucketDeployment extends cdk.Stack {
       source: s3deploy.Source.asset(path.join(__dirname, 'my-website')),
       destinationBucket: bucket2,
       destinationKeyPrefix: 'deploy/here/',
-      retainOnDelete: false, // this is the default
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
   }
 }
