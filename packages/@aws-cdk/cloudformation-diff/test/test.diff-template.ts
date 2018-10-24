@@ -109,7 +109,9 @@ exports.diffTemplate = {
     const bucketName = 'ShineyBucketName';
     const currentTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
@@ -122,7 +124,9 @@ exports.diffTemplate = {
     const newBucketName = `${bucketName}-v2`;
     const newTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
@@ -148,7 +152,9 @@ exports.diffTemplate = {
     const bucketName = 'ShineyBucketName';
     const currentTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
@@ -160,7 +166,9 @@ exports.diffTemplate = {
 
     const newTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket'
         }
@@ -183,7 +191,9 @@ exports.diffTemplate = {
     const bucketName = 'ShineyBucketName';
     const currentTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket'
         }
@@ -192,7 +202,9 @@ exports.diffTemplate = {
 
     const newTemplate = {
       Resources: {
-        BucketPolicyResource: BUCKET_POLICY_RESOURCE,
+        QueueResource: {
+          Type: 'AWS::SQS::Queue'
+        },
         BucketResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
@@ -247,5 +259,52 @@ exports.diffTemplate = {
              'the difference reflects the type change');
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_REPLACE, 'the difference reflects that the resource will be replaced');
     test.done();
-  }
+  },
+
+  'resource replacement is tracked through references': (test: Test) => {
+    // If a resource is replaced, then that change shows that references are
+    // going to change. This may lead to replacement of downstream resources
+    // if the reference is used in an immutable property, and so on.
+
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'Name1', }, // Immutable prop
+        },
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: { Ref: 'Bucket' }}, // Immutable prop
+        },
+        Topic: {
+          Type: 'AWS::SNS::Topic',
+          Properties: { TopicName: { Ref: 'Queue' }}, // Immutable prop
+        }
+      }
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'Name2', },
+        },
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: { Ref: 'Bucket' }},
+        },
+        Topic: {
+          Type: 'AWS::SNS::Topic',
+          Properties: { TopicName: { Ref: 'Queue' }},
+        }
+      }
+    };
+    const differences = diffTemplate(currentTemplate, newTemplate);
+
+    // THEN
+    test.equal(differences.resources.count, 3, 'all resources are replaced');
+    test.done();
+  },
 };
