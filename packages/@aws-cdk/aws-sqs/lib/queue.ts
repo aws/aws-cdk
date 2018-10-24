@@ -278,17 +278,17 @@ export class Queue extends QueueRef {
   }
 
   /**
-   * Grant access to Consume a queue to the given identity.
+   * Grant permissions to consume messages from a queue
    *
    * This will grant the following permissions:
    *
-   *   * sqs:ChangeMessageVisibility
-   *   * sqs:DeleteMessage
-   *   * sqs:ReceiveMessage
+   *   - sqs:ChangeMessageVisibility
+   *   - sqs:DeleteMessage
+   *   - sqs:ReceiveMessage
    *
    * @param identity Principal to grant consume rights to
    */
-  public grantConsume(identity?: iam.IPrincipal) {
+  public grantConsumeMessages(identity?: iam.IPrincipal) {
     this.grant(identity, perms.QUEUE_GET_ACTIONS.concat(perms.QUEUE_CONSUME_ACTIONS));
   }
 
