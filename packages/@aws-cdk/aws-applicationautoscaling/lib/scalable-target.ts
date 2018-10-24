@@ -94,8 +94,8 @@ export class ScalableTarget extends cdk.Construct {
     });
 
     const resource = new cloudformation.ScalableTargetResource(this, 'Resource', {
-      maxCapacity: new cdk.Token(() => props.maxCapacity),
-      minCapacity: new cdk.Token(() => props.minCapacity),
+      maxCapacity: props.maxCapacity,
+      minCapacity: props.minCapacity,
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
