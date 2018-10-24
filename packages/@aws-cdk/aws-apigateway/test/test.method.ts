@@ -78,8 +78,8 @@ export = {
             "Fn::Join": [
             "",
             [
-              "arn", ":", { Ref: "AWS::Partition" }, ":", "apigateway", ":",
-              { Ref: "AWS::Region" }, ":", "s3", ":", "path", "/", "bucket/key"
+              "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
+              { Ref: "AWS::Region" }, ":s3:path/bucket/key"
             ]
             ]
           }
@@ -133,19 +133,17 @@ export = {
       "Fn::Join": [
         "",
         [
-        "arn",
-        ":",
+        "arn:",
         { Ref: "AWS::Partition" },
-        ":",
-        "execute-api",
-        ":",
+        ":execute-api:",
         { Ref: "AWS::Region" },
         ":",
         { Ref: "AWS::AccountId" },
         ":",
         { Ref: "testapiD6451F70" },
         "/",
-        { "Fn::Join": [ "", [ { Ref: "testapiDeploymentStageprod5C9E92A4" }, "/POST/" ] ] }
+        { Ref: "testapiDeploymentStageprod5C9E92A4" },
+        "/POST/"
         ]
       ]
     });
@@ -169,19 +167,15 @@ export = {
       "Fn::Join": [
         "",
         [
-        "arn",
-        ":",
+        "arn:",
         { Ref: "AWS::Partition" },
-        ":",
-        "execute-api",
-        ":",
+        ":execute-api:",
         { Ref: "AWS::Region" },
         ":",
         { Ref: "AWS::AccountId" },
         ":",
         { Ref: "testapiD6451F70" },
-        "/",
-        "test-invoke-stage/POST/"
+        "/test-invoke-stage/POST/"
         ]
       ]
     });
@@ -241,7 +235,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { "Fn::Join": [ "", [ "arn", ":", { Ref: "AWS::Partition" }, ":", "iam", ":", "", ":", "*", ":", "user", "/", "*" ] ] }
+        Credentials: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::*:user/*" ] ] }
       }
     }));
     test.done();

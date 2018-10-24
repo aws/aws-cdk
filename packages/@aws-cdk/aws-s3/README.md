@@ -55,23 +55,31 @@ const bucket = new Bucket(this, 'Buck', {
 assert(bucket.encryptionKey == null);
 ```
 
-### Bucket Policy
+### Permissions
 
-By default, a bucket policy will be automatically created for the bucket upon the first call to `addToPolicy(statement)`:
+A bucket policy will be automatically created for the bucket upon the first call to
+`addToResourcePolicy(statement)`:
 
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
-bucket.addToPolicy(statement);
-
-// we now have a policy!
+bucket.addToResourcePolicy(new iam.PolicyStatement()
+    .addActions('s3:GetObject')
+    .addAllResources());
 ```
 
-You can bring you own policy as well:
+Most of the time, you won't have to manipulate the bucket policy directly.
+Instead, buckets have "grant" methods called to give prepackaged sets of permissions
+to other resources. For example:
 
 ```ts
-const policy = new BucketPolicy(this, 'MyBucketPolicy');
-const bucket = new Bucket(this, 'MyBucket', { policy });
+const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+
+const bucket = new Bucket(this, 'MyBucket');
+bucket.grantReadWrite(lambda.role);
 ```
+
+Will give the Lambda's execution role permissions to read and write
+from the bucket.
 
 ### Buckets as sources in CodePipeline
 

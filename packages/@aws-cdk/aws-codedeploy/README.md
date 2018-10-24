@@ -53,6 +53,19 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
             'key2': ['v3'],
         },
     ),
+    // CloudWatch alarms
+    alarms: [
+        new cloudwatch.Alarm(/* ... */),
+    ],
+    // whether to ignore failure to fetch the status of alarms from CloudWatch
+    // default: false
+    ignorePollAlarmsFailure: false,
+    // auto-rollback configuration
+    autoRollback: {
+        failedDeployment: true, // default: true
+        stoppedDeployment: true, // default: false
+        deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
+    },
 });
 ```
 

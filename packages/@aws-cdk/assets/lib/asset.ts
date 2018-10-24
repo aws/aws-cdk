@@ -65,7 +65,16 @@ export class Asset extends cdk.Construct {
    */
   public readonly assetPath: string;
 
-  private readonly bucket: s3.BucketRef;
+  /**
+   * The S3 bucket in which this asset resides.
+   */
+  public readonly bucket: s3.BucketRef;
+
+  /**
+   * Indicates if this asset is a zip archive. Allows constructs to ensure that the
+   * correct file type was used.
+   */
+  public readonly isZipArchive: boolean;
 
   /**
    * The S3 prefix where all different versions of this asset are stored
@@ -77,6 +86,11 @@ export class Asset extends cdk.Construct {
 
     // resolve full path
     this.assetPath = path.resolve(props.path);
+
+    // sets isZipArchive based on the type of packaging and file extension
+    this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
+      ? true
+      : this.assetPath.toLowerCase().endsWith('.zip');
 
     validateAssetOnDisk(this.assetPath, props.packaging);
 

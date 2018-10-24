@@ -3,58 +3,59 @@ export interface LambdaRuntimeProps {
    * Whether the ``ZipFile`` (aka inline code) property can be used with this runtime.
    * @default false
    */
-  readonly supportsInlineCode?: boolean;
+  supportsInlineCode?: boolean;
+}
+
+export enum RuntimeFamily {
+  NodeJS,
+  Java,
+  Python,
+  DotNetCore,
+  Go
 }
 
 /**
  * Lambda function runtime environment.
+ *
+ * If you need to use a runtime name that doesn't exist as a static member, you
+ * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
-export class Runtime implements InlinableRuntime, InlinableJavaScriptRuntime {
-  /* tslint:disable variable-name */
-  public static readonly NodeJS = new Runtime('nodejs', { supportsInlineCode: true }) as InlinableJavaScriptRuntime;
-  // Using ``as InlinableLambdaRuntime`` because that class cannot be defined just yet
-  public static readonly NodeJS43 = new Runtime('nodejs4.3', { supportsInlineCode: true }) as InlinableJavaScriptRuntime;
-  public static readonly NodeJS43Edge = new Runtime('nodejs4.3-edge');
-  // Using ``as InlinableLambdaRuntime`` because that class cannot be defined just yet
-  public static readonly NodeJS610 = new Runtime('nodejs6.10', { supportsInlineCode: true }) as InlinableJavaScriptRuntime;
-  public static readonly NodeJS810 = new Runtime('nodejs8.10');
-  public static readonly Java8 = new Runtime('java8');
-  // Using ``as InlinableLambdaRuntime`` because that class cannot be defined just yet
-  public static readonly Python27 = new Runtime('python2.7', { supportsInlineCode: true }) as InlinableRuntime;
-  // Using ``as InlinableLambdaRuntime`` because that class cannot be defined just yet
-  public static readonly Python36 = new Runtime('python3.6', { supportsInlineCode: true }) as InlinableRuntime;
-  public static readonly DotNetCore1 = new Runtime('dotnetcore1.0');
-  public static readonly DotNetCore2 = new Runtime('dotnetcore2.0');
-  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1');
-  public static readonly Go1x = new Runtime('go1.x');
-  /* tslint:enable variable-name */
+export class Runtime {
+  public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly NodeJS810 =    new Runtime('nodejs8.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
+  public static readonly Python27 =     new Runtime('python2.7',      RuntimeFamily.Python, { supportsInlineCode: true });
+  public static readonly Python36 =     new Runtime('python3.6',      RuntimeFamily.Python, { supportsInlineCode: true });
+  public static readonly Java8 =        new Runtime('java8',          RuntimeFamily.Java);
+  public static readonly DotNetCore1 =  new Runtime('dotnetcore1.0',  RuntimeFamily.DotNetCore);
+  public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
+  public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
+  public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.Go);
 
-  /** The name of this runtime, as expected by the Lambda resource. */
+  /**
+   * The name of this runtime, as expected by the Lambda resource.
+   */
   public readonly name: string;
-  /** Whether the ``ZipFile`` (aka inline code) property can be used with this runtime. */
+
+  /**
+   * Whether the ``ZipFile`` (aka inline code) property can be used with this
+   * runtime.
+   */
   public readonly supportsInlineCode: boolean;
 
-  constructor(name: string, props: LambdaRuntimeProps = {}) {
+  /**
+   * The runtime family.
+   */
+  public readonly family?: RuntimeFamily;
+
+  constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
+    this.family = family;
   }
 
   public toString(): string {
     return this.name;
   }
 }
-
-/**
- * A ``LambdaRuntime`` that can be used in conjunction with the ``ZipFile``
- * property of the ``AWS::Lambda::Function`` resource.
- */
-export interface InlinableRuntime {
-  readonly name: string;
-  readonly supportsInlineCode: boolean;
-}
-
-/**
- * A ``LambdaRuntime`` that can be used for inlining JavaScript.
- */
-// tslint:disable-next-line:no-empty-interface this is a marker to allow type-safe declarations
-export interface InlinableJavaScriptRuntime extends InlinableRuntime {}

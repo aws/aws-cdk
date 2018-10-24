@@ -163,7 +163,7 @@ export interface SourceConfiguration {
    *
    * @default no additional headers are passed
    */
-  readonly originHeaders?: {[key: string]: string};
+  readonly originHeaders?: { [key: string]: string };
 }
 
 /**
@@ -431,6 +431,12 @@ export interface CloudFrontWebDistributionProps {
    * How CloudFront should handle requests that are no successful (eg PageNotFound)
    */
   errorConfigurations?: cloudformation.DistributionResource.CustomErrorResponseProperty[];
+
+  /**
+   * Optional AWS WAF WebACL to associate with this CloudFront distribution
+   */
+  webACLId?: string;
+
 }
 
 /**
@@ -492,6 +498,11 @@ export class CloudFrontWebDistribution extends cdk.Construct {
   public readonly domainName: string;
 
   /**
+   * The distribution ID for this distribution.
+   */
+  public readonly distributionId: string;
+
+  /**
    * Maps our methods to the string arrays they are
    */
   private readonly METHOD_LOOKUP_MAP = {
@@ -523,6 +534,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       ipv6Enabled: props.enableIpV6 || true,
       // tslint:disable-next-line:max-line-length
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
+      webAclId: props.webACLId,
     };
 
     const behaviors: BehaviorWithOrigin[] = [];
@@ -580,7 +592,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         };
       }
       for (const behavior of originConfig.behaviors) {
-        behaviors.push({...behavior, targetOriginId: originId});
+        behaviors.push({ ...behavior, targetOriginId: originId });
       }
       origins.push(originProperty);
       originIndex++;
@@ -642,18 +654,18 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       };
     }
 
-    const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
+    const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.distributionDomainName;
-
+    this.distributionId = distribution.distributionId;
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
-    let toReturn =  {
+    let toReturn = {
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress,
       defaultTtl: input.defaultTtlSeconds,
-      forwardedValues: input.forwardedValues || { queryString: false, cookies: {forward: "none"} },
+      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
       maxTtl: input.maxTtlSeconds,
       minTtl: input.minTtlSeconds,
       trustedSigners: input.trustedSigners,
@@ -661,7 +673,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,
     };
     if (!input.isDefaultBehavior) {
-      toReturn = Object.assign(toReturn, {pathPattern: input.pathPattern});
+      toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
     return toReturn;
   }

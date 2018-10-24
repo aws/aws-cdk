@@ -2,10 +2,11 @@
 import 'source-map-support/register';
 
 import cdk = require('@aws-cdk/cdk');
+import fs = require('fs-extra');
 import path = require('path');
 
 // tslint:disable-next-line:no-var-requires
-const YAML = require('yamljs');
+const YAML = require('js-yaml');
 
 main().catch(e => {
   // tslint:disable-next-line:no-console
@@ -22,7 +23,7 @@ async function main() {
   }
 
   // read applet properties from the provided file
-  const props = YAML.load(appletFile);
+  const props = YAML.safeLoad(await fs.readFile(appletFile, { encoding: 'utf-8' }));
 
   // the 'applet' attribute tells us how to load the applet. in the javascript case
   // it will be in the format <module>:<class> where <module> is technically passed to "require"

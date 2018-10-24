@@ -262,7 +262,7 @@ export = {
         Resource: {
           'Fn::Join': [
             '',
-            [ { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }, '/', 'hello/world' ]
+            [ { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] }, '/hello/world' ]
           ]
         }
       });
@@ -290,8 +290,7 @@ export = {
             '',
             [
               { 'Fn::GetAtt': [ 'MyBucketF68F3FF0', 'Arn' ] },
-              '/',
-              'home/',
+              '/home/',
               { Ref: 'MyTeam01DD6685' },
               '/',
               { Ref: 'MyUserDC45028B' },
@@ -399,17 +398,7 @@ export = {
             {
               "Action": "s3:*",
               "Effect": "Allow",
-              "Resource": {
-              "Fn::Join": [
-                "",
-                [
-                "arn:aws:s3:::my-bucket",
-                "/",
-                "my/folder/",
-                "my-bucket"
-                ]
-              ]
-              }
+              "Resource": "arn:aws:s3:::my-bucket/my/folder/my-bucket"
             }
             ],
             "Version": "2012-10-17"
@@ -503,11 +492,8 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  {
-                  "Fn::ImportValue": "S1:MyBucketBucketArnE260558C"
-                  },
-                  "/",
-                  "*"
+                  { "Fn::ImportValue": "S1:MyBucketBucketArnE260558C" },
+                  "/*"
                 ]
                 ]
               }
@@ -570,8 +556,7 @@ export = {
                   "Arn"
                 ]
                 },
-                "/",
-                "*"
+                "/*"
               ]
               ]
             }
@@ -643,8 +628,7 @@ export = {
                     "Arn"
                     ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                   ]
                 ]
                 }
@@ -797,8 +781,7 @@ export = {
                     "Arn"
                     ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                   ]
                 ]
                 }
@@ -936,8 +919,7 @@ export = {
                 {
                 "Fn::ImportValue": "MyBucketBucketArnE260558C"
                 },
-                "/",
-                "*"
+                "/*"
               ]
               ]
             }
@@ -980,8 +962,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1005,8 +986,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1018,8 +998,7 @@ export = {
           {
             "Ref": "MyBucketF68F3FF0"
           },
-          "/",
-          "my/file.txt"
+          "/my/file.txt"
           ]
         ]
         },
@@ -1032,8 +1011,7 @@ export = {
         "Fn::Join": [
           "",
           [
-          "https://",
-          "s3.",
+          "https://s3.",
           {
             "Ref": "AWS::Region"
           },
@@ -1045,8 +1023,7 @@ export = {
           {
             "Ref": "MyBucketF68F3FF0"
           },
-          "/",
-          "your/file.txt"
+          "/your/file.txt"
           ]
         ]
         },
@@ -1077,7 +1054,7 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1102,7 +1079,7 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "only/access/these/*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/only/access/these/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1127,7 +1104,7 @@ export = {
               "Action": [ "s3:GetObject", "s3:PutObject" ],
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] }
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] }
             }
           ],
           "Version": "2012-10-17"
@@ -1153,13 +1130,51 @@ export = {
               "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": "*",
-              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/", "*" ] ] },
+              "Resource": { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "bC3BBCC65", "Arn" ] }, "/*" ] ] },
               "Condition": {
                 "IpAddress": { "aws:SourceIp": "54.240.143.0/24" }
               }
             }
           ],
           "Version": "2012-10-17"
+        }
+      }));
+      test.done();
+    }
+  },
+
+  'website configuration': {
+    'only index doc'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index2.html'
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          IndexDocument: "index2.html"
+        }
+      }));
+      test.done();
+    },
+    'fails if only error doc is specified'(test: Test) {
+      const stack = new cdk.Stack();
+      test.throws(() => {
+        new s3.Bucket(stack, 'Website', {
+          websiteErrorDocument: 'error.html'
+        });
+      }, /"websiteIndexDocument" is required if "websiteErrorDocument" is set/);
+      test.done();
+    },
+    'error and index docs'(test: Test) {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteIndexDocument: 'index2.html',
+        websiteErrorDocument: 'error.html',
+      });
+      expect(stack).to(haveResource('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          IndexDocument: "index2.html",
+          ErrorDocument: "error.html"
         }
       }));
       test.done();

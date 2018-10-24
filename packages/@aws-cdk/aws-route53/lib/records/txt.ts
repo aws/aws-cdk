@@ -23,7 +23,7 @@ export class TXTRecord extends Construct {
 
     new cloudformation.RecordSetResource(this, 'Resource', {
       hostedZoneId: parent.hostedZoneId,
-      recordSetName: determineFullyQualifiedDomainName(props.recordName, parent),
+      name: determineFullyQualifiedDomainName(props.recordName, parent),
       type: 'TXT',
       resourceRecords: [recordValue],
       ttl: ttl.toString()

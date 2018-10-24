@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { CanonicalUserPrincipal, PolicyDocument, PolicyStatement } from '../lib';
+import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, PrincipalPolicyFragment } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -11,7 +11,7 @@ export = {
     p.addResource('yourQueue');
 
     p.addAllResources();
-    p.addAwsAccountPrincipal(new FnConcat('my', 'account', 'name').toString());
+    p.addAwsAccountPrincipal(new FnConcat('my', { account: 'account' }, 'name').toString());
     p.limitToAccount('12221121221');
 
     test.deepEqual(resolve(p), { Action:
@@ -26,9 +26,9 @@ export = {
           [ '',
           [ 'arn:',
             { Ref: 'AWS::Partition' },
-            ':iam::',
-            { 'Fn::Join': [ '', [ 'my', 'account', 'name' ] ] },
-            ':root' ] ] } },
+            ':iam::my',
+            { account: 'account' },
+            'name:root' ] ] } },
        Condition: { StringEquals: { 'sts:ExternalId': '12221121221' } } });
 
     test.done();
@@ -143,6 +143,22 @@ export = {
     test.done();
   },
 
+  'addAwsAccountPrincipal can be used multiple times'(test: Test) {
+    const p = new PolicyStatement();
+    p.addAwsAccountPrincipal('1234');
+    p.addAwsAccountPrincipal('5678');
+    test.deepEqual(resolve(p), {
+      Effect: 'Allow',
+      Principal: {
+        AWS: [
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] },
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::5678:root']] }
+        ]
+      }
+    });
+    test.done();
+  },
+
   'hasResource': {
     'false if there are no resources'(test: Test) {
       test.equal(new PolicyStatement().hasResource, false, 'hasResource should be false for an empty permission');
@@ -188,5 +204,39 @@ export = {
     p.addStatement(new PolicyStatement());
     test.equal(p.statementCount, 2);
     test.done();
-  }
+  },
+
+  'the { AWS: "*" } principal is represented as "*"'(test: Test) {
+    const p = new PolicyDocument().addStatement(new PolicyStatement().addPrincipal(new Anyone()));
+    test.deepEqual(resolve(p), { Statement: [{ Effect: 'Allow', Principal: '*' }], Version: '2012-10-17' });
+    test.done();
+  },
+
+  'addPrincipal prohibits mixing principal types'(test: Test) {
+    const s = new PolicyStatement().addAccountRootPrincipal();
+    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); },
+                /Attempted to add principal key Service/);
+    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); },
+                /Attempted to add principal key Federated/);
+    test.done();
+  },
+
+  'addPrincipal correctly merges array in'(test: Test) {
+    const arrayPrincipal: PolicyPrincipal = {
+      assumeRoleAction: 'sts:AssumeRole',
+      policyFragment: () => new PrincipalPolicyFragment({ AWS: ['foo', 'bar'] }),
+    };
+    const s = new PolicyStatement().addAccountRootPrincipal()
+                                   .addPrincipal(arrayPrincipal);
+    test.deepEqual(resolve(s), {
+      Effect: 'Allow',
+      Principal: {
+        AWS: [
+          { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+          'foo', 'bar'
+        ]
+      }
+    });
+    test.done();
+  },
 };

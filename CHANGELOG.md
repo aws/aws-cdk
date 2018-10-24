@@ -1,3 +1,54 @@
+<a name="0.13.0"></a>
+## [0.13.0](https://github.com/awslabs/aws-cdk/compare/v0.12.0...v0.13.0) (2018-10-19)
+
+### Highlights
+
+ - __A new construct library for AWS Step Functions__
+   ([docs](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-stepfunctions/README.md)).
+   The library provides rich APIs for modeling state machines by exposing a
+   programmatic interface for [Amazon State
+   Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html).
+ - __A new construct library for Amazon S3 bucket deployments__
+   ([docs](https://github.com/awslabs/aws-cdk/blob/master/packages/%40aws-cdk/aws-s3-deployment/README.md)).
+   You can use now automatically populate an S3 Bucket from a .zip file or a
+   local directory. This is a building block for end-to-end support for static
+   websites in the AWS CDK.
+
+### Bug Fixes
+
+* **aws-apigateway:** make LambdaRestApi proxy by default ([#963](https://github.com/awslabs/aws-cdk/issues/963)) ([a5f5e2c](https://github.com/awslabs/aws-cdk/commit/a5f5e2c)), closes [#959](https://github.com/awslabs/aws-cdk/issues/959)
+* **aws-cdk:** Allow use of assumed roles behind a proxy ([#898](https://github.com/awslabs/aws-cdk/issues/898)) ([f2b1048](https://github.com/awslabs/aws-cdk/commit/f2b1048))
+* **aws-cdk:** Auto-delete stacks that failed creating before new attempt ([#917](https://github.com/awslabs/aws-cdk/issues/917)) ([2af8309](https://github.com/awslabs/aws-cdk/commit/2af8309))
+* **aws-cloudfront:** expose distributionId ([#938](https://github.com/awslabs/aws-cdk/issues/938)) ([f58d98c](https://github.com/awslabs/aws-cdk/commit/f58d98c))
+* **aws-dynamodb:** don't emit empty array properties ([#909](https://github.com/awslabs/aws-cdk/issues/909)) ([841975a](https://github.com/awslabs/aws-cdk/commit/841975a))
+* **docs:** use ..code to display file structure in "writing constructs" ([#935](https://github.com/awslabs/aws-cdk/issues/935)) ([b743362](https://github.com/awslabs/aws-cdk/commit/b743362))
+
+### Features
+
+* **assets:** isZipArchive indicates if this is a zip asset ([#944](https://github.com/awslabs/aws-cdk/issues/944)) ([65190f9](https://github.com/awslabs/aws-cdk/commit/65190f9))
+* **aws-cdk:** deploy supports CloudFormation Role ([#940](https://github.com/awslabs/aws-cdk/issues/940)) ([393be6f](https://github.com/awslabs/aws-cdk/commit/393be6f)), closes [#735](https://github.com/awslabs/aws-cdk/issues/735)
+* **aws-cloudformation:** allow specifying custom resource type ([#943](https://github.com/awslabs/aws-cdk/issues/943)) ([9de3a84](https://github.com/awslabs/aws-cdk/commit/9de3a84))
+* **aws-cloudformation:** correctly handle the templateConfiguration property in the CreateUpdateStack Pipeline Action. ([#923](https://github.com/awslabs/aws-cdk/issues/923)) ([d251a46](https://github.com/awslabs/aws-cdk/commit/d251a46))
+* **aws-cloudfront:** add support for "webAclId" ([#969](https://github.com/awslabs/aws-cdk/issues/969)) ([3ec9d76](https://github.com/awslabs/aws-cdk/commit/3ec9d76))
+* **aws-codedeploy:** add auto rollback configuration to server Deployment Group. ([#925](https://github.com/awslabs/aws-cdk/issues/925)) ([7ee91cf](https://github.com/awslabs/aws-cdk/commit/7ee91cf))
+* **aws-codedeploy:** add instance tag filter support for server Deployment Groups. ([#824](https://github.com/awslabs/aws-cdk/issues/824)) ([e6e8c51](https://github.com/awslabs/aws-cdk/commit/e6e8c51))
+* **aws-codedeploy:** add support for setting CloudWatch alarms on a server Deployment Group. ([#926](https://github.com/awslabs/aws-cdk/issues/926)) ([27b26b1](https://github.com/awslabs/aws-cdk/commit/27b26b1))
+* add support for Step Functions ([#827](https://github.com/awslabs/aws-cdk/issues/827)) ([81b533c](https://github.com/awslabs/aws-cdk/commit/81b533c))
+* **aws-lambda:** add grantInvoke() method ([#962](https://github.com/awslabs/aws-cdk/issues/962)) ([1ee8135](https://github.com/awslabs/aws-cdk/commit/1ee8135)), closes [#961](https://github.com/awslabs/aws-cdk/issues/961)
+* **aws-lambda:** improvements to the code and runtime APIs ([#945](https://github.com/awslabs/aws-cdk/issues/945)) ([36f29b6](https://github.com/awslabs/aws-cdk/commit/36f29b6)), closes [#902](https://github.com/awslabs/aws-cdk/issues/902) [#188](https://github.com/awslabs/aws-cdk/issues/188) [#947](https://github.com/awslabs/aws-cdk/issues/947) [#947](https://github.com/awslabs/aws-cdk/issues/947) [#664](https://github.com/awslabs/aws-cdk/issues/664)
+* **aws-logs:** extractMetric() returns Metric object ([#939](https://github.com/awslabs/aws-cdk/issues/939)) ([5558fff](https://github.com/awslabs/aws-cdk/commit/5558fff)), closes [#850](https://github.com/awslabs/aws-cdk/issues/850)
+* **aws-s3:** initial support for website hosting ([#946](https://github.com/awslabs/aws-cdk/issues/946)) ([2d3661c](https://github.com/awslabs/aws-cdk/commit/2d3661c))
+* **aws-s3-deployment:** bucket deployments ([#971](https://github.com/awslabs/aws-cdk/issues/971)) ([84d6876](https://github.com/awslabs/aws-cdk/commit/84d6876)), closes [#952](https://github.com/awslabs/aws-cdk/issues/952) [#953](https://github.com/awslabs/aws-cdk/issues/953) [#954](https://github.com/awslabs/aws-cdk/issues/954)
+* **docs:** added link to CloudFormation concepts ([#934](https://github.com/awslabs/aws-cdk/issues/934)) ([666bbba](https://github.com/awslabs/aws-cdk/commit/666bbba))
+
+### BREAKING CHANGES
+
+* **aws-apigateway:** specifying a path no longer works. If you used to
+provide a '/', remove it. Otherwise, you will have to supply `proxy: false`
+and construct more complex resource paths yourself.
+* **aws-lambda:** The construct `lambda.InlineJavaScriptLambda` is no longer supported. Use `lambda.Code.inline` instead; `lambda.Runtime.NodeJS43Edge` runtime is removed. CloudFront docs [stipulate](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-lambda-function-configuration) that you should use node6.10 or node8.10. It is always possible to use any value by instantiating a `lambda.Runtime` object.
+
+
 <a name="0.12.0"></a>
 ## [0.12.0](https://github.com/awslabs/aws-cdk/compare/v0.11.0...v0.12.0) (2018-10-12)
 
