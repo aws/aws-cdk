@@ -1,5 +1,7 @@
+import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
+import perms = require('./perms');
 import { QueueRef } from './queue-ref';
 import { cloudformation } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -273,6 +275,64 @@ export class Queue extends QueueRef {
 
       throw new Error(`Unexpected 'encryptionType': ${encryption}`);
     }
+  }
+
+  /**
+   * Grant access to Consume a queue to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *   * sqs:ChangeMessageVisibility
+   *   * sqs:DeleteMessage
+   *   * sqs:ReceiveMessage
+   *
+   * @param identity Principal to grant consume rights to
+   */
+  public grantConsume(identity?: iam.IPrincipal) {
+    this.grant(identity, perms.QUEUE_GET_ACTIONS.concat(perms.QUEUE_CONSUME_ACTIONS));
+  }
+
+  /**
+   * Grant access to receive messages from a queue to
+   * the given identity.
+   *
+   * This will grant sqs:ReceiveMessage
+   *
+   * @param identity Principal to grant receive rights to
+   */
+  public grantReceiveMessages(identity?: iam.IPrincipal) {
+    this.grant(identity, perms.QUEUE_GET_ACTIONS);
+  }
+
+  /**
+   * Grant access to send messages to a queue to the
+   * given identity.
+   *
+   * This will grant sqs:SendMessage
+   *
+   * @param identity Principal to grant send rights to
+   */
+  public grantSendMessages(identity?: iam.IPrincipal) {
+    this.grant(identity, perms.QUEUE_PUT_ACTIONS);
+  }
+
+  /**
+   * Grant the actions defined in queueActions
+   * to the identity Principal given.
+   *
+   * @param identity Principal to grant right to
+   * @param queueActions The actions to grant
+   */
+  private grant(identity: iam.IPrincipal | undefined,
+                queueActions: string[]) {
+
+      if (!identity) {
+        return;
+      }
+
+      identity.addToPolicy(new iam.PolicyStatement()
+        .addResource(this.queueArn)
+        .addActions(...queueActions));
   }
 
   /**
