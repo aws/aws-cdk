@@ -1,9 +1,9 @@
-import asg = require("@aws-cdk/aws-autoscaling");
-import ec2 = require("@aws-cdk/aws-ec2");
-import iam = require("@aws-cdk/aws-iam");
-import cdk = require("@aws-cdk/cdk");
-import { cloudformation } from "./eks.generated";
-import { maxPods, nodeAmi, NodeType } from "./instance-data";
+import asg = require('@aws-cdk/aws-autoscaling');
+import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
+import cdk = require('@aws-cdk/cdk');
+import { cloudformation } from './eks.generated';
+import { maxPods, nodeAmi, NodeType } from './instance-data';
 
 /**
  * Reference properties used when a cluster is exported or imported
@@ -41,8 +41,7 @@ export interface IClusterRefProps {
 /**
  * A SecurityGroup Reference, object not created with this template.
  */
-export abstract class ClusterRef extends cdk.Construct
-  implements ec2.IConnectable {
+export abstract class ClusterRef extends cdk.Construct implements ec2.IConnectable {
   /**
    * Import an existing cluster
    *
@@ -50,11 +49,7 @@ export abstract class ClusterRef extends cdk.Construct
    * @param id the id or name to import as
    * @param props the cluster properties to use for importing information
    */
-  public static import(
-    parent: cdk.Construct,
-    id: string,
-    props: IClusterRefProps
-  ): ClusterRef {
+  public static import(parent: cdk.Construct, id: string, props: IClusterRefProps): ClusterRef {
     return new ImportedCluster(parent, id, props);
   }
 
@@ -70,12 +65,12 @@ export abstract class ClusterRef extends cdk.Construct
    */
   public export(): IClusterRefProps {
     return {
-      clusterName: this.makeOutput("ClusterName", this.clusterName),
-      clusterArn: this.makeOutput("ClusterArn", this.clusterArn),
-      clusterEndpoint: this.makeOutput("ClusterEndpoint", this.clusterEndpoint),
+      clusterName: this.makeOutput('ClusterName', this.clusterName),
+      clusterArn: this.makeOutput('ClusterArn', this.clusterArn),
+      clusterEndpoint: this.makeOutput('ClusterEndpoint', this.clusterEndpoint),
       vpcPlacement: this.vpcPlacement,
       securityGroupId: this.securityGroupId,
-      connections: this.connections
+      connections: this.connections,
     };
   }
 
@@ -202,7 +197,7 @@ export class Cluster extends ClusterRef {
     this.securityGroup = this.addSecurityGroup();
     this.securityGroupId = this.securityGroup.securityGroupId;
     this.connections = new ec2.Connections({
-      securityGroup: this.securityGroup
+      securityGroup: this.securityGroup,
     });
 
     const clusterProps: cloudformation.ClusterResourceProps = {
@@ -211,8 +206,8 @@ export class Cluster extends ClusterRef {
       version: props.version,
       resourcesVpcConfig: {
         securityGroupIds: new Array(this.securityGroupId),
-        subnetIds
-      }
+        subnetIds,
+      },
     };
     this.cluster = this.createCluster(clusterProps);
     this.clusterName = this.cluster.clusterName;
@@ -222,7 +217,7 @@ export class Cluster extends ClusterRef {
   }
 
   private createCluster(props: cloudformation.ClusterResourceProps) {
-    const cluster = new cloudformation.ClusterResource(this, "Cluster", props);
+    const cluster = new cloudformation.ClusterResource(this, 'Cluster', props);
 
     return cluster;
   }
@@ -234,23 +229,23 @@ export class Cluster extends ClusterRef {
    * creates a brand new cluster
    */
   private addSecurityGroup() {
-    return new ec2.SecurityGroup(this, "ClusterSecurityGroup", {
+    return new ec2.SecurityGroup(this, 'ClusterSecurityGroup', {
       vpc: this.vpc,
-      description: "Cluster API Server Security Group.",
+      description: 'Cluster API Server Security Group.',
       tags: {
-        Name: "Cluster SecurityGroup",
-        Description: "The security group assigned to the cluster"
-      }
+        Name: 'Cluster SecurityGroup',
+        Description: 'The security group assigned to the cluster',
+      },
     });
   }
 
   private addClusterRole() {
-    const role = new iam.Role(this, "ClusterRole", {
-      assumedBy: new iam.ServicePrincipal("eks.amazonaws.com"),
+    const role = new iam.Role(this, 'ClusterRole', {
+      assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
       managedPolicyArns: [
-        "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-        "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-      ]
+        'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy',
+        'arn:aws:iam::aws:policy/AmazonEKSServicePolicy',
+      ],
     });
 
     return role;
@@ -377,23 +372,16 @@ export class Nodes extends cdk.Construct {
       desiredCapacity: props.minNodes || 1,
       keyName: props.sshKeyName,
       vpcPlacement: this.vpcPlacement,
-      tags: props.tags
+      tags: props.tags,
     };
     this.nodeGroup = this.addNodes(nodeProps, type);
   }
 
-  private addNodes(
-    props: asg.AutoScalingGroupProps,
-    type: ec2.InstanceTypePair
-  ) {
-    const nodes = new asg.AutoScalingGroup(
-      this,
-      `NodeGroup-${type.toString()}`,
-      props
-    );
+  private addNodes(props: asg.AutoScalingGroupProps, type: ec2.InstanceTypePair) {
+    const nodes = new asg.AutoScalingGroup(this, `NodeGroup-${type.toString()}`, props);
     // EKS Required Tags
-    nodes.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, "owned", {
-      overwrite: false
+    nodes.tags.setTag(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+      overwrite: false,
     });
 
     this.addRole(nodes.role);
@@ -413,30 +401,31 @@ export class Nodes extends cdk.Construct {
     props.nodes.connections.allowInternally(new ec2.UdpAllPorts());
     props.nodes.connections.allowInternally(new ec2.IcmpAllTypesAndCodes());
 
-    // Cluster to:from rules
+    // Cluster to:nodes rules
     props.nodes.connections.allowFrom(this.cluster, new ec2.TcpPort(443));
-    props.nodes.connections.allowFrom(
-      this.cluster,
-      new ec2.TcpPortRange(1025, 65535)
-    );
+    props.nodes.connections.allowFrom(this.cluster, new ec2.TcpPortRange(1025, 65535));
+
+    // Allow HTTPS from Nodes to Cluster
+    props.nodes.connections.allowTo(this.cluster, new ec2.TcpPort(443));
+
+    // Allow all node outbound traffic
+    props.nodes.connections.allowToAnyIPv4(new ec2.TcpAllPorts());
+    props.nodes.connections.allowToAnyIPv4(new ec2.UdpAllPorts());
+    props.nodes.connections.allowToAnyIPv4(new ec2.IcmpAllTypesAndCodes());
   }
 
   private addUserData(props: { nodes: asg.AutoScalingGroup; type: string }) {
     const max = maxPods.get(props.type);
     props.nodes.addUserData(
-      "set -o xtrace",
-      `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${max}`
+      'set -o xtrace',
+      `/etc/eks/bootstrap.sh ${this.clusterName} --use-max-pods ${max}`,
     );
   }
 
   private addRole(role: iam.Role) {
-    role.attachManagedPolicy(
-      "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-    );
-    role.attachManagedPolicy("arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy");
-    role.attachManagedPolicy(
-      "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-    );
+    role.attachManagedPolicy('arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy');
+    role.attachManagedPolicy('arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy');
+    role.attachManagedPolicy('arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly');
 
     return role;
   }
