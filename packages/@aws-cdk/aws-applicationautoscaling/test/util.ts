@@ -2,6 +2,7 @@ import cdk = require('@aws-cdk/cdk');
 import fc = require('fast-check');
 import appscaling = require('../lib');
 import { normalizeIntervals } from '../lib/interval-utils';
+import { ServiceNamespace } from '../lib';
 
 /**
  * Arbitrary (valid) array of intervals
@@ -115,7 +116,7 @@ export function arbitrary_complete_intervals() {
 
 export function createScalableTarget(parent: cdk.Construct) {
   return new appscaling.ScalableTarget(parent, 'Target', {
-    serviceNamespace: 'test',
+    serviceNamespace: ServiceNamespace.DynamoDb,
     scalableDimension: 'test:TestCount',
     resourceId: 'test:this/test',
     minCapacity: 1,

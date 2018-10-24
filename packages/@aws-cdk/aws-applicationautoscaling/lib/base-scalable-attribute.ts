@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ScalableTarget, ScalingSchedule } from './scalable-target';
+import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
 
@@ -11,7 +11,7 @@ export interface BaseScalableAttributeProps extends EnableScalingProps {
   /**
    * Service namespace of the scalable attribute
    */
-  serviceNamespace: string;
+  serviceNamespace: ServiceNamespace;
 
   /**
    * Resource ID of the attribute

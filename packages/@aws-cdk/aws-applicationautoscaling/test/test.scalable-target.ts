@@ -11,7 +11,7 @@ export = {
 
     // WHEN
     new appscaling.ScalableTarget(stack, 'Target', {
-      serviceNamespace: 'test',
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
       scalableDimension: 'test:TestCount',
       resourceId: 'test:this/test',
       minCapacity: 1,
@@ -20,7 +20,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
-      ServiceNamespace: 'test',
+      ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
       MinCapacity: 1,
