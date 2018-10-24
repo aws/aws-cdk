@@ -100,7 +100,7 @@ export = {
     const vpc = new VpcNetwork(stack, 'VPC');
 
     // WHEN
-    const sg = new SecurityGroup(stack, 'SG1', { vpc });
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
     sg.addEgressRule(new AnyIPv4(), new TcpPort(86), 'This replaces the other one');
 
     // THEN

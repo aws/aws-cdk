@@ -123,7 +123,7 @@ export interface SecurityGroupProps {
    * outbound traffic. If this is set to false, no outbound traffic will be allowed by
    * default and all egress traffic must be explicitly authorized.
    *
-   * @default false
+   * @default true
    */
   allowAllOutbound?: boolean;
 }
@@ -168,7 +168,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
     this.tags = new TagManager(this, { initialTags: props.tags});
     const groupDescription = props.description || this.path;
 
-    this.allowAllOutbound = props.allowAllOutbound || false;
+    this.allowAllOutbound = props.allowAllOutbound !== false;
 
     this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
       groupName: props.groupName,
@@ -282,7 +282,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
     if (this.allowAllOutbound) {
       this.directEgressRules.push(ALLOW_ALL_RULE);
     } else {
-      this.directEgressRules.push(BOGUS_RULE);
+      this.directEgressRules.push(MATCH_NO_TRAFFIC);
     }
   }
 
@@ -290,7 +290,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
    * Remove the bogus rule if it exists
    */
   private removeBogusRule() {
-    const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, BOGUS_RULE));
+    const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));
     if (i > -1) {
       this.directEgressRules.splice(i, 1);
     }
@@ -306,7 +306,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
  * in order to lock it down even more we'll restrict to a nonexistent
  * ICMP traffic type.
  */
-const BOGUS_RULE = {
+const MATCH_NO_TRAFFIC = {
   cidrIp: '255.255.255.255/32',
   description: 'Disallow all traffic',
   ipProtocol: 'icmp',
