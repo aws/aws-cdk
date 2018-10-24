@@ -1,4 +1,5 @@
 import ec2 = require('@aws-cdk/aws-ec2');
+import { InstanceType } from '@aws-cdk/aws-ec2';
 import ecs = require('@aws-cdk/aws-ecs');
 import cdk = require('@aws-cdk/cdk');
 
@@ -11,7 +12,11 @@ class BonjourECS extends cdk.Stack {
     // deploy, but VPC creation is slow so we'll only have to do that once
     // and can iterate quickly on consuming stacks. Not doing that for now.
     const vpc = new ec2.VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
-    const cluster = new ecs.EcsCluster(this, 'EcsCluster', { vpc });
+    const cluster = new ecs.EcsCluster(this, 'EcsCluster', {
+      vpc,
+      size: 3,
+      instanceType: new InstanceType("t2.xlarge")
+    });
 
     // Instantiate ECS Service with just cluster and image
     const ecsService = new ecs.LoadBalancedEcsService(this, "EcsService", {

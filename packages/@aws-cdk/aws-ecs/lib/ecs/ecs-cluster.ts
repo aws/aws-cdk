@@ -17,6 +17,13 @@ export interface EcsClusterProps extends BaseClusterProps {
    * The type of EC2 instance to launch into your Autoscaling Group
    */
   instanceType?: ec2.InstanceType;
+
+  /**
+   * Number of container instances registered in your ECS Cluster
+   *
+   * @default 1
+   */
+  size?: number;
 }
 
 export class EcsCluster extends BaseCluster implements IEcsCluster {
@@ -34,7 +41,10 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
       vpc: props.vpc,
       instanceType: props.instanceType || new ec2.InstanceTypePair(ec2.InstanceClass.T2, ec2.InstanceSize.Micro),
       machineImage: new EcsOptimizedAmi(),
-      updateType: autoscaling.UpdateType.ReplacingUpdate
+      updateType: autoscaling.UpdateType.ReplacingUpdate,
+      minSize: 0, // NOTE: This differs from default of 1 in ASG construct lib -- also does not appear to work?
+      maxSize: props.size || 1,
+      desiredCapacity: props.size || 1
     });
 
     this.securityGroup = autoScalingGroup.connections.securityGroup!;
