@@ -55,7 +55,7 @@ export interface ScalableTargetProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
-  serviceNamespace: string;
+  serviceNamespace: ServiceNamespace;
 }
 
 /**
@@ -208,4 +208,49 @@ export interface ScalingSchedule {
    * @default No new maximum capacity
    */
   maxCapacity?: number;
+}
+
+/**
+ * The service that supports Application AutoScaling
+ */
+export enum ServiceNamespace {
+  /**
+   * Elastic Container Service
+   */
+  Ecs = 'ecs',
+
+  /**
+   * Elastic Map Reduce
+   */
+  ElasticMapReduce = 'elasticmapreduce',
+
+  /**
+   * Elastic Compute Cloud
+   */
+  Ec2 = 'ec2',
+
+  /**
+   * App Stream
+   */
+  AppStream = 'appstream',
+
+  /**
+   * Dynamo DB
+   */
+  DynamoDb = 'dynamodb',
+
+  /**
+   * Relational Database Service
+   */
+  Rds = 'rds',
+
+  /**
+   * SageMaker
+   */
+  SageMaker = 'sagemaker',
+
+  /**
+   * Custom Resource
+   */
+  CustomResource = 'custom-resource',
 }

@@ -1,3 +1,4 @@
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
@@ -283,7 +284,7 @@ export class Table extends Construct {
     }
 
     return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
-      serviceNamespace: 'dynamodb',
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:ReadCapacityUnits',
       role: this.scalingRole,
@@ -302,7 +303,7 @@ export class Table extends Construct {
     }
 
     return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
-      serviceNamespace: 'dynamodb',
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:WriteCapacityUnits',
       role: this.scalingRole,
@@ -325,7 +326,7 @@ export class Table extends Construct {
     }
 
     return attributePair.scalableReadAttribute = new ScalableTableAttribute(this, `${indexName}ReadScaling`, {
-      serviceNamespace: 'dynamodb',
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:ReadCapacityUnits',
       role: this.scalingRole,
@@ -348,7 +349,7 @@ export class Table extends Construct {
     }
 
     return attributePair.scalableWriteAttribute = new ScalableTableAttribute(this, `${indexName}WriteScaling`, {
-      serviceNamespace: 'dynamodb',
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
       resourceId: `table/${this.tableName}/index/${indexName}`,
       dimension: 'dynamodb:index:WriteCapacityUnits',
       role: this.scalingRole,
