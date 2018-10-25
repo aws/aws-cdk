@@ -43,6 +43,7 @@ export class App extends Root {
     }
 
     const result: cxapi.SynthesizeResponse = {
+      version: cxapi.PROTO_RESPONSE_VERSION,
       stacks: this.synthesizeStacks(Object.keys(this.stacks)),
       runtime: this.collectRuntimeInformation()
     };
