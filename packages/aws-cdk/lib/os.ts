@@ -93,6 +93,6 @@ function windowsEscape(x: string): string {
   // First surround by double quotes, ignore the part about backslashes
   x = `"${x}"`;
   // Now escape all special characters
-  const shellMeta = ['"', '&', '^', '%'];
-  return x.split('').map(c => shellMeta.indexOf(x) !== -1 ? '^' + c : c).join('');
+  const shellMeta = new Set<string>(['"', '&', '^', '%']);
+  return x.split('').map(c => shellMeta.has(x) ? '^' + c : c).join('');
 }
