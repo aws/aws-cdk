@@ -115,6 +115,17 @@ export interface SecurityGroupProps {
    * The VPC in which to create the security group.
    */
   vpc: VpcNetworkRef;
+
+  /**
+   * Whether to allow all outbound traffic by default.
+   *
+   * If this is set to true, there will only be a single egress rule which allows all
+   * outbound traffic. If this is set to false, no outbound traffic will be allowed by
+   * default and all egress traffic must be explicitly authorized.
+   *
+   * @default true
+   */
+  allowAllOutbound?: boolean;
 }
 
 /**
@@ -149,11 +160,16 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
   private readonly directEgressRules: cloudformation.SecurityGroupResource.EgressProperty[] = [];
 
+  private readonly allowAllOutbound: boolean;
+
   constructor(parent: Construct, name: string, props: SecurityGroupProps) {
     super(parent, name);
 
     this.tags = new TagManager(this, { initialTags: props.tags});
     const groupDescription = props.description || this.path;
+
+    this.allowAllOutbound = props.allowAllOutbound !== false;
+
     this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
       groupName: props.groupName,
       groupDescription,
@@ -166,6 +182,8 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
     this.securityGroupId = this.securityGroup.securityGroupId;
     this.groupName = this.securityGroup.securityGroupName;
     this.vpcId = this.securityGroup.securityGroupVpcId;
+
+    this.addDefaultEgressRule();
   }
 
   public addIngressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
@@ -186,6 +204,18 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   }
 
   public addEgressRule(peer: ISecurityGroupRule, connection: IPortRange, description?: string) {
+    if (this.allowAllOutbound) {
+      // In the case of "allowAllOutbound", we don't add any more rules. There
+      // is only one rule which allows all traffic and that subsumes any other
+      // rule.
+      return;
+    } else {
+      // Otherwise, if the bogus rule exists we can now remove it because the
+      // presence of any other rule will get rid of EC2's implicit "all
+      // outbound" rule anyway.
+      this.removeNoTrafficRule();
+    }
+
     if (!peer.canInlineRule || !connection.canInlineRule) {
       super.addEgressRule(peer, connection, description);
       return;
@@ -195,11 +225,22 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    this.addDirectEgressRule({
+    const rule = {
       ...peer.toEgressRuleJSON(),
       ...connection.toRuleJSON(),
       description
-    });
+    };
+
+    if (isAllTrafficRule(rule)) {
+      // We cannot allow this; if someone adds the rule in this way, it will be
+      // removed again if they add other rules. We also can't automatically switch
+      // to "allOutbound=true" mode, because we might have already emitted
+      // EgressRule objects (which count as rules added later) and there's no way
+      // to recall those. Better to prevent this for now.
+      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true on the SecurityGroup instead.');
+    }
+
+    this.addDirectEgressRule(rule);
   }
 
   /**
@@ -233,7 +274,65 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   private hasEgressRule(rule: cloudformation.SecurityGroupResource.EgressProperty): boolean {
     return this.directEgressRules.findIndex(r => egressRulesEqual(r, rule)) > -1;
   }
+
+  /**
+   * Add the default egress rule to the securityGroup
+   *
+   * This depends on allowAllOutbound:
+   *
+   * - If allowAllOutbound is true, we *TECHNICALLY* don't need to do anything, because
+   *   EC2 is going to create this default rule anyway. But, for maximum readability
+   *   of the template, we will add one anyway.
+   * - If allowAllOutbound is false, we add a bogus rule that matches no traffic in
+   *   order to get rid of the default "all outbound" rule that EC2 creates by default.
+   *   If other rules happen to get added later, we remove the bogus rule again so
+   *   that it doesn't clutter up the template too much (even though that's not
+   *   strictly necessary).
+   */
+  private addDefaultEgressRule() {
+    if (this.allowAllOutbound) {
+      this.directEgressRules.push(ALLOW_ALL_RULE);
+    } else {
+      this.directEgressRules.push(MATCH_NO_TRAFFIC);
+    }
+  }
+
+  /**
+   * Remove the bogus rule if it exists
+   */
+  private removeNoTrafficRule() {
+    const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));
+    if (i > -1) {
+      this.directEgressRules.splice(i, 1);
+    }
+  }
 }
+
+/**
+ * Egress rule that purposely matches no traffic
+ *
+ * This is used in order to disable the "all traffic" default of Security Groups.
+ *
+ * No machine can ever actually have the 255.255.255.255 IP address, but
+ * in order to lock it down even more we'll restrict to a nonexistent
+ * ICMP traffic type.
+ */
+const MATCH_NO_TRAFFIC = {
+  cidrIp: '255.255.255.255/32',
+  description: 'Disallow all traffic',
+  ipProtocol: 'icmp',
+  fromPort: 252,
+  toPort: 86
+};
+
+/**
+ * Egress rule that matches all traffic
+ */
+const ALLOW_ALL_RULE = {
+  cidrIp: '0.0.0.0/0',
+  description: 'Allow all outbound traffic by default',
+  ipProtocol: '-1',
+};
 
 export interface ConnectionRule {
   /**
@@ -314,4 +413,11 @@ function egressRulesEqual(a: cloudformation.SecurityGroupResource.EgressProperty
     && a.ipProtocol === b.ipProtocol
     && a.destinationPrefixListId === b.destinationPrefixListId
     && a.destinationSecurityGroupId === b.destinationSecurityGroupId;
+}
+
+/**
+ * Whether this rule refers to all traffic
+ */
+function isAllTrafficRule(rule: any) {
+  return rule.cidrIp === '0.0.0.0/0' && rule.ipProtocol === '-1';
 }
