@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
-import { IIdentityResource, IPrincipal, Policy } from './policy';
+import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { User } from './user';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -34,7 +34,7 @@ export interface GroupProps {
   path?: string;
 }
 
-export class Group extends Construct implements IIdentityResource, IPrincipal {
+export class Group extends Construct implements IPrincipal {
   /**
    * The runtime name of this group.
    */

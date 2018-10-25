@@ -190,7 +190,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   /**
    * Grant topic publishing permissions to the given identity
    */
-  public grantPublish(identity?: iam.IIdentityResource) {
+  public grantPublish(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }

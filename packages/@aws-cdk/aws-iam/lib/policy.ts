@@ -39,7 +39,7 @@ export interface IPrincipal {
  * @deprecated Use IPrincipal
  */
 // tslint:disable-next-line:no-empty-interface
-export interface IIdentityResource extends IPrincipal { }
+export type IIdentityResource = IPrincipal;
 
 export interface PolicyProps {
   /**

@@ -1,7 +1,10 @@
-import { cloudformation as applicationautoscaling } from '@aws-cdk/aws-applicationautoscaling';
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
+import cdk = require('@aws-cdk/cdk');
 import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { cloudformation as dynamodb } from './dynamodb.generated';
+import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
+import { ScalableTableAttribute } from './scalable-table-attribute';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -84,20 +87,6 @@ export interface TableProps {
    * @default undefined, TTL is disabled
    */
   ttlAttributeName?: string;
-
-  /**
-   * AutoScalingProps configuration to configure Read AutoScaling for the DynamoDB table.
-   * This field is optional and this can be achieved via addReadAutoScaling.
-   * @default undefined, read auto scaling is disabled
-   */
-  readAutoScaling?: AutoScalingProps;
-
-  /**
-   * AutoScalingProps configuration to configure Write AutoScaling for the DynamoDB table.
-   * This field is optional and this can be achieved via addWriteAutoScaling.
-   * @default undefined, write auto scaling is disabled
-   */
-  writeAutoScaling?: AutoScalingProps;
 }
 
 export interface SecondaryIndexProps {
@@ -151,42 +140,6 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
   sortKey: Attribute;
 }
 
-/* tslint:disable:max-line-length */
-export interface AutoScalingProps {
-  /**
-   * The minimum value that Application Auto Scaling can use to scale a target during a scaling activity.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-mincapacity
-   */
-  minCapacity: number;
-  /**
-   * The maximum value that Application Auto Scaling can use to scale a target during a scaling activity.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalabletarget.html#cfn-applicationautoscaling-scalabletarget-maxcapacity
-   */
-  maxCapacity: number;
-  /**
-   * Application Auto Scaling ensures that the ratio of consumed capacity to provisioned capacity stays at or near this value. You define TargetValue as a percentage.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-targetvalue
-   */
-  targetValue: number;
-  /**
-   * The amount of time, in seconds, after a scale in activity completes before another scale in activity can start.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleincooldown
-   */
-  scaleInCooldown: number;
-  /**
-   * The amount of time, in seconds, after a scale out activity completes before another scale out activity can start.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration.html#cfn-applicationautoscaling-scalingpolicy-targettrackingscalingpolicyconfiguration-scaleoutcooldown
-   */
-  scaleOutCooldown: number;
-  /**
-   * A name for the scaling policy.
-   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html#cfn-applicationautoscaling-scalingpolicy-policyname
-   * @default {TableName}[ReadCapacity|WriteCapacity]ScalingPolicy
-   */
-  scalingPolicyName?: string;
-}
-/* tslint:enable:max-line-length */
-
 /**
  * Provides a DynamoDB table.
  */
@@ -208,8 +161,9 @@ export class Table extends Construct {
   private tablePartitionKey: Attribute | undefined = undefined;
   private tableSortKey: Attribute | undefined = undefined;
 
-  private readScalingPolicyResource?: applicationautoscaling.ScalingPolicyResource;
-  private writeScalingPolicyResource?: applicationautoscaling.ScalingPolicyResource;
+  private readonly tableScaling: ScalableAttributePair = {};
+  private readonly indexScaling = new Map<string, ScalableAttributePair>();
+  private readonly scalingRole: iam.IRole;
 
   constructor(parent: Construct, name: string, props: TableProps = {}) {
     super(parent, name);
@@ -234,13 +188,8 @@ export class Table extends Construct {
     this.tableName = this.table.tableName;
     this.tableStreamArn = this.table.tableStreamArn;
 
-    if (props.readAutoScaling) {
-      this.addReadAutoScaling(props.readAutoScaling);
-    }
+    this.scalingRole = this.makeScalingRole();
 
-    if (props.writeAutoScaling) {
-      this.addWriteAutoScaling(props.writeAutoScaling);
-    }
   }
 
   /**
@@ -291,6 +240,8 @@ export class Table extends Construct {
       projection: gsiProjection,
       provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 }
     });
+
+    this.indexScaling.set(props.indexName, {});
   }
 
   /**
@@ -322,12 +273,88 @@ export class Table extends Construct {
     });
   }
 
-  public addReadAutoScaling(props: AutoScalingProps) {
-    this.readScalingPolicyResource = this.buildAutoScaling(this.readScalingPolicyResource, 'Read', props);
+  /**
+   * Enable read capacity scaling for this table
+   *
+   * @returns An object to configure additional AutoScaling settings
+   */
+  public autoScaleReadCapacity(props: EnableScalingProps): IScalableTableAttribute {
+    if (this.tableScaling.scalableReadAttribute) {
+      throw new Error('Read AutoScaling already enabled for this table');
+    }
+
+    return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      resourceId: `table/${this.tableName}`,
+      dimension: 'dynamodb:table:ReadCapacityUnits',
+      role: this.scalingRole,
+      ...props
+    });
   }
 
-  public addWriteAutoScaling(props: AutoScalingProps) {
-    this.writeScalingPolicyResource = this.buildAutoScaling(this.writeScalingPolicyResource, 'Write', props);
+  /**
+   * Enable write capacity scaling for this table
+   *
+   * @returns An object to configure additional AutoScaling settings for this attribute
+   */
+  public autoScaleWriteCapacity(props: EnableScalingProps): IScalableTableAttribute {
+    if (this.tableScaling.scalableWriteAttribute) {
+      throw new Error('Write AutoScaling already enabled for this table');
+    }
+
+    return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      resourceId: `table/${this.tableName}`,
+      dimension: 'dynamodb:table:WriteCapacityUnits',
+      role: this.scalingRole,
+      ...props,
+    });
+  }
+
+  /**
+   * Enable read capacity scaling for the given GSI
+   *
+   * @returns An object to configure additional AutoScaling settings for this attribute
+   */
+  public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    const attributePair = this.indexScaling.get(indexName);
+    if (!attributePair) {
+      throw new Error(`No global secondary index with name ${indexName}`);
+    }
+    if (attributePair.scalableReadAttribute) {
+      throw new Error('Read AutoScaling already enabled for this index');
+    }
+
+    return attributePair.scalableReadAttribute = new ScalableTableAttribute(this, `${indexName}ReadScaling`, {
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      resourceId: `table/${this.tableName}/index/${indexName}`,
+      dimension: 'dynamodb:index:ReadCapacityUnits',
+      role: this.scalingRole,
+      ...props
+    });
+  }
+
+  /**
+   * Enable write capacity scaling for the given GSI
+   *
+   * @returns An object to configure additional AutoScaling settings for this attribute
+   */
+  public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    const attributePair = this.indexScaling.get(indexName);
+    if (!attributePair) {
+      throw new Error(`No global secondary index with name ${indexName}`);
+    }
+    if (attributePair.scalableWriteAttribute) {
+      throw new Error('Write AutoScaling already enabled for this index');
+    }
+
+    return attributePair.scalableWriteAttribute = new ScalableTableAttribute(this, `${indexName}WriteScaling`, {
+      serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
+      resourceId: `table/${this.tableName}/index/${indexName}`,
+      dimension: 'dynamodb:index:WriteCapacityUnits',
+      role: this.scalingRole,
+      ...props
+    });
   }
 
   /**
@@ -435,25 +462,6 @@ export class Table extends Construct {
     });
   }
 
-  private validateAutoScalingProps(props: AutoScalingProps) {
-    if (props.targetValue < 10 || props.targetValue > 90) {
-      throw new RangeError("scalingTargetValue for predefined metric type DynamoDBReadCapacityUtilization/"
-        + "DynamoDBWriteCapacityUtilization must be between 10 and 90; Provided value is: " + props.targetValue);
-    }
-    if (props.scaleInCooldown < 0) {
-      throw new RangeError("scaleInCooldown must be greater than or equal to 0; Provided value is: " + props.scaleInCooldown);
-    }
-    if (props.scaleOutCooldown < 0) {
-      throw new RangeError("scaleOutCooldown must be greater than or equal to 0; Provided value is: " + props.scaleOutCooldown);
-    }
-    if (props.maxCapacity < 0) {
-      throw new RangeError("maximumCapacity must be greater than or equal to 0; Provided value is: " + props.maxCapacity);
-    }
-    if (props.minCapacity < 0) {
-      throw new RangeError("minimumCapacity must be greater than or equal to 0; Provided value is: " + props.minCapacity);
-    }
-  }
-
   private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): dynamodb.TableResource.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
     const indexKeySchema: dynamodb.TableResource.KeySchemaProperty[] = [
@@ -486,73 +494,6 @@ export class Table extends Construct {
     return {
       projectionType: props.projectionType ? props.projectionType : ProjectionType.All,
       nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined
-    };
-  }
-
-  private buildAutoScaling(scalingPolicyResource: applicationautoscaling.ScalingPolicyResource | undefined,
-                           scalingType: string,
-                           props: AutoScalingProps) {
-    if (scalingPolicyResource) {
-      throw new Error(`${scalingType} Auto Scaling already defined for Table`);
-    }
-
-    this.validateAutoScalingProps(props);
-    const autoScalingRole = this.buildAutoScalingRole(`${scalingType}AutoScalingRole`);
-
-    const scalableTargetResource = new applicationautoscaling.ScalableTargetResource(
-      this, `${scalingType}CapacityScalableTarget`, this.buildScalableTargetResourceProps(
-        `dynamodb:table:${scalingType}CapacityUnits`, autoScalingRole, props));
-
-    return new applicationautoscaling.ScalingPolicyResource(
-      this, `${scalingType}CapacityScalingPolicy`,
-      this.buildScalingPolicyResourceProps(`DynamoDB${scalingType}CapacityUtilization`, `${scalingType}Capacity`,
-      scalableTargetResource, props));
-  }
-
-  private buildAutoScalingRole(roleResourceName: string) {
-    const autoScalingRole = new iam.Role(this, roleResourceName, {
-      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
-    });
-    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
-      .addActions("dynamodb:DescribeTable", "dynamodb:UpdateTable")
-      .addResource(this.tableArn));
-    autoScalingRole.addToPolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow)
-      .addActions("cloudwatch:PutMetricAlarm", "cloudwatch:DescribeAlarms", "cloudwatch:GetMetricStatistics",
-        "cloudwatch:SetAlarmState", "cloudwatch:DeleteAlarms")
-      .addAllResources());
-    return autoScalingRole;
-  }
-
-  private buildScalableTargetResourceProps(scalableDimension: string,
-                                           scalingRole: iam.Role,
-                                           props: AutoScalingProps) {
-    return {
-      maxCapacity: props.maxCapacity,
-      minCapacity: props.minCapacity,
-      resourceId: `table/${this.tableName}`,
-      roleArn: scalingRole.roleArn,
-      scalableDimension,
-      serviceNamespace: 'dynamodb'
-    };
-  }
-
-  private buildScalingPolicyResourceProps(predefinedMetricType: string,
-                                          scalingParameter: string,
-                                          scalableTargetResource: applicationautoscaling.ScalableTargetResource,
-                                          props: AutoScalingProps) {
-    const scalingPolicyName = props.scalingPolicyName || `${this.tableName}${scalingParameter}ScalingPolicy`;
-    return {
-      policyName: scalingPolicyName,
-      policyType: 'TargetTrackingScaling',
-      scalingTargetId: scalableTargetResource.ref,
-      targetTrackingScalingPolicyConfiguration: {
-        predefinedMetricSpecification: {
-          predefinedMetricType
-        },
-        scaleInCooldown: props.scaleInCooldown,
-        scaleOutCooldown: props.scaleOutCooldown,
-        targetValue: props.targetValue
-      }
     };
   }
 
@@ -592,6 +533,21 @@ export class Table extends Construct {
       });
     }
   }
+
+  /**
+   * Return the role that will be used for AutoScaling
+   */
+  private makeScalingRole(): iam.IRole {
+    // Use a Service Linked Role.
+    return iam.Role.import(this, 'ScalingRole', {
+      roleArn: cdk.ArnUtils.fromComponents({
+        // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+        service: 'iam',
+        resource: 'role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_DynamoDBTable'
+      })
+    });
+  }
 }
 
 export enum AttributeType {
@@ -621,4 +577,12 @@ export enum StreamViewType {
   NewAndOldImages = 'NEW_AND_OLD_IMAGES',
   /** Only the key attributes of the modified item are written to the stream. */
   KeysOnly = 'KEYS_ONLY'
+}
+
+/**
+ * Just a convenient way to keep track of both attributes
+ */
+interface ScalableAttributePair {
+  scalableReadAttribute?: ScalableTableAttribute;
+  scalableWriteAttribute?: ScalableTableAttribute;
 }

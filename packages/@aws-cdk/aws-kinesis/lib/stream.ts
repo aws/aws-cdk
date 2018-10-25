@@ -88,7 +88,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(identity?: iam.IIdentityResource) {
+  public grantRead(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -114,7 +114,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(identity?: iam.IIdentityResource) {
+  public grantWrite(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -142,7 +142,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(identity?: iam.IIdentityResource) {
+  public grantReadWrite(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -221,7 +221,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(identity: iam.IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
+  private grant(identity: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
     identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.streamArn)
       .addActions(...actions.streamActions));

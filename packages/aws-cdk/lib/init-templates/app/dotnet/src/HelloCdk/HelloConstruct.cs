@@ -10,7 +10,7 @@ namespace HelloCdk
     {
         public int BucketCount { get; set; }
     }
-    
+
     public class HelloConstruct : Construct
     {
         private readonly IEnumerable<Bucket> _buckets;
@@ -24,7 +24,7 @@ namespace HelloCdk
         }
 
         // Give the specified principal read access to the buckets in this construct.
-        public void GrantRead(IIIdentityResource principal)
+        public void GrantRead(IIPrincipal principal)
         {
             foreach (Bucket bucket in _buckets)
             {

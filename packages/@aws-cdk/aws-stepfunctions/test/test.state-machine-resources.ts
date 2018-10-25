@@ -80,13 +80,13 @@ export = {
         test.deepEqual(cdk.resolve(task.metricRunTime()), {
             ...sharedMetric,
             metricName: 'FakeResourceRunTime',
-            statistic: 'avg'
+            statistic: 'Average'
         });
 
         test.deepEqual(cdk.resolve(task.metricFailed()), {
             ...sharedMetric,
             metricName: 'FakeResourcesFailed',
-            statistic: 'sum'
+            statistic: 'Sum'
         });
 
         test.done();
