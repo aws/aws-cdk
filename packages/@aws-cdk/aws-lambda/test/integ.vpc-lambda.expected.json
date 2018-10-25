@@ -355,10 +355,8 @@
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Talk to everyone",
-            "FromPort": 0,
-            "IpProtocol": "tcp",
-            "ToPort": 65535
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "SecurityGroupIngress": [],
