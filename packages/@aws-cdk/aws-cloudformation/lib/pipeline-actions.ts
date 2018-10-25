@@ -1,7 +1,6 @@
 import codepipeline  = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import crypto = require('crypto');
 
 /**
  * Properties common to all CloudFormation actions
@@ -93,12 +92,8 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ChangeSetName: props.changeSetName,
     });
 
-    const sid = uuid(`PipelineExecuteChangeSetAction-${props.changeSetName}`);
-    props.stage.pipelineRole.findOrAddStatement(
-      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid)
-        .addAction('cloudformation:ExecuteChangeSet')
-        .addCondition('StringEquals', { 'cloudformation:ChangeSetName': props.changeSetName })
-    ).addResource(stackArnFromName(props.stackName));
+    SingletonPolicy.forRole(props.stage.pipelineRole)
+                   .grantExecuteChangeSet(props);
   }
 }
 
@@ -215,12 +210,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       }
     }
 
-    // Allow the pipeline to pass this actions' role to CloudFormation
-    // Required by all Actions that perform CFN deployments
-    const sid = uuid(`PipelineCloudFormationDeployAction-PassRole`);
-    props.stage.pipelineRole.findOrAddStatement(
-      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid).addAction('iam:PassRole')
-    ).addResource(this.role.roleArn);
+    SingletonPolicy.forRole(props.stage.pipelineRole).grantPassRole(this.role);
   }
 
   /**
@@ -265,16 +255,7 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    const sid = uuid(`PipelineCreateReplaceChangeSetAction-${props.changeSetName}`);
-    // Allow the pipeline to Stack & ChangeSet existence, and to create & delete the specified ChangeSet
-    props.stage.pipelineRole.findOrAddStatement(
-      new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, sid)
-        .addActions('cloudformation:CreateChangeSet',
-                    'cloudformation:DeleteChangeSet',
-                    'cloudformation:DescribeChangeSet',
-                    'cloudformation:DescribeStacks')
-        .addCondition('StringEqualsIfExists', { 'cloudformation:ChangeSetName': props.changeSetName })
-    ).addResource(stackArnFromName(props.stackName));
+    SingletonPolicy.forRole(props.stage.pipelineRole).grantCreateReplaceChangeSet(props);
   }
 }
 
@@ -329,22 +310,7 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    // permissions are based on best-guess from
-    // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html
-    // and https://docs.aws.amazon.com/IAM/latest/UserGuide/list_awscloudformation.html
-    const stackArn = stackArnFromName(props.stackName);
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addActions(
-        'cloudformation:DescribeStack*',
-        'cloudformation:CreateStack',
-        'cloudformation:UpdateStack',
-        'cloudformation:DeleteStack', // needed when props.replaceOnFailure is true
-        'cloudformation:GetTemplate*',
-        'cloudformation:ValidateTemplate',
-        'cloudformation:GetStackPolicy',
-        'cloudformation:SetStackPolicy',
-      )
-      .addResource(stackArn));
+    SingletonPolicy.forRole(props.stage.pipelineRole).grantCreateUpdateStack(props);
   }
 }
 
@@ -366,13 +332,7 @@ export class PipelineDeleteStackAction extends PipelineCloudFormationDeployActio
     super(parent, id, props, {
       ActionMode: 'DELETE_ONLY',
     });
-    const stackArn = stackArnFromName(props.stackName);
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
-      .addActions(
-        'cloudformation:DescribeStack*',
-        'cloudformation:DeleteStack',
-      )
-      .addResource(stackArn));
+    SingletonPolicy.forRole(props.stage.pipelineRole).grantDeleteStack(props);
   }
 }
 
@@ -406,10 +366,105 @@ function stackArnFromName(stackName: string): string {
   });
 }
 
-function uuid(label: string): string {
-  return crypto.createHash('sha256')
-               // Making sure those hashes are in a "unique" namespace
-               .update('8389e75f-0810-4838-bf64-d6f85a95cf83\0')
-               .update(label)
-               .digest('hex');
+/**
+ * Manages a bunch of singleton-y statements on the policy of an IAM Role.
+ * Dedicated methods can be used to add specific permissions to the role policy
+ * using as few statements as possible (adding resources to existing compatible
+ * statements instead of adding new statements whenever possible).
+ *
+ * Statements created outside of this class are not considered when adding new
+ * permissions.
+ */
+class SingletonPolicy extends cdk.Construct {
+  /**
+   * Obtain a SingletonPolicy for a given role.
+   * @param role the Role this policy is bound to.
+   * @returns the SingletonPolicy for this role.
+   */
+  public static forRole(role: iam.Role): SingletonPolicy {
+    const found = role.tryFindChild(SingletonPolicy.UUID);
+    return (found as SingletonPolicy) || new SingletonPolicy(role);
+  }
+
+  private static readonly UUID = '8389e75f-0810-4838-bf64-d6f85a95cf83';
+
+  private statements: { [key: string]: iam.PolicyStatement } = {};
+
+  private constructor(private readonly role: iam.Role) {
+    super(role, SingletonPolicy.UUID);
+  }
+
+  public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean }): void {
+    const actions = [
+      'cloudformation:DescribeStack*',
+      'cloudformation:CreateStack',
+      'cloudformation:UpdateStack',
+      'cloudformation:GetTemplate*',
+      'cloudformation:ValidateTemplate',
+      'cloudformation:GetStackPolicy',
+      'cloudformation:SetStackPolicy',
+    ];
+    if (props.replaceOnFailure) {
+      actions.push('cloudformation:DeleteStack');
+    }
+    this.statementFor({
+      id: `CreateUpdateStack(replaceOnFailure=${props.replaceOnFailure})`,
+      actions,
+    }).addResource(stackArnFromName(props.stackName));
+  }
+
+  public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string }): void {
+    this.statementFor({
+      id: `CreateReplaceChangeSet(${props.changeSetName})`,
+      actions: [
+        'cloudformation:CreateChangeSet',
+        'cloudformation:DeleteChangeSet',
+        'cloudformation:DescribeChangeSet',
+        'cloudformation:DescribeStacks',
+      ],
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
+    }).addResource(stackArnFromName(props.stackName));
+  }
+
+  public grantExecuteChangeSet(props: { stackName: string, changeSetName: string }): void {
+    this.statementFor({
+      id: `ExecuteChangeSet(${props.changeSetName})`,
+      actions: ['cloudformation:ExecuteChangeSet'],
+      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
+    }).addResource(stackArnFromName(props.stackName));
+  }
+
+  public grantDeleteStack(props: { stackName: string }): void {
+    this.statementFor({
+      id: 'DeleteStack',
+      actions: [
+        'cloudformation:DescribeStack*',
+        'cloudformation:DeleteStack',
+      ]
+    }).addResource(stackArnFromName(props.stackName));
+  }
+
+  public grantPassRole(role: iam.Role): void {
+    this.statementFor({
+      id: 'PassRole',
+      actions: ['iam:PassRole'],
+    }).addResource(role.roleArn);
+  }
+
+  private statementFor(props: StatementTemplate): iam.PolicyStatement {
+    if (!(props.id in this.statements)) {
+      this.statements[props.id] = new iam.PolicyStatement().addActions(...props.actions);
+      if (props.conditions) {
+        this.statements[props.id].addConditions(props.conditions);
+      }
+      this.role.addToPolicy(this.statements[props.id]);
+    }
+    return this.statements[props.id];
+  }
+}
+
+interface StatementTemplate {
+  id: string;
+  actions: string[];
+  conditions?: { [op: string]: { [attribute: string]: any } }
 }

@@ -69,7 +69,6 @@ export = nodeunit.testCase({
               { 'Fn::GetAtt': [ 'ActionARole72759154', 'Arn' ] },
               { 'Fn::GetAtt': [ 'ActionBRole6A2F6804', 'Arn' ] }
             ],
-            Sid: '735a3c36e2835a0ccdcb53352ff11ca8f958b3fb0781d87bfa79c4b77136cb96'
           },
           {
             Action: [
@@ -86,7 +85,6 @@ export = nodeunit.testCase({
               // tslint:disable-next-line:max-line-length
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
             ],
-            Sid: 'c4638deb1c21970f8fdac7bce05a8ab4821cddc3b9f804de543d3ad60bd49a2b'
           }
         ]
       );
@@ -148,7 +146,6 @@ export = nodeunit.testCase({
               // tslint:disable-next-line:max-line-length
               { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':cloudformation:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':stack/StackB/*' ] ] }
             ],
-            Sid: 'd65a418665cdf14ac5d3afc79357d41211b05b9eb3ed799f6ad8992c2f2a4964'
           }
         ]
       );
@@ -164,6 +161,7 @@ export = nodeunit.testCase({
       stage: new StageDouble({ pipelineRole }),
       templatePath: new cpapi.Artifact(stack as any, 'TestArtifact').atPath('some/file'),
       stackName: 'MyStack',
+      replaceOnFailure: true,
     });
     const stackArn = _stackArn('MyStack');
 

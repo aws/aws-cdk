@@ -159,16 +159,6 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
     this.defaultPolicy.addStatement(statement);
   }
 
-  public findOrAddStatement(statement: PolicyStatement): PolicyStatement {
-    if (!statement.sid) {
-      throw new Error(`A sid must be provided in order to use findOrAddStatement`);
-    }
-    const found = this.defaultPolicy && this.defaultPolicy.document.tryFindStatement(statement.sid);
-    if (found) { return found; }
-    this.addToPolicy(statement);
-    return statement;
-  }
-
   /**
    * Attaches a managed policy to this role.
    * @param arn The ARN of the managed policy to attach.

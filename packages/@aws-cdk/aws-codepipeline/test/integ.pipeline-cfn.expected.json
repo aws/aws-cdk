@@ -97,8 +97,7 @@
                   "CfnChangeSetRole6F05F6FC",
                   "Arn"
                 ]
-              },
-              "Sid": "735a3c36e2835a0ccdcb53352ff11ca8f958b3fb0781d87bfa79c4b77136cb96"
+              }
             },
             {
               "Action": [
@@ -132,8 +131,7 @@
                     ":stack/IntegTest-TestActionStack/*"
                   ]
                 ]
-              },
-              "Sid": "9c9fda9b142ff86aba246ff49f9c38f932a7c28ff7af0e7d5985eaf56ab7c637"
+              }
             }
           ],
           "Version": "2012-10-17"

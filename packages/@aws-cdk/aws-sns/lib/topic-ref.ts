@@ -42,11 +42,6 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   private eventRuleTargetPolicyAdded = false;
 
   /**
-   * The number of sources that were registered, used as the Sid for policy statements.
-   */
-  private sourceCount = 0;
-
-  /**
    * Export this Topic
    */
   public export(): TopicRefProps {
@@ -173,12 +168,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
    *
-   * If this topic was created in this stack (``new Topic`), a topic policy
-   * will be automatically created upon the first call to ``addToPolicy``. If
-   * the topic is imported (``Topic.import``), then this is a no-op.
-   *
-   * @param statement the statement to add to the policy. It must have an Sid
-   *                  that has not yet been used in this resource policy.
+   * If this topic was created in this stack (`new Topic`), a topic policy
+   * will be automatically created upon the first call to `addToPolicy`. If
+   * the topic is improted (`Topic.import`), then this is a no-op.
    */
   public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
@@ -186,14 +178,11 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     }
 
     if (this.policy) {
-      // statements must be uniquely named with an SID.
+      // statements must be unique, so we use the statement index.
+      // potantially SIDs can change as a result of order change, but this should
+      // not have an impact on the policy evaluation.
       // https://docs.aws.amazon.com/sns/latest/dg/AccessPolicyLanguage_SpecialInfo.html
-      if (!statement.sid) {
-        throw new Error(`SNS policy statements must have a unique Sid, but none was provided`);
-      }
-      if (this.policy.document.tryFindStatement(statement.sid)) {
-        throw new Error(`There is already a statement with Sid=${statement.sid}, this is not allowed`);
-      }
+      statement.describe(this.policy.document.statementCount.toString());
       this.policy.document.addStatement(statement);
     }
   }
@@ -219,7 +208,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
    */
   public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
     if (!this.eventRuleTargetPolicyAdded) {
-      this.addToResourcePolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, `${this.sourceCount++}`)
+      this.addToResourcePolicy(new iam.PolicyStatement()
         .addAction('sns:Publish')
         .addPrincipal(new iam.ServicePrincipal('events.amazonaws.com'))
         .addResource(this.topicArn));
@@ -295,11 +284,12 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   public asBucketNotificationDestination(bucketArn: string, bucketId: string): s3n.BucketNotificationDestinationProps {
     // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
     if (!this.notifyingBuckets.has(bucketId)) {
-      this.addToResourcePolicy(new iam.PolicyStatement(iam.PolicyStatementEffect.Allow, `${this.sourceCount++}`)
+
+      this.addToResourcePolicy(new iam.PolicyStatement()
         .addServicePrincipal('s3.amazonaws.com')
         .addAction('sns:Publish')
         .addResource(this.topicArn)
-        .addCondition('ArnLike', { 'aws:SourceArn': bucketArn }));
+        .addCondition('ArnLike', { "aws:SourceArn": bucketArn }));
 
       this.notifyingBuckets.add(bucketId);
     }

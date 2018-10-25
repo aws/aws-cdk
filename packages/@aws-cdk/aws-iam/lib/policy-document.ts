@@ -40,16 +40,6 @@ export class PolicyDocument extends Token {
     this.statements.push(statement);
     return this;
   }
-
-  /**
-   * Looks up a statement by it's SID
-   *
-   * @param sid the SID to be searched for.
-   * @returns a ``PolicyStatement``, or ``undefined`` if no statement has the specified SID.
-   */
-  public tryFindStatement(sid: string): PolicyStatement | undefined {
-    return this.statements.find(stmt => stmt.sid === sid);
-  }
 }
 
 /**
@@ -168,10 +158,12 @@ export class PolicyStatement extends Token {
   private principal: { [key: string]: any[] } = {};
   private resource = new Array<any>();
   private condition: { [key: string]: any } = { };
+  private effect?: PolicyStatementEffect;
+  private sid?: any;
 
-  constructor(private effect: PolicyStatementEffect = PolicyStatementEffect.Allow,
-              public readonly sid?: string) {
+  constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
     super();
+    this.effect = effect;
   }
 
   //
@@ -263,6 +255,11 @@ export class PolicyStatement extends Token {
    */
   public get hasResource() {
     return this.resource && this.resource.length > 0;
+  }
+
+  public describe(sid: string): PolicyStatement {
+    this.sid = sid;
+    return this;
   }
 
   //
