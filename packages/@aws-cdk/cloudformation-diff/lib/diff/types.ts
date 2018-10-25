@@ -210,17 +210,18 @@ export interface Resource {
   [key: string]: any;
 }
 export class ResourceDifference extends Difference<Resource> {
-  /** The resource type (or old and new type if it has changed) */
-  public readonly resourceType: string | { readonly oldType: string, readonly newType: string };
   /** Property-level changes on the resource */
   public readonly propertyChanges: { [key: string]: PropertyDifference<any> };
   /** Changes to non-property level attributes of the resource */
   public readonly otherChanges: { [key: string]: Difference<any> };
 
+  /** The resource type (or old and new type if it has changed) */
+  private readonly resourceType: { readonly oldType: string, readonly newType: string };
+
   constructor(oldValue: Resource | undefined,
               newValue: Resource | undefined,
               args: {
-          resourceType: string | { oldType: string, newType: string },
+          resourceType: { oldType: string, newType: string },
           propertyChanges: { [key: string]: Difference<any> },
           otherChanges: { [key: string]: Difference<any> }
         }
@@ -231,14 +232,26 @@ export class ResourceDifference extends Difference<Resource> {
     this.otherChanges = args.otherChanges;
   }
 
+  public get oldResourceType(): string | undefined {
+    return this.resourceType.oldType;
+  }
+
+  public get newResourceType(): string | undefined {
+    return this.resourceType.newType;
+  }
+
   public get changeImpact(): ResourceImpact {
-    if (Object.keys(this.propertyChanges).length === 0) {
-      if (typeof this.resourceType !== 'string') { return ResourceImpact.WILL_REPLACE; }
-      if (!this.oldValue) { return ResourceImpact.WILL_CREATE; }
-      return this.oldValue.DeletionPolicy === 'Retain'
-        ? ResourceImpact.WILL_ORPHAN
-        : ResourceImpact.WILL_DESTROY;
+    // Check the Type first
+    if (this.resourceType.oldType !== this.resourceType.newType) {
+      if (this.resourceType.oldType === undefined) { return ResourceImpact.WILL_CREATE; }
+      if (this.resourceType.newType === undefined) {
+        return this.oldValue!.DeletionPolicy === 'Retain'
+          ? ResourceImpact.WILL_ORPHAN
+          : ResourceImpact.WILL_DESTROY;
+      }
+      return ResourceImpact.WILL_REPLACE;
     }
+
     return Object.values(this.propertyChanges)
            .map(elt => elt.changeImpact)
            .reduce(worstImpact, ResourceImpact.WILL_UPDATE);

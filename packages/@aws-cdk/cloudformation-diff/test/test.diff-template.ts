@@ -45,7 +45,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.ok(difference && difference.isAddition, 'the difference reflects there was no such resource before');
-    test.deepEqual(difference && difference.resourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
+    test.deepEqual(difference && difference.newResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_CREATE, 'the difference reflects that a new resource will be created');
     test.done();
   },
@@ -70,7 +70,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketPolicyResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketPolicyResource logical ID');
     test.ok(difference && difference.isRemoval, 'the difference reflects there is no such resource after');
-    test.deepEqual(difference && difference.resourceType, 'AWS::S3::BucketPolicy', 'the difference reports the resource type');
+    test.deepEqual(difference && difference.oldResourceType, 'AWS::S3::BucketPolicy', 'the difference reports the resource type');
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_DESTROY, 'the difference reflects that the resource will be deleted');
     test.done();
   },
@@ -100,7 +100,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketPolicyResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketPolicyResource logical ID');
     test.ok(difference && difference.isRemoval, 'the difference reflects there is no such resource after');
-    test.deepEqual(difference && difference.resourceType, 'AWS::S3::BucketPolicy', 'the difference reports the resource type');
+    test.deepEqual(difference && difference.oldResourceType, 'AWS::S3::BucketPolicy', 'the difference reports the resource type');
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_ORPHAN, 'the difference reflects that the resource will be orphaned');
     test.done();
   },
@@ -141,10 +141,39 @@ exports.diffTemplate = {
     test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
-    test.equal(difference && difference.resourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
+    test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
     test.deepEqual(difference && difference.propertyChanges,
              { BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
+    test.done();
+  },
+
+  'change in dependencies counts as a simple update'(test: Test) {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['SomeResource']
+        }
+      }
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['SomeResource', 'SomeOtherResource']
+        }
+      }
+    };
+    const differences = diffTemplate(currentTemplate, newTemplate);
+
+    // THEN
+    test.equal(differences.count, 1, 'no change');
+    const difference = differences.resources.changes.BucketResource;
+    test.equal(difference && difference.changeImpact, ResourceImpact.WILL_UPDATE, 'the difference reflects that the resource will be replaced');
     test.done();
   },
 
@@ -180,7 +209,7 @@ exports.diffTemplate = {
     test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
-    test.equal(difference && difference.resourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
+    test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
     test.deepEqual(difference && difference.propertyChanges,
              { BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
@@ -219,7 +248,7 @@ exports.diffTemplate = {
     test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
-    test.equal(difference && difference.resourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
+    test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
     test.deepEqual(difference && difference.propertyChanges,
              { BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
@@ -254,9 +283,8 @@ exports.diffTemplate = {
     test.equal(differences.resources.count, 1, 'the difference is in the Resources section');
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
-    test.deepEqual(difference && difference.resourceType,
-             { oldType: 'AWS::IAM::Policy', newType: 'AWS::S3::Bucket' },
-             'the difference reflects the type change');
+    test.deepEqual(difference && difference.oldResourceType, 'AWS::IAM::Policy');
+    test.deepEqual(difference && difference.newResourceType, 'AWS::S3::Bucket');
     test.equal(difference && difference.changeImpact, ResourceImpact.WILL_REPLACE, 'the difference reflects that the resource will be replaced');
     test.done();
   },
