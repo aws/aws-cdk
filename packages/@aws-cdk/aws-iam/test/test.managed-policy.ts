@@ -8,19 +8,9 @@ export = {
 
     test.deepEqual(cdk.resolve(mp.policyArn), {
       "Fn::Join": ['', [
-        'arn',
-        ':',
+        'arn:',
         { Ref: 'AWS::Partition' },
-        ':',
-        'iam',
-        ':',
-        '',
-        ':',
-        'aws',
-        ':',
-        'policy',
-        '/',
-        'service-role/SomePolicy'
+        ':iam::aws:policy/service-role/SomePolicy'
       ]]
     });
 
