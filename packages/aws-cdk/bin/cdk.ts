@@ -9,6 +9,7 @@ import YAML = require('js-yaml');
 import minimatch = require('minimatch');
 import os = require('os');
 import path = require('path');
+import semver = require('semver');
 import util = require('util');
 import yargs = require('yargs');
 import cdkUtil = require('../lib/util');
@@ -469,7 +470,7 @@ async function initCommandLine() {
 
         const response = await fs.readJson(outfile);
         debug(response);
-        return response;
+        return versionCheckResponse(response);
       } finally {
         debug('Removing outdir', outdir);
         await fs.remove(outdir);
@@ -508,7 +509,37 @@ async function initCommandLine() {
         });
       }
     }
+  }
 
+  /**
+   * Look at the type of response we get and upgrade it to the latest expected version
+   */
+  function versionCheckResponse(response: cxapi.SynthesizeResponse): cxapi.SynthesizeResponse {
+    if (!response.version) {
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`CDK Framework >= ${cxapi.PROTO_RESPONSE_VERSION} is required in order to interact with this version of the Toolkit.`);
+    }
+
+    const frameworkVersion = semver.coerce(response.version);
+    const toolkitVersion = semver.coerce(cxapi.PROTO_RESPONSE_VERSION);
+
+    // Should not happen, but I don't trust this library 100% either, so let's check for it to be safe
+    if (!frameworkVersion || !toolkitVersion) { throw new Error('SemVer library could not parse versions'); }
+
+    if (semver.gt(frameworkVersion, toolkitVersion)) {
+      throw new Error(`CDK Toolkit >= ${response.version} is required in order to interact with this program.`);
+    }
+
+    if (semver.lt(frameworkVersion, toolkitVersion)) {
+      // Toolkit protocol is newer than the framework version, and we KNOW the
+      // version. This is a scenario in which we could potentially do some
+      // upgrading of the response in the future.
+      //
+      // For now though, we simply reject old responses.
+      throw new Error(`CDK Framework >= ${cxapi.PROTO_RESPONSE_VERSION} is required in order to interact with this version of the Toolkit.`);
+    }
+
+    return response;
   }
 
   /**

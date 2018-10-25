@@ -69,7 +69,9 @@ export = {
     response.stacks.forEach(s => delete s.metadata);
     delete response.runtime;
 
-    test.deepEqual(response, { stacks:
+    test.deepEqual(response, {
+      version: '0.14.0',
+      stacks:
       [ { name: 'stack1',
           environment:
            { name: '12345/us-east-1',
