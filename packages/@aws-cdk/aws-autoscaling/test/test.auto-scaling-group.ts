@@ -27,10 +27,8 @@ export = {
             "SecurityGroupEgress": [
               {
                 "CidrIp": "0.0.0.0/0",
-                "Description": "Outbound traffic allowed by default",
-                "FromPort": -1,
+                "Description": "Allow all outbound traffic by default",
                 "IpProtocol": "-1",
-                "ToPort": -1
               }
             ],
             "SecurityGroupIngress": [],

@@ -64,7 +64,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
     this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
       vpc: props.vpc,
-      description: `Automatically created Security Group for ELB ${this.uniqueId}`
+      description: `Automatically created Security Group for ELB ${this.uniqueId}`,
+      allowAllOutbound: false
     });
     this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
 

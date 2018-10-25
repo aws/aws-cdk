@@ -341,6 +341,24 @@ export class IcmpTypeAndCode implements IPortRange {
 }
 
 /**
+ * ICMP Ping traffic
+ */
+export class IcmpPing implements IPortRange {
+  public readonly canInlineRule = true;
+
+  public toRuleJSON(): any {
+    return {
+      ipProtocol: Protocol.Icmp,
+      fromPort: 8,
+    };
+  }
+
+  public toString() {
+    return `ICMP PING`;
+  }
+}
+
+/**
  * All ICMP Codes for a given ICMP Type
  */
 export class IcmpAllTypeCodes implements IPortRange {
@@ -384,14 +402,12 @@ export class IcmpAllTypesAndCodes implements IPortRange {
 /**
  * All Traffic
  */
-export class AllConnections implements IPortRange {
+export class AllTraffic implements IPortRange {
   public readonly canInlineRule = true;
 
   public toRuleJSON(): any {
     return {
       ipProtocol: '-1',
-      fromPort: -1,
-      toPort: -1,
     };
   }
 

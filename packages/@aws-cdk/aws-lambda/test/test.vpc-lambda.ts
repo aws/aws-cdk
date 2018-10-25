@@ -20,7 +20,8 @@ export = {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.NodeJS610,
-        vpc: this.vpc
+        vpc: this.vpc,
+        allowAllOutbound: false
       });
     }
 
@@ -50,7 +51,7 @@ export = {
       // WHEN
       this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
 
-      // THEN: SomeSecurityGroup accepts connections from Lambda
+      // THEN: Lambda can connect to SomeSecurityGroup
       expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupEgress", {
         GroupId: {"Fn::GetAtt": ["LambdaSecurityGroupE74659A1", "GroupId"]},
         IpProtocol: "tcp",
@@ -60,7 +61,7 @@ export = {
         ToPort: 65535
       }));
 
-      // THEN: Lambda can connect to SomeSecurityGroup
+      // THEN: SomeSecurityGroup accepts connections from Lambda
       expect(this.stack).to(haveResource("AWS::EC2::SecurityGroupIngress", {
         IpProtocol: "tcp",
         Description: "Lambda can call connectable",
