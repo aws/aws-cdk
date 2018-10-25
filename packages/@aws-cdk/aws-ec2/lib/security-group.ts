@@ -213,7 +213,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
       // Otherwise, if the bogus rule exists we can now remove it because the
       // presence of any other rule will get rid of EC2's implicit "all
       // outbound" rule anyway.
-      this.removeBogusRule();
+      this.removeNoTrafficRule();
     }
 
     if (!peer.canInlineRule || !connection.canInlineRule) {
@@ -225,11 +225,22 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    this.addDirectEgressRule({
+    const rule = {
       ...peer.toEgressRuleJSON(),
       ...connection.toRuleJSON(),
       description
-    });
+    };
+
+    if (isAllTrafficRule(rule)) {
+      // We cannot allow this; if someone adds the rule in this way, it will be
+      // removed again if they add other rules. We also can't automatically switch
+      // to "allOutbound=true" mode, because we might have already emitted
+      // EgressRule objects (which count as rules added later) and there's no way
+      // to recall those. Better to prevent this for now.
+      throw new Error('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true on the SecurityGroup instead.');
+    }
+
+    this.addDirectEgressRule(rule);
   }
 
   /**
@@ -289,7 +300,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   /**
    * Remove the bogus rule if it exists
    */
-  private removeBogusRule() {
+  private removeNoTrafficRule() {
     const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));
     if (i > -1) {
       this.directEgressRules.splice(i, 1);
@@ -402,4 +413,11 @@ function egressRulesEqual(a: cloudformation.SecurityGroupResource.EgressProperty
     && a.ipProtocol === b.ipProtocol
     && a.destinationPrefixListId === b.destinationPrefixListId
     && a.destinationSecurityGroupId === b.destinationSecurityGroupId;
+}
+
+/**
+ * Whether this rule refers to all traffic
+ */
+function isAllTrafficRule(rule: any) {
+  return rule.cidrIp === '0.0.0.0/0' && rule.ipProtocol === '-1';
 }

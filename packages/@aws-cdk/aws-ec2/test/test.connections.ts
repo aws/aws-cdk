@@ -1,13 +1,15 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
+
 import {
-  AllConnections,
+  AllTraffic,
   AnyIPv4,
   AnyIPv6,
   Connections,
   IcmpAllTypeCodes,
   IcmpAllTypesAndCodes,
+  IcmpPing,
   IcmpTypeAndCode,
   IConnectable,
   PrefixList,
@@ -119,6 +121,20 @@ export = {
     test.done();
   },
 
+  'all outbound rule cannot be added after creation'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new VpcNetwork(stack, 'VPC');
+
+    // WHEN
+    const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
+    test.throws(() => {
+      sg.addEgressRule(new AnyIPv4(), new AllTraffic(), 'All traffic');
+    }, /Cannot add/);
+
+    test.done();
+  },
+
   'peering between two security groups does not recursive infinitely'(test: Test) {
     // GIVEN
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' }});
@@ -197,7 +213,8 @@ export = {
       new IcmpTypeAndCode(5, 1),
       new IcmpAllTypeCodes(8),
       new IcmpAllTypesAndCodes(),
-      new AllConnections()
+      new IcmpPing(),
+      new AllTraffic()
     ];
 
     // WHEN

@@ -39,6 +39,11 @@ async function main() {
       default: require.resolve('nodeunit/bin/nodeunit'),
       defaultDescription: 'nodeunit provided by node dependencies'
     })
+    .option('build', {
+      type: 'boolean',
+      desc: 'Rebuild the packages before running the tests',
+      default: true,
+    })
     .argv as any;
 
   const options = cdkBuildOptions();
@@ -50,7 +55,9 @@ async function main() {
   // Always recompile before running tests, so it's impossible to forget.
   // During a normal build, this means we'll compile twice, but the
   // hash calculation makes that cheaper on CPU (if not on disk).
-  await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc });
+  if (args.build) {
+    await compileCurrentPackage(timers, { jsii: args.jsii, tsc: args.tsc });
+  }
 
   const testFiles = await unitTestFiles();
   if (testFiles.length > 0) {

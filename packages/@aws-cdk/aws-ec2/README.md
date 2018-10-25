@@ -173,14 +173,13 @@ Application subnets will route to the NAT Gateway.
 
 ### Allowing Connections
 
-In AWS, all network traffic in and out of **Elastic Network Interfaces**
-(ENIs) is controlled by **Security Groups**. You can think of Security Groups
-as a firewall with a set of rules. By default, Security Groups allow no
-incoming (ingress) traffic and all outgoing (egress) traffic. You can add
-ingress rules to them to allow incoming traffic streams, and the same goes for
-egress rules. As soon as you add at least one egress rule to a security
-group, only the rules will be honored and the default "all outgoing traffic"
-rule no longer applies.
+In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
+is controlled by **Security Groups**. You can think of Security Groups as a
+firewall with a set of rules. By default, Security Groups allow no incoming
+(ingress) traffic and all outgoing (egress) traffic. You can add ingress rules
+to them to allow incoming traffic streams. To exert fine-grained control over
+egress traffic, set `allowAllOutbound: false` on the `SecurityGroup`, after
+which you can add egress traffic rules.
 
 You can manipulate Security Groups directly:
 
@@ -188,13 +187,14 @@ You can manipulate Security Groups directly:
 const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
   vpc,
   description: 'Allow ssh access to ec2 instances',
+  allowAllOutbound: true   // Can be set to false
 });
 mySecurityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
 ```
 
 All constructs that create ENIs on your behalf (typically constructs that create
-EC2 instances or other VPC-connected resources) all have security groups
-(without you having to create any). Those constructs have an attribute called
+EC2 instances or other VPC-connected resources) will all have security groups
+automatically assigned. Those constructs have an attribute called
 **connections**, which is an object that makes it convenient to update the
 security groups. If you want to allow connections between two constructs that
 have security groups, you have to add an **Egress* rule to one Security Group,
