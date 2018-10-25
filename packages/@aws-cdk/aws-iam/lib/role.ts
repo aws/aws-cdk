@@ -1,6 +1,6 @@
 import { Construct, IDependable } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
-import { IIdentityResource, IPrincipal, Policy } from './policy';
+import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -165,7 +165,7 @@ export class Role extends Construct implements IRole {
 /**
  * A Role object
  */
-export interface IRole extends IIdentityResource, IPrincipal, IDependable {
+export interface IRole extends IPrincipal, IDependable {
   /**
    * Returns the ARN of this role.
    */

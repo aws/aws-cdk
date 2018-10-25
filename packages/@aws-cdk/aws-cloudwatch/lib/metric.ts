@@ -87,7 +87,7 @@ export class Metric {
    *
    * @param identity The IAM identity to give permissions to.
    */
-  public static grantPutMetricData(identity?: iam.IIdentityResource) {
+  public static grantPutMetricData(identity?: iam.IPrincipal) {
     if (!identity) { return; }
 
     identity.addToPolicy(new iam.PolicyStatement()
