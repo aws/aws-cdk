@@ -41,14 +41,11 @@
           "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "iam",
-              ":",
+              ":iam:",
               {
                 "Ref": "AWS::Region"
               },
@@ -56,10 +53,7 @@
               {
                 "Ref": "AWS::AccountId"
               },
-              ":",
-              "role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com",
-              "/",
-              "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+              ":role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
             ]
           ]
         },
