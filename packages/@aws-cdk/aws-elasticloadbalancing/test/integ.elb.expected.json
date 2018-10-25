@@ -175,7 +175,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-elb-integ/LB/SecurityGroup",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp":"255.255.255.255/32",
+            "Description":"Disallow all traffic",
+            "FromPort":252,
+            "IpProtocol":"icmp",
+            "ToPort":86
+          }
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",
