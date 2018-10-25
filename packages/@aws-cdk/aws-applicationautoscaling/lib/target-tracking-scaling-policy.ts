@@ -52,13 +52,6 @@ export interface BaseTargetTrackingProps {
  */
 export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackingProps {
   /**
-   * A name for the scaling policy
-   *
-   * @default Automatically generated name
-   */
-  policyName?: string;
-
-  /**
    * The target value for the metric.
    */
   targetValue: number;
