@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/cdk';
 import { Group } from './group';
 import { cloudformation } from './iam.generated';
-import { IIdentityResource, IPrincipal, Policy } from './policy';
+import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
 
@@ -62,7 +62,7 @@ export interface UserProps {
   passwordResetRequired?: boolean;
 }
 
-export class User extends Construct implements IIdentityResource, IPrincipal {
+export class User extends Construct implements IPrincipal {
 
   /**
    * An attribute that represents the user name.
