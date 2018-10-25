@@ -42,7 +42,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   private eventRuleTargetPolicyAdded = false;
 
   /**
-   * The number of sourcs that were registered, used as the Sid for policy statements.
+   * The number of sources that were registered, used as the Sid for policy statements.
    */
   private sourceCount = 0;
 
@@ -175,7 +175,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
    *
    * If this topic was created in this stack (``new Topic`), a topic policy
    * will be automatically created upon the first call to ``addToPolicy``. If
-   * the topic is improted (``Topic.import``), then this is a no-op.
+   * the topic is imported (``Topic.import``), then this is a no-op.
    *
    * @param statement the statement to add to the policy. It must have an Sid
    *                  that has not yet been used in this resource policy.

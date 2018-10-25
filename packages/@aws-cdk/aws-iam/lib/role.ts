@@ -161,7 +161,7 @@ export class Role extends Construct implements IIdentityResource, IPrincipal, ID
 
   public findOrAddStatement(statement: PolicyStatement): PolicyStatement {
     if (!statement.sid) {
-      throw new Error(`A sid must be rovided in order to use findOrAddStatement`);
+      throw new Error(`A sid must be provided in order to use findOrAddStatement`);
     }
     const found = this.defaultPolicy && this.defaultPolicy.document.tryFindStatement(statement.sid);
     if (found) { return found; }
