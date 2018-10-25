@@ -19,16 +19,22 @@ export interface BucketDeploymentProps {
   destinationBucket: s3.BucketRef;
 
   /**
-   * Key prefix in desination.
-   * @default No prefix (source == dest)
+   * Key prefix in the destination bucket.
+   *
+   * @default "/" (unzip to root of the destination bucket)
    */
   destinationKeyPrefix?: string;
 
   /**
-   * If this is enabled, files in destination bucket/prefix will not be deleted
-   * when the resource is deleted or removed from the stack.
+   * If this is set to "false", the destination files will be deleted when the
+   * resource is deleted or the destination is updated.
    *
-   * @default false (when resource is deleted, files are deleted)
+   * NOTICE: if this is set to "false" and destination bucket/prefix is updated,
+   * all files in the previous destination will first be deleted and then
+   * uploaded to the new destination location. This could have availablity
+   * implications on your users.
+   *
+   * @default true - when resource is deleted/updated, files are retained
    */
   retainOnDelete?: boolean;
 }

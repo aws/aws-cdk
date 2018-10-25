@@ -4,10 +4,20 @@ import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 
 export interface SourceProps {
+  /**
+   * The source bucket to deploy from.
+   */
   bucket: s3.BucketRef;
+
+  /**
+   * An S3 object key in the source bucket that points to a zip file.
+   */
   zipObjectKey: string;
 }
 
+/**
+ * Represents a source for bucket deployments.
+ */
 export interface ISource {
   /**
    * Binds the source to a bucket deployment.
@@ -22,7 +32,8 @@ export interface ISource {
  * Usage:
  *
  *     Source.bucket(bucket, key)
- *     Source.asset('/path/to/asset')
+ *     Source.asset('/local/path/to/directory')
+ *     Source.asset('/local/path/to/a/file.zip')
  *
  */
 export class Source {
