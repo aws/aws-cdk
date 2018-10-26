@@ -407,15 +407,11 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({
-      id: `CreateUpdateStack(replaceOnFailure=${props.replaceOnFailure})`,
-      actions,
-    }).addResource(stackArnFromName(props.stackName));
+    this.statementFor({ actions }).addResource(stackArnFromName(props.stackName));
   }
 
   public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string }): void {
     this.statementFor({
-      id: `CreateReplaceChangeSet(${props.changeSetName})`,
       actions: [
         'cloudformation:CreateChangeSet',
         'cloudformation:DeleteChangeSet',
@@ -428,7 +424,6 @@ class SingletonPolicy extends cdk.Construct {
 
   public grantExecuteChangeSet(props: { stackName: string, changeSetName: string }): void {
     this.statementFor({
-      id: `ExecuteChangeSet(${props.changeSetName})`,
       actions: ['cloudformation:ExecuteChangeSet'],
       conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
     }).addResource(stackArnFromName(props.stackName));
@@ -436,7 +431,6 @@ class SingletonPolicy extends cdk.Construct {
 
   public grantDeleteStack(props: { stackName: string }): void {
     this.statementFor({
-      id: 'DeleteStack',
       actions: [
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
@@ -445,26 +439,45 @@ class SingletonPolicy extends cdk.Construct {
   }
 
   public grantPassRole(role: iam.Role): void {
-    this.statementFor({
-      id: 'PassRole',
-      actions: ['iam:PassRole'],
-    }).addResource(role.roleArn);
+    this.statementFor({ actions: ['iam:PassRole'] }).addResource(role.roleArn);
   }
 
-  private statementFor(props: StatementTemplate): iam.PolicyStatement {
-    if (!(props.id in this.statements)) {
-      this.statements[props.id] = new iam.PolicyStatement().addActions(...props.actions);
-      if (props.conditions) {
-        this.statements[props.id].addConditions(props.conditions);
+  private statementFor(template: StatementTemplate): iam.PolicyStatement {
+    const key = keyFor(template);
+    if (!(key in this.statements)) {
+      this.statements[key] = new iam.PolicyStatement().addActions(...template.actions);
+      if (template.conditions) {
+        this.statements[key].addConditions(template.conditions);
       }
-      this.role.addToPolicy(this.statements[props.id]);
+      this.role.addToPolicy(this.statements[key]);
     }
-    return this.statements[props.id];
+    return this.statements[key];
+
+    function keyFor(props: StatementTemplate): string {
+      const actions = `${props.actions.sort().join('\x1F')}`;
+      const conditions = formatConditions(props.conditions);
+      return `${actions}\x1D${conditions}`;
+
+      function formatConditions(cond?: StatementCondition): string {
+        if (cond == null) { return ''; }
+        let result = '';
+        for (const op of Object.keys(cond).sort()) {
+          result += `${op}\x1E`;
+          const condition = cond[op];
+          for (const attribute of Object.keys(condition).sort()) {
+            const value = condition[attribute];
+            result += `${value}\x1F`;
+          }
+        }
+        return result;
+      }
+    }
   }
 }
 
 interface StatementTemplate {
-  id: string;
   actions: string[];
-  conditions?: { [op: string]: { [attribute: string]: any } }
+  conditions?: StatementCondition;
 }
+
+type StatementCondition = { [op: string]: { [attribute: string]: string } };
