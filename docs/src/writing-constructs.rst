@@ -43,7 +43,7 @@ General Design Priciples
   **dnsSupport**, only throw an error if the user has *explicitly* disabled DNS
   Support, but tried to enable DNS Hostnames. A user expects things to just
   work. If their intention is clear, we should do the right thing.
-* Make the user think about ntent, not implementation detail; for example,
+* Make the user think about intent, not implementation detail; for example,
   if establishing an association between two resources (such as a **Topic**
   and a **Queue**) requires multiple steps (in this case, creating a
   **Subscription** but also setting appropriate IAM permissions), make
