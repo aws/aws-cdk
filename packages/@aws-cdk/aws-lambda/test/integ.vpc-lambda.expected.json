@@ -309,16 +309,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -355,10 +355,8 @@
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Talk to everyone",
-            "FromPort": 0,
-            "IpProtocol": "tcp",
-            "ToPort": 65535
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "SecurityGroupIngress": [],

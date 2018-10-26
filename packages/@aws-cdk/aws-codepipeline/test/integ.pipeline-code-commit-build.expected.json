@@ -15,16 +15,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -32,18 +32,17 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -68,14 +67,14 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "codecommit:CancelUploadArchive",
                 "codecommit:GetBranch",
                 "codecommit:GetCommit",
+                "codecommit:UploadArchive",
                 "codecommit:GetUploadArchiveStatus",
-                "codecommit:UploadArchive"
+                "codecommit:CancelUploadArchive"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyRepoF4F48043",
@@ -84,12 +83,26 @@
               }
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "codebuild:BatchGetBuilds",
                 "codebuild:StartBuild",
                 "codebuild:StopBuild"
               ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyBuildProject30DB9D6E",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild",
+                "codebuild:StopBuild"
+              ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "MyBuildProject30DB9D6E",
@@ -97,7 +110,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
@@ -180,6 +194,27 @@
                   }
                 ],
                 "RunOrder": 1
+              },
+              {
+                "ActionTypeId": {
+                  "Category": "Test",
+                  "Owner": "AWS",
+                  "Provider": "CodeBuild",
+                  "Version": "1"
+                },
+                "Configuration": {
+                  "ProjectName": {
+                    "Ref": "MyBuildProject30DB9D6E"
+                  }
+                },
+                "InputArtifacts": [
+                  {
+                    "Name": "SourceArtifact"
+                  }
+                ],
+                "Name": "test",
+                "OutputArtifacts": [],
+                "RunOrder": 1
               }
             ],
             "Name": "build"
@@ -195,16 +230,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -212,15 +247,14 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
@@ -238,17 +272,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyBuildProject30DB9D6E"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyBuildProject30DB9D6E"
                       }
                     ]
                   ]
@@ -280,15 +306,45 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
@@ -312,7 +368,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyBuildProjectRoleDefaultPolicy5604AA87",
         "Roles": [

@@ -1,14 +1,24 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './applicationautoscaling.generated';
-import { BaseScalingPolicy, BaseScalingPolicyProps } from "./base-scaling-policy";
+import { findAlarmThresholds, normalizeIntervals } from './interval-utils';
+import { ScalableTarget } from './scalable-target';
+import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
-/**
- * Properties for a scaling policy
- */
-export interface StepScalingPolicyProps extends BaseScalingPolicyProps {
+export interface BasicStepScalingPolicyProps {
   /**
-   * How the adjustment numbers are interpreted
+   * Metric to scale on.
+   */
+  metric: cloudwatch.Metric;
+
+  /**
+   * The intervals for scaling.
+   *
+   * Maps a range of metric values to a particular scaling behavior.
+   */
+  scalingSteps: ScalingInterval[];
+
+  /**
+   * How the adjustment numbers inside 'intervals' are interpreted.
    *
    * @default ChangeInCapacity
    */
@@ -17,16 +27,15 @@ export interface StepScalingPolicyProps extends BaseScalingPolicyProps {
   /**
    * Grace period after scaling activity.
    *
-   * For scale out policies, multiple scale outs during the cooldown period are
-   * squashed so that only the biggest scale out happens.
+   * Subsequent scale outs during the cooldown period are squashed so that only
+   * the biggest scale out happens.
    *
-   * For scale in policies, subsequent scale ins during the cooldown period are
-   * ignored.
+   * Subsequent scale ins during the cooldown period are ignored.
    *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
    * @default No cooldown period
    */
-  cooldownSeconds?: number;
+  cooldownSec?: number;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -37,94 +46,118 @@ export interface StepScalingPolicyProps extends BaseScalingPolicyProps {
    * @default No minimum scaling effect
    */
   minAdjustmentMagnitude?: number;
+}
 
+export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
-   * The aggregation type for the CloudWatch metrics.
-   *
-   * @default Average
+   * The scaling target
    */
-  metricAggregationType?: MetricAggregationType;
+  scalingTarget: ScalableTarget;
 }
 
 /**
- * Define a step scaling policy
+ * Define a acaling strategy which scales depending on absolute values of some metric.
  *
- * This kind of scaling policy adjusts the target capacity in configurable
- * steps. The size of the step is configurable based on the metric's distance
- * to its alarm threshold.
+ * You can specify the scaling behavior for various values of the metric.
+ *
+ * Implemented using one or more CloudWatch alarms and Step Scaling Policies.
  */
-export class StepScalingPolicy extends BaseScalingPolicy implements cloudwatch.IAlarmAction {
-  public readonly alarmActionArn: string;
-  private readonly adjustments = new Array<cloudformation.ScalingPolicyResource.StepAdjustmentProperty>();
+export class StepScalingPolicy extends cdk.Construct {
+  public readonly lowerAlarm?: cloudwatch.Alarm;
+  public readonly lowerAction?: StepScalingAction;
+  public readonly upperAlarm?: cloudwatch.Alarm;
+  public readonly upperAction?: StepScalingAction;
 
   constructor(parent: cdk.Construct, id: string, props: StepScalingPolicyProps) {
-    super(parent, id, props, {
-      policyType: 'StepScaling',
-      stepScalingPolicyConfiguration: {
+    super(parent, id);
+
+    if (props.scalingSteps.length < 2) {
+      throw new Error('You must supply at least 2 intervals for autoscaling');
+    }
+
+    const adjustmentType = props.adjustmentType || AdjustmentType.ChangeInCapacity;
+    const changesAreAbsolute = adjustmentType === AdjustmentType.ExactCapacity;
+
+    const intervals = normalizeIntervals(props.scalingSteps, changesAreAbsolute);
+    const alarms = findAlarmThresholds(intervals);
+
+    if (alarms.lowerAlarmIntervalIndex) {
+      const threshold = intervals[alarms.lowerAlarmIntervalIndex].upper;
+
+      this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldown: props.cooldownSeconds,
+        cooldownSec: props.cooldownSec,
+        metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
-        metricAggregationType: props.metricAggregationType,
-        stepAdjustments: new cdk.Token(() => this.adjustments),
-      } as cloudformation.ScalingPolicyResource.StepScalingPolicyConfigurationProperty
-    });
-    this.alarmActionArn = this.scalingPolicyArn;
+        scalingTarget: props.scalingTarget,
+      });
+
+      for (let i = alarms.lowerAlarmIntervalIndex; i >= 0; i--) {
+        this.lowerAction.addAdjustment({
+          adjustment: intervals[i].change!,
+          lowerBound: i !== 0 ? intervals[i].lower - threshold : undefined, // Extend last interval to -infinity
+          upperBound: intervals[i].upper - threshold,
+        });
+      }
+
+      this.lowerAlarm = new cloudwatch.Alarm(this, 'LowerAlarm', {
+        // Recommended by AutoScaling
+        metric: props.metric.with({ periodSec: 60 }),
+        alarmDescription: 'Lower threshold scaling alarm',
+        comparisonOperator: cloudwatch.ComparisonOperator.LessThanThreshold,
+        evaluationPeriods: 1,
+        threshold,
+      });
+      this.lowerAlarm.onAlarm(this.lowerAction);
+    }
+
+    if (alarms.upperAlarmIntervalIndex) {
+      const threshold = intervals[alarms.upperAlarmIntervalIndex].lower;
+
+      this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
+        adjustmentType: props.adjustmentType,
+        cooldownSec: props.cooldownSec,
+        metricAggregationType: aggregationTypeFromMetric(props.metric),
+        minAdjustmentMagnitude: props.minAdjustmentMagnitude,
+        scalingTarget: props.scalingTarget,
+      });
+
+      for (let i = alarms.upperAlarmIntervalIndex; i < intervals.length; i++) {
+        this.upperAction.addAdjustment({
+          adjustment: intervals[i].change!,
+          lowerBound: intervals[i].lower - threshold,
+          upperBound: i !== intervals.length - 1 ? intervals[i].upper - threshold : undefined, // Extend last interval to +infinity
+        });
+      }
+
+      this.upperAlarm = new cloudwatch.Alarm(this, 'UpperAlarm', {
+        // Recommended by AutoScaling
+        metric: props.metric.with({ periodSec: 60 }),
+        alarmDescription: 'Upper threshold scaling alarm',
+        comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+        evaluationPeriods: 1,
+        threshold,
+      });
+      this.upperAlarm.onAlarm(this.upperAction);
+    }
   }
 }
 
-/**
- * How adjustment numbers are interpreted
- */
-export enum AdjustmentType {
-  /**
-   * Add the adjustment number to the current capacity.
-   *
-   * A positive number increases capacity, a negative number decreases capacity.
-   */
-  ChangeInCapacity = 'ChangeInCapacity',
-
-  /**
-   * Add this percentage of the current capacity to itself.
-   *
-   * The number must be between -100 and 100; a positive number increases
-   * capacity and a negative number decreases it.
-   */
-  PercentChangeInCapacity = 'PercentChangeInCapacity',
-
-  /**
-   * Make the capacity equal to the exact number given.
-   */
-  ExactCapacity = 'ExactCapacity',
+export interface ScalingInterval {
+  lower?: number;
+  upper?: number;
+  change: number;
 }
 
-/**
- * How the scaling metric is going to be aggregated
- */
-export enum MetricAggregationType {
-  /**
-   * Average
-   */
-  Average = 'Average',
-
-  /**
-   * Minimum
-   */
-  Minimum = 'Minimum',
-
-  /**
-   * Maximum
-   */
-  Maximum = 'Maximum'
-}
-
-export interface ITierRange {
-  scaleBy(adjustment: number): ITierMark;
-}
-
-export interface ITierMark {
-  at(threshold: number): ITierRange;
-
-  endAt0(): StepScalingPolicy;
-
-  endAtInfinity(): StepScalingPolicy;
+function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregationType {
+  switch (metric.statistic) {
+    case 'Average':
+      return MetricAggregationType.Average;
+    case 'Minimum':
+      return MetricAggregationType.Minimum;
+    case 'Maximum':
+      return MetricAggregationType.Maximum;
+    default:
+      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
+  }
 }

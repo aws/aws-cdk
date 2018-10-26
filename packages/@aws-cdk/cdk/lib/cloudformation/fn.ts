@@ -1,4 +1,4 @@
-import { unresolved } from '../core/tokens';
+import { resolve, Token, unresolved } from '../core/tokens';
 import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
 // tslint:disable:max-line-length
 
@@ -85,6 +85,8 @@ export class FnImportValue extends Fn {
 export class FnJoin extends Fn {
   private readonly delimiter: string;
   private readonly listOfValues: any[];
+  // Cache for the result of resolveValues() - since it otherwise would be computed several times
+  private _resolvedValues?: any[];
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -96,45 +98,53 @@ export class FnJoin extends Fn {
     if (listOfValues.length === 0) {
       throw new Error(`FnJoin requires at least one value to be provided`);
     }
-    /*
-     * Optimization: if an Fn::Join is nested in another one (either as an instance of the FnJoin class, or as a JSON
-     * token), and they share the same delimiter, then flatten it up. Also, if two concatenated elements are literal
-     * strings (not tokens), then pre-concatenate them with the delimiter, to generate shorter output.
-     */
+    // Passing the values as a token, optimization requires resolving stringified tokens, we should be deferred until
+    // this token is itself being resolved.
+    super('Fn::Join', [ delimiter, new Token(() => this.resolveValues()) ]);
+    this.delimiter = delimiter;
+    this.listOfValues = listOfValues;
+  }
+
+  public resolve(): any {
+    if (this.resolveValues().length === 1) {
+      return this.resolveValues()[0];
+    }
+    return super.resolve();
+  }
+
+  /**
+   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
+   * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
+   * generate shorter output.
+   */
+  private resolveValues() {
+    if (this._resolvedValues) { return this._resolvedValues; }
+
+    const resolvedValues = [...this.listOfValues.map(e => resolve(e))];
     let i = 0;
-    while (i < listOfValues.length) {
-      const el = listOfValues[i];
-      if (el instanceof FnJoin && el.delimiter === delimiter) {
-        listOfValues.splice(i, 1, ...el.listOfValues);
-      } else if (isFnJoinIntrinsicWithSameDelimiter(el)) {
-        listOfValues.splice(i, 1, ...el['Fn::Join'][1]);
-      } else if (i > 0 && isPlainString(listOfValues[i - 1]) && isPlainString(listOfValues[i])) {
-        listOfValues[i - 1] += delimiter + listOfValues[i];
-        listOfValues.splice(i, 1);
+    while (i < resolvedValues.length) {
+      const el = resolvedValues[i];
+      if (isFnJoinIntrinsicWithSameDelimiter.call(this, el)) {
+        resolvedValues.splice(i, 1, ...el['Fn::Join'][1]);
+      } else if (i > 0 && isPlainString(resolvedValues[i - 1]) && isPlainString(resolvedValues[i])) {
+        resolvedValues[i - 1] += this.delimiter + resolvedValues[i];
+        resolvedValues.splice(i, 1);
       } else {
         i += 1;
       }
     }
-    super('Fn::Join', [ delimiter, listOfValues ]);
-    this.delimiter = delimiter;
-    this.listOfValues = listOfValues;
 
-    function isFnJoinIntrinsicWithSameDelimiter(obj: any) {
+    return this._resolvedValues = resolvedValues;
+
+    function isFnJoinIntrinsicWithSameDelimiter(this: FnJoin, obj: any): boolean {
       return isIntrinsic(obj)
         && Object.keys(obj)[0] === 'Fn::Join'
-        && obj['Fn::Join'][0] === delimiter;
+        && obj['Fn::Join'][0] === this.delimiter;
     }
 
-    function isPlainString(obj: any) {
+    function isPlainString(obj: any): boolean {
       return typeof obj === 'string' && !unresolved(obj);
     }
-  }
-
-  public resolve(): any {
-    if (this.listOfValues.length === 1) {
-      return this.listOfValues[0];
-    }
-    return super.resolve();
   }
 }
 

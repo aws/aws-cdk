@@ -314,8 +314,8 @@ export = {
         "Statement": [
         {
           "Action": [
-            "codepipeline:PutJobFailureResult",
-            "codepipeline:PutJobSuccessResult",
+          "codepipeline:PutJobSuccessResult",
+          "codepipeline:PutJobFailureResult"
           ],
           "Effect": "Allow",
           "Resource": "*"

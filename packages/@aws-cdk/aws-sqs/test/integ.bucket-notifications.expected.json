@@ -54,20 +54,9 @@
       "Type": "AWS::SQS::QueuePolicy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sqs:SendMessage",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "MyQueueE6CA6235",
-                  "Arn"
-                ]
-              },
-              "Principal": {
-                "Service": "s3.amazonaws.com"
-              },
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -77,20 +66,20 @@
                     ]
                   }
                 }
-              }
-            },
-            {
+              },
               "Effect": "Allow",
-              "Action": "sqs:SendMessage",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
               "Resource": {
                 "Fn::GetAtt": [
                   "MyQueueE6CA6235",
                   "Arn"
                 ]
-              },
-              "Principal": {
-                "Service": "s3.amazonaws.com"
-              },
+              }
+            },
+            {
+              "Action": "sqs:SendMessage",
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -100,9 +89,20 @@
                     ]
                   }
                 }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyQueueE6CA6235",
+                  "Arn"
+                ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Queues": [
           {
@@ -115,16 +115,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -139,20 +139,26 @@
               ]
             ]
           }
-        ],
-        "Policies": [
+        ]
+      }
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": [
           {
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": "s3:PutBucketNotification",
-                  "Resource": "*"
-                }
-              ]
-            },
-            "PolicyName": "allowPutBucketNotification"
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
           }
         ]
       }
@@ -224,25 +230,23 @@
       "Type": "AWS::KMS::Key",
       "Properties": {
         "KeyPolicy": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "kms:CancelKeyDeletion",
                 "kms:Create*",
-                "kms:Delete*",
                 "kms:Describe*",
-                "kms:Disable*",
                 "kms:Enable*",
-                "kms:Get*",
                 "kms:List*",
                 "kms:Put*",
+                "kms:Update*",
                 "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:Update*"
+                "kms:CancelKeyDeletion"
               ],
-              "Resource": "*",
+              "Effect": "Allow",
               "Principal": {
                 "AWS": {
                   "Fn::Join": [
@@ -260,20 +264,22 @@
                     ]
                   ]
                 }
-              }
+              },
+              "Resource": "*"
             },
             {
-              "Effect": "Allow",
               "Action": [
-                "kms:Decrypt",
-                "kms:GenerateDataKey"
+                "kms:GenerateDataKey",
+                "kms:Decrypt"
               ],
-              "Resource": "*",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "s3.amazonaws.com"
-              }
+              },
+              "Resource": "*"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Description": "Created by sqs-bucket-notifications/EncryptedQueue"
       },
@@ -294,20 +300,9 @@
       "Type": "AWS::SQS::QueuePolicy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sqs:SendMessage",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "EncryptedQueue0428C61A",
-                  "Arn"
-                ]
-              },
-              "Principal": {
-                "Service": "s3.amazonaws.com"
-              },
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -317,9 +312,20 @@
                     ]
                   }
                 }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "EncryptedQueue0428C61A",
+                  "Arn"
+                ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "Queues": [
           {

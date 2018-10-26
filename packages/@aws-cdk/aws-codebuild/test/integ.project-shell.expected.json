@@ -14,16 +14,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codebuild.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -31,15 +31,14 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
@@ -60,55 +59,41 @@
                   "Fn::Join": [
                     "",
                     [
+                      "arn:",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":s3:::",
-                            {
-                              "Ref": "BundleS3Bucket0EFC11B0"
-                            }
-                          ]
-                        ]
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "BundleS3Bucket0EFC11B0"
                       },
                       "/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "BundleS3VersionKey720F2199"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            "*"
-                          ]
+                        "Fn::Select": [
+                          0,
+                          {
+                            "Fn::Split": [
+                              "||",
+                              {
+                                "Ref": "BundleS3VersionKey720F2199"
+                              }
+                            ]
+                          }
                         ]
-                      }
+                      },
+                      "*"
                     ]
                   ]
                 }
               ]
             },
             {
-              "Effect": "Allow",
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::Join": [
@@ -126,17 +111,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":log-group:",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "MyProject39F7B0AE"
-                            }
-                          ]
-                        ]
+                        "Ref": "MyProject39F7B0AE"
                       }
                     ]
                   ]
@@ -167,7 +144,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
         "Roles": [

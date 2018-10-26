@@ -57,18 +57,6 @@
         }
       }
     },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -93,6 +81,18 @@
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet1"
           }
         ]
+      }
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
@@ -137,18 +137,6 @@
         }
       }
     },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -173,6 +161,18 @@
             "Value": "aws-cdk-elbv2-integ/VPC/PublicSubnet2"
           }
         ]
+      }
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -333,7 +333,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "Automatically created Security Group for ELB awscdkelbv2integLB9950B1E4",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp":"255.255.255.255/32",
+            "Description":"Disallow all traffic",
+            "FromPort":252,
+            "IpProtocol":"icmp",
+            "ToPort":86
+          }
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",

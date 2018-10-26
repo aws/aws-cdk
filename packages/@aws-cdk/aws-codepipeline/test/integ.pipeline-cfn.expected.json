@@ -8,16 +8,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -25,28 +25,21 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
                     "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineBucketB967BD35",
                     "Arn"
                   ]
                 },
@@ -62,6 +55,22 @@
                       },
                       "/*"
                     ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
                   ]
                 },
                 {
@@ -81,8 +90,8 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": "iam:PassRole",
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "CfnChangeSetRole6F05F6FC",
@@ -91,13 +100,8 @@
               }
             },
             {
+              "Action": "cloudformation:DescribeStacks",
               "Effect": "Allow",
-              "Action": [
-                "cloudformation:CreateChangeSet",
-                "cloudformation:DeleteChangeSet",
-                "cloudformation:DescribeChangeSet",
-                "cloudformation:DescribeStacks"
-              ],
               "Resource": {
                 "Fn::Join": [
                   "",
@@ -117,14 +121,43 @@
                     ":stack/IntegTest-TestActionStack/*"
                   ]
                 ]
-              },
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet"
+              ],
               "Condition": {
-                "StringEqualsIfExists": {
+                "StringEquals": {
                   "cloudformation:ChangeSetName": "ChangeSetIntegTest"
                 }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":stack/IntegTest-TestActionStack/*"
+                  ]
+                ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
@@ -230,16 +263,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "cloudformation.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     }

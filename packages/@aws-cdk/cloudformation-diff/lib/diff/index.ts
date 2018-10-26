@@ -27,25 +27,22 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
 }
 
 export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  let resourceType: string | { oldType: string, newType: string } =
-    ((oldValue && oldValue.Type) || (newValue && newValue.Type)) as string;
+  const resourceType =  {
+    oldType: oldValue && oldValue.Type,
+    newType: newValue && newValue.Type
+  };
   let propertyChanges: { [key: string]: types.PropertyDifference<any> } = {};
   let otherChanges: { [key: string]: types.Difference<any> } = {};
 
-  if (oldValue && newValue) {
-    const oldType = oldValue.Type as string;
-    const newType = newValue.Type as string;
-    if (oldType !== newType) {
-      resourceType = { oldType, newType };
-    } else {
-      const typeSpec = cfnspec.filteredSpecification(oldType);
-      const impl = typeSpec.ResourceTypes[oldType];
-      propertyChanges = diffKeyedEntities(oldValue.Properties,
-                        newValue.Properties,
-                        (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
-      otherChanges = diffKeyedEntities(oldValue, newValue, _diffOther);
-      delete otherChanges.Properties;
-    }
+  if (resourceType.oldType === resourceType.newType) {
+    // Only makes sense to inspect deeper if the types stayed the same
+    const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
+    const impl = typeSpec.ResourceTypes[resourceType.oldType];
+    propertyChanges = diffKeyedEntities(oldValue.Properties,
+                      newValue.Properties,
+                      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+    otherChanges = diffKeyedEntities(oldValue, newValue, _diffOther);
+    delete otherChanges.Properties;
   }
 
   return new types.ResourceDifference(oldValue, newValue, { resourceType, propertyChanges, otherChanges });

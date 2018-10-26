@@ -406,29 +406,29 @@ export = {
             "Type": "AWS::SQS::QueuePolicy",
             "Properties": {
               "PolicyDocument": {
-                "Version": "2012-10-17",
                 "Statement": [
                   {
-                    "Effect": "Allow",
                     "Action": "sqs:SendMessage",
-                    "Resource": {
-                      "Fn::GetAtt": [
-                        "MyQueueE6CA6235",
-                        "Arn"
-                      ]
-                    },
-                    "Principal": {
-                      "Service": "sns.amazonaws.com"
-                    },
                     "Condition": {
                       "ArnEquals": {
                         "aws:SourceArn": {
                           "Ref": "MyTopic86869434"
                         }
                       }
+                    },
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "sns.amazonaws.com"
+                    },
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "MyQueueE6CA6235",
+                        "Arn"
+                      ]
                     }
                   }
-                ]
+                ],
+                "Version": "2012-10-17"
               },
               "Queues": [
                 {
@@ -441,16 +441,16 @@ export = {
             "Type": "AWS::IAM::Role",
             "Properties": {
               "AssumeRolePolicyDocument": {
-                "Version": "2012-10-17",
                 "Statement": [
                   {
-                    "Effect": "Allow",
                     "Action": "sts:AssumeRole",
+                    "Effect": "Allow",
                     "Principal": {
                       "Service": "lambda.amazonaws.com"
                     }
                   }
-                ]
+                ],
+                "Version": "2012-10-17"
               },
               "ManagedPolicyArns": [
                 {

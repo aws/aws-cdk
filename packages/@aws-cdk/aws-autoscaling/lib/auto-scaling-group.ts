@@ -179,15 +179,14 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
   constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
     super(parent, name);
 
-    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', { vpc: props.vpc });
+    this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+      vpc: props.vpc,
+      allowAllOutbound: props.allowAllOutbound !== false
+    });
     this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
     this.securityGroups.push(this.securityGroup);
     this.tags = new TagManager(this, {initialTags: props.tags});
     this.tags.setTag(NAME_TAG, this.path, { overwrite: false });
-
-    if (props.allowAllOutbound !== false) {
-      this.connections.allowTo(new ec2.AnyIPv4(), new ec2.AllConnections(), 'Outbound traffic allowed by default');
-    }
 
     this.role = new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')

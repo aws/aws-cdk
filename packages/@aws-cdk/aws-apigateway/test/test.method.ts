@@ -142,7 +142,8 @@ export = {
         ":",
         { Ref: "testapiD6451F70" },
         "/",
-        { "Fn::Join": [ "", [ { Ref: "testapiDeploymentStageprod5C9E92A4" }, "/POST/" ] ] }
+        { Ref: "testapiDeploymentStageprod5C9E92A4" },
+        "/POST/"
         ]
       ]
     });

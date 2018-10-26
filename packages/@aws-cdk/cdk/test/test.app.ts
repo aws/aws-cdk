@@ -69,7 +69,9 @@ export = {
     response.stacks.forEach(s => delete s.metadata);
     delete response.runtime;
 
-    test.deepEqual(response, { stacks:
+    test.deepEqual(response, {
+      version: '0.14.0',
+      stacks:
       [ { name: 'stack1',
           environment:
            { name: '12345/us-east-1',
@@ -220,16 +222,23 @@ export = {
         super(parent, name, props);
 
         this.reportMissingContext('missing-context-key', {
-          provider: 'ctx-provider',
-          args: [ 'arg1', 'arg2' ],
-          scope: [ 'scope1', 'scope2' ]
-        });
+          provider: 'fake',
+          props: {
+            account: '12345689012',
+            region: 'ab-north-1',
+          },
+        },
+        );
 
         this.reportMissingContext('missing-context-key-2', {
-          provider: 'ctx-provider',
-          args: [ 'arg1', 'arg2' ],
-          scope: [ 'scope1', 'scope2' ]
-        });
+          provider: 'fake2',
+          props: {
+            foo: 'bar',
+            account: '12345689012',
+            region: 'ab-south-1',
+          },
+        },
+        );
       }
     }
 
@@ -239,27 +248,20 @@ export = {
 
     test.deepEqual(response.stacks[0].missing, {
       "missing-context-key": {
-      provider: "ctx-provider",
-      args: [
-        "arg1",
-        "arg2"
-      ],
-      scope: [
-        "scope1",
-        "scope2"
-      ]
+        provider: 'fake',
+        props: {
+          account: '12345689012',
+          region: 'ab-north-1',
+        },
       },
       "missing-context-key-2": {
-      provider: "ctx-provider",
-      args: [
-        "arg1",
-        "arg2"
-      ],
-      scope: [
-        "scope1",
-        "scope2"
-      ]
-      }
+        provider: 'fake2',
+        props: {
+          account: '12345689012',
+          region: 'ab-south-1',
+          foo: 'bar',
+        },
+      },
     });
 
     test.done();

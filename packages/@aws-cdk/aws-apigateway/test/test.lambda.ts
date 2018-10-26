@@ -26,33 +26,25 @@ export = {
         Type: "AWS_PROXY",
         Uri: {
           "Fn::Join": [
-          "",
-          [
-            "arn:",
-            {
-            Ref: "AWS::Partition"
-            },
-            ":apigateway:",
-            {
-            Ref: "AWS::Region"
-            },
-            ":lambda:path/",
-            {
-            "Fn::Join": [
-              "",
-              [
-              "2015-03-31/functions/",
+            "",
+            [
+              "arn:",
+              {
+              Ref: "AWS::Partition"
+              },
+              ":apigateway:",
+              {
+              Ref: "AWS::Region"
+              },
+              ":lambda:path/2015-03-31/functions/",
               {
                 "Fn::GetAtt": [
-                "Handler886CB40B",
-                "Arn"
+                  "Handler886CB40B",
+                  "Arn"
                 ]
               },
               "/invocations"
-              ]
             ]
-            }
-          ]
           ]
         }
       }
@@ -81,8 +73,8 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn:", { Ref: "AWS::Partition" }, ":execute-api:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":",
-          { Ref: "apiC8550315" }, "/", { "Fn::Join": [ "", [ { Ref: "apiDeploymentStageprod896C8101" }, "/GET/" ] ] }
+            "arn:", { Ref: "AWS::Partition" }, ":execute-api:", { Ref: "AWS::Region" }, ":", { Ref: "AWS::AccountId" }, ":",
+            { Ref: "apiC8550315" }, "/", { Ref: "apiDeploymentStageprod896C8101" }, "/GET/"
           ]
         ]
       }
@@ -173,34 +165,25 @@ export = {
         "Fn::Join": [
           "",
           [
-          "arn:",
-          {
-            Ref: "AWS::Partition"
-          },
-          ":execute-api:",
-          {
-            Ref: "AWS::Region"
-          },
-          ":",
-          {
-            Ref: "AWS::AccountId"
-          },
-          ":",
-          {
-            Ref: "testapiD6451F70"
-          },
-          "/",
-          {
-            "Fn::Join": [
-            "",
-            [
-              {
-              Ref: "testapiDeploymentStageprod5C9E92A4"
-              },
-              "/*/"
-            ]
-            ]
-          }
+            "arn:",
+            {
+              Ref: "AWS::Partition"
+            },
+            ":execute-api:",
+            {
+              Ref: "AWS::Region"
+            },
+            ":",
+            {
+              Ref: "AWS::AccountId"
+            },
+            ":",
+            {
+              Ref: "testapiD6451F70"
+            },
+            "/",
+            { Ref: "testapiDeploymentStageprod5C9E92A4" },
+            "/*/"
           ]
         ]
       }

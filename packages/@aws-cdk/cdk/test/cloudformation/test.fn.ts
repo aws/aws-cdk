@@ -2,6 +2,7 @@ import fc = require('fast-check');
 import _ = require('lodash');
 import nodeunit = require('nodeunit');
 import fn = require('../../lib/cloudformation/fn');
+import { resolve } from '../../lib/core/tokens';
 
 function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.Test) => void {
   return async (test: nodeunit.Test) => {
@@ -19,6 +20,10 @@ function asyncTest(cb: (test: nodeunit.Test) => Promise<void>): (test: nodeunit.
   };
 }
 
+const nonEmptyString = fc.string(1, 16);
+const tokenish = fc.array(nonEmptyString, 2, 2).map(arr => ({ [arr[0]]: arr[1] }));
+const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
+
 export = nodeunit.testCase({
   FnJoin: {
     'rejects empty list of arguments to join'(test: nodeunit.Test) {
@@ -28,8 +33,8 @@ export = nodeunit.testCase({
     'resolves to the value if only one value is joined': asyncTest(async () => {
       await fc.assert(
         fc.property(
-          fc.string(), fc.oneof(fc.string(), fc.object()),
-          (delimiter, value) => new fn.FnJoin(delimiter, [value]).resolve() === value
+          fc.string(), anyValue,
+          (delimiter, value) => _.isEqual(resolve(new fn.FnJoin(delimiter, [value])), value)
         ),
         { verbose: true }
       );
@@ -37,8 +42,8 @@ export = nodeunit.testCase({
     'pre-concatenates string literals': asyncTest(async () => {
       await fc.assert(
         fc.property(
-          fc.string(), fc.array(fc.string(), 1, 15),
-          (delimiter, values) => new fn.FnJoin(delimiter, values).resolve() === values.join(delimiter)
+          fc.string(), fc.array(nonEmptyString, 1, 15),
+          (delimiter, values) => resolve(new fn.FnJoin(delimiter, values)) === values.join(delimiter)
         ),
         { verbose: true }
       );
@@ -46,23 +51,24 @@ export = nodeunit.testCase({
     'pre-concatenates around tokens': asyncTest(async () => {
       await fc.assert(
         fc.property(
-          fc.string(), fc.array(fc.string(), 1, 3), fc.object(), fc.array(fc.string(), 1, 3),
+          fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
           (delimiter, prefix, obj, suffix) =>
-            _.isEqual(new fn.FnJoin(delimiter, [...prefix, obj, ...suffix]).resolve(),
+            _.isEqual(resolve(new fn.FnJoin(delimiter, [...prefix, obj, ...suffix])),
                       { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] })
         ),
-        { verbose: true }
+        { verbose: true, seed: 1539874645005, path: "0:0:0:0:0:0:0:0:0" }
       );
     }),
     'flattens joins nested under joins with same delimiter': asyncTest(async () => {
       await fc.assert(
         fc.property(
-          fc.string(), fc.array(fc.oneof(fc.string(), fc.object())),
-                      fc.array(fc.oneof(fc.string(), fc.object()), 1, 3),
-                      fc.array(fc.oneof(fc.string(), fc.object())),
+          fc.string(), fc.array(anyValue),
+                      fc.array(anyValue, 1, 3),
+                      fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
-            _.isEqual(new fn.FnJoin(delimiter, [...prefix, new fn.FnJoin(delimiter, nested), ...suffix]).resolve(),
-                      new fn.FnJoin(delimiter, [...prefix, ...nested, ...suffix]).resolve())
+            // Gonna test
+            _.isEqual(resolve(new fn.FnJoin(delimiter, [...prefix, new fn.FnJoin(delimiter, nested), ...suffix])),
+                      resolve(new fn.FnJoin(delimiter, [...prefix, ...nested, ...suffix])))
         ),
         { verbose: true }
       );
@@ -71,16 +77,16 @@ export = nodeunit.testCase({
       await fc.assert(
         fc.property(
           fc.string(), fc.string(),
-          fc.array(fc.oneof(fc.string(), fc.object()), 1, 3),
-          fc.array(fc.object(), 2, 3),
-          fc.array(fc.oneof(fc.string(), fc.object()), 3),
+          fc.array(anyValue, 1, 3),
+          fc.array(tokenish, 2, 3),
+          fc.array(anyValue, 3),
           (delimiter1, delimiter2, prefix, nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
             const join = new fn.FnJoin(delimiter1, [...prefix, new fn.FnJoin(delimiter2, nested), ...suffix]);
-            const resolved = join.resolve();
+            const resolved = resolve(join);
             return resolved['Fn::Join'][1].find((e: any) => typeof e === 'object'
-                                                        && (e instanceof fn.FnJoin)
-                                                        && e.resolve()['Fn::Join'][0] === delimiter2) != null;
+                                                        && ('Fn::Join' in e)
+                                                        && e['Fn::Join'][0] === delimiter2) != null;
           }
         ),
         { verbose: true }

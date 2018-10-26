@@ -59,18 +59,9 @@
           }
         ],
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
-              "Sid": "sid0",
               "Action": "sns:Publish",
-              "Resource": {
-                "Ref": "TopicBFC7AF6E"
-              },
-              "Principal": {
-                "Service": "s3.amazonaws.com"
-              },
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -80,9 +71,18 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "Sid": "sid0"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -98,18 +98,9 @@
           }
         ],
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
-              "Sid": "sid0",
               "Action": "sns:Publish",
-              "Resource": {
-                "Ref": "Topic3DEAE47A7"
-              },
-              "Principal": {
-                "Service": "s3.amazonaws.com"
-              },
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -119,18 +110,18 @@
                     ]
                   }
                 }
-              }
-            },
-            {
-              "Effect": "Allow",
-              "Sid": "sid1",
-              "Action": "sns:Publish",
-              "Resource": {
-                "Ref": "Topic3DEAE47A7"
               },
+              "Effect": "Allow",
               "Principal": {
                 "Service": "s3.amazonaws.com"
               },
+              "Resource": {
+                "Ref": "Topic3DEAE47A7"
+              },
+              "Sid": "sid0"
+            },
+            {
+              "Action": "sns:Publish",
               "Condition": {
                 "ArnLike": {
                   "aws:SourceArn": {
@@ -140,9 +131,18 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "s3.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "Topic3DEAE47A7"
+              },
+              "Sid": "sid1"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -150,16 +150,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -174,20 +174,26 @@
               ]
             ]
           }
-        ],
-        "Policies": [
+        ]
+      }
+    },
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:PutBucketNotification",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+        "Roles": [
           {
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": "s3:PutBucketNotification",
-                  "Resource": "*"
-                }
-              ]
-            },
-            "PolicyName": "allowPutBucketNotification"
+            "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
           }
         ]
       }

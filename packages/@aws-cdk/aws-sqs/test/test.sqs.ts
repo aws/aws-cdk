@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
+import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import { resolve, Stack } from '@aws-cdk/cdk';
@@ -111,6 +111,94 @@ export = {
     test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'QueueQueueUrlC30FF916' } });
 
     test.done();
+  },
+
+  'iam': {
+    'grants permission to consume messages'(test: Test) {
+      const stack = new Stack();
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+      const queue = new sqs.Queue(stack, 'Queue');
+      queue.grantConsumeMessages(role);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:DeleteMessage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt":
+                  [
+                    "Queue4A7E3555",
+                    "Arn"
+                  ]
+              }
+            }
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'grants permission to receive messages'(test: Test) {
+      const stack = new Stack();
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+      const queue = new sqs.Queue(stack, 'Queue');
+      queue.grantReceiveMessages(role);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:ReceiveMessage",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt":
+                  [
+                    "Queue4A7E3555",
+                    "Arn"
+                  ]
+              }
+            }
+          ]
+        }
+      }));
+
+      test.done();
+    },
+
+    'grants permission to send messages'(test: Test) {
+      const stack = new Stack();
+      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
+      const queue = new sqs.Queue(stack, 'Queue');
+      queue.grantSendMessages(role);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt":
+                  [
+                    "Queue4A7E3555",
+                    "Arn"
+                  ]
+              }
+            }
+          ]
+        }
+      }));
+
+      test.done();
+    }
+
   },
 
   'queue encryption': {
@@ -348,18 +436,18 @@ export = {
         "Statement": [
           {
           "Action": [
-            "kms:CancelKeyDeletion",
             "kms:Create*",
-            "kms:Delete*",
             "kms:Describe*",
-            "kms:Disable*",
             "kms:Enable*",
-            "kms:Get*",
             "kms:List*",
             "kms:Put*",
-            "kms:Revoke*",
-            "kms:ScheduleKeyDeletion",
             "kms:Update*",
+            "kms:Revoke*",
+            "kms:Disable*",
+            "kms:Get*",
+            "kms:Delete*",
+            "kms:ScheduleKeyDeletion",
+            "kms:CancelKeyDeletion"
           ],
           "Effect": "Allow",
           "Principal": {
@@ -384,8 +472,8 @@ export = {
           },
           {
           "Action": [
-            "kms:Decrypt",
             "kms:GenerateDataKey",
+            "kms:Decrypt"
           ],
           "Effect": "Allow",
           "Principal": {

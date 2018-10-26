@@ -1,6 +1,8 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './applicationautoscaling.generated';
+import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
+import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 
 /**
  * Properties for a scalable target
@@ -19,12 +21,9 @@ export interface ScalableTargetProps {
   /**
    * Role that allows Application Auto Scaling to modify your scalable target.
    *
-   * If not supplied, a service-linked role is used. Some resources require a
-   * concrete role.
-   *
-   * @default A service-linked role is used
+   * @default A role is automatically created
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * The resource identifier to associate with this scalable target.
@@ -56,13 +55,13 @@ export interface ScalableTargetProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_RegisterScalableTarget.html
    */
-  serviceNamespace: string;
+  serviceNamespace: ServiceNamespace;
 }
 
 /**
  * Define a scalable target
  */
-export class ScalableTarget extends cdk.Construct implements IScalableTarget {
+export class ScalableTarget extends cdk.Construct {
   /**
    * ID of the Scalable Target
    *
@@ -70,41 +69,59 @@ export class ScalableTarget extends cdk.Construct implements IScalableTarget {
    */
   public readonly scalableTargetId: string;
 
-  public readonly resourceId: string;
-  public readonly scalableDimension: string;
-  public readonly serviceNamespace: string;
+  /**
+   * The role used to give AutoScaling permissions to your resource
+   */
+  public readonly role: iam.IRole;
 
   private readonly actions = new Array<cloudformation.ScalableTargetResource.ScheduledActionProperty>();
 
   constructor(parent: cdk.Construct, id: string, props: ScalableTargetProps) {
     super(parent, id);
 
+    if (props.maxCapacity < 0) {
+      throw new RangeError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`);
+    }
+    if (props.minCapacity < 0) {
+      throw new RangeError(`minCapacity cannot be negative, got: ${props.minCapacity}`);
+    }
+    if (props.maxCapacity < props.minCapacity) {
+      throw new RangeError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`);
+    }
+
+    this.role = props.role || new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
+    });
+
     const resource = new cloudformation.ScalableTargetResource(this, 'Resource', {
       maxCapacity: props.maxCapacity,
       minCapacity: props.minCapacity,
       resourceId: props.resourceId,
-      // Schema says roleArn is required but docs say it's not. Override typechecking.
-      roleArn: (props.role && props.role.roleArn) as any,
+      roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
       scheduledActions: this.actions,
       serviceNamespace: props.serviceNamespace
     });
 
-    this.resourceId = props.resourceId;
-    this.scalableDimension = props.scalableDimension;
-    this.serviceNamespace = props.serviceNamespace;
     this.scalableTargetId = resource.scalableTargetId;
   }
 
   /**
-   * Schedule an action for this scalable target
+   * Add a policy statement to the role's policy
    */
-  public addScheduledAction(action: ScheduledAction) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.role.addToPolicy(statement);
+  }
+
+  /**
+   * Scale out or in based on time
+   */
+  public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new Error('You must supply at least one of minCapacity or maxCapacity');
+      throw new Error(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`);
     }
     this.actions.push({
-      scheduledActionName: action.name,
+      scheduledActionName: id,
       schedule: action.schedule,
       startTime: action.startTime,
       endTime: action.endTime,
@@ -114,14 +131,26 @@ export class ScalableTarget extends cdk.Construct implements IScalableTarget {
       },
     });
   }
+
+  /**
+   * Scale out or in, in response to a metric
+   */
+  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
+    return new StepScalingPolicy(this, id, { ...props, scalingTarget: this });
+  }
+
+  /**
+   * Scale out or in in order to keep a metric around a target value
+   */
+  public scaleToTrackMetric(id: string, props: BasicTargetTrackingScalingPolicyProps) {
+    return new TargetTrackingScalingPolicy(this, id, { ...props, scalingTarget: this });
+  }
 }
 
-export interface ScheduledAction {
-  /**
-   * A name for the scheduled action
-   */
-  name: string;
-
+/**
+ * A scheduled scaling action
+ */
+export interface ScalingSchedule {
   /**
    * When to perform this action.
    *
@@ -181,9 +210,47 @@ export interface ScheduledAction {
   maxCapacity?: number;
 }
 
-export interface IScalableTarget {
-  readonly scalableTargetId: string;
-  readonly resourceId: string;
-  readonly scalableDimension: string;
-  readonly serviceNamespace: string;
+/**
+ * The service that supports Application AutoScaling
+ */
+export enum ServiceNamespace {
+  /**
+   * Elastic Container Service
+   */
+  Ecs = 'ecs',
+
+  /**
+   * Elastic Map Reduce
+   */
+  ElasticMapReduce = 'elasticmapreduce',
+
+  /**
+   * Elastic Compute Cloud
+   */
+  Ec2 = 'ec2',
+
+  /**
+   * App Stream
+   */
+  AppStream = 'appstream',
+
+  /**
+   * Dynamo DB
+   */
+  DynamoDb = 'dynamodb',
+
+  /**
+   * Relational Database Service
+   */
+  Rds = 'rds',
+
+  /**
+   * SageMaker
+   */
+  SageMaker = 'sagemaker',
+
+  /**
+   * Custom Resource
+   */
+  CustomResource = 'custom-resource',
 }

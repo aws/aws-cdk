@@ -41,7 +41,7 @@ export = {
     },
 
     'undefined if cannot extract name from a non-string arn'(test: Test) {
-      const bucketArn = new cdk.FnConcat('arn:aws:s3:::', { Ref: 'BucketName' }).toString();
+      const bucketArn = new cdk.FnConcat('arn:aws:s3:::', { Ref: 'my-bucket' }).toString();
       test.deepEqual(cdk.resolve(parseBucketName({ bucketArn })), undefined);
       test.done();
     },

@@ -4,16 +4,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -80,16 +80,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "booksapiDeploymentStageprod55D8E03E"
-                    },
-                    "/GET/books"
-                  ]
-                ]
-              }
+                "Ref": "booksapiDeploymentStageprod55D8E03E"
+              },
+              "/GET/books"
             ]
           ]
         }
@@ -159,16 +152,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "booksapiDeploymentStageprod55D8E03E"
-                    },
-                    "/POST/books"
-                  ]
-                ]
-              }
+                "Ref": "booksapiDeploymentStageprod55D8E03E"
+              },
+              "/POST/books"
             ]
           ]
         }
@@ -212,16 +198,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -288,16 +274,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "booksapiDeploymentStageprod55D8E03E"
-                    },
-                    "/GET/books/{book_id}"
-                  ]
-                ]
-              }
+                "Ref": "booksapiDeploymentStageprod55D8E03E"
+              },
+              "/GET/books/{book_id}"
             ]
           ]
         }
@@ -367,16 +346,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "booksapiDeploymentStageprod55D8E03E"
-                    },
-                    "/DELETE/books/{book_id}"
-                  ]
-                ]
-              }
+                "Ref": "booksapiDeploymentStageprod55D8E03E"
+              },
+              "/DELETE/books/{book_id}"
             ]
           ]
         }
@@ -420,16 +392,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -496,16 +468,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "booksapiDeploymentStageprod55D8E03E"
-                    },
-                    "/*/"
-                  ]
-                ]
-              }
+                "Ref": "booksapiDeploymentStageprod55D8E03E"
+              },
+              "/*/"
             ]
           ]
         }
@@ -551,7 +516,7 @@
         "Name": "books-api"
       }
     },
-    "booksapiDeployment308B08F1f7b468f166aada3ba8cfaeb29858fe3b": {
+    "booksapiDeployment308B08F1c828b08824c062376eba921738884f85": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -576,7 +541,7 @@
           "Ref": "booksapiE1885304"
         },
         "DeploymentId": {
-          "Ref": "booksapiDeployment308B08F1f7b468f166aada3ba8cfaeb29858fe3b"
+          "Ref": "booksapiDeployment308B08F1c828b08824c062376eba921738884f85"
         },
         "StageName": "prod"
       }
@@ -585,16 +550,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "apigateway.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -655,22 +620,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "Hello4A628BD4",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "Hello4A628BD4",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -718,22 +675,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "BooksHandler3EB83358",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "BooksHandler3EB83358",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -766,22 +715,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "BooksHandler3EB83358",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "BooksHandler3EB83358",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -826,22 +767,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "BookHandlerF9638A7A",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "BookHandlerF9638A7A",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -874,22 +807,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "BookHandlerF9638A7A",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "BookHandlerF9638A7A",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }

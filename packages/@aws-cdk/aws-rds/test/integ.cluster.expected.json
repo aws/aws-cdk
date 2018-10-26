@@ -57,18 +57,6 @@
         }
       }
     },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -93,6 +81,18 @@
             "Value": "aws-cdk-rds-integ/VPC/PublicSubnet1"
           }
         ]
+      }
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
@@ -137,18 +137,6 @@
         }
       }
     },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
-      }
-    },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
@@ -173,6 +161,18 @@
             "Value": "aws-cdk-rds-integ/VPC/PublicSubnet2"
           }
         ]
+      }
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -319,25 +319,23 @@
       "Type": "AWS::KMS::Key",
       "Properties": {
         "KeyPolicy": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "kms:CancelKeyDeletion",
                 "kms:Create*",
-                "kms:Delete*",
                 "kms:Describe*",
-                "kms:Disable*",
                 "kms:Enable*",
-                "kms:Get*",
                 "kms:List*",
                 "kms:Put*",
+                "kms:Update*",
                 "kms:Revoke*",
+                "kms:Disable*",
+                "kms:Get*",
+                "kms:Delete*",
                 "kms:ScheduleKeyDeletion",
-                "kms:Update*"
+                "kms:CancelKeyDeletion"
               ],
-              "Resource": "*",
+              "Effect": "Allow",
               "Principal": {
                 "AWS": {
                   "Fn::Join": [
@@ -355,9 +353,11 @@
                     ]
                   ]
                 }
-              }
+              },
+              "Resource": "*"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       },
       "DeletionPolicy": "Retain"
@@ -380,7 +380,13 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "RDS security group",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp":"0.0.0.0/0",
+            "Description":"Allow all outbound traffic by default",
+            "IpProtocol":"-1"
+          }
+        ],
         "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "VPCB9E5F0B4"

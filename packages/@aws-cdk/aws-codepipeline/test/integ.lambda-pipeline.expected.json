@@ -8,16 +8,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "codepipeline.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -25,28 +25,21 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "s3:Abort*",
-                "s3:DeleteObject*",
-                "s3:GetBucket*",
                 "s3:GetObject*",
+                "s3:GetBucket*",
                 "s3:List*",
-                "s3:PutObject*"
+                "s3:DeleteObject*",
+                "s3:PutObject*",
+                "s3:Abort*"
               ],
+              "Effect": "Allow",
               "Resource": [
                 {
                   "Fn::GetAtt": [
                     "PipelineArtifactsBucket22248F97",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::GetAtt": [
-                    "PipelineBucketB967BD35",
                     "Arn"
                   ]
                 },
@@ -62,6 +55,22 @@
                       },
                       "/*"
                     ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineBucketB967BD35",
+                    "Arn"
                   ]
                 },
                 {
@@ -81,13 +90,13 @@
               ]
             },
             {
-              "Effect": "Allow",
               "Action": "lambda:ListFunctions",
+              "Effect": "Allow",
               "Resource": "*"
             },
             {
-              "Effect": "Allow",
               "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
                   "LambdaFun98622869",
@@ -95,7 +104,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
         "Roles": [
@@ -190,16 +200,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -221,17 +231,17 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
-                "codepipeline:PutJobFailureResult",
-                "codepipeline:PutJobSuccessResult"
+                "codepipeline:PutJobSuccessResult",
+                "codepipeline:PutJobFailureResult"
               ],
+              "Effect": "Allow",
               "Resource": "*"
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "LambdaFunServiceRoleDefaultPolicy217FED83",
         "Roles": [

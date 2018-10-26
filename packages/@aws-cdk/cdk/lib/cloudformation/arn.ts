@@ -33,7 +33,7 @@ export class ArnUtils {
       ? new AwsAccountId()
       : components.account;
 
-    const values = ['arn:', partition, ':', components.service, ':', region, ':', account, ':', components.resource];
+    const values = [ 'arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource ];
 
     const sep = components.sep || '/';
     if (sep !== '/' && sep !== ':') {

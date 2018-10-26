@@ -7,16 +7,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -38,15 +38,14 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": [
                 "ssm:DescribeParameters",
-                "ssm:GetParameter",
-                "ssm:GetParameters"
+                "ssm:GetParameters",
+                "ssm:GetParameter"
               ],
+              "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
                   "",
@@ -63,24 +62,17 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":parameter/",
+                    ":parameter//rtv/",
                     {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/rtv/",
-                          {
-                            "Ref": "AWS::StackName"
-                          },
-                          "/com.myorg/MyQueueURL"
-                        ]
-                      ]
-                    }
+                      "Ref": "AWS::StackName"
+                    },
+                    "/com.myorg/MyQueueURL"
                   ]
                 ]
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "PolicyName": "MyFunctionServiceRoleDefaultPolicyB705ABD4",
         "Roles": [

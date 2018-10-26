@@ -6,7 +6,7 @@
         "Name": "my-api"
       }
     },
-    "myapiDeployment92F2CB49b0e416d9836c2cb90a9e2244b6360281": {
+    "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -37,7 +37,7 @@
         "CacheClusterEnabled": true,
         "CacheClusterSize": "0.5",
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB49b0e416d9836c2cb90a9e2244b6360281"
+          "Ref": "myapiDeployment92F2CB498cbe233ce6b744150b3f2d80a9c3dd24"
         },
         "Description": "beta stage",
         "MethodSettings": [
@@ -60,16 +60,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "apigateway.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -154,22 +154,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -274,22 +266,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -322,22 +306,14 @@
                 {
                   "Ref": "AWS::Region"
                 },
-                ":lambda:path/",
+                ":lambda:path/2015-03-31/functions/",
                 {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "2015-03-31/functions/",
-                      {
-                        "Fn::GetAtt": [
-                          "MyHandler6B74D312",
-                          "Arn"
-                        ]
-                      },
-                      "/invocations"
-                    ]
+                  "Fn::GetAtt": [
+                    "MyHandler6B74D312",
+                    "Arn"
                   ]
-                }
+                },
+                "/invocations"
               ]
             ]
           }
@@ -348,16 +324,16 @@
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "lambda.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           {
@@ -424,16 +400,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/GET/v1/toys"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/GET/v1/toys"
             ]
           ]
         }
@@ -503,16 +472,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/GET/v1/books"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/GET/v1/books"
             ]
           ]
         }
@@ -582,16 +544,9 @@
               },
               "/",
               {
-                "Fn::Join": [
-                  "",
-                  [
-                    {
-                      "Ref": "myapiDeploymentStagebeta96434BEB"
-                    },
-                    "/POST/v1/books"
-                  ]
-                ]
-              }
+                "Ref": "myapiDeploymentStagebeta96434BEB"
+              },
+              "/POST/v1/books"
             ]
           ]
         }

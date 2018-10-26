@@ -57,7 +57,7 @@ export class RuntimeValue extends cdk.Construct {
     this.parameterName = `/rtv/${new cdk.AwsStackName()}/${props.package}/${name}`;
 
     new ssm.cloudformation.ParameterResource(this, 'Parameter', {
-      parameterName: this.parameterName,
+      name: this.parameterName,
       type: 'String',
       value: props.value,
     });
@@ -73,7 +73,7 @@ export class RuntimeValue extends cdk.Construct {
    * Grants a principal read permissions on this runtime value.
    * @param principal The principal (e.g. Role, User, Group)
    */
-  public grantRead(principal?: iam.IIdentityResource) {
+  public grantRead(principal?: iam.IPrincipal) {
 
     // sometimes "role" is optional, so we want `rtv.grantRead(role)` to be a no-op
     if (!principal) {

@@ -1,15 +1,14 @@
-import cdk = require('@aws-cdk/cdk');
-import { optimizeStatements } from './optimize-statements';
+import { AwsAccountId, AwsPartition, Token } from '@aws-cdk/cdk';
 
-export class PolicyDocument extends cdk.Token {
-  private readonly statements = new Array<PolicyStatement>();
+export class PolicyDocument extends Token {
+  private statements = new Array<PolicyStatement>();
 
   /**
    * Creates a new IAM policy document.
    * @param defaultDocument An IAM policy document to use as an initial
    * policy. All statements of this document will be copied in.
    */
-  constructor(private readonly baseDocument: any = {}) {
+  constructor(private readonly baseDocument?: any) {
     super();
   }
 
@@ -18,9 +17,10 @@ export class PolicyDocument extends cdk.Token {
       return undefined;
     }
 
-    const doc = { ...this.baseDocument };
+    const doc = this.baseDocument || { };
+    doc.Statement = doc.Statement || [ ];
     doc.Version = doc.Version || '2012-10-17';
-    doc.Statement = optimizeStatements(cdk.resolve([...(doc.Statement || []), ...this.statements.map(s => s.resolve())]));
+    doc.Statement = doc.Statement.concat(this.statements);
     return doc;
   }
 
@@ -82,7 +82,7 @@ export class ArnPrincipal extends PolicyPrincipal {
 
 export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
-    super(`arn:${new cdk.AwsPartition()}:iam::${accountId}:root`);
+    super(`arn:${new AwsPartition()}:iam::${accountId}:root`);
   }
 }
 
@@ -137,37 +137,28 @@ export class FederatedPrincipal extends PolicyPrincipal {
 
 export class AccountRootPrincipal extends AccountPrincipal {
   constructor() {
-    super(new cdk.AwsAccountId());
+    super(new AwsAccountId());
   }
 }
 
 /**
  * A principal representing all identities in all accounts
  */
-export class Anyone extends PolicyPrincipal {
-  /**
-   * Interface compatibility with AccountPrincipal for the purposes of the Lambda library
-   *
-   * The Lambda's addPermission() call works differently from regular
-   * statements, and will use the value of this property directly if present
-   * (which leads to the correct statement ultimately).
-   */
-  public readonly accountId = '*';
-
-  public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: '*' });
+export class Anyone extends ArnPrincipal {
+  constructor() {
+    super('*');
   }
 }
 
 /**
  * Represents a statement in an IAM policy document.
  */
-export class PolicyStatement extends cdk.Token {
-  private readonly action = new Array<any>();
-  private readonly resource = new Array<any>();
-  private readonly principal: { [key: string]: any[] } = {};
-  private readonly condition: { [key: string]: any } = {};
-  private effect: PolicyStatementEffect;
+export class PolicyStatement extends Token {
+  private action = new Array<any>();
+  private principal: { [key: string]: any[] } = {};
+  private resource = new Array<any>();
+  private condition: { [key: string]: any } = { };
+  private effect?: PolicyStatementEffect;
   private sid?: any;
 
   constructor(effect: PolicyStatementEffect = PolicyStatementEffect.Allow) {
@@ -197,12 +188,15 @@ export class PolicyStatement extends cdk.Token {
    * Indicates if this permission has a "Principal" section.
    */
   public get hasPrincipal() {
-    return this.principal != null && Object.keys(this.principal).length > 0;
+    return Object.keys(this.principal).length > 0;
   }
 
   public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
     const fragment = principal.policyFragment();
     for (const key of Object.keys(fragment.principalJson)) {
+      if (Object.keys(this.principal).length > 0 && !(key in this.principal)) {
+        throw new Error(`Attempted to add principal key ${key} in principal of type ${Object.keys(this.principal)[0]}`);
+      }
       this.principal[key] = this.principal[key] || [];
       const value = fragment.principalJson[key];
       if (Array.isArray(value)) {
@@ -320,7 +314,7 @@ export class PolicyStatement extends cdk.Token {
   }
 
   public limitToAccount(accountId: string): PolicyStatement {
-    return this.addCondition('StringEquals', new cdk.Token(() => {
+    return this.addCondition('StringEquals', new Token(() => {
       return { 'sts:ExternalId': accountId };
     }));
   }
@@ -338,7 +332,7 @@ export class PolicyStatement extends cdk.Token {
       Action: _norm(this.action),
       Condition: _norm(this.condition),
       Effect: _norm(this.effect),
-      Principal: _norm(this.principal),
+      Principal: _normPrincipal(this.principal),
       Resource: _norm(this.resource),
       Sid: _norm(this.sid),
     };
@@ -368,6 +362,22 @@ export class PolicyStatement extends cdk.Token {
       }
 
       return values;
+    }
+
+    function _normPrincipal(principal: { [key: string]: any[] }) {
+      const keys = Object.keys(principal);
+      if (keys.length === 0) { return undefined; }
+      const result: any = {};
+      for (const key of keys) {
+        const normVal = _norm(principal[key]);
+        if (normVal) {
+          result[key] = normVal;
+        }
+      }
+      if (Object.keys(result).length === 1 && result.AWS === '*') {
+        return '*';
+      }
+      return result;
     }
   }
 }

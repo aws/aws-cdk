@@ -501,7 +501,8 @@ export = {
       ':',
       { Ref: 'apiC8550315' },
       '/',
-      { 'Fn::Join': [ '', [ { Ref: 'apiDeploymentStageprod896C8101' }, '/*/' ] ] } ] ] });
+      { Ref: 'apiDeploymentStageprod896C8101' },
+      '/*/'] ] });
     test.done();
   },
 

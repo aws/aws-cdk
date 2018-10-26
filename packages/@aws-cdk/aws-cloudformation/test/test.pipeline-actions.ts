@@ -22,7 +22,7 @@ export = nodeunit.testCase({
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
 
       const stackArn = _stackArn('MyStack');
-      const changeSetCondition = { StringEqualsIfExists: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
+      const changeSetCondition = { StringEquals: { 'cloudformation:ChangeSetName': 'MyChangeSet' } };
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeStacks', stackArn);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:DescribeChangeSet', stackArn, changeSetCondition);
       _assertPermissionGranted(test, pipelineRole.statements, 'cloudformation:CreateChangeSet', stackArn, changeSetCondition);
@@ -194,6 +194,10 @@ class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
     this.name = name || 'TestStage';
     this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: pipelineName || 'TestPipeline' });
     this.pipelineRole = pipelineRole;
+  }
+
+  public grantPipelineBucketRead() {
+    throw new Error('Unsupported');
   }
 
   public grantPipelineBucketReadWrite() {
