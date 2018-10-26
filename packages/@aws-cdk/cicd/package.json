@@ -1,0 +1,62 @@
+{
+  "name": "@aws-cdk/cicd",
+  "description": "Continuous Integration / Continuous Delivery for CDK Applications",
+  "version": "0.14.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "targets": {
+      "java": {
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cicd"
+        },
+        "package": "software.amazon.awscdk.cicd"
+      },
+      "sphinx": {},
+      "dotnet": {
+        "namespace": "Amazon.CDK.CICD",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      }
+    },
+    "outdir": "dist"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "package": "cdk-package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "integ": "cdk-integ"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.14.0",
+    "@aws-cdk/aws-codepipeline-api": "^0.14.0",
+    "@aws-cdk/cdk": "^0.14.0",
+    "@aws-cdk/cx-api": "^0.14.0"
+  },
+  "devDependencies": {
+    "@aws-cdk/aws-codepipeline": "^0.14.0",
+    "@aws-cdk/aws-s3": "^0.14.0",
+    "cdk-build-tools": "^0.14.0",
+    "cdk-integ-tools": "^0.14.0",
+    "fast-check": "^1.7.0",
+    "pkglint": "^0.14.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
