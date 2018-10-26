@@ -38,16 +38,16 @@ export class SSMContextProviderPlugin implements ContextProviderPlugin {
   public async getValue(args: {[key: string]: any}) {
     const region = args.region;
     const account = args.account;
-    if (!('parameterName' in args.props)) {
+    if (!('parameterName' in args)) {
         throw new Error('parameterName must be provided in props for SSMContextProviderPlugin');
     }
-    const parameterName = args.props.parameterName;
+    const parameterName = args.parameterName;
     debug(`Reading SSM parameter ${account}:${region}:${parameterName}`);
 
     const ssm = await this.aws.ssm(account, region, Mode.ForReading);
     const response = await ssm.getParameter({ Name: parameterName }).promise();
     if (!response.Parameter || response.Parameter.Value === undefined) {
-      throw new Error(`SSM parameter not availble in account ${account}, region ${region}: ${parameterName}`);
+      throw new Error(`SSM parameter not available in account ${account}, region ${region}: ${parameterName}`);
     }
     return response.Parameter.Value;
   }
