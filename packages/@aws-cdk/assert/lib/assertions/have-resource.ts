@@ -13,10 +13,10 @@ export function haveResource(resourceType: string, properties?: any, comparison?
   return new HaveResourceAssertion(resourceType, properties, comparison);
 }
 
-type PropertyPredicate = (props: any) => boolean;
+type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
 
 class HaveResourceAssertion extends Assertion<StackInspector> {
-  private inspected: any[] = [];
+  private inspected: InspectionFailure[] = [];
   private readonly part: ResourcePart;
   private readonly predicate: PropertyPredicate;
 
@@ -33,13 +33,17 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
     for (const logicalId of Object.keys(inspector.value.Resources)) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
-        this.inspected.push(resource);
-
         const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
 
-        if (this.predicate(propsToCheck)) {
+        // Pass inspection object as 2nd argument, initialize failure with default string,
+        // to maintain backwards compatibility with old predicate API.
+        const inspection = { resource, failureReason: 'Object did not match predicate' };
+
+        if (this.predicate(propsToCheck, inspection)) {
           return true;
         }
+
+        this.inspected.push(inspection);
       }
     }
 
@@ -48,7 +52,15 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
 
   public assertOrThrow(inspector: StackInspector) {
     if (!this.assertUsing(inspector)) {
-      throw new Error(`None of ${JSON.stringify(this.inspected, null, 2)} match ${this.description}`);
+      const lines: string[] = [];
+      lines.push(`None of ${this.inspected.length} resources matches ${this.description}.`);
+
+      for (const inspected of this.inspected) {
+        lines.push(`- ${inspected.failureReason} in:`);
+        lines.push(indent(4, JSON.stringify(inspected.resource, null, 2)));
+      }
+
+      throw new Error(lines.join('\n'));
     }
   }
 
@@ -58,13 +70,26 @@ class HaveResourceAssertion extends Assertion<StackInspector> {
   }
 }
 
+function indent(n: number, s: string) {
+  const prefix = ' '.repeat(n);
+  return prefix + s.replace(/\n/g, '\n' + prefix);
+}
+
 /**
  * Make a predicate that checks property superset
  */
 function makeSuperObjectPredicate(obj: any) {
-  return (resourceProps: any) => {
-    return isSuperObject(resourceProps, obj);
+  return (resourceProps: any, inspection: InspectionFailure) => {
+    const errors: string[] = [];
+    const ret = isSuperObject(resourceProps, obj, errors);
+    inspection.failureReason = errors.join(',');
+    return ret;
   };
+}
+
+interface InspectionFailure {
+  resource: any;
+  failureReason: string;
 }
 
 /**
@@ -72,32 +97,48 @@ function makeSuperObjectPredicate(obj: any) {
  *
  * A super-object has the same or more property values, recursing into nested objects.
  */
-export function isSuperObject(superObj: any, obj: any): boolean {
+export function isSuperObject(superObj: any, obj: any, errors: string[]): boolean {
   if (obj == null) { return true; }
-  if (Array.isArray(superObj) !== Array.isArray(obj)) { return false; }
+  if (Array.isArray(superObj) !== Array.isArray(obj)) {
+    errors.push('Array type mismatch');
+    return false;
+  }
   if (Array.isArray(superObj)) {
-    if (obj.length !== superObj.length) { return false; }
+    if (obj.length !== superObj.length) {
+      errors.push('Array length mismatch');
+      return false;
+    }
 
     // Do isSuperObject comparison for individual objects
     for (let i = 0; i < obj.length; i++) {
-      if (!isSuperObject(superObj[i], obj[i])) {
-        return false;
+      if (!isSuperObject(superObj[i], obj[i], [])) {
+        errors.push(`Array element ${i} mismatch`);
       }
     }
-    return true;
+    return errors.length === 0;
   }
-  if ((typeof superObj === 'object') !== (typeof obj === 'object')) { return false; }
+  if ((typeof superObj === 'object') !== (typeof obj === 'object')) {
+    errors.push('Object type mismatch');
+    return false;
+  }
   if (typeof obj === 'object') {
     for (const key of Object.keys(obj)) {
-      if (!(key in superObj)) { return false; }
+      if (!(key in superObj)) {
+        errors.push(`Field ${key} missing`);
+        continue;
+      }
 
-      if (!isSuperObject(superObj[key], obj[key])) {
-        return false;
+      if (!isSuperObject(superObj[key], obj[key], [])) {
+        errors.push(`Field ${key} mismatch`);
       }
     }
-    return true;
+    return errors.length === 0;
   }
-  return superObj === obj;
+
+  if (superObj !== obj) {
+    errors.push('Different values');
+  }
+  return errors.length === 0;
 }
 
 /**
