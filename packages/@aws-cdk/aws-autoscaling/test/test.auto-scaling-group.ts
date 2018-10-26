@@ -126,121 +126,25 @@ export = {
     test.done();
   },
 
-  'can scale min size to 0'(test: Test) {
+  'can set minSize, maxSize, desiredCapacity to 0'(test: Test) {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
       machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
       minSize: 0,
-      vpc
+      maxSize: 0,
+      desiredCapacity: 0
     });
 
-    expect(stack).toMatch({
-      "Resources": {
-        "MyFleetInstanceSecurityGroup774E8234": {
-          "Type": "AWS::EC2::SecurityGroup",
-          "Properties": {
-            "GroupDescription": "MyFleet/InstanceSecurityGroup",
-            "SecurityGroupEgress": [
-              {
-                "CidrIp": "0.0.0.0/0",
-                "Description": "Allow all outbound traffic by default",
-                "IpProtocol": "-1",
-              }
-            ],
-            "SecurityGroupIngress": [],
-            "Tags": [
-              {
-                "Key": "Name",
-                "Value": "MyFleet"
-              }
-            ],
-
-            "VpcId": "my-vpc"
-          }
-        },
-        "MyFleetInstanceRole25A84AB8": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-            "AssumeRolePolicyDocument": {
-              "Statement": [
-            {
-            "Action": "sts:AssumeRole",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "ec2.amazonaws.com"
-            }
-            }
-          ],
-          "Version": "2012-10-17"
-          }
-        }
-        },
-        "MyFleetInstanceProfile70A58496": {
-        "Type": "AWS::IAM::InstanceProfile",
-        "Properties": {
-          "Roles": [
-          {
-            "Ref": "MyFleetInstanceRole25A84AB8"
-          }
-          ]
-        }
-        },
-        "MyFleetLaunchConfig5D7F9801": {
-        "Type": "AWS::AutoScaling::LaunchConfiguration",
-        "Properties": {
-          "IamInstanceProfile": {
-          "Ref": "MyFleetInstanceProfile70A58496"
-          },
-          "ImageId": "dummy",
-          "InstanceType": "m4.micro",
-          "SecurityGroups": [
-          {
-            "Fn::GetAtt": [
-            "MyFleetInstanceSecurityGroup774E8234",
-            "GroupId"
-            ]
-          }
-          ],
-          "UserData": {
-          "Fn::Base64": "#!/bin/bash\n"
-          }
-        },
-        "DependsOn": [
-          "MyFleetInstanceRole25A84AB8"
-        ]
-        },
-        "MyFleetASG88E55886": {
-        "Type": "AWS::AutoScaling::AutoScalingGroup",
-        "UpdatePolicy": {
-          "AutoScalingScheduledAction": {
-          "IgnoreUnmodifiedGroupSizeProperties": true
-          }
-        },
-        "Properties": {
-          "DesiredCapacity": "1",
-          "LaunchConfigurationName": {
-          "Ref": "MyFleetLaunchConfig5D7F9801"
-          },
-          "Tags": [
-            {
-              "Key": "Name",
-              "PropagateAtLaunch": true,
-              "Value": "MyFleet"
-            }
-          ],
-
-          "MaxSize": "1",
-          "MinSize": "0",
-          "VPCZoneIdentifier": [
-            "pri1"
-          ]
-        }
-        }
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "0",
+        MaxSize: "0",
+        DesiredCapacity: "0",
       }
-    });
+    ));
 
     test.done();
   },
