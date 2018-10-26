@@ -650,7 +650,7 @@ export = {
           }
           ],
           "Version": "2012-10-17"
-  },
+        },
         "Topics": [
           {
           "Ref": "MyTopic86869434"
