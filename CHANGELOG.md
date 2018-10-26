@@ -1,3 +1,11 @@
+<a name="0.14.1"></a>
+## [0.14.1](https://github.com/awslabs/aws-cdk/compare/v0.14.0...v0.14.1) (2018-10-26)
+
+### Bug Fixes
+
+* **aws-cdk:** fix bug in SSM Parameter Provider ([#1023](https://github.com/awslabs/aws-cdk/issues/1023)) ([6e6aa1d](https://github.com/awslabs/aws-cdk/commit/6e6aa1d))
+
+
 <a name="0.14.0"></a>
 ## [0.14.0](https://github.com/awslabs/aws-cdk/compare/v0.13.0...v0.14.0) (2018-10-26)
 
