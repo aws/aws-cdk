@@ -1,3 +1,44 @@
+<a name="0.14.0"></a>
+## [0.14.0](https://github.com/awslabs/aws-cdk/compare/v0.13.0...v0.14.0) (2018-10-26)
+
+__IMPORTANT NOTE__: when upgrading to this version of the CDK framework, you must also upgrade
+your installation the CDK Toolkit to the matching version:
+
+```shell
+$ npm i -g aws-cdk
+$ cdk --version
+0.14.0 (build ...)
+```
+
+### Bug Fixes
+
+* remove CloudFormation property renames ([#973](https://github.com/awslabs/aws-cdk/issues/973)) ([3f86603](https://github.com/awslabs/aws-cdk/commit/3f86603)), closes [#852](https://github.com/awslabs/aws-cdk/issues/852)
+* **aws-ec2:** fix retention of all egress traffic rule ([#998](https://github.com/awslabs/aws-cdk/issues/998)) ([b9d5b43](https://github.com/awslabs/aws-cdk/commit/b9d5b43)), closes [#987](https://github.com/awslabs/aws-cdk/issues/987)
+* **aws-s3-deployment:** avoid deletion during update using physical ids ([#1006](https://github.com/awslabs/aws-cdk/issues/1006)) ([bca99c6](https://github.com/awslabs/aws-cdk/commit/bca99c6)), closes [#981](https://github.com/awslabs/aws-cdk/issues/981) [#981](https://github.com/awslabs/aws-cdk/issues/981)
+* **cloudformation-diff:** ignore changes to DependsOn ([#1005](https://github.com/awslabs/aws-cdk/issues/1005)) ([3605f9c](https://github.com/awslabs/aws-cdk/commit/3605f9c)), closes [#274](https://github.com/awslabs/aws-cdk/issues/274)
+* **cloudformation-diff:** track replacements ([#1003](https://github.com/awslabs/aws-cdk/issues/1003)) ([a83ac5f](https://github.com/awslabs/aws-cdk/commit/a83ac5f)), closes [#1001](https://github.com/awslabs/aws-cdk/issues/1001)
+* **docs:** fix EC2 readme for "natgatway" configuration ([#994](https://github.com/awslabs/aws-cdk/issues/994)) ([0b1e7cc](https://github.com/awslabs/aws-cdk/commit/0b1e7cc))
+* **docs:** updates to contribution guide ([#997](https://github.com/awslabs/aws-cdk/issues/997)) ([b42e742](https://github.com/awslabs/aws-cdk/commit/b42e742))
+* **iam:** Merge multiple principals correctly ([#983](https://github.com/awslabs/aws-cdk/issues/983)) ([3fc5c8c](https://github.com/awslabs/aws-cdk/commit/3fc5c8c)), closes [#924](https://github.com/awslabs/aws-cdk/issues/924) [#916](https://github.com/awslabs/aws-cdk/issues/916) [#958](https://github.com/awslabs/aws-cdk/issues/958)
+
+
+### Features
+
+* add construct library for Application AutoScaling ([#933](https://github.com/awslabs/aws-cdk/issues/933)) ([7861c6f](https://github.com/awslabs/aws-cdk/commit/7861c6f)), closes [#856](https://github.com/awslabs/aws-cdk/issues/856) [#861](https://github.com/awslabs/aws-cdk/issues/861) [#640](https://github.com/awslabs/aws-cdk/issues/640) [#644](https://github.com/awslabs/aws-cdk/issues/644)
+* add HostedZone context provider ([#823](https://github.com/awslabs/aws-cdk/issues/823)) ([1626c37](https://github.com/awslabs/aws-cdk/commit/1626c37))
+* **assert:** haveResource lists failing properties ([#1016](https://github.com/awslabs/aws-cdk/issues/1016)) ([7f6f3fd](https://github.com/awslabs/aws-cdk/commit/7f6f3fd))
+* **aws-cdk:** add CDK app version negotiation ([#988](https://github.com/awslabs/aws-cdk/issues/988)) ([db4e718](https://github.com/awslabs/aws-cdk/commit/db4e718)), closes [#891](https://github.com/awslabs/aws-cdk/issues/891)
+* **aws-codebuild:** Introduce a CodePipeline test Action. ([#873](https://github.com/awslabs/aws-cdk/issues/873)) ([770f9aa](https://github.com/awslabs/aws-cdk/commit/770f9aa))
+* **aws-sqs:** Add grantXxx() methods ([#1004](https://github.com/awslabs/aws-cdk/issues/1004)) ([8c90350](https://github.com/awslabs/aws-cdk/commit/8c90350))
+* **core:** Pre-concatenate Fn::Join ([#967](https://github.com/awslabs/aws-cdk/issues/967)) ([33c32a8](https://github.com/awslabs/aws-cdk/commit/33c32a8)), closes [#916](https://github.com/awslabs/aws-cdk/issues/916) [#958](https://github.com/awslabs/aws-cdk/issues/958)
+
+
+### BREAKING CHANGES
+
+* DynamoDB AutoScaling: Instead of `addReadAutoScaling()`, call `autoScaleReadCapacity()`, and similar for write scaling.
+* CloudFormation resource usage: If you use L1s, you may need to change some `XxxName` properties back into `Name`. These will match the CloudFormation property names.
+* You must use the matching `aws-cdk` toolkit when upgrading to this version, or context providers will cease to work. All existing cached context values in `cdk.json` will be invalidated and refreshed.
+
 <a name="0.13.0"></a>
 ## [0.13.0](https://github.com/awslabs/aws-cdk/compare/v0.12.0...v0.13.0) (2018-10-19)
 
