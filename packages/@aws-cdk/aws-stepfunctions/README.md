@@ -5,6 +5,8 @@ serverless workflows. Using objects. Defining a workflow looks like this
 (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
+### TypeScript example
+
 ```ts
 const submitLambda = new lambda.Function(this, 'SubmitLambda', { ... });
 const getStatusLambda = new lambda.Function(this, 'CheckLambda', { ... });
@@ -49,6 +51,66 @@ const definition = submitJob
 new stepfunctions.StateMachine(this, 'StateMachine', {
     definition,
     timeoutSec: 300
+});
+```
+
+### .NET Example
+
+```csharp
+var submitLambda = new Function(this, "SubmitLambda", new FunctionProps
+{
+    // ...
+});
+
+var getStatusLambda = new Function(this, "CheckLambda", new FunctionProps
+{
+    // ...
+});
+
+var submitJob = new Task(this, "Submit Job", new TaskProps
+{
+    Resource = submitLambda,
+    ResultPath = "$.guid"
+});
+
+var waitX = new Wait(this, "Wait X Seconds", new WaitProps
+{
+    SecondsPath = "$.wait_time"
+});
+
+var getStatus = new Task(this, "Get Job Status", new TaskProps
+{
+    Resource = getStatusLambda,
+    InputPath = "$.guid",
+    ResultPath = "$.status"
+});
+
+var jobFailed = new Fail(this, "Job Failed", new FailProps
+{
+    Cause = "AWS Batch Job Failed",
+    Error = "DescribeJob returned FAILED"
+});
+
+var finalStatus = new Task(this, "Get Final Job Status", new TaskProps
+{
+    Resource = getStatusLambda,
+    // Use "guid" field as input, output of the Lambda becomes the
+    // entire state machine output.
+    InputPath = "$.guid"
+});
+
+var definition = submitJob
+    .Next(waitX)
+    .Next(getStatus)
+    .Next(new Choice(this, "Job Complete?", new ChoiceProps())
+        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals("$.status", "FAILED"), jobFailed)
+        .When(Amazon.CDK.AWS.StepFunctions.Condition.StringEquals("$.status", "SUCCEEDED"), finalStatus)
+        .Otherwise(waitX));
+
+new StateMachine(this, "StateMachine", new StateMachineProps
+{
+    Definition = definition,
+    TimeoutSec = 300
 });
 ```
 
