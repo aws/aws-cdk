@@ -97,7 +97,7 @@ interface InspectionFailure {
  *
  * A super-object has the same or more property values, recursing into nested objects.
  */
-export function isSuperObject(superObj: any, obj: any, errors: string[]): boolean {
+export function isSuperObject(superObj: any, obj: any, errors: string[] = []): boolean {
   if (obj == null) { return true; }
   if (Array.isArray(superObj) !== Array.isArray(obj)) {
     errors.push('Array type mismatch');
