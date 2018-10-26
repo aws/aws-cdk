@@ -446,10 +446,8 @@
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
-            "Description": "Outbound traffic allowed by default",
-            "FromPort": -1,
-            "IpProtocol": "-1",
-            "ToPort": -1
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
           }
         ],
         "SecurityGroupIngress": [],
@@ -626,7 +624,15 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp":"255.255.255.255/32",
+            "Description":"Disallow all traffic",
+            "FromPort":252,
+            "IpProtocol":"icmp",
+            "ToPort":86
+          }
+        ],
         "SecurityGroupIngress": [
           {
             "CidrIp": "0.0.0.0/0",

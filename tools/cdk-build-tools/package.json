@@ -1,7 +1,7 @@
 {
   "name": "cdk-build-tools",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Tools package with shared build scripts for CDK packages",
   "main": "lib/index.js",
   "repository": {
@@ -28,13 +28,13 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
     "@types/yargs": "^8.0.3",
-    "pkglint": "^0.13.0"
+    "pkglint": "^0.14.0"
   },
   "dependencies": {
     "fs-extra": "^7.0.0",
-    "jsii": "^0.7.7",
+    "jsii": "^0.7.8",
     "jsii-pacmak": "^0.7.7",
-    "merkle-build": "^0.13.0",
+    "merkle-build": "^0.14.0",
     "nodeunit": "^0.11.3",
     "nyc": "^13.1.0",
     "typescript": "^3.1.3",

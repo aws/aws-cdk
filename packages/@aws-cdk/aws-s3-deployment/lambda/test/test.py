@@ -12,7 +12,6 @@ from unittest.mock import MagicMock
 class TestHandler(unittest.TestCase):
     def setUp(self):
         logger = logging.getLogger()
-        logger.addHandler(logging.NullHandler())
 
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
@@ -20,7 +19,7 @@ class TestHandler(unittest.TestCase):
 
     def test_invalid_request(self):
         resp = invoke_handler("Create", {}, expected_status="FAILED")
-        self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketName'")
+        self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketName'. props: {}")
 
     def test_create_update(self):
         invoke_handler("Create", {
@@ -33,6 +32,20 @@ class TestHandler(unittest.TestCase):
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
         )
+
+    def test_create_with_backslash_prefix_same_as_no_prefix(self):
+        invoke_handler("Create", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "/"
+        })
+
+        self.assertAwsCommands(
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
+        )
+
 
     def test_create_update_with_dest_key(self):
         invoke_handler("Create", {
@@ -47,12 +60,13 @@ class TestHandler(unittest.TestCase):
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/<dest-key-prefix>"
         )
 
-    def test_delete(self):
+    def test_delete_no_retain(self):
         invoke_handler("Delete", {
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
-            "DestinationBucketName": "<dest-bucket-name>"
-        })
+            "DestinationBucketName": "<dest-bucket-name>",
+            "RetainOnDelete": "false"
+        }, physical_id="<physicalid>")
 
         self.assertAwsCommands("s3 rm s3://<dest-bucket-name>/ --recursive")
 
@@ -61,18 +75,30 @@ class TestHandler(unittest.TestCase):
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
             "DestinationBucketName": "<dest-bucket-name>",
-            "DestinationBucketKeyPrefix": "<dest-key-prefix>"
-        })
+            "DestinationBucketKeyPrefix": "<dest-key-prefix>",
+            "RetainOnDelete": "false"
+        }, physical_id="<physicalid>")
 
         self.assertAwsCommands("s3 rm s3://<dest-bucket-name>/<dest-key-prefix> --recursive")
 
-    def test_delete_with_retain(self):
+    def test_delete_with_retain_explicit(self):
         invoke_handler("Delete", {
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "true"
-        })
+        }, physical_id="<physicalid>")
+
+        # no aws commands (retain)
+        self.assertAwsCommands()
+
+    # RetainOnDelete=true is the default
+    def test_delete_with_retain_implicit_default(self):
+        invoke_handler("Delete", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>"
+        }, physical_id="<physicalid>")
 
         # no aws commands (retain)
         self.assertAwsCommands()
@@ -83,7 +109,7 @@ class TestHandler(unittest.TestCase):
             "SourceObjectKey": "<source-object-key>",
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "false"
-        })
+        }, physical_id="<physicalid>")
 
         self.assertAwsCommands(
             "s3 rm s3://<dest-bucket-name>/ --recursive"
@@ -100,7 +126,7 @@ class TestHandler(unittest.TestCase):
             "DestinationBucketName": "<dest-bucket-name>",
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
-        })
+        }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
@@ -115,23 +141,24 @@ class TestHandler(unittest.TestCase):
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
             "RetainOnDelete": "true"
-        })
+        }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/"
         )
 
-    def test_update_new_dest_no_retain_explicit(self):
+    def test_update_new_dest_no_retain(self):
         invoke_handler("Update", {
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
             "DestinationBucketName": "<new-dest-bucket-name>",
+            "RetainOnDelete": "false"
         }, old_resource_props={
             "DestinationBucketName": "<old-dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<old-dest-prefix>",
             "RetainOnDelete": "false"
-        })
+        }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
             "s3 rm s3://<old-dest-bucket-name>/<old-dest-prefix> --recursive",
@@ -139,7 +166,7 @@ class TestHandler(unittest.TestCase):
             "s3 sync --delete contents.zip s3://<new-dest-bucket-name>/"
         )
 
-    def test_update_new_dest_no_retain_implicit(self):
+    def test_update_new_dest_retain_implicit(self):
         invoke_handler("Update", {
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
@@ -147,15 +174,32 @@ class TestHandler(unittest.TestCase):
         }, old_resource_props={
             "DestinationBucketName": "<old-dest-bucket-name>",
             "DestinationBucketKeyPrefix": "<old-dest-prefix>"
-        })
+        }, physical_id="<physical-id>")
 
         self.assertAwsCommands(
-            "s3 rm s3://<old-dest-bucket-name>/<old-dest-prefix> --recursive",
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
             "s3 sync --delete contents.zip s3://<new-dest-bucket-name>/"
         )
 
-    def test_update_new_dest_prefix_no_retain_implicit(self):
+    def test_update_new_dest_prefix_no_retain(self):
+        invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+            "DestinationBucketKeyPrefix": "<new-dest-prefix>",
+            "RetainOnDelete": "false"
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+            "RetainOnDelete": "false"
+        }, physical_id="<physical id>")
+
+        self.assertAwsCommands(
+            "s3 rm s3://<dest-bucket-name>/ --recursive",
+            "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
+            "s3 sync --delete contents.zip s3://<dest-bucket-name>/<new-dest-prefix>"
+        )
+
+    def test_update_new_dest_prefix_retain_implicit(self):
         invoke_handler("Update", {
             "SourceBucketName": "<source-bucket>",
             "SourceObjectKey": "<source-object-key>",
@@ -163,13 +207,69 @@ class TestHandler(unittest.TestCase):
             "DestinationBucketKeyPrefix": "<new-dest-prefix>"
         }, old_resource_props={
             "DestinationBucketName": "<dest-bucket-name>",
-        })
+        }, physical_id="<physical id>")
 
         self.assertAwsCommands(
-            "s3 rm s3://<dest-bucket-name>/ --recursive",
             "s3 cp s3://<source-bucket>/<source-object-key> archive.zip",
             "s3 sync --delete contents.zip s3://<dest-bucket-name>/<new-dest-prefix>"
         )
+
+    #
+    # physical id
+    #
+
+    def test_physical_id_allocated_on_create_and_reused_afterwards(self):
+        create_resp = invoke_handler("Create", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+        })
+
+        phid = create_resp['PhysicalResourceId']
+        self.assertTrue(phid.startswith('aws.cdk.s3deployment'))
+
+        # now issue an update and pass in the physical id. expect the same
+        # one to be returned back
+        update_resp = invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<new-dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, physical_id=phid)
+        self.assertEqual(update_resp['PhysicalResourceId'], phid)
+
+        # now issue a delete, and make sure this also applies
+        delete_resp = invoke_handler("Delete", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<dest-bucket-name>",
+            "RetainOnDelete": "false"
+        }, physical_id=phid)
+        self.assertEqual(delete_resp['PhysicalResourceId'], phid)
+
+    def test_fails_when_physical_id_not_present_in_update(self):
+        update_resp = invoke_handler("Update", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<new-dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, expected_status="FAILED")
+
+        self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Update' but 'PhysicalResourceId' is not defined")
+
+    def test_fails_when_physical_id_not_present_in_delete(self):
+        update_resp = invoke_handler("Delete", {
+            "SourceBucketName": "<source-bucket>",
+            "SourceObjectKey": "<source-object-key>",
+            "DestinationBucketName": "<new-dest-bucket-name>",
+        }, old_resource_props={
+            "DestinationBucketName": "<dest-bucket-name>",
+        }, expected_status="FAILED")
+
+        self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Delete' but 'PhysicalResourceId' is not defined")
+
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):
@@ -193,7 +293,7 @@ def read_aws_out():
 #   requestType: CloudFormation request type ("Create", "Update", "Delete")
 #   resourceProps: map to pass to "ResourceProperties"
 #   expected_status: "SUCCESS" or "FAILED"
-def invoke_handler(requestType, resourceProps, old_resource_props=None, expected_status='SUCCESS'):
+def invoke_handler(requestType, resourceProps, old_resource_props=None, physical_id=None, expected_status='SUCCESS'):
     response_url = '<response-url>'
 
     event={
@@ -207,6 +307,9 @@ def invoke_handler(requestType, resourceProps, old_resource_props=None, expected
 
     if old_resource_props:
         event['OldResourceProperties'] = old_resource_props
+
+    if physical_id:
+        event['PhysicalResourceId'] = physical_id
 
     class ContextMock: log_stream_name = 'log_stream'
     class ResponseMock: reason = 'OK'
