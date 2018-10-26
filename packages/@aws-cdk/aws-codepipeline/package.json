@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codepipeline",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -58,24 +58,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.14.0",
-    "@aws-cdk/aws-cloudformation": "^0.14.0",
-    "@aws-cdk/aws-codebuild": "^0.14.0",
-    "@aws-cdk/aws-codecommit": "^0.14.0",
-    "@aws-cdk/aws-codedeploy": "^0.14.0",
-    "@aws-cdk/aws-lambda": "^0.14.0",
-    "@aws-cdk/aws-sns": "^0.14.0",
-    "cdk-build-tools": "^0.14.0",
-    "cdk-integ-tools": "^0.14.0",
-    "cfn2ts": "^0.14.0",
-    "pkglint": "^0.14.0"
+    "@aws-cdk/assert": "^0.14.1",
+    "@aws-cdk/aws-cloudformation": "^0.14.1",
+    "@aws-cdk/aws-codebuild": "^0.14.1",
+    "@aws-cdk/aws-codecommit": "^0.14.1",
+    "@aws-cdk/aws-codedeploy": "^0.14.1",
+    "@aws-cdk/aws-lambda": "^0.14.1",
+    "@aws-cdk/aws-sns": "^0.14.1",
+    "cdk-build-tools": "^0.14.1",
+    "cdk-integ-tools": "^0.14.1",
+    "cfn2ts": "^0.14.1",
+    "pkglint": "^0.14.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.14.0",
-    "@aws-cdk/aws-events": "^0.14.0",
-    "@aws-cdk/aws-iam": "^0.14.0",
-    "@aws-cdk/aws-s3": "^0.14.0",
-    "@aws-cdk/cdk": "^0.14.0"
+    "@aws-cdk/aws-codepipeline-api": "^0.14.1",
+    "@aws-cdk/aws-events": "^0.14.1",
+    "@aws-cdk/aws-iam": "^0.14.1",
+    "@aws-cdk/aws-s3": "^0.14.1",
+    "@aws-cdk/cdk": "^0.14.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }
