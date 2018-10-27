@@ -46,7 +46,13 @@ export = {
           Type: 'AWS::EC2::SecurityGroup',
           Properties: {
             GroupDescription: 'Cluster API Server Security Group.',
-            SecurityGroupEgress: [],
+            SecurityGroupEgress: [
+              {
+                CidrIp: '0.0.0.0/0',
+                Description: 'Allow all outbound traffic by default',
+                IpProtocol: '-1',
+              },
+            ],
             SecurityGroupIngress: [],
             Tags: [
               {
@@ -202,31 +208,8 @@ export = {
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
-            Description: 'Outbound traffic allowed by default',
-            FromPort: -1,
+            Description: 'Allow all outbound traffic by default',
             IpProtocol: '-1',
-            ToPort: -1,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'tcp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:UDP ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'udp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL ICMP',
-            FromPort: -1,
-            IpProtocol: 'icmp',
-            ToPort: -1,
           },
         ],
         SecurityGroupIngress: [],
@@ -388,31 +371,8 @@ export = {
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
-            Description: 'Outbound traffic allowed by default',
-            FromPort: -1,
+            Description: 'Allow all outbound traffic by default',
             IpProtocol: '-1',
-            ToPort: -1,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'tcp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:UDP ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'udp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL ICMP',
-            FromPort: -1,
-            IpProtocol: 'icmp',
-            ToPort: -1,
           },
         ],
         SecurityGroupIngress: [],
@@ -446,31 +406,8 @@ export = {
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
-            Description: 'Outbound traffic allowed by default',
-            FromPort: -1,
+            Description: 'Allow all outbound traffic by default',
             IpProtocol: '-1',
-            ToPort: -1,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'tcp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:UDP ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'udp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL ICMP',
-            FromPort: -1,
-            IpProtocol: 'icmp',
-            ToPort: -1,
           },
         ],
         SecurityGroupIngress: [],
@@ -498,214 +435,9 @@ export = {
       }),
     );
 
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to NodeGroup1NodeGroupm5largeInstanceSecurityGroup19C09C7B:443',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        FromPort: 443,
-        ToPort: 443,
-      }),
-    );
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to NodeGroup1NodeGroupm5largeInstanceSecurityGroup19C09C7B:1025-65535',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        FromPort: 1025,
-        ToPort: 65535,
-      }),
-    );
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to NodeGroup2NodeGroupt2mediumInstanceSecurityGroupFBAF2A85:443',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        FromPort: 443,
-        ToPort: 443,
-      }),
-    );
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to NodeGroup2NodeGroupt2mediumInstanceSecurityGroupFBAF2A85:1025-65535',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        FromPort: 1025,
-        ToPort: 65535,
-      }),
-    );
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to MyClusterClusterSecurityGroup4AEAC08A:443',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        FromPort: 443,
-        ToPort: 443,
-      }),
-    );
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupEgress', {
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        IpProtocol: 'tcp',
-        Description: 'to MyClusterClusterSecurityGroup4AEAC08A:443',
-        DestinationSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        FromPort: 443,
-        ToPort: 443,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from NodeGroup1NodeGroupm5largeInstanceSecurityGroup19C09C7B:443',
-        FromPort: 443,
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        ToPort: 443,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from NodeGroup2NodeGroupt2mediumInstanceSecurityGroupFBAF2A85:443',
-        FromPort: 443,
-        GroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        ToPort: 443,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: '-1',
-        Description: 'from NodeGroup1NodeGroupm5largeInstanceSecurityGroup19C09C7B:ALL TRAFFIC',
-        FromPort: -1,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        ToPort: -1,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from MyClusterClusterSecurityGroup4AEAC08A:443',
-        FromPort: 443,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        ToPort: 443,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from MyClusterClusterSecurityGroup4AEAC08A:1025-65535',
-        FromPort: 1025,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup1NodeGroupm5largeInstanceSecurityGroup68AD5F49', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        ToPort: 65535,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: '-1',
-        Description: 'from NodeGroup2NodeGroupt2mediumInstanceSecurityGroupFBAF2A85:ALL TRAFFIC',
-        FromPort: -1,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        ToPort: -1,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from MyClusterClusterSecurityGroup4AEAC08A:443',
-        FromPort: 443,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        ToPort: 443,
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroupIngress', {
-        IpProtocol: 'tcp',
-        Description: 'from MyClusterClusterSecurityGroup4AEAC08A:1025-65535',
-        FromPort: 1025,
-        GroupId: {
-          'Fn::GetAtt': ['NodeGroup2NodeGroupt2mediumInstanceSecurityGroup5F0C1B74', 'GroupId'],
-        },
-        SourceSecurityGroupId: {
-          'Fn::GetAtt': ['MyClusterClusterSecurityGroup17ACDE00', 'GroupId'],
-        },
-        ToPort: 65535,
-      }),
-    );
-
     test.done();
   },
-  'can export cluster and create second stack'(test: Test) {
+  'can export cluster'(test: Test) {
     const stack = new cdk.Stack(undefined, 'TestStack', {
       env: { region: 'us-east-1', account: '123456' },
     });
@@ -847,66 +579,14 @@ export = {
 
     expect(stack).to(
       haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'NodeGroup1/NodeGroup-m5.large/InstanceSecurityGroup',
+        GroupDescription: 'Cluster API Server Security Group.',
         SecurityGroupEgress: [
           {
             CidrIp: '0.0.0.0/0',
-            Description: 'Outbound traffic allowed by default',
-            FromPort: -1,
+            Description: 'Allow all outbound traffic by default',
             IpProtocol: '-1',
-            ToPort: -1,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'tcp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:UDP ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'udp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL ICMP',
-            FromPort: -1,
-            IpProtocol: 'icmp',
-            ToPort: -1,
           },
         ],
-        SecurityGroupIngress: [],
-        Tags: [
-          {
-            Key: 'Name',
-            Value: 'NodeGroup1/NodeGroup-m5.large',
-          },
-          {
-            Key: {
-              'Fn::Join': [
-                '',
-                [
-                  'kubernetes.io/cluster/',
-                  {
-                    Ref: 'MyCluster9CF8BB78',
-                  },
-                ],
-              ],
-            },
-            Value: 'owned',
-          },
-        ],
-        VpcId: 'test-vpc-1234',
-      }),
-    );
-
-    expect(stack).to(
-      haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'Cluster API Server Security Group.',
-        SecurityGroupEgress: [],
         SecurityGroupIngress: [],
         Tags: [
           {
@@ -916,68 +596,6 @@ export = {
           {
             Key: 'Description',
             Value: 'The security group assigned to the cluster',
-          },
-        ],
-        VpcId: 'test-vpc-1234',
-      }),
-    );
-
-    expect(stack2).to(
-      haveResource('AWS::EC2::SecurityGroup', {
-        GroupDescription: 'NodeGroup2/NodeGroup-p3.large/InstanceSecurityGroup',
-        SecurityGroupEgress: [
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'Outbound traffic allowed by default',
-            FromPort: -1,
-            IpProtocol: '-1',
-            ToPort: -1,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'tcp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:UDP ALL PORTS',
-            FromPort: 0,
-            IpProtocol: 'udp',
-            ToPort: 65535,
-          },
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL ICMP',
-            FromPort: -1,
-            IpProtocol: 'icmp',
-            ToPort: -1,
-          },
-        ],
-        SecurityGroupIngress: [],
-        Tags: [
-          {
-            Key: 'Environment',
-            Value: 'test',
-          },
-          {
-            Key: 'Name',
-            Value: 'NodeGroup2/NodeGroup-p3.large',
-          },
-          {
-            Key: {
-              'Fn::Join': [
-                '',
-                [
-                  'kubernetes.io/cluster/',
-                  {
-                    'Fn::ImportValue': 'TestStack:MyClusterClusterName37E9AAAB',
-                  },
-                ],
-              ],
-            },
-            Value: 'owned',
           },
         ],
         VpcId: 'test-vpc-1234',
