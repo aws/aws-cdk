@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-codebuild",
-  "version": "0.13.0",
+  "version": "0.14.1",
   "description": "CDK Constructs for AWS CodeBuild",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -55,25 +55,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.13.0",
-    "@aws-cdk/aws-sns": "^0.13.0",
-    "@aws-cdk/aws-sqs": "^0.13.0",
-    "aws-sdk": "^2.339.0",
-    "cdk-build-tools": "^0.13.0",
-    "cdk-integ-tools": "^0.13.0",
-    "cfn2ts": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "@aws-cdk/assert": "^0.14.1",
+    "@aws-cdk/aws-sns": "^0.14.1",
+    "@aws-cdk/aws-sqs": "^0.14.1",
+    "aws-sdk": "^2.259.1",
+    "cdk-build-tools": "^0.14.1",
+    "cdk-integ-tools": "^0.14.1",
+    "cfn2ts": "^0.14.1",
+    "pkglint": "^0.14.1"
   },
   "dependencies": {
-    "@aws-cdk/assets": "^0.13.0",
-    "@aws-cdk/aws-cloudwatch": "^0.13.0",
-    "@aws-cdk/aws-codecommit": "^0.13.0",
-    "@aws-cdk/aws-codepipeline-api": "^0.13.0",
-    "@aws-cdk/aws-events": "^0.13.0",
-    "@aws-cdk/aws-iam": "^0.13.0",
-    "@aws-cdk/aws-kms": "^0.13.0",
-    "@aws-cdk/aws-s3": "^0.13.0",
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/assets": "^0.14.1",
+    "@aws-cdk/aws-cloudwatch": "^0.14.1",
+    "@aws-cdk/aws-codecommit": "^0.14.1",
+    "@aws-cdk/aws-codepipeline-api": "^0.14.1",
+    "@aws-cdk/aws-events": "^0.14.1",
+    "@aws-cdk/aws-iam": "^0.14.1",
+    "@aws-cdk/aws-kms": "^0.14.1",
+    "@aws-cdk/aws-s3": "^0.14.1",
+    "@aws-cdk/cdk": "^0.14.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

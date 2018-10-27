@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-quickstarts",
-  "version": "0.13.0",
+  "version": "0.14.1",
   "description": "AWS Quickstarts for the CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -48,15 +48,15 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "^0.13.0",
-    "pkglint": "^0.13.0"
+    "cdk-build-tools": "^0.14.1",
+    "pkglint": "^0.14.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudformation": "^0.13.0",
-    "@aws-cdk/aws-ec2": "^0.13.0",
-    "@aws-cdk/aws-iam": "^0.13.0",
-    "@aws-cdk/aws-rds": "^0.13.0",
-    "@aws-cdk/cdk": "^0.13.0"
+    "@aws-cdk/aws-cloudformation": "^0.14.1",
+    "@aws-cdk/aws-ec2": "^0.14.1",
+    "@aws-cdk/aws-iam": "^0.14.1",
+    "@aws-cdk/aws-rds": "^0.14.1",
+    "@aws-cdk/cdk": "^0.14.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

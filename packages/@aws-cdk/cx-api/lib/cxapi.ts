@@ -4,6 +4,24 @@
 
 import { Environment } from './environment';
 
+/**
+ * Bump this to the library version if and only if the CX protocol changes.
+ *
+ * We could also have used 1, 2, 3, ... here to indicate protocol versions, but
+ * those then still need to be mapped to software versions to be useful. So we
+ * might as well use the software version as protocol version and immediately
+ * generate a useful error message from this.
+ *
+ * Note the following:
+ *
+ * - The versions are not compared in a semver way, they are used as
+ *    opaque ordered tokens.
+ * - The version needs to be set to the NEXT releasable version when it's
+ *   updated (as the current verison in package.json has already been released!)
+ * - The request does not have versioning yet, only the response.
+ */
+export const PROTO_RESPONSE_VERSION = '0.14.0';
+
 export const OUTFILE_NAME = 'cdk.out';
 export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
@@ -21,6 +39,10 @@ export interface MissingContext {
 }
 
 export interface SynthesizeResponse {
+  /**
+   * Protocol version
+   */
+  version: string;
   stacks: SynthesizedStack[];
   runtime?: AppRuntime;
 }

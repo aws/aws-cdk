@@ -141,6 +141,16 @@ export interface FunctionProps {
   securityGroup?: ec2.SecurityGroupRef;
 
   /**
+   * Whether to allow the Lambda to send all network traffic
+   *
+   * If set to false, you must individually add traffic rules to allow the
+   * Lambda to connect to network targets.
+   *
+   * @default true
+   */
+  allowAllOutbound?: boolean;
+
+  /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
    * an SQS queue with default options will be defined for your Function.
    *
@@ -312,15 +322,21 @@ export class Function extends FunctionRef {
    * Lambda creation properties.
    */
   private configureVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
+    if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
+      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
+    }
+
     if (!props.vpc) { return undefined; }
 
-    let securityGroup = props.securityGroup;
-    if (!securityGroup) {
-      securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.uniqueId,
-      });
+    if (props.securityGroup && props.allowAllOutbound !== undefined) {
+      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
     }
+
+    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc: props.vpc,
+      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      allowAllOutbound: props.allowAllOutbound
+    });
 
     this._connections = new ec2.Connections({ securityGroup });
 

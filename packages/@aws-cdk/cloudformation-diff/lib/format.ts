@@ -60,13 +60,13 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
         ADDITION,
         formatImpact(diff.changeImpact),
         colors.blue(logicalId),
-        formatValue(diff.resourceType, colors.green));
+        formatValue(diff.newResourceType, colors.green));
     } else if (diff.isUpdate) {
       print('%s %s %s (type: %s)',
         UPDATE,
         formatImpact(diff.changeImpact),
         colors.blue(logicalId),
-        formatValue(diff.resourceType, colors.green));
+        formatValue(diff.newResourceType, colors.green));
       let processedCount = 0;
       diff.forEach((type, name, values) => {
         processedCount += 1;
@@ -78,7 +78,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
         REMOVAL,
         formatImpact(diff.changeImpact),
         colors.blue(logicalId),
-        formatValue(diff.resourceType, colors.green));
+        formatValue(diff.oldResourceType, colors.green));
     }
   }
 

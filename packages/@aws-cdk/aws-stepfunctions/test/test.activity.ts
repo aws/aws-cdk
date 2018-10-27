@@ -63,13 +63,13 @@ export = {
         test.deepEqual(cdk.resolve(activity.metricRunTime()), {
             ...sharedMetric,
             metricName: 'ActivityRunTime',
-            statistic: 'avg'
+            statistic: 'Average'
         });
 
         test.deepEqual(cdk.resolve(activity.metricFailed()), {
             ...sharedMetric,
             metricName: 'ActivitiesFailed',
-            statistic: 'sum'
+            statistic: 'Sum'
         });
 
         test.done();
