@@ -57,6 +57,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.14.1",
+    "@aws-cdk/aws-events": "^0.14.1",
     "@types/lodash": "^4.14.116",
     "cdk-build-tools": "^0.14.1",
     "cdk-integ-tools": "^0.14.1",
