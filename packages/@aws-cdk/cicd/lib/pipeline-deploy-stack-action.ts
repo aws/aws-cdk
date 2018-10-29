@@ -14,14 +14,15 @@ export interface PipelineDeployStackActionProps {
    */
   stage: api.IStage;
   /**
-   * The name to use when creating a ChangeSet for the stack.
-   */
-  changeSetName: string;
-  /**
    * The CodePipeline artifact that holds the synthesized app.
    */
   inputArtifact: api.Artifact;
 
+  /**
+   * The name to use when creating a ChangeSet for the stack.
+   * @default CDK-CodePipeline-ChangeSet
+   */
+  changeSetName?: string;
   /**
    * The runOrder for the CodePipeline action creating the ChangeSet.
    * @default 1
@@ -53,9 +54,10 @@ export class PipelineDeployStackAction extends cdk.Construct {
     }
 
     this.stack = props.stack;
+    const changeSetName = props.changeSetName || 'CDK-CodePipeline-ChangeSet';
 
     new cfn.PipelineCreateReplaceChangeSetAction(this, 'ChangeSet', {
-      changeSetName: props.changeSetName,
+      changeSetName,
       runOrder: createChangeSetRunOrder,
       stackName: props.stack.name,
       stage: props.stage,
@@ -63,7 +65,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
     });
 
     new cfn.PipelineExecuteChangeSetAction(this, 'Execute', {
-      changeSetName: props.changeSetName,
+      changeSetName,
       runOrder: executeChangeSetRunOrder,
       stackName: props.stack.name,
       stage: props.stage,
