@@ -267,7 +267,7 @@ export class PolicyStatement extends Token {
   //
 
   /**
-   * Sets the permission effect to deny access to resources.
+   * Sets the permission effect to allow access to resources.
    */
   public allow(): PolicyStatement {
     this.effect = PolicyStatementEffect.Allow;
@@ -275,7 +275,7 @@ export class PolicyStatement extends Token {
   }
 
   /**
-   * Sets the permission effect to allow access to resources.
+   * Sets the permission effect to deny access to resources.
    */
   public deny(): PolicyStatement {
     this.effect = PolicyStatementEffect.Deny;
