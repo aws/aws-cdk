@@ -212,9 +212,9 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
 
     launchConfig.addDependency(this.role);
 
-    const minSize = props.minSize || 1;
-    const maxSize = props.maxSize || 1;
-    const desiredCapacity = props.desiredCapacity || 1;
+    const minSize = props.minSize !== undefined ? props.minSize : 1;
+    const maxSize = props.maxSize !== undefined ? props.maxSize : 1;
+    const desiredCapacity = props.desiredCapacity !== undefined ? props.desiredCapacity : 1;
 
     if (desiredCapacity < minSize || desiredCapacity > maxSize) {
       throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
