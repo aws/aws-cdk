@@ -22,6 +22,15 @@ export interface RoleProps {
   managedPolicyArns?: string[];
 
   /**
+   * A list of named policies to inline into this role. These policies will be
+   * created with the role, whereas those added by ``addToPolicy`` are added
+   * using a separate CloudFormation resource (allowing a way around circular
+   * dependencies that could otherwise be introduced).
+   * @default No policy is inlined in the Role resource.
+   */
+  inlinePolicies?: { [name: string]: PolicyDocument };
+
+  /**
    * The path associated with this role. For information about IAM paths, see
    * Friendly Names and Paths in IAM User Guide.
    */
@@ -119,15 +128,28 @@ export class Role extends Construct implements IRole {
     const role = new cloudformation.RoleResource(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
+      policies: _flatten(props.inlinePolicies),
       path: props.path,
       roleName: props.roleName,
-      maxSessionDuration: props.maxSessionDurationSec
+      maxSessionDuration: props.maxSessionDurationSec,
     });
 
     this.roleArn = role.roleArn;
     this.principal = new ArnPrincipal(this.roleArn);
     this.roleName = role.roleName;
     this.dependencyElements = [ role ];
+
+    function _flatten(policies?: { [name: string]: PolicyDocument }) {
+      if (policies == null || Object.keys(policies).length === 0) {
+        return undefined;
+      }
+      const result = new Array<cloudformation.RoleResource.PolicyProperty>();
+      for (const policyName of Object.keys(policies)) {
+        const policyDocument = policies[policyName];
+        result.push({ policyName, policyDocument });
+      }
+      return result;
+    }
   }
 
   /**
