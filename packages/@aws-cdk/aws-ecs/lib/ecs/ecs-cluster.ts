@@ -42,7 +42,7 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
       instanceType: props.instanceType || new ec2.InstanceTypePair(ec2.InstanceClass.T2, ec2.InstanceSize.Micro),
       machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate,
-      minSize: 0, // NOTE: This differs from default of 1 in ASG construct lib -- also does not appear to work?
+      minSize: 0,
       maxSize: props.size || 1,
       desiredCapacity: props.size || 1
     });
@@ -96,6 +96,8 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
 
     this.autoScalingGroup = autoScalingGroup;
   }
+
+  // TODO Add cluster scaling API
 
   /**
    * Export the EcsCluster
