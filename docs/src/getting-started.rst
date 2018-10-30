@@ -31,7 +31,7 @@ You must install
 toolkit and language bindings.
 
 You must set the `JAVA_HOME` environment variable to the path to where you have
-installed the JDK or JRE installed on your machine to build an |cdk| app in Java.
+installed the JDK on your machine to build an |cdk| app in Java.
 
 .. _setup_recommendations:
 
@@ -69,7 +69,7 @@ Initializing the Project
 
 .. note::
 
-    This guide walks you through the process of creating a |cdk| project.
+    This guide walks you through the process of creating an |cdk| project.
     You can also use the
     :code:`cdk init` command to create a skeleton project from a
     template in any of the supported languages except JavaScript.
@@ -94,6 +94,13 @@ Create an empty project structure for the |cdk| app.
             git init
             npm init -y # creates package.json
 
+	Create a **.gitignore** file with the following content:
+
+	.. code-block:: sh
+
+	    *.js
+            node_modules
+
     .. group-tab:: TypeScript
 
         Create an empty source-controlled directory for your project and an
@@ -105,6 +112,14 @@ Create an empty project structure for the |cdk| app.
             cd hello-cdk
             git init
             npm init -y # creates package.json
+
+	Create a **.gitignore** file with the following content:
+
+	.. code-block:: sh
+
+	    *.js
+	    *.d.ts
+            node_modules
 
         Add the `build` and `watch` TypeScript commands to **package.json**:
 
@@ -129,6 +144,27 @@ Create an empty project structure for the |cdk| app.
             }
 
     .. group-tab:: Java
+
+        Create an empty source-controlled directory for your project:
+
+        .. code-block:: sh
+
+            mkdir hello-cdk
+            cd hello-cdk
+            git init
+
+	Create a **.gitignore** file with the following content:
+
+	.. code-block:: sh
+
+	    .classpath.txt
+            target
+            .classpath
+            .project
+            .idea
+            .settings
+            .vscode
+            *.iml
 
         Use your favorite IDE to create a Maven-based empty Java 8 project.
 
