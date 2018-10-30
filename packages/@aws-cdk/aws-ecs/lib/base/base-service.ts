@@ -41,7 +41,7 @@ export interface BaseServiceProps {
   /**
    * Time after startup to ignore unhealthy load balancer checks.
    *
-   * @default ???
+   * @default ??? FIXME
    */
   healthCheckGracePeriodSeconds?: number;
 
@@ -75,8 +75,8 @@ export abstract class BaseService extends cdk.Construct
       serviceName: props.serviceName,
       loadBalancers: new cdk.Token(() => this.loadBalancers),
       deploymentConfiguration: {
-        maximumPercent: props.maximumPercent,
-        minimumHealthyPercent: props.minimumHealthyPercent
+        maximumPercent: props.maximumPercent || 200,
+        minimumHealthyPercent: props.minimumHealthyPercent || 50
       },
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
