@@ -81,6 +81,24 @@ export = {
       test.done();
     },
 
+    "errors when no container specified on task definition"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.FargateCluster(stack, 'FargateCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, "FargateService", {
+          cluster,
+          taskDefinition,
+        });
+      });
+
+      test.done();
+    },
+
     "allows specifying assignPublicIP as enabled"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -96,7 +114,6 @@ export = {
         cluster,
         taskDefinition,
         assignPublicIp: true
-
       });
 
       // THEN
