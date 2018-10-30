@@ -282,7 +282,7 @@ class. Create an empty **App**:
             import java.util.Arrays;
 
             public class MyApp {
-                public static void main(final String[] argv) {
+                public static void main(final String argv[]) {
                     App app = new App();
 
                     // Create your stacks here as:
@@ -533,10 +533,15 @@ Define a stack and add it to the app.
 
             import software.amazon.awscdk.App;
             import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
 
             public class MyStack extends Stack {
-                public MyStack(final App parent, final String id) {
-                    super(parent, id);
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
                 }
             }
 
@@ -548,19 +553,15 @@ Define a stack and add it to the app.
             package com.acme;
 
             import software.amazon.awscdk.App;
-
             import java.util.Arrays;
-            import java.util.List;
 
-            public class MyApp extends App {
-                public MyApp(final List<String> argv) {
-                    super(argv);
+            public class MyApp {
+                public static void main(final String argv[]) {
+                    App app = new App();
 
-                    new MyStack(this, "hello-cdk");
-                }
+                    new MyStack(app, "hello-cdk");
 
-                public static void main(final String[] argv) {
-                    System.out.println(new MyApp(Arrays.asList(argv)).run());
+                    app.run();
                 }
             }
 
@@ -709,12 +710,17 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
             import software.amazon.awscdk.App;
             import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
             import software.amazon.awscdk.services.s3.Bucket;
             import software.amazon.awscdk.services.s3.BucketProps;
 
             public class MyStack extends Stack {
-                public MyStack(final App parent, final String id) {
-                    super(parent, id);
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
 
                     new Bucket(this, "MyFirstBucket", BucketProps.builder()
                             .withVersioned(true)
