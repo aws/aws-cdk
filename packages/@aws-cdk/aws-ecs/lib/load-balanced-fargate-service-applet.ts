@@ -4,8 +4,15 @@ import { DockerHub } from './container-image';
 import { FargateCluster } from './fargate/fargate-cluster';
 import { LoadBalancedFargateService } from './load-balanced-fargate-service';
 
+/**
+ * Properties for a LoadBalancedEcsServiceApplet
+ */
 export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
+  /**
+   * The image to start (from DockerHub)
+   */
   image: string;
+
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -65,6 +72,9 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
   publicTasks?: boolean;
 }
 
+/**
+ * An applet for a LoadBalancedFargateService
+ */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
   constructor(parent: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
     super(parent, id, props);

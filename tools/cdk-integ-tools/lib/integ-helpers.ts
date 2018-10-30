@@ -5,6 +5,9 @@ import fs = require('fs');
 import path = require('path');
 import util = require('util');
 
+const stat = util.promisify(fs.stat);
+const readdir = util.promisify(fs.readdir);
+
 export class IntegrationTests {
   constructor(private readonly directory: string) {
   }
@@ -18,13 +21,32 @@ export class IntegrationTests {
   }
 
   public async discover(): Promise<IntegrationTest[]> {
-    const files = await util.promisify(fs.readdir)(this.directory);
-    const integs = files.filter(fileName => fileName.startsWith('integ.') && fileName.endsWith('.js'));
+    const files = await this.readTree();
+    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
     return await this.request(integs);
   }
 
   public async request(files: string[]): Promise<IntegrationTest[]> {
     return files.map(fileName => new IntegrationTest(this.directory, fileName));
+  }
+
+  private async readTree(): Promise<string[]> {
+    const ret = new Array<string>();
+
+    const rootDir = this.directory;
+
+    async function recurse(dir: string) {
+      const files = await readdir(dir);
+      for (const file of files) {
+        const fullPath = path.join(dir, file);
+        const statf = await stat(fullPath);
+        if (statf.isFile()) { ret.push(fullPath.substr(rootDir.length + 1)); }
+        if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
+      }
+    }
+
+    await recurse(this.directory);
+    return ret;
   }
 }
 

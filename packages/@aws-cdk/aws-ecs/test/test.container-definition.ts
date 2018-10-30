@@ -1,3 +1,4 @@
+import { expect, haveResource } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -205,5 +206,35 @@ export = {
         test.done();
       },
     },
+  },
+
+  'can add AWS logging to container definition'(test: Test) {
+    // GIVEN
+    const stack =  new cdk.Stack();
+    const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.DockerHub.image('test'),
+      logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": { Ref: "LoggingLogGroupC6B8E20B" },
+              "awslogs-stream-prefix": "prefix",
+              "awslogs-region": { Ref: "AWS::Region" }
+            }
+          },
+        }
+      ]
+    }));
+
+    test.done();
   },
 };

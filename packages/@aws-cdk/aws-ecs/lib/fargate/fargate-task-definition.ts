@@ -1,6 +1,9 @@
 import cdk = require('@aws-cdk/cdk');
 import { BaseTaskDefinition, BaseTaskDefinitionProps, Compatibilities, NetworkMode } from '../base/base-task-definition';
 
+/**
+ * Properties to define a Fargate Task
+ */
 export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
   /**
    * The number of cpu units used by the task.
@@ -36,7 +39,13 @@ export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
   memoryMiB?: string;
 }
 
+/**
+ * A definition for Tasks on a Fargate cluster
+ */
 export class FargateTaskDefinition extends BaseTaskDefinition {
+  /**
+   * The configured network mode
+   */
   public readonly networkMode = NetworkMode.AwsVpc;
 
   constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {

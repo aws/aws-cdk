@@ -3,6 +3,9 @@ import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
 import { cloudformation } from '../ecs.generated';
 
+/**
+ * Basic task definition properties
+ */
 export interface BaseTaskDefinitionProps {
   /**
    * Namespace for task definition versions
@@ -34,10 +37,28 @@ export interface BaseTaskDefinitionProps {
   volumes?: Volume[];
 }
 
+/**
+ * Base class for Ecs and Fargate task definitions
+ */
 export abstract class BaseTaskDefinition extends cdk.Construct {
+  /**
+   * The family name of this task definition
+   */
   public readonly family: string;
+
+  /**
+   * ARN of this task definition
+   */
   public readonly taskDefinitionArn: string;
+
+  /**
+   * Task role used by this task definition
+   */
   public readonly taskRole: iam.Role;
+
+  /**
+   * Network mode used by this task definition
+   */
   public abstract readonly networkMode: NetworkMode;
 
   /**
@@ -48,8 +69,22 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
    * container.
    */
   public defaultContainer?: ContainerDefinition;
+
+  /**
+   * All containers
+   */
   private readonly containers = new Array<ContainerDefinition>();
+
+  /**
+   * All volumes
+   */
   private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
+
+  /**
+   * Execution role for this task definition
+   *
+   * Will be created as needed.
+   */
   private executionRole?: iam.Role;
 
   constructor(parent: cdk.Construct, name: string, props: BaseTaskDefinitionProps, additionalProps: any) {
@@ -87,8 +122,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   }
 
   /**
-   * Add a container to this task
-   * FIXME pass in actual container instead of container props?
+   * Create a new container to this task definition
    */
   public addContainer(id: string, props: ContainerDefinitionProps) {
     const container = new ContainerDefinition(this, id, this, props);
@@ -103,6 +137,9 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
     return container;
   }
 
+  /**
+   * Add a volume to this task definition
+   */
   private addVolume(volume: Volume) {
     this.volumes.push(volume);
   }
@@ -148,18 +185,43 @@ export enum NetworkMode {
   Host = 'host',
 }
 
+/**
+ * Compatibilties
+ */
 export enum Compatibilities {
+  /**
+   * EC2 capabilities
+   */
   Ec2 = "EC2",
+
+  /**
+   * Fargate capabilities
+   */
   Fargate = "FARGATE"
 }
 
-// FIXME separate Volume from InstanceVolume (Host not supported in Fargate)
+/**
+ * Volume definition
+ */
 export interface Volume {
+  /**
+   * Path on the host
+   */
   host?: Host;
+
+  /**
+   * A name for the volume
+   */
   name?: string;
   // FIXME add dockerVolumeConfiguration
 }
 
+/**
+ * A volume host
+ */
 export interface Host {
+  /**
+   * Source path on the host
+   */
   sourcePath?: string;
 }

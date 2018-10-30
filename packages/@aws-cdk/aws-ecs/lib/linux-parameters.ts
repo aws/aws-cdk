@@ -1,37 +1,74 @@
 import { cloudformation } from './ecs.generated';
 
+/**
+ * Linux parameter setup in a container
+ */
 export class LinuxParameters {
+  /**
+   * Whether the init process is enabled
+   */
   public initProcessEnabled?: boolean;
 
+  /**
+   * The shared memory size
+   */
   public sharedMemorySize?: number;
 
+  /**
+   * Capabilities to be added
+   */
   private readonly capAdd: Capability[] = [];
 
+  /**
+   * Capabilities to be dropped
+   */
   private readonly capDrop: Capability[] = [];
 
+  /**
+   * Device mounts
+   */
   private readonly devices: Device[] = [];
 
+  /**
+   * TMPFS mounts
+   */
   private readonly tmpfs: Tmpfs[] = [];
 
   /**
-   * AddCapabilities only works with EC2 launch type
+   * Add one or more capabilities
+   *
+   * Only works with EC2 launch type.
    */
   public addCapabilities(...cap: Capability[]) {
     this.capAdd.push(...cap);
   }
 
+  /**
+   * Drop one or more capabilities
+   *
+   * Only works with EC2 launch type.
+   */
   public dropCapabilities(...cap: Capability[]) {
     this.capDrop.push(...cap);
   }
 
+  /**
+   * Add one or more devices
+   */
   public addDevices(...device: Device[]) {
     this.devices.push(...device);
   }
 
+  /**
+   * Add one or more tmpfs mounts
+   */
   public addTmpfs(...tmpfs: Tmpfs[]) {
     this.tmpfs.push(...tmpfs);
   }
 
+  /**
+   * Render the Linux parameters to a CloudFormation object
+   */
   public renderLinuxParameters(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
@@ -46,9 +83,27 @@ export class LinuxParameters {
   }
 }
 
+/**
+ * A host device
+ */
 export interface Device {
+  /**
+   * Path in the container
+   *
+   * @default Same path as the host
+   */
   containerPath?: string,
+
+  /**
+   * Path on the host
+   */
   hostPath: string,
+
+  /**
+   * Permissions
+   *
+   * @default Readonly
+   */
   permissions?: DevicePermission[]
 }
 
@@ -60,9 +115,23 @@ function renderDevice(device: Device): cloudformation.TaskDefinitionResource.Dev
   };
 }
 
+/**
+ * A tmpfs mount
+ */
 export interface Tmpfs {
+  /**
+   * Path in the container to mount
+   */
   containerPath: string,
+
+  /**
+   * Size of the volume
+   */
   size: number,
+
+  /**
+   * Mount options
+   */
   mountOptions?: TmpfsMountOption[],
 }
 
@@ -74,6 +143,9 @@ function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsP
   };
 }
 
+/**
+ * A Linux capability
+ */
 export enum Capability {
   All = "ALL",
   AuditControl = "AUDIT_CONTROL",
@@ -115,12 +187,29 @@ export enum Capability {
   WakeAlarm = "WAKE_ALARM"
 }
 
+/**
+ * Permissions for device access
+ */
 export enum DevicePermission {
+  /**
+   * Read
+   */
   Read = "read",
+
+  /**
+   * Write
+   */
   Write = "write",
+
+  /**
+   * Make a node
+   */
   Mknod = "mknod",
 }
 
+/**
+ * Options for a tmpfs mount
+ */
 export enum TmpfsMountOption {
   Defaults = "defaults",
   Ro = "ro",

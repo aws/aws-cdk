@@ -3,6 +3,9 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from '../ecs.generated';
 
+/**
+ * Basic cluster properties
+ */
 export interface BaseClusterProps {
   /**
    * A name for the cluster.
@@ -12,19 +15,28 @@ export interface BaseClusterProps {
   clusterName?: string;
 
   /**
-   * The VPC where your ECS instances will be running
+   * The VPC where your ECS instances will be running or your ENIs will be deployed
    */
   vpc: ec2.VpcNetworkRef;
 }
 
-export class BaseCluster extends cdk.Construct {
+/**
+ * Base class for Ecs and Fargate clusters
+ */
+export abstract class BaseCluster extends cdk.Construct {
   /**
-   * The VPC this cluster was created in
+   * The VPC this cluster was created in.
    */
   public readonly vpc: ec2.VpcNetworkRef;
 
+  /**
+   * The ARN of this cluster
+   */
   public readonly clusterArn: string;
 
+  /**
+   * The name of this cluster
+   */
   public readonly clusterName: string;
 
   constructor(parent: cdk.Construct, name: string, props: BaseClusterProps) {

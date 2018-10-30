@@ -5,13 +5,20 @@ import { IFargateCluster } from './fargate/fargate-cluster';
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
 
+/**
+ * Properties for a LoadBalancedEcsService
+ */
 export interface LoadBalancedFargateServiceProps {
   /**
    * The cluster where your Fargate service will be deployed
    */
   cluster: IFargateCluster;
 
+  /**
+   * The image to start
+   */
   image: ContainerImage;
+
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -71,6 +78,9 @@ export interface LoadBalancedFargateServiceProps {
   publicTasks?: boolean;
 }
 
+/**
+ * A single task running on an ECS cluster fronted by a load balancer
+ */
 export class LoadBalancedFargateService extends cdk.Construct {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
 
@@ -110,5 +120,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       port: 80,
       targets: [service]
     });
+
+    new cdk.Output(this, 'LoadBalancerDNS', { value: lb.dnsName });
   }
 }

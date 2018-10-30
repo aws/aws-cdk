@@ -5,6 +5,9 @@ import { BaseTaskDefinition } from '../base/base-task-definition';
 import { IFargateCluster } from './fargate-cluster';
 import { FargateTaskDefinition } from './fargate-task-definition';
 
+/**
+ * Properties to define a Fargate service
+ */
 export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
@@ -38,8 +41,18 @@ export interface FargateServiceProps extends BaseServiceProps {
   securityGroup?: ec2.SecurityGroupRef;
 }
 
+/**
+ * Start a service on an ECS cluster
+ */
 export class FargateService extends BaseService {
+  /**
+   * Manage allowed network traffic for this construct
+   */
   public readonly connections: ec2.Connections;
+
+  /**
+   * The Task Definition for this service
+   */
   public readonly taskDefinition: FargateTaskDefinition;
   protected readonly taskDef: BaseTaskDefinition;
 

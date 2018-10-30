@@ -8,11 +8,14 @@ import { cloudformation } from '../ecs.generated';
 import { IEcsCluster } from './ecs-cluster';
 import { EcsTaskDefinition } from './ecs-task-definition';
 
+/**
+ * Properties to define an ECS service
+ */
 export interface EcsServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IEcsCluster; // should be required? do we assume 'default' exists?
+  cluster: IEcsCluster;
 
   /**
    * Task Definition used for running tasks in the service
@@ -55,10 +58,22 @@ export interface EcsServiceProps extends BaseServiceProps {
   daemon?: boolean;
 }
 
+/**
+ * Start a service on an ECS cluster
+ */
 export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
+  /**
+   * Manage allowed network traffic for this construct
+   */
   public readonly connections: ec2.Connections;
+
+  /**
+   * Name of the cluster
+   */
   public readonly clusterName: string;
+
   protected readonly taskDef: BaseTaskDefinition;
+
   private readonly taskDefinition: EcsTaskDefinition;
   private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
   private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
@@ -215,6 +230,9 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
   }
 }
 
+/**
+ * Validate combinations of networking arguments
+ */
 function validateNoNetworkingProps(props: EcsServiceProps) {
   if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
     throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');

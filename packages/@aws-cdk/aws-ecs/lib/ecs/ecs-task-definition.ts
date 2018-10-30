@@ -2,6 +2,9 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseTaskDefinition, BaseTaskDefinitionProps, Compatibilities, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
 
+/**
+ * Properties to define an ECS task definition
+ */
 export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
   /**
    * The Docker networking mode to use for the containers in the task.
@@ -20,8 +23,18 @@ export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
   placementConstraints?: PlacementConstraint[];
 }
 
+/**
+ * Define Tasks to run on an ECS cluster
+ */
 export class EcsTaskDefinition extends BaseTaskDefinition {
+  /**
+   * The networkmode configuration of this task
+   */
   public readonly networkMode: NetworkMode;
+
+  /**
+   * Placement constraints for task instances
+   */
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[];
 
   constructor(parent: cdk.Construct, name: string, props: EcsTaskDefinitionProps = {}) {
@@ -49,6 +62,9 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
     this.placementConstraints.push(pc);
   }
 
+  /**
+   * Render the placement constraints
+   */
   private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
     return {
       type: pc.type,
@@ -57,12 +73,32 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
   }
 }
 
+/**
+ * A constraint on how instances should be placed
+ */
 export interface PlacementConstraint {
-  expression?: string;
+  /**
+   * The type of constraint
+   */
   type: PlacementConstraintType;
+
+  /**
+   * Additional information for the constraint
+   */
+  expression?: string;
 }
 
+/**
+ * A placement constraint type
+ */
 export enum PlacementConstraintType {
+  /**
+   * Place each task on a different instance
+   */
   DistinctInstance = "distinctInstance",
-    MemberOf = "memberOf"
+
+  /**
+   * Place tasks only on instances matching the expression in 'expression'
+   */
+  MemberOf = "memberOf"
 }

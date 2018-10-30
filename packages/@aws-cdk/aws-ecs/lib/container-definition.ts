@@ -5,6 +5,9 @@ import { cloudformation } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver } from './log-drivers/log-driver';
 
+/**
+ * Properties of a container definition
+ */
 export interface ContainerDefinitionProps {
   /**
    * The image to use for a container.
@@ -169,23 +172,53 @@ export interface ContainerDefinitionProps {
   logging?: LogDriver;
 }
 
+/**
+ * A definition for a single container in a Task
+ */
 export class ContainerDefinition extends cdk.Construct {
+  /**
+   * Access Linux Parameters
+   */
   public readonly linuxParameters = new LinuxParameters();
 
+  /**
+   * The configured mount points
+   */
   public readonly mountPoints = new Array<MountPoint>();
 
+  /**
+   * The configured port mappings
+   */
   public readonly portMappings = new Array<PortMapping>();
 
+  /**
+   * The configured volumes
+   */
   public readonly volumesFrom = new Array<VolumeFrom>();
 
+  /**
+   * The configured ulimits
+   */
   public readonly ulimits = new Array<Ulimit>();
 
+  /**
+   * Whether or not this container is essential
+   */
   public readonly essential: boolean;
 
+  /**
+   * The configured container links
+   */
   private readonly links = new Array<string>();
 
+  /**
+   * The task definition this container definition is part of
+   */
   private readonly taskDefinition: BaseTaskDefinition;
 
+  /**
+   * Whether this container uses an ECR image
+   */
   private _usesEcrImages: boolean = false;
 
   constructor(parent: cdk.Construct, id: string, taskDefinition: BaseTaskDefinition, private readonly props: ContainerDefinitionProps) {
@@ -195,6 +228,9 @@ export class ContainerDefinition extends cdk.Construct {
     props.image.bind(this);
   }
 
+  /**
+   * Add a link from this container to a different container
+   */
   public addLink(container: ContainerDefinition, alias?: string) {
     if (alias !== undefined) {
       this.links.push(`${container.id}:${alias}`);
@@ -203,10 +239,16 @@ export class ContainerDefinition extends cdk.Construct {
     }
   }
 
+  /**
+   * Add one or more mount points to this container
+   */
   public addMountPoints(...mountPoints: MountPoint[]) {
     this.mountPoints.push(...mountPoints);
   }
 
+  /**
+   * Add one or more port mappings to this container
+   */
   public addPortMappings(...portMappings: PortMapping[]) {
     for (const pm of portMappings) {
       if (this.taskDefinition.networkMode === NetworkMode.AwsVpc || this.taskDefinition.networkMode === NetworkMode.Host) {
@@ -223,10 +265,16 @@ export class ContainerDefinition extends cdk.Construct {
     this.portMappings.push(...portMappings);
   }
 
+  /**
+   * Add one or more ulimits to this container
+   */
   public addUlimits(...ulimits: Ulimit[]) {
     this.ulimits.push(...ulimits);
   }
 
+  /**
+   * Add one or more volumes to this container
+   */
   public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
     this.volumesFrom.push(...volumesFrom);
   }
@@ -238,16 +286,19 @@ export class ContainerDefinition extends cdk.Construct {
     this._usesEcrImages = true;
   }
 
+  /**
+   * Whether this container uses ECR images
+   */
   public get usesEcrImages() {
     return this._usesEcrImages;
   }
 
   /**
-   * Ingress Port is needed to set the security group ingress for the task/service.
+   * Ingress Port is needed to set the security group ingress for the task/service
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.id} hasn't defined any ports`);
+      throw new Error(`Container ${this.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -260,17 +311,21 @@ export class ContainerDefinition extends cdk.Construct {
     }
     return defaultPortMapping.containerPort;
   }
+
   /**
    * Return the port that the container will be listening on by default
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new Error(`Container ${this.id} hasn't defined any ports`);
+      throw new Error(`Container ${this.id} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
     return defaultPortMapping.containerPort;
   }
 
+  /**
+   * Render this container definition to a CloudFormation object
+   */
   public renderContainerDefinition(): cloudformation.TaskDefinitionResource.ContainerDefinitionProperty {
     return {
       command: this.props.command,
@@ -394,16 +449,32 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 }
 
 /**
- * Container ulimits. Correspond to ulimits options on docker run.
+ * Container ulimits.
+ *
+ * Correspond to ulimits options on docker run.
  *
  * NOTE: Does not work for Windows containers.
  */
 export interface Ulimit {
+  /**
+   * What resource to enforce a limit on
+   */
   name: UlimitName,
+
+  /**
+   * Soft limit of the resource
+   */
   softLimit: number,
+
+  /**
+   * Hard limit of the resource
+   */
   hardLimit: number,
 }
 
+/**
+ * Type of resource to set a limit on
+ */
 export enum UlimitName {
   Core = "core",
   Cpu = "cpu",
@@ -458,8 +529,18 @@ export interface PortMapping {
   protocol?: Protocol
 }
 
+/**
+ * Network protocol
+ */
 export enum Protocol {
+  /**
+   * TCP
+   */
   Tcp = "tcp",
+
+  /**
+   * UDP
+   */
   Udp = "udp",
 }
 
@@ -485,9 +566,19 @@ function renderMountPoint(mp: MountPoint): cloudformation.TaskDefinitionResource
   };
 }
 
+/**
+ * A volume from another container
+ */
 export interface VolumeFrom {
-    sourceContainer: string,
-    readOnly: boolean,
+  /**
+   * Name of the source container
+   */
+  sourceContainer: string,
+
+  /**
+   * Whether the volume is read only
+   */
+  readOnly: boolean,
 }
 
 function renderVolumeFrom(vf: VolumeFrom): cloudformation.TaskDefinitionResource.VolumeFromProperty {

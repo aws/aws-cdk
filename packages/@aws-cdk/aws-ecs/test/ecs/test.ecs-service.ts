@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
@@ -387,5 +388,37 @@ export = {
 
       test.done();
     }
+  },
+
+  'classic ELB': {
+    'can attach to classic ELB'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'VPC');
+      const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
+      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.DockerHub.image('test'),
+      });
+      container.addPortMappings({ containerPort: 808 });
+      const service = new ecs.EcsService(stack, 'Service', { cluster, taskDefinition });
+
+      // WHEN
+      const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+      lb.addTarget(service);
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        LoadBalancers: [
+          {
+            ContainerName: "web",
+            ContainerPort: 808,
+            LoadBalancerName: { Ref: "LB8A12904C" }
+          }
+        ],
+      }));
+
+      test.done();
+    },
   }
 };

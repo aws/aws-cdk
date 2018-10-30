@@ -5,6 +5,9 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
 
+/**
+ * Properties to define an ECS cluster
+ */
 export interface EcsClusterProps extends BaseClusterProps {
   /**
    * Whether or not the containers can access the instance role
@@ -26,12 +29,25 @@ export interface EcsClusterProps extends BaseClusterProps {
   size?: number;
 }
 
+/**
+ * A container cluster that runs on your EC2 instances
+ */
 export class EcsCluster extends BaseCluster implements IEcsCluster {
+  /**
+   * Import an existing cluster
+   */
   public static import(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps): IEcsCluster {
     return new ImportedEcsCluster(parent, name, props);
   }
 
+  /**
+   * The AutoScalingGroup that the cluster is running on
+   */
   public readonly autoScalingGroup: autoscaling.AutoScalingGroup;
+
+  /**
+   * SecurityGroup of the EC2 instances
+   */
   public readonly securityGroup: ec2.SecurityGroupRef;
 
   constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
@@ -59,23 +75,6 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
       autoScalingGroup.addUserData('sudo service iptables save');
     }
 
-    // Note: if the ASG doesn't launch or doesn't register itself with
-    // ECS, *Cluster* stabilization will fail after timing our for an hour
-    // or so, because the *Service* doesn't have any running instances.
-    // During this time, you CANNOT DO ANYTHING ELSE WITH YOUR STACK.
-    //
-    // Apart from the weird relationship here between Cluster and Service
-    // (why is Cluster failing and not Service?), the experience is...
-    //
-    // NOT GREAT.
-    //
-    // Also, there's sort of a bidirectional dependency between Cluster and ASG:
-    //
-    // - ASG depends on Cluster to get the ClusterName (which needs to go into
-    //   UserData).
-    // - Cluster depends on ASG to boot up, so the service is launched, so the
-    //   Cluster can stabilize.
-
     // ECS instances must be able to do these things
     // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
     autoScalingGroup.addToRolePolicy(new iam.PolicyStatement().addActions(
@@ -96,8 +95,6 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
 
     this.autoScalingGroup = autoScalingGroup;
   }
-
-  // TODO Add cluster scaling API
 
   /**
    * Export the EcsCluster
@@ -147,6 +144,9 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
 export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
   private static AmiParameterName = "/aws/service/ecs/optimized-ami/amazon-linux/recommended";
 
+  /**
+   * Return the correct image
+   */
   public getImage(parent: cdk.Construct): ec2.MachineImage {
     const ssmProvider = new cdk.SSMParameterProvider(parent, {
         parameterName: EcsOptimizedAmi.AmiParameterName
@@ -159,24 +159,63 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
   }
 }
 
+/**
+ * An ECS cluster
+ */
 export interface IEcsCluster {
+  /**
+   * Name of the cluster
+   */
   readonly clusterName: string;
+
+  /**
+   * VPC that the cluster instances are running in
+   */
   readonly vpc: ec2.VpcNetworkRef;
+
+  /**
+   * Security group of the cluster instances
+   */
   readonly securityGroup: ec2.SecurityGroupRef;
 }
 
+/**
+ * Properties to import an ECS cluster
+ */
 export interface ImportedEcsClusterProps {
-  readonly clusterName: string;
-  readonly vpc: ec2.VpcNetworkRefProps;
-  readonly securityGroup: ec2.SecurityGroupRefProps;
+  /**
+   * Name of the cluster
+   */
+  clusterName: string;
+
+  /**
+   * VPC that the cluster instances are running in
+   */
+  vpc: ec2.VpcNetworkRefProps;
+
+  /**
+   * Security group of the cluster instances
+   */
+  securityGroup: ec2.SecurityGroupRefProps;
 }
 
-// /**
-//  * A EcsCluster that has been imported
-//  */
+/**
+ * An EcsCluster that has been imported
+ */
 class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
+  /**
+   * Name of the cluster
+   */
   public readonly clusterName: string;
+
+  /**
+   * VPC that the cluster instances are running in
+   */
   public readonly vpc: ec2.VpcNetworkRef;
+
+  /**
+   * Security group of the cluster instances
+   */
   public readonly securityGroup: ec2.SecurityGroupRef;
 
   constructor(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps) {

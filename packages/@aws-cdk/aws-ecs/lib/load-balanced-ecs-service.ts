@@ -5,6 +5,9 @@ import { IEcsCluster } from './ecs/ecs-cluster';
 import { EcsService } from './ecs/ecs-service';
 import { EcsTaskDefinition } from './ecs/ecs-task-definition';
 
+/**
+ * Properties for a LoadBalancedEcsService
+ */
 export interface LoadBalancedEcsServiceProps {
   /**
    * The cluster where your Fargate service will be deployed
@@ -12,10 +15,7 @@ export interface LoadBalancedEcsServiceProps {
   cluster: IEcsCluster;
 
   /**
-   * The image to use for a container.
-   *
-   * You can use images in the Docker Hub registry or specify other
-   * repositories (repository-url/image:tag).
+   * The image to start.
    */
   image: ContainerImage;
 
@@ -56,7 +56,13 @@ export interface LoadBalancedEcsServiceProps {
   publicLoadBalancer?: boolean;
 }
 
+/**
+ * A single task running on an ECS cluster fronted by a load balancer
+ */
 export class LoadBalancedEcsService extends cdk.Construct {
+  /**
+   * The load balancer that is fronting the ECS service
+   */
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
 
   constructor(parent: cdk.Construct, id: string, props: LoadBalancedEcsServiceProps) {
@@ -91,5 +97,7 @@ export class LoadBalancedEcsService extends cdk.Construct {
       port: 80,
       targets: [service]
     });
+
+    new cdk.Output(this, 'LoadBalancerDNS', { value: lb.dnsName });
   }
 }
