@@ -69,6 +69,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
 
     const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
       containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
+      volumes: new cdk.Token(() => this.volumes),
       executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -87,6 +88,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
 
   /**
    * Add a container to this task
+   * FIXME pass in actual container instead of container props?
    */
   public addContainer(id: string, props: ContainerDefinitionProps) {
     const container = new ContainerDefinition(this, id, this, props);
@@ -102,7 +104,6 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   }
 
   private addVolume(volume: Volume) {
-    // const v = this.renderVolume(volume);
     this.volumes.push(volume);
   }
 
@@ -152,9 +153,11 @@ export enum Compatibilities {
   Fargate = "FARGATE"
 }
 
+// FIXME separate Volume from InstanceVolume (Host not supported in Fargate)
 export interface Volume {
   host?: Host;
   name?: string;
+  // FIXME add dockerVolumeConfiguration
 }
 
 export interface Host {
