@@ -29,6 +29,10 @@ const service = new ecs.FargateService(stack, "Service", {
   taskDefinition,
 });
 
+const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
+// Quite low to try and force it to scale
+scaling.scaleOnCpuUtilization('ReasonableCpu', { targetUtilizationPercent: 10 });
+
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('PublicListener', { port: 80, open: true });
 listener.addTargets('Fargate', {

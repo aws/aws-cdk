@@ -76,7 +76,7 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
       placementConstraints: new cdk.Token(() => this.constraints),
       placementStrategies: new cdk.Token(() => this.strategies),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    });
+    }, props.cluster.clusterName);
 
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];

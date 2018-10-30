@@ -48,7 +48,7 @@ export class FargateService extends BaseService {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',
-    });
+    }, props.cluster.clusterName);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
     this.connections = new ec2.Connections({ securityGroup: this.securityGroup });

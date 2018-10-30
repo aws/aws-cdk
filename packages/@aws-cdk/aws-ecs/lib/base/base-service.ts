@@ -1,9 +1,12 @@
+import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
+import { ScalableTaskCount } from './scalable-task-count';
 
 export interface BaseServiceProps {
   /**
@@ -60,14 +63,17 @@ export abstract class BaseService extends cdk.Construct
   implements elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, cdk.IDependable {
   public readonly dependencyElements: cdk.IDependable[];
   public abstract readonly connections: ec2.Connections;
+  public readonly serviceArn: string;
   public readonly serviceName: string;
+  public readonly clusterName: string;
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
   protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
   protected readonly abstract taskDef: BaseTaskDefinition;
   protected _securityGroup?: ec2.SecurityGroupRef;
   private readonly resource: cloudformation.ServiceResource;
+  private scalableTaskCount?: ScalableTaskCount;
 
-  constructor(parent: cdk.Construct, name: string, props: BaseServiceProps, additionalProps: any) {
+  constructor(parent: cdk.Construct, name: string, props: BaseServiceProps, additionalProps: any, clusterName: string) {
     super(parent, name);
 
     this.resource = new cloudformation.ServiceResource(this, "Service", {
@@ -83,9 +89,10 @@ export abstract class BaseService extends cdk.Construct
       platformVersion: props.platformVersion,
       ...additionalProps
     });
-
-    this.dependencyElements = [this.resource];
+    this.serviceArn = this.resource.serviceArn;
     this.serviceName = this.resource.serviceName;
+    this.dependencyElements = [this.resource];
+    this.clusterName = clusterName;
   }
 
   /**
@@ -109,6 +116,23 @@ export abstract class BaseService extends cdk.Construct
 
   public get securityGroup(): ec2.SecurityGroupRef {
     return this._securityGroup!;
+  }
+
+  /**
+   * Enable autoscaling for the number of tasks in this service
+   */
+  public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
+    if (this.scalableTaskCount) {
+      throw new Error('AutoScaling of task count already enabled for this service');
+    }
+
+    return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
+      serviceNamespace: appscaling.ServiceNamespace.Ecs,
+      resourceId: `service/${this.clusterName}/${this.resource.serviceName}`,
+      dimension: 'ecs:service:DesiredCount',
+      role: this.makeAutoScalingRole(),
+      ...props
+    });
   }
 
   /**
@@ -158,6 +182,20 @@ export abstract class BaseService extends cdk.Construct
 
     const targetType = this.taskDef.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
     return { targetType };
+  }
+
+  /**
+   * Generate the role that will be used for autoscaling this service
+   */
+  private makeAutoScalingRole(): iam.IRole {
+    // Use a Service Linked Role.
+    return iam.Role.import(this, 'ScalingRole', {
+      roleArn: cdk.ArnUtils.fromComponents({
+        service: 'iam',
+        resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
+        resourceName: 'AWSServiceRoleForApplicationAutoScaling_ECSService',
+      })
+    });
   }
 }
 
