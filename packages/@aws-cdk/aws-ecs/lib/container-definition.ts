@@ -119,7 +119,7 @@ export interface ContainerDefinitionProps {
    * If your container attempts to exceed the allocated memory, the container
    * is terminated.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
    */
   memoryLimitMiB?: number;
 
@@ -131,7 +131,7 @@ export interface ContainerDefinitionProps {
    * it can consume up to the value specified by the Memory property or all of
    * the available memory on the container instance—whichever comes first.
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required.
+   * At least one of memoryLimitMiB and memoryReservationMiB is required for non-Fargate services.
    */
   memoryReservationMiB?: number;
 
@@ -302,6 +302,7 @@ export class ContainerDefinition extends cdk.Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters.renderLinuxParameters(),
+
     };
   }
 }
