@@ -11,3 +11,5 @@ coverage
 dist
 tsconfig.json
 tslint.json
+
+*.snk

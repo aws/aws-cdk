@@ -16,3 +16,5 @@ lib/*.zip
 coverage
 .nycrc
 .LAST_PACKAGE
+
+*.snk
