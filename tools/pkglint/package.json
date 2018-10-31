@@ -32,12 +32,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^5.0.4",
+    "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3"
   },
   "dependencies": {
     "case": "^1.5.5",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^4.0.2",
     "yargs": "^9.0.1"
   }
 }
