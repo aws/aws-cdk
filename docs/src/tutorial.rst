@@ -105,7 +105,7 @@ Step 2: Create a |LAM| Function to List all Widgets
 The next step is to create a |LAM| function to list all of the widgets in our
 |S3| bucket.
 
-Create the directory *resource* at the same level as the *bin* directory.
+Create the directory *resources* at the same level as the *bin* directory.
 
 .. code-block:: sh
 
@@ -122,28 +122,49 @@ in the *resources* directory.
     const bucketName = process.env.BUCKET;
 
     // For now we only handle GET /:
-    exports.main = function(event, context, callback) {
-      if (event.httpMethod == "GET") {
-        if (event.path.length == 1) {
-          S3.listObjectsV2({ Bucket: bucketName })
-            .promise()
-            .then(function(data) {
-              var body = { widgets: data.Contents.map(function(e) { return e.Key }) };
-              var response = {
-                statusCode: 200,
-                headers: {},
-                body: JSON.stringify(body)
-              };
-              callback(null, response);
-            })
-            .catch(rejectedPromise);
-        }
-      }
+    exports.main = async function(event, context) {
+      try {
+        var method = event.httpMethod;
 
-      function rejectedPromise(error) {
+        if (method == "GET") {
+          if (event.path.length == 1) {
+            const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
+            var body = {
+              widgets: data.Contents.map(function(e) { return e.Key })
+            };
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }
+          else {
+            // GET /name
+            var name = event.path.substring(1, event.path.length);
+  
+            const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
+            var body = data.Body.toString('utf-8');
+
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }
+        }
+        else {
+          var body = "We only accept GET, POST, and DELETE, not " + method;
+        
+          return {
+            statusCode: 200,
+            headers: {},
+            body: JSON.stringify(body)
+          };
+        }
+      } catch(error) {
         var body = error.stack || JSON.stringify(error, null, 2);
         var response = makeError(body);
-        callback(null, response);
+        return response;
       }
     }
 
@@ -165,9 +186,7 @@ Add the |APIGATEWAY|, |LAM|, and |S3| packages to our app.
 
 .. code-block:: sh
 
-    npm install @aws-cdk/aws-apigateway
-    npm install @aws-cdk/aws-lambda
-    npm install @aws-cdk/aws-s3
+    npm install @aws-cdk/aws-apigateway @aws-cdk/aws-lambda @aws-cdk/aws-s3
 
 Create the directory *lib* at the same level as the *bin* and *resources*
 directories.
@@ -313,143 +332,115 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
 
 .. code-block:: js
 
-    exports.main = function(event, context, callback) {
-      if (event.httpMethod != null) {
-        if (event.httpMethod != "") {
-          if (event.httpMethod == "GET") {
-            // GET / or GET /name?
-            var pathLength = event.path.length
+    exports.main = async function(event, context) {
+      try {
+        var method = event.httpMethod;
 
-            if (pathLength == 1) {
-              // GET /
-              console.log("GET /");
-
-              S3.listObjectsV2({ Bucket: bucketName })
-                .promise()
-                .then(function(data) {
-                  var body = { widgets: data.Contents.map(function(e) { return e.Key }) };
-                  console.log("Body for GET /: " + body);
-                  var response = makeResponse(body);
-                    console.log("GET / response: \n" + response);
-                  callback(null, response);
-              })
-                .catch(rejectedPromise);
-            }
-            else {
-              // GET /name
-              name = getName(event.path);
-
-              S3.getObject({ Bucket: bucketName, Key: name})
-                .promise()
-                .then(function(data) {
-                  var body = data.Body.toString('utf-8');
-                  var response = makeResponse(body);
-                  callback(null, response);
-              })
-                .catch(rejectedPromise);
-            }
-          }
-          else if (event.httpMethod == "POST") {
-            // POST /name
-            // Make sure we have a name
-            var pathLength = event.path.length
-
-            if (pathLength == 1) {
-              // Return error
-              var body = "NAME arg missing (/ supplied, not /name)";
-              console.log(body);
-              var response = makeError(body);
-              callback(null, response);
-            }
-            else {
-              name = getName(event.path);
-
-              // Create some dummy data to populate object
-              const now = new Date();
-              var data = name + " created: " + now;
-
-              var base64data = new Buffer(data, 'binary');
-
-              S3.putObject({
-                Bucket: bucketName,
-                Key: name,
-                Body: base64data,
-                ContentType: 'application/json'
-              }).promise()
-                .then(function() {
-                  var response = makeResponse(event.widgets);
-                  console.log("POST /name response: " + response);
-                  callback(null, response);
-                })
-                .catch(rejectedPromise);
-            }
-          }
-          else if (event.httpMethod == "DELETE") {
-            // DELETE /name
-            // Make sure we have a name
-            var pathLength = event.path.length
-
-            if (pathLength == 1) {
-              // Return error
-              var body = "NAME arg missing (/ supplied, not /name)";
-              var response = makeError(body);
-              callback(null, response);
-            }
-            else {
-              name = getName(event.path);
-
-              S3.deleteObject({ Bucket: bucketName, Key: name })
-                .promise()
-                .then(function(data) {
-                  var body = { success: true }
-                  var response = makeResponse(body);
-                  callback(null, response);
-              })
-                .catch(rejectedPromise);
-            }
+        if (method == "GET") {
+          if (event.path.length == 1) {
+            const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
+            var body = {
+              widgets: data.Contents.map(function(e) { return e.Key })
+            };
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
           }
           else {
-            // Return error
-            var body = "HTTP method " + event.httpMethod + " not supported";
-            var response = makeError(body);
-            callback(null, response);
+            // GET /name
+            var name = event.path.substring(1, event.path.length);
+  
+            const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
+            var body = data.Body.toString('utf-8');
+
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
           }
         }
+        else if (method == "POST") {
+          // POST /name
+          // Make sure we have a name
+          if (event.path.length == 1) {
+            // Return error
+            var body = "NAME arg missing (/ supplied, not /name)";
+
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }  
+          else {
+            var name = event.path.substring(1, event.path.length);
+
+            // Create some dummy data to populate object
+            const now = new Date();
+            var data = name + " created: " + now;
+
+            var base64data = new Buffer(data, 'binary');
+
+            await S3.putObject({
+              Bucket: bucketName,
+              Key: name,
+              Body: base64data,
+              ContentType: 'application/json'
+            }).promise();
+
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(event.widgets)
+            };
+          }
+        }
+        else if (method == "DELETE") {
+          // DELETE /name
+          // Make sure we have a name
+          if (event.path.length == 1) {
+            // Return error
+            var body = "NAME arg missing (/ supplied, not /name)";
+        
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }
+          else {
+            var name = event.path.substring(1, event.path.length);
+
+            await S3.deleteObject({ 
+              Bucket: bucketName, Key: name
+            }).promise();
+
+            var body = { success: true }
+            
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }
+        }
+        else {
+          var body = "We only accept GET, POST, and DELETE, not " + method;
+        
+          return {
+            statusCode: 200,
+            headers: {},
+            body: JSON.stringify(body)
+          };
+        }
+      } catch(error) {
+        var body = error.stack || JSON.stringify(error, null, 2);
+        var response = makeError(body);
+        return response;
       }
-    
-
-You probably noticed we also introduced three new helper functions:
-**getName**, **makeResponse**, and **makeError**.
-Add these to *widgets.js*.
-
-.. code-block:: js
-
-    // Get name from path /name
-    function getName(path) {
-      var name = path.substring(1, path.length);
-      return name;
-    }
-
-    // Create JSON response from body
-    function makeResponse(responseBody) {
-      var response = {
-        statusCode: 200,
-        headers: {},
-        body: JSON.stringify(responseBody)
-      };
-
-      return response;
-    }
-
-    // For bad requests
-    function makeError(body) {
-      var response = {
-        statusCode: 404,
-        headers: {},
-        body: JSON.stringify(body)
-      };
-
-      return response;
     }
 
 Wire these functions up to our API Gateway code in *widget_service.ts*
@@ -467,7 +458,7 @@ by adding the following code at the end of the constructor.
 
     // Remove a specific widget from the bucket with: DELETE /{name}
     const deleteWidgetIntegration = new apigateway.LambdaIntegration(handler);
-    
+
     widget.addMethod('POST', postWidgetIntegration);    // POST /{name}
     widget.addMethod('GET', getWidgetIntegration);       // GET /{name}
     widget.addMethod('DELETE', deleteWidgetIntegration); // DELETE /{name}
