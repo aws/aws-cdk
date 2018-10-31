@@ -1,0 +1,9 @@
+---
+- applet: ./test-applet:TestApplet
+  name: Stack1
+  prop1: stack1
+  prop2: 123
+- applet: ./test-applet:TestApplet
+  name: Stack2
+  prop1: stack2
+  prop2: 456

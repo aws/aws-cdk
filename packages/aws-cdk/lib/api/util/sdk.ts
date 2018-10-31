@@ -103,12 +103,21 @@ export class SDK {
       credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
+
   public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
     return new AWS.Route53({
       region,
       credentials: await this.credentialsCache.get(awsAccountId, mode),
     });
   }
+
+  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+    return new AWS.ECR({
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
+    });
+  }
+
   public async defaultRegion(): Promise<string | undefined> {
     return await getCLICompatibleDefaultRegion(this.profile);
   }

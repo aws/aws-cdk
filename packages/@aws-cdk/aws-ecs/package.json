@@ -61,13 +61,15 @@
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "^0.14.1",
     "@aws-cdk/aws-autoscaling": "^0.14.1",
+    "@aws-cdk/aws-cloudformation": "^0.14.1",
     "@aws-cdk/aws-cloudwatch": "^0.14.1",
     "@aws-cdk/aws-ec2": "^0.14.1",
     "@aws-cdk/aws-elasticloadbalancing": "^0.14.1",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.14.1",
     "@aws-cdk/aws-iam": "^0.14.1",
     "@aws-cdk/aws-logs": "^0.14.1",
-    "@aws-cdk/cdk": "^0.14.1"
+    "@aws-cdk/cdk": "^0.14.1",
+    "@aws-cdk/cx-api": "^0.14.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk"
 }

@@ -1,6 +1,6 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
-import { ContainerImage } from './container-image';
+import { IContainerImage } from './container-image';
 import { IEcsCluster } from './ecs/ecs-cluster';
 import { EcsService } from './ecs/ecs-service';
 import { EcsTaskDefinition } from './ecs/ecs-task-definition';
@@ -17,7 +17,7 @@ export interface LoadBalancedEcsServiceProps {
   /**
    * The image to start.
    */
-  image: ContainerImage;
+  image: IContainerImage;
 
   /**
    * The hard limit (in MiB) of memory to present to the container.
