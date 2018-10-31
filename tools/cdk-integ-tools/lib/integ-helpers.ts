@@ -112,6 +112,7 @@ export const STATIC_TEST_CONTEXT = {
   [DEFAULT_REGION_CONTEXT_KEY]: "test-region",
   "availability-zones:account=12345678:region=test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
+  "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
 };
 
 /**
