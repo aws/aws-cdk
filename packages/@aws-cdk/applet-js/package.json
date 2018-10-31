@@ -11,7 +11,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
-    "test": "cdk-test && /bin/bash test/test-applet.sh",
+    "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
