@@ -1,10 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import { resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sqs = require('../lib');
+import { Queue } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -56,7 +57,7 @@ export = {
   'addToPolicy will automatically create a policy for this queue'(test: Test) {
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'MyQueue');
-    queue.addToResourcePolicy(new PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new ArnPrincipal('arn')));
+    queue.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new iam.ArnPrincipal('arn')));
     expect(stack).toMatch({
       "Resources": {
         "MyQueueE6CA6235": {
@@ -113,92 +114,114 @@ export = {
     test.done();
   },
 
-  'iam': {
-    'grants permission to consume messages'(test: Test) {
+  'grants': {
+    'grantConsumeMessages'(test: Test) {
+      testGrant((q, p) => q.grantConsumeMessages(p),
+        'sqs:ReceiveMessage',
+        'sqs:ChangeMessageVisibility',
+        'sqs:ChangeMessageVisibilityBatch',
+        'sqs:GetQueueUrl',
+        'sqs:DeleteMessage',
+        'sqs:DeleteMessageBatch',
+        'sqs:GetQueueAttributes',
+      );
+      test.done();
+    },
+
+    'grantConsumeMessages with additional actions'(test: Test) {
+      testGrant((q, p) => q.grantConsumeMessages(p, 'sqs:additional', 'sqs:action'),
+        'sqs:ReceiveMessage',
+        'sqs:ChangeMessageVisibility',
+        'sqs:ChangeMessageVisibilityBatch',
+        'sqs:GetQueueUrl',
+        'sqs:DeleteMessage',
+        'sqs:DeleteMessageBatch',
+        'sqs:GetQueueAttributes',
+        'sqs:additional',
+        'sqs:action'
+      );
+      test.done();
+    },
+
+    'grantSendMessages'(test: Test) {
+      testGrant((q, p) => q.grantSendMessages(p),
+        'sqs:SendMessage',
+        'sqs:SendMessageBatch',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
+
+    'grantSendMessages with additional actions'(test: Test) {
+      testGrant((q, p) => q.grantSendMessages(p, 'sqs:foo'),
+        'sqs:SendMessage',
+        'sqs:SendMessageBatch',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+        'sqs:foo'
+      );
+      test.done();
+    },
+
+    'grantPurge'(test: Test) {
+      testGrant((q, p) => q.grantPurge(p),
+        'sqs:PurgeQueue',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
+
+    'grantPurge with additional actions'(test: Test) {
+      testGrant((q, p) => q.grantPurge(p, 'hello', 'world'),
+        'sqs:PurgeQueue',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+        'hello',
+        'world'
+      );
+      test.done();
+    },
+
+    'grant() is general purpose'(test: Test) {
+      testGrant((q, p) => q.grant(p, 'hello', 'world'),
+        'hello',
+        'world'
+      );
+      test.done();
+    },
+
+    'grants also work on imported queues'(test: Test) {
       const stack = new Stack();
-      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
-      const queue = new sqs.Queue(stack, 'Queue');
-      queue.grantConsumeMessages(role);
+      const queue = Queue.import(stack, 'Import', {
+        queueArn: 'imported-queue-arn',
+        queueUrl: 'https://queue-url'
+      });
+
+      const user = new iam.User(stack, 'User');
+
+      queue.grantPurge(user);
 
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
           "Statement": [
             {
               "Action": [
-                "sqs:ReceiveMessage",
-                "sqs:ChangeMessageVisibility",
-                "sqs:DeleteMessage"
+                "sqs:PurgeQueue",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
               ],
               "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt":
-                  [
-                    "Queue4A7E3555",
-                    "Arn"
-                  ]
-              }
+              "Resource": "imported-queue-arn"
             }
-          ]
-        }
-      }));
-
-      test.done();
-    },
-
-    'grants permission to receive messages'(test: Test) {
-      const stack = new Stack();
-      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
-      const queue = new sqs.Queue(stack, 'Queue');
-      queue.grantReceiveMessages(role);
-
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sqs:ReceiveMessage",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt":
-                  [
-                    "Queue4A7E3555",
-                    "Arn"
-                  ]
-              }
-            }
-          ]
-        }
-      }));
-
-      test.done();
-    },
-
-    'grants permission to send messages'(test: Test) {
-      const stack = new Stack();
-      const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
-      const queue = new sqs.Queue(stack, 'Queue');
-      queue.grantSendMessages(role);
-
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sqs:SendMessage",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt":
-                  [
-                    "Queue4A7E3555",
-                    "Arn"
-                  ]
-              }
-            }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }));
 
       test.done();
     }
-
   },
 
   'queue encryption': {
@@ -500,3 +523,29 @@ export = {
 
   }
 };
+
+function testGrant(action: (q: Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
+  const stack = new Stack();
+  const queue = new Queue(stack, 'MyQueue');
+  const principal = new iam.User(stack, 'User');
+
+  action(queue, principal);
+
+  expect(stack).to(haveResource('AWS::IAM::Policy', {
+    "PolicyDocument": {
+      "Statement": [
+        {
+          "Action": expectedActions,
+          "Effect": "Allow",
+          "Resource": {
+            "Fn::GetAtt": [
+              "MyQueueE6CA6235",
+              "Arn"
+            ]
+          }
+        }
+      ],
+      "Version": "2012-10-17"
+    }
+  }));
+}

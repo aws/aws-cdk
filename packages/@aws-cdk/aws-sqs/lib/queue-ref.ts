@@ -110,6 +110,93 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
       dependencies: [ this.policy! ]
     };
   }
+
+  /**
+   * Grant permissions to consume messages from a queue
+   *
+   * This will grant the following permissions:
+   *
+   *   - sqs:ChangeMessageVisibility
+   *   - sqs:ChangeMessageVisibilityBatch
+   *   - sqs:DeleteMessage
+   *   - sqs:ReceiveMessage
+   *   - sqs:DeleteMessageBatch
+   *   - sqs:GetQueueAttributes
+   *   - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant consume rights to
+   * @param queueActions additional queue actions to allow
+   */
+  public grantConsumeMessages(identity?: iam.IPrincipal, ...queueActions: string[]) {
+    this.grant(identity,
+      'sqs:ReceiveMessage',
+      'sqs:ChangeMessageVisibility',
+      'sqs:ChangeMessageVisibilityBatch',
+      'sqs:GetQueueUrl',
+      'sqs:DeleteMessage',
+      'sqs:DeleteMessageBatch',
+      'sqs:GetQueueAttributes',
+      ...queueActions);
+  }
+
+  /**
+   * Grant access to send messages to a queue to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sqs:SendMessage
+   *  - sqs:SendMessageBatch
+   *  - sqs:GetQueueAttributes
+   *  - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant send rights to
+   * @param queueActions additional queue actions to allow
+   */
+  public grantSendMessages(identity?: iam.IPrincipal, ...queueActions: string[]) {
+    this.grant(identity,
+      'sqs:SendMessage',
+      'sqs:SendMessageBatch',
+      'sqs:GetQueueAttributes',
+      'sqs:GetQueueUrl',
+      ...queueActions);
+  }
+
+  /**
+   * Grant an IAM principal permissions to purge all messages from the queue.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sqs:PurgeQueue
+   *  - sqs:GetQueueAttributes
+   *  - sqs:GetQueueUrl
+   *
+   * @param identity Principal to grant send rights to
+   * @param queueActions additional queue actions to allow
+   */
+  public grantPurge(identity?: iam.IPrincipal, ...queueActions: string[]) {
+    this.grant(identity,
+      'sqs:PurgeQueue',
+      'sqs:GetQueueAttributes',
+      'sqs:GetQueueUrl',
+      ...queueActions);
+  }
+
+  /**
+   * Grant the actions defined in queueActions to the identity Principal given
+   * on this SQS queue resource.
+   *
+   * @param identity Principal to grant right to
+   * @param queueActions The actions to grant
+   */
+  public grant(identity?: iam.IPrincipal, ...queueActions: string[]) {
+      if (!identity) {
+        return;
+      }
+
+      identity.addToPolicy(new iam.PolicyStatement()
+        .addResource(this.queueArn)
+        .addActions(...queueActions));
+  }
 }
 
 /**
