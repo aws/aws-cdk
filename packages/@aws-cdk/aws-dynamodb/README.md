@@ -1,19 +1,19 @@
 ## AWS DynamoDB Construct Library
 
-Add a DynamoDB table to your stack like so:
+Here is a minimal deployable DynamoDB table definition:
 
 ```ts
 import dynamodb = require('@aws-cdk/aws-dynamodb');
 
 const table = new dynamodb.Table(stack, 'Table', {
-    // You can leave this out to automatically generate a name.
-    tableName: 'MyTableName',
-
-    // If you leave these out they default to 5
-    readCapacity: 100,
-    writeCapacity: 10,
-})
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.String }
+});
 ```
+
+### Keys
+
+You can either specify `partitionKey` and/or `sortKey` when you initialize the
+table, or call `addPartitionKey` and `addSortKey` after initialization.
 
 ### Configure AutoScaling for your table
 

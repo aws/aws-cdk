@@ -123,6 +123,38 @@ export = {
       test.done();
     },
 
+    'hash + range key can also be specified in props'(test: Test) {
+      const app = new TestApp();
+
+      new Table(app.stack, CONSTRUCT_NAME, {
+        partitionKey: TABLE_PARTITION_KEY,
+        sortKey: TABLE_SORT_KEY
+      });
+
+      const template = app.synthesizeTemplate();
+
+      test.deepEqual(template, {
+        Resources: {
+          MyTable794EDED1: {
+            Type: 'AWS::DynamoDB::Table',
+            Properties: {
+              AttributeDefinitions: [
+                { AttributeName: 'hashKey', AttributeType: 'S' },
+                { AttributeName: 'sortKey', AttributeType: 'N' }
+              ],
+              KeySchema: [
+                { AttributeName: 'hashKey', KeyType: 'HASH' },
+                { AttributeName: 'sortKey', KeyType: 'RANGE' }
+              ],
+              ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+            }
+          }
+        }
+      });
+
+      test.done();
+    },
+
     'point-in-time recovery is not enabled'(test: Test) {
       const app = new TestApp();
       new Table(app.stack, CONSTRUCT_NAME)
@@ -1167,7 +1199,7 @@ export = {
     '"grantFullAccess" allows the principal to perform any action on the table ("*")'(test: Test) {
       testGrant(test, [ '*' ], (p, t) => t.grantFullAccess(p));
     }
-  }
+  },
 };
 
 class TestApp {
