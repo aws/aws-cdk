@@ -30,13 +30,8 @@ You must install
 `Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ to use the command-line
 toolkit and language bindings.
 
-You must set the `JAVA_HOME` environment variable to the path to where you have
+If you use Java, you must set the `JAVA_HOME` environment variable to the path to where you have
 installed the JDK on your machine to build an |cdk| app in Java.
-
-.. _setup_recommendations:
-
-Recommendations
----------------
 
 Specify your credentials and region with the
 `AWS CLI <https://aws.amazon.com/cli>`_.
@@ -72,7 +67,7 @@ Initializing the Project
     This guide walks you through the process of creating an |cdk| project.
     You can also use the
     :code:`cdk init` command to create a skeleton project from a
-    template in any of the supported languages except JavaScript.
+    template in any of the supported languages.
 
 Create an empty project structure for the |cdk| app.
 
@@ -94,11 +89,11 @@ Create an empty project structure for the |cdk| app.
             git init
             npm init -y # creates package.json
 
-	Create a **.gitignore** file with the following content:
+        Create a **.gitignore** file with the following content:
 
-	.. code-block:: sh
+        .. code-block:: sh
 
-	    *.js
+            *.js
             node_modules
 
     .. group-tab:: TypeScript
@@ -113,12 +108,12 @@ Create an empty project structure for the |cdk| app.
             git init
             npm init -y # creates package.json
 
-	Create a **.gitignore** file with the following content:
+        Create a **.gitignore** file with the following content:
 
-	.. code-block:: sh
+        .. code-block:: sh
 
-	    *.js
-	    *.d.ts
+            *.js
+            *.d.ts
             node_modules
 
         Add the `build` and `watch` TypeScript commands to **package.json**:
@@ -153,11 +148,11 @@ Create an empty project structure for the |cdk| app.
             cd hello-cdk
             git init
 
-	Create a **.gitignore** file with the following content:
+        Create a **.gitignore** file with the following content:
 
-	.. code-block:: sh
+        .. code-block:: sh
 
-	    .classpath.txt
+            .classpath.txt
             target
             .classpath
             .project
@@ -207,11 +202,11 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
     .. group-tab:: TypeScript
 
-        Install the **@aws-cdk/cdk** and the **@types/node** packages:
+        Install the **@aws-cdk/cdk** package:
 
         .. code-block:: sh
 
-            npm install @aws-cdk/cdk @types/node
+            npm install @aws-cdk/cdk
 
     .. group-tab:: Java
 
@@ -239,7 +234,7 @@ class. Create an empty **App**:
 
     .. group-tab:: JavaScript
 
-        Create the file **hello-cdk.js** in the **bin** folder:
+        Create the file **bin/hello-cdk.js**:
 
         .. code-block:: js
 
@@ -255,7 +250,7 @@ class. Create an empty **App**:
 
     .. group-tab:: TypeScript
 
-        Create the file **hello-cdk.ts** in the **bin** folder:
+        Create the file **bin/hello-cdk.ts**:
 
         .. code-block:: ts
 
@@ -284,9 +279,6 @@ class. Create an empty **App**:
             public class MyApp {
                 public static void main(final String argv[]) {
                     App app = new App();
-
-                    // Create your stacks here as:
-                    // new MyStack(app, "STACK-NAME");
 
                     app.run();
                 }
