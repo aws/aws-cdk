@@ -9,3 +9,4 @@ coverage
 .nycrc
 dist
 .LAST_PACKAGE
+*.snk
