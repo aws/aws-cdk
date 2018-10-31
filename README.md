@@ -17,9 +17,9 @@ and efficient manner.
 
 The following languages are currently supported:
 
-* Java ![](docs/src/_images/java.png)
-* JavaScript ![](docs/src/_images/js.png), TypeScript ![](docs/src/_images/ts.png)
-* .NET ![](docs/src/_images/dotnet.png)
+* Java ![](docs/src/_images/java_40.png)
+* JavaScript ![](docs/src/_images/js_40.png), TypeScript ![](docs/src/_images/ts_40.png)
+* .NET ![](docs/src/_images/DotNetLogo_40.jpg)
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
