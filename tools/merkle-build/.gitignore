@@ -2,3 +2,5 @@
 *.js.map
 *.d.ts
 dist
+
+*.snk
