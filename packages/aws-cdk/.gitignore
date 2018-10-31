@@ -12,3 +12,4 @@ lib/version.ts
 coverage
 .nycrc
 .LAST_PACKAGE
+*.snk

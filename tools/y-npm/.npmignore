@@ -2,3 +2,4 @@
 !*.d.ts
 
 .LAST_BUILD
+*.snk

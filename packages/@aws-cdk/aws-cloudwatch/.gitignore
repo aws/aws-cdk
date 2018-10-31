@@ -14,3 +14,4 @@ lib/generated/resources.ts
 coverage
 .nycrc
 .LAST_PACKAGE
+*.snk

@@ -13,3 +13,4 @@ tslint.json
 coverage
 .nycrc
 .LAST_PACKAGE
+*.snk
