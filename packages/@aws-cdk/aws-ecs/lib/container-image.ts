@@ -1,18 +1,18 @@
 import { ContainerDefinition } from './container-definition';
 
 /**
- * Base class for container images
+ * A container image
  */
-export abstract class ContainerImage {
+export interface IContainerImage {
   /**
    * Name of the image
    */
-  public abstract readonly imageName: string;
+  readonly imageName: string;
 
   /**
    * Called when the image is used by a ContainerDefinition
    */
-  public abstract bind(containerDefinition: ContainerDefinition): void;
+  bind(containerDefinition: ContainerDefinition): void;
 }
 
 /**
@@ -22,7 +22,7 @@ export class DockerHub {
   /**
    * Reference an image on DockerHub
    */
-  public static image(name: string): ContainerImage {
+  public static image(name: string): IContainerImage {
     return new DockerHubImage(name);
   }
 }
@@ -30,11 +30,11 @@ export class DockerHub {
 /**
  * A DockerHub image
  */
-class DockerHubImage {
+class DockerHubImage implements IContainerImage {
   constructor(public readonly imageName: string) {
   }
 
   public bind(_containerDefinition: ContainerDefinition): void {
-    // Nothing
+    // Nothing to do
   }
 }

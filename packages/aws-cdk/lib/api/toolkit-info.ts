@@ -21,12 +21,15 @@ export interface Uploaded {
 }
 
 export class ToolkitInfo {
+  public readonly sdk: SDK;
+
   constructor(private readonly props: {
     sdk: SDK,
     bucketName: string,
     bucketEndpoint: string,
     environment: cxapi.Environment
-  }) { }
+  }) {
+  }
 
   public get bucketUrl() {
     return `https://${this.props.bucketEndpoint}`;
@@ -73,6 +76,82 @@ export class ToolkitInfo {
     return { filename, key, changed: true };
   }
 
+  /**
+   * Prepare an ECR repository for uploading to using Docker
+   */
+  public async prepareEcrRepository(id: string, imageTag: string): Promise<EcrRepositoryInfo> {
+    const ecr = await this.props.sdk.ecr(this.props.environment, Mode.ForWriting);
+
+    // Create the repository if it doesn't exist yet
+    const repositoryName = 'cdk/' + id.replace(/[:/]/g, '-').toLowerCase();
+
+    let repository;
+    try {
+      const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+      repository = describeResponse.repositories![0];
+    } catch (e) {
+      if (e.code !== 'RepositoryNotFoundException') { throw e; }
+    }
+
+    if (repository) {
+      try {
+        await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
+
+        // If we got here, the image already exists. Nothing else needs to be done.
+        return {
+          alreadyExists: true,
+          repositoryUri: repository.repositoryUri!,
+          repositoryArn: repository.repositoryArn!,
+        };
+      } catch (e) {
+        if (e.code !== 'ImageNotFoundException') { throw e; }
+      }
+    } else {
+      const response = await ecr.createRepository({ repositoryName }).promise();
+      repository = response.repository!;
+
+      // Better put a lifecycle policy on this so as to not cost too much money
+      await ecr.putLifecyclePolicy({
+        repositoryName,
+        lifecyclePolicyText: JSON.stringify(DEFAULT_REPO_LIFECYCLE)
+      }).promise();
+    }
+
+    // The repo exists, image just needs to be uploaded. Get auth to do so.
+
+    const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
+    if (authData.length === 0) {
+      throw new Error('No authorization data received from ECR');
+    }
+    const token = Buffer.from(authData[0].authorizationToken!, 'base64').toString('ascii');
+    const [username, password] = token.split(':');
+
+    return {
+      alreadyExists: false,
+      repositoryUri: repository.repositoryUri!,
+      repositoryArn: repository.repositoryArn!,
+      username,
+      password,
+      endpoint: authData[0].proxyEndpoint!,
+    };
+  }
+}
+
+export type EcrRepositoryInfo = CompleteEcrRepositoryInfo | UploadableEcrRepositoryInfo;
+
+export interface CompleteEcrRepositoryInfo {
+  repositoryUri: string;
+  repositoryArn: string;
+  alreadyExists: true;
+}
+
+export interface UploadableEcrRepositoryInfo {
+  repositoryUri: string;
+  repositoryArn: string;
+  alreadyExists: false;
+  username: string;
+  password: string;
+  endpoint: string;
 }
 
 async function objectExists(s3: aws.S3, bucket: string, key: string) {
@@ -114,3 +193,18 @@ function getOutputValue(stack: aws.CloudFormation.Stack, output: string): string
   }
   return result;
 }
+
+const DEFAULT_REPO_LIFECYCLE = {
+  rules: [
+    {
+      rulePriority: 100,
+      description: 'Retain only 5 images',
+      selection: {
+        tagStatus: 'any',
+        countType: 'imageCountMoreThan',
+        countNumber: 5,
+      },
+      action: { type: 'expire' }
+    }
+  ]
+};

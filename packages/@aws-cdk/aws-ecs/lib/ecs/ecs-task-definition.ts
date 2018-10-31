@@ -54,6 +54,18 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
     }
   }
 
+  public validate(): string[] {
+    const ret = super.validate();
+
+    for (const container of this.containers) {
+      if (!container.memoryLimitSpecified) {
+        ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+      }
+    }
+
+    return ret;
+  }
+
   /**
    * Constrain where tasks can be placed
    */
