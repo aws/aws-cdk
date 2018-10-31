@@ -31,9 +31,9 @@ one to run Tasks on fargate.
 
 ## Cluster
 
-An `EcsCluster` or `FargateCluster` defines a set of instances to run your
+An `EcsCluster` or `FargateCluster` defines the infrastructure to run your
 tasks on. If you create an ECS cluster, an AutoScalingGroup of EC2 instances
-running the right AMI will implicitly be created for you.
+running the latest ECS Optimized AMI will implicitly be created for you.
 
 You can run many tasks on a single cluster.
 
@@ -73,7 +73,7 @@ taskDefinition.addContainer('main', {
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories:
 
-* `ecs.DockerHub.image(imageName)`: use an publicly available image from
+* `ecs.DockerHub.image(imageName)`: use a publicly available image from
   DockerHub.
 * `repository.getImage(tag)`: use the given ECR repository as the image
   to start.
@@ -81,7 +81,7 @@ obtained from either DockerHub or from ECR repositories:
 ## Service
 
 A `Service` instantiates a `TaskDefinition` on a `Cluster` a given number of
-times, optionally associating them with a load balnacer. Tasks that fail will
+times, optionally associating them with a load balancer. Tasks that fail will
 automatically be restarted.
 
 ```ts
