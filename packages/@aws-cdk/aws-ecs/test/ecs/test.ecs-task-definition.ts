@@ -149,6 +149,7 @@ export = {
       });
 
       taskDefinition.addContainer("web", {
+        memoryLimitMiB: 1024,
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample")
       });
 

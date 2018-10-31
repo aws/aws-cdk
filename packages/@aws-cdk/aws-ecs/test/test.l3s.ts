@@ -14,6 +14,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedEcsService(stack, 'Service', {
       cluster,
+      memoryLimitMiB: 1024,
       image: ecs.DockerHub.image('test')
     });
 

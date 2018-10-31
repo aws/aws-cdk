@@ -216,6 +216,7 @@ export = {
     // WHEN
     taskDefinition.addContainer('cont', {
       image: ecs.DockerHub.image('test'),
+      memoryLimitMiB: 1024,
       logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
     });
 

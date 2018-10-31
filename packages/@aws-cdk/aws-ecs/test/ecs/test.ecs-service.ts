@@ -399,6 +399,7 @@ export = {
       const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
         image: ecs.DockerHub.image('test'),
+        memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
       const service = new ecs.EcsService(stack, 'Service', { cluster, taskDefinition });
