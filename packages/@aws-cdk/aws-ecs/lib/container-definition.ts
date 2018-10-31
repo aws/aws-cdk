@@ -208,14 +208,14 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly essential: boolean;
 
   /**
-   * The configured container links
-   */
-  private readonly links = new Array<string>();
-
-  /**
    * Whether there was at least one memory limit specified in this definition
    */
   public readonly memoryLimitSpecified: boolean;
+
+  /**
+   * The configured container links
+   */
+  private readonly links = new Array<string>();
 
   /**
    * The task definition this container definition is part of
