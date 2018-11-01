@@ -32,7 +32,7 @@ async function main() {
   }
 
   const searchDir = path.dirname(appletFile);
-  const tempDir = await fs.mkdtemp(os.tmpdir());
+  const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdkapplet'));
   try {
 
     const app = new cdk.App();
