@@ -214,7 +214,7 @@ export abstract class BaseService extends cdk.Construct
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
     if (this.taskDef.networkMode === NetworkMode.None) {
-      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Host or AwsVpc instead.");
+      throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     this.loadBalancers.push({
