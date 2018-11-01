@@ -1,7 +1,8 @@
 const AWS = require('aws-sdk');
 const ecr = new AWS.ECR();
 
-exports.handler = async function adoptRegistryHandler(event, context) {
+exports.handler = async function(event, context, respond) {
+  respond = respond || respondCFN;
   try {
     console.log(JSON.stringify(event));
 
@@ -65,7 +66,7 @@ exports.handler = async function adoptRegistryHandler(event, context) {
     await respond("FAILED", e.message, context.logStreamName, {});
   }
 
-  function respond(responseStatus, reason, physId, data) {
+  function respondCFN(responseStatus, reason, physId, data) {
     const responseBody = JSON.stringify({
       Status: responseStatus,
       Reason: reason,

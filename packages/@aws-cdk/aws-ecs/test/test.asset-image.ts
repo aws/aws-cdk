@@ -27,5 +27,57 @@ export = {
     }, MatchStyle.SUPERSET);
 
     test.done();
-  }
+  },
+
+  async 'exercise handler'(test: Test) {
+    // Hijack the require('aws-sdk') statement
+    const Module = require('module');
+    const oldRequire = Module.prototype.require;
+
+    Module.prototype.require = (file: string) => {
+      if (file === 'aws-sdk') {
+        return { ECR };
+      }
+      return oldRequire(file);
+    };
+
+    const handler = require(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'));
+
+    let output;
+    async function response(responseStatus: string, reason: string, physId: string, data: any) {
+      output = { responseStatus, reason, physId, data };
+    }
+
+    await handler.handler({
+      StackId: 'StackId',
+      ResourceProperties: {
+        RepositoryArn: 'RepositoryArn',
+      },
+      RequestType: 'Create',
+      ResponseURL: 'https://localhost/test'
+    }, {
+      logStreamName: 'xyz',
+    }, response);
+
+    test.deepEqual(output, {
+      responseStatus: 'SUCCESS',
+      reason: 'OK',
+      physId: '',
+      data: { RepositoryUri: 'undefined.dkr.ecr.undefined.amazonaws.com/' }
+    });
+
+    test.done();
+  },
 };
+
+class ECR {
+  public getRepositoryPolicy() {
+    return { async promise() { return {
+      policyText: '{"asdf": "asdf"}'
+    }; } };
+  }
+
+  public setRepositoryPolicy() {
+    return { async promise() { return; } };
+  }
+}
