@@ -1060,6 +1060,31 @@ export = {
 
     test.done();
   },
+
+  'addEventSource calls bind'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    let bindTarget;
+
+    class EventSourceMock implements lambda.IEventSource {
+      public bind(target: lambda.FunctionRef) {
+        bindTarget = target;
+      }
+    }
+
+    // WHEN
+    fn.addEventSource(new EventSourceMock());
+
+    // THEN
+    test.same(bindTarget, fn);
+    test.done();
+  }
 };
 
 function newTestLambda(parent: cdk.Construct) {

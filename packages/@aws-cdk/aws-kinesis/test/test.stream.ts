@@ -953,6 +953,12 @@ export = {
         },
         "Outputs": {
           "MyStreamKeyKeyArn967BCB03": {
+            "Value": {
+              "Fn::GetAtt": [
+                "MyStreamKey76F3300E",
+                "Arn"
+              ]
+            },
             "Export": {
               "Name": "MyStreamKeyKeyArn967BCB03"
             }
