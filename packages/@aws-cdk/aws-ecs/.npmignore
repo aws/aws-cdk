@@ -12,4 +12,4 @@ dist
 
 # Include .jsii
 !.jsii
-!lib/adopt-registry/*
+!lib/adopt-repository/*

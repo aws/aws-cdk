@@ -39,6 +39,16 @@ export interface FargateServiceProps extends BaseServiceProps {
    * @default A new security group is created
    */
   securityGroup?: ec2.SecurityGroupRef;
+
+  /**
+   * Fargate platform version to run this service on
+   *
+   * Unless you have specific compatibility requirements, you don't need to
+   * specify this.
+   *
+   * @default Latest
+   */
+  platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -61,6 +71,7 @@ export class FargateService extends BaseService {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',
+      platformVersion: props.platformVersion,
     }, props.cluster.clusterName);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
@@ -73,4 +84,37 @@ export class FargateService extends BaseService {
     this.taskDefinition = props.taskDefinition;
     this.taskDef = props.taskDefinition;
   }
+}
+
+/**
+ * Fargate platform version
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
+ */
+export enum FargatePlatformVersion {
+  /**
+   * The latest, recommended platform version
+   */
+  Latest = 'LATEST',
+
+  /**
+   * Version 1.2
+   *
+   * Supports private registries.
+   */
+  Version12 = '1.2.0',
+
+  /**
+   * Version 1.1.0
+   *
+   * Supports task metadata, health checks, service discovery.
+   */
+  Version11 = '1.1.0',
+
+  /**
+   * Initial release
+   *
+   * Based on Amazon Linux 2017.09.
+   */
+  Version10 = '1.0.0',
 }

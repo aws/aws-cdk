@@ -16,7 +16,7 @@ export interface AssetImageProps {
 }
 
 /**
- * An image that will be built at deployment time
+ * An image that will be built at synthesis time
  */
 export class AssetImage extends cdk.Construct implements IContainerImage {
   /**
@@ -42,6 +42,9 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
     if (!fs.existsSync(this.directory)) {
       throw new Error(`Cannot find image directory at ${this.directory}`);
     }
+    if (!fs.existsSync(path.join(this.directory, 'Dockerfile'))) {
+      throw new Error(`No 'Dockerfile' found in ${this.directory}`);
+    }
 
     const repositoryParameter = new cdk.Parameter(this, 'Repository', {
       type: 'String',
@@ -65,8 +68,13 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
 
     this.repositoryArn = repositoryParameter.value.toString();
 
-    // Require that repository adoption happens first
-    const adopted = new AdoptRegistry(this, 'AdoptRegistry', { repositoryArn: this.repositoryArn });
+    // Require that repository adoption happens first, so we route the
+    // input ARN into the Custom Resource and then get the URI which we use to
+    // refer to the image FROM the Custom Resource.
+    //
+    // If adoption fails (because the repository might be twice-adopted), we
+    // haven't already started using the image.
+    const adopted = new AdoptRepository(this, 'doptRegistry', { repositoryArn: this.repositoryArn });
     this.imageName = `${adopted.repositoryUri}:${tagParameter.value}`;
   }
 
@@ -82,33 +90,36 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
   }
 }
 
-interface AdoptRegistryProps {
+interface AdoptRepositoryProps {
   repositoryArn: string;
 }
 
 /**
- * Custom Resource which will adopt the registry used for the locally built image into the stack.
+ * Custom Resource which will adopt the repository used for the locally built image into the stack.
  *
- * This is so we can clean it up when the stack gets deleted.
+ * Since the repository is not created by the stack (but by the CDK toolkit),
+ * adopting will make the repository "owned" by the stack. It will be cleaned
+ * up when the stack gets deleted, to avoid leaving orphaned repositories on stack
+ * cleanup.
  */
-class AdoptRegistry extends cdk.Construct {
+class AdoptRepository extends cdk.Construct {
   public readonly repositoryUri: string;
 
-  constructor(parent: cdk.Construct, id: string, props: AdoptRegistryProps) {
+  constructor(parent: cdk.Construct, id: string, props: AdoptRepositoryProps) {
     super(parent, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
       runtime: lambda.Runtime.NodeJS810,
-      lambdaPurpose: 'AdoptEcrRegistry',
+      lambdaPurpose: 'AdoptEcrRepository',
       handler: 'handler.handler',
-      code: lambda.Code.asset(path.join(__dirname, 'adopt-registry')),
+      code: lambda.Code.asset(path.join(__dirname, 'adopt-repository')),
       uuid: 'dbc60def-c595-44bc-aa5c-28c95d68f62c',
       timeout: 300
     });
 
     fn.addToRolePolicy(new iam.PolicyStatement()
       .addActions('ecr:GetRepositoryPolicy', 'ecr:SetRepositoryPolicy', 'ecr:DeleteRepository', 'ecr:ListImages', 'ecr:BatchDeleteImage')
-      .addAllResources());
+      .addResource(props.repositoryArn));
 
     const resource = new cfn.CustomResource(this, 'Resource', {
       lambdaProvider: fn,

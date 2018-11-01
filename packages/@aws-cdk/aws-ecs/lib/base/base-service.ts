@@ -50,16 +50,6 @@ export interface BaseServiceProps {
    * @default ??? FIXME
    */
   healthCheckGracePeriodSeconds?: number;
-
-  /**
-   * Fargate platform version to run this service on
-   *
-   * Unless you have specific compatibility requirements, you don't need to
-   * specify this.
-   *
-   * @default Latest
-   */
-  platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -74,7 +64,7 @@ export abstract class BaseService extends cdk.Construct
   public readonly dependencyElements: cdk.IDependable[];
 
   /**
-   * Manage allowed network traffic for this construct
+   * Manage allowed network traffic for this service
    */
   public abstract readonly connections: ec2.Connections;
 
@@ -113,7 +103,6 @@ export abstract class BaseService extends cdk.Construct
       },
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
-      platformVersion: props.platformVersion,
       ...additionalProps
     });
     this.serviceArn = this.resource.serviceArn;
@@ -248,36 +237,3 @@ export abstract class BaseService extends cdk.Construct
  * The port range to open up for dynamic port mapping
  */
 const EPHEMERAL_PORT_RANGE = new ec2.TcpPortRange(32768, 65535);
-
-/**
- * Fargate platform version
- *
- * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html
- */
-export enum FargatePlatformVersion {
-  /**
-   * The latest, recommended platform version
-   */
-  Latest = 'LATEST',
-
-  /**
-   * Version 1.2
-   *
-   * Supports private registries.
-   */
-  Version12 = '1.2.0',
-
-  /**
-   * Version 1.1.0
-   *
-   * Supports task metadata, health checks, service discovery.
-   */
-  Version11 = '1.1.0',
-
-  /**
-   * Initial release
-   *
-   * Based on Amazon Linux 2017.09.
-   */
-  Version10 = '1.0.0',
-}

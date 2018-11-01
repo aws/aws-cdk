@@ -22,18 +22,36 @@ const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
 ### Fargate vs ECS
 
 There are two sets of constructs in this library; one to run tasks on ECS and
-one to run Tasks on fargate.
+one to run Tasks on Fargate.
 
 - Use the `Ec2Cluster`, `Ec2TaskDefinition` and `Ec2Service` constructs to
   run tasks on EC2 instances running in your account.
 - Use the `FargateCluster`, `FargateTaskDefinition` and `FargateService`
   constructs to run tasks on instances that are managed for you by AWS.
 
+Here are the main differences:
+
+- **EC2**: instances are under your control. Complete control of task to host
+  allocation. Required to specify at least a memory reseration or limit for
+  every container. Can use Host, Bridge and AwsVpc networking modes. Can attach
+  Classic Load Balancer. Can share volumes between container and host.
+- **Fargate**: tasks run on AWS-managed instances, AWS manages task to host
+  allocation for you. Requires specification of memory and cpu sizes at the
+  taskdefinition level. Only supports AwsVpc networking modes and
+  Application/Network Load Balancers. Only the AWS log driver is supported.
+  Many host features are not supported such as adding kernel capabilities
+  and mounting host devices/volumes inside the container.
+
+For more information on EC2 vs Fargate and networking see the AWS Documentation:
+[AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) and
+[Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html).
+
+
 ## Cluster
 
 An `Ec2Cluster` or `FargateCluster` defines the infrastructure to run your
 tasks on. If you create an ECS cluster, an AutoScalingGroup of EC2 instances
-running the latest ECS Optimized AMI will implicitly be created for you.
+running the latest ECS Optimized AMI will automatically be created for you.
 
 You can run many tasks on a single cluster.
 
@@ -87,7 +105,7 @@ automatically be restarted.
 ```ts
 const taskDefinition;
 
-const service = new ecs.Ec2Service(this, 'Service', {
+const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5
@@ -139,4 +157,7 @@ your EC2 instances might fill up as your number of Tasks goes up.
 To avoid placement errors, you will want to configure AutoScaling for your
 EC2 instance group so that your instance count scales with demand.
 
-TO BE IMPLEMENTED
+## Roadmap
+
+- [ ] Instance AutoScaling
+- [ ] Service Discovery Integration

@@ -11,4 +11,3 @@ coverage
 .nyc_output
 .LAST_BUILD
 *.swp
-./examples/cdk-examples-typescript/hello-cdk-ecs/cdk.json

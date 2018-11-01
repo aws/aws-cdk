@@ -52,6 +52,25 @@ export abstract class RepositoryRef extends cdk.Construct {
   public getImage(tag: string = "latest"): ecs.IContainerImage {
     return new EcrImage(this, tag);
   }
+
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  public grant(identity?: iam.IPrincipal, ...actions: string[]) {
+    if (!identity) {
+      return;
+    }
+    identity.addToPolicy(new iam.PolicyStatement()
+      .addResource(this.repositoryArn)
+      .addActions(...actions));
+  }
+
+  /**
+   * Grant the given identity permissions to use the images in this repository
+   */
+  public grantUseImage(identity?: iam.IPrincipal) {
+    this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
+  }
 }
 
 export interface RepositoryRefProps {

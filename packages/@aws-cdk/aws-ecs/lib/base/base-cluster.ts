@@ -46,7 +46,7 @@ export abstract class BaseCluster extends cdk.Construct {
 
     this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;
-    this.clusterName = cluster.ref;
+    this.clusterName = cluster.clusterName;
   }
 
   /**
