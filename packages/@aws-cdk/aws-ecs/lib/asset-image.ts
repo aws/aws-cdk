@@ -74,7 +74,7 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
     //
     // If adoption fails (because the repository might be twice-adopted), we
     // haven't already started using the image.
-    const adopted = new AdoptRepository(this, 'doptRegistry', { repositoryArn: this.repositoryArn });
+    const adopted = new AdoptRepository(this, 'AdoptRepository', { repositoryArn: this.repositoryArn });
     this.imageName = `${adopted.repositoryUri}:${tagParameter.value}`;
   }
 

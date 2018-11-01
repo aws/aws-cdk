@@ -17,7 +17,7 @@ exports.handler = async function adoptRegistryHandler(event, context) {
     }
 
     // The repository must already exist
-    async function getAdopter(name): Promise<any> {
+    async function getAdopter(name) {
       try {
         const policyResponse = await ecr.getRepositoryPolicy({ repositoryName: name }).promise();
         const policy = JSON.parse(policyResponse.policyText);
@@ -87,7 +87,7 @@ exports.handler = async function adoptRegistryHandler(event, context) {
       headers: { "content-type": "", "content-length": responseBody.length }
     };
 
-    return new Promise<void>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
         const request = require('https').request(requestOptions, resolve);
         request.on("error", reject);

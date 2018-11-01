@@ -308,20 +308,150 @@
     "ClusterEB0386A7": {
       "Type": "AWS::ECS::Cluster"
     },
+    "ImagedoptRegistry65D733CD": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
+            "Arn"
+          ]
+        },
+        "RepositoryArn": {
+          "Ref": "ImageRepositoryC2BE7AD4"
+        }
+      }
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:GetRepositoryPolicy",
+                "ecr:SetRepositoryPolicy",
+                "ecr:DeleteRepository",
+                "ecr:ListImages",
+                "ecr:BatchDeleteImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "ImageRepositoryC2BE7AD4"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+        "Roles": [
+          {
+            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
+          }
+        ]
+      }
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Handler": "handler.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs8.10",
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
+        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C"
+      ]
+    },
     "FargateServiceTaskDefTaskRole8CDCF85E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "ecs-tasks.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         }
       }
     },
@@ -336,7 +466,10 @@
                 "",
                 [
                   {
-                    "Ref": "ImageRepositoryC2BE7AD4"
+                    "Fn::GetAtt": [
+                      "ImagedoptRegistry65D733CD",
+                      "RepositoryUri"
+                    ]
                   },
                   ":",
                   {
@@ -384,36 +517,59 @@
             "FargateServiceTaskDefTaskRole8CDCF85E",
             "Arn"
           ]
-        }
+        },
+        "Volumes": []
       }
     },
     "FargateServiceTaskDefExecutionRole9194820E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "ecs-tasks.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "ImageRepositoryC2BE7AD4"
+              }
+            },
+            {
+              "Action": [
+                "ecr:GetAuthorizationToken",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
         },
-        "ManagedPolicyArns": [
+        "PolicyName": "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
+        "Roles": [
           {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-              ]
-            ]
+            "Ref": "FargateServiceTaskDefExecutionRole9194820E"
           }
         ]
       }
@@ -427,7 +583,10 @@
         "Cluster": {
           "Ref": "ClusterEB0386A7"
         },
-        "DeploymentConfiguration": {},
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
         "DesiredCount": 1,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
@@ -469,7 +628,13 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "aws-ecs-integ/FargateService/Service/SecurityGroup",
-        "SecurityGroupEgress": [],
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
         "SecurityGroupIngress": [],
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -597,14 +762,33 @@
   "Parameters": {
     "ImageRepositoryC2BE7AD4": {
       "Type": "String",
-      "Description": "Repository for asset \"aws-ecs-integ/Image\""
+      "Description": "Repository ARN for asset \"aws-ecs-integ/Image\""
     },
     "ImageTagE17D8A6B": {
       "Type": "String",
       "Description": "Tag for asset \"aws-ecs-integ/Image\""
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
+    },
+    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
     }
   },
   "Outputs": {
+    "FargateServiceLoadBalancerDNS9433D5F6": {
+      "Value": {
+        "Fn::GetAtt": [
+          "FargateServiceLBB353E155",
+          "DNSName"
+        ]
+      },
+      "Export": {
+        "Name": "aws-ecs-integ:FargateServiceLoadBalancerDNS9433D5F6"
+      }
+    },
     "LoadBalancerDNS": {
       "Value": {
         "Fn::GetAtt": [
