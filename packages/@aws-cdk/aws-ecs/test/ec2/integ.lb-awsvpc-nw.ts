@@ -1,33 +1,31 @@
-
 import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import ecs = require('../../lib');
+import { NetworkMode } from '../../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
+const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
-const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
 
-const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
-  // networkMode defaults to "bridge"
-  // memoryMiB: '1GB',
-  // cpu: '512'
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+  networkMode: NetworkMode.AwsVpc
 });
 
 const container = taskDefinition.addContainer('web', {
   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 256,
 });
+
 container.addPortMappings({
   containerPort: 80,
-  hostPort: 8080,
   protocol: ecs.Protocol.Tcp
 });
 
-const service = new ecs.EcsService(stack, "Service", {
+const service = new ecs.Ec2Service(stack, "Service", {
   cluster,
   taskDefinition,
 });

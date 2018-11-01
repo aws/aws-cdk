@@ -10,7 +10,7 @@ export = {
       "Host port should be the same as container port"(test: Test) {
         // GIVEN
         const stack =  new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
 
@@ -31,7 +31,7 @@ export = {
       "Host port can be empty "(test: Test) {
         // GIVEN
         const stack =  new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
 
@@ -55,7 +55,7 @@ export = {
       "Host port can be empty "(test: Test) {
         // GIVEN
         const stack =  new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
 
@@ -76,7 +76,7 @@ export = {
       "Host port should not be lower than 1024"(test: Test) {
         // GIVEN
         const stack =  new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
 
@@ -111,7 +111,7 @@ export = {
       "Ingress port should be the same as container port"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
 
@@ -136,7 +136,7 @@ export = {
       "Ingress port should be the same as container port"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.Host,
         });
 
@@ -161,7 +161,7 @@ export = {
       "Ingress port should be the same as host port if supplied"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.Bridge,
         });
 
@@ -185,7 +185,7 @@ export = {
       "Ingress port should be 0 if not supplied"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef', {
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.Bridge,
         });
 
@@ -211,7 +211,7 @@ export = {
   'can add AWS logging to container definition'(test: Test) {
     // GIVEN
     const stack =  new cdk.Stack();
-    const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TaskDef');
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN
     taskDefinition.addContainer('cont', {

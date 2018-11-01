@@ -7,10 +7,10 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ2');
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
-const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
+const cluster = new ecs.Ec2Cluster(stack, 'Cluster', { vpc });
 
-// Instantiate Ecs Service with just cluster and image
-new ecs.LoadBalancedEcsService(stack, "EcsService", {
+// Instantiate Ec2 Service with just cluster and image
+new ecs.LoadBalancedEc2Service(stack, "Ec2Service", {
   cluster,
   containerPort: 8000,
   memoryReservationMiB: 128,

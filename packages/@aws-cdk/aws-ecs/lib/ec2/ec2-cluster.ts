@@ -8,7 +8,7 @@ import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
 /**
  * Properties to define an ECS cluster
  */
-export interface EcsClusterProps extends BaseClusterProps {
+export interface Ec2ClusterProps extends BaseClusterProps {
   /**
    * Whether or not the containers can access the instance role
    *
@@ -32,12 +32,12 @@ export interface EcsClusterProps extends BaseClusterProps {
 /**
  * A container cluster that runs on your EC2 instances
  */
-export class EcsCluster extends BaseCluster implements IEcsCluster {
+export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps): IEcsCluster {
-    return new ImportedEcsCluster(parent, name, props);
+  public static import(parent: cdk.Construct, name: string, props: ImportedEc2ClusterProps): IEc2Cluster {
+    return new ImportedEc2Cluster(parent, name, props);
   }
 
   /**
@@ -50,7 +50,7 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
    */
   public readonly securityGroup: ec2.SecurityGroupRef;
 
-  constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
+  constructor(parent: cdk.Construct, name: string, props: Ec2ClusterProps) {
     super(parent, name, props);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoScalingGroup', {
@@ -97,9 +97,9 @@ export class EcsCluster extends BaseCluster implements IEcsCluster {
   }
 
   /**
-   * Export the EcsCluster
+   * Export the Ec2Cluster
    */
-  public export(): ImportedEcsClusterProps {
+  public export(): ImportedEc2ClusterProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
@@ -162,7 +162,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
 /**
  * An ECS cluster
  */
-export interface IEcsCluster {
+export interface IEc2Cluster {
   /**
    * Name of the cluster
    */
@@ -182,7 +182,7 @@ export interface IEcsCluster {
 /**
  * Properties to import an ECS cluster
  */
-export interface ImportedEcsClusterProps {
+export interface ImportedEc2ClusterProps {
   /**
    * Name of the cluster
    */
@@ -200,9 +200,9 @@ export interface ImportedEcsClusterProps {
 }
 
 /**
- * An EcsCluster that has been imported
+ * An Ec2Cluster that has been imported
  */
-class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
+class ImportedEc2Cluster extends cdk.Construct implements IEc2Cluster {
   /**
    * Name of the cluster
    */
@@ -218,7 +218,7 @@ class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
    */
   public readonly securityGroup: ec2.SecurityGroupRef;
 
-  constructor(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps) {
+  constructor(parent: cdk.Construct, name: string, props: ImportedEc2ClusterProps) {
     super(parent, name);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);

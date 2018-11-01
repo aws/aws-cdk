@@ -10,11 +10,11 @@ export = {
     "with only required properties set, it correctly sets default properties"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "EcsTaskDef",
+        Family: "Ec2TaskDef",
         ContainerDefinitions: [],
         PlacementConstraints: [],
         Volumes: [],
@@ -29,7 +29,7 @@ export = {
     "correctly sets network mode"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {
+      new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         networkMode: ecs.NetworkMode.AwsVpc
       });
 
@@ -45,7 +45,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       const container = taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
@@ -59,7 +59,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "EcsTaskDef",
+        Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           Essential: true,
           Memory: 512,
@@ -99,7 +99,7 @@ export = {
       };
 
       // Adding volumes via props is a bit clunky
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         volumes: [volume]
       });
 
@@ -117,7 +117,7 @@ export = {
 
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-        Family: "EcsTaskDef",
+        Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           MountPoints: [
             {
@@ -141,7 +141,7 @@ export = {
     "correctly sets placement constraints"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
         placementConstraints: [{
           expression: "attribute:ecs.instance-type =~ t2.*",
           type: ecs.PlacementConstraintType.MemberOf
@@ -169,7 +169,7 @@ export = {
     // "correctly sets taskRole"(test: Test) {
     //   // GIVEN
     //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {
+    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
     //     taskRole: new iam.Role(this, 'TaskRole', {
     //       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     //     })
@@ -191,7 +191,7 @@ export = {
     // "correctly sets taskExecutionRole if containerDef uses ECR"(test: Test) {
     //   // GIVEN
     //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {});
+    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
     //   const container = taskDefinition.addContainer("web", {
     //     image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
     //     memoryLimitMiB: 512 // add validation?

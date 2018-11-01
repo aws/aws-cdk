@@ -5,22 +5,22 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
-import { IEcsCluster } from './ecs-cluster';
-import { EcsTaskDefinition } from './ecs-task-definition';
+import { IEc2Cluster } from './ec2-cluster';
+import { Ec2TaskDefinition } from './ec2-task-definition';
 
 /**
  * Properties to define an ECS service
  */
-export interface EcsServiceProps extends BaseServiceProps {
+export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IEcsCluster;
+  cluster: IEc2Cluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: EcsTaskDefinition;
+  taskDefinition: Ec2TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -61,7 +61,7 @@ export interface EcsServiceProps extends BaseServiceProps {
 /**
  * Start a service on an ECS cluster
  */
-export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
+export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   /**
    * Manage allowed network traffic for this construct
    */
@@ -74,12 +74,12 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
 
   protected readonly taskDef: BaseTaskDefinition;
 
-  private readonly taskDefinition: EcsTaskDefinition;
+  private readonly taskDefinition: Ec2TaskDefinition;
   private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
   private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
   private readonly daemon: boolean;
 
-  constructor(parent: cdk.Construct, name: string, props: EcsServiceProps) {
+  constructor(parent: cdk.Construct, name: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
     }
@@ -233,7 +233,7 @@ export class EcsService extends BaseService implements elb.ILoadBalancerTarget {
 /**
  * Validate combinations of networking arguments
  */
-function validateNoNetworkingProps(props: EcsServiceProps) {
+function validateNoNetworkingProps(props: Ec2ServiceProps) {
   if (props.vpcPlacement !== undefined || props.securityGroup !== undefined) {
     throw new Error('vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }

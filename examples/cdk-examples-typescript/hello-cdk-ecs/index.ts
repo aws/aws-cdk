@@ -12,14 +12,14 @@ class BonjourECS extends cdk.Stack {
     // deploy, but VPC creation is slow so we'll only have to do that once
     // and can iterate quickly on consuming stacks. Not doing that for now.
     const vpc = new ec2.VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
-    const cluster = new ecs.EcsCluster(this, 'EcsCluster', {
+    const cluster = new ecs.Ec2Cluster(this, 'Ec2Cluster', {
       vpc,
       size: 3,
       instanceType: new InstanceType("t2.xlarge")
     });
 
     // Instantiate ECS Service with just cluster and image
-    const ecsService = new ecs.LoadBalancedEcsService(this, "EcsService", {
+    const ecsService = new ecs.LoadBalancedEc2Service(this, "Ec2Service", {
       cluster,
       memoryLimitMiB: 512,
       image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
@@ -35,79 +35,3 @@ const app = new cdk.App();
 new BonjourECS(app, 'Bonjour');
 
 app.run();
-
-// name, image, cpu, memory, port (with default)
-//
-// Include in constructs:
-//   - networking - include SD, ALB
-//   - logging - cloudwatch logs integration? talk to nathan about 3rd
-//     party integrations - aggregated logging across the service
-//     (instead of per task). Probably prometheus or elk?
-//   - tracing aws-xray-fargate - CNCF opentracing standard - jaeger,
-//     zipkin.
-//   - so x-ray is a container that is hooked up to sidecars that come
-//     with the application container itself
-//   - autoscaling - application autoscaling (Fargate focused?)
-
-// const taskDefinition = new ecs.EcsTaskDefinition(this, "EcsTD", {
-//   family: "ecs-task-definition",
-// });
-
-// const container = taskDefinition.addContainer('web', {
-//   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
-//   cpu: 1024,
-//   memoryLimitMiB: 512,
-//   essential: true
-// });
-
-// container.linuxParameters.addCapabilities(ecs.Capability.All);
-// container.linuxParameters.dropCapabilities(ecs.Capability.Chown);
-
-// container.linuxParameters.addDevices({
-//   containerPath: "/dev/pudding",
-//   hostPath: "/dev/clyde",
-//   permissions: [ecs.DevicePermission.Read]
-// });
-
-// container.linuxParameters.addTmpfs({
-//   containerPath: "/dev/sda",
-//   size: 12345,
-//   mountOptions: [ecs.TmpfsMountOption.Ro]
-// });
-
-// container.linuxParameters.sharedMemorySize = 65535;
-// container.linuxParameters.initProcessEnabled = true;
-
-// container.addUlimits({
-//   name: ecs.UlimitName.Core,
-//   softLimit: 1234,
-//   hardLimit: 1234,
-// });
-
-// container.addPortMappings({
-//   containerPort: 80,
-//   // hostPort: 80,
-//   protocol: ecs.Protocol.Tcp,
-// });
-
-// container.addMountPoints({
-//   containerPath: '/tmp/cache',
-//   sourceVolume: 'volume-1',
-//   readOnly: true,
-// }, {
-//   containerPath: './cache',
-//   sourceVolume: 'volume-2',
-//   readOnly: true,
-// });
-
-// container.addVolumesFrom({
-//   sourceContainer: 'web',
-//   readOnly: true,
-// });
-
-// new ecs.EcsService(this, "EcsService", {
-//         cluster,
-//         taskDefinition,
-//         desiredCount: 1,
-// });
-// }

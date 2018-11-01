@@ -9,10 +9,10 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
-    const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
+    const cluster = new ecs.Ec2Cluster(stack, 'Cluster', { vpc });
 
     // WHEN
-    new ecs.LoadBalancedEcsService(stack, 'Service', {
+    new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
       image: ecs.DockerHub.image('test')

@@ -12,15 +12,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      new ecs.EcsService(stack, "EcsService", {
+      new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition
       });
@@ -28,10 +28,10 @@ export = {
       // THEN
       expect(stack).to(haveResource("AWS::ECS::Service", {
         TaskDefinition: {
-          Ref: "EcsTaskDefA3440FB6"
+          Ref: "Ec2TaskDef0226F28C"
         },
         Cluster: {
-          Ref: "EcsCluster97242B84"
+          Ref: "Ec2ClusterEE43E89D"
         },
         DeploymentConfiguration: {
           MaximumPercent: 200,
@@ -52,12 +52,12 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
-        new ecs.EcsService(stack, "EcsService", {
+        new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
           daemon: true,
@@ -72,12 +72,12 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
       test.throws(() => {
-        new ecs.EcsService(stack, "EcsService", {
+        new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition,
         });
@@ -90,15 +90,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      new ecs.EcsService(stack, "EcsService", {
+      new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
         daemon: true
@@ -117,8 +117,8 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-        const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef', {
+        const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
 
@@ -127,7 +127,7 @@ export = {
           memoryLimitMiB: 512
         });
 
-        new ecs.EcsService(stack, "EcsService", {
+        new ecs.Ec2Service(stack, "Ec2Service", {
           cluster,
           taskDefinition
         });
@@ -140,7 +140,7 @@ export = {
               SecurityGroups: [
                 {
                   "Fn::GetAtt": [
-                    "EcsServiceSecurityGroup8FDFD52F",
+                    "Ec2ServiceSecurityGroupAEC30825",
                     "GroupId"
                   ]
                 }
@@ -168,15 +168,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      new ecs.EcsService(stack, "EcsService", {
+      new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
         placeOnDistinctInstances: true
@@ -196,15 +196,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition
       });
@@ -226,15 +226,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition
       });
@@ -256,15 +256,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
         daemon: true
@@ -282,15 +282,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition
       });
@@ -311,15 +311,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
         daemon: true
@@ -337,15 +337,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition
       });
@@ -367,15 +367,15 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'EcsTaskDef');
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
         image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
-      const service = new ecs.EcsService(stack, "EcsService", {
+      const service = new ecs.Ec2Service(stack, "Ec2Service", {
         cluster,
         taskDefinition,
         daemon: true
@@ -395,14 +395,14 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'VPC');
-      const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
-      const taskDefinition = new ecs.EcsTaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
+      const cluster = new ecs.Ec2Cluster(stack, 'Cluster', { vpc });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
         image: ecs.DockerHub.image('test'),
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });
-      const service = new ecs.EcsService(stack, 'Service', { cluster, taskDefinition });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster, taskDefinition });
 
       // WHEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });

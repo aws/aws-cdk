@@ -1,18 +1,18 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
 import { IContainerImage } from './container-image';
-import { IEcsCluster } from './ecs/ecs-cluster';
-import { EcsService } from './ecs/ecs-service';
-import { EcsTaskDefinition } from './ecs/ecs-task-definition';
+import { IEc2Cluster } from './ec2/ec2-cluster';
+import { Ec2Service } from './ec2/ec2-service';
+import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
 
 /**
- * Properties for a LoadBalancedEcsService
+ * Properties for a LoadBalancedEc2Service
  */
-export interface LoadBalancedEcsServiceProps {
+export interface LoadBalancedEc2ServiceProps {
   /**
    * The cluster where your Fargate service will be deployed
    */
-  cluster: IEcsCluster;
+  cluster: IEc2Cluster;
 
   /**
    * The image to start.
@@ -59,16 +59,16 @@ export interface LoadBalancedEcsServiceProps {
 /**
  * A single task running on an ECS cluster fronted by a load balancer
  */
-export class LoadBalancedEcsService extends cdk.Construct {
+export class LoadBalancedEc2Service extends cdk.Construct {
   /**
    * The load balancer that is fronting the ECS service
    */
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
 
-  constructor(parent: cdk.Construct, id: string, props: LoadBalancedEcsServiceProps) {
+  constructor(parent: cdk.Construct, id: string, props: LoadBalancedEc2ServiceProps) {
     super(parent, id);
 
-    const taskDefinition = new EcsTaskDefinition(this, 'TaskDef', {});
+    const taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {});
 
     const container = taskDefinition.addContainer('web', {
       image: props.image,
@@ -79,7 +79,7 @@ export class LoadBalancedEcsService extends cdk.Construct {
       containerPort: props.containerPort || 80,
     });
 
-    const service = new EcsService(this, "Service", {
+    const service = new Ec2Service(this, "Service", {
       cluster: props.cluster,
       taskDefinition,
     });

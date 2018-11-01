@@ -5,14 +5,14 @@ Service** (ECS). The simplest example of using this library looks like this:
 
 ```ts
 // Create an ECS cluster (backed by an AutoScaling group)
-const cluster = new ecs.EcsCluster(this, 'Cluster', {
+const cluster = new ecs.Ec2Cluster(this, 'Cluster', {
   vpc,
   size: 3,
   instanceType: new InstanceType("t2.xlarge")
 });
 
 // Instantiate ECS Service with an automatic load balancer
-const ecsService = new ecs.LoadBalancedEcsService(this, 'Service', {
+const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
   cluster,
   memoryLimitMiB: 512,
   image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
@@ -24,14 +24,14 @@ const ecsService = new ecs.LoadBalancedEcsService(this, 'Service', {
 There are two sets of constructs in this library; one to run tasks on ECS and
 one to run Tasks on fargate.
 
-- Use the `EcsCluster`, `EcsTaskDefinition` and `EcsService` constructs to
+- Use the `Ec2Cluster`, `Ec2TaskDefinition` and `Ec2Service` constructs to
   run tasks on EC2 instances running in your account.
 - Use the `FargateCluster`, `FargateTaskDefinition` and `FargateService`
   constructs to run tasks on instances that are managed for you by AWS.
 
 ## Cluster
 
-An `EcsCluster` or `FargateCluster` defines the infrastructure to run your
+An `Ec2Cluster` or `FargateCluster` defines the infrastructure to run your
 tasks on. If you create an ECS cluster, an AutoScalingGroup of EC2 instances
 running the latest ECS Optimized AMI will implicitly be created for you.
 
@@ -87,7 +87,7 @@ automatically be restarted.
 ```ts
 const taskDefinition;
 
-const service = new ecs.EcsService(this, 'Service', {
+const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   desiredCount: 5
@@ -113,7 +113,7 @@ listener.addTargets('ECS', {
 There are two higher-level constructs available which include a load balancer for you:
 
 * `LoadBalancedFargateService`
-* `LoadBalancedEcsService`
+* `LoadBalancedEc2Service`
 
 ## Task AutoScaling
 

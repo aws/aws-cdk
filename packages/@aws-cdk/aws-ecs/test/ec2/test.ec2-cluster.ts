@@ -11,7 +11,7 @@ export = {
       // GIVEN
       const stack =  new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      new ecs.EcsCluster(stack, 'EcsCluster', {
+      new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
         vpc,
       });
 
@@ -34,12 +34,12 @@ export = {
         ImageId: "", // Should this not be the latest image ID?
         InstanceType: "t2.micro",
         IamInstanceProfile: {
-          Ref: "EcsClusterAutoScalingGroupInstanceProfile77D897B8"
+          Ref: "Ec2ClusterAutoScalingGroupInstanceProfile18B9D870"
         },
         SecurityGroups: [
           {
             "Fn::GetAtt": [
-              "EcsClusterAutoScalingGroupInstanceSecurityGroupBFB09B50",
+              "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37",
               "GroupId"
             ]
           }
@@ -51,7 +51,7 @@ export = {
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  Ref: "EcsCluster97242B84"
+                  Ref: "Ec2ClusterEE43E89D"
                 },
                 // tslint:disable-next-line:max-line-length
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save"
@@ -66,13 +66,13 @@ export = {
         MinSize: "0",
         DesiredCapacity: "1",
         LaunchConfigurationName: {
-          Ref: "EcsClusterAutoScalingGroupLaunchConfig965E00BD"
+          Ref: "Ec2ClusterAutoScalingGroupLaunchConfig570E562A"
         },
         Tags: [
           {
             Key: "Name",
             PropagateAtLaunch: true,
-            Value: "EcsCluster/AutoScalingGroup"
+            Value: "Ec2Cluster/AutoScalingGroup"
           }
         ],
         VPCZoneIdentifier: [
@@ -89,7 +89,7 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
-        GroupDescription: "EcsCluster/AutoScalingGroup/InstanceSecurityGroup",
+        GroupDescription: "Ec2Cluster/AutoScalingGroup/InstanceSecurityGroup",
         SecurityGroupEgress: [
           {
             CidrIp: "0.0.0.0/0",
@@ -101,7 +101,7 @@ export = {
         Tags: [
           {
             Key: "Name",
-            Value: "EcsCluster/AutoScalingGroup"
+            Value: "Ec2Cluster/AutoScalingGroup"
           }
         ],
         VpcId: {
@@ -160,7 +160,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    new ecs.EcsCluster(stack, 'EcsCluster', {
+    new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
       vpc,
       instanceType: new InstanceType("m3.large")
     });
@@ -178,7 +178,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    new ecs.EcsCluster(stack, 'EcsCluster', {
+    new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
       vpc,
       size: 3
     });

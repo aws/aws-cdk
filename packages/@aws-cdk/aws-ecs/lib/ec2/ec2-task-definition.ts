@@ -5,7 +5,7 @@ import { cloudformation } from '../ecs.generated';
 /**
  * Properties to define an ECS task definition
  */
-export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
+export interface Ec2TaskDefinitionProps extends BaseTaskDefinitionProps {
   /**
    * The Docker networking mode to use for the containers in the task.
    *
@@ -26,7 +26,7 @@ export interface EcsTaskDefinitionProps extends BaseTaskDefinitionProps {
 /**
  * Define Tasks to run on an ECS cluster
  */
-export class EcsTaskDefinition extends BaseTaskDefinition {
+export class Ec2TaskDefinition extends BaseTaskDefinition {
   /**
    * The networkmode configuration of this task
    */
@@ -37,7 +37,7 @@ export class EcsTaskDefinition extends BaseTaskDefinition {
    */
   private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[];
 
-  constructor(parent: cdk.Construct, name: string, props: EcsTaskDefinitionProps = {}) {
+  constructor(parent: cdk.Construct, name: string, props: Ec2TaskDefinitionProps = {}) {
     const networkMode = props.networkMode || NetworkMode.Bridge;
 
     super(parent, name, props, {
