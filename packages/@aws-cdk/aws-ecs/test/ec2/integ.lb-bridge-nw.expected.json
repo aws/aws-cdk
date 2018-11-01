@@ -305,13 +305,13 @@
         }
       }
     },
-    "EcsCluster97242B84": {
+    "Ec2ClusterEE43E89D": {
       "Type": "AWS::ECS::Cluster"
     },
-    "EcsClusterAutoScalingGroupInstanceSecurityGroupBFB09B50": {
+    "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ-ecs/EcsCluster/AutoScalingGroup/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-ecs/Ec2Cluster/AutoScalingGroup/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -323,7 +323,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ-ecs/EcsCluster/AutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/Ec2Cluster/AutoScalingGroup"
           }
         ],
         "VpcId": {
@@ -331,7 +331,7 @@
         }
       }
     },
-    "EcsClusterAutoScalingGroupInstanceSecurityGroupfromawsecsintegecsLBSecurityGroup7DA90129808022F17D5A": {
+    "Ec2ClusterAutoScalingGroupInstanceSecurityGroupfromawsecsintegecsLBSecurityGroup7DA9012980802D795A20": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -339,7 +339,7 @@
         "FromPort": 8080,
         "GroupId": {
           "Fn::GetAtt": [
-            "EcsClusterAutoScalingGroupInstanceSecurityGroupBFB09B50",
+            "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37",
             "GroupId"
           ]
         },
@@ -352,7 +352,7 @@
         "ToPort": 8080
       }
     },
-    "EcsClusterAutoScalingGroupInstanceRole2505B71D": {
+    "Ec2ClusterAutoScalingGroupInstanceRole99A1E97C": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -369,7 +369,7 @@
         }
       }
     },
-    "EcsClusterAutoScalingGroupInstanceRoleDefaultPolicy0DEB9F1F": {
+    "Ec2ClusterAutoScalingGroupInstanceRoleDefaultPolicyD987CC12": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -396,36 +396,36 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "EcsClusterAutoScalingGroupInstanceRoleDefaultPolicy0DEB9F1F",
+        "PolicyName": "Ec2ClusterAutoScalingGroupInstanceRoleDefaultPolicyD987CC12",
         "Roles": [
           {
-            "Ref": "EcsClusterAutoScalingGroupInstanceRole2505B71D"
+            "Ref": "Ec2ClusterAutoScalingGroupInstanceRole99A1E97C"
           }
         ]
       }
     },
-    "EcsClusterAutoScalingGroupInstanceProfile77D897B8": {
+    "Ec2ClusterAutoScalingGroupInstanceProfile18B9D870": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "EcsClusterAutoScalingGroupInstanceRole2505B71D"
+            "Ref": "Ec2ClusterAutoScalingGroupInstanceRole99A1E97C"
           }
         ]
       }
     },
-    "EcsClusterAutoScalingGroupLaunchConfig965E00BD": {
+    "Ec2ClusterAutoScalingGroupLaunchConfig570E562A": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-1234",
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
-          "Ref": "EcsClusterAutoScalingGroupInstanceProfile77D897B8"
+          "Ref": "Ec2ClusterAutoScalingGroupInstanceProfile18B9D870"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "EcsClusterAutoScalingGroupInstanceSecurityGroupBFB09B50",
+              "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37",
               "GroupId"
             ]
           }
@@ -437,7 +437,7 @@
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  "Ref": "EcsCluster97242B84"
+                  "Ref": "Ec2ClusterEE43E89D"
                 },
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save"
               ]
@@ -446,24 +446,24 @@
         }
       },
       "DependsOn": [
-        "EcsClusterAutoScalingGroupInstanceRole2505B71D",
-        "EcsClusterAutoScalingGroupInstanceRoleDefaultPolicy0DEB9F1F"
+        "Ec2ClusterAutoScalingGroupInstanceRole99A1E97C",
+        "Ec2ClusterAutoScalingGroupInstanceRoleDefaultPolicyD987CC12"
       ]
     },
-    "EcsClusterAutoScalingGroupASGB16C0B67": {
+    "Ec2ClusterAutoScalingGroupASGC290B9EA": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "1",
         "MinSize": "0",
         "DesiredCapacity": "1",
         "LaunchConfigurationName": {
-          "Ref": "EcsClusterAutoScalingGroupLaunchConfig965E00BD"
+          "Ref": "Ec2ClusterAutoScalingGroupLaunchConfig570E562A"
         },
         "Tags": [
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-ecs-integ-ecs/EcsCluster/AutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/Ec2Cluster/AutoScalingGroup"
           }
         ],
         "VPCZoneIdentifier": [
@@ -553,7 +553,7 @@
           "Ref": "TaskDef54694570"
         },
         "Cluster": {
-          "Ref": "EcsCluster97242B84"
+          "Ref": "Ec2ClusterEE43E89D"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
@@ -621,7 +621,7 @@
         }
       }
     },
-    "LBSecurityGrouptoawsecsintegecsEcsClusterAutoScalingGroupInstanceSecurityGroup019ACCA48080512AF7A6": {
+    "LBSecurityGrouptoawsecsintegecsEc2ClusterAutoScalingGroupInstanceSecurityGroup4939BA238080198BB235": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
@@ -634,7 +634,7 @@
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "EcsClusterAutoScalingGroupInstanceSecurityGroupBFB09B50",
+            "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37",
             "GroupId"
           ]
         },

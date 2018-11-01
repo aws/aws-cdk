@@ -56,7 +56,8 @@ export class IntegrationTest {
   private readonly cdkConfigPath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
-    this.expectedFileName = path.basename(this.name, '.js') + '.expected.json';
+    const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
+    this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
     this.cdkConfigPath = path.join(this.directory, 'cdk.json');
   }
