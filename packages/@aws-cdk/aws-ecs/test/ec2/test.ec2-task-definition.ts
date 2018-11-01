@@ -57,6 +57,12 @@ export = {
         containerPort: 3000
       });
 
+      container.addUlimits({
+        hardLimit: 128,
+        name: ecs.UlimitName.Rss,
+        softLimit: 128
+      });
+
       // THEN
       expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
@@ -80,7 +86,11 @@ export = {
             HostPort: 0,
             Protocol: Protocol.Tcp
           }],
-          Ulimits: [],
+          Ulimits: [{
+            HardLimit: 128,
+            Name: "rss",
+            SoftLimit: 128
+          }],
           VolumesFrom: []
         }],
       }));
