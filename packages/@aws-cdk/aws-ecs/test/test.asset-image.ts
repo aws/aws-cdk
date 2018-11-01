@@ -1,6 +1,7 @@
 import { expect, MatchStyle } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
+import path = require('path');
 import ecs = require('../lib');
 
 export = {
@@ -10,7 +11,7 @@ export = {
 
     // WHEN
     new ecs.AssetImage(stack, 'Image', {
-      directory: '.'
+      directory: path.join(__dirname, 'demo-image'),
     });
 
     // THEN
