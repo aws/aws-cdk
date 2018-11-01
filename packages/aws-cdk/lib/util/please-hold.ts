@@ -1,4 +1,5 @@
-import { warning } from "../logging";
+import colors = require('colors/safe');
+import { print } from "../logging";
 
 /**
  * Print a message to the logger in case the operation takes a long time
@@ -20,6 +21,6 @@ export class PleaseHold {
   }
 
   private printMessage() {
-    warning(this.message);
+    print(colors.yellow(this.message));
   }
 }

@@ -87,6 +87,7 @@ export class ToolkitInfo {
 
     let repository;
     try {
+      debug(`${repositoryName}: checking for repository.`);
       const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
       repository = describeResponse.repositories![0];
     } catch (e) {
@@ -95,6 +96,7 @@ export class ToolkitInfo {
 
     if (repository) {
       try {
+        debug(`${repositoryName}: checking for image ${imageTag}`);
         await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
 
         // If we got here, the image already exists. Nothing else needs to be done.
@@ -107,6 +109,7 @@ export class ToolkitInfo {
         if (e.code !== 'ImageNotFoundException') { throw e; }
       }
     } else {
+      debug(`${repositoryName}: creating`);
       const response = await ecr.createRepository({ repositoryName }).promise();
       repository = response.repository!;
 
@@ -118,7 +121,7 @@ export class ToolkitInfo {
     }
 
     // The repo exists, image just needs to be uploaded. Get auth to do so.
-
+    debug(`Fetching ECR authorization token`);
     const authData =  (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
     if (authData.length === 0) {
       throw new Error('No authorization data received from ECR');

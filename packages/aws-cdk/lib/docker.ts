@@ -33,7 +33,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     const imageId = (await shell(command, { quiet: true })).trim();
     buildHold.stop();
 
-    const tag = await calculateImageDigest(imageId);
+    const tag = await calculateImageFingerprint(imageId);
 
     debug(` ⌛  Image has tag ${tag}, preparing ECR repository`);
     const ecr = await toolkitInfo.prepareEcrRepository(asset.id, tag);
@@ -55,6 +55,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
       // There's no way to make this quiet, so we can't use a PleaseHold. Print a header message.
       print(` ⌛ Pusing Docker image for ${asset.path}; this may take a while.`);
       await shell(['docker', 'push', qualifiedImageName]);
+      debug(` 👑  Docker image for ${asset.path} pushed.`);
     }
 
     return [
@@ -73,25 +74,36 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
 }
 
 /**
- * Calculate image digest
+ * Calculate image fingerprint.
+ *
+ * The fingerprint has a high likelihood to be the same across repositories.
+ * (As opposed to Docker's built-in image digest, which changes as soon
+ * as the image is uploaded since it includes the tags that an image has).
+ *
+ * The fingerprint will be used as a tag to identify a particular image.
  */
-async function calculateImageDigest(imageId: string) {
-  const manifest = await shell(['docker', 'inspect', imageId], { quiet: true });
-  const parsed = JSON.parse(manifest)[0];
+async function calculateImageFingerprint(imageId: string) {
+  const manifestString = await shell(['docker', 'inspect', imageId], { quiet: true });
+  const manifest = JSON.parse(manifestString)[0];
 
-  const importantParts = {
-    Parent: parsed.Parent,
-    Comment: parsed.Comment,
-    Config: parsed.Config,
-    RootFS: parsed.RootFS,
-    Architecture: parsed.Architecture,
-    Os: parsed.Os,
-    Size: parsed.Size,
-    VirtualSize: parsed.VirtualSize,
-    GraphDriver: parsed.GraphDriver
-  };
+  // Id can change
+  delete manifest.Id;
 
-  return crypto.createHash('sha256').update(JSON.stringify(importantParts)).digest('hex');
+  // Repository-based identifiers are out
+  delete manifest.RepoTags;
+  delete manifest.RepoDigests;
+
+  // Metadata that has no bearing on the image contents
+  delete manifest.Created;
+
+  // We're interested in the image itself, not any running instaces of it
+  delete manifest.Container;
+  delete manifest.ContainerConfig;
+
+  // We're not interested in the Docker version used to create this image
+  delete manifest.DockerVersion;
+
+  return crypto.createHash('sha256').update(JSON.stringify(manifest)).digest('hex');
 }
 
 /**
