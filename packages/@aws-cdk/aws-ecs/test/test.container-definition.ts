@@ -9,7 +9,7 @@ export = {
     "With network mode AwsVpc": {
       "Host port should be the same as container port"(test: Test) {
         // GIVEN
-        const stack =  new cdk.Stack();
+        const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
@@ -18,6 +18,7 @@ export = {
           image: ecs.DockerHub.image("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
+
         // THEN
         test.throws(() => {
           container.addPortMappings({
@@ -25,12 +26,13 @@ export = {
             hostPort: 8081
           });
         });
+
         test.done();
       },
 
       "Host port can be empty "(test: Test) {
         // GIVEN
-        const stack =  new cdk.Stack();
+        const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
           networkMode: ecs.NetworkMode.AwsVpc,
         });
@@ -39,30 +41,7 @@ export = {
           image: ecs.DockerHub.image("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
-        // WHEN
-        container.addPortMappings({
-          containerPort: 8080,
-        });
 
-        // THEN no excpetion raised
-        test.done();
-      },
-    },
-    "With network mode Host ": {
-      "Host port should be the same as container port"(test: Test) {
-        test.done();
-      },
-      "Host port can be empty "(test: Test) {
-        // GIVEN
-        const stack =  new cdk.Stack();
-        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
-        });
-
-        const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
-          memoryLimitMiB: 2048,
-        });
         // WHEN
         container.addPortMappings({
           containerPort: 8080,
@@ -72,12 +51,13 @@ export = {
         test.done();
       },
     },
-    "With network mode Bridge": {
-      "Host port should not be lower than 1024"(test: Test) {
+
+    "With network mode Host ": {
+      "Host port should be the same as container port"(test: Test) {
         // GIVEN
-        const stack =  new cdk.Stack();
+        const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
-          networkMode: ecs.NetworkMode.AwsVpc,
+          networkMode: ecs.NetworkMode.Host,
         });
 
         const container = taskDefinition.addContainer("Container", {
@@ -89,12 +69,84 @@ export = {
         test.throws(() => {
           container.addPortMappings({
             containerPort: 8080,
-            hostPort: 1,
+            hostPort: 8081
           });
         });
+
+        test.done();
+      },
+
+      "Host port can be empty "(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.Host,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        // WHEN
+        container.addPortMappings({
+          containerPort: 8080,
+        });
+
+        // THEN no exception raised
+        test.done();
+      },
+
+      "errors when adding links"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.Host,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        const logger = taskDefinition.addContainer("LoggingContainer", {
+          image: ecs.DockerHub.image("myLogger"),
+          memoryLimitMiB: 1024,
+        });
+
+        // THEN
+        test.throws(() => {
+          container.addLink(logger);
+        });
+
         test.done();
       },
     },
+
+    "With network mode Bridge": {
+      "allows adding links"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
+          networkMode: ecs.NetworkMode.Bridge,
+        });
+
+        const container = taskDefinition.addContainer("Container", {
+          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          memoryLimitMiB: 2048,
+        });
+
+        const logger = taskDefinition.addContainer("LoggingContainer", {
+          image: ecs.DockerHub.image("myLogger"),
+          memoryLimitMiB: 1024,
+        });
+
+        // THEN
+        container.addLink(logger);
+
+        test.done();
+      },
+    }
 
     //     "With health check": {
     //       "healthCheck.command is a single string"(test: Test) {
@@ -157,6 +209,7 @@ export = {
         test.done();
       },
     },
+
     "With network mode Bridge": {
       "Ingress port should be the same as host port if supplied"(test: Test) {
         // GIVEN
@@ -182,6 +235,7 @@ export = {
         test.equal(actual, expected);
         test.done();
       },
+
       "Ingress port should be 0 if not supplied"(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
@@ -210,7 +264,7 @@ export = {
 
   'can add AWS logging to container definition'(test: Test) {
     // GIVEN
-    const stack =  new cdk.Stack();
+    const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN

@@ -233,8 +233,14 @@ export class ContainerDefinition extends cdk.Construct {
 
   /**
    * Add a link from this container to a different container
+   * The link parameter allows containers to communicate with each other without the need for port mappings.
+   * Only supported if the network mode of a task definition is set to bridge.
+   * Warning: The --link flag is a legacy feature of Docker. It may eventually be removed.
    */
   public addLink(container: ContainerDefinition, alias?: string) {
+    if (this.taskDefinition.networkMode !== NetworkMode.Bridge) {
+      throw new Error(`You must use network mode Bridge to add container links.`);
+    }
     if (alias !== undefined) {
       this.links.push(`${container.id}:${alias}`);
     } else {
