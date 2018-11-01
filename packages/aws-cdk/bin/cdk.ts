@@ -623,23 +623,33 @@ async function initCommandLine() {
       const deployName = renames.finalName(stack.name);
 
       if (deployName !== stack.name) {
-        success(' ⏳  Starting deployment of stack %s as %s...', colors.blue(stack.name), colors.blue(deployName));
+        print('%s: Deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
       } else {
-        success(' ⏳  Starting deployment of stack %s...', colors.blue(stack.name));
+        print('%s: Deploying...', colors.bold(stack.name));
       }
 
       try {
         const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn });
-        const message = result.noOp ? ` ✅  Stack was already up-to-date, it has ARN ${colors.blue(result.stackArn)}`
-                      : ` ✅  Deployment of stack %s completed successfully, it has ARN ${colors.blue(result.stackArn)}`;
-        data(result.stackArn);
-        success(message, colors.blue(stack.name));
+        const message = result.noOp
+          ? ` ✅ %s (no changes)`
+          : ` ✅ %s`;
+
+        success('\n' + message, stack.name);
+
+        if (Object.keys(result.outputs).length > 0) {
+          print('\nOutputs:');
+        }
+
         for (const name of Object.keys(result.outputs)) {
           const value = result.outputs[name];
-          print('%s.%s = %s', colors.blue(deployName), colors.blue(name), colors.green(value));
+          print('%s.%s = %s', colors.cyan(deployName), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
+
+        print('\nStack ARN:');
+
+        data(result.stackArn);
       } catch (e) {
-        error(' ❌  Deployment of stack %s failed: %s', colors.blue(stack.name), e);
+        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
         throw e;
       }
     }

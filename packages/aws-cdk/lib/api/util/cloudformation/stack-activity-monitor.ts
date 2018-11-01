@@ -165,19 +165,23 @@ export class StackActivityMonitor {
     const color = this.colorFromStatus(e.ResourceStatus);
     const md = this.findMetadataFor(e.LogicalResourceId);
 
-    let suffix = '';
+    let stackTrace = '';
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      suffix = `\n${md.entry.data} was created at: ${md.path}\n\t${md.entry.trace.join('\n\t\\_ ')}`;
+      stackTrace = `\n\t${md.entry.trace.join('\n\t\\_ ')}`;
     }
 
-    process.stderr.write(util.format(color(`%s %s  %s  [%s] %s %s%s\n`),
+    let resourceName = md ? md.path.replace(/\/Resource$/, '') : (e.LogicalResourceId || '');
+    resourceName = resourceName.replace(/^\//, ''); // remove "/" prefix
+
+    process.stderr.write(util.format(` %s | %s | %s | [%s] %s (%s) %s%s\n`,
           this.progress(),
-          e.Timestamp,
-          padRight(18, "" + e.ResourceStatus),
-          e.ResourceType,
+          new Date(e.Timestamp).toLocaleTimeString(),
+          color(padLeft(44, e.ResourceStatus || '')),
+          e.ResourceType || '',
+          color(colors.bold(resourceName)),
           e.LogicalResourceId,
-          e.ResourceStatusReason ? e.ResourceStatusReason : '',
-          suffix));
+          color(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+          color(stackTrace)));
 
     this.lastPrintTime = Date.now();
   }
@@ -188,10 +192,10 @@ export class StackActivityMonitor {
   private progress(): string {
     if (this.resourcesTotal == null) {
       // Don't have total, show simple count and hope the human knows
-      return util.format('[%s]', this.resourcesDone);
+      return util.format('%s', this.resourcesDone);
     }
 
-    return util.format('[%s/%s]',
+    return util.format('%s/%s',
         padLeft(this.resourceDigits, this.resourcesDone.toString()),
         padLeft(this.resourceDigits, this.resourcesTotal != null ? this.resourcesTotal.toString() : '?'));
   }
@@ -204,9 +208,11 @@ export class StackActivityMonitor {
       return;
     }
 
-    process.stderr.write(util.format(colors.blue('%s Currently in progress: %s\n'),
-      this.progress(),
-      Array.from(this.resourcesInProgress).join(', ')));
+    if (this.resourcesInProgress.size > 0) {
+      process.stderr.write(util.format('%s Currently in progress: %s\n',
+        this.progress(),
+        colors.bold(Array.from(this.resourcesInProgress).join(', '))));
+    }
 
     // We cheat a bit here. To prevent printInProgress() from repeatedly triggering,
     // we set the timestamp into the future. It will be reset whenever a regular print

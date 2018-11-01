@@ -4,7 +4,7 @@ import colors = require('colors/safe');
 import YAML = require('js-yaml');
 import uuid = require('uuid');
 import { prepareAssets } from '../assets';
-import { debug, error } from '../logging';
+import { debug, error, print } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './util/cloudformation';
@@ -61,6 +61,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
+  print(`%s: Creating changeset...`, colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
