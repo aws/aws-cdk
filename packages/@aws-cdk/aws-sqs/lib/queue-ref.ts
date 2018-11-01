@@ -125,9 +125,8 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
    *   - sqs:GetQueueUrl
    *
    * @param identity Principal to grant consume rights to
-   * @param queueActions additional queue actions to allow
    */
-  public grantConsumeMessages(identity?: iam.IPrincipal, ...queueActions: string[]) {
+  public grantConsumeMessages(identity?: iam.IPrincipal) {
     this.grant(identity,
       'sqs:ReceiveMessage',
       'sqs:ChangeMessageVisibility',
@@ -135,8 +134,7 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
       'sqs:GetQueueUrl',
       'sqs:DeleteMessage',
       'sqs:DeleteMessageBatch',
-      'sqs:GetQueueAttributes',
-      ...queueActions);
+      'sqs:GetQueueAttributes');
   }
 
   /**
@@ -150,15 +148,13 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
    *  - sqs:GetQueueUrl
    *
    * @param identity Principal to grant send rights to
-   * @param queueActions additional queue actions to allow
    */
-  public grantSendMessages(identity?: iam.IPrincipal, ...queueActions: string[]) {
+  public grantSendMessages(identity?: iam.IPrincipal) {
     this.grant(identity,
       'sqs:SendMessage',
       'sqs:SendMessageBatch',
       'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl',
-      ...queueActions);
+      'sqs:GetQueueUrl');
   }
 
   /**
@@ -173,12 +169,11 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
    * @param identity Principal to grant send rights to
    * @param queueActions additional queue actions to allow
    */
-  public grantPurge(identity?: iam.IPrincipal, ...queueActions: string[]) {
+  public grantPurge(identity?: iam.IPrincipal) {
     this.grant(identity,
       'sqs:PurgeQueue',
       'sqs:GetQueueAttributes',
-      'sqs:GetQueueUrl',
-      ...queueActions);
+      'sqs:GetQueueUrl');
   }
 
   /**

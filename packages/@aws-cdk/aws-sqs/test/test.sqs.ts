@@ -128,21 +128,6 @@ export = {
       test.done();
     },
 
-    'grantConsumeMessages with additional actions'(test: Test) {
-      testGrant((q, p) => q.grantConsumeMessages(p, 'sqs:additional', 'sqs:action'),
-        'sqs:ReceiveMessage',
-        'sqs:ChangeMessageVisibility',
-        'sqs:ChangeMessageVisibilityBatch',
-        'sqs:GetQueueUrl',
-        'sqs:DeleteMessage',
-        'sqs:DeleteMessageBatch',
-        'sqs:GetQueueAttributes',
-        'sqs:additional',
-        'sqs:action'
-      );
-      test.done();
-    },
-
     'grantSendMessages'(test: Test) {
       testGrant((q, p) => q.grantSendMessages(p),
         'sqs:SendMessage',
@@ -153,33 +138,11 @@ export = {
       test.done();
     },
 
-    'grantSendMessages with additional actions'(test: Test) {
-      testGrant((q, p) => q.grantSendMessages(p, 'sqs:foo'),
-        'sqs:SendMessage',
-        'sqs:SendMessageBatch',
-        'sqs:GetQueueAttributes',
-        'sqs:GetQueueUrl',
-        'sqs:foo'
-      );
-      test.done();
-    },
-
     'grantPurge'(test: Test) {
       testGrant((q, p) => q.grantPurge(p),
         'sqs:PurgeQueue',
         'sqs:GetQueueAttributes',
         'sqs:GetQueueUrl',
-      );
-      test.done();
-    },
-
-    'grantPurge with additional actions'(test: Test) {
-      testGrant((q, p) => q.grantPurge(p, 'hello', 'world'),
-        'sqs:PurgeQueue',
-        'sqs:GetQueueAttributes',
-        'sqs:GetQueueUrl',
-        'hello',
-        'world'
       );
       test.done();
     },
