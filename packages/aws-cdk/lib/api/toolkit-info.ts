@@ -23,6 +23,11 @@ export interface Uploaded {
 export class ToolkitInfo {
   public readonly sdk: SDK;
 
+  /**
+   * A cache of previous uploads done in this session
+   */
+  private readonly previousUploads: {[key: string]: Uploaded} = {};
+
   constructor(private readonly props: {
     sdk: SDK,
     bucketName: string,
@@ -63,17 +68,31 @@ export class ToolkitInfo {
       return { filename, key, changed: false };
     }
 
-    debug(`${url}: uploading`);
-    await s3.putObject({
-      Bucket: bucket,
-      Key: key,
-      Body: data,
-      ContentType: props.contentType
-    }).promise();
+    const uploaded = { filename, key, changed: true };
 
-    debug(`${url}: upload complete`);
+    // Upload if it's new or server-side copy if it was already uploaded previously
+    const previous = this.previousUploads[hash];
+    if (previous) {
+      debug(`${url}: copying`);
+      await s3.copyObject({
+        Bucket: bucket,
+        Key: key,
+        CopySource: `${bucket}/${previous.key}`
+      }).promise();
+      debug(`${url}: copy complete`);
+    } else {
+      debug(`${url}: uploading`);
+      await s3.putObject({
+        Bucket: bucket,
+        Key: key,
+        Body: data,
+        ContentType: props.contentType
+      }).promise();
+      debug(`${url}: upload complete`);
+      this.previousUploads[hash] = uploaded;
+    }
 
-    return { filename, key, changed: true };
+    return uploaded;
   }
 
   /**
