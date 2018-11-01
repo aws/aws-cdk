@@ -141,14 +141,53 @@ function appToArray(app: any) {
   return typeof app === 'string' ? app.split(' ') : app;
 }
 
+type CommandGenerator = (file: string) => string[];
+
+/**
+ * Direct execution of a YAML file, assume that we're deploying an Applet
+ */
+function executeApplet(appletFile: string): string[] {
+    const appletBinary = path.resolve(require.resolve('@aws-cdk/applet-js'));
+    return [process.execPath, appletBinary, appletFile];
+}
+
+/**
+ * Execute the given file with the same 'node' process as is running the current process
+ */
+function executeNode(scriptFile: string): string[] {
+    return [process.execPath, scriptFile];
+}
+
+/**
+ * Mapping of extensions to command-line generators
+ */
+const EXTENSION_MAP = new Map<string, CommandGenerator>([
+  ['.yml', executeApplet],
+  ['.yaml', executeApplet],
+  ['.js', executeNode],
+]);
+
 /**
  * Guess the executable from the command-line argument
+ *
+ * Only do this if the file is NOT marked as executable. If it is,
+ * we'll defer to the shebang inside the file itself.
+ *
+ * If we're on Windows, we ALWAYS take the handler, since it's hard to
+ * verify if registry associations have or have not been set up for this
+ * file type, so we'll assume the worst and take control.
  */
 async function guessExecutable(commandLine: string[]) {
-  if (commandLine.length === 1 && ['.yml', '.yaml'].includes(path.extname(commandLine[0]))) {
-    // Direct execution of a YAML file, assume that we're deploying an Applet
-    const appletBinary = path.resolve(require.resolve('@aws-cdk/applet-js'));
-    return [process.execPath, appletBinary, commandLine[0]];
+  if (commandLine.length === 1) {
+    const fstat = await fs.stat(commandLine[0]);
+    // tslint:disable-next-line:no-bitwise
+    const isExecutable = (fstat.mode & fs.constants.X_OK) !== 0;
+    const isWindows = process.platform === "win32";
+
+    const handler = EXTENSION_MAP.get(path.extname(commandLine[0]));
+    if (handler && (!isExecutable || isWindows)) {
+      return handler(commandLine[0]);
+    }
   }
   return commandLine;
 }

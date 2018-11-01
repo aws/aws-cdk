@@ -1,4 +1,6 @@
-#!/usr/bin/env cdk-applet-js
-applet: ./test-applet:NoStackApplet
-argument: this should be reflected in the template description
+Applets:
+  NoStackApplet:
+    Type: ./test-applet:NoStackApplet
+    Properties:
+      argument: this should be reflected in the template description
 

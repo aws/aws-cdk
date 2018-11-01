@@ -26,18 +26,22 @@ async function main() {
   }
 
   // read applet(s) properties from the provided file
-  let fileContents = YAML.safeLoad(await fs.readFile(appletFile, { encoding: 'utf-8' }));
-  if (!Array.isArray(fileContents)) {
-    fileContents = [fileContents];
+  const fileContents = YAML.safeLoad(await fs.readFile(appletFile, { encoding: 'utf-8' }));
+  if (typeof fileContents !== 'object') {
+    throw new Error(`${appletFile}: should contain a YAML object`);
+  }
+  const appletMap = fileContents.Applets;
+  if (!appletMap) {
+    throw new Error(`${appletFile}: must have an 'Applets' key`);
   }
 
   const searchDir = path.dirname(appletFile);
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdkapplet'));
   try {
-
     const app = new cdk.App();
-    for (const props of fileContents) {
-      await constructStack(app, searchDir, tempDir, props);
+
+    for (const [name, definition] of Object.entries(appletMap)) {
+      await constructStack(app, searchDir, tempDir, name, definition);
     }
     app.run();
   } finally {
@@ -49,19 +53,18 @@ async function main() {
  * Construct a stack from the given props
  * @param props Const
  */
-async function constructStack(app: cdk.App, searchDir: string, tempDir: string, props: any) {
+async function constructStack(app: cdk.App, searchDir: string, tempDir: string, stackName: string, spec: any) {
   // the 'applet' attribute tells us how to load the applet. in the javascript case
   // it will be in the format <module>:<class> where <module> is technically passed to "require"
   // and <class> is expected to be exported from the module.
-  const appletSpec: string = props.applet;
+  const appletSpec: string | undefined = spec.Type;
   if (!appletSpec) {
-    throw new Error('Applet file missing "applet" attribute');
+    throw new Error(`Applet ${stackName} missing "Type" attribute`);
   }
 
   const applet = parseApplet(appletSpec);
 
-  // remove the 'applet' attribute as we pass it along to the applet class.
-  delete props.applet;
+  const props = spec.Properties || {};
 
   if (applet.npmPackage) {
     // tslint:disable-next-line:no-console
@@ -79,8 +82,7 @@ async function constructStack(app: cdk.App, searchDir: string, tempDir: string, 
 
   // we need to resolve the module name relatively to where the applet file is
   // and not relative to this module or cwd.
-  const resolve = require.resolve as any; // escape type-checking since { paths } is not defined
-  const modulePath = resolve(applet.moduleName, { paths: [ searchDir ] });
+  const modulePath = require.resolve(applet.moduleName, { paths: [ searchDir ] });
 
   // load the module
   const pkg = require(modulePath);
@@ -91,8 +93,6 @@ async function constructStack(app: cdk.App, searchDir: string, tempDir: string, 
   if (!appletConstructor) {
     throw new Error(`Cannot find applet class "${applet.className}" in module "${applet.moduleName}"`);
   }
-
-  const stackName = props.name || applet.className;
 
   if (isStackConstructor(appletConstructor)) {
     // add the applet stack into the app.

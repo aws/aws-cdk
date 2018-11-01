@@ -1,1 +1,3 @@
-applet: npm://@aws-cdk/aws-ecs:Hello
+Applets:
+  Hello:
+    Type: npm://@aws-cdk/aws-ecs:Hello
