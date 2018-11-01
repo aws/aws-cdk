@@ -310,6 +310,13 @@ export class MustUseCDKBuild extends ValidationRule {
   }
 }
 
+export class MustIgnoreSNK extends ValidationRule {
+  public validate(pkg: PackageJson): void {
+    fileShouldContain(pkg, '.npmignore', '*.snk');
+    fileShouldContain(pkg, '.gitignore', '*.snk');
+  }
+}
+
 export class NpmIgnoreForJsiiModules extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }

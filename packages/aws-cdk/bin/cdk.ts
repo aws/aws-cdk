@@ -434,7 +434,6 @@ async function initCommandLine() {
         return modules.join(',');
       }
     }
-
   }
 
   /**
