@@ -359,7 +359,6 @@ export class ContainerDefinition extends cdk.Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: this.links,
       linuxParameters: this.linuxParameters.renderLinuxParameters(),
-
     };
   }
 }
@@ -423,10 +422,10 @@ function renderKV(env: {[key: string]: string}, keyName: string, valueName: stri
 function renderHealthCheck(hc: HealthCheck): cloudformation.TaskDefinitionResource.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.intervalSeconds,
-    retries: hc.retries,
+    interval: hc.intervalSeconds !== undefined ? hc.intervalSeconds : 30,
+    retries: hc.retries !== undefined ? hc.retries : 3,
     startPeriod: hc.startPeriod,
-    timeout: hc.timeout
+    timeout: hc.timeout !== undefined ? hc.timeout : 5,
   };
 }
 
