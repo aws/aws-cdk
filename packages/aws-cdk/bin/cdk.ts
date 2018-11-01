@@ -631,8 +631,8 @@ async function initCommandLine() {
       try {
         const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn });
         const message = result.noOp
-          ? ` ✅ %s (no changes)`
-          : ` ✅ %s`;
+          ? ` ✅  %s (no changes)`
+          : ` ✅  %s`;
 
         success('\n' + message, stack.name);
 
