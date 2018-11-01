@@ -7,6 +7,7 @@ import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { IEventSource } from './event-source';
 import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
@@ -375,6 +376,19 @@ export abstract class FunctionRef extends cdk.Construct
         .addActions("lambda:InvokeFunction")
       ]
     };
+  }
+
+  /**
+   * Adds an event source to this function.
+   *
+   * Any type that implements the IEventSource interface can be used here. For
+   * example, you can call this with an SQS queue: `lambda.addEventSource(queue)`.
+   *
+   * @param source The event source
+   * @param options Event source mapping options (e.g. batch size, enabled, etc)
+   */
+  public addEventSource(source: IEventSource) {
+    source.bind(this);
   }
 
   private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
