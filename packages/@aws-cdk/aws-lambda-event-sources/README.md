@@ -20,16 +20,21 @@ first create or update an Amazon SQS queue and select custom values for the
 queue parameters. The following parameters will impact Amazon SQS's polling
 behavior:
 
-* __VisibilityTimeout__: May impact the period between retries.
-* __TimeToWait__: Will determine long poll duration. The default value is 20 seconds.
+* __visibilityTimeoutSec__: May impact the period between retries.
+* __receiveMessageWaitTimeSec__: Will determine [long
+  poll](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-long-polling.html)
+  duration. The default value is 20 seconds.
 
 ```ts
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-const queue = new sqs.Queue(...);
+const queue = new sqs.Queue(this, 'MyQueue', {
+  visibilityTimeoutSec: 30      // default,
+  receiveMessageWaitTimeSec: 20 // default
+});
 
 lambda.addEventSource(new SqsEventSource(queue, {
-  batchSize: 10 // optional
+  batchSize: 10 // default
 });
 ```
 
@@ -73,14 +78,6 @@ Event](https://docs.aws.amazon.com/lambda/latest/dg/eventsources.html#eventsourc
 For an example use case, see [Using AWS Lambda with Amazon SNS from Different
 Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 
-When a user calls the SNS Publish API on a topic that your Lambda function is
-subscribed to, Amazon SNS will call Lambda to invoke your function
-asynchronously. Lambda will then return a delivery status. If there was an error
-calling Lambda, Amazon SNS will retry invoking the Lambda function up to three
-times. After three tries, if Amazon SNS still could not successfully invoke the
-Lambda function, then Amazon SNS will send a delivery status failure message to
-CloudWatch.
-
 ```ts
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
@@ -88,7 +85,6 @@ const topic = new sns.Topic(...);
 
 lambda.addEventSource(new SnsEventSource(topic));
 ```
-
 
 When a user calls the SNS Publish API on a topic that your Lambda function is
 subscribed to, Amazon SNS will call Lambda to invoke your function
