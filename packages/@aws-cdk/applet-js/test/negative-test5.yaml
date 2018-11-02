@@ -1,4 +1,4 @@
 # applet module not found
-Applets:
+applets:
   Applet:
-    Type: notfound
+    type: notfound

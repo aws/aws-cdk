@@ -1,6 +1,6 @@
 #!/usr/bin/env cdk-applet-js
-Applets:
+applets:
   Applet:
-    Type: ./test-applet
-    Properties:
+    type: ./test-applet
+    properties:
       desc: this should be reflected in the template description

@@ -1,11 +1,11 @@
-Applets:
+applets:
   Stack1:
-    Type: ./test-applet:TestApplet
-    Properties:
+    type: ./test-applet:TestApplet
+    properties:
       prop1: stack1
       prop2: 123
   Stack2:
-    Type: ./test-applet:TestApplet
-    Properties:
+    type: ./test-applet:TestApplet
+    properties:
       prop1: stack2
       prop2: 456

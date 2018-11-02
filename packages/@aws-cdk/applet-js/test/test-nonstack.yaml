@@ -1,6 +1,6 @@
-Applets:
+applets:
   NoStackApplet:
-    Type: ./test-applet:NoStackApplet
-    Properties:
+    type: ./test-applet:NoStackApplet
+    properties:
       argument: this should be reflected in the template description
 

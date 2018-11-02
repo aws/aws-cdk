@@ -30,9 +30,9 @@ async function main() {
   if (typeof fileContents !== 'object') {
     throw new Error(`${appletFile}: should contain a YAML object`);
   }
-  const appletMap = fileContents.Applets;
+  const appletMap = fileContents.applets;
   if (!appletMap) {
-    throw new Error(`${appletFile}: must have an 'Applets' key`);
+    throw new Error(`${appletFile}: must have an 'applets' key`);
   }
 
   const searchDir = path.dirname(appletFile);
@@ -57,14 +57,14 @@ async function constructStack(app: cdk.App, searchDir: string, tempDir: string, 
   // the 'applet' attribute tells us how to load the applet. in the javascript case
   // it will be in the format <module>:<class> where <module> is technically passed to "require"
   // and <class> is expected to be exported from the module.
-  const appletSpec: string | undefined = spec.Type;
+  const appletSpec: string | undefined = spec.type;
   if (!appletSpec) {
-    throw new Error(`Applet ${stackName} missing "Type" attribute`);
+    throw new Error(`Applet ${stackName} missing "type" attribute`);
   }
 
   const applet = parseApplet(appletSpec);
 
-  const props = spec.Properties || {};
+  const props = spec.properties || {};
 
   if (applet.npmPackage) {
     // tslint:disable-next-line:no-console
