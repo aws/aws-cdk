@@ -102,19 +102,19 @@ export enum FargatePlatformVersion {
    *
    * Supports private registries.
    */
-  Version12 = '1.2.0',
+  Version1_2 = '1.2.0',
 
   /**
    * Version 1.1.0
    *
    * Supports task metadata, health checks, service discovery.
    */
-  Version11 = '1.1.0',
+  Version1_1 = '1.1.0',
 
   /**
    * Initial release
    *
    * Based on Amazon Linux 2017.09.
    */
-  Version10 = '1.0.0',
+  Version1_0 = '1.0.0',
 }

@@ -161,3 +161,5 @@ EC2 instance group so that your instance count scales with demand.
 
 - [ ] Instance AutoScaling
 - [ ] Service Discovery Integration
+- [ ] Private registry authentication
+
