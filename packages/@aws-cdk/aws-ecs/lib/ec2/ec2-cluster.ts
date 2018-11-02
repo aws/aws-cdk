@@ -73,6 +73,8 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
       // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
       autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
       autoScalingGroup.addUserData('sudo service iptables save');
+      // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+      autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
     }
 
     // ECS instances must be able to do these things
