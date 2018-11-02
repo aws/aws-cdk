@@ -6,6 +6,9 @@ import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
 
+export const DEFAULTS = 'cdk.json';
+export const PER_USER_DEFAULTS = '~/.cdk.json';
+
 export class Settings {
   public static mergeAll(...settings: Settings[]): Settings {
     let ret = new Settings();
