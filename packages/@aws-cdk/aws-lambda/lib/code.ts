@@ -143,10 +143,13 @@ export class AssetCode extends Code {
   }
 
   public bind(lambda: Func) {
-    this.asset = new assets.Asset(lambda, 'Code', {
-      path: this.path,
-      packaging: this.packaging
-    });
+    // If the same AssetCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new assets.Asset(lambda, 'Code', {
+        path: this.path,
+        packaging: this.packaging
+      });
+    }
 
     if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);

@@ -465,7 +465,7 @@ async function initCommandLine() {
         const outfile = await exec();
         debug('outfile:', outfile);
         if (!(await fs.pathExists(outfile))) {
-          throw new Error(`Unable to find output file ${outfile}`);
+          throw new Error(`Unable to find output file ${outfile}; are you calling app.run()?`);
         }
 
         const response = await fs.readJson(outfile);

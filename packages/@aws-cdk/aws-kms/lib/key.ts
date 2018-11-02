@@ -75,7 +75,7 @@ export abstract class EncryptionKeyRef extends Construct {
    */
   public export(): EncryptionKeyRefProps {
     return {
-      keyArn: new Output(this, 'KeyArn').makeImportValue().toString()
+      keyArn: new Output(this, 'KeyArn', { value: this.keyArn }).makeImportValue().toString()
     };
   }
 }
