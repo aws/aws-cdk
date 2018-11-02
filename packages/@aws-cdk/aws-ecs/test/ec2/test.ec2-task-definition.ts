@@ -98,6 +98,46 @@ export = {
       test.done();
     },
 
+    "correctly sets scratch space"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      const container = taskDefinition.addContainer("web", {
+        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
+
+      container.addScratch({
+        containerPath: "./cache",
+        readOnly: true,
+        sourcePath: "/tmp/cache",
+        name: "scratch"
+      });
+
+      // THEN
+      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+        Family: "Ec2TaskDef",
+        ContainerDefinitions: [{
+          MountPoints: [
+            {
+              ContainerPath: "./cache",
+              ReadOnly: true,
+              SourceVolume: "scratch"
+            }
+          ]
+        }],
+        Volumes: [{
+          Host: {
+            SourcePath: "/tmp/cache"
+          },
+          Name: "scratch"
+        }]
+      }));
+
+      test.done();
+    },
+
     "correctly sets volumes"(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

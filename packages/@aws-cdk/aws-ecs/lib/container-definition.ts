@@ -249,10 +249,32 @@ export class ContainerDefinition extends cdk.Construct {
   }
 
   /**
-   * Add one or more mount points to this container
+   * Add one or more mount points to this container.
    */
   public addMountPoints(...mountPoints: MountPoint[]) {
     this.mountPoints.push(...mountPoints);
+  }
+
+  /**
+   * Mount temporary disc space to a container.
+   * This adds the correct container mountPoint and task definition volume.
+   */
+  public addScratch(scratch: ScratchSpace) {
+    const mountPoint = {
+      containerPath: scratch.containerPath,
+      readOnly: scratch.readOnly,
+      sourceVolume: scratch.name
+    };
+
+    const volume = {
+      host: {
+        sourcePath: scratch.sourcePath
+      },
+      name: scratch.name
+    };
+
+    this.taskDefinition.addVolume(volume);
+    this.addMountPoints(mountPoint);
   }
 
   /**
@@ -551,6 +573,13 @@ function renderPortMapping(pm: PortMapping): cloudformation.TaskDefinitionResour
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.Tcp,
   };
+}
+
+export interface ScratchSpace {
+    containerPath: string,
+    readOnly: boolean,
+    sourcePath: string
+    name: string,
 }
 
 export interface MountPoint {

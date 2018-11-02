@@ -146,7 +146,7 @@ export abstract class BaseTaskDefinition extends cdk.Construct {
   /**
    * Add a volume to this task definition
    */
-  private addVolume(volume: Volume) {
+  public addVolume(volume: Volume) {
     this.volumes.push(volume);
   }
 }
