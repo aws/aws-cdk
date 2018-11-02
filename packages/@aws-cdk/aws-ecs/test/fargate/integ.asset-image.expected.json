@@ -308,7 +308,7 @@
     "ClusterEB0386A7": {
       "Type": "AWS::ECS::Cluster"
     },
-    "ImagedoptRegistry65D733CD": {
+    "ImageAdoptRepositoryE1E84E35": {
       "Type": "AWS::CloudFormation::CustomResource",
       "Properties": {
         "ServiceToken": {
@@ -467,7 +467,7 @@
                 [
                   {
                     "Fn::GetAtt": [
-                      "ImagedoptRegistry65D733CD",
+                      "ImageAdoptRepositoryE1E84E35",
                       "RepositoryUri"
                     ]
                   },

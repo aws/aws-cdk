@@ -49,7 +49,7 @@ export = {
       ResponseURL: 'https://localhost/test'
     }, {
       logStreamName: 'xyz',
-    }, response);
+    }, undefined, response);
 
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
