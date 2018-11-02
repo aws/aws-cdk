@@ -69,37 +69,14 @@
               }
             },
             {
-              "Action": "cloudformation:DescribeStacks",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":cloudformation:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":stack/CICD/*"
-                  ]
-                ]
-              }
-            },
-            {
               "Action": [
                 "cloudformation:CreateChangeSet",
                 "cloudformation:DeleteChangeSet",
-                "cloudformation:DescribeChangeSet"
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks"
               ],
               "Condition": {
-                "StringEquals": {
+                "StringEqualsIfExists": {
                   "cloudformation:ChangeSetName": "CICD-ChangeSet"
                 }
               },

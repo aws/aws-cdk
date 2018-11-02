@@ -16,6 +16,7 @@
       "sphinx": {},
       "dotnet": {
         "namespace": "Amazon.CDK.CICD",
+        "packageId": "Amazon.CDK.CICD",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       }

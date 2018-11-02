@@ -9,3 +9,7 @@ coverage
 .nyc_output
 *.tgz
 *.snk
+
+
+# Include .jsii
+!.jsii
