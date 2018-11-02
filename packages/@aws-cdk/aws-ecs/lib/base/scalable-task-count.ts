@@ -8,22 +8,22 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
   /**
    * Scale out or in based on time
    */
-  public scaleOnSchedule(id: string, props: appscaling.ScalingSchedule) {
-    return super.scaleOnSchedule(id, props);
+  public doScaleOnSchedule(id: string, props: appscaling.ScalingSchedule) {
+    return super.doScaleOnSchedule(id, props);
   }
 
   /**
    * Scale out or in based on a metric value
    */
-  public scaleOnMetric(id: string, props: appscaling.BasicStepScalingPolicyProps) {
-    return super.scaleOnMetric(id, props);
+  public doScaleOnMetric(id: string, props: appscaling.BasicStepScalingPolicyProps) {
+    return super.doScaleOnMetric(id, props);
   }
 
   /**
    * Scale out or in to achieve a target CPU utilization
    */
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
-    return super.scaleToTrackMetric(id, {
+    return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageCPUUtilization,
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
@@ -37,7 +37,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scale out or in to achieve a target memory utilization utilization
    */
   public scaleOnMemoryUtilization(id: string, props: CpuUtilizationScalingProps) {
-    return super.scaleToTrackMetric(id, {
+    return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ECSServiceAverageMemoryUtilization,
       targetValue: props.targetUtilizationPercent,
       policyName: props.policyName,
@@ -51,7 +51,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scale out or in to track a custom metric
    */
   public scaleToTrackCustomMetric(id: string, props: TrackCustomMetricProps) {
-    return super.scaleToTrackMetric(id, {
+    return super.doScaleToTrackMetric(id, {
       customMetric: props.metric,
       targetValue: props.targetValue,
       policyName: props.policyName,
