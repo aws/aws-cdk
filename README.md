@@ -20,8 +20,8 @@ and efficient manner.
 The following languages are currently supported:
 
 * Java
-* JavaScript, TypeScript)
-* .NET)
+* JavaScript, TypeScript
+* .NET
 
 The CDK is currently in developer preview and we look forward to community feedback and collaboration!
 
