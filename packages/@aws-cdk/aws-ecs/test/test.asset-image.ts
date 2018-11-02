@@ -2,6 +2,7 @@ import { expect, MatchStyle } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import path = require('path');
+import proxyquire = require('proxyquire');
 import ecs = require('../lib');
 
 export = {
@@ -30,18 +31,9 @@ export = {
   },
 
   async 'exercise handler'(test: Test) {
-    // Hijack the require('aws-sdk') statement
-    const Module = require('module');
-    const oldRequire = Module.prototype.require;
-
-    Module.prototype.require = (file: string) => {
-      if (file === 'aws-sdk') {
-        return { ECR };
-      }
-      return oldRequire(file);
-    };
-
-    const handler = require(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'));
+    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'), {
+      'aws-sdk': { '@noCallThru': true, ECR }
+    });
 
     let output;
     async function response(responseStatus: string, reason: string, physId: string, data: any) {
