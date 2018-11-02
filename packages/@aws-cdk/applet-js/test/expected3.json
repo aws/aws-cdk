@@ -1,11 +1,7 @@
 {
-  "stacks": [
-    {
-      "name": "Applet",
-      "template": {
-        "Description": "this should be reflected in the template description"
-      },
-      "metadata": {}
-    }
-  ]
+  "name": "Applet",
+  "template": {
+    "Description": "this should be reflected in the template description"
+  },
+  "metadata": {}
 }

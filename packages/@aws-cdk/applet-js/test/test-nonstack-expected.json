@@ -1,0 +1,22 @@
+{
+  "name": "NoStackApplet",
+  "template": {
+    "Parameters": {
+      "P1": {
+        "Type": "String",
+        "Default": "this should be reflected in the template description"
+      }
+    }
+  },
+  "metadata": {
+    "/NoStackApplet/Default/P1": [
+      {
+        "type": "aws:cdk:logicalId",
+        "data": "P1",
+        "trace": [
+          "**REDACTED**"
+        ]
+      }
+    ]
+  }
+}

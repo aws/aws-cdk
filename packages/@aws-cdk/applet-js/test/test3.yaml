@@ -1,5 +1,6 @@
 #!/usr/bin/env cdk-applet-js
-
-# if class name is not specified, 'Applet' is assumed
-applet: ./test-applet
-desc: this should be reflected in the template description
+applets:
+  Applet:
+    type: ./test-applet
+    properties:
+      desc: this should be reflected in the template description

@@ -1,47 +1,34 @@
 {
-  "name": "TestApplet",
+  "name": "Stack2",
   "template": {
     "Parameters": {
       "P1": {
         "Type": "String",
-        "Default": "hello"
+        "Default": "stack2"
       },
       "P2": {
         "Type": "Number",
-        "Default": 123
-      },
-      "P3": {
-        "Type": "StringList",
-        "Default": "hello,this,is,awesome,12345"
+        "Default": 456
       }
     }
   },
   "metadata": {
-    "/TestApplet/P1": [
+    "/Stack2/P1": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P1",
         "trace": [
           "**REDACTED**"
-            ]
+        ]
       }
     ],
-    "/TestApplet/P2": [
+    "/Stack2/P2": [
       {
         "type": "aws:cdk:logicalId",
         "data": "P2",
         "trace": [
           "**REDACTED**"
-            ]
-      }
-    ],
-    "/TestApplet/P3": [
-      {
-        "type": "aws:cdk:logicalId",
-        "data": "P3",
-        "trace": [
-          "**REDACTED**"
-            ]
+        ]
       }
     ]
   }

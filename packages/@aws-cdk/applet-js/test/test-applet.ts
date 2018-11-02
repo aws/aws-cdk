@@ -1,4 +1,4 @@
-import { App, Parameter, Stack, StackProps } from '@aws-cdk/cdk';
+import { App, Construct, Parameter, Stack, StackProps } from '@aws-cdk/cdk';
 
 export interface TestAppletProps extends StackProps {
   prop1: string
@@ -28,5 +28,17 @@ export class Applet extends Stack {
     super(parent, name);
 
     this.templateOptions.description = props.desc;
+  }
+}
+
+interface NoStackAppletProps {
+  argument: string;
+}
+
+export class NoStackApplet extends Construct {
+  constructor(parent: Construct, id: string, props: NoStackAppletProps) {
+    super(parent, id);
+
+    new Parameter(this, 'P1', { default: props.argument, type: 'String' });
   }
 }
