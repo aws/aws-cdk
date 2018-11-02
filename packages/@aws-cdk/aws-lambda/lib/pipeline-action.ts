@@ -68,12 +68,12 @@ export class PipelineInvokeAction extends codepipeline.Action {
     });
 
     // allow pipeline to list functions
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:ListFunctions')
       .addAllResources());
 
     // allow pipeline to invoke this lambda functionn
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addAction('lambda:InvokeFunction')
       .addResource(props.lambda.functionArn));
 

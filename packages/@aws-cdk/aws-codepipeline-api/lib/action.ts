@@ -68,6 +68,41 @@ export interface IInternalStage {
 }
 
 /**
+ * The abstract view of an AWS CodePipeline as required and used by Actions.
+ * It extends {@link events.IEventRuleTarget},
+ * so this interface can be used as a Target for CloudWatch Events.
+ */
+export interface IPipeline extends events.IEventRuleTarget {
+  /**
+   * The ARN of the Pipeline.
+   */
+  readonly pipelineArn: string;
+
+  /**
+   * The unique ID of the Pipeline Construct.
+   */
+  readonly uniqueId: string;
+
+  /**
+   * The service Role of the Pipeline.
+   */
+  readonly role: iam.Role;
+
+  /* Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
+   *
+   * @param identity the IAM Identity to grant the permissions to
+   */
+  grantBucketRead(identity?: iam.IPrincipal): void;
+
+  /**
+   * Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity.
+   *
+   * @param identity the IAM Identity to grant the permissions to
+   */
+  grantBucketReadWrite(identity?: iam.IPrincipal): void;
+}
+
+/**
  * The abstract interface of a Pipeline Stage that is used by Actions.
  */
 export interface IStage {
@@ -77,33 +112,15 @@ export interface IStage {
   readonly name: string;
 
   /**
-   * The ARN of the Pipeline.
+   * The Pipeline this Stage belongs to.
    */
-  readonly pipelineArn: string;
-
-  /**
-   * The service Role of the Pipeline.
-   */
-  readonly pipelineRole: iam.Role;
+  readonly pipeline: IPipeline;
 
   /**
    * The API of Stage used internally by the CodePipeline Construct.
    * You should never need to call any of the methods inside of it yourself.
    */
   readonly _internal: IInternalStage;
-
-  /* Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
-   *
-   * @param identity the IAM Identity to grant the permissions to
-   */
-  grantPipelineBucketRead(identity: iam.IPrincipal): void;
-
-  /**
-   * Grants read & write permissions to the Pipeline's S3 Bucket to the given Identity.
-   *
-   * @param identity the IAM Identity to grant the permissions to
-   */
-  grantPipelineBucketReadWrite(identity: iam.IPrincipal): void;
 }
 
 /**
@@ -215,7 +232,7 @@ export abstract class Action extends cdk.Construct {
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],
       source: [ 'aws.codepipeline' ],
-      resources: [ this.stage.pipelineArn ],
+      resources: [ this.stage.pipeline.pipelineArn ],
       detail: {
         stage: [ this.stage.name ],
         action: [ this.id ],

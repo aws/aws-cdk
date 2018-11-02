@@ -22,11 +22,11 @@ export interface CommonPipelineSourceActionProps extends codepipeline.CommonActi
    */
   branch?: string;
 
-  // TODO: use CloudWatch events instead
   /**
-   * Whether or not AWS CodePipeline should poll for source changes.
+   * Whether AWS CodePipeline should poll for source changes.
+   * If this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.
    *
-   * @default true
+   * @default false
    */
   pollForSourceChanges?: boolean;
 }
@@ -54,10 +54,14 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       configuration: {
         RepositoryName: props.repository.repositoryName,
         BranchName: props.branch || 'master',
-        PollForSourceChanges: props.pollForSourceChanges !== undefined ? props.pollForSourceChanges : true
+        PollForSourceChanges: props.pollForSourceChanges || false,
       },
       outputArtifactName: props.outputArtifactName
     });
+
+    if (!props.pollForSourceChanges) {
+      props.repository.onCommit(props.stage.pipeline.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
+    }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     const actions = [
@@ -68,7 +72,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       'codecommit:CancelUploadArchive',
     ];
 
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addResource(props.repository.repositoryArn)
       .addActions(...actions));
   }

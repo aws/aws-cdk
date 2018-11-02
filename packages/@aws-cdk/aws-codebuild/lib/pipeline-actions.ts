@@ -108,7 +108,7 @@ export class PipelineTestAction extends codepipeline.TestAction {
 function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: ProjectRef,
                                        needsPipelineBucketWrite: boolean) {
   // grant the Pipeline role the required permissions to this Project
-  stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+  stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
     .addResource(project.projectArn)
     .addActions(
       'codebuild:BatchGetBuilds',
@@ -117,11 +117,9 @@ function setCodeBuildNeededPermissions(stage: codepipeline.IStage, project: Proj
     ));
 
   // allow the Project access to the Pipline's artifact Bucket
-  if (project.role) {
-    if (needsPipelineBucketWrite) {
-      stage.grantPipelineBucketReadWrite(project.role);
-    } else {
-      stage.grantPipelineBucketRead(project.role);
-    }
+  if (needsPipelineBucketWrite) {
+    stage.pipeline.grantBucketReadWrite(project.role);
+  } else {
+    stage.pipeline.grantBucketRead(project.role);
   }
 }

@@ -54,7 +54,7 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       resourceName: props.applicationName,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addResource(applicationArn)
       .addActions(
         'codedeploy:GetApplicationRevision',
@@ -67,7 +67,7 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       resourceName: `${props.applicationName}/${props.deploymentGroupName}`,
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addResource(deploymentGroupArn)
       .addActions(
         'codedeploy:CreateDeployment',
@@ -80,7 +80,7 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       resourceName: '*',
       sep: ':',
     });
-    props.stage.pipelineRole.addToPolicy(new iam.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addResource(deployConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',

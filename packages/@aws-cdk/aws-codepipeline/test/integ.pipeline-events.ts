@@ -23,6 +23,7 @@ const sourceAction = new codecommit.PipelineSourceAction(pipeline, 'CodeCommitSo
   stage: sourceStage,
   outputArtifactName: 'Source',
   repository,
+  pollForSourceChanges: true,
 });
 new codebuild.PipelineBuildAction(stack, 'CodeBuildAction', {
   stage: buildStage,

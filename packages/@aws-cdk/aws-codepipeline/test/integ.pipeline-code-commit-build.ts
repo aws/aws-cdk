@@ -18,6 +18,7 @@ new codecommit.PipelineSourceAction(stack, 'source', {
   stage: sourceStage,
   outputArtifactName: 'SourceArtifact',
   repository,
+  pollForSourceChanges: true,
 });
 
 const project = new codebuild.Project(stack, 'MyBuildProject', {

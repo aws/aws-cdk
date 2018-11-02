@@ -1,4 +1,4 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -43,7 +43,7 @@ export interface PipelineProps {
  *
  * // ... add more stages
  */
-export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
+export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
   /**
    * The IAM role AWS CodePipeline will use to perform actions or assume roles for actions with
    * a more specific IAM role.
@@ -77,7 +77,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     super(parent, name);
     props = props || {};
 
-    actions.validateName('Pipeline', props.pipelineName);
+    cpapi.validateName('Pipeline', props.pipelineName);
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = props.artifactBucket;
@@ -216,6 +216,14 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     return this.stages.length;
   }
 
+  public grantBucketRead(identity?: iam.IPrincipal): void {
+    this.artifactBucket.grantRead(identity);
+  }
+
+  public grantBucketReadWrite(identity?: iam.IPrincipal): void {
+    this.artifactBucket.grantReadWrite(identity);
+  }
+
   /**
    * Adds a Stage to this Pipeline.
    * This is an internal operation -
@@ -247,7 +255,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
 
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _generateOutputArtifactName(stage: actions.IStage, action: actions.Action): string {
+  private _generateOutputArtifactName(stage: cpapi.IStage, action: cpapi.Action): string {
     // generate the artifact name based on the Action's full logical ID,
     // thus guaranteeing uniqueness
     return 'Artifact_' + action.uniqueId;
@@ -265,7 +273,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
    */
   // ignore unused private method (it's actually used in Stage)
   // @ts-ignore
-  private _findInputArtifact(stage: actions.IStage, action: actions.Action): actions.Artifact {
+  private _findInputArtifact(stage: cpapi.IStage, action: cpapi.Action): cpapi.Artifact {
     // search for the first Action that has an outputArtifact,
     // and return that
     const startIndex = this.stages.findIndex(s => s === stage);
@@ -337,7 +345,7 @@ export class Pipeline extends cdk.Construct implements events.IEventRuleTarget {
     for (const stage of this.stages) {
       const onlySourceActionsPermitted = firstStage;
       for (const action of stage.actions) {
-        errors.push(...actions.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id));
+        errors.push(...cpapi.validateSourceAction(onlySourceActionsPermitted, action.category, action.id, stage.id));
       }
       firstStage = false;
     }
