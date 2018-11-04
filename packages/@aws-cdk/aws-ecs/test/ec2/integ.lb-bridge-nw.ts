@@ -10,6 +10,9 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
 const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+cluster.addDefaultAutoScalingGroupCapacity({
+  instanceType: new ec2.InstanceType('t2.micro')
+});
 
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
   // networkMode defaults to "bridge"

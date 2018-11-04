@@ -8,25 +8,8 @@ import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
 /**
  * Properties to define an ECS cluster
  */
+// tslint:disable-next-line:no-empty-interface
 export interface Ec2ClusterProps extends BaseClusterProps {
-  /**
-   * Whether or not the containers can access the instance role
-   *
-   * @default false
-   */
-  containersAccessInstanceRole?: boolean;
-
-  /**
-   * The type of EC2 instance to launch into your Autoscaling Group
-   */
-  instanceType?: ec2.InstanceType;
-
-  /**
-   * Number of container instances registered in your ECS Cluster
-   *
-   * @default 1
-   */
-  size?: number;
 }
 
 /**
@@ -41,34 +24,41 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
   }
 
   /**
-   * The AutoScalingGroup that the cluster is running on
+   * Connections manager for the EC2 cluster
    */
-  public readonly autoScalingGroup: autoscaling.AutoScalingGroup;
-
-  /**
-   * SecurityGroup of the EC2 instances
-   */
-  public readonly securityGroup: ec2.SecurityGroupRef;
+  public readonly connections: ec2.Connections = new ec2.Connections();
 
   constructor(parent: cdk.Construct, name: string, props: Ec2ClusterProps) {
     super(parent, name, props);
+  }
 
-    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'AutoScalingGroup', {
-      vpc: props.vpc,
-      instanceType: props.instanceType || new ec2.InstanceTypePair(ec2.InstanceClass.T2, ec2.InstanceSize.Micro),
+  /**
+   * Add a default-configured AutoScalingGroup running the ECS-optimized AMI to this Cluster
+   */
+  public addDefaultAutoScalingGroupCapacity(options: AddDefaultAutoScalingGroupOptions) {
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'DefaultAutoScalingGroup', {
+      vpc: this.vpc,
+      instanceType: options.instanceType,
       machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate,
       minSize: 0,
-      maxSize: props.size || 1,
-      desiredCapacity: props.size || 1
+      maxSize: options.instanceCount || 1,
+      desiredCapacity: options.instanceCount || 1
     });
 
-    this.securityGroup = autoScalingGroup.connections.securityGroup!;
+    this.addAutoScalingGroupCapacity(autoScalingGroup);
+  }
+
+  /**
+   * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
+   */
+  public addAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
     autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
 
-    if (!props.containersAccessInstanceRole) {
+    if (!options.containersAccessInstanceRole) {
       // Deny containers access to instance metadata service
       // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
       autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
@@ -88,14 +78,9 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
       "ecs:StartTelemetrySession",
       "ecs:Submit*",
       "ecr:GetAuthorizationToken",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
       "logs:CreateLogStream",
       "logs:PutLogEvents"
-    ).addAllResources()); // Conceivably we might do better than all resources and add targeted ARNs
-
-    this.autoScalingGroup = autoScalingGroup;
+    ).addAllResources());
   }
 
   /**
@@ -105,7 +90,7 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
-      securityGroup: this.securityGroup.export(),
+      securityGroups: this.connections.securityGroups.map(sg => sg.export()),
     };
   }
 
@@ -176,9 +161,9 @@ export interface IEc2Cluster {
   readonly vpc: ec2.VpcNetworkRef;
 
   /**
-   * Security group of the cluster instances
+   * Connections manager of the cluster instances
    */
-  readonly securityGroup: ec2.SecurityGroupRef;
+  readonly connections: ec2.Connections;
 }
 
 /**
@@ -198,7 +183,7 @@ export interface ImportedEc2ClusterProps {
   /**
    * Security group of the cluster instances
    */
-  securityGroup: ec2.SecurityGroupRefProps;
+  securityGroups: ec2.SecurityGroupRefProps[];
 }
 
 /**
@@ -218,12 +203,47 @@ class ImportedEc2Cluster extends cdk.Construct implements IEc2Cluster {
   /**
    * Security group of the cluster instances
    */
-  public readonly securityGroup: ec2.SecurityGroupRef;
+  public readonly connections = new ec2.Connections();
 
   constructor(parent: cdk.Construct, name: string, props: ImportedEc2ClusterProps) {
     super(parent, name);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);
-    this.securityGroup = ec2.SecurityGroupRef.import(this, "securityGroup", props.securityGroup);
+
+    let i = 1;
+    for (const sgProps of props.securityGroups) {
+      this.connections.addSecurityGroup(ec2.SecurityGroupRef.import(this, `SecurityGroup${i}`, sgProps));
+      i++;
+    }
   }
+}
+
+/**
+ * Properties for adding an autoScalingGroup
+ */
+export interface AddAutoScalingGroupCapacityOptions {
+  /**
+   * Whether or not the containers can access the instance role
+   *
+   * @default false
+   */
+  containersAccessInstanceRole?: boolean;
+}
+
+/**
+ * Properties for adding autoScalingGroup
+ */
+export interface AddDefaultAutoScalingGroupOptions {
+
+  /**
+   * The type of EC2 instance to launch into your Autoscaling Group
+   */
+  instanceType: ec2.InstanceType;
+
+  /**
+   * Number of container instances registered in your ECS Cluster
+   *
+   * @default 1
+   */
+  instanceCount?: number;
 }

@@ -56,11 +56,6 @@ export interface FargateServiceProps extends BaseServiceProps {
  */
 export class FargateService extends BaseService {
   /**
-   * Manage allowed network traffic for this construct
-   */
-  public readonly connections: ec2.Connections;
-
-  /**
    * The Task Definition for this service
    */
   public readonly taskDefinition: FargateTaskDefinition;
@@ -75,7 +70,6 @@ export class FargateService extends BaseService {
     }, props.cluster.clusterName);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
-    this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');

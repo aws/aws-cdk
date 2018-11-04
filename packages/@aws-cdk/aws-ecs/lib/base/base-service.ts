@@ -66,7 +66,7 @@ export abstract class BaseService extends cdk.Construct
   /**
    * Manage allowed network traffic for this service
    */
-  public abstract readonly connections: ec2.Connections;
+  public readonly connections: ec2.Connections = new ec2.Connections();
 
   /**
    * ARN of this service
@@ -86,7 +86,6 @@ export abstract class BaseService extends cdk.Construct
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
   protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
   protected readonly abstract taskDef: BaseTaskDefinition;
-  protected _securityGroup?: ec2.SecurityGroupRef;
   private readonly resource: cloudformation.ServiceResource;
   private scalableTaskCount?: ScalableTaskCount;
 
@@ -140,13 +139,6 @@ export abstract class BaseService extends cdk.Construct
   }
 
   /**
-   * SecurityGroup of this service
-   */
-  public get securityGroup(): ec2.SecurityGroupRef {
-    return this._securityGroup!;
-  }
-
-  /**
    * Enable autoscaling for the number of tasks in this service
    */
   public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
@@ -187,7 +179,7 @@ export abstract class BaseService extends cdk.Construct
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     }
     const subnets = vpc.subnets(vpcPlacement);
-    this._securityGroup = securityGroup;
+    this.connections.addSecurityGroup(securityGroup);
 
     this.networkConfiguration = {
       awsvpcConfiguration: {

@@ -11,8 +11,12 @@ export = {
       // GIVEN
       const stack =  new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
+      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
         vpc,
+      });
+
+      cluster.addDefaultAutoScalingGroupCapacity({
+        instanceType: new ec2.InstanceType('t2.micro')
       });
 
       expect(stack).to(haveResource("AWS::ECS::Cluster"));
@@ -34,12 +38,12 @@ export = {
         ImageId: "", // Should this not be the latest image ID?
         InstanceType: "t2.micro",
         IamInstanceProfile: {
-          Ref: "Ec2ClusterAutoScalingGroupInstanceProfile18B9D870"
+          Ref: "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471"
         },
         SecurityGroups: [
           {
             "Fn::GetAtt": [
-              "Ec2ClusterAutoScalingGroupInstanceSecurityGroup77BA7E37",
+              "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
               "GroupId"
             ]
           }
@@ -66,13 +70,13 @@ export = {
         MinSize: "0",
         DesiredCapacity: "1",
         LaunchConfigurationName: {
-          Ref: "Ec2ClusterAutoScalingGroupLaunchConfig570E562A"
+          Ref: "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A"
         },
         Tags: [
           {
             Key: "Name",
             PropagateAtLaunch: true,
-            Value: "Ec2Cluster/AutoScalingGroup"
+            Value: "Ec2Cluster/DefaultAutoScalingGroup"
           }
         ],
         VPCZoneIdentifier: [
@@ -89,7 +93,7 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
-        GroupDescription: "Ec2Cluster/AutoScalingGroup/InstanceSecurityGroup",
+        GroupDescription: "Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
         SecurityGroupEgress: [
           {
             CidrIp: "0.0.0.0/0",
@@ -101,7 +105,7 @@ export = {
         Tags: [
           {
             Key: "Name",
-            Value: "Ec2Cluster/AutoScalingGroup"
+            Value: "Ec2Cluster/DefaultAutoScalingGroup"
           }
         ],
         VpcId: {
@@ -125,29 +129,26 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::IAM::Policy", {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              "ecs:CreateCluster",
-              "ecs:DeregisterContainerInstance",
-              "ecs:DiscoverPollEndpoint",
-              "ecs:Poll",
-              "ecs:RegisterContainerInstance",
-              "ecs:StartTelemetrySession",
-              "ecs:Submit*",
-              "ecr:GetAuthorizationToken",
-              "ecr:BatchCheckLayerAvailability",
-              "ecr:GetDownloadUrlForLayer",
-              "ecr:BatchGetImage",
-              "logs:CreateLogStream",
-              "logs:PutLogEvents"
-            ],
-            Effect: "Allow",
-            Resource: "*"
-          }
-        ],
-        Version: "2012-10-17"
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                "ecs:CreateCluster",
+                "ecs:DeregisterContainerInstance",
+                "ecs:DiscoverPollEndpoint",
+                "ecs:Poll",
+                "ecs:RegisterContainerInstance",
+                "ecs:StartTelemetrySession",
+                "ecs:Submit*",
+                "ecr:GetAuthorizationToken",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              Effect: "Allow",
+              Resource: "*"
+            }
+          ],
+          Version: "2012-10-17"
         }
       }));
 
@@ -160,8 +161,8 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
-      vpc,
+    const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+    cluster.addDefaultAutoScalingGroupCapacity({
       instanceType: new InstanceType("m3.large")
     });
 
@@ -178,9 +179,10 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
-      vpc,
-      size: 3
+    const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+    cluster.addDefaultAutoScalingGroupCapacity({
+      instanceType: new ec2.InstanceType('t2.micro'),
+      instanceCount: 3
     });
 
     // THEN

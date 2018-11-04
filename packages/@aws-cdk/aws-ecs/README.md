@@ -4,11 +4,15 @@ This package contains constructs for working with **AWS Elastic Container
 Service** (ECS). The simplest example of using this library looks like this:
 
 ```ts
-// Create an ECS cluster (backed by an AutoScaling group)
+// Create an ECS cluster
 const cluster = new ecs.Ec2Cluster(this, 'Cluster', {
   vpc,
-  size: 3,
-  instanceType: new InstanceType("t2.xlarge")
+});
+
+// Add capacity to it
+cluster.addDefaultAutoScalingGroupCapacity({
+  instanceType: new InstanceType("t2.xlarge"),
+  instanceCount: 3,
 });
 
 // Instantiate ECS Service with an automatic load balancer
@@ -55,12 +59,38 @@ running the latest ECS Optimized AMI will automatically be created for you.
 
 You can run many tasks on a single cluster.
 
-To create a cluster, go:
+To create a Fargate cluster, go:
 
 ```ts
 const cluster = new ecs.FargateCluster(this, 'Cluster', {
   vpc: vpc
 });
+```
+
+If you decide to create an EC2 cluster, don't forget to add
+capacity to it, in one of the following ways:
+
+```ts
+const cluster = new ecs.Ec2Cluster(this, 'Cluster', {
+  vpc: vpc
+});
+
+// Either add default capacity
+cluster.addDefaultAutoScalingGroupCapacity({
+  instanceType: new ec2.InstanceType("t2.xlarge"),
+  instanceCount: 3,
+});
+
+// Or add customized capacity. Be sure to start the ECS-optimized AMI.
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.xlarge'),
+  machineImage: new EcsOptimizedAmi(),
+  desiredCapacity: 3,
+  // ... other options here ...
+});
+
+cluster.addAutoScalingGroupCapacity(autoScalingGroup);
 ```
 
 ## TaskDefinition

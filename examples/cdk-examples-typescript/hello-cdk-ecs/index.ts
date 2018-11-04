@@ -12,10 +12,10 @@ class BonjourECS extends cdk.Stack {
     // deploy, but VPC creation is slow so we'll only have to do that once
     // and can iterate quickly on consuming stacks. Not doing that for now.
     const vpc = new ec2.VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
-    const cluster = new ecs.Ec2Cluster(this, 'Ec2Cluster', {
-      vpc,
-      size: 3,
-      instanceType: new InstanceType("t2.xlarge")
+    const cluster = new ecs.Ec2Cluster(this, 'Ec2Cluster', { vpc });
+    cluster.addDefaultAutoScalingGroupCapacity({
+      instanceType: new InstanceType("t2.xlarge"),
+      instanceCount: 3,
     });
 
     // Instantiate ECS Service with just cluster and image
