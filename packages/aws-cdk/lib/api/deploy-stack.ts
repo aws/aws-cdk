@@ -61,7 +61,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
-  print(`%s: Creating changeset...`, colors.bold(deployName));
+  print(`%s: creating CloudFormation changeset...`, colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
@@ -84,7 +84,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
   await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
   // tslint:disable-next-line:max-line-length
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack.metadata, changeSetDescription.Changes.length).start();
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, changeSetDescription.Changes.length).start();
   debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
   await waitForStack(cfn, deployName);
   if (monitor) { await monitor.stop(); }
@@ -154,7 +154,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   if (!await stackExists(cfn, deployName)) {
     return;
   }
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName).start();
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
   await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise().catch(e => { throw e; });
   const destroyedStack = await waitForStack(cfn, deployName, false);
   if (monitor) { await monitor.stop(); }

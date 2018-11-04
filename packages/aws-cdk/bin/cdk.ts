@@ -623,9 +623,9 @@ async function initCommandLine() {
       const deployName = renames.finalName(stack.name);
 
       if (deployName !== stack.name) {
-        print('%s: Deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
+        print('%s: deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
       } else {
-        print('%s: Deploying...', colors.bold(stack.name));
+        print('%s: deploying...', colors.bold(stack.name));
       }
 
       try {
@@ -670,12 +670,12 @@ async function initCommandLine() {
     for (const stack of stacks) {
       const deployName = renames.finalName(stack.name);
 
-      success(' ⏳  Starting destruction of stack %s...', colors.blue(deployName));
+      success('%s: destroying...', colors.blue(deployName));
       try {
         await destroyStack({ stack, sdk: aws, deployName, roleArn });
-        success(' ✅  Stack %s successfully destroyed.', colors.blue(deployName));
+        success('\n ✅  %s: destroyed', colors.blue(deployName));
       } catch (e) {
-        error(' ❌  Destruction failed: %s', colors.blue(deployName), e);
+        error('\n ❌  %s: destroy failed', colors.blue(deployName), e);
         throw e;
       }
     }
