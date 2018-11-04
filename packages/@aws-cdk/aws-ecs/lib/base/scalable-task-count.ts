@@ -8,14 +8,14 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
   /**
    * Scale out or in based on time
    */
-  public doScaleOnSchedule(id: string, props: appscaling.ScalingSchedule) {
+  public scaleOnSchedule(id: string, props: appscaling.ScalingSchedule) {
     return super.doScaleOnSchedule(id, props);
   }
 
   /**
    * Scale out or in based on a metric value
    */
-  public doScaleOnMetric(id: string, props: appscaling.BasicStepScalingPolicyProps) {
+  public scaleOnMetric(id: string, props: appscaling.BasicStepScalingPolicyProps) {
     return super.doScaleOnMetric(id, props);
   }
 
