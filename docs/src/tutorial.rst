@@ -141,14 +141,14 @@ in the *resources* directory.
 
         // We only accept GET for now
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers: {},
           body: "We only accept GET /"
         };
       } catch(error) {
         var body = error.stack || JSON.stringify(error, null, 2);
         return {
-          statusCode: 200,
+          statusCode: 400,
             headers: {},
             body: JSON.stringify(body)
         }
@@ -322,6 +322,8 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
     exports.main = async function(event, context) {
       try {
         var method = event.httpMethod;
+        // Get name, if present
+        var widgetName = event.path.startsWith('/') ? event.path.substring(1) : event.path;
 
         if (method === "GET") {
           // GET / to get the names of all widgets
@@ -337,41 +339,39 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
             };
           }
 
-          // GET /name to get info on widget name
-          var name = event.path.substring(1, event.path.length);
+          if (widgetName) {
+            // GET /name to get info on widget name
+            const data = await S3.getObject({ Bucket: bucketName, Key: widgetName}).promise();
+            var body = data.Body.toString('utf-8');
 
-          const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
-          var body = data.Body.toString('utf-8');
-
-          return {
-            statusCode: 200,
-            headers: {},
-            body: JSON.stringify(body)
-          };
+            return {
+              statusCode: 200,
+              headers: {},
+              body: JSON.stringify(body)
+            };
+          }
         }
 
         if (method === "POST") {
           // POST /name
           // Return error if we do not have a name
-          if (event.path.length == 1) {
+          if (!widgetName) {
             return {
-              statusCode: 200,
+              statusCode: 400,
               headers: {},
               body: "Widget name missing"
             };
           }
 
-          var name = event.path.substring(1, event.path.length);
-
           // Create some dummy data to populate object
           const now = new Date();
-          var data = name + " created: " + now;
+          var data = widgetName + " created: " + now;
 
           var base64data = new Buffer(data, 'binary');
 
           await S3.putObject({
             Bucket: bucketName,
-            Key: name,
+            Key: widgetName,
             Body: base64data,
             ContentType: 'application/json'
           }).promise();
@@ -386,37 +386,35 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
         if (method === "DELETE") {
           // DELETE /name
           // Return an error if we do not have a name
-          if (event.path.length == 1) {
+          if (!widgetName) {
             return {
-              statusCode: 200,
+              statusCode: 400,
               headers: {},
               body: "Widget name missing"
             };
           }
 
-          var name = event.path.substring(1, event.path.length);
-
           await S3.deleteObject({
-            Bucket: bucketName, Key: name
+            Bucket: bucketName, Key: widgetName
           }).promise();
 
           return {
             statusCode: 200,
             headers: {},
-            body: "Successfully deleted widget " + name
+            body: "Successfully deleted widget " + widgetName
           };
         }
 
         // We got something besides a GET, POST, or DELETE
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers: {},
           body: "We only accept GET, POST, and DELETE, not " + method
         };
       } catch(error) {
         var body = error.stack || JSON.stringify(error, null, 2);
         return {
-          statusCode: 200,
+          statusCode: 400,
           headers: {},
           body: body
         }
