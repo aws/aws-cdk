@@ -466,7 +466,7 @@ export = {
     }
   },
 
-  'using path in S3 artifacts sets it correctly'(test: Test) {
+  'using timeout and path in S3 artifacts sets it correctly'(test: Test) {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'Bucket');
     new codebuild.Project(stack, 'Project', {
@@ -475,6 +475,7 @@ export = {
         name: 'some_name',
         bucket,
       }),
+      timeout: 123,
     });
 
     expect(stack).to(haveResource('AWS::CodeBuild::Project', {
@@ -483,6 +484,7 @@ export = {
         "Name": "some_name",
         "Type": "S3",
       },
+      "TimeoutInMinutes": 123,
     }));
 
     test.done();
