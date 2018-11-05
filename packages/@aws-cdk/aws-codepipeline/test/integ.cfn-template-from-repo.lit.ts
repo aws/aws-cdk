@@ -18,6 +18,7 @@ const source = new codecommit.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
   repository: repo,
   outputArtifactName: 'SourceArtifact',
+  pollForSourceChanges: true,
 });
 
 // Deployment stage: create and deploy changeset with manual approval
