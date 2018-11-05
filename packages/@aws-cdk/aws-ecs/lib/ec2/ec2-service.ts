@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { NetworkMode } from '../base/base-task-definition';
+import { NetworkMode } from '../base/task-definition';
 import { cloudformation } from '../ecs.generated';
 import { IEc2Cluster } from './ec2-cluster';
 import { Ec2TaskDefinition } from './ec2-task-definition';
