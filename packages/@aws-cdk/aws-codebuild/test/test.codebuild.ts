@@ -466,6 +466,28 @@ export = {
     }
   },
 
+  'using path in S3 artifacts sets it correctly'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    new codebuild.Project(stack, 'Project', {
+      artifacts: new codebuild.S3BucketBuildArtifacts({
+        path: 'some/path',
+        name: 'some_name',
+        bucket,
+      }),
+    });
+
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      "Artifacts": {
+        "Path": "some/path",
+        "Name": "some_name",
+        "Type": "S3",
+      },
+    }));
+
+    test.done();
+  },
+
   'artifacts': {
     'CodePipeline': {
       'both source and artifacs are set to CodePipeline'(test: Test) {
