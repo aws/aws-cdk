@@ -3,24 +3,34 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { BaseCluster, BaseClusterProps } from '../base/base-cluster';
+import { cloudformation } from './ecs.generated';
 
 /**
  * Properties to define an ECS cluster
  */
-// tslint:disable-next-line:no-empty-interface
-export interface Ec2ClusterProps extends BaseClusterProps {
+export interface EcsClusterProps {
+  /**
+   * A name for the cluster.
+   *
+   * @default CloudFormation-generated name
+   */
+  clusterName?: string;
+
+  /**
+   * The VPC where your ECS instances will be running or your ENIs will be deployed
+   */
+  vpc: ec2.VpcNetworkRef;
 }
 
 /**
  * A container cluster that runs on your EC2 instances
  */
-export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
+export class EcsCluster extends cdk.Construct implements IEcsCluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ImportedEc2ClusterProps): IEc2Cluster {
-    return new ImportedEc2Cluster(parent, name, props);
+  public static import(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps): IEcsCluster {
+    return new ImportedEcsCluster(parent, name, props);
   }
 
   /**
@@ -28,8 +38,29 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
 
-  constructor(parent: cdk.Construct, name: string, props: Ec2ClusterProps) {
-    super(parent, name, props);
+  /**
+   * The VPC this cluster was created in.
+   */
+  public readonly vpc: ec2.VpcNetworkRef;
+
+  /**
+   * The ARN of this cluster
+   */
+  public readonly clusterArn: string;
+
+  /**
+   * The name of this cluster
+   */
+  public readonly clusterName: string;
+
+  constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
+    super(parent, name);
+
+    const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
+
+    this.vpc = props.vpc;
+    this.clusterArn = cluster.clusterArn;
+    this.clusterName = cluster.clusterName;
   }
 
   /**
@@ -84,9 +115,9 @@ export class Ec2Cluster extends BaseCluster implements IEc2Cluster {
   }
 
   /**
-   * Export the Ec2Cluster
+   * Export the EcsCluster
    */
-  public export(): ImportedEc2ClusterProps {
+  public export(): ImportedEcsClusterProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
@@ -149,7 +180,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
 /**
  * An ECS cluster
  */
-export interface IEc2Cluster {
+export interface IEcsCluster {
   /**
    * Name of the cluster
    */
@@ -169,7 +200,7 @@ export interface IEc2Cluster {
 /**
  * Properties to import an ECS cluster
  */
-export interface ImportedEc2ClusterProps {
+export interface ImportedEcsClusterProps {
   /**
    * Name of the cluster
    */
@@ -187,9 +218,9 @@ export interface ImportedEc2ClusterProps {
 }
 
 /**
- * An Ec2Cluster that has been imported
+ * An EcsCluster that has been imported
  */
-class ImportedEc2Cluster extends cdk.Construct implements IEc2Cluster {
+class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
   /**
    * Name of the cluster
    */
@@ -205,7 +236,7 @@ class ImportedEc2Cluster extends cdk.Construct implements IEc2Cluster {
    */
   public readonly connections = new ec2.Connections();
 
-  constructor(parent: cdk.Construct, name: string, props: ImportedEc2ClusterProps) {
+  constructor(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps) {
     super(parent, name);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);

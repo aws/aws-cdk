@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { IFargateCluster } from './fargate-cluster';
+import { IEcsCluster } from '../ecs-cluster';
 import { FargateTaskDefinition } from './fargate-task-definition';
 
 /**
@@ -11,7 +11,7 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IFargateCluster; // should be required? do we assume 'default' exists?
+  cluster: IEcsCluster; // should be required? do we assume 'default' exists?
 
   /**
    * Task Definition used for running tasks in the service

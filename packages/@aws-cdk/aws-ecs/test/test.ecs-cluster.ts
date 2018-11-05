@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
-import ecs = require('../../lib');
+import ecs = require('../lib');
 
 export = {
   "When creating an ECS Cluster": {
@@ -11,7 +11,7 @@ export = {
       // GIVEN
       const stack =  new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', {
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', {
         vpc,
       });
 
@@ -38,12 +38,12 @@ export = {
         ImageId: "", // Should this not be the latest image ID?
         InstanceType: "t2.micro",
         IamInstanceProfile: {
-          Ref: "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471"
+          Ref: "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
         },
         SecurityGroups: [
           {
             "Fn::GetAtt": [
-              "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
+              "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
               "GroupId"
             ]
           }
@@ -55,7 +55,7 @@ export = {
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  Ref: "Ec2ClusterEE43E89D"
+                  Ref: "EcsCluster97242B84"
                 },
                 // tslint:disable-next-line:max-line-length
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
@@ -70,13 +70,13 @@ export = {
         MinSize: "0",
         DesiredCapacity: "1",
         LaunchConfigurationName: {
-          Ref: "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A"
+          Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
         Tags: [
           {
             Key: "Name",
             PropagateAtLaunch: true,
-            Value: "Ec2Cluster/DefaultAutoScalingGroup"
+            Value: "EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         VPCZoneIdentifier: [
@@ -93,7 +93,7 @@ export = {
       }));
 
       expect(stack).to(haveResource("AWS::EC2::SecurityGroup", {
-        GroupDescription: "Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+        GroupDescription: "EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
         SecurityGroupEgress: [
           {
             CidrIp: "0.0.0.0/0",
@@ -105,7 +105,7 @@ export = {
         Tags: [
           {
             Key: "Name",
-            Value: "Ec2Cluster/DefaultAutoScalingGroup"
+            Value: "EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         VpcId: {
@@ -161,7 +161,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+    const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
     cluster.addDefaultAutoScalingGroupCapacity({
       instanceType: new InstanceType("m3.large")
     });
@@ -179,7 +179,7 @@ export = {
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
 
-    const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+    const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
     cluster.addDefaultAutoScalingGroupCapacity({
       instanceType: new ec2.InstanceType('t2.micro'),
       instanceCount: 3

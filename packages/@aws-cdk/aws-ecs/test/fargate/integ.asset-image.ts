@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
-const cluster = new ecs.FargateCluster(stack, 'Cluster', { vpc });
+const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
 
 Array.isArray(cluster);
 Array.isArray(path);

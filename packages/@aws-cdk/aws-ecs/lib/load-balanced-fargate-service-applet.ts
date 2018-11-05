@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { DockerHub } from './container-image';
-import { FargateCluster } from './fargate/fargate-cluster';
+import { EcsCluster } from './ecs-cluster';
 import { LoadBalancedFargateService } from './load-balanced-fargate-service';
 
 /**
@@ -80,7 +80,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
     super(parent, id, props);
 
     const vpc = new ec2.VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
-    const cluster = new FargateCluster(this, 'Cluster', { vpc });
+    const cluster = new EcsCluster(this, 'Cluster', { vpc });
 
     // Instantiate Fargate Service with just cluster and image
     new LoadBalancedFargateService(this, "FargateService", {

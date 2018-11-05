@@ -4,8 +4,8 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode } from '../base/task-definition';
+import { IEcsCluster } from '../ecs-cluster';
 import { cloudformation } from '../ecs.generated';
-import { IEc2Cluster } from './ec2-cluster';
 import { Ec2TaskDefinition } from './ec2-task-definition';
 
 /**
@@ -15,7 +15,7 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IEc2Cluster;
+  cluster: IEcsCluster;
 
   /**
    * Task Definition used for running tasks in the service

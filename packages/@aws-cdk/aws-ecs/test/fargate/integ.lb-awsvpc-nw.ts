@@ -8,7 +8,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
-const cluster = new ecs.FargateCluster(stack, 'FargateCluster', { vpc });
+const cluster = new ecs.EcsCluster(stack, 'FargateCluster', { vpc });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   memoryMiB: '1GB',

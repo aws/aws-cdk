@@ -5,12 +5,11 @@ export * from './base/task-definition';
 
 export * from './container-definition';
 export * from './container-image';
+export * from './ecs-cluster';
 
-export * from './ec2/ec2-cluster';
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
 
-export * from './fargate/fargate-cluster';
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';
 

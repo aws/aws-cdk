@@ -10,7 +10,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.FargateCluster(stack, 'FargateCluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
@@ -28,7 +28,7 @@ export = {
           Ref: "FargateTaskDefC6FB60B4"
         },
         Cluster: {
-          Ref: "FargateCluster7CCD5F93"
+          Ref: "EcsCluster97242B84"
         },
         DeploymentConfiguration: {
           MaximumPercent: 200,
@@ -85,7 +85,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.FargateCluster(stack, 'FargateCluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
@@ -103,7 +103,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.FargateCluster(stack, 'FargateCluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {

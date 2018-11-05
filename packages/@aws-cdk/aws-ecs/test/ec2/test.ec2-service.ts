@@ -12,7 +12,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -31,7 +31,7 @@ export = {
           Ref: "Ec2TaskDef0226F28C"
         },
         Cluster: {
-          Ref: "Ec2ClusterEE43E89D"
+          Ref: "EcsCluster97242B84"
         },
         DeploymentConfiguration: {
           MaximumPercent: 200,
@@ -52,7 +52,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -72,7 +72,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -90,7 +90,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -117,7 +117,7 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-        const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
@@ -168,7 +168,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -196,7 +196,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -226,7 +226,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -256,7 +256,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -282,7 +282,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -311,7 +311,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -337,7 +337,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -367,7 +367,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.Ec2Cluster(stack, 'Ec2Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -395,7 +395,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'VPC');
-      const cluster = new ecs.Ec2Cluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
         image: ecs.DockerHub.image('test'),
