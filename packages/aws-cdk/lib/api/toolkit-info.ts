@@ -34,6 +34,7 @@ export class ToolkitInfo {
     bucketEndpoint: string,
     environment: cxapi.Environment
   }) {
+    this.sdk = props.sdk;
   }
 
   public get bucketUrl() {

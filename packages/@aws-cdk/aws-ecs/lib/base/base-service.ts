@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
+import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { cloudformation } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -83,14 +83,25 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly clusterName: string;
 
+  /**
+   * Task definition this service is associated with
+   */
+  public readonly taskDefinition: TaskDefinition;
+
   protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
   protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
-  protected readonly abstract taskDef: BaseTaskDefinition;
   private readonly resource: cloudformation.ServiceResource;
   private scalableTaskCount?: ScalableTaskCount;
 
-  constructor(parent: cdk.Construct, name: string, props: BaseServiceProps, additionalProps: any, clusterName: string) {
+  constructor(parent: cdk.Construct,
+              name: string,
+              props: BaseServiceProps,
+              additionalProps: any,
+              clusterName: string,
+              taskDefinition: TaskDefinition) {
     super(parent, name);
+
+    this.taskDefinition = taskDefinition;
 
     this.resource = new cloudformation.ServiceResource(this, "Service", {
       desiredCount: props.desiredCount || 1,
@@ -121,7 +132,7 @@ export abstract class BaseService extends cdk.Construct
 
     // Open up security groups. For dynamic port mapping, we won't know the port range
     // in advance so we need to open up all ports.
-    const port = this.taskDef.defaultContainer!.ingressPort;
+    const port = this.taskDefinition.defaultContainer!.ingressPort;
     const portRange = port === 0 ? EPHEMERAL_PORT_RANGE : new ec2.TcpPort(port);
     targetGroup.registerConnectable(this, portRange);
 
@@ -194,19 +205,19 @@ export abstract class BaseService extends cdk.Construct
    * Shared logic for attaching to an ELBv2
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup): elbv2.LoadBalancerTargetProps {
-    if (this.taskDef.networkMode === NetworkMode.None) {
+    if (this.taskDefinition.networkMode === NetworkMode.None) {
       throw new Error("Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.");
     }
 
     this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
-      containerName: this.taskDef.defaultContainer!.id,
-      containerPort: this.taskDef.defaultContainer!.containerPort,
+      containerName: this.taskDefinition.defaultContainer!.id,
+      containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 
     this.resource.addDependency(targetGroup.listenerDependency());
 
-    const targetType = this.taskDef.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
+    const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
     return { targetType };
   }
 

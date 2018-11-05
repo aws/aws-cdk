@@ -19,7 +19,7 @@ export = {
         PlacementConstraints: [],
         Volumes: [],
         NetworkMode: ecs.NetworkMode.Bridge,
-        RequiresCompatibilities: [ecs.Compatibilities.Ec2]
+        RequiresCompatibilities: ["EC2"]
       }));
 
       // test error if no container defs?

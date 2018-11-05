@@ -1,15 +1,16 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseTaskDefinition, BaseTaskDefinitionProps, Compatibilities, NetworkMode } from '../base/base-task-definition';
-import { cloudformation } from '../ecs.generated';
+import { CommonTaskDefinitionProps, Compatibility, NetworkMode, PlacementConstraint, TaskDefinition } from '../base/task-definition';
 
 /**
  * Properties to define an ECS task definition
  */
-export interface Ec2TaskDefinitionProps extends BaseTaskDefinitionProps {
+export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The Docker networking mode to use for the containers in the task.
    *
-   * @default NetworkMode.Bridge
+   * On Fargate, the only supported networking mode is AwsVpc.
+   *
+   * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
    */
   networkMode?: NetworkMode;
 
@@ -26,91 +27,12 @@ export interface Ec2TaskDefinitionProps extends BaseTaskDefinitionProps {
 /**
  * Define Tasks to run on an ECS cluster
  */
-export class Ec2TaskDefinition extends BaseTaskDefinition {
-  /**
-   * The networkmode configuration of this task
-   */
-  public readonly networkMode: NetworkMode;
-
-  /**
-   * Placement constraints for task instances
-   */
-  private readonly placementConstraints: cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty[];
-
+export class Ec2TaskDefinition extends TaskDefinition {
   constructor(parent: cdk.Construct, name: string, props: Ec2TaskDefinitionProps = {}) {
-    const networkMode = props.networkMode || NetworkMode.Bridge;
-
-    super(parent, name, props, {
-      networkMode,
-      requiresCompatibilities: [Compatibilities.Ec2],
-      placementConstraints: new cdk.Token(() => this.placementConstraints)
+    super(parent, name, {
+      ...props,
+      compatibility: Compatibility.Ec2,
+      placementConstraints: props.placementConstraints,
     });
-
-    this.networkMode = networkMode;
-    this.placementConstraints = [];
-
-    if (props.placementConstraints) {
-      props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
-    }
   }
-
-  public validate(): string[] {
-    const ret = super.validate();
-
-    for (const container of this.containers) {
-      if (!container.memoryLimitSpecified) {
-        ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
-      }
-    }
-
-    return ret;
-  }
-
-  /**
-   * Constrain where tasks can be placed
-   */
-  private addPlacementConstraint(constraint: PlacementConstraint) {
-    const pc = this.renderPlacementConstraint(constraint);
-    this.placementConstraints.push(pc);
-  }
-
-  /**
-   * Render the placement constraints
-   */
-  private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
-    return {
-      type: pc.type,
-      expression: pc.expression
-    };
-  }
-}
-
-/**
- * A constraint on how instances should be placed
- */
-export interface PlacementConstraint {
-  /**
-   * The type of constraint
-   */
-  type: PlacementConstraintType;
-
-  /**
-   * Additional information for the constraint
-   */
-  expression?: string;
-}
-
-/**
- * A placement constraint type
- */
-export enum PlacementConstraintType {
-  /**
-   * Place each task on a different instance
-   */
-  DistinctInstance = "distinctInstance",
-
-  /**
-   * Place tasks only on instances matching the expression in 'expression'
-   */
-  MemberOf = "memberOf"
 }

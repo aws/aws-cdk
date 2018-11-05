@@ -3,7 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { BaseTaskDefinition, NetworkMode } from '../base/base-task-definition';
+import { NetworkMode } from '../base/base-task-definition';
 import { cloudformation } from '../ecs.generated';
 import { IEc2Cluster } from './ec2-cluster';
 import { Ec2TaskDefinition } from './ec2-task-definition';
@@ -67,9 +67,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    */
   public readonly clusterName: string;
 
-  protected readonly taskDef: BaseTaskDefinition;
-
-  private readonly taskDefinition: Ec2TaskDefinition;
   private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
   private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
   private readonly daemon: boolean;
@@ -86,7 +83,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       placementConstraints: new cdk.Token(() => this.constraints),
       placementStrategies: new cdk.Token(() => this.strategies),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
-    }, props.cluster.clusterName);
+    }, props.cluster.clusterName, props.taskDefinition);
 
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];
@@ -100,9 +97,6 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       validateNoNetworkingProps(props);
       this.connections.addSecurityGroup(...props.cluster.connections.securityGroups);
     }
-
-    this.taskDefinition = props.taskDefinition;
-    this.taskDef = props.taskDefinition;
 
     if (props.placeOnDistinctInstances) {
       this.constraints.push({ type: 'distinctInstance' });

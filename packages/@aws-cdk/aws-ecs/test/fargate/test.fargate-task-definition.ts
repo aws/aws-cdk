@@ -16,7 +16,7 @@ export = {
         ContainerDefinitions: [],
         Volumes: [],
         NetworkMode: ecs.NetworkMode.AwsVpc,
-        RequiresCompatibilities: [ecs.Compatibilities.Fargate],
+        RequiresCompatibilities: ["FARGATE"],
         Cpu: "256",
         Memory: "512",
       }));

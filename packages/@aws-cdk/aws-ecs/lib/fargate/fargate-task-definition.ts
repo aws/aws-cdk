@@ -1,10 +1,10 @@
 import cdk = require('@aws-cdk/cdk');
-import { BaseTaskDefinition, BaseTaskDefinitionProps, Compatibilities, NetworkMode } from '../base/base-task-definition';
+import { CommonTaskDefinitionProps, Compatibility, NetworkMode, TaskDefinition } from '../base/task-definition';
 
 /**
  * Properties to define a Fargate Task
  */
-export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
+export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The number of cpu units used by the task.
    * Valid values, which determines your range of valid values for the memory parameter:
@@ -42,18 +42,19 @@ export interface FargateTaskDefinitionProps extends BaseTaskDefinitionProps {
 /**
  * A definition for Tasks on a Fargate cluster
  */
-export class FargateTaskDefinition extends BaseTaskDefinition {
+export class FargateTaskDefinition extends TaskDefinition {
   /**
    * The configured network mode
    */
   public readonly networkMode = NetworkMode.AwsVpc;
 
   constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
-    super(parent, name, props, {
+    super(parent, name, {
+      ...props,
       cpu: props.cpu || '256',
-      memory: props.memoryMiB || '512',
+      memoryMiB: props.memoryMiB || '512',
+      compatibility: Compatibility.Fargate,
       networkMode: NetworkMode.AwsVpc,
-      requiresCompatibilities: [Compatibilities.Fargate]
     });
   }
 }

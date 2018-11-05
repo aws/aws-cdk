@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTaskDefinition, NetworkMode } from './base/base-task-definition';
+import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { IContainerImage } from './container-image';
 import { cloudformation } from './ecs.generated';
 import { LinuxParameters } from './linux-parameters';
@@ -220,9 +220,9 @@ export class ContainerDefinition extends cdk.Construct {
   /**
    * The task definition this container definition is part of
    */
-  private readonly taskDefinition: BaseTaskDefinition;
+  private readonly taskDefinition: TaskDefinition;
 
-  constructor(parent: cdk.Construct, id: string, taskDefinition: BaseTaskDefinition, private readonly props: ContainerDefinitionProps) {
+  constructor(parent: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
     super(parent, id);
     this.essential = props.essential !== undefined ? props.essential : true;
     this.taskDefinition = taskDefinition;

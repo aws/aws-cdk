@@ -1,7 +1,6 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { BaseTaskDefinition } from '../base/base-task-definition';
 import { IFargateCluster } from './fargate-cluster';
 import { FargateTaskDefinition } from './fargate-task-definition';
 
@@ -55,28 +54,19 @@ export interface FargateServiceProps extends BaseServiceProps {
  * Start a service on an ECS cluster
  */
 export class FargateService extends BaseService {
-  /**
-   * The Task Definition for this service
-   */
-  public readonly taskDefinition: FargateTaskDefinition;
-  protected readonly taskDef: BaseTaskDefinition;
-
   constructor(parent: cdk.Construct, name: string, props: FargateServiceProps) {
     super(parent, name, props, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',
       platformVersion: props.platformVersion,
-    }, props.cluster.clusterName);
+    }, props.cluster.clusterName, props.taskDefinition);
 
     this.configureAwsVpcNetworking(props.cluster.vpc, props.assignPublicIp, props.vpcPlacement, props.securityGroup);
 
     if (!props.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
-
-    this.taskDefinition = props.taskDefinition;
-    this.taskDef = props.taskDefinition;
   }
 }
 

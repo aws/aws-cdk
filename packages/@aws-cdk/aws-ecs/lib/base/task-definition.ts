@@ -1,0 +1,397 @@
+import iam = require('@aws-cdk/aws-iam');
+import cdk = require('@aws-cdk/cdk');
+import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
+import { cloudformation } from '../ecs.generated';
+
+/**
+ * Properties common to all Task definitions
+ */
+export interface CommonTaskDefinitionProps {
+  /**
+   * Namespace for task definition versions
+   *
+   * @default Automatically generated name
+   */
+  family?: string;
+
+  /**
+   * The IAM role assumed by the ECS agent.
+   *
+   * The role will be used to retrieve container images from ECR and
+   * create CloudWatch log groups.
+   *
+   * @default An execution role will be automatically created if you use ECR images in your task definition
+   */
+  executionRole?: iam.Role;
+
+  /**
+   * The IAM role assumable by your application code running inside the container
+   *
+   * @default A task role is automatically created for you
+   */
+  taskRole?: iam.Role;
+
+  /**
+   * See: https://docs.aws.amazon.com/AmazonECS/latest/developerguide//task_definition_parameters.html#volumes
+   */
+  volumes?: Volume[];
+}
+
+/**
+ * Properties for generic task definitions
+ */
+export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
+  /**
+   * The Docker networking mode to use for the containers in the task.
+   *
+   * On Fargate, the only supported networking mode is AwsVpc.
+   *
+   * @default NetworkMode.Bridge for EC2 tasks, AwsVpc for Fargate tasks.
+   */
+  networkMode?: NetworkMode;
+
+  /**
+   * An array of placement constraint objects to use for the task. You can
+   * specify a maximum of 10 constraints per task (this limit includes
+   * constraints in the task definition and those specified at run time).
+   *
+   * Not supported in Fargate.
+   */
+  placementConstraints?: PlacementConstraint[];
+
+  /**
+   * What launch types this task definition should be compatible with.
+   */
+  compatibility: Compatibility;
+
+  /**
+   * The number of cpu units used by the task.
+   * Valid values, which determines your range of valid values for the memory parameter:
+   * 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
+   * 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
+   * 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
+   * 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
+   * 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
+   */
+  cpu?: string;
+
+  /**
+   * The amount (in MiB) of memory used by the task.
+   *
+   * This field is required and you must use one of the following values, which determines your range of valid values
+   * for the cpu parameter:
+   *
+   * 0.5GB, 1GB, 2GB - Available cpu values: 256 (.25 vCPU)
+   *
+   * 1GB, 2GB, 3GB, 4GB - Available cpu values: 512 (.5 vCPU)
+   *
+   * 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB - Available cpu values: 1024 (1 vCPU)
+   *
+   * Between 4GB and 16GB in 1GB increments - Available cpu values: 2048 (2 vCPU)
+   *
+   * Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
+   */
+  memoryMiB?: string;
+}
+
+/**
+ * Base class for Ecs and Fargate task definitions
+ */
+export class TaskDefinition extends cdk.Construct {
+  /**
+   * The family name of this task definition
+   */
+  public readonly family: string;
+
+  /**
+   * ARN of this task definition
+   */
+  public readonly taskDefinitionArn: string;
+
+  /**
+   * Task role used by this task definition
+   */
+  public readonly taskRole: iam.Role;
+
+  /**
+   * Network mode used by this task definition
+   */
+  public readonly networkMode: NetworkMode;
+
+  /**
+   * Default container for this task
+   *
+   * Load balancers will send traffic to this container. The first
+   * essential container that is added to this task will become the default
+   * container.
+   */
+  public defaultContainer?: ContainerDefinition;
+
+  /**
+   * What launching modes this task is compatible with
+   */
+  public compatibility: Compatibility;
+
+  /**
+   * All containers
+   */
+  protected readonly containers = new Array<ContainerDefinition>();
+
+  /**
+   * All volumes
+   */
+  private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
+
+  /**
+   * Execution role for this task definition
+   *
+   * Will be created as needed.
+   */
+  private executionRole?: iam.Role;
+
+  /**
+   * Placement constraints for task instances
+   */
+  private readonly placementConstraints = new Array<cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty>();
+
+  constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
+    super(parent, name);
+
+    this.family = props.family || this.uniqueId;
+    this.compatibility = props.compatibility;
+
+    if (props.volumes) {
+      props.volumes.forEach(v => this.addVolume(v));
+    }
+
+    this.networkMode = props.networkMode !== undefined ? props.networkMode :
+                       isFargateCompatible(this.compatibility) ? NetworkMode.AwsVpc : NetworkMode.Bridge;
+    if (isFargateCompatible(this.compatibility) && this.networkMode !== NetworkMode.AwsVpc) {
+      throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
+    }
+
+    if (props.placementConstraints && props.placementConstraints.length > 0 && isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot set placement constraints on tasks that run on Fargate');
+    }
+
+    if (isFargateCompatible(this.compatibility) && (!props.cpu || !props.memoryMiB)) {
+      throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
+    }
+
+    this.executionRole = props.executionRole;
+
+    this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+
+    const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
+      containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
+      volumes: new cdk.Token(() => this.volumes),
+      executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
+      family: this.family,
+      taskRoleArn: this.taskRole.roleArn,
+      requiresCompatibilities: [
+        ...(isEc2Compatible(props.compatibility) ? ["EC2"] : []),
+        ...(isFargateCompatible(props.compatibility) ? ["FARGATE"] : []),
+      ],
+      networkMode: this.networkMode,
+      placementConstraints: !isFargateCompatible(this.compatibility) ? new cdk.Token(this.placementConstraints) : undefined,
+      cpu: props.cpu,
+      memory: props.memoryMiB,
+    });
+
+    if (props.placementConstraints) {
+      props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
+    }
+
+    this.taskDefinitionArn = taskDef.taskDefinitionArn;
+  }
+
+  /**
+   * Add a policy statement to the Task Role
+   */
+  public addToTaskRolePolicy(statement: iam.PolicyStatement) {
+    this.taskRole.addToPolicy(statement);
+  }
+
+  public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
+    if (!this.executionRole) {
+      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+    }
+    this.executionRole.addToPolicy(statement);
+  }
+
+  /**
+   * Create a new container to this task definition
+   */
+  public addContainer(id: string, props: ContainerDefinitionProps) {
+    const container = new ContainerDefinition(this, id, this, props);
+    this.containers.push(container);
+    if (this.defaultContainer === undefined && container.essential) {
+      this.defaultContainer = container;
+    }
+
+    return container;
+  }
+
+  /**
+   * Add a volume to this task definition
+   */
+  public addVolume(volume: Volume) {
+    this.volumes.push(volume);
+  }
+
+  /**
+   * Validate this task definition
+   */
+  public validate(): string[] {
+    const ret = super.validate();
+
+    if (isEc2Compatible(this.compatibility)) {
+      // EC2 mode validations
+
+      // Container sizes
+      for (const container of this.containers) {
+        if (!container.memoryLimitSpecified) {
+          ret.push(`ECS Container ${container.id} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+        }
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * Constrain where tasks can be placed
+   */
+  public addPlacementConstraint(constraint: PlacementConstraint) {
+    if (isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot set placement constraints on tasks that run on Fargate');
+    }
+    const pc = this.renderPlacementConstraint(constraint);
+    this.placementConstraints.push(pc);
+  }
+
+  /**
+   * Render the placement constraints
+   */
+  private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
+    return {
+      type: pc.type,
+      expression: pc.expression
+    };
+  }
+}
+
+/**
+ * The Docker networking mode to use for the containers in the task.
+ */
+export enum NetworkMode {
+  /**
+   * The task's containers do not have external connectivity and port mappings can't be specified in the container definition.
+   */
+  None = 'none',
+
+  /**
+   * The task utilizes Docker's built-in virtual network which runs inside each container instance.
+   */
+  Bridge = 'bridge',
+
+  /**
+   * The task is allocated an elastic network interface.
+   */
+  AwsVpc = 'awsvpc',
+
+  /**
+   * The task bypasses Docker's built-in virtual network and maps container ports directly to the EC2 instance's network interface directly.
+   *
+   * In this mode, you can't run multiple instantiations of the same task on a
+   * single container instance when port mappings are used.
+   */
+  Host = 'host',
+}
+
+/**
+ * Volume definition
+ */
+export interface Volume {
+  /**
+   * Path on the host
+   */
+  host?: Host;
+
+  /**
+   * A name for the volume
+   */
+  name?: string;
+  // FIXME add dockerVolumeConfiguration
+}
+
+/**
+ * A volume host
+ */
+export interface Host {
+  /**
+   * Source path on the host
+   */
+  sourcePath?: string;
+}
+
+/**
+ * A constraint on how instances should be placed
+ */
+export interface PlacementConstraint {
+  /**
+   * The type of constraint
+   */
+  type: PlacementConstraintType;
+
+  /**
+   * Additional information for the constraint
+   */
+  expression?: string;
+}
+
+/**
+ * A placement constraint type
+ */
+export enum PlacementConstraintType {
+  /**
+   * Place each task on a different instance
+   */
+  DistinctInstance = "distinctInstance",
+
+  /**
+   * Place tasks only on instances matching the expression in 'expression'
+   */
+  MemberOf = "memberOf"
+}
+
+/**
+ * Task compatibility
+ */
+export enum Compatibility {
+  /**
+   * Task should be launchable on EC2 clusters
+   */
+  Ec2,
+
+  /**
+   * Task should be launchable on Fargate clusters
+   */
+  Fargate,
+
+  /**
+   * Task should be launchable on both types of clusters
+   */
+  Ec2AndFargate
+}
+
+function isEc2Compatible(comp: Compatibility) {
+  return comp === Compatibility.Ec2 || comp === Compatibility.Ec2AndFargate;
+}
+
+function isFargateCompatible(comp: Compatibility) {
+  return comp === Compatibility.Fargate || comp === Compatibility.Ec2AndFargate;
+}
