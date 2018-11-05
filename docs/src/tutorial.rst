@@ -126,7 +126,7 @@ in the *resources* directory.
         var method = event.httpMethod;
 
         if (method === "GET") {
-          if (event.path.length == 1) {
+          if (event.path === "/") {
             const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
             var body = {
               widgets: data.Contents.map(function(e) { return e.Key })
@@ -327,7 +327,7 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
 
         if (method === "GET") {
           // GET / to get the names of all widgets
-          if (event.path.length == 1) {
+          if (event.path === "/") {
             const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
             var body = {
               widgets: data.Contents.map(function(e) { return e.Key })
