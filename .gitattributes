@@ -6,5 +6,7 @@
 * eol=lf
 *.gif binary
 *.zip binary
+*.png binary
+*.jpg binary
 packages/@aws-cdk-testing/framework-integ/test/aws-eks/**/*.zip filter=lfs diff=lfs merge=lfs -text
 packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/**/*.zip filter=lfs diff=lfs merge=lfs -text
