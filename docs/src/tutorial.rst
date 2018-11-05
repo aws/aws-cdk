@@ -121,12 +121,11 @@ in the *resources* directory.
 
     const bucketName = process.env.BUCKET;
 
-    // For now we only handle GET /:
     exports.main = async function(event, context) {
       try {
         var method = event.httpMethod;
 
-        if (method == "GET") {
+        if (method === "GET") {
           if (event.path.length == 1) {
             const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
             var body = {
@@ -138,33 +137,21 @@ in the *resources* directory.
               body: JSON.stringify(body)
             };
           }
-          else {
-            // GET /name
-            var name = event.path.substring(1, event.path.length);
-  
-            const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
-            var body = data.Body.toString('utf-8');
+        }
 
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-        }
-        else {
-          var body = "We only accept GET, POST, and DELETE, not " + method;
-        
-          return {
-            statusCode: 200,
-            headers: {},
-            body: JSON.stringify(body)
-          };
-        }
+        // We only accept GET for now
+        return {
+          statusCode: 200,
+          headers: {},
+          body: "We only accept GET /"
+        };
       } catch(error) {
         var body = error.stack || JSON.stringify(error, null, 2);
-        var response = makeError(body);
-        return response;
+        return {
+          statusCode: 200,
+            headers: {},
+            body: JSON.stringify(body)
+        }
       }
     }
 
@@ -216,7 +203,7 @@ in the *lib* directory.
         // in the source file widgets(.js) in the resources directory
         // to handle requests through API Gateway
         const handler = new lambda.Function(this, 'WidgetHandler', {
-          runtime: lambda.Runtime.NodeJS610,
+          runtime: lambda.Runtime.NodeJS810,
           code: lambda.Code.directory('resources'),
           handler: 'widgets.main',
           environment: {
@@ -336,7 +323,8 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
       try {
         var method = event.httpMethod;
 
-        if (method == "GET") {
+        if (method === "GET") {
+          // GET / to get the names of all widgets
           if (event.path.length == 1) {
             const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
             var body = {
@@ -348,98 +336,90 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
               body: JSON.stringify(body)
             };
           }
-          else {
-            // GET /name
-            var name = event.path.substring(1, event.path.length);
-  
-            const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
-            var body = data.Body.toString('utf-8');
 
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-        }
-        else if (method == "POST") {
-          // POST /name
-          // Make sure we have a name
-          if (event.path.length == 1) {
-            // Return error
-            var body = "NAME arg missing (/ supplied, not /name)";
+          // GET /name to get info on widget name
+          var name = event.path.substring(1, event.path.length);
 
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }  
-          else {
-            var name = event.path.substring(1, event.path.length);
+          const data = await S3.getObject({ Bucket: bucketName, Key: name}).promise();
+          var body = data.Body.toString('utf-8');
 
-            // Create some dummy data to populate object
-            const now = new Date();
-            var data = name + " created: " + now;
-
-            var base64data = new Buffer(data, 'binary');
-
-            await S3.putObject({
-              Bucket: bucketName,
-              Key: name,
-              Body: base64data,
-              ContentType: 'application/json'
-            }).promise();
-
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(event.widgets)
-            };
-          }
-        }
-        else if (method == "DELETE") {
-          // DELETE /name
-          // Make sure we have a name
-          if (event.path.length == 1) {
-            // Return error
-            var body = "NAME arg missing (/ supplied, not /name)";
-        
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-          else {
-            var name = event.path.substring(1, event.path.length);
-
-            await S3.deleteObject({ 
-              Bucket: bucketName, Key: name
-            }).promise();
-
-            var body = { success: true }
-            
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-        }
-        else {
-          var body = "We only accept GET, POST, and DELETE, not " + method;
-        
           return {
             statusCode: 200,
             headers: {},
             body: JSON.stringify(body)
           };
         }
+
+        if (method === "POST") {
+          // POST /name
+          // Return error if we do not have a name
+          if (event.path.length == 1) {
+            return {
+              statusCode: 200,
+              headers: {},
+              body: "Widget name missing"
+            };
+          }
+
+          var name = event.path.substring(1, event.path.length);
+
+          // Create some dummy data to populate object
+          const now = new Date();
+          var data = name + " created: " + now;
+
+          var base64data = new Buffer(data, 'binary');
+
+          await S3.putObject({
+            Bucket: bucketName,
+            Key: name,
+            Body: base64data,
+            ContentType: 'application/json'
+          }).promise();
+
+          return {
+            statusCode: 200,
+            headers: {},
+            body: JSON.stringify(event.widgets)
+          };
+        }
+
+        if (method === "DELETE") {
+          // DELETE /name
+          // Return an error if we do not have a name
+          if (event.path.length == 1) {
+            return {
+              statusCode: 200,
+              headers: {},
+              body: "Widget name missing"
+            };
+          }
+
+          var name = event.path.substring(1, event.path.length);
+
+          await S3.deleteObject({
+            Bucket: bucketName, Key: name
+          }).promise();
+
+          return {
+            statusCode: 200,
+            headers: {},
+            body: "Successfully deleted widget " + name
+          };
+        }
+
+        // We got something besides a GET, POST, or DELETE
+        return {
+          statusCode: 200,
+          headers: {},
+          body: "We only accept GET, POST, and DELETE, not " + method
+        };
       } catch(error) {
         var body = error.stack || JSON.stringify(error, null, 2);
-        var response = makeError(body);
-        return response;
+        return {
+          statusCode: 200,
+          headers: {},
+          body: body
+        }
       }
     }
 
