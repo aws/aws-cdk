@@ -6,6 +6,7 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 
 import { cloudformation } from './autoscaling.generated';
+import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 
 /**
  * Name tag constant
@@ -147,7 +148,7 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
+export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * The type of OS instances of this fleet are running.
@@ -168,6 +169,11 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    * Manage tags for this construct and children
    */
   public readonly tags: cdk.TagManager;
+
+  /**
+   * Name of the AutoScalingGroup
+   */
+  public readonly autoScalingGroupName: string;
 
   private readonly userDataLines = new Array<string>();
   private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
@@ -248,6 +254,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
 
     this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
+    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
 
     this.applyUpdatePolicies(props);
   }
@@ -294,8 +301,14 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
   }
 
-  public autoScalingGroupName() {
-    return this.autoScalingGroup.ref;
+  /**
+   * Scale out or in based on time
+   */
+  public scaleOnSchedule(id: string, props: BasicScheduledActionProps) {
+    new ScheduledAction(this, `ScheduledAction${id}`, {
+      autoScalingGroup: this,
+      ...props,
+    });
   }
 
   /**
@@ -505,6 +518,10 @@ class TagManager extends cdk.TagManager {
 function renderIsoDuration(seconds: number): string {
   const ret: string[] = [];
 
+  if (seconds === 0) {
+    return 'PT0S';
+  }
+
   if (seconds >= 3600) {
     ret.push(`${Math.floor(seconds / 3600)}H`);
     seconds %= 3600;
@@ -523,4 +540,14 @@ function renderIsoDuration(seconds: number): string {
 function validatePercentage(x?: number): number | undefined {
   if (x === undefined || (0 <= x && x <= 100)) { return x; }
   throw new Error(`Expected: a percentage 0..100, got: ${x}`);
+}
+
+/**
+ * An AutoScalingGroup
+ */
+export interface IAutoScalingGroup {
+  /**
+   * The name of the AutoScalingGroup
+   */
+  readonly autoScalingGroupName: string;
 }
