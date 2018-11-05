@@ -51,7 +51,7 @@ const source = new codepipeline.GitHubSourceAction(pipelineStack, 'GitHub', {
   stage: pipeline.addStage('source'),
   /* ... */
 });
-const project = new codebuild.PipeilineProject(pipelineStack, 'CodeBuild', {
+const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
   /* ... */
 });
 const synthesizedApp = project.outputArtifact;
