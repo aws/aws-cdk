@@ -12,6 +12,9 @@ echo "Stack deployed successfully"
 # verify that we only deployed a single stack (there's a single ARN in the output)
 lines="$(echo "${stack_arns}" | wc -l)"
 if [ "${lines}" -ne 2 ]; then
+    echo "-- output -----------"
+    echo "${stack_arns}"
+    echo "---------------------"
     fail "cdk deploy returned ${lines} arns and we expected 2"
 fi
 
