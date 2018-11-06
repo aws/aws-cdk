@@ -198,7 +198,7 @@ EC2 instances or other VPC-connected resources) will all have security groups
 automatically assigned. Those constructs have an attribute called
 **connections**, which is an object that makes it convenient to update the
 security groups. If you want to allow connections between two constructs that
-have security groups, you have to add an **Egress* rule to one Security Group,
+have security groups, you have to add an **Egress** rule to one Security Group,
 and an **Ingress** rule to the other. The connections object will automatically
 take care of this for you:
 
@@ -270,3 +270,22 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 // Port implicit in peer
 fleet.connections.allowToDefaultPort(rdsDatabase, 'Fleet can access database');
 ```
+
+### Machine Images (AMIs)
+
+AMIs control the OS that gets launched when you start your EC2 instance. The EC2
+library contains constructs to select the AMI you want to use.
+
+Depending on the type of AMI, you select it a different way.
+
+The latest version of Amazon Linux and Microsoft Windows images are
+selectable by instantiating one of these classes:
+
+[example of creating images](test/example.images.lit.ts)
+
+> NOTE: The Amazon Linux images selected will be cached in your `cdk.json`, so that your
+> AutoScalingGroups don't automatically change out from under you when you're making unrelated
+> changes. To update to the latest version of Amazon Linux, remove the cache entry from the `context`
+> section of your `cdk.json`.
+>
+> We will add command-line options to make this step easier in the future.
