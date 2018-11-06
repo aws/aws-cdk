@@ -12,7 +12,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -52,7 +53,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -72,7 +74,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       // THEN
@@ -90,7 +92,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -117,7 +120,8 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.Bridge
         });
@@ -148,7 +152,8 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
@@ -198,7 +203,8 @@ export = {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
           networkMode: NetworkMode.AwsVpc
         });
@@ -225,7 +231,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -253,7 +260,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -283,7 +291,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -313,7 +322,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -339,7 +349,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -368,7 +379,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc');
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -394,7 +406,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -424,7 +437,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
@@ -452,7 +466,8 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'VPC');
-      const cluster = new ecs.EcsCluster(stack, 'Cluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
         image: ecs.DockerHub.image('test'),

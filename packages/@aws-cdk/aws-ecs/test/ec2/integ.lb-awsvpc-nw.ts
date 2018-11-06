@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'Vpc', { maxAZs: 2 });
 
-const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 cluster.addDefaultAutoScalingGroupCapacity({
   instanceType: new ec2.InstanceType('t2.micro')
 });

@@ -8,7 +8,7 @@ import { cloudformation } from './ecs.generated';
 /**
  * Properties to define an ECS cluster
  */
-export interface EcsClusterProps {
+export interface ClusterProps {
   /**
    * A name for the cluster.
    *
@@ -25,12 +25,12 @@ export interface EcsClusterProps {
 /**
  * A container cluster that runs on your EC2 instances
  */
-export class EcsCluster extends cdk.Construct implements IEcsCluster {
+export class Cluster extends cdk.Construct implements ICluster {
   /**
    * Import an existing cluster
    */
-  public static import(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps): IEcsCluster {
-    return new ImportedEcsCluster(parent, name, props);
+  public static import(parent: cdk.Construct, name: string, props: ImportedClusterProps): ICluster {
+    return new ImportedCluster(parent, name, props);
   }
 
   /**
@@ -53,7 +53,12 @@ export class EcsCluster extends cdk.Construct implements IEcsCluster {
    */
   public readonly clusterName: string;
 
-  constructor(parent: cdk.Construct, name: string, props: EcsClusterProps) {
+  /**
+   * Whether the cluster has EC2 capacity associated with it
+   */
+  private _hasEc2Capacity: boolean = false;
+
+  constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
     super(parent, name);
 
     const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
@@ -84,6 +89,7 @@ export class EcsCluster extends cdk.Construct implements IEcsCluster {
    * Add compute capacity to this ECS cluster in the form of an AutoScalingGroup
    */
   public addAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     // Tie instances to cluster
@@ -115,13 +121,21 @@ export class EcsCluster extends cdk.Construct implements IEcsCluster {
   }
 
   /**
-   * Export the EcsCluster
+   * Whether the cluster has EC2 capacity associated with it
    */
-  public export(): ImportedEcsClusterProps {
+  public get hasEc2Capacity(): boolean {
+    return this._hasEc2Capacity;
+  }
+
+  /**
+   * Export the Cluster
+   */
+  public export(): ImportedClusterProps {
     return {
       clusterName: new cdk.Output(this, 'ClusterName', { value: this.clusterName }).makeImportValue().toString(),
       vpc: this.vpc.export(),
       securityGroups: this.connections.securityGroups.map(sg => sg.export()),
+      hasEc2Capacity: this.hasEc2Capacity,
     };
   }
 
@@ -180,7 +194,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImageSource  {
 /**
  * An ECS cluster
  */
-export interface IEcsCluster {
+export interface ICluster {
   /**
    * Name of the cluster
    */
@@ -195,12 +209,17 @@ export interface IEcsCluster {
    * Connections manager of the cluster instances
    */
   readonly connections: ec2.Connections;
+
+  /**
+   * Whether the cluster has EC2 capacity associated with it
+   */
+  readonly hasEc2Capacity: boolean;
 }
 
 /**
  * Properties to import an ECS cluster
  */
-export interface ImportedEcsClusterProps {
+export interface ImportedClusterProps {
   /**
    * Name of the cluster
    */
@@ -215,12 +234,19 @@ export interface ImportedEcsClusterProps {
    * Security group of the cluster instances
    */
   securityGroups: ec2.SecurityGroupRefProps[];
+
+  /**
+   * Whether the given cluster has EC2 capacity
+   *
+   * @default true
+   */
+  hasEc2Capacity?: boolean;
 }
 
 /**
- * An EcsCluster that has been imported
+ * An Cluster that has been imported
  */
-class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
+class ImportedCluster extends cdk.Construct implements ICluster {
   /**
    * Name of the cluster
    */
@@ -236,10 +262,16 @@ class ImportedEcsCluster extends cdk.Construct implements IEcsCluster {
    */
   public readonly connections = new ec2.Connections();
 
-  constructor(parent: cdk.Construct, name: string, props: ImportedEcsClusterProps) {
+  /**
+   * Whether the cluster has EC2 capacity
+   */
+  public readonly hasEc2Capacity: boolean;
+
+  constructor(parent: cdk.Construct, name: string, props: ImportedClusterProps) {
     super(parent, name);
     this.clusterName = props.clusterName;
     this.vpc = ec2.VpcNetworkRef.import(this, "vpc", props.vpc);
+    this.hasEc2Capacity = props.hasEc2Capacity !== false;
 
     let i = 1;
     for (const sgProps of props.securityGroups) {

@@ -2,6 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
 import { cloudformation } from '../ecs.generated';
+import { isEc2Compatible, isFargateCompatible } from '../util';
 
 /**
  * Properties common to all Task definitions
@@ -274,6 +275,16 @@ export class TaskDefinition extends cdk.Construct {
   }
 
   /**
+   * Extend this TaskDefinition with the given extension
+   *
+   * Extension can be used to apply a packaged modification to
+   * a task definition.
+   */
+  public addExtension(extension: ITaskDefinitionExtension) {
+    extension.extend(this);
+  }
+
+  /**
    * Render the placement constraints
    */
   private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
@@ -388,10 +399,18 @@ export enum Compatibility {
   Ec2AndFargate
 }
 
-function isEc2Compatible(comp: Compatibility) {
-  return comp === Compatibility.Ec2 || comp === Compatibility.Ec2AndFargate;
-}
-
-function isFargateCompatible(comp: Compatibility) {
-  return comp === Compatibility.Fargate || comp === Compatibility.Ec2AndFargate;
+/**
+ * An extension for Task Definitions
+ *
+ * Classes can want to make changes to a TaskDefinition (such as
+ * adding helper containers) can implement this interface, and can
+ * then be "added" to a TaskDefinition like so:
+ *
+ *    taskDefinition.addExtension(new MyExtension("some_parameter"));
+ */
+export interface ITaskDefinitionExtension {
+  /**
+   * Apply the extension to the given TaskDefinition
+   */
+  extend(taskDefinition: TaskDefinition): void;
 }

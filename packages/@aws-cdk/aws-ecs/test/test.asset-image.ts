@@ -30,9 +30,12 @@ export = {
     test.done();
   },
 
-  async 'exercise handler'(test: Test) {
+  async 'exercise handler create'(test: Test) {
     const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'), {
-      'aws-sdk': { '@noCallThru': true, ECR }
+      'aws-sdk': {
+        '@noCallThru': true,
+        "ECR": ECRWithEmptyPolicy,
+      }
     });
 
     let output;
@@ -60,16 +63,86 @@ export = {
 
     test.done();
   },
+
+  async 'exercise handler delete'(test: Test) {
+    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'), {
+      'aws-sdk': { '@noCallThru': true, "ECR": ECRWithOwningPolicy }
+    });
+
+    let output;
+    async function response(responseStatus: string, reason: string, physId: string, data: any) {
+      output = { responseStatus, reason, physId, data };
+    }
+
+    await handler.handler({
+      StackId: 'StackId',
+      ResourceProperties: {
+        RepositoryArn: 'RepositoryArn',
+      },
+      RequestType: 'Delete',
+      ResponseURL: 'https://localhost/test'
+    }, {
+      logStreamName: 'xyz',
+    }, undefined, response);
+
+    test.deepEqual(output, {
+      responseStatus: 'SUCCESS',
+      reason: 'OK',
+      physId: '',
+      data: { RepositoryUri: 'undefined.dkr.ecr.undefined.amazonaws.com/' }
+    });
+
+    test.done();
+  },
 };
 
+function ECRWithEmptyPolicy() {
+  return new ECR({ asdf: 'asdf' });
+}
+
+function ECRWithOwningPolicy() {
+  return new ECR({
+    Statement: [
+      {
+        Sid: 'StackId',
+        Effect: "Deny",
+        Action: "OwnedBy:CDKStack",
+        Principal: "*"
+      }
+    ]
+  });
+}
+
 class ECR {
+  public constructor(private policy: any) {
+  }
+
   public getRepositoryPolicy() {
+    const self = this;
     return { async promise() { return {
-      policyText: '{"asdf": "asdf"}'
+      policyText: JSON.stringify(self.policy)
     }; } };
   }
 
   public setRepositoryPolicy() {
     return { async promise() { return; } };
+  }
+
+  public listImages() {
+    return { async promise() {
+      return { imageIds: [] };
+    } };
+  }
+
+  public batchDeleteImage() {
+    return { async promise() {
+      return {};
+    } };
+  }
+
+  public deleteRepository() {
+    return { async promise() {
+      return {};
+    } };
   }
 }

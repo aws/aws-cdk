@@ -3,10 +3,10 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { NetworkMode } from '../base/task-definition';
-import { IEcsCluster } from '../ecs-cluster';
+import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
 import { cloudformation } from '../ecs.generated';
-import { Ec2TaskDefinition } from './ec2-task-definition';
+import { isEc2Compatible } from '../util';
 
 /**
  * Properties to define an ECS service
@@ -15,12 +15,12 @@ export interface Ec2ServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IEcsCluster;
+  cluster: ICluster;
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: Ec2TaskDefinition;
+  taskDefinition: TaskDefinition;
 
   /**
    * In what subnets to place the task's ENIs
@@ -70,10 +70,15 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
   private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
   private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
   private readonly daemon: boolean;
+  private readonly cluster: ICluster;
 
   constructor(parent: cdk.Construct, name: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
       throw new Error('Daemon mode launches one task on every instance. Don\'t supply desiredCount.');
+    }
+
+    if (!isEc2Compatible(props.taskDefinition.compatibility)) {
+      throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
     super(parent, name, props, {
@@ -85,6 +90,7 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.cluster.clusterName, props.taskDefinition);
 
+    this.cluster = props.cluster;
     this.clusterName = props.cluster.clusterName;
     this.constraints = [];
     this.strategies = [];
@@ -215,6 +221,17 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    */
   public metricCpuUtilization(props?: cloudwatch.MetricCustomization): cloudwatch.Metric {
     return this.metric('CPUUtilization', props);
+  }
+
+  /**
+   * Validate this Ec2Service
+   */
+  public validate(): string[] {
+    const ret = super.validate();
+    if (!this.cluster.hasEc2Capacity) {
+      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+    }
+    return ret;
   }
 }
 

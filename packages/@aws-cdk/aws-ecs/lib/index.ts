@@ -1,11 +1,10 @@
-export * from './base/base-cluster';
 export * from './base/base-service';
 export * from './base/scalable-task-count';
 export * from './base/task-definition';
 
 export * from './container-definition';
 export * from './container-image';
-export * from './ecs-cluster';
+export * from './cluster';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';

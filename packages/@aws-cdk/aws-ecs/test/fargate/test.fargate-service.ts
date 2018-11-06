@@ -10,7 +10,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
@@ -85,7 +85,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
@@ -103,7 +103,7 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
-      const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {

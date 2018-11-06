@@ -5,7 +5,7 @@ Service** (ECS). The simplest example of using this library looks like this:
 
 ```ts
 // Create an ECS cluster
-const cluster = new ecs.EcsCluster(this, 'Cluster', {
+const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
 });
 
@@ -51,13 +51,13 @@ For more information on EC2 vs Fargate and networking see the AWS Documentation:
 
 ### Clusters
 
-An `EcsCluster` defines the infrastructure to run your
+A `Cluster` defines the infrastructure to run your
 tasks on. You can run many tasks on a single cluster.
 
 To create a cluster that can run Fargate tasks, go:
 
 ```ts
-const cluster = new ecs.EcsCluster(this, 'Cluster', {
+const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc: vpc
 });
 ```
@@ -73,7 +73,7 @@ with various instance types if you want to.
 Creating an ECS cluster and adding capacity to it looks like this:
 
 ```ts
-const cluster = new ecs.EcsCluster(this, 'Cluster', {
+const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc: vpc
 });
 
@@ -148,7 +148,8 @@ container.addPortMappings({
 })
 ```
 
-If you wish to use a TaskDefinition that can be used with either EC2 or Fargate launch types, there is also the `TaskDefinition` construct.
+If you wish to use a TaskDefinition that can be used with either EC2 or
+Fargate launch types, there is also the `TaskDefinition` construct.
 
 When creating a Task Definition you have to specify what kind of
 tasks you intend to run: EC2, Fargate, or both:

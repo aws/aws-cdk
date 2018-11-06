@@ -1,9 +1,9 @@
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import cdk = require('@aws-cdk/cdk');
+import { ICluster } from './cluster';
 import { IContainerImage } from './container-image';
 import { Ec2Service } from './ec2/ec2-service';
 import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
-import { IEcsCluster } from './ecs-cluster';
 
 /**
  * Properties for a LoadBalancedEc2Service
@@ -12,7 +12,7 @@ export interface LoadBalancedEc2ServiceProps {
   /**
    * The cluster where your Fargate service will be deployed
    */
-  cluster: IEcsCluster;
+  cluster: ICluster;
 
   /**
    * The image to start.

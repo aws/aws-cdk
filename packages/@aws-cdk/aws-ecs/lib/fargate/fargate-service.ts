@@ -1,8 +1,9 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
-import { IEcsCluster } from '../ecs-cluster';
-import { FargateTaskDefinition } from './fargate-task-definition';
+import { TaskDefinition } from '../base/task-definition';
+import { ICluster } from '../cluster';
+import { isFargateCompatible } from '../util';
 
 /**
  * Properties to define a Fargate service
@@ -11,12 +12,12 @@ export interface FargateServiceProps extends BaseServiceProps {
   /**
    * Cluster where service will be deployed
    */
-  cluster: IEcsCluster; // should be required? do we assume 'default' exists?
+  cluster: ICluster; // should be required? do we assume 'default' exists?
 
   /**
    * Task Definition used for running tasks in the service
    */
-  taskDefinition: FargateTaskDefinition;
+  taskDefinition: TaskDefinition;
 
   /**
    * Assign public IP addresses to each task
@@ -55,6 +56,10 @@ export interface FargateServiceProps extends BaseServiceProps {
  */
 export class FargateService extends BaseService {
   constructor(parent: cdk.Construct, name: string, props: FargateServiceProps) {
+    if (!isFargateCompatible(props.taskDefinition.compatibility)) {
+      throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
+    }
+
     super(parent, name, props, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
