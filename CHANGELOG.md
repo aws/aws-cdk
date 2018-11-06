@@ -4,6 +4,7 @@
 ### Bug Fixes
 
 * Update peer dependencies to refer to correct version so NPM installs don't fail.
+* Switch back to `js-yaml` as `yaml` was emitting unquoted single colons as list elements.
 
 <a name="0.15.0"></a>
 ## [0.15.0](https://github.com/awslabs/aws-cdk/compare/v0.14.1...v0.15.0) (2018-11-06)
