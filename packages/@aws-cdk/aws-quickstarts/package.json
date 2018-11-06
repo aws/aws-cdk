@@ -58,5 +58,9 @@
     "@aws-cdk/aws-rds": "^0.14.1",
     "@aws-cdk/cdk": "^0.14.1"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.14.1",
+    "@aws-cdk/aws-ec2": "^0.14.1"
+  }
 }

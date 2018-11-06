@@ -70,5 +70,13 @@
     "@aws-cdk/aws-s3": "^0.14.1",
     "@aws-cdk/cdk": "^0.14.1"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-codepipeline-api": "^0.14.1",
+    "@aws-cdk/cdk": "^0.14.1",
+    "@aws-cdk/aws-cloudwatch": "^0.14.1",
+    "@aws-cdk/aws-autoscaling": "^0.14.1",
+    "@aws-cdk/aws-iam": "^0.14.1",
+    "@aws-cdk/aws-codedeploy-api": "^0.14.1"
+  }
 }

@@ -69,5 +69,8 @@
     "json-diff",
     "js-base64"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cx-api": "^0.14.1"
+  }
 }

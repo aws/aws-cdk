@@ -65,5 +65,12 @@
     "@aws-cdk/aws-s3-notifications": "^0.14.1",
     "@aws-cdk/cdk": "^0.14.1"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.14.1",
+    "@aws-cdk/aws-s3-notifications": "^0.14.1",
+    "@aws-cdk/aws-kms": "^0.14.1",
+    "@aws-cdk/aws-iam": "^0.14.1",
+    "@aws-cdk/aws-codepipeline-api": "^0.14.1"
+  }
 }
