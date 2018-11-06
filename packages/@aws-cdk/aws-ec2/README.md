@@ -198,7 +198,7 @@ EC2 instances or other VPC-connected resources) will all have security groups
 automatically assigned. Those constructs have an attribute called
 **connections**, which is an object that makes it convenient to update the
 security groups. If you want to allow connections between two constructs that
-have security groups, you have to add an **Egress* rule to one Security Group,
+have security groups, you have to add an **Egress** rule to one Security Group,
 and an **Ingress** rule to the other. The connections object will automatically
 take care of this for you:
 
