@@ -62,5 +62,11 @@
     "@aws-cdk/aws-sns": "^0.14.1",
     "@aws-cdk/cdk": "^0.14.1"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-s3": "^0.14.1",
+    "@aws-cdk/aws-lambda": "^0.14.1",
+    "@aws-cdk/aws-sns": "^0.14.1",
+    "@aws-cdk/aws-sqs": "^0.14.1"
+  }
 }
