@@ -52,6 +52,6 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
     });
 
     const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
-    this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
 }

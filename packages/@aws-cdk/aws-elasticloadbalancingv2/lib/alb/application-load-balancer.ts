@@ -67,7 +67,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       description: `Automatically created Security Group for ELB ${this.uniqueId}`,
       allowAllOutbound: false
     });
-    this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
+    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeoutSecs !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeoutSecs.toString()); }
@@ -201,7 +201,7 @@ class ImportedApplicationLoadBalancer extends cdk.Construct implements IApplicat
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
-      securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })
+      securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })]
     });
   }
 

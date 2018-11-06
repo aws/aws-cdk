@@ -124,7 +124,7 @@ export class Asset extends cdk.Construct {
     // for tooling to be able to package and upload a directory to the
     // s3 bucket and plug in the bucket name and key in the correct
     // parameters.
-    const asset: cxapi.AssetMetadataEntry = {
+    const asset: cxapi.FileAssetMetadataEntry = {
       path: this.assetPath,
       id: this.uniqueId,
       packaging: props.packaging,

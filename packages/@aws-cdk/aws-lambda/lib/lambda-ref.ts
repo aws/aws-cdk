@@ -334,8 +334,8 @@ export abstract class FunctionRef extends cdk.Construct
   public export(): FunctionRefProps {
     return {
       functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroup
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue().toString()
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -427,9 +427,9 @@ class LambdaRefImport extends FunctionRef {
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({
-        securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
+        securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
           securityGroupId: props.securityGroupId
-        })
+        })]
       });
     }
   }
@@ -449,6 +449,5 @@ class LambdaRefImport extends FunctionRef {
    */
   private extractNameFromArn(arn: string) {
     return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
-
   }
 }

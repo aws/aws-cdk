@@ -49,6 +49,6 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
     });
 
     const defaultPortRange = new ec2.TcpPort(SqlServer.PORT);
-    this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
 }

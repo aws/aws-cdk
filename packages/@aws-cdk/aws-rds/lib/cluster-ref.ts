@@ -156,7 +156,7 @@ class ImportedDatabaseCluster extends DatabaseClusterRef {
     this.securityGroupId = props.securityGroupId;
     this.defaultPortRange = new ec2.TcpPortFromAttribute(props.port);
     this.connections = new ec2.Connections({
-      securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', props),
+      securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', props)],
       defaultPortRange: this.defaultPortRange
     });
     this.clusterIdentifier = props.clusterIdentifier;

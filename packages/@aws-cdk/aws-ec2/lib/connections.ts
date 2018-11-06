@@ -36,11 +36,11 @@ export interface ConnectionsProps {
   securityGroupRule?: ISecurityGroupRule;
 
   /**
-   * What securityGroup this object is managing connections for
+   * What securityGroup(s) this object is managing connections for
    *
-   * @default No security
+   * @default No security groups
    */
-  securityGroup?: SecurityGroupRef;
+  securityGroups?: SecurityGroupRef[];
 
   /**
    * Default port range for initiating connections to and from this object
@@ -59,68 +59,102 @@ export interface ConnectionsProps {
  * establishing connectivity between security groups, it will automatically
  * add rules in both security groups
  *
+ * This object can manage one or more security groups.
  */
-export class Connections {
-  /**
-   * Underlying securityGroup for this Connections object, if present
-   *
-   * May be empty if this Connections object is not managing a SecurityGroup,
-   * but simply representing a Connectable peer.
-   */
-  public readonly securityGroup?: SecurityGroupRef;
-
-  /**
-   * The rule that defines how to represent this peer in a security group
-   */
-  public readonly securityGroupRule: ISecurityGroupRule;
+export class Connections implements IConnectable {
+  public readonly connections: Connections;
 
   /**
    * The default port configured for this connection peer, if available
    */
   public readonly defaultPortRange?: IPortRange;
 
-  constructor(props: ConnectionsProps) {
-    if (!props.securityGroupRule && !props.securityGroup) {
-      throw new Error('Connections: require one of securityGroupRule or securityGroup');
+  /**
+   * Underlying securityGroup for this Connections object, if present
+   *
+   * May be empty if this Connections object is not managing a SecurityGroup,
+   * but simply representing a Connectable peer.
+   */
+  private readonly _securityGroups = new ReactiveList<SecurityGroupRef>();
+
+  /**
+   * The rule that defines how to represent this peer in a security group
+   */
+  private readonly _securityGroupRules = new ReactiveList<ISecurityGroupRule>();
+
+  private skip: boolean = false;
+
+  constructor(props: ConnectionsProps = {}) {
+    this.connections = this;
+    this._securityGroups.push(...(props.securityGroups || []));
+
+    this._securityGroupRules.push(...this._securityGroups.asArray());
+    if (props.securityGroupRule) {
+      this._securityGroupRules.push(props.securityGroupRule);
     }
 
-    this.securityGroupRule = props.securityGroupRule || props.securityGroup!;
-    this.securityGroup = props.securityGroup;
     this.defaultPortRange = props.defaultPortRange;
+  }
+
+  public get securityGroups(): SecurityGroupRef[] {
+    return this._securityGroups.asArray();
+  }
+
+  /**
+   * Add a security group to the list of security groups managed by this object
+   */
+  public addSecurityGroup(...securityGroups: SecurityGroupRef[]) {
+    for (const securityGroup of securityGroups) {
+      this._securityGroups.push(securityGroup);
+      this._securityGroupRules.push(securityGroup);
+    }
   }
 
   /**
    * Allow connections to the peer on the given port
    */
   public allowTo(other: IConnectable, portRange: IPortRange, description?: string) {
-    if (this.securityGroup) {
-      this.securityGroup.addEgressRule(other.connections.securityGroupRule, portRange, description);
-    }
-    if (other.connections.securityGroup) {
-      other.connections.securityGroup.addIngressRule(this.securityGroupRule, portRange, description);
+    if (this.skip) { return; }
 
-    }
+    this._securityGroups.forEachAndForever(securityGroup => {
+      other.connections._securityGroupRules.forEachAndForever(rule => {
+        securityGroup.addEgressRule(rule, portRange, description);
+      });
+    });
+
+    this.skip = true;
+    other.connections.allowFrom(this, portRange, description);
+    this.skip = false;
   }
 
   /**
    * Allow connections from the peer on the given port
    */
   public allowFrom(other: IConnectable, portRange: IPortRange, description?: string) {
-    if (this.securityGroup) {
-      this.securityGroup.addIngressRule(other.connections.securityGroupRule, portRange, description);
-    }
-    if (other.connections.securityGroup) {
-      other.connections.securityGroup.addEgressRule(this.securityGroupRule, portRange, description);
-    }
+    if (this.skip) { return; }
+
+    this._securityGroups.forEachAndForever(securityGroup => {
+      other.connections._securityGroupRules.forEachAndForever(rule => {
+        securityGroup.addIngressRule(rule, portRange, description);
+      });
+    });
+
+    this.skip = true;
+    other.connections.allowTo(this, portRange, description);
+    this.skip = false;
   }
 
   /**
    * Allow hosts inside the security group to connect to each other on the given port
    */
   public allowInternally(portRange: IPortRange, description?: string) {
-    if (this.securityGroup) {
-      this.securityGroup.addIngressRule(this.securityGroupRule, portRange, description);
-    }
+    this._securityGroups.forEachAndForever(securityGroup => {
+      this._securityGroupRules.forEachAndForever(rule => {
+        securityGroup.addIngressRule(rule, portRange, description);
+        // FIXME: this seems required but we didn't use to have it. Research.
+        // securityGroup.addEgressRule(rule, portRange, description);
+      });
+    });
   }
 
   /**
@@ -190,5 +224,36 @@ export class Connections {
       throw new Error('Cannot call allowDefaultPortTo(): this resource has no default port');
     }
     this.allowTo(other, this.defaultPortRange, description);
+  }
+}
+
+type Action<T> = (x: T) => void;
+
+class ReactiveList<T> {
+  private readonly elements = new Array<T>();
+  private readonly listeners = new Array<Action<T>>();
+
+  public push(...xs: T[]) {
+    this.elements.push(...xs);
+    for (const listener of this.listeners) {
+      for (const x of xs) {
+        listener(x);
+      }
+    }
+  }
+
+  public forEachAndForever(listener: Action<T>) {
+    for (const element of this.elements) {
+      listener(element);
+    }
+    this.listeners.push(listener);
+  }
+
+  public asArray(): T[] {
+    return this.elements.slice();
+  }
+
+  public get length(): number {
+    return this.elements.length;
   }
 }

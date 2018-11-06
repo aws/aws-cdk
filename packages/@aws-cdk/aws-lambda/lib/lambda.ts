@@ -338,7 +338,7 @@ export class Function extends FunctionRef {
       allowAllOutbound: props.allowAllOutbound
     });
 
-    this._connections = new ec2.Connections({ securityGroup });
+    this._connections = new ec2.Connections({ securityGroups: [securityGroup] });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.

@@ -128,7 +128,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // This listener edits the securitygroup of the load balancer,
     // but adds its own default port.
     this.connections = new ec2.Connections({
-      securityGroup: props.loadBalancer.connections.securityGroup,
+      securityGroups: props.loadBalancer.connections.securityGroups,
       defaultPortRange: new ec2.TcpPort(port),
     });
 
@@ -241,7 +241,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public export(): ApplicationListenerRefProps {
     return {
       listenerArn: new cdk.Output(this, 'ListenerArn', { value: this.listenerArn }).makeImportValue().toString(),
-      securityGroupId: this.connections.securityGroup!.export().securityGroupId,
+      securityGroupId: this.connections.securityGroups[0]!.export().securityGroupId,
       defaultPort: new cdk.Output(this, 'Port', { value: this.defaultPort }).makeImportValue().toString(),
     };
   }
@@ -335,7 +335,7 @@ class ImportedApplicationListener extends cdk.Construct implements IApplicationL
     const defaultPortRange = props.defaultPort !== undefined ? new ec2.TcpPortFromAttribute(props.defaultPort) : undefined;
 
     this.connections = new ec2.Connections({
-      securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId }),
+      securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', { securityGroupId: props.securityGroupId })],
       defaultPortRange,
     });
   }
