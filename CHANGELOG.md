@@ -1,3 +1,10 @@
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/awslabs/aws-cdk/compare/v0.15.0...v0.15.1) (2018-11-06)
+
+### Bug Fixes
+
+* Update peer dependencies to refer to correct version so NPM installs don't fail.
+
 <a name="0.15.0"></a>
 ## [0.15.0](https://github.com/awslabs/aws-cdk/compare/v0.14.1...v0.15.0) (2018-11-06)
 
