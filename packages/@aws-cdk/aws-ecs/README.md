@@ -5,7 +5,7 @@ Service** (ECS). The simplest example of using this library looks like this:
 
 ```ts
 // Create an ECS cluster
-const cluster = new ecs.Ec2Cluster(this, 'Cluster', {
+const cluster = new ecs.EcsCluster(this, 'Cluster', {
   vpc,
 });
 
@@ -28,9 +28,8 @@ const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
 There are two sets of constructs in this library; one to run tasks on ECS and
 one to run Tasks on Fargate.
 
-- Use the `Ec2Cluster` and `Ec2Service` constructs to run tasks on EC2
-  instances running in your account.
-- Use the `FargateCluster` and `FargateService` constructs to run tasks on
+- Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on EC2 instances running in your account.
+- Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
   instances that are managed for you by AWS.
 
 Here are the main differences:
@@ -52,29 +51,29 @@ For more information on EC2 vs Fargate and networking see the AWS Documentation:
 
 ### Clusters
 
-An `Ec2Cluster` or `FargateCluster` defines the infrastructure to run your
+An `EcsCluster` defines the infrastructure to run your
 tasks on. You can run many tasks on a single cluster.
 
-To create a Fargate cluster, backed by machines managed by AWS, go:
+To create a cluster that can run Fargate tasks, go:
 
 ```ts
-const cluster = new ecs.FargateCluster(this, 'Cluster', {
+const cluster = new ecs.EcsCluster(this, 'Cluster', {
   vpc: vpc
 });
 ```
 
-If you create an ECS cluster you also have to create and add machines to it
-to run the tasks scheduled on the cluster. Typically, you will add an
-AutoScalingGroup with instances running the latest ECS-optimized AMI to
-the cluster. There is a method to build and add such an AutoScalingGroup
-automatically, or you can supply a customized AutoScalingGroup that
-you construct yourself. It's possible to add multiple AutoScalingGroups
+If you wish to use tasks with EC2 launch-type, you also have to add capacity to
+your cluster in order for tasks to be scheduled on your instances.  Typically,
+you will add an AutoScalingGroup with instances running the latest
+ECS-optimized AMI to the cluster. There is a method to build and add such an
+AutoScalingGroup automatically, or you can supply a customized AutoScalingGroup
+that you construct yourself. It's possible to add multiple AutoScalingGroups
 with various instance types if you want to.
 
-Creating an EC2 cluster and adding capacity to it looks like this:
+Creating an ECS cluster and adding capacity to it looks like this:
 
 ```ts
-const cluster = new ecs.Ec2Cluster(this, 'Cluster', {
+const cluster = new ecs.EcsCluster(this, 'Cluster', {
   vpc: vpc
 });
 
@@ -97,38 +96,71 @@ cluster.addAutoScalingGroupCapacity(autoScalingGroup);
 ```
 
 ### Task definitions
-
-A `TaskDefinition` describes what a single copy of a **Task** should look like.
+A Task Definition describes what a single copy of a **Task** should look like.
 A task definition has one or more containers; typically, it has one
 main container (the *default container* is the first one that's added
 to the task definition, and it will be marked *essential*) and optionally
 some supporting containers which are used to support the main container,
 doings things like upload logs or metrics to monitoring services.
 
+To run a task or service with EC2 launch type, use the `Ec2TaskDefinition`. For Fargate tasks/services, use the
+`FargateTaskDefinition`. These classes provide a simplified API that only contain
+properties relevant for that specific launch type.
+
+For a `FargateTaskDefinition`, specify the task size (`memoryMiB` and `cpu`):
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryMiB: '512'
+  cpu: 256,
+});
+```
+To add containers to a Task Definition, call `addContainer()`:
+
+```ts
+const container = fargateTaskDefinition.addContainer(this, {
+  // Use an image from DockerHub
+  image: ecs.DockerHub.image('amazon/amazon-ecs-sample')
+  // ... other options here ...
+});
+```
+
+For a `Ec2TaskDefinition`:
+
+```ts
+const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
+  networkMode: bridge
+});
+
+const container = ec2TaskDefinition.addContainer(this, {
+  // Use an image from DockerHub
+  image: ecs.DockerHub.image('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 1024
+  // ... other options here ...
+});
+```
+
+You can specify container properties when you add them to the task definition, or with various methods, e.g.:
+
+```ts
+container.addPortMappings({
+  containerPort: 3000
+})
+```
+
+If you wish to use a TaskDefinition that can be used with either EC2 or Fargate launch types, there is also the `TaskDefinition` construct.
+
 When creating a Task Definition you have to specify what kind of
-clusters you intend to run it on: EC2 clusters, Fargate clusters, or
-both:
+tasks you intend to run: EC2, Fargate, or both:
 
 ```ts
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512'
   cpu: 256,
+  networkMode: 'awsvpc',
   compatibility: ecs.Compatibility.Ec2AndFargate,
 });
 ```
-
-To add containers to a `TaskDefinition`, call `addContainer()`:
-
-```ts
-taskDefinition.addContainer('main', {
-  // Use an image from DockerHub
-  image: ecs.DockerHub.image('amazon/amazon-ecs-sample')
-});
-```
-If you're not trying to construct task definitions that can run on multiple
-cluster types, you can directly instantiate `Ec2TaskDefinition` or
-`FargateTaskDefinition`, classes with a simplified API that only contain
-properties relevant for that specific launch type.
 
 #### Images
 
@@ -206,4 +238,3 @@ EC2 instance group so that your instance count scales with demand.
 - [ ] Instance AutoScaling
 - [ ] Service Discovery Integration
 - [ ] Private registry authentication
-
