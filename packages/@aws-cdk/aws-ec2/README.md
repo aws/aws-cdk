@@ -281,30 +281,7 @@ Depending on the type of AMI, you select it a different way.
 The latest version of Amazon Linux and Microsoft Windows images are
 selectable by instantiating one of these classes:
 
-```ts
-// Pick a Windows edition to use
-const windows = new ec2.WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase);
-
-// Pick the right Amazon Linux edition. All arguments shown are optional
-// and will default to these values when omitted.
-const amznLinux = new ec2.AmazonLinuxImage({
-  generation: ec2.AmazonLinuxGeneration.AmazonLinux,
-  edition: ec2.AmazonLinuxEdition.Standard,
-  virtualization: ec2.AmazonLinuxVirt.HVM,
-  storage: ec2.AmazonLinuxStorage.GeneralPurpose,
-});
-```
-
-For other custom (Linux) images, instantiate a `GenericLinuxImage` with
-a map giving the AMI to in for each region:
-
-```ts
-const linux = new ec2.GenericLinuxImage({
-    'us-east-1': 'ami-97785bed',
-    'eu-west-1': 'ami-12345678',
-    // ...
-});
-```
+[example of creating images](test/example.images.lit.ts)
 
 > NOTE: The Amazon Linux images selected will be cached in your `cdk.json`, so that your
 > AutoScalingGroups don't automatically change out from under you when you're making unrelated
