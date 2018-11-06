@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/cicd",
+  "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
   "version": "0.14.1",
   "main": "lib/index.js",
@@ -9,14 +9,14 @@
       "java": {
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-cicd"
+          "artifactId": "cdk-app-delivery"
         },
-        "package": "software.amazon.awscdk.cicd"
+        "package": "software.amazon.awscdk.appdelivery"
       },
       "sphinx": {},
       "dotnet": {
-        "namespace": "Amazon.CDK.CICD",
-        "packageId": "Amazon.CDK.CICD",
+        "namespace": "Amazon.CDK.AppDelivery",
+        "packageId": "Amazon.CDK.AppDelivery",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       }
