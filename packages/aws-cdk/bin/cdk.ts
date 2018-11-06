@@ -4,9 +4,9 @@ import 'source-map-support/register';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
+import YAML = require('js-yaml');
 import minimatch = require('minimatch');
 import util = require('util');
-import YAML = require('yaml');
 import yargs = require('yargs');
 import cdkUtil = require('../lib/util');
 
@@ -610,7 +610,7 @@ async function initCommandLine() {
     /* Attempt to parse YAML, fall back to JSON. */
     function parseTemplate(text: string): any {
       try {
-        return YAML.parse(text, { schema: 'yaml-1.1' });
+        return YAML.safeLoad(text);
       } catch (e) {
         return JSON.parse(text);
       }
@@ -684,7 +684,7 @@ async function initCommandLine() {
       const indentWidth = 2;
       return JSON.stringify(object, noFiltering, indentWidth);
     } else {
-      return YAML.stringify(object, { schema: 'yaml-1.1' });
+      return YAML.safeDump(object);
     }
   }
 }
