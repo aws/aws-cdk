@@ -92,7 +92,7 @@ export class PipelineExecuteChangeSetAction extends PipelineCloudFormationAction
       ChangeSetName: props.changeSetName,
     });
 
-    SingletonPolicy.forRole(props.stage.pipelineRole)
+    SingletonPolicy.forRole(props.stage.pipeline.role)
                    .grantExecuteChangeSet(props);
   }
 }
@@ -210,7 +210,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
       }
     }
 
-    SingletonPolicy.forRole(props.stage.pipelineRole).grantPassRole(this.role);
+    SingletonPolicy.forRole(props.stage.pipeline.role).grantPassRole(this.role);
   }
 
   /**
@@ -255,7 +255,7 @@ export class PipelineCreateReplaceChangeSetAction extends PipelineCloudFormation
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    SingletonPolicy.forRole(props.stage.pipelineRole).grantCreateReplaceChangeSet(props);
+    SingletonPolicy.forRole(props.stage.pipeline.role).grantCreateReplaceChangeSet(props);
   }
 }
 
@@ -310,7 +310,7 @@ export class PipelineCreateUpdateStackAction extends PipelineCloudFormationDeplo
       this.addInputArtifact(props.templateConfiguration.artifact);
     }
 
-    SingletonPolicy.forRole(props.stage.pipelineRole).grantCreateUpdateStack(props);
+    SingletonPolicy.forRole(props.stage.pipeline.role).grantCreateUpdateStack(props);
   }
 }
 
@@ -332,7 +332,7 @@ export class PipelineDeleteStackAction extends PipelineCloudFormationDeployActio
     super(parent, id, props, {
       ActionMode: 'DELETE_ONLY',
     });
-    SingletonPolicy.forRole(props.stage.pipelineRole).grantDeleteStack(props);
+    SingletonPolicy.forRole(props.stage.pipeline.role).grantDeleteStack(props);
   }
 }
 

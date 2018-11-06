@@ -16,61 +16,71 @@ Applets
 
 .. note:: Currently the |cdk| only supports applets published as JavaScript modules.
 
-Applets are files in the YAML or JSON format that have the following root attribute,
-where MODULE can represent
-a local file, such as :code:`./my-module`,
-a local dependency, such as :code:`my-dependency`,
-or a global module, such as :code:`@aws-cdk/aws-s3`
-and CLASS is the name of a class exported by the module.
+Applets are files in the YAML format that instantiate constructs directly,
+without writing any code. The structure of an applet file looks like this:
+
+.. code:: js
+
+   applets:
+     Applet1:
+       type: MODULE[:CLASS]
+       properties:
+         property1: value1
+         property2: value2
+         ...
+     Applet2:
+       type: MODULE[:CLASS]
+       properties:
+         ...
+
+Every applet will be synthesized to its own stack, named after the key used
+in the applet definition.
+
+Specifying the applet to load
+=============================
+
+An applet ``type`` specification looks like this:
 
 .. code:: js
 
    applet: MODULE[:CLASS]
 
-If CLASS is not specified, :code:`Applet` is used as the default class name.
-Therefore, you need only refer to |cdk| construct libraries that export
-an :code:`Applet` class by their library name.
+**MODULE** can be used to indicate:
 
-The rest of the YAML file is applet-dependent.
-The object is passed as :code:`props` when the applet object is instantiated
-and added to an |cdk| app created by **cdk-applet-js**.
+* A local file, such as ``./my-module`` (expects ``my-module.js`` in the same
+  directory).
+* A local module such as ``my-dependency`` (expects an NPM package at
+  ``node_modules/my-dependency``).
+* A global module, such as ``@aws-cdk/aws-s3`` (expects the package to have been
+  globally installed using NPM).
+* An NPM package, such as ``npm://some-package@1.2.3`` (the version specifier
+  may be omitted to refer to the latest version of the package).
 
-Use **cdk-applet-js** *applet* to run the applet, create an |cdk| app,
-and use that with the |cdk| tools, as shown in the following example.
+**CLASS** should reference the name of a class exported by the indicated module.
+If the class name is omitted, ``Applet`` is used as the default class name.
 
-.. code-block:: sh
+Properties
+==========
 
-   cdk --app "cdk-applet-js ./my-applet.yaml" synth
+Pass properties to the applet by specifying them in the ``properties`` object.
+The properties will be passed to the instantiation of the class in the ``type``
+parameter.
 
-To make the applet file executable and use the host as a shebang
-on Unix-based systems, such as Linux, MacOS, or Windows Bash shell,
-create a script similar to the following.
+Running
+=======
 
-.. code-block:: sh
-
-   #!/usr/bin/env cdk-applet-js
-
-   applet: aws-cdk-codebuild
-   source: arn:aws:codecommit:::my-repository
-   image: node:8.9.4
-   compute: large
-   build:
-      - npm install --unsafe-perm
-      - npm test
-      - npm pack --unsafe-perm
-
-To execute the applet and synthesize an |CFN| template,
-use the following command.
+To run an applet, pass its YAML file directly as the ``--app`` argument to a
+``cdk`` invocation:
 
 .. code-block:: sh
 
-   cdk synth --app "./build.yaml"
+   cdk --app ./my-applet.yaml deploy
 
-To avoid needing **--app** for every invocation,
-add the following entry to *cdk.json*.
+To avoid needing to specify ``--app`` for every invocation, make a ``cdk.json``
+file and add in the application in the config as usual:
 
 .. code-block:: json
 
    {
-      "app": "./build.yaml"
+      "app": "./my-applet.yaml"
    }

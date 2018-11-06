@@ -24,7 +24,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
 
   public abstract readonly securityGroupId: string;
   public readonly canInlineRule = false;
-  public readonly connections = new Connections({ securityGroup: this });
+  public readonly connections = new Connections({ securityGroups: [this] });
 
   /**
    * FIXME: Where to place this??

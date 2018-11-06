@@ -5,3 +5,4 @@
 .nyc_output
 coverage
 .nycrc
+*.snk

@@ -7,6 +7,7 @@ import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
+import { IEventSource } from './event-source';
 import { cloudformation } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
@@ -333,8 +334,8 @@ export abstract class FunctionRef extends cdk.Construct
   public export(): FunctionRefProps {
     return {
       functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroup
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue().toString()
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -377,6 +378,19 @@ export abstract class FunctionRef extends cdk.Construct
     };
   }
 
+  /**
+   * Adds an event source to this function.
+   *
+   * Any type that implements the IEventSource interface can be used here. For
+   * example, you can call this with an SQS queue: `lambda.addEventSource(queue)`.
+   *
+   * @param source The event source
+   * @param options Event source mapping options (e.g. batch size, enabled, etc)
+   */
+  public addEventSource(source: IEventSource) {
+    source.bind(this);
+  }
+
   private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
     if (!principal) {
       return undefined;
@@ -413,9 +427,9 @@ class LambdaRefImport extends FunctionRef {
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({
-        securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
+        securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
           securityGroupId: props.securityGroupId
-        })
+        })]
       });
     }
   }
@@ -435,6 +449,5 @@ class LambdaRefImport extends FunctionRef {
    */
   private extractNameFromArn(arn: string) {
     return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
-
   }
 }

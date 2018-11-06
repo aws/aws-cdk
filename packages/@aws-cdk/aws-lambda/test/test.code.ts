@@ -37,6 +37,35 @@ export = {
       // THEN
       test.throws(() => defineFunction(fileAsset), /Asset must be a \.zip file or a directory/);
       test.done();
+    },
+
+    'only one Asset object gets created even if multiple functions use the same AssetCode'(test: Test) {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'MyStack');
+      const directoryAsset = lambda.Code.asset(path.join(__dirname, 'my-lambda-handler'));
+
+      // WHEN
+      new lambda.Function(stack, 'Func1', {
+        handler: 'foom',
+        runtime: lambda.Runtime.NodeJS810,
+        code: directoryAsset
+      });
+
+      new lambda.Function(stack, 'Func2', {
+        handler: 'foom',
+        runtime: lambda.Runtime.NodeJS810,
+        code: directoryAsset
+      });
+
+      // THEN
+      const synthesized = app.synthesizeStack('MyStack');
+
+      // Func1 has an asset, Func2 does not
+      test.deepEqual(synthesized.metadata['/MyStack/Func1/Code'][0].type, 'aws:cdk:asset');
+      test.deepEqual(synthesized.metadata['/MyStack/Func2/Code'], undefined);
+
+      test.done();
     }
   }
 };

@@ -9,7 +9,7 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
    * Scale out or in based on time
    */
   public scaleOnSchedule(id: string, action: appscaling.ScalingSchedule) {
-    super.scaleOnSchedule(id, action);
+    super.doScaleOnSchedule(id, action);
   }
 
   /**
@@ -24,7 +24,7 @@ export class ScalableTableAttribute extends appscaling.BaseScalableAttribute {
         ? appscaling.PredefinedMetric.DynamoDBWriteCapacityUtilization
         : appscaling.PredefinedMetric.DynamoDBReadCapacityUtilization;
 
-    super.scaleToTrackMetric('Tracking', {
+    super.doScaleToTrackMetric('Tracking', {
       policyName: props.policyName,
       disableScaleIn: props.disableScaleIn,
       scaleInCooldownSec: props.scaleInCooldownSec,
