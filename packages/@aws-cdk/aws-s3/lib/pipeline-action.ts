@@ -59,6 +59,6 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
     });
 
     // pipeline needs permissions to read from the S3 bucket
-    props.bucket.grantRead(props.stage.pipelineRole);
+    props.bucket.grantRead(props.stage.pipeline.role);
   }
 }

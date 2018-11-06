@@ -334,30 +334,31 @@ export = {
     test.done();
   },
 
-  'polling for changes': {
-    'does not poll for changes'(test: Test) {
+  'CodeCommit Action': {
+    'does not poll for changes by default'(test: Test) {
       const stack = new cdk.Stack();
+      const sourceAction = new codecommit.PipelineSourceAction(stack, 'stage', {
+        stage: stageForTesting(stack),
+        outputArtifactName: 'SomeArtifact',
+        repository: repositoryForTesting(stack),
+      });
 
-      const result = new codecommit.PipelineSourceAction(stack, 'stage', {
+      test.equal(sourceAction.configuration.PollForSourceChanges, false);
+
+      test.done();
+    },
+
+    'does not poll for source changes when explicitly set to false'(test: Test) {
+      const stack = new cdk.Stack();
+      const sourceAction = new codecommit.PipelineSourceAction(stack, 'stage', {
         stage: stageForTesting(stack),
         outputArtifactName: 'SomeArtifact',
         repository: repositoryForTesting(stack),
         pollForSourceChanges: false,
       });
-      test.equal(result.configuration.PollForSourceChanges, false);
-      test.done();
-    },
 
-    'polls for changes'(test: Test) {
-      const stack = new cdk.Stack();
+      test.equal(sourceAction.configuration.PollForSourceChanges, false);
 
-      const result = new codecommit.PipelineSourceAction(stack, 'stage', {
-        stage: stageForTesting(stack),
-        outputArtifactName: 'SomeArtifact',
-        repository: repositoryForTesting(stack),
-        pollForSourceChanges: true,
-      });
-      test.equal(result.configuration.PollForSourceChanges, true);
       test.done();
     }
   }

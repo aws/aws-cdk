@@ -1,6 +1,7 @@
 // tslint:disable-next-line:max-line-length
 import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import colors = require('colors');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
@@ -83,11 +84,14 @@ async function prepareFileAsset(
     contentType
   });
 
+  const relativePath = path.relative(process.cwd(), asset.path);
+
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
+  debug(`S3 url for ${relativePath}: ${s3url}`);
   if (changed) {
-    success(` 👑  Asset ${asset.path} (${asset.packaging}) uploaded: ${s3url}`);
+    success(`Updated: ${colors.bold(relativePath)} (${asset.packaging})`);
   } else {
-    debug(` 👑  Asset ${asset.path} (${asset.packaging}) is up-to-date: ${s3url}`);
+    debug(`Up-to-date: ${colors.bold(relativePath)} (${asset.packaging})`);
   }
 
   return [
