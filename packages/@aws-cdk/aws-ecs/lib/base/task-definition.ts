@@ -412,7 +412,7 @@ export enum Compatibility {
 /**
  * An extension for Task Definitions
  *
- * Classes can want to make changes to a TaskDefinition (such as
+ * Classes that want to make changes to a TaskDefinition (such as
  * adding helper containers) can implement this interface, and can
  * then be "added" to a TaskDefinition like so:
  *
