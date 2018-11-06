@@ -252,6 +252,90 @@
         "description": "Set RefKind of AWS::ApiGateway::VpcLink to Id"
       }
     },
+    "AWS::AppStream::DirectoryConfig": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::DirectoryConfig to None"
+      }
+    },
+    "AWS::AppStream::Fleet": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::Fleet to None"
+      }
+    },
+    "AWS::AppStream::ImageBuilder": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::ImageBuilder to None"
+      }
+    },
+    "AWS::AppStream::Stack": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::Stack to None"
+      }
+    },
+    "AWS::AppStream::StackFleetAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::StackFleetAssociation to None"
+      }
+    },
+    "AWS::AppStream::StackUserAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::StackUserAssociation to None"
+      }
+    },
+    "AWS::AppStream::User": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "None"
+          }
+        ],
+        "description": "Set RefKind of AWS::AppStream::User to None"
+      }
+    },
     "AWS::AppSync::ApiKey": {
       "patch": {
         "operations": [
@@ -1860,6 +1944,18 @@
         "description": "Set RefKind of AWS::Elasticsearch::Domain to Name"
       }
     },
+    "AWS::Events::EventBusPolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::Events::EventBusPolicy to Id"
+      }
+    },
     "AWS::Events::Rule": {
       "patch": {
         "operations": [
@@ -3094,6 +3190,18 @@
           }
         ],
         "description": "Set RefKind of AWS::SSM::Document to Name"
+      }
+    },
+    "AWS::SSM::MaintenanceWindow": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::SSM::MaintenanceWindow to Id"
       }
     },
     "AWS::SSM::MaintenanceWindowTask": {
