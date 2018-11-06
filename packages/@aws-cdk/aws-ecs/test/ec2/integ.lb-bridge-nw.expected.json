@@ -305,13 +305,13 @@
         }
       }
     },
-    "Ec2ClusterEE43E89D": {
+    "EcsCluster97242B84": {
       "Type": "AWS::ECS::Cluster"
     },
-    "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E": {
+    "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ-ecs/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+        "GroupDescription": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -323,7 +323,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-ecs-integ-ecs/Ec2Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         "VpcId": {
@@ -331,7 +331,7 @@
         }
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegecsLBSecurityGroup7DA90129808025D51C31": {
+    "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegecsLBSecurityGroup7DA9012980800B834EB8": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -339,7 +339,7 @@
         "FromPort": 8080,
         "GroupId": {
           "Fn::GetAtt": [
-            "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
+            "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
             "GroupId"
           ]
         },
@@ -352,7 +352,7 @@
         "ToPort": 8080
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898": {
+    "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -369,7 +369,7 @@
         }
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD": {
+    "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -393,36 +393,36 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD",
+        "PolicyName": "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
         "Roles": [
           {
-            "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
+            "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
           }
         ]
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471": {
+    "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Roles": [
           {
-            "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
+            "Ref": "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863"
           }
         ]
       }
     },
-    "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A": {
+    "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "ImageId": "ami-1234",
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
-          "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471"
+          "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
         },
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
+              "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
               "GroupId"
             ]
           }
@@ -434,7 +434,7 @@
               [
                 "#!/bin/bash\necho ECS_CLUSTER=",
                 {
-                  "Ref": "Ec2ClusterEE43E89D"
+                  "Ref": "EcsCluster97242B84"
                 },
                 " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
               ]
@@ -443,24 +443,24 @@
         }
       },
       "DependsOn": [
-        "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898",
-        "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD"
+        "EcsClusterDefaultAutoScalingGroupInstanceRole3C026863",
+        "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80"
       ]
     },
-    "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0": {
+    "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "MaxSize": "1",
         "MinSize": "0",
         "DesiredCapacity": "1",
         "LaunchConfigurationName": {
-          "Ref": "Ec2ClusterDefaultAutoScalingGroupLaunchConfig7B2FED3A"
+          "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
         },
         "Tags": [
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-ecs-integ-ecs/Ec2Cluster/DefaultAutoScalingGroup"
+            "Value": "aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup"
           }
         ],
         "VPCZoneIdentifier": [
@@ -550,7 +550,7 @@
           "Ref": "TaskDef54694570"
         },
         "Cluster": {
-          "Ref": "Ec2ClusterEE43E89D"
+          "Ref": "EcsCluster97242B84"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
@@ -618,7 +618,7 @@
         }
       }
     },
-    "LBSecurityGrouptoawsecsintegecsEc2ClusterDefaultAutoScalingGroupInstanceSecurityGroup03E2DA498080B03BF019": {
+    "LBSecurityGrouptoawsecsintegecsEcsClusterDefaultAutoScalingGroupInstanceSecurityGroupE3116410808033398DFA": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
@@ -631,7 +631,7 @@
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
+            "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
             "GroupId"
           ]
         },
