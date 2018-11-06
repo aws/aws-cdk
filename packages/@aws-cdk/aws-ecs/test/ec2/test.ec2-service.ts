@@ -112,6 +112,37 @@ export = {
       test.done();
     },
 
+    "with a TaskDefinition with Bridge network mode": {
+      "it errors if vpcPlacement is specified"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: NetworkMode.Bridge
+        });
+
+        taskDefinition.addContainer("web", {
+          image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+          memoryLimitMiB: 512
+        });
+
+      // THEN
+        test.throws(() => {
+          new ecs.Ec2Service(stack, "Ec2Service", {
+            cluster,
+            taskDefinition,
+            vpcPlacement: {
+              subnetsToUse: ec2.SubnetType.Public
+            }
+          });
+        });
+
+        // THEN
+        test.done();
+      },
+    },
+
     "with a TaskDefinition with AwsVpc network mode": {
       "it creates a security group for the service"(test: Test) {
         // GIVEN
@@ -161,7 +192,33 @@ export = {
         }));
 
         test.done();
-      }
+      },
+
+      "it allows vpcPlacement"(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+        const cluster = new ecs.EcsCluster(stack, 'EcsCluster', { vpc });
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+          networkMode: NetworkMode.AwsVpc
+        });
+
+        taskDefinition.addContainer("web", {
+          image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+          memoryLimitMiB: 512
+        });
+
+        new ecs.Ec2Service(stack, "Ec2Service", {
+          cluster,
+          taskDefinition,
+          vpcPlacement: {
+            subnetsToUse: ec2.SubnetType.Public
+          }
+        });
+
+        // THEN
+        test.done();
+      },
     },
 
     "with distinctInstance placement constraint"(test: Test) {
