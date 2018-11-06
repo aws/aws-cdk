@@ -1,5 +1,5 @@
 import cdk = require("@aws-cdk/cdk");
-import { Action, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
+import { Action, ActionArtifactBounds, ActionCategory, CommonActionConstructProps, CommonActionProps } from "./action";
 import { Artifact } from "./artifact";
 
 /**
@@ -15,6 +15,11 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
    * The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild.
    */
   provider: string;
+
+  /**
+   * The upper and lower bounds on the number of input and output artifacts for this Action.
+   */
+  artifactBounds: ActionArtifactBounds;
 
   /**
    * The source action owner (could be 'AWS', 'ThirdParty' or 'Custom').
@@ -48,7 +53,6 @@ export abstract class BuildAction extends Action {
   constructor(parent: cdk.Construct, name: string, props: BuildActionProps) {
     super(parent, name, {
       category: ActionCategory.Build,
-      artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 0, maxOutputs: 1 },
       ...props,
     });
 
