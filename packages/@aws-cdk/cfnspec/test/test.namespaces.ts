@@ -12,6 +12,7 @@ export = testCase({
 const expectedNamespaces = [
   'AWS::AmazonMQ',
   'AWS::ApiGateway',
+  'AWS::AppStream',
   'AWS::AppSync',
   'AWS::ApplicationAutoScaling',
   'AWS::Athena',
