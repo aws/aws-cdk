@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Cluster } from './cluster';
-import { DockerHub } from './container-image';
+import { DockerHub } from './images/dockerhub';
 import { LoadBalancedFargateService } from './load-balanced-fargate-service';
 
 /**

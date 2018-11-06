@@ -213,14 +213,14 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly memoryLimitSpecified: boolean;
 
   /**
+   * The task definition this container definition is part of
+   */
+  public readonly taskDefinition: TaskDefinition;
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
-
-  /**
-   * The task definition this container definition is part of
-   */
-  private readonly taskDefinition: TaskDefinition;
 
   constructor(parent: cdk.Construct, id: string, taskDefinition: TaskDefinition, private readonly props: ContainerDefinitionProps) {
     super(parent, id);

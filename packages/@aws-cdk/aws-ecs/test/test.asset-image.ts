@@ -31,7 +31,7 @@ export = {
   },
 
   async 'exercise handler create'(test: Test) {
-    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'), {
+    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'images', 'adopt-repository', 'handler'), {
       'aws-sdk': {
         '@noCallThru': true,
         "ECR": ECRWithEmptyPolicy,
@@ -65,7 +65,7 @@ export = {
   },
 
   async 'exercise handler delete'(test: Test) {
-    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'adopt-repository', 'handler'), {
+    const handler = proxyquire(path.resolve(__dirname, '..', 'lib', 'images', 'adopt-repository', 'handler'), {
       'aws-sdk': { '@noCallThru': true, "ECR": ECRWithOwningPolicy }
     });
 

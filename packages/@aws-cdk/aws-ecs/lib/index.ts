@@ -17,7 +17,10 @@ export * from './load-balanced-ecs-service';
 export * from './load-balanced-fargate-service';
 export * from './load-balanced-ecs-service';
 export * from './load-balanced-fargate-service-applet';
-export * from './asset-image';
+
+export * from './images/asset-image';
+export * from './images/dockerhub';
+export * from './images/ecr';
 
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/log-driver';

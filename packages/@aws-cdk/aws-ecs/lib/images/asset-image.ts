@@ -1,12 +1,13 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
+import ecr = require('@aws-cdk/aws-ecr');
 import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { ContainerDefinition } from './container-definition';
-import { IContainerImage } from './container-image';
+import { ContainerDefinition } from '../container-definition';
+import { IContainerImage } from '../container-image';
 
 export interface AssetImageProps {
   /**
@@ -30,9 +31,9 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
   private readonly directory: string;
 
   /**
-   * ARN of the repository
+   * Repository where the image is stored
    */
-  private readonly repositoryArn: string;
+  private repository: ecr.RepositoryRef;
 
   constructor(parent: cdk.Construct, id: string, props: AssetImageProps) {
     super(parent, id);
@@ -66,7 +67,9 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
 
     this.addMetadata(cxapi.ASSET_METADATA, asset);
 
-    this.repositoryArn = repositoryParameter.value.toString();
+    this.repository = ecr.Repository.import(this, 'RepositoryObject', {
+      repositoryArn: repositoryParameter.value.toString(),
+    });
 
     // Require that repository adoption happens first, so we route the
     // input ARN into the Custom Resource and then get the URI which we use to
@@ -74,19 +77,12 @@ export class AssetImage extends cdk.Construct implements IContainerImage {
     //
     // If adoption fails (because the repository might be twice-adopted), we
     // haven't already started using the image.
-    const adopted = new AdoptRepository(this, 'AdoptRepository', { repositoryArn: this.repositoryArn });
+    const adopted = new AdoptRepository(this, 'AdoptRepository', { repositoryArn: this.repository.repositoryArn });
     this.imageName = `${adopted.repositoryUri}:${tagParameter.value}`;
   }
 
   public bind(containerDefinition: ContainerDefinition): void {
-    // This image will be in ECR, so we need appropriate permissions.
-    containerDefinition.addToExecutionPolicy(new iam.PolicyStatement()
-      .addActions("ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage")
-      .addResource(this.repositoryArn));
-
-    containerDefinition.addToExecutionPolicy(new iam.PolicyStatement()
-      .addActions("ecr:GetAuthorizationToken", "logs:CreateLogStream", "logs:PutLogEvents")
-      .addAllResources());
+    this.repository.grantUseImage(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 }
 

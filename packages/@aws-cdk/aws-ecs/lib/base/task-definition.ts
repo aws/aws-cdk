@@ -215,13 +215,11 @@ export class TaskDefinition extends cdk.Construct {
     this.taskRole.addToPolicy(statement);
   }
 
+  /**
+   * Add a policy statement to the Execution Role
+   */
   public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
-    if (!this.executionRole) {
-      this.executionRole = new iam.Role(this, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
-    }
-    this.executionRole.addToPolicy(statement);
+    this.obtainExecutionRole().addToPolicy(statement);
   }
 
   /**
@@ -282,6 +280,18 @@ export class TaskDefinition extends cdk.Construct {
    */
   public addExtension(extension: ITaskDefinitionExtension) {
     extension.extend(this);
+  }
+
+  /**
+   * Create the execution role if it doesn't exist
+   */
+  public obtainExecutionRole(): iam.IRole {
+    if (!this.executionRole) {
+      this.executionRole = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+    }
+    return this.executionRole;
   }
 
   /**

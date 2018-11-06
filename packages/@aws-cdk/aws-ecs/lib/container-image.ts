@@ -1,4 +1,10 @@
+import ecr = require('@aws-cdk/aws-ecr');
+import cdk = require('@aws-cdk/cdk');
+
 import { ContainerDefinition } from './container-definition';
+import { AssetImage, AssetImageProps } from './images/asset-image';
+import { DockerHubImage } from './images/dockerhub';
+import { EcrImage } from './images/ecr';
 
 /**
  * A container image
@@ -16,25 +22,27 @@ export interface IContainerImage {
 }
 
 /**
- * Factory for DockerHub images
+ * Constructs for types of container images
  */
-export class DockerHub {
+export class ContainerImage {
   /**
    * Reference an image on DockerHub
    */
-  public static image(name: string): IContainerImage {
+  public static fromDockerHub(name: string) {
     return new DockerHubImage(name);
   }
-}
 
-/**
- * A DockerHub image
- */
-class DockerHubImage implements IContainerImage {
-  constructor(public readonly imageName: string) {
+  /**
+   * Reference an image in an ECR repository
+   */
+  public static fromEcrRepository(repository: ecr.RepositoryRef, tag: string = 'latest') {
+    return new EcrImage(repository, tag);
   }
 
-  public bind(_containerDefinition: ContainerDefinition): void {
-    // Nothing to do
+  /**
+   * Reference an image that's constructed directly from sources on disk
+   */
+  public static fromAsset(parent: cdk.Construct, id: string, props: AssetImageProps) {
+    return new AssetImage(parent, id, props);
   }
 }
