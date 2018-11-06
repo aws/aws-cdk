@@ -6,10 +6,8 @@ import child_process = require('child_process');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
+import YAML = require('yaml');
 import { isStackConstructor, parseApplet } from '../lib/applet-helpers';
-
-// tslint:disable-next-line:no-var-requires
-const YAML = require('js-yaml');
 
 main().catch(e => {
   // tslint:disable-next-line:no-console
@@ -26,7 +24,7 @@ async function main() {
   }
 
   // read applet(s) properties from the provided file
-  const fileContents = YAML.safeLoad(await fs.readFile(appletFile, { encoding: 'utf-8' }));
+  const fileContents = YAML.parse(await fs.readFile(appletFile, { encoding: 'utf-8' }), { schema: 'yaml-1.1' });
   if (typeof fileContents !== 'object') {
     throw new Error(`${appletFile}: should contain a YAML object`);
   }
