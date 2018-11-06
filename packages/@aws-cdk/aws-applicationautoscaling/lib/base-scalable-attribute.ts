@@ -62,21 +62,21 @@ export abstract class BaseScalableAttribute extends cdk.Construct {
   /**
    * Scale out or in based on time
    */
-  protected scaleOnSchedule(id: string, props: ScalingSchedule) {
+  protected doScaleOnSchedule(id: string, props: ScalingSchedule) {
     this.target.scaleOnSchedule(id, props);
   }
 
   /**
    * Scale out or in based on a metric value
    */
-  protected scaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
+  protected doScaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
     this.target.scaleOnMetric(id, props);
   }
 
   /**
    * Scale out or in in order to keep a metric around a target value
    */
-  protected scaleToTrackMetric(id: string, props: BasicTargetTrackingScalingPolicyProps) {
+  protected doScaleToTrackMetric(id: string, props: BasicTargetTrackingScalingPolicyProps) {
     this.target.scaleToTrackMetric(id, props);
   }
 }

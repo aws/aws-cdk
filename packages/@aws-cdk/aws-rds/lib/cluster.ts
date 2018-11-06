@@ -213,7 +213,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     }
 
     const defaultPortRange = new ec2.TcpPortFromAttribute(this.clusterEndpoint.port);
-    this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
 }
 
