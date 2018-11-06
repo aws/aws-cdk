@@ -1,4 +1,5 @@
-import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+// tslint:disable-next-line:max-line-length
+import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import colors = require('colors');
 import fs = require('fs-extra');
@@ -6,6 +7,7 @@ import os = require('os');
 import path = require('path');
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
+import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
@@ -36,12 +38,15 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo)
       return await prepareZipAsset(asset, toolkitInfo);
     case 'file':
       return await prepareFileAsset(asset, toolkitInfo);
+    case 'container-image':
+      return await prepareContainerAsset(asset, toolkitInfo);
     default:
-      throw new Error(`Unsupported packaging type: ${asset.packaging}`);
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
-async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
   debug('Preparing zip asset from directory:', asset.path);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
@@ -61,7 +66,7 @@ async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitIn
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
-    asset: AssetMetadataEntry,
+    asset: FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
     filePath?: string,
     contentType?: string): Promise<CloudFormation.Parameter[]> {

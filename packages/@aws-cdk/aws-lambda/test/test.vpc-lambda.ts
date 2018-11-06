@@ -46,7 +46,7 @@ export = {
     public 'participates in Connections objects'(test: Test) {
       // GIVEN
       const securityGroup = new ec2.SecurityGroup(this.stack, 'SomeSecurityGroup', { vpc: this.vpc });
-      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
+      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
       this.lambda.connections.allowTo(somethingConnectable, new ec2.TcpAllPorts(), 'Lambda can call connectable');
@@ -78,7 +78,7 @@ export = {
       // GIVEN
       const stack2 = new cdk.Stack();
       const securityGroup = new ec2.SecurityGroup(stack2, 'SomeSecurityGroup', { vpc: this.vpc });
-      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroup }));
+      const somethingConnectable = new SomethingConnectable(new ec2.Connections({ securityGroups: [securityGroup] }));
 
       // WHEN
       const importedLambda = lambda.FunctionRef.import(stack2, 'Lambda', this.lambda.export());
