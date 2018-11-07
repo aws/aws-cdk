@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import YAML = require('js-yaml');
 import uuid = require('uuid');
+import YAML = require('yaml');
 import { prepareAssets } from '../assets';
-import { debug, error } from '../logging';
+import { debug, error, print } from '../logging';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './util/cloudformation';
@@ -61,6 +61,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const changeSetName = `CDK-${executionId}`;
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
+  print(`%s: creating CloudFormation changeset...`, colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
@@ -83,7 +84,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
   await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
   // tslint:disable-next-line:max-line-length
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack.metadata, changeSetDescription.Changes.length).start();
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack, changeSetDescription.Changes.length).start();
   debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
   await waitForStack(cfn, deployName);
   if (monitor) { await monitor.stop(); }
@@ -112,7 +113,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
  * @param toolkitInfo information about the toolkit stack
  */
 async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
-  const templateJson = YAML.safeDump(stack.template, { indent: 4, flowLevel: 16 });
+  const templateJson = YAML.stringify(stack.template, { schema: 'yaml-1.1' });
   if (toolkitInfo) {
     const s3KeyPrefix = `cdk/${stack.name}/`;
     const s3KeySuffix = '.yml';
@@ -153,7 +154,7 @@ export async function destroyStack(options: DestroyStackOptions) {
   if (!await stackExists(cfn, deployName)) {
     return;
   }
-  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName).start();
+  const monitor = options.quiet ? undefined : new StackActivityMonitor(cfn, deployName, options.stack).start();
   await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise().catch(e => { throw e; });
   const destroyedStack = await waitForStack(cfn, deployName, false);
   if (monitor) { await monitor.stop(); }

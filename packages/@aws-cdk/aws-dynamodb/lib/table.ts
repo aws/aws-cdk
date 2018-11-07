@@ -87,6 +87,18 @@ export interface TableProps {
    * @default undefined, TTL is disabled
    */
   ttlAttributeName?: string;
+
+  /**
+   * Partition key attribute definition. This is eventually required, but you
+   * can also use `addPartitionKey` to specify the partition key at a later stage.
+   */
+  partitionKey?: Attribute;
+
+  /**
+   * Table sort key attribute definition. You can also use `addSortKey` to set
+   * this up later.
+   */
+  sortKey?: Attribute;
 }
 
 export interface SecondaryIndexProps {
@@ -158,8 +170,8 @@ export class Table extends Construct {
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
 
-  private tablePartitionKey: Attribute | undefined = undefined;
-  private tableSortKey: Attribute | undefined = undefined;
+  private tablePartitionKey?: Attribute;
+  private tableSortKey?: Attribute;
 
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
@@ -190,6 +202,13 @@ export class Table extends Construct {
 
     this.scalingRole = this.makeScalingRole();
 
+    if (props.partitionKey) {
+      this.addPartitionKey(props.partitionKey);
+    }
+
+    if (props.sortKey) {
+      this.addSortKey(props.sortKey);
+    }
   }
 
   /**

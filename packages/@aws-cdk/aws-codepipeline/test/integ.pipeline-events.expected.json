@@ -238,7 +238,7 @@
         ]
       }
     },
-    "MyPipelineOnSourceStateChange7DC39EE9": {
+    "SourceOnSourceStateChangeEF8EB16D": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
