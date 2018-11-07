@@ -11,7 +11,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 
 // Add capacity to it
 cluster.addDefaultAutoScalingGroupCapacity({
-  instanceType: new InstanceType("t2.xlarge"),
+  instanceType: new ec2.InstanceType("t2.xlarge"),
   instanceCount: 3,
 });
 
