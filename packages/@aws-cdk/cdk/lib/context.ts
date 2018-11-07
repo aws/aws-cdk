@@ -167,8 +167,8 @@ export class SSMParameterProvider {
   /**
    * Return the SSM parameter string with the indicated key
    */
-  public parameterValue(): any {
-    return this.provider.getStringValue('dummy');
+  public parameterValue(defaultValue = 'dummy'): any {
+    return this.provider.getStringValue(defaultValue);
   }
 }
 

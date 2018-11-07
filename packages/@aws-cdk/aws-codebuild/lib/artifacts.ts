@@ -72,7 +72,7 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
     return {
       type: 'S3',
       location: this.props.bucket.bucketName,
-      path: this.props.bucket.path,
+      path: this.props.path,
       namespaceType: this.parseNamespaceType(this.props.includeBuildID),
       name: this.props.name,
       packaging: this.parsePackaging(this.props.packageZip),

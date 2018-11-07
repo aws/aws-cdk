@@ -4,12 +4,11 @@ import 'source-map-support/register';
 import cdk = require('@aws-cdk/cdk');
 import child_process = require('child_process');
 import fs = require('fs-extra');
+import YAML = require('js-yaml');
 import os = require('os');
 import path = require('path');
-import { isStackConstructor, parseApplet } from '../lib/applet-helpers';
 
-// tslint:disable-next-line:no-var-requires
-const YAML = require('js-yaml');
+import { isStackConstructor, parseApplet } from '../lib/applet-helpers';
 
 main().catch(e => {
   // tslint:disable-next-line:no-console

@@ -189,7 +189,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       vpc: props.vpc,
       allowAllOutbound: props.allowAllOutbound !== false
     });
-    this.connections = new ec2.Connections({ securityGroup: this.securityGroup });
+    this.connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
     this.tags = new TagManager(this, {initialTags: props.tags});
     this.tags.setTag(NAME_TAG, this.path, { overwrite: false });

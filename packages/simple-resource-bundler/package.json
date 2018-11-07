@@ -1,6 +1,6 @@
 {
   "name": "simple-resource-bundler",
-  "version": "0.14.1",
+  "version": "0.15.1",
   "description": "Command-line tool to embed resources into JS libraries",
   "main": "bundler.js",
   "types": "bundler.d.ts",
@@ -24,8 +24,8 @@
   "devDependencies": {
     "@types/fs-extra": "^4.0.8",
     "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.14.1",
-    "pkglint": "^0.14.1"
+    "cdk-build-tools": "^0.15.1",
+    "pkglint": "^0.15.1"
   },
   "dependencies": {
     "fs-extra": "^4.0.2",

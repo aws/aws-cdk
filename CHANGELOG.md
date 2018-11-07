@@ -1,3 +1,70 @@
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/awslabs/aws-cdk/compare/v0.15.0...v0.15.1) (2018-11-06)
+
+### Bug Fixes
+
+* Update peer dependencies to refer to correct version so NPM installs don't fail.
+* Switch back to `js-yaml` as `yaml` was emitting unquoted single colons as list elements.
+
+<a name="0.15.0"></a>
+## [0.15.0](https://github.com/awslabs/aws-cdk/compare/v0.14.1...v0.15.0) (2018-11-06)
+
+### Bug Fixes
+
+* **aws-autoscaling:** allow minSize to be set to 0 ([#1015](https://github.com/awslabs/aws-cdk/issues/1015)) ([67f7fa1](https://github.com/awslabs/aws-cdk/commit/67f7fa1))
+* **aws-codebuild:** correctly pass the timeout property to CFN when creating a Project. ([#1071](https://github.com/awslabs/aws-cdk/issues/1071)) ([b1322bb](https://github.com/awslabs/aws-cdk/commit/b1322bb))
+* **aws-codebuild:** correctly set S3 path when using it as artifact. ([#1072](https://github.com/awslabs/aws-cdk/issues/1072)) ([f32cba9](https://github.com/awslabs/aws-cdk/commit/f32cba9))
+* **aws-kms:** add output value when exporting an encryption key ([#1036](https://github.com/awslabs/aws-cdk/issues/1036)) ([cb490be](https://github.com/awslabs/aws-cdk/commit/cb490be))
+* Switch from `js-yaml` to `yaml` ([#1092](https://github.com/awslabs/aws-cdk/issues/1092)) ([0b132b5](https://github.com/awslabs/aws-cdk/commit/0b132b5))
+
+
+### Features
+
+* don't upload the same asset multiple times ([#1011](https://github.com/awslabs/aws-cdk/issues/1011)) ([35937b6](https://github.com/awslabs/aws-cdk/commit/35937b6)), closes [#989](https://github.com/awslabs/aws-cdk/issues/989)
+* **app-delivery:** CI/CD for CDK Stacks ([#1022](https://github.com/awslabs/aws-cdk/issues/1022)) ([f2fe4e9](https://github.com/awslabs/aws-cdk/commit/f2fe4e9))
+* add a new construct library for ECS ([#1058](https://github.com/awslabs/aws-cdk/issues/1058)) ([ae03ddb](https://github.com/awslabs/aws-cdk/commit/ae03ddb))
+* **applets:** integrate into toolkit ([#1039](https://github.com/awslabs/aws-cdk/issues/1039)) ([fdabe95](https://github.com/awslabs/aws-cdk/commit/fdabe95)), closes [#849](https://github.com/awslabs/aws-cdk/issues/849) [#342](https://github.com/awslabs/aws-cdk/issues/342) [#291](https://github.com/awslabs/aws-cdk/issues/291)
+* **aws-codecommit:** use CloudWatch Events instead of polling by default in the CodePipeline Action. ([#1026](https://github.com/awslabs/aws-cdk/issues/1026)) ([d09d30c](https://github.com/awslabs/aws-cdk/commit/d09d30c))
+* **aws-dynamodb:** allow specifying partition/sort keys in props ([#1054](https://github.com/awslabs/aws-cdk/issues/1054)) ([ec87331](https://github.com/awslabs/aws-cdk/commit/ec87331)), closes [#1051](https://github.com/awslabs/aws-cdk/issues/1051)
+* **aws-ec2:** AmazonLinuxImage supports AL2 ([#1081](https://github.com/awslabs/aws-cdk/issues/1081)) ([97b57a5](https://github.com/awslabs/aws-cdk/commit/97b57a5)), closes [#1062](https://github.com/awslabs/aws-cdk/issues/1062)
+* **aws-lambda:** high level API for event sources ([#1063](https://github.com/awslabs/aws-cdk/issues/1063)) ([1be3442](https://github.com/awslabs/aws-cdk/commit/1be3442))
+* **aws-sqs:** improvements to IAM grants API ([#1052](https://github.com/awslabs/aws-cdk/issues/1052)) ([6f2475e](https://github.com/awslabs/aws-cdk/commit/6f2475e))
+* **codepipeline/cfn:** Use fewer statements for pipeline permissions ([#1009](https://github.com/awslabs/aws-cdk/issues/1009)) ([8f4c2ab](https://github.com/awslabs/aws-cdk/commit/8f4c2ab))
+* **pkglint:** Make sure .snk files are ignored ([#1049](https://github.com/awslabs/aws-cdk/issues/1049)) ([53c8d76](https://github.com/awslabs/aws-cdk/commit/53c8d76)), closes [#643](https://github.com/awslabs/aws-cdk/issues/643)
+* **toolkit:** deployment ui improvements ([#1067](https://github.com/awslabs/aws-cdk/issues/1067)) ([c832eaf](https://github.com/awslabs/aws-cdk/commit/c832eaf))
+* Update to CloudFormation resource specification v2.11.0
+
+
+### BREAKING CHANGES
+
+* The ec2.Connections object has been changed to be able to manage multiple
+  security groups. The relevant property has been changed from `securityGroup`
+  to `securityGroups` (an array of security group objects).
+* **aws-codecommit:** this modifies the default behavior of the CodeCommit
+  Action.  It also changes the internal API contract between the
+  aws-codepipeline-api module and the CodePipeline Actions in the service
+  packages.
+* **applets:** The applet schema has changed to allow Multiple applets can be
+  define in one file by structuring the files like this:
+* **applets:** The applet schema has changed to allow definition of multiple
+  applets in the same file.
+
+The schema now looks like this:
+
+    applets:
+      MyApplet:
+        type: ./my-applet-file
+        properties:
+          property1: value
+          ...
+By starting an applet specifier with npm://, applet modules can directly be
+referenced in NPM. You can include a version specifier (@1.2.3) to reference
+specific versions.
+* **aws-sqs:** `queue.grantReceiveMessages` has been removed. It is unlikely
+  that this would be sufficient to interact with a queue. Alternatively you can
+  use `queue.grantConsumeMessages` or `queue.grant('sqs:ReceiveMessage')` if
+  there's a need to only grant this action.
+
 <a name="0.14.1"></a>
 ## [0.14.1](https://github.com/awslabs/aws-cdk/compare/v0.14.0...v0.14.1) (2018-10-26)
 

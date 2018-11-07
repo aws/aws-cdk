@@ -523,6 +523,7 @@ export class Project extends ProjectRef {
       badgeEnabled: props.badge,
       cache,
       name: props.projectName,
+      timeoutInMinutes: props.timeout,
     });
 
     this.projectArn = resource.projectArn;

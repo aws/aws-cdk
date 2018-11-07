@@ -684,9 +684,7 @@ async function initCommandLine() {
       const indentWidth = 2;
       return JSON.stringify(object, noFiltering, indentWidth);
     } else {
-      const inlineJsonAfterDepth = 16;
-      const indentWidth = 4;
-      return YAML.safeDump(object, { indent: indentWidth, flowLevel: inlineJsonAfterDepth });
+      return YAML.safeDump(object);
     }
   }
 }

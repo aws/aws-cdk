@@ -334,8 +334,8 @@ export abstract class FunctionRef extends cdk.Construct
   public export(): FunctionRefProps {
     return {
       functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroup
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue().toString()
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -381,11 +381,14 @@ export abstract class FunctionRef extends cdk.Construct
   /**
    * Adds an event source to this function.
    *
-   * Any type that implements the IEventSource interface can be used here. For
-   * example, you can call this with an SQS queue: `lambda.addEventSource(queue)`.
+   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
    *
-   * @param source The event source
-   * @param options Event source mapping options (e.g. batch size, enabled, etc)
+   * The following example adds an SQS Queue as an event source:
+   *
+   *     import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   *     myFunction.addEventSource(new SqsEventSource(myQueue));
+   *
+   * @param source The event source to bind to this function
    */
   public addEventSource(source: IEventSource) {
     source.bind(this);
@@ -427,9 +430,9 @@ class LambdaRefImport extends FunctionRef {
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({
-        securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
+        securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
           securityGroupId: props.securityGroupId
-        })
+        })]
       });
     }
   }
@@ -449,6 +452,5 @@ class LambdaRefImport extends FunctionRef {
    */
   private extractNameFromArn(arn: string) {
     return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
-
   }
 }
