@@ -381,11 +381,14 @@ export abstract class FunctionRef extends cdk.Construct
   /**
    * Adds an event source to this function.
    *
-   * Any type that implements the IEventSource interface can be used here. For
-   * example, you can call this with an SQS queue: `lambda.addEventSource(queue)`.
+   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
    *
-   * @param source The event source
-   * @param options Event source mapping options (e.g. batch size, enabled, etc)
+   * The following example adds an SQS Queue as an event source:
+   *
+   *     import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   *     myFunction.addEventSource(new SqsEventSource(myQueue));
+   *
+   * @param source The event source to bind to this function
    */
   public addEventSource(source: IEventSource) {
     source.bind(this);
