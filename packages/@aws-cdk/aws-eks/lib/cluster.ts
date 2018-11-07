@@ -197,7 +197,7 @@ export class Cluster extends ClusterRef {
     this.securityGroup = this.addSecurityGroup();
     this.securityGroupId = this.securityGroup.securityGroupId;
     this.connections = new ec2.Connections({
-      securityGroup: this.securityGroup,
+      securityGroups: [this.securityGroup],
     });
 
     const clusterProps: cloudformation.ClusterResourceProps = {
