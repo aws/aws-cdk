@@ -168,7 +168,7 @@ given an :py:class:`s3.Bucket <@aws-cdk/s3.Bucket>` construct:
 
    // we use our knowledge that the main construct is called "Resource" and
    // that it's actual type is s3.cloudformation.BucketResource; const
-   const bucketResource = bucket.findResource('Resource') as s3.cloudformation.BucketResource;
+   const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
 
 At this point, ``bucketResource`` represents the low-level CloudFormation resource of type
 :py:class:`s3.cloudformation.BucketResource <@aws-cdk/aws-s3.cloudformation.BucketResource>`
