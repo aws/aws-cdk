@@ -1,3 +1,17 @@
+<a name="0.15.2"></a>
+## [0.15.2](https://github.com/awslabs/aws-cdk/compare/v0.15.1...v0.15.2) (2018-11-08)
+
+
+### Bug Fixes
+
+* correctly emit quoted YAML for account numbers ([#1105](https://github.com/awslabs/aws-cdk/issues/1105)) ([b4d9155](https://github.com/awslabs/aws-cdk/commit/b4d9155)), closes [#1100](https://github.com/awslabs/aws-cdk/issues/1100) [#1098](https://github.com/awslabs/aws-cdk/issues/1098)
+* **aws-ecs:** fix use of published NPM package with TypeScript ([#1117](https://github.com/awslabs/aws-cdk/issues/1117)) ([ebfb522](https://github.com/awslabs/aws-cdk/commit/ebfb522))
+
+
+### Features
+
+* **aws-ecs:** Add desired count to LoadBalanced[Fargate|EC2]Service ([#1111](https://github.com/awslabs/aws-cdk/issues/1111)) ([cafcc11](https://github.com/awslabs/aws-cdk/commit/cafcc11))
+
 <a name="0.15.1"></a>
 ## [0.15.1](https://github.com/awslabs/aws-cdk/compare/v0.15.0...v0.15.1) (2018-11-06)
 
