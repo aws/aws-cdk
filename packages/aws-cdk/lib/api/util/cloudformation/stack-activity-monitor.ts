@@ -65,9 +65,14 @@ export class StackActivityMonitor {
    */
   private readPromise?: Promise<AWS.CloudFormation.StackEvent[]>;
 
+  /**
+   * The with of the "resource type" column.
+   */
+  private readonly resourceTypeColumnWidth: number;
+
   constructor(private readonly cfn: aws.CloudFormation,
               private readonly stackName: string,
-              private readonly metadata?: cxapi.StackMetadata,
+              private readonly stack: cxapi.SynthesizedStack,
               private readonly resourcesTotal?: number) {
 
     if (this.resourcesTotal != null) {
@@ -78,6 +83,8 @@ export class StackActivityMonitor {
       // How many digits does this number take to represent?
       this.resourceDigits = Math.ceil(Math.log10(this.resourcesTotal));
     }
+
+    this.resourceTypeColumnWidth = calcMaxResourceTypeLength(this.stack.template);
   }
 
   public start() {
@@ -164,20 +171,33 @@ export class StackActivityMonitor {
     const e = activity.event;
     const color = this.colorFromStatus(e.ResourceStatus);
     const md = this.findMetadataFor(e.LogicalResourceId);
+    let reasonColor = colors.cyan;
 
-    let suffix = '';
+    let stackTrace = '';
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      suffix = `\n${md.entry.data} was created at: ${md.path}\n\t${md.entry.trace.join('\n\t\\_ ')}`;
+      stackTrace = `\n\t${md.entry.trace.join('\n\t\\_ ')}`;
+      reasonColor = colors.red;
     }
 
-    process.stderr.write(util.format(color(`%s %s  %s  [%s] %s %s%s\n`),
+    let resourceName = md ? md.path.replace(/\/Resource$/, '') : (e.LogicalResourceId || '');
+    resourceName = resourceName.replace(/^\//, ''); // remove "/" prefix
+
+    // remove "<stack-name>/" prefix
+    if (resourceName.startsWith(this.stackName + '/')) {
+      resourceName = resourceName.substr(this.stackName.length + 1);
+    }
+
+    const logicalId = resourceName !== e.LogicalResourceId ? `(${e.LogicalResourceId}) ` : '';
+
+    process.stderr.write(util.format(` %s | %s | %s | %s | %s %s%s%s\n`,
           this.progress(),
-          e.Timestamp,
-          padRight(18, "" + e.ResourceStatus),
-          e.ResourceType,
-          e.LogicalResourceId,
-          e.ResourceStatusReason ? e.ResourceStatusReason : '',
-          suffix));
+          new Date(e.Timestamp).toLocaleTimeString(),
+          color(padRight(20, (e.ResourceStatus || '').substr(0, 20))), // pad left and trim
+          padRight(this.resourceTypeColumnWidth, e.ResourceType || ''),
+          color(colors.bold(resourceName)),
+          logicalId,
+          reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+          reasonColor(stackTrace)));
 
     this.lastPrintTime = Date.now();
   }
@@ -188,10 +208,10 @@ export class StackActivityMonitor {
   private progress(): string {
     if (this.resourcesTotal == null) {
       // Don't have total, show simple count and hope the human knows
-      return util.format('[%s]', this.resourcesDone);
+      return padLeft(3, util.format('%s', this.resourcesDone)); // max 200 resources
     }
 
-    return util.format('[%s/%s]',
+    return util.format('%s/%s',
         padLeft(this.resourceDigits, this.resourcesDone.toString()),
         padLeft(this.resourceDigits, this.resourcesTotal != null ? this.resourcesTotal.toString() : '?'));
   }
@@ -204,9 +224,11 @@ export class StackActivityMonitor {
       return;
     }
 
-    process.stderr.write(util.format(colors.blue('%s Currently in progress: %s\n'),
-      this.progress(),
-      Array.from(this.resourcesInProgress).join(', ')));
+    if (this.resourcesInProgress.size > 0) {
+      process.stderr.write(util.format('%s Currently in progress: %s\n',
+        this.progress(),
+        colors.bold(Array.from(this.resourcesInProgress).join(', '))));
+    }
 
     // We cheat a bit here. To prevent printInProgress() from repeatedly triggering,
     // we set the timestamp into the future. It will be reset whenever a regular print
@@ -215,9 +237,10 @@ export class StackActivityMonitor {
   }
 
   private findMetadataFor(logicalId: string | undefined): { entry: cxapi.MetadataEntry, path: string } | undefined {
-    if (!logicalId || !this.metadata) { return undefined; }
-    for (const path of Object.keys(this.metadata)) {
-      const entry = this.metadata[path].filter(e => e.type === 'aws:cdk:logicalId')
+    const metadata = this.stack.metadata;
+    if (!logicalId || !metadata) { return undefined; }
+    for (const path of Object.keys(metadata)) {
+      const entry = metadata[path].filter(e => e.type === 'aws:cdk:logicalId')
                       .find(e => e.data === logicalId);
       if (entry) { return { entry, path }; }
     }
@@ -283,4 +306,16 @@ function padRight(n: number, x: string): string {
  */
 function padLeft(n: number, x: string): string {
   return ' '.repeat(Math.max(0, n - x.length)) + x;
+}
+
+function calcMaxResourceTypeLength(template: any) {
+  const resources = (template && template.Resources) || {};
+  let maxWidth = 0;
+  for (const id of Object.keys(resources)) {
+    const type = resources[id].Type || '';
+    if (type.length > maxWidth) {
+      maxWidth = type.length;
+    }
+  }
+  return maxWidth;
 }

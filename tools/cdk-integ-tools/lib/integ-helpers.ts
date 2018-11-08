@@ -5,6 +5,9 @@ import fs = require('fs');
 import path = require('path');
 import util = require('util');
 
+const stat = util.promisify(fs.stat);
+const readdir = util.promisify(fs.readdir);
+
 export class IntegrationTests {
   constructor(private readonly directory: string) {
   }
@@ -18,13 +21,32 @@ export class IntegrationTests {
   }
 
   public async discover(): Promise<IntegrationTest[]> {
-    const files = await util.promisify(fs.readdir)(this.directory);
-    const integs = files.filter(fileName => fileName.startsWith('integ.') && fileName.endsWith('.js'));
+    const files = await this.readTree();
+    const integs = files.filter(fileName => path.basename(fileName).startsWith('integ.') && path.basename(fileName).endsWith('.js'));
     return await this.request(integs);
   }
 
   public async request(files: string[]): Promise<IntegrationTest[]> {
     return files.map(fileName => new IntegrationTest(this.directory, fileName));
+  }
+
+  private async readTree(): Promise<string[]> {
+    const ret = new Array<string>();
+
+    const rootDir = this.directory;
+
+    async function recurse(dir: string) {
+      const files = await readdir(dir);
+      for (const file of files) {
+        const fullPath = path.join(dir, file);
+        const statf = await stat(fullPath);
+        if (statf.isFile()) { ret.push(fullPath.substr(rootDir.length + 1)); }
+        if (statf.isDirectory()) { await recurse(path.join(fullPath)); }
+      }
+    }
+
+    await recurse(this.directory);
+    return ret;
   }
 }
 
@@ -34,7 +56,8 @@ export class IntegrationTest {
   private readonly cdkConfigPath: string;
 
   constructor(private readonly directory: string, public readonly name: string) {
-    this.expectedFileName = path.basename(this.name, '.js') + '.expected.json';
+    const baseName = this.name.endsWith('.js') ? this.name.substr(0, this.name.length - 3) : this.name;
+    this.expectedFileName = baseName + '.expected.json';
     this.expectedFilePath = path.join(this.directory, this.expectedFileName);
     this.cdkConfigPath = path.join(this.directory, 'cdk.json');
   }
@@ -90,6 +113,8 @@ export const STATIC_TEST_CONTEXT = {
   [DEFAULT_REGION_CONTEXT_KEY]: "test-region",
   "availability-zones:account=12345678:region=test-region": [ "test-region-1a", "test-region-1b", "test-region-1c" ],
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
+  "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
+  "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
 };
 
 /**

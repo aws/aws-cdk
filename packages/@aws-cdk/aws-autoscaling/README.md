@@ -23,32 +23,24 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 > internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
 > your instances to be able to start arbitrary connections.
 
-### AMIs
+### Machine Images (AMIs)
 
-AMIs control the OS that gets launched when you start your instance.
+AMIs control the OS that gets launched when you start your EC2 instance. The EC2
+library contains constructs to select the AMI you want to use.
 
 Depending on the type of AMI, you select it a different way.
 
-The latest version of Windows images are regionally published under labels,
-so you can select Windows images like this:
+The latest version of Amazon Linux and Microsoft Windows images are
+selectable by instantiating one of these classes:
 
-    new ec2.WindowsImage(WindowsVersion.WindowsServer2016EnglishNanoBase)
+[example of creating images](test/example.images.lit.ts)
 
-You can select the latest Amazon Linux image like this:
-
-    new ec2.AmazonLinuxImage()
-
-Other Linux images are unfortunately not currently published this way, so you have
-to supply a region-to-AMI map when creating a Linux image:
-
-    machineImage: new ec2.GenericLinuxImage({
-        'us-east-1': 'ami-97785bed',
-        'eu-west-1': 'ami-12345678',
-        // ...
-    })
-
-> NOTE: Selecting Linux images will change when the information is published in an automatically
-> consumable way.
+> NOTE: The Amazon Linux images selected will be cached in your `cdk.json`, so that your
+> AutoScalingGroups don't automatically change out from under you when you're making unrelated
+> changes. To update to the latest version of Amazon Linux, remove the cache entry from the `context`
+> section of your `cdk.json`.
+>
+> We will add command-line options to make this step easier in the future.
 
 ### Allowing Connections
 

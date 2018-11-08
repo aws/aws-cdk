@@ -30,6 +30,7 @@ export = {
     stage: sourceStage,
     outputArtifactName: 'SourceArtifact',
     repository: repo,
+    pollForSourceChanges: true,
   });
 
   /** Build! */

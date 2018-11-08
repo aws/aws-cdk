@@ -1,2 +1,4 @@
 # malformed applet specification
-applet: invalid:number:of:components:in:applet:name
+applets:
+  Applet:
+    type: invalid:number:of:components:in:applet:name
