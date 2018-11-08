@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import aws = require('aws-sdk');
 import colors = require('colors/safe');
-import YAML = require('js-yaml');
 import uuid = require('uuid');
 import { prepareAssets } from '../assets';
 import { debug, error, print } from '../logging';
+import { toYAML } from '../serialize';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
 import { describeStack, stackExists, stackFailedCreating, waitForChangeSet, waitForStack } from './util/cloudformation';
@@ -113,7 +113,7 @@ async function getStackOutputs(cfn: aws.CloudFormation, stackName: string): Prom
  * @param toolkitInfo information about the toolkit stack
  */
 async function makeBodyParameter(stack: cxapi.SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
-  const templateJson = YAML.safeDump(stack.template, { indent: 4, flowLevel: 16 });
+  const templateJson = toYAML(stack.template);
   if (toolkitInfo) {
     const s3KeyPrefix = `cdk/${stack.name}/`;
     const s3KeySuffix = '.yml';
