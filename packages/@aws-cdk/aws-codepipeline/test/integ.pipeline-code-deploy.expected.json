@@ -175,10 +175,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":application:",
-                    {
-                      "Ref": "CodeDeployApplicationE587C27C"
-                    }
+                    ":application:IntegTestDeployApp"
                   ]
                 ]
               }
@@ -205,14 +202,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":deploymentgroup:",
-                    {
-                      "Ref": "CodeDeployApplicationE587C27C"
-                    },
-                    "/",
-                    {
-                      "Ref": "CodeDeployGroup58220FC8"
-                    }
+                    ":deploymentgroup:IntegTestDeployApp/IntegTestDeploymentGroup"
                   ]
                 ]
               }
@@ -236,10 +226,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":deploymentconfig:",
-                    {
-                      "Ref": "CustomDeployConfig52EEBC13"
-                    }
+                    ":deploymentconfig:*"
                   ]
                 ]
               }
@@ -309,12 +296,8 @@
                   "Version": "1"
                 },
                 "Configuration": {
-                  "ApplicationName": {
-                    "Ref": "CodeDeployApplicationE587C27C"
-                  },
-                  "DeploymentGroupName": {
-                    "Ref": "CodeDeployGroup58220FC8"
-                  }
+                  "ApplicationName": "IntegTestDeployApp",
+                  "DeploymentGroupName": "IntegTestDeploymentGroup"
                 },
                 "InputArtifacts": [
                   {
