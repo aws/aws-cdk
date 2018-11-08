@@ -47,6 +47,9 @@ export class FargateTaskDefinition extends TaskDefinition {
    * The configured network mode
    */
   public readonly networkMode: NetworkMode = NetworkMode.AwsVpc;
+  // NOTE: Until the fix to https://github.com/Microsoft/TypeScript/issues/26969 gets released,
+  // we need to explicitly write the type here, as type deduction for enums won't lead to
+  // the import being generated in the .d.ts file.
 
   constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
     super(parent, name, {
