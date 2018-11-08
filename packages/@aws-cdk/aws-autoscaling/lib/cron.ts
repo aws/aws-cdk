@@ -13,7 +13,7 @@ export class Cron {
    */
   public static dailyUtc(hour: number, minute?: number) {
     minute = minute || 0;
-    // 3rd and 5th expression are mutually exclusive, one of them should be ?
-    return `${minute} ${hour} * * ?`;
+    // In this cron flavor, 3rd and 5th expression can both be *
+    return `${minute} ${hour} * * *`;
   }
 }

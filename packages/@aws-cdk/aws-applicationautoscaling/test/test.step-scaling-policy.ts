@@ -1,9 +1,10 @@
+import { arbitrary_input_intervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import fc = require('fast-check');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
-import { arbitrary_input_intervals, createScalableTarget } from './util';
+import { createScalableTarget } from './util';
 
 export = {
   'alarm thresholds are valid numbers'(test: Test) {

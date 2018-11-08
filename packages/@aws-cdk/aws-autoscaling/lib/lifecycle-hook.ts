@@ -1,3 +1,4 @@
+import api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
@@ -31,7 +32,7 @@ export interface BasicLifecycleHookProps {
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
    */
-  lifecycleTransition: Transition;
+  lifecycleTransition: LifecycleTransition;
 
   /**
    * Additional data to pass to the lifecycle hook target
@@ -43,7 +44,7 @@ export interface BasicLifecycleHookProps {
   /**
    * The target of the lifecycle hook
    */
-  notificationTarget?: ILifecycleHookTarget;
+  notificationTarget: api.ILifecycleHookTarget;
 
   /**
    * The role that allows publishing to the notification target
@@ -63,7 +64,7 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   autoScalingGroup: IAutoScalingGroup;
 }
 
-export class LifecycleHook extends cdk.Construct {
+export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
   /**
    * The role that allows the ASG to publish to the notification target
    */
@@ -81,7 +82,7 @@ export class LifecycleHook extends cdk.Construct {
       assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com')
     });
 
-    const targetProps = props.notificationTarget && props.notificationTarget.asLifecycleHookTarget(this);
+    const targetProps = props.notificationTarget.asLifecycleHookTarget(this);
 
     const resource = new cloudformation.LifecycleHookResource(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
@@ -90,7 +91,7 @@ export class LifecycleHook extends cdk.Construct {
       lifecycleHookName: props.lifecycleHookName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,
-      notificationTargetArn: targetProps && targetProps.notificationTargetArn,
+      notificationTargetArn: targetProps.notificationTargetArn,
       roleArn: this.role.roleArn,
     });
 
@@ -106,7 +107,7 @@ export enum DefaultResult {
 /**
  * What instance transition to attach the hook to
  */
-export enum Transition {
+export enum LifecycleTransition {
   /**
    * Execute the hook when an instance is about to be added
    */
@@ -116,24 +117,4 @@ export enum Transition {
    * Execute the hook when an instance is about to be terminated
    */
   InstanceTerminating = 'autoscaling:EC2_INSTANCE_TERMINATING',
-}
-
-/**
- * Interface for autoscaling lifecycle hook targets
- */
-export interface ILifecycleHookTarget {
-  /**
-   * Called when this object is used as the target of a lifecycle hook
-   */
-  asLifecycleHookTarget(lifecycleHook: LifecycleHook): LifecycleHookTargetProps;
-}
-
-/**
- * Properties to add the target to a lifecycle hook
- */
-export interface LifecycleHookTargetProps {
-  /**
-   * The ARN to use as the notification target
-   */
-  notificationTargetArn: string;
 }

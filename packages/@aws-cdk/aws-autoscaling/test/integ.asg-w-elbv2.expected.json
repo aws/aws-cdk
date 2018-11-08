@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC"
+            "Value": "aws-cdk-asg-integ/VPC"
           }
         ]
       }
@@ -27,7 +27,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -41,7 +41,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
           }
         ]
       }
@@ -54,6 +54,18 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        }
+      }
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
         }
       }
     },
@@ -78,21 +90,9 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet1DefaultRoute91CEF279": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPublicSubnet2Subnet74179F39": {
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -121,7 +121,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
           }
         ]
       }
@@ -134,6 +134,18 @@
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet2Subnet74179F39"
+        }
+      }
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
         }
       }
     },
@@ -158,21 +170,9 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PublicSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
           }
         ]
-      }
-    },
-    "VPCPublicSubnet2DefaultRouteB7481BBA": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VPCIGWB7E252D3"
-        }
       }
     },
     "VPCPrivateSubnet1Subnet8BCA10E0": {
@@ -187,7 +187,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -201,7 +201,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet1"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
           }
         ]
       }
@@ -241,7 +241,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -255,7 +255,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC/PrivateSubnet2"
+            "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
           }
         ]
       }
@@ -289,7 +289,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/VPC"
+            "Value": "aws-cdk-asg-integ/VPC"
           }
         ]
       }
@@ -308,7 +308,7 @@
     "FleetInstanceSecurityGroupA8C3D7AD": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-cdk-ec2-integ/Fleet/InstanceSecurityGroup",
+        "GroupDescription": "aws-cdk-asg-integ/Fleet/InstanceSecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -320,7 +320,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-cdk-ec2-integ/Fleet"
+            "Value": "aws-cdk-asg-integ/Fleet"
           }
         ],
         "VpcId": {
@@ -328,7 +328,7 @@
         }
       }
     },
-    "FleetInstanceSecurityGroupfromawscdkec2integLBSecurityGroupDEF4F99A8025E910CB": {
+    "FleetInstanceSecurityGroupfromawscdkasgintegLBSecurityGroup33FBF9CC8076F0C574": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
@@ -413,7 +413,7 @@
           {
             "Key": "Name",
             "PropagateAtLaunch": true,
-            "Value": "aws-cdk-ec2-integ/Fleet"
+            "Value": "aws-cdk-asg-integ/Fleet"
           }
         ],
         "TargetGroupARNs": [
@@ -435,6 +435,82 @@
           "IgnoreUnmodifiedGroupSizeProperties": true
         }
       }
+    },
+    "FleetScalingPolicyAModestLoad92829613": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "AutoScalingGroupName": {
+          "Ref": "FleetASG3971DFE5"
+        },
+        "PolicyType": "TargetTrackingScaling",
+        "TargetTrackingConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "ALBRequestCountPerTarget",
+            "ResourceLabel": {
+              "Fn::Join": [
+                "",
+                [
+                  "app/",
+                  {
+                    "Fn::Select": [
+                      2,
+                      {
+                        "Fn::Split": [
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::GetAtt": [
+                                  "LBListenerTargetGroupF04FCF6D",
+                                  "LoadBalancerArns"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "/",
+                  {
+                    "Fn::Select": [
+                      3,
+                      {
+                        "Fn::Split": [
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::GetAtt": [
+                                  "LBListenerTargetGroupF04FCF6D",
+                                  "LoadBalancerArns"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "/",
+                  {
+                    "Fn::GetAtt": [
+                      "LBListenerTargetGroupF04FCF6D",
+                      "TargetGroupFullName"
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "TargetValue": 1
+        }
+      },
+      "DependsOn": [
+        "LBListener49E825B4"
+      ]
     },
     "LB8A12904C": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -463,7 +539,7 @@
     "LBSecurityGroup8A41EA2B": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awscdkec2integLB366431B5",
+        "GroupDescription": "Automatically created Security Group for ELB awscdkasgintegLB91115691",
         "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
@@ -479,7 +555,7 @@
         }
       }
     },
-    "LBSecurityGrouptoawscdkec2integFleetInstanceSecurityGroupB03BE84D80B371C596": {
+    "LBSecurityGrouptoawscdkasgintegFleetInstanceSecurityGroup3CA66C0C808D3B5C07": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
@@ -524,12 +600,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
-        "TargetType": "instance",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
         },
         "TargetGroupAttributes": [],
-        "Targets": []
+        "Targets": [],
+        "TargetType": "instance"
       }
     }
   }

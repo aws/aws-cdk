@@ -1,28 +1,10 @@
 {
-  "name": "@aws-cdk/aws-sqs",
+  "name": "@aws-cdk/aws-autoscaling-common",
+  "private": true,
   "version": "0.15.1",
-  "description": "CDK Constructs for AWS SQS",
+  "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "jsii": {
-    "outdir": "dist",
-    "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.services.sqs",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "sqs"
-        }
-      },
-      "dotnet": {
-        "namespace": "Amazon.CDK.AWS.SQS",
-        "packageId": "Amazon.CDK.AWS.SQS",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
-      },
-      "sphinx": {}
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git"
@@ -36,14 +18,11 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::SQS"
-  },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "sqs"
+    "s3"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -53,26 +32,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.15.1",
-    "@aws-cdk/aws-s3": "^0.15.1",
-    "aws-sdk": "^2.259.1",
     "cdk-build-tools": "^0.15.1",
     "cdk-integ-tools": "^0.15.1",
-    "cfn2ts": "^0.15.1",
+    "fast-check": "^1.6.1",
     "pkglint": "^0.15.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.15.1",
     "@aws-cdk/aws-iam": "^0.15.1",
-    "@aws-cdk/aws-kms": "^0.15.1",
-    "@aws-cdk/aws-s3-notifications": "^0.15.1",
     "@aws-cdk/cdk": "^0.15.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling-api": "^0.15.1",
     "@aws-cdk/aws-iam": "^0.15.1",
-    "@aws-cdk/aws-kms": "^0.15.1",
-    "@aws-cdk/aws-s3-notifications": "^0.15.1",
     "@aws-cdk/cdk": "^0.15.1"
   }
 }
