@@ -76,6 +76,13 @@ export interface LoadBalancedFargateServiceProps {
    * @default false
    */
   publicTasks?: boolean;
+
+  /**
+   * Number of desired copies of running tasks
+   *
+   * @default 1
+   */
+  desiredCount?: number;
 }
 
 /**
@@ -103,6 +110,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
     const assignPublicIp = props.publicTasks !== undefined ? props.publicTasks : false;
     const service = new FargateService(this, "Service", {
       cluster: props.cluster,
+      desiredCount: props.desiredCount || 1,
       taskDefinition,
       assignPublicIp
     });
