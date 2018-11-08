@@ -54,6 +54,13 @@ export interface LoadBalancedEc2ServiceProps {
    * @default true
    */
   publicLoadBalancer?: boolean;
+
+  /**
+   * Number of desired copies of running tasks
+   *
+   * @default 1
+   */
+  desiredCount?: number;
 }
 
 /**
@@ -81,6 +88,7 @@ export class LoadBalancedEc2Service extends cdk.Construct {
 
     const service = new Ec2Service(this, "Service", {
       cluster: props.cluster,
+      desiredCount: props.desiredCount || 1,
       taskDefinition,
     });
 
