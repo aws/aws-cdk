@@ -1,6 +1,7 @@
 import caseUtils = require('case');
 import fs = require('fs');
 import path = require('path');
+import semver = require('semver');
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
 import { deepGet, deepSet, expectDevDependency, expectJSON, fileShouldBe, fileShouldContain, monoRepoVersion } from './util';
@@ -307,6 +308,39 @@ export class MustUseCDKBuild extends ValidationRule {
     const merkleMarker = '.LAST_BUILD';
     fileShouldContain(pkg, '.gitignore', merkleMarker);
     fileShouldContain(pkg, '.npmignore', merkleMarker);
+  }
+}
+
+/**
+ * Dependencies in both regular and peerDependencies must agree in semver
+ *
+ * In particular, verify that depVersion satisfies peerVersion. This prevents
+ * us from instructing NPM to construct impossible closures, where we say:
+ *
+ *    peerDependency: A@1.0.0
+ *    dependency: A@2.0.0
+ *
+ * There is no version of A that would satisfy this.
+ *
+ * The other way around is not necessary--the depVersion can be bumped without
+ * bumping the peerVersion (if the API didn't change this may be perfectly
+ * valid). This prevents us from restricting a user's potential combinations of
+ * libraries unnecessarily.
+ */
+export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRule {
+  public validate(pkg: PackageJson): void {
+    for (const [depName, peerVersion] of Object.entries(pkg.peerDependencies)) {
+      const depVersion = pkg.dependencies[depName];
+      if (depVersion === undefined) { continue; }
+
+      // Make sure that depVersion satisfies peerVersion.
+      if (!semver.intersects(depVersion, peerVersion)) {
+        pkg.report({
+          message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
+          fix: () => pkg.addPeerDependency(depName, depVersion)
+        });
+      }
+    }
   }
 }
 
