@@ -46,7 +46,7 @@ export class FargateTaskDefinition extends TaskDefinition {
   /**
    * The configured network mode
    */
-  public readonly networkMode = NetworkMode.AwsVpc;
+  public readonly networkMode: NetworkMode = NetworkMode.AwsVpc;
 
   constructor(parent: cdk.Construct, name: string, props: FargateTaskDefinitionProps = {}) {
     super(parent, name, {
