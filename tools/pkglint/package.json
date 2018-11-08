@@ -36,8 +36,10 @@
     "@types/yargs": "^8.0.3"
   },
   "dependencies": {
+    "@types/semver": "^5.5.0",
     "case": "^1.5.5",
     "fs-extra": "^4.0.2",
+    "semver": "^5.6.0",
     "yargs": "^9.0.1"
   }
 }
