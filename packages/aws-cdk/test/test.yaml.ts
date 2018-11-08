@@ -1,44 +1,47 @@
 import { Test } from 'nodeunit';
+import { toYAML } from '../lib/serialize';
 
-import YAML = require('js-yaml');
-
-function yamlStringify(obj: any) {
-  return YAML.dump(obj);
-}
+// Preferred quote of the YAML library
+const q = '"';
 
 export = {
   'quote the word "ON"'(test: Test) {
     // NON NEGOTIABLE! If not quoted, will be interpreted as the boolean TRUE
 
     // tslint:disable-next-line:no-console
-    const output = yamlStringify({
+    const output = toYAML({
       notABoolean: "ON"
     });
 
-    test.equals(output.trim(), `notABoolean: 'ON'`);
+    test.equals(output.trim(), `notABoolean: ${q}ON${q}`);
 
     test.done();
   },
 
   'quote number-like strings with a leading 0'(test: Test) {
-    const output = yamlStringify({
+    const output = toYAML({
       leadingZero: "012345"
     });
 
-    test.equals(output.trim(), `leadingZero: '012345'`);
+    test.equals(output.trim(), `leadingZero: ${q}012345${q}`);
 
     test.done();
   },
 
   'do not quote octal numbers that arent really octal'(test: Test) {
-    // Under contention: this seems to be okay, pyyaml parses it
-    // correctly. Unsure of what CloudFormation does about it.
+    // This is a contentious one, and something that might have changed in YAML1.2 vs YAML1.1
+    //
+    // One could make the argument that a sequence of characters that couldn't ever
+    // be an octal value doesn't need to be quoted, and pyyaml parses it correctly.
+    //
+    // However, CloudFormation's parser interprets it as a decimal number (eating the
+    // leading 0) if it's unquoted, so that's the behavior we're testing for.
 
-    const output = yamlStringify({
+    const output = toYAML({
       leadingZero: "0123456789"
     });
 
-    test.equals(output.trim(), `leadingZero: 0123456789`);
+    test.equals(output.trim(), `leadingZero: ${q}0123456789${q}`);
 
     test.done();
   },
@@ -48,14 +51,14 @@ export = {
     //
     // 'yaml' fails this.
 
-    const output = yamlStringify({
+    const output = toYAML({
       colons: ['arn', ':', 'aws']
     });
 
     test.equals(output.trim(), [
       'colons:',
       '  - arn',
-      `  - ':'`,
+      `  - ${q}:${q}`,
       '  - aws'
     ].join('\n'));
 

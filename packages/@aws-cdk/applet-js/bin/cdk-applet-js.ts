@@ -4,9 +4,9 @@ import 'source-map-support/register';
 import cdk = require('@aws-cdk/cdk');
 import child_process = require('child_process');
 import fs = require('fs-extra');
-import YAML = require('js-yaml');
 import os = require('os');
 import path = require('path');
+import YAML = require('yaml');
 
 import { isStackConstructor, parseApplet } from '../lib/applet-helpers';
 
@@ -25,7 +25,7 @@ async function main() {
   }
 
   // read applet(s) properties from the provided file
-  const fileContents = YAML.safeLoad(await fs.readFile(appletFile, { encoding: 'utf-8' }));
+  const fileContents = YAML.parse(await fs.readFile(appletFile, { encoding: 'utf-8' }));
   if (typeof fileContents !== 'object') {
     throw new Error(`${appletFile}: should contain a YAML object`);
   }
