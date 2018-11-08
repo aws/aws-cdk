@@ -172,7 +172,7 @@ obtained from either DockerHub or from ECR repositories:
   DockerHub.
 * `ecs.ContaienrImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start.
-* `ecs.ContainerImage.fromAsset({ directory: './image' })`: build and upload an
+* `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
 ### Service

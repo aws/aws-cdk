@@ -16,11 +16,17 @@ export = {
     new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
-      image: ecs.DockerHub.image('test')
+      image: ecs.DockerHub.image('test'),
+      desiredCount: 2
     });
 
-    // THEN - stack containers a load balancer
+    // THEN - stack containers a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 2,
+      LaunchType: "EC2",
+    }));
 
     test.done();
   },
@@ -34,11 +40,36 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.DockerHub.image('test')
+      image: ecs.DockerHub.image('test'),
+      desiredCount: 2
     });
 
-    // THEN - stack containers a load balancer
+    // THEN - stack contains a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 2,
+      LaunchType: "FARGATE",
+    }));
+
+    test.done();
+  },
+
+  'test Fargateloadbalanced applet'(test: Test) {
+    // WHEN
+    const app = new cdk.App();
+    const stack = new ecs.LoadBalancedFargateServiceApplet(app, 'Service', {
+      image: 'test',
+      desiredCount: 2
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 2,
+      LaunchType: "FARGATE",
+    }));
 
     test.done();
   }

@@ -70,6 +70,13 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    * @default false
    */
   publicTasks?: boolean;
+
+  /**
+   * Number of desired copies of running tasks
+   *
+   * @default 1
+   */
+  desiredCount?: number;
 }
 
 /**
@@ -91,6 +98,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       publicLoadBalancer: props.publicLoadBalancer,
       publicTasks: props.publicTasks,
       image: DockerHub.image(props.image),
+      desiredCount: props.desiredCount,
     });
   }
 }
