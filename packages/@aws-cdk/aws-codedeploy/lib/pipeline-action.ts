@@ -1,7 +1,6 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { ServerDeploymentGroupRef } from './deployment-group';
 
 /**
  * Construction properties of the {@link PipelineDeployAction CodeDeploy deploy CodePipeline Action}.
@@ -9,9 +8,20 @@ import { ServerDeploymentGroupRef } from './deployment-group';
 export interface PipelineDeployActionProps extends codepipeline.CommonActionProps,
     codepipeline.CommonActionConstructProps {
   /**
-   * The CodeDeploy Deployment Group to deploy to.
+   * The name of the CodeDeploy application to deploy to.
+   *
+   * @note this will most likely be changed to a proper CodeDeploy AWS Construct reference
+   *   once that functionality has been implemented for CodeDeploy
    */
-  deploymentGroup: ServerDeploymentGroupRef;
+  applicationName: string;
+
+  /**
+   * The name of the CodeDeploy deployment group to deploy to.
+   *
+   * @note this will most likely be changed to a proper CodeDeploy AWS Construct reference
+   *   once that functionality has been implemented for CodeDeploy
+   */
+  deploymentGroupName: string;
 
   /**
    * The source to use as input for deployment.
@@ -30,37 +40,50 @@ export class PipelineDeployAction extends codepipeline.DeployAction {
       provider: 'CodeDeploy',
       inputArtifact: props.inputArtifact,
       configuration: {
-        ApplicationName: props.deploymentGroup.application.applicationName,
-        DeploymentGroupName: props.deploymentGroup.deploymentGroupName,
+        ApplicationName: props.applicationName,
+        DeploymentGroupName: props.deploymentGroupName,
       },
     });
 
     // permissions, based on:
     // https://docs.aws.amazon.com/codedeploy/latest/userguide/auth-and-access-control-permissions-reference.html
 
+    const applicationArn = cdk.ArnUtils.fromComponents({
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: props.applicationName,
+      sep: ':',
+    });
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.deploymentGroup.application.applicationArn)
+      .addResource(applicationArn)
       .addActions(
         'codedeploy:GetApplicationRevision',
         'codedeploy:RegisterApplicationRevision',
       ));
 
+    const deploymentGroupArn = cdk.ArnUtils.fromComponents({
+      service: 'codedeploy',
+      resource: 'deploymentgroup',
+      resourceName: `${props.applicationName}/${props.deploymentGroupName}`,
+      sep: ':',
+    });
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.deploymentGroup.deploymentGroupArn)
+      .addResource(deploymentGroupArn)
       .addActions(
         'codedeploy:CreateDeployment',
         'codedeploy:GetDeployment',
       ));
 
+    const deployConfigArn = cdk.ArnUtils.fromComponents({
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: '*',
+      sep: ':',
+    });
     props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
-      .addResource(props.deploymentGroup.deploymentConfig.deploymentConfigArn)
+      .addResource(deployConfigArn)
       .addActions(
         'codedeploy:GetDeploymentConfig',
       ));
-
-    // grant the ASG Role permissions to read from the Pipeline Bucket
-    for (const asg of props.deploymentGroup.autoScalingGroups || []) {
-      props.stage.pipeline.grantBucketRead(asg.role);
-    }
   }
 }
