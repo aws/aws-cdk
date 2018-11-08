@@ -64,6 +64,18 @@ export class PackageJson {
     this.reports.push(report);
   }
 
+  public get dependencies(): {[key: string]: string} {
+    return this.json.dependencies || {};
+  }
+
+  public get devDependencies(): {[key: string]: string} {
+    return this.json.devDependencies || {};
+  }
+
+  public get peerDependencies(): {[key: string]: string} {
+    return this.json.peerDependencies || {};
+  }
+
   public applyFixes() {
     const fixable = this.reports.filter(r => r.fix);
     const nonFixable = this.reports.filter(r => !r.fix);
@@ -172,6 +184,14 @@ export class PackageJson {
         delete this.json.devDependencies[m];
       }
     }
+  }
+
+  public addPeerDependency(module: string, version: string) {
+    if (!('peerDependencies' in this.json)) {
+      this.json.peerDependencies = {};
+    }
+
+    this.peerDependencies[module] = version;
   }
 
   /**
