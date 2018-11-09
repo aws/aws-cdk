@@ -4,7 +4,6 @@ import 'source-map-support/register';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import YAML = require('js-yaml');
 import minimatch = require('minimatch');
 import util = require('util');
 import yargs = require('yargs');
@@ -19,6 +18,7 @@ import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
+import { deserializeStructure, serializeStructure } from '../lib/serialize';
 import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
@@ -609,11 +609,7 @@ async function initCommandLine() {
 
     /* Attempt to parse YAML, fall back to JSON. */
     function parseTemplate(text: string): any {
-      try {
-        return YAML.safeLoad(text);
-      } catch (e) {
-        return JSON.parse(text);
-      }
+      return deserializeStructure(text);
     }
   }
 
@@ -679,13 +675,7 @@ async function initCommandLine() {
   }
 
   function toJsonOrYaml(object: any): string {
-    if (argv.json) {
-      const noFiltering = undefined;
-      const indentWidth = 2;
-      return JSON.stringify(object, noFiltering, indentWidth);
-    } else {
-      return YAML.safeDump(object);
-    }
+    return serializeStructure(object, argv.json);
   }
 }
 

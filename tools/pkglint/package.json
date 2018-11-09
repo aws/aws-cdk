@@ -1,6 +1,6 @@
 {
   "name": "pkglint",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "private": true,
   "description": "Validate and fix package.json files",
   "main": "lib/index.js",
@@ -36,8 +36,10 @@
     "@types/yargs": "^8.0.3"
   },
   "dependencies": {
+    "@types/semver": "^5.5.0",
     "case": "^1.5.5",
     "fs-extra": "^4.0.2",
+    "semver": "^5.6.0",
     "yargs": "^9.0.1"
   }
 }

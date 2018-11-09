@@ -11,7 +11,7 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
 
 // Add capacity to it
 cluster.addDefaultAutoScalingGroupCapacity({
-  instanceType: new InstanceType("t2.xlarge"),
+  instanceType: new ec2.InstanceType("t2.xlarge"),
   instanceCount: 3,
 });
 
@@ -172,7 +172,7 @@ obtained from either DockerHub or from ECR repositories:
   DockerHub.
 * `ecs.ContaienrImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start.
-* `ecs.ContainerImage.fromAsset({ directory: './image' })`: build and upload an
+* `ecs.ContainerImage.fromAsset(this, 'Image', { directory: './image' })`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 
 ### Service
