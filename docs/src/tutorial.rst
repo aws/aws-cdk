@@ -169,7 +169,7 @@ the Lambda file does not appear in the output.
 Step 3: Create Widgets Service
 ==============================
 
-Add the |APIGATEWAY|, |LAM|, and |S3| packages to our app.
+Add the |ABP|, |LAM|, and |S3| packages to our app.
 
 .. code-block:: sh
 
@@ -297,8 +297,8 @@ browser or use the following **curl** command.
 
     curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
 
-You can also open the AWS Console,
-navigate to the API Gateway service,
+You can also open the |console|,
+navigate to the |ABP| service,
 find **Widget Service** in the list.
 Select **GET** and **Test** to test the function.
 Since we haven't stored any widgets yet, the output should be similar to the following
@@ -421,7 +421,7 @@ Replace the existing **exports.main** function in *widgets.js* with the followin
       }
     }
 
-Wire these functions up to our API Gateway code in *widget_service.ts*
+Wire these functions up to our |ABP| code in *widget_service.ts*
 by adding the following code at the end of the constructor.
 
 .. code-block:: ts
@@ -460,6 +460,6 @@ and again show the list of widgets.
     curl -X DELETE 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
     curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
 
-You can also use the API Gateway console to test these functions.
+You can also use the |ABP| console to test these functions.
 You'll have to set the **name** entry to the name of an widget,
 such as **dummy**.
