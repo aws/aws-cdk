@@ -25,7 +25,7 @@ rsync -av src/ "${staging}"
 cd ${staging}
 
 # install python requirements
-pip3 install -r requirements.txt -t .
+pip3 install --install-option="--prefix=" -r requirements.txt -t .
 
 # create archive
 zip -qr ${bundle_out} .
