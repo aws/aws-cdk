@@ -520,6 +520,10 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     });
   }
 
+  /**
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
+   */
   protected addDefaultRouteToIGW(
     gateway: cloudformation.InternetGatewayResource,
     gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
@@ -541,7 +545,8 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 
   /**
-   * Create a default route that points to a passed IGW
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    */
   public addDefaultIGWRouteEntry(
     gateway: cloudformation.InternetGatewayResource,
