@@ -1,6 +1,5 @@
 {
   "name": "@aws-cdk/aws-autoscaling-common",
-  "private": true,
   "version": "0.15.2",
   "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",

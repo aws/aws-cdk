@@ -64,9 +64,6 @@
     "@aws-cdk/aws-iam": "^0.15.2",
     "@aws-cdk/cdk": "^0.15.2"
   },
-  "bundledDependencies": [
-    "@aws-cdk/aws-autoscaling-common"
-  ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "^0.15.1",

@@ -58,7 +58,6 @@
     "cfn2ts": "^0.15.2",
     "pkglint": "^0.15.2"
   },
-  "bundledDependencies": [ "@aws-cdk/aws-autoscaling-common" ],
   "dependencies": {
     "@aws-cdk/aws-autoscaling-api": "^0.15.2",
     "@aws-cdk/aws-autoscaling-common": "^0.15.2",
