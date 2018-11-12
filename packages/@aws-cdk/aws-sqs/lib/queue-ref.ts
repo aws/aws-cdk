@@ -201,7 +201,6 @@ export abstract class QueueRef extends cdk.Construct implements s3n.IBucketNotif
         .addResource(this.queueArn)
         .addActions(...queueActions));
   }
-
 }
 
 /**
