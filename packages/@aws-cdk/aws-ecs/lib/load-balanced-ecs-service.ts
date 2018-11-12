@@ -10,7 +10,7 @@ import { Ec2TaskDefinition } from './ec2/ec2-task-definition';
  */
 export interface LoadBalancedEc2ServiceProps {
   /**
-   * The cluster where your Fargate service will be deployed
+   * The cluster where your EC2 service will be deployed
    */
   cluster: ICluster;
 
@@ -42,7 +42,7 @@ export interface LoadBalancedEc2ServiceProps {
   memoryReservationMiB?: number;
 
   /**
-   * The container port of the application load balancer attached to your Fargate service. Corresponds to container port mapping.
+   * The container port of the application load balancer attached to your EC2 service. Corresponds to container port mapping.
    *
    * @default 80
    */
