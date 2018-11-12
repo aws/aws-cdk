@@ -1,3 +1,27 @@
+<a name="0.16.0"></a>
+## [0.16.0](https://github.com/awslabs/aws-cdk/compare/v0.15.2...v0.16.0) (2018-11-12)
+
+### Bug Fixes
+
+* **aws-elasticloadbalancingv2:** listener dependency ([#1146](https://github.com/awslabs/aws-cdk/issues/1146)) ([e9d3d93](https://github.com/awslabs/aws-cdk/commit/e9d3d93)), closes [#1139](https://github.com/awslabs/aws-cdk/issues/1139)
+* **aws-elasticloadbalancingv2:** unhealthy threshold ([#1145](https://github.com/awslabs/aws-cdk/issues/1145)) ([a70a50d](https://github.com/awslabs/aws-cdk/commit/a70a50d))
+
+
+### Features
+
+* **aws-codedeploy:** CodeDeploy Pipeline Action using the L2 DeploymentGroup Construct. ([#1085](https://github.com/awslabs/aws-cdk/issues/1085)) ([ce999b6](https://github.com/awslabs/aws-cdk/commit/ce999b6))
+* **aws-route53:** route53 Alias record support ([#1131](https://github.com/awslabs/aws-cdk/issues/1131)) ([72f0124](https://github.com/awslabs/aws-cdk/commit/72f0124))
+* **cdk:** allow Tokens to be encoded as lists ([#1144](https://github.com/awslabs/aws-cdk/issues/1144)) ([cd7947c](https://github.com/awslabs/aws-cdk/commit/cd7947c)), closes [#744](https://github.com/awslabs/aws-cdk/issues/744)
+
+
+### BREAKING CHANGES
+
+* **aws-codedeploy:** this changes the API of the CodeDeploy Pipeline Action
+to take the DeploymentGroup AWS Construct as an argument instead of the names
+of the Application and Deployment Group.
+
+
+
 <a name="0.15.2"></a>
 ## [0.15.2](https://github.com/awslabs/aws-cdk/compare/v0.15.1...v0.15.2) (2018-11-08)
 
