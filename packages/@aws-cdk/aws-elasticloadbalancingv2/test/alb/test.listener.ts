@@ -287,6 +287,7 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
+      unhealthyThresholdCount: 3,
       timeoutSeconds: 3600,
       intervalSecs: 30,
       path: '/test',
@@ -297,6 +298,7 @@ export = {
       HealthCheckIntervalSeconds: 30,
       HealthCheckPath: "/test",
       HealthCheckTimeoutSeconds: 3600,
+      UnhealthyThresholdCount: 3,
     }));
 
     test.done();
