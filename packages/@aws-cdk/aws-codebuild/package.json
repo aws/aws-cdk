@@ -77,14 +77,14 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "^0.15.1",
-    "@aws-cdk/aws-cloudwatch": "^0.15.1",
-    "@aws-cdk/aws-codecommit": "^0.15.1",
-    "@aws-cdk/aws-codepipeline-api": "^0.15.1",
-    "@aws-cdk/aws-events": "^0.15.1",
-    "@aws-cdk/aws-iam": "^0.15.1",
-    "@aws-cdk/aws-kms": "^0.15.1",
-    "@aws-cdk/aws-s3": "^0.15.1",
-    "@aws-cdk/cdk": "^0.15.1"
+    "@aws-cdk/assets": "^0.16.0",
+    "@aws-cdk/aws-cloudwatch": "^0.16.0",
+    "@aws-cdk/aws-codecommit": "^0.16.0",
+    "@aws-cdk/aws-codepipeline-api": "^0.16.0",
+    "@aws-cdk/aws-events": "^0.16.0",
+    "@aws-cdk/aws-iam": "^0.16.0",
+    "@aws-cdk/aws-kms": "^0.16.0",
+    "@aws-cdk/aws-s3": "^0.16.0",
+    "@aws-cdk/cdk": "^0.16.0"
   }
 }

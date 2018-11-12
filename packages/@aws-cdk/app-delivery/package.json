@@ -62,7 +62,7 @@
     "cdk"
   ],
   "peerDependencies": {
-    "@aws-cdk/aws-codepipeline-api": "^0.15.2",
-    "@aws-cdk/cdk": "^0.15.2"
+    "@aws-cdk/aws-codepipeline-api": "^0.16.0",
+    "@aws-cdk/cdk": "^0.16.0"
   }
 }

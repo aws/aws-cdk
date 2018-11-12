@@ -72,11 +72,11 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "^0.15.1",
-    "@aws-cdk/aws-cloudwatch": "^0.15.1",
-    "@aws-cdk/aws-codedeploy-api": "^0.15.1",
-    "@aws-cdk/aws-codepipeline-api": "^0.15.1",
-    "@aws-cdk/aws-iam": "^0.15.1",
-    "@aws-cdk/cdk": "^0.15.1"
+    "@aws-cdk/aws-autoscaling": "^0.16.0",
+    "@aws-cdk/aws-cloudwatch": "^0.16.0",
+    "@aws-cdk/aws-codedeploy-api": "^0.16.0",
+    "@aws-cdk/aws-codepipeline-api": "^0.16.0",
+    "@aws-cdk/aws-iam": "^0.16.0",
+    "@aws-cdk/cdk": "^0.16.0"
   }
 }

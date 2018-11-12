@@ -71,6 +71,6 @@
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cx-api": "^0.15.1"
+    "@aws-cdk/cx-api": "^0.16.0"
   }
 }

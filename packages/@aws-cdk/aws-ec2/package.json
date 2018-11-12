@@ -64,6 +64,6 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/cdk": "^0.15.1"
+    "@aws-cdk/cdk": "^0.16.0"
   }
 }
