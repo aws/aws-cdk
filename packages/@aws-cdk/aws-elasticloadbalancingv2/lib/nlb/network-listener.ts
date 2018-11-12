@@ -67,6 +67,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     // New default target(s)
     for (const targetGroup of targetGroups) {
       this._addDefaultTargetGroup(targetGroup);
+      targetGroup.registerListener(this);
     }
   }
 

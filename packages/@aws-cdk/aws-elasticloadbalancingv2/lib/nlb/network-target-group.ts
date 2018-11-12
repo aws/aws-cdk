@@ -80,12 +80,22 @@ export class NetworkTargetGroup extends BaseTargetGroup {
  */
 // tslint:disable-next-line:no-empty-interface
 export interface INetworkTargetGroup extends ITargetGroup {
+  /**
+   * Register a listener that is load balancing to this target group.
+   *
+   * Don't call this directly. It will be called by listeners.
+   */
+  registerListener(listener: INetworkListener): void;
 }
 
 /**
  * An imported network target group
  */
 class ImportedNetworkTargetGroup extends BaseImportedTargetGroup implements INetworkTargetGroup {
+  public registerListener(_listener: INetworkListener) {
+    // Nothing to do, we know nothing of our members
+  }
+
   public listenerDependency(): cdk.IDependable {
     return new LazyDependable([]);
   }
