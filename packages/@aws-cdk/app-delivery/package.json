@@ -60,5 +60,9 @@
   "keywords": [
     "aws",
     "cdk"
-  ]
+  ],
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.15.2",
+    "@aws-cdk/aws-codepipeline-api": "^0.15.2"
+  }
 }
