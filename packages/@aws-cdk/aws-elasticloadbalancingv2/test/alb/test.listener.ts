@@ -287,6 +287,7 @@ export = {
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
     });
     group.configureHealthCheck({
+      unhealthyThresholdCount: 3,
       timeoutSeconds: 3600,
       intervalSecs: 30,
       path: '/test',
@@ -294,6 +295,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      UnhealthyThresholdCount: 3,
       HealthCheckIntervalSeconds: 30,
       HealthCheckPath: "/test",
       HealthCheckTimeoutSeconds: 3600,
