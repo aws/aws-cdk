@@ -4,6 +4,25 @@
   "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.autoscaling.common",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "autoscaling-common"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+        "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      },
+      "sphinx": {}
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/awslabs/aws-cdk.git"
