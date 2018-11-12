@@ -295,10 +295,10 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      UnhealthyThresholdCount: 3,
       HealthCheckIntervalSeconds: 30,
       HealthCheckPath: "/test",
       HealthCheckTimeoutSeconds: 3600,
-      UnhealthyThresholdCount: 3,
     }));
 
     test.done();
