@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { CloudFormationToken, resolve, Token, unresolved } from '../../lib';
+import { CloudFormationToken, FnJoin, FnSelect, resolve, Token, unresolved } from '../../lib';
 import { evaluateCFN } from '../cloudformation/evaluate-cfn';
 
 export = {
@@ -269,6 +269,87 @@ export = {
     // THEN
     test.throws(() => resolve(s), 'The key "${Token[TOKEN.19]}" has been resolved to {"Ref":"Other"} but must be resolvable to a string');
     test.done();
+  },
+
+  'list encoding': {
+    'can encode Token to string and resolve the encoding'(test: Test) {
+      // GIVEN
+      const token = new CloudFormationToken({ Ref: 'Other' });
+
+      // WHEN
+      const struct = {
+        XYZ: token.toList()
+      };
+
+      // THEN
+      test.deepEqual(resolve(struct), {
+        XYZ: { Ref: 'Other'}
+      });
+
+      test.done();
+    },
+
+    'cannot add to encoded list'(test: Test) {
+      // GIVEN
+      const token = new CloudFormationToken({ Ref: 'Other' });
+
+      // WHEN
+      const encoded: string[] = token.toList();
+      encoded.push('hello');
+
+      // THEN
+      test.throws(() => {
+        resolve(encoded);
+      }, /Cannot add elements to list token/);
+
+      test.done();
+    },
+
+    'cannot add to strings in encoded list'(test: Test) {
+      // GIVEN
+      const token = new CloudFormationToken({ Ref: 'Other' });
+
+      // WHEN
+      const encoded: string[] = token.toList();
+      encoded[0] += 'hello';
+
+      // THEN
+      test.throws(() => {
+        resolve(encoded);
+      }, /concatenate strings in/);
+
+      test.done();
+    },
+
+    'can pass encoded lists to FnSelect'(test: Test) {
+      // GIVEN
+      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+
+      // WHEN
+      const struct = new FnSelect(1, encoded);
+
+      // THEN
+      test.deepEqual(resolve(struct), {
+        'Fn::Select': [1, { Ref: 'Other'}]
+      });
+
+      test.done();
+    },
+
+    'can pass encoded lists to FnJoin'(test: Test) {
+      // GIVEN
+      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
+
+      // WHEN
+      const struct = new FnJoin('/', encoded);
+
+      // THEN
+      test.deepEqual(resolve(struct), {
+        'Fn::Join': ['/', { Ref: 'Other'}]
+      });
+
+      test.done();
+    }
   }
 };
 
