@@ -5,11 +5,11 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 are spelled out in bold, capital letters (as they are shown here).
 
 ## Introduction
-A *Cloud Assembly* is a document container fail designed to hold the components of *cloud-native* applications,
-including all the parts that are needed in order to deploy those to *the cloud*. This document exposes the specification
-of the *Cloud Assembly* format as well as requirements imposed on *Cloud Assemblers* and *Cloud Runtimes*.
+A *Cloud Assembly* is a self-contained document container designed to hold the components of *cloud applications*,
+including all the parts that are needed in order to deploy those to a *cloud* provider. This document is the
+specification of the *Cloud Assembly* format as well as requirements imposed on *Cloud Assemblers* and *Cloud Runtimes*.
 
-### Goals
+### Design Goals
 The design goals for the *Cloud Assembly Specification* are the following:
 * The *Cloud Assembly Specification* is extensible.
 * The *Cloud Assembly Specification* is cloud-agnostic.
@@ -34,7 +34,7 @@ a single `object` that conforms to the following schema:
 Key           |Type                 |Required|Description
 --------------|---------------------|:------:|-----------
 `schema`      |`string`             |Required|The schema for the document. **MUST** be `cloud-assembly/1.0`.
-`drops`       |`Map<ID,Drop>`       |Required|A mapping of [*Logical ID*](#logical-id) to [`Drop`](#drop).
+`drops`       |`Map<ID,Drop>`       |Required|A mapping of [*Logical ID*](#logical-id) to [Drop](#drop).
 `missing`     |`Map<string,Missing>`|        |A mapping of context keys to [missing information](#missing).
 
 The [JSON] specification allows for keys to be specified multiple times in a given `object`. However, *Cloud Assembly*
@@ -42,7 +42,7 @@ consumers **MAY** assume keys are unique, and [*Cloud Assemblers*](#cloud-assemb
 duplicate keys. If duplicate keys are present, the latest specified value **SHOULD** be preferred.
 
 ### Logical ID
-*Logical IDs* are `string`s that uniquely identify [`Drop`](#drop)s in the context of a *Cloud Assembly*.
+*Logical IDs* are `string`s that uniquely identify [Drop](#drop)s in the context of a *Cloud Assembly*.
 * A *Logical ID* **MUST NOT** be empty.
 * A *Logical ID* **SHOULD NOT** exceed `256` characters.
 * A *Logical ID* **MUST** be composed of only the following ASCII printable characters:
@@ -53,22 +53,30 @@ duplicate keys. If duplicate keys are present, the latest specified value **SHOU
   + Minus: `-` (`0x2D`)
   + Forward-slash: `/` (`0x2F`)
   + Underscore: `_` (`0x5F`)
+* A *Logical ID* **MUST NOT** contain the `.` (`0x2E`) character as it is used in the string substitution pattern for
+  cross-drop references to separate the *Logical ID* from the *attribute* name.
 
-### `Drop`
-`Drop`s are the building blocks of *Cloud Assemblies*. They model a part of the *cloud-native* application that can be
-deployed independently, provided it's dependencies are fulfilled. `Drop`s are specified using [JSON] objects that
-**MUST** conform to the following schema:
+In other words, *Logical IDs* are expected to match the following regular expression:
+```js
+/^[A-Za-z0-9+\/_-]{1,256}$/
+```
+
+### Drop
+Clouds are made of Drops. Thet are the building blocks of *Cloud Assemblies*. They model a part of the
+*cloud application* that can be deployed independently, provided it's dependencies are fulfilled. Drops are specified
+using [JSON] objects that **MUST** conform to the following schema:
 
 Key          |Type             |Required|Description
 -------------|-----------------|:------:|-----------
-`type`       |`string`         |Required|The [*Drop Type*](#drop-type) specifier of this `Drop`.
-`environment`|`string`         |required|The [environment](#environment) specifier for this `Drop`.
-`metadata`   |`Map<string,any>`|        |Arbitrary key-value pairs associated with this `Drop`.
-`properties` |`Map<string,any>`|        |The properties of this `Drop` as documented by its maintainers.
+`type`       |`string`         |Required|The [*Drop Type*](#drop-type) specifier of this Drop.
+`environment`|`string`         |required|The target [environment](#environment) in which Drop is deployed.
+`metadata`   |`Map<string,any>`|        |Arbitrary key-value pairs associated with this Drop.
+`properties` |`Map<string,any>`|        |The properties of this Drop as documented by its maintainers.
 
-Each [`Drop` Type](#drop-type) can produce outputs that can be used in order to allow other `Drop`s to consume the
-resources they procude. Each `Drop` implementer is responsible to document the output attributes it supports. References
-to these outputs are modeled using special `string` tokens within entries of the `properties` section of `Drop`s:
+Each [Drop Type](#drop-type) can produce output strings that allow Drops to provide informations that other Drops can
+use when composing the *cloud application*. Each Drop implementer is responsible to document the output attributes it
+supports. References to these outputs are modeled using special `string` tokens within entries of the `properties`
+section of Drops:
 
 ```
 ${LogicalId.attributeName}
@@ -85,9 +93,9 @@ Deployment systems **SHOULD** return an error upon encountering an occurrence of
 valid escape sequence.
 
 #### Drop Type
-Every `Drop` has a type specifier, which allows *Cloud Assembly* consumers to know how to deploy it. The type specifiers
+Every Drop has a type specifier, which allows *Cloud Assembly* consumers to know how to deploy it. The type specifiers
 are `string`s that use an URI-like syntax (`protocol://path`), providing the coordinates to a reference implementation
-for the `Drop` behavior.
+for the Drop behavior.
 
 Deployment systems **MUST** support at least one protocol, and **SHOULD** support all the protocols specified in
 the following sub-sections.
@@ -105,8 +113,8 @@ npm://[@namespace/]package/ClassName[@version]
 ```
 
 #### Environment
-`Environment`s help Deployment systems determine where to deploy a particular `Drop`. Thy are `string`s that use an
-URI-like syntax (`protocol://path`).
+Environments help Deployment systems determine where to deploy a particular Drop. They are referenced by `string`s that
+use an URI-like syntax (`protocol://path`).
 
 Deployment systems **MUST** support at least one protocol, and **SHOULD** support all the protocols specified in the
 following sub-sections.
@@ -122,7 +130,7 @@ aws://account/region
 ```
 
 ### `Missing`
-[`Drop`s](#drop) may require contextual information to be available in order to correctly participate in a
+[Drops](#drop) may require contextual information to be available in order to correctly participate in a
 *Cloud Assembly*. When information is missing, *Cloud Assembly* producers report the missing information by adding
 entries to the `missing` section of the [manifest document](#manifest-document). The values are [JSON] `object`s that
 **MUST** conform to the following schema:
@@ -157,7 +165,7 @@ Deployment systems that support verifying signed *Cloud Assemblies*:
 * **SHOULD** allow the user to specify a list of trusted [PGP][RFC 4880] keys.
 
 ## Annex
-### Examples of `Drop`s for the AWS Cloud
+### Examples of Drops for the AWS Cloud
 #### `@aws-cdk/aws-cloudformation.StackDrop`
 A [*CloudFormation* stack][CFN Stack].
 
