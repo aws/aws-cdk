@@ -294,7 +294,7 @@ export = {
       const token = new CloudFormationToken({ Ref: 'Other' });
 
       // WHEN
-      const encoded = token.toList();
+      const encoded: string[] = token.toList();
       encoded.push('hello');
 
       // THEN
@@ -310,7 +310,7 @@ export = {
       const token = new CloudFormationToken({ Ref: 'Other' });
 
       // WHEN
-      const encoded = token.toList();
+      const encoded: string[] = token.toList();
       encoded[0] += 'hello';
 
       // THEN
@@ -323,7 +323,7 @@ export = {
 
     'can pass encoded lists to FnSelect'(test: Test) {
       // GIVEN
-      const encoded = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = new FnSelect(1, encoded);
@@ -338,7 +338,7 @@ export = {
 
     'can pass encoded lists to FnJoin'(test: Test) {
       // GIVEN
-      const encoded = new CloudFormationToken({ Ref: 'Other' }).toList();
+      const encoded: string[] = new CloudFormationToken({ Ref: 'Other' }).toList();
 
       // WHEN
       const struct = new FnJoin('/', encoded);

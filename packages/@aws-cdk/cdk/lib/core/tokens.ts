@@ -97,15 +97,15 @@ export class Token {
    * If so, you can represent the Token in a similar way in the type
    * system.
    *
-   * Note that even though the Tokens is represented as a list of strings, you
-   * still cannot do any operations on it such as concatenation or indexing.
+   * Note that even though the Token is represented as a list of strings, you
+   * still cannot do any operations on it such as concatenation, indexing,
+   * or taking its length. The only useful operations you can do to these lists
+   * is constructing a `FnJoin` or a `FnSelect` on it.
    */
   public toList(): string[] {
     const valueType = typeof this.valueOrFunction;
-    // Optimization: if we can immediately resolve this, don't bother
-    // registering a Token.
     if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
-      return this.valueOrFunction.toString();
+      throw new Error('Got a literal Token value; cannot be encoded as a list.');
     }
 
     if (this.tokenListification === undefined) {
