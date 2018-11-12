@@ -60,5 +60,8 @@
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.15.2"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^0.15.2"
   }
 }
