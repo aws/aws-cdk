@@ -87,6 +87,7 @@ export class FnJoin extends Fn {
   private readonly listOfValues: any[];
   // Cache for the result of resolveValues() - since it otherwise would be computed several times
   private _resolvedValues?: any[];
+  private canOptimize: boolean;
 
   /**
    * Creates an ``Fn::Join`` function.
@@ -103,11 +104,13 @@ export class FnJoin extends Fn {
     super('Fn::Join', [ delimiter, new Token(() => this.resolveValues()) ]);
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
+    this.canOptimize = true;
   }
 
   public resolve(): any {
-    if (this.resolveValues().length === 1) {
-      return this.resolveValues()[0];
+    const resolved = this.resolveValues();
+    if (this.canOptimize && resolved.length === 1) {
+      return resolved[0];
     }
     return super.resolve();
   }
@@ -119,6 +122,12 @@ export class FnJoin extends Fn {
    */
   private resolveValues() {
     if (this._resolvedValues) { return this._resolvedValues; }
+
+    if (unresolved(this.listOfValues)) {
+      // This is a list token, don't resolve and also don't optimize.
+      this.canOptimize = false;
+      return this._resolvedValues = this.listOfValues;
+    }
 
     const resolvedValues = [...this.listOfValues.map(e => resolve(e))];
     let i = 0;

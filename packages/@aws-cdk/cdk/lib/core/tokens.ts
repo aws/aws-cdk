@@ -17,7 +17,8 @@ export const RESOLVE_METHOD = 'resolve';
  * semantics.
  */
 export class Token {
-  private tokenKey?: string;
+  private tokenStringification?: string;
+  private tokenListification?: string[];
 
   /**
    * Creates a token that resolves to `value`.
@@ -72,10 +73,10 @@ export class Token {
       return this.valueOrFunction.toString();
     }
 
-    if (this.tokenKey === undefined) {
-      this.tokenKey = TOKEN_STRING_MAP.register(this, this.displayName);
+    if (this.tokenStringification === undefined) {
+      this.tokenStringification = TOKEN_MAP.registerString(this, this.displayName);
     }
-    return this.tokenKey;
+    return this.tokenStringification;
   }
 
   /**
@@ -87,6 +88,30 @@ export class Token {
   public toJSON(): any {
     // tslint:disable-next-line:max-line-length
     throw new Error('JSON.stringify() cannot be applied to structure with a Token in it. Use a document-specific stringification method instead.');
+  }
+
+  /**
+   * Return a string list representation of this token
+   *
+   * Call this if the Token intrinsically evaluates to a list of strings.
+   * If so, you can represent the Token in a similar way in the type
+   * system.
+   *
+   * Note that even though the Token is represented as a list of strings, you
+   * still cannot do any operations on it such as concatenation, indexing,
+   * or taking its length. The only useful operations you can do to these lists
+   * is constructing a `FnJoin` or a `FnSelect` on it.
+   */
+  public toList(): string[] {
+    const valueType = typeof this.valueOrFunction;
+    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      throw new Error('Got a literal Token value; cannot be encoded as a list.');
+    }
+
+    if (this.tokenListification === undefined) {
+      this.tokenListification = TOKEN_MAP.registerList(this, this.displayName);
+    }
+    return this.tokenListification;
   }
 
   /**
@@ -103,12 +128,15 @@ export class Token {
 
 /**
  * Returns true if obj is a token (i.e. has the resolve() method or is a string
- * that includes token markers).
+ * that includes token markers), or it's a listifictaion of a Token string.
+ *
  * @param obj The object to test.
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
-    return TOKEN_STRING_MAP.createTokenString(obj).test();
+    return TOKEN_MAP.createStringTokenString(obj).test();
+  } else if (Array.isArray(obj) && obj.length === 1) {
+    return isListToken(obj[0]);
   } else {
     return typeof(obj[RESOLVE_METHOD]) === 'function';
   }
@@ -158,7 +186,7 @@ export function resolve(obj: any, prefix?: string[]): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
-    return TOKEN_STRING_MAP.resolveMarkers(obj as string);
+    return TOKEN_MAP.resolveStringTokens(obj as string);
   }
 
   //
@@ -170,24 +198,28 @@ export function resolve(obj: any, prefix?: string[]): any {
   }
 
   //
+  // arrays - resolve all values, remove undefined and remove empty arrays
+  //
+
+  if (Array.isArray(obj)) {
+    if (containsListToken(obj)) {
+      return TOKEN_MAP.resolveListTokens(obj);
+    }
+
+    const arr = obj
+      .map((x, i) => resolve(x, path.concat(i.toString())))
+      .filter(x => typeof(x) !== 'undefined');
+
+    return arr;
+  }
+
+  //
   // tokens - invoke 'resolve' and continue to resolve recursively
   //
 
   if (unresolved(obj)) {
     const value = obj[RESOLVE_METHOD]();
     return resolve(value, path);
-  }
-
-  //
-  // arrays - resolve all values, remove undefined and remove empty arrays
-  //
-
-  if (Array.isArray(obj)) {
-    const arr = obj
-      .map((x, i) => resolve(x, path.concat(i.toString())))
-      .filter(x => typeof(x) !== 'undefined');
-
-    return arr;
   }
 
   //
@@ -221,6 +253,14 @@ export function resolve(obj: any, prefix?: string[]): any {
   return result;
 }
 
+function isListToken(x: any) {
+    return typeof(x) === 'string' && TOKEN_MAP.createListTokenString(x).test();
+}
+
+function containsListToken(xs: any[]) {
+  return xs.some(isListToken);
+}
+
 /**
  * Central place where we keep a mapping from Tokens to their String representation
  *
@@ -230,7 +270,7 @@ export function resolve(obj: any, prefix?: string[]): any {
  * All instances of TokenStringMap share the same storage, so that this process
  * works even when different copies of the library are loaded.
  */
-class TokenStringMap {
+class TokenMap {
   private readonly tokenMap: {[key: string]: Token};
 
   constructor() {
@@ -239,7 +279,7 @@ class TokenStringMap {
   }
 
   /**
-   * Generating a unique string for this Token, returning a key
+   * Generate a unique string for this Token, returning a key
    *
    * Every call for the same Token will produce a new unique string, no
    * attempt is made to deduplicate. Token objects should cache the
@@ -249,33 +289,54 @@ class TokenStringMap {
    * hint. This may be used to produce aesthetically pleasing and
    * recognizable token representations for humans.
    */
-  public register(token: Token, representationHint?: string): string {
-    const counter = Object.keys(this.tokenMap).length;
-    const representation = representationHint || `TOKEN`;
+  public registerString(token: Token, representationHint?: string): string {
+    const key = this.register(token, representationHint);
+    return `${BEGIN_STRING_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
+  }
 
-    const key = `${representation}.${counter}`;
-    if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
-      throw new Error(`Invalid characters in token representation: ${key}`);
-    }
-
-    this.tokenMap[key] = token;
-    return `${BEGIN_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`;
+  /**
+   * Generate a unique string for this Token, returning a key
+   */
+  public registerList(token: Token, representationHint?: string): string[] {
+    const key = this.register(token, representationHint);
+    return [`${BEGIN_LIST_TOKEN_MARKER}${key}${END_TOKEN_MARKER}`];
   }
 
   /**
    * Returns a `TokenString` for this string.
    */
-  public createTokenString(s: string) {
-    return new TokenString(s, BEGIN_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+  public createStringTokenString(s: string) {
+    return new TokenString(s, BEGIN_STRING_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
+  }
+
+  /**
+   * Returns a `TokenString` for this string.
+   */
+  public createListTokenString(s: string) {
+    return new TokenString(s, BEGIN_LIST_TOKEN_MARKER, `[${VALID_KEY_CHARS}]+`, END_TOKEN_MARKER);
   }
 
   /**
    * Replace any Token markers in this string with their resolved values
    */
-  public resolveMarkers(s: string): any {
-    const str = this.createTokenString(s);
+  public resolveStringTokens(s: string): any {
+    const str = this.createStringTokenString(s);
     const fragments = str.split(this.lookupToken.bind(this));
     return fragments.join();
+  }
+
+  public resolveListTokens(xs: string[]): any {
+    // Must be a singleton list token, because concatenation is not allowed.
+    if (xs.length !== 1) {
+      throw new Error(`Cannot add elements to list token, got: ${xs}`);
+    }
+
+    const str = this.createListTokenString(xs[0]);
+    const fragments = str.split(this.lookupToken.bind(this));
+    if (fragments.length !== 1) {
+      throw new Error(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
+    }
+    return fragments.values()[0];
   }
 
   /**
@@ -288,16 +349,30 @@ class TokenStringMap {
 
     return this.tokenMap[key];
   }
+
+  private register(token: Token, representationHint?: string): string {
+    const counter = Object.keys(this.tokenMap).length;
+    const representation = representationHint || `TOKEN`;
+
+    const key = `${representation}.${counter}`;
+    if (new RegExp(`[^${VALID_KEY_CHARS}]`).exec(key)) {
+      throw new Error(`Invalid characters in token representation: ${key}`);
+    }
+
+    this.tokenMap[key] = token;
+    return key;
+  }
 }
 
-const BEGIN_TOKEN_MARKER = '${Token[';
+const BEGIN_STRING_TOKEN_MARKER = '${Token[';
+const BEGIN_LIST_TOKEN_MARKER = '#{Token[';
 const END_TOKEN_MARKER = ']}';
 const VALID_KEY_CHARS = 'a-zA-Z0-9:._-';
 
 /**
  * Singleton instance of the token string map
  */
-const TOKEN_STRING_MAP = new TokenStringMap();
+const TOKEN_MAP = new TokenMap();
 
 /**
  * Interface that Token joiners implement
@@ -381,6 +456,10 @@ type Fragment =  StringFragment | TokenFragment;
  */
 class TokenStringFragments {
   private readonly fragments = new Array<Fragment>();
+
+  public get length() {
+    return this.fragments.length;
+  }
 
   public values(): any[] {
     return this.fragments.map(f => f.type === 'token' ? resolve(f.token) : f.str);
