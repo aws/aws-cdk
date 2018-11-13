@@ -15,5 +15,6 @@ lib/*.zip
 coverage
 .nycrc
 .LAST_PACKAGE
+tsconfig.json
 
 *.snk
