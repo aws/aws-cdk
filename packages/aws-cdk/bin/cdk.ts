@@ -206,7 +206,7 @@ async function initCommandLine() {
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE || 'default', language);
+          return await cliInit(args.TEMPLATE, language);
         }
 
       default:
