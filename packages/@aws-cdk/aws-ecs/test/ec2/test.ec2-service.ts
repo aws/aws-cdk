@@ -17,7 +17,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -97,7 +97,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -127,7 +127,7 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -159,7 +159,7 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -210,7 +210,7 @@ export = {
         });
 
         taskDefinition.addContainer("web", {
-          image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+          image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
           memoryLimitMiB: 512
         });
 
@@ -236,7 +236,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -265,7 +265,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -296,7 +296,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -327,7 +327,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -354,7 +354,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -384,7 +384,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -411,7 +411,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -442,7 +442,7 @@ export = {
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
         memoryLimitMiB: 512
       });
 
@@ -470,7 +470,7 @@ export = {
       cluster.addDefaultAutoScalingGroupCapacity({ instanceType: new ec2.InstanceType('t2.micro') });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { networkMode: ecs.NetworkMode.Host });
       const container = taskDefinition.addContainer('web', {
-        image: ecs.DockerHub.image('test'),
+        image: ecs.ContainerImage.fromDockerHub('test'),
         memoryLimitMiB: 1024,
       });
       container.addPortMappings({ containerPort: 808 });

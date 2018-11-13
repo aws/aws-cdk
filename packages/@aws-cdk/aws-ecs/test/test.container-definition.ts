@@ -15,7 +15,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -38,7 +38,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -61,7 +61,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -84,7 +84,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -105,12 +105,12 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
         const logger = taskDefinition.addContainer("LoggingContainer", {
-          image: ecs.DockerHub.image("myLogger"),
+          image: ecs.ContainerImage.fromDockerHub("myLogger"),
           memoryLimitMiB: 1024,
         });
 
@@ -132,12 +132,12 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
         const logger = taskDefinition.addContainer("LoggingContainer", {
-          image: ecs.DockerHub.image("myLogger"),
+          image: ecs.ContainerImage.fromDockerHub("myLogger"),
           memoryLimitMiB: 1024,
         });
 
@@ -159,7 +159,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -184,7 +184,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -210,7 +210,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -235,7 +235,7 @@ export = {
         });
 
         const container = taskDefinition.addContainer("Container", {
-          image: ecs.DockerHub.image("/aws/aws-example-app"),
+          image: ecs.ContainerImage.fromDockerHub("/aws/aws-example-app"),
           memoryLimitMiB: 2048,
         });
 
@@ -260,7 +260,7 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       memoryLimitMiB: 1024,
       logging: new ecs.AwsLogDriver(stack, 'Logging', { streamPrefix: 'prefix' })
     });
@@ -291,7 +291,7 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand]
@@ -323,7 +323,7 @@ export = {
 
     // WHEN
     taskDefinition.addContainer('cont', {
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       memoryLimitMiB: 1024,
       healthCheck: {
         command: [hcCommand],

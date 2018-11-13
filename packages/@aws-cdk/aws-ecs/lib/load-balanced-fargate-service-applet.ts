@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Cluster } from './cluster';
-import { DockerHub } from './images/dockerhub';
+import { ContainerImage } from './container-image';
 import { LoadBalancedFargateService } from './load-balanced-fargate-service';
 
 /**
@@ -97,7 +97,7 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       memoryMiB: props.memoryMiB,
       publicLoadBalancer: props.publicLoadBalancer,
       publicTasks: props.publicTasks,
-      image: DockerHub.image(props.image),
+      image: ContainerImage.fromDockerHub(props.image),
       desiredCount: props.desiredCount,
     });
   }
