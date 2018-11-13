@@ -18,8 +18,15 @@ const CDK_HOME = process.env.CDK_HOME ? path.resolve(process.env.CDK_HOME) : pat
 /**
  * Initialize a CDK package in the current directory
  */
-export async function cliInit(type: string, language: string | undefined, canUseNetwork?: boolean) {
-  const template = (await availableInitTemplates).find(t => t.hasName(type));
+export async function cliInit(type?: string, language?: string, canUseNetwork?: boolean) {
+  if (!type && !language) {
+    await printAvailableTemplates();
+    return;
+  }
+
+  type = type || 'default'; // "default" is the default type (and maps to "app")
+
+  const template = (await availableInitTemplates).find(t => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(language);
     throw new Error(`Unknown init template: ${type}`);
