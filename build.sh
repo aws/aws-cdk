@@ -2,10 +2,11 @@
 set -euo pipefail
 
 bail="--bail"
+run_tests="true"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test]"
             exit 1
             ;;
         --no-bail)
@@ -13,6 +14,9 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         -f|--force)
             export CDK_BUILD="--force"
+            ;;
+        --skip-test|--skip-tests)
+            run_tests="false"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -47,8 +51,10 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream build || fail
 
-echo "============================================================================================="
-echo "testing..."
-lerna run $bail --stream test || fail
+if $run_tests; then
+  echo "============================================================================================="
+  echo "testing..."
+  lerna run $bail --stream test || fail
+fi
 
 touch $BUILD_INDICATOR
