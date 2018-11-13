@@ -2,7 +2,7 @@ import fc = require('fast-check');
 import { Test } from 'nodeunit';
 import appscaling = require('../lib');
 import { findAlarmThresholds, normalizeIntervals } from '../lib/interval-utils';
-import { arbitrary_complete_intervals } from '../lib/test-utils';
+import { arbitrary_complete_intervals } from './util';
 
 export = {
   'test bounds propagation'(test: Test) {

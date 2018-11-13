@@ -1,6 +1,4 @@
-import fc = require('fast-check');
 import appscaling = require('../lib');
-import { normalizeIntervals } from '../lib/interval-utils';
 
 /**
  * Arbitrary (valid) array of intervals
@@ -13,8 +11,7 @@ import { normalizeIntervals } from '../lib/interval-utils';
  * Some of the changes may change its meaning, but we take care to never leave
  * a schedule with insufficient information so that the parser will error out.
  */
-export class ArbitraryIntervals extends fc.Arbitrary<appscaling.ScalingInterval[]> {
-  public generate(mrng: fc.Random): fc.Shrinkable<appscaling.ScalingInterval[]> {
+export function generateArbitraryIntervals(mrng: IRandomGenerator): ArbitraryIntervals {
     const ret = new Array<appscaling.ScalingInterval>();
 
     const absolute = mrng.nextBoolean();
@@ -91,23 +88,15 @@ export class ArbitraryIntervals extends fc.Arbitrary<appscaling.ScalingInterval[
       }
     }
 
-    // Hide a property on the array
-    (ret as any).absolute = absolute;
-
-    // Shrinkable that doesn't actually shrink
-    return new fc.Shrinkable(ret);
-  }
+    return { absolute, intervals: ret };
 }
 
-export function arbitrary_input_intervals() {
-  return new ArbitraryIntervals();
+export interface IRandomGenerator {
+  nextBoolean(): boolean;
+  nextInt(min: number, max: number): number;
 }
 
-/**
- * Normalized interval array
- */
-export function arbitrary_complete_intervals() {
-  return  new ArbitraryIntervals().map(x => {
-    return normalizeIntervals(x, (x as any).absolute);
-  });
+export interface ArbitraryIntervals {
+  absolute: boolean;
+  intervals: appscaling.ScalingInterval[];
 }
