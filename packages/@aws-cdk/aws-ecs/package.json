@@ -76,7 +76,6 @@
     "@aws-cdk/aws-route53": "^0.16.0",
     "@aws-cdk/cdk": "^0.16.0",
     "@aws-cdk/cx-api": "^0.16.0"
->>>>>>> upstream/master
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
