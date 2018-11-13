@@ -319,7 +319,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       this.dependencyElements.push(igw, att);
 
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultIGWRouteEntry(igw.ref);
+        publicSubnet.addDefaultIGWRouteEntry(igw, att);
       });
 
       // if gateways are needed create them
@@ -520,12 +520,19 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     });
   }
 
-  protected addDefaultRouteToIGW(gatewayId: string) {
-    new cloudformation.RouteResource(this, `DefaultRoute`, {
+  /**
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
+   */
+  protected addDefaultRouteToIGW(
+    gateway: cloudformation.InternetGatewayResource,
+    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
+    const route = new cloudformation.RouteResource(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+      gatewayId: gateway.ref
     });
+    route.addDependency(gatewayAttachment);
   }
 }
 
@@ -538,10 +545,13 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 
   /**
-   * Create a default route that points to a passed IGW
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    */
-  public addDefaultIGWRouteEntry(gatewayId: string) {
-    this.addDefaultRouteToIGW(gatewayId);
+  public addDefaultIGWRouteEntry(
+    gateway: cloudformation.InternetGatewayResource,
+    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
+    this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
   /**
