@@ -71,7 +71,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       domainName: 'api.example.com',
       domainZone: zone,
       certificate: CertificateRef.import(stack, 'Cert', { certificateArn: 'helloworld' })
@@ -117,7 +117,7 @@ export = {
     test.throws(() => {
       new ecs.LoadBalancedFargateService(stack, 'Service', {
         cluster,
-        image: ecs.DockerHub.image('test'),
+        image: ecs.ContainerImage.fromDockerHub('test'),
         domainName: 'api.example.com'
       });
     });
