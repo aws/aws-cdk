@@ -16,7 +16,7 @@ export = {
     new ecs.LoadBalancedEc2Service(stack, 'Service', {
       cluster,
       memoryLimitMiB: 1024,
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       desiredCount: 2
     });
 
@@ -40,7 +40,7 @@ export = {
     // WHEN
     new ecs.LoadBalancedFargateService(stack, 'Service', {
       cluster,
-      image: ecs.DockerHub.image('test'),
+      image: ecs.ContainerImage.fromDockerHub('test'),
       desiredCount: 2
     });
 
