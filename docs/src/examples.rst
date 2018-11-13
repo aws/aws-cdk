@@ -14,205 +14,183 @@
 |cdk| Examples
 ##############
 
-This topic contains some usage examples to help you get started understanding
-the |cdk|.
+This topic contains some examples to help you get started using some of the advanced constructs
+offered by the |cdk|.
 
-.. We'll include this if we ever implement DeploymentPipeline
-   _multiple_stacks_example:
+.. _creating_ecs_l2_example:
 
-   Creating an App with Multiple Stacks
-   ====================================
+Creating an |ECS| Construct
+===========================
 
-   The following example creates the following stacks and one deployment pipeline:
+|ECSlong| (|ECS|) is a highly scalable, fast, container management service
+that makes it easy to run, stop, and manage Docker containers on a cluster.
+You can host your cluster on a serverless infrastructure that is managed by
+|ECS| by launching your services or tasks using the Fargate launch type.
+For more control you can host your tasks on a cluster of
+|EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
 
-   - **Dev** uses the default environment
-   - **PreProd** in the **us-west-2** Region
-   - **NAEast** in the **us-east-1** Region
-   - **NAWest** in the **us-west-2** Region
-   - **EU** in the **eu-west-1** Region
-   - **DeploymentPipeline** in the **us-east-1** Region
+Since |ECS| can be used with a number of AWS services,
+you should understand how the |ECS| construct that we use in this example
+gives you a leg up on using these AWS services:
 
-   Implement the class **MyStack** in the *my-stack* sub-folder,
-   that extends the |stack-class| class
-   (this is the same code as shown in the :doc:`concepts` topic).
 
-   code-block:: js
 
-   import { Stack, StackProps } from '@aws-cdk/cdk'
+* Automatic security group opening for LBs
+* Automatic ordering dependency between service and LB attaching to target group
+* Automatic userdata configuration on ASG 
+* Early validation of some tricky param combinations, which saves you deployment time in CFN to discover issues
+* Automatic permissions added for ECR if you use an image from ECR
+* convenient api for autoscaling 
+* Asset support, so deploying source from yer machine to ECS in one go
 
-   interface MyStackProps extends StackProps {
-     encryptedStorage: boolean;
-   }
 
-   export class MyStack extends Stack {
-     constructor(parent: Construct, name: string, props?: MyStackProps) {
-       super(parent, name, props);
 
-       new MyStorageLayer(this, 'Storage', { encryptedStorage: props.encryptedStorage });
-       new MyControlPlane(this, 'CPlane');
-       new MyDataPlane(this, 'DPlane');
-     }
-   }
+- |IAM|
+- |EC2|
+- |ELB|
+- |ECR|
+- |CFN|
 
-   Implement the class **DeploymentPipeline** in the *my-deployment* sub-folder,
-   that extends the |stack-class| class
-   (this is the same code as shown in the :doc:`concepts` topic).
 
-   code-block:: js
+.. _creating_ecs_l2_example_1:
 
-   Use **MyStack** and **DeploymentPipeline** to create the stacks and deployment pipeline.
+Step 1: Create the Directory and Initialze the |cdk|
+----------------------------------------------------
 
-   code-block:: js
+Let's start with creating a new directory to hold our |cdk| code
+and create a new app in that directory.
 
-   import { App } from '@aws-cdk/cdk'
-   import { MyStack } from './my-stack'
-   import { DeploymentPipeline } from './my-deployment'
+.. code-block:: sh
 
-   const app = new App();
+    mkdir MyEcsConstruct
+    cd MyEcsConstruct
+    
+.. tabs::
 
-   // Use the default environment
-   new MyStack(app, { name: 'Dev' });
+    .. group-tab:: TypeScript
 
-   // Pre-production stack
-   const preProd = new MyStack(app, {
-     name: 'PreProd',
-     env: { region: 'us-west-2' },
-     preProd: true
-   });
+        .. code-block:: sh
 
-   // Production stacks
-   const prod = [
-     new MyStack(app, {
-       name: 'NAEast',
-       env: { region: 'us-east-1' }
-   }),
+            cdk init --language typescript
 
-   new MyStack(app, {
-     name: 'NAWest',
-     env: { region: 'us-west-2' }
-   }),
+    Update *my_ecs_construct.ts* in the *bin* directory to only contain the following code:
 
-   new MyStack(app, {
-     name: 'EU',
-     env: { region: 'eu-west-1' },
-       encryptedStorage: true
-     })
-   ]
+    .. code-block:: ts
 
-   // CI/CD pipeline stack
-   new DeploymentPipeline(app, {
-     env: { region: 'us-east-1' },
-      strategy: DeploymentStrategy.Waved,
-      preProdStages: [ preProd ],
-      prodStages: prod
-   });
+        #!/usr/bin/env node
+        import cdk = require('@aws-cdk/cdk');
 
-   app.run();
+        class MyWidgetServiceStack extends cdk.Stack {
+          constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
+            super(parent, name, props);
 
-.. _dynamodb_example:
 
-Creating a |DDB| Table
-======================
+          }
+        }
 
-The following example creates a
-|DDB| table with the partition key **Alias**
-and sort key **Timestamp**.
+        // Create a new CDK app
+        const app = new cdk.App();
 
-.. code-block:: js
+        // Add your stack to it
+        new MyWidgetServiceStack(app, 'MyWidgetServiceStack');
 
-   import dynamodb = require('@aws-cdk/aws-dynamodb');
-   import cdk = require('@aws-cdk/cdk');
+        app.run();
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+    Save it and make sure it builds and creates an empty stack.
 
-       const table = new dynamodb.Table(this, 'Table', {
-         tableName: 'MyAppTable',
-         readCapacity: 5,
-         writeCapacity: 5
-       });
+    .. code-block:: sh
 
-       table.addPartitionKey({ name: 'Alias', type: dynamodb.AttributeType.String });
-       table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.String });
-     }
-   }
+        npm run build
+        cdk synth
 
-   const app = new cdk.App();
+    You should see a stack like the following,
+    where CDK-VERSION is the version of the CDK.
 
-   new MyStack(app, 'MyStack');
+    .. code-block:: sh
 
-    app.run();
+        Resources:
+          CDKMetadata:
+            Type: 'AWS::CDK::Metadata'
+            Properties:
+              Modules: >-
+                @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0
 
-.. _creating_rds_example:
 
-Creating an |RDS| Database
-==========================
+    .. group-tab:: Java
 
-The following example creates the Aurora database **MyAuroraDatabase**.
+        .. code-block:: sh
 
-.. code-block:: js
+            cdk init --language java
 
-   import ec2 = require('@aws-cdk/aws-ec2');
-   import rds = require('@aws-cdk/aws-rds');
-   import cdk = require('@aws-cdk/cdk');
+.. _creating_ecs_l2_example_2:
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+Step 2: Add the |ECS| Package and ???
+-------------------------------------
 
-       const vpc = new ec2.VpcNetwork(this, 'VPC');
+Install support for |EC2| and |ECS|.
 
-       new rds.DatabaseCluster(this, 'MyRdsDb', {
-         defaultDatabaseName: 'MyAuroraDatabase',
-         masterUser: {
-           username: 'admin',
-           password: '123456'
-         },
-         engine: rds.DatabaseClusterEngine.Aurora,
-         instanceProps: {
-           instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-           vpc: vpc,
-           vpcPlacement: {
-             subnetsToUse: ec2.SubnetType.Public
-           }
-         }
-       });
-     }
-   }
+.. tabs::
 
-   const app = new cdk.App();
+    .. group-tab:: TypeScript
 
-   new MyStack(app, 'MyStack');
+        .. code-block:: sh
 
-   app.run();
+            npm install @aws-cdk/aws-ec2 @aws-cdk/aws-ecs
 
-.. _creating_s3_example:
+Create an |ECS| Fargate construct.
+Fargate ???
 
-Creating an |S3| Bucket
-=======================
+.. tabs::
 
-The following example creates the |S3| bucket **MyS3Bucket** with server-side KMS
-encryption provided by |S3|.
+    .. group-tab:: TypeScript
 
-.. code-block:: js
+        Add the following import statements:
 
-   import s3 = require('@aws-cdk/aws-s3');
-   import cdk = require('@aws-cdk/cdk');
+        .. code-block:: typescript
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+            import ec2 = require('@aws-cdk/aws-ec2');
+            import ecs = require('@aws-cdk/aws-ecs');
 
-       new s3.Bucket(this, 'MyBucket', {
-         bucketName: 'MyS3Bucket',
-         encryption: s3.BucketEncryption.KmsManaged
-       });
-     }
-   }
+        Add the following code to the end of the constructor:
 
-   const app = new cdk.App();
+        .. code-block:: typescript
 
-   new MyStack(app, 'MyStack');
+            // Create a VPC
+            const vpc = new ec2.VpcNetwork(this, 'VPC');const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
+              cidr: '10.0.0.0/21',
+              subnetConfiguration: [
+                {
+                  cidrMask: 24,
+                  name: 'Ingress',
+                  subnetType: ec2.SubnetType.Public,
+                },
+                {
+                  cidrMask: 24,
+                  name: 'Application',
+                  subnetType: ec2.SubnetType.Private,
+                },
+                {
+                  cidrMask: 28,
+                  name: 'Database',
+                  subnetType: ec2.SubnetType.Isolated,
+                }
+              ],
+            });
 
-   app.run()
+            // Create an ECS cluster
+            const cluster = new ecs.Cluster(this, 'Cluster', {
+              vpc: vpc,
+            });
+
+            // Add capacity to the cluster
+            cluster.addDefaultAutoScalingGroupCapacity({
+              instanceType: new ec2.InstanceType("t2.xlarge"),
+              instanceCount: 3,
+            });
+
+            // Instantiate an ECS Service with an automatic load balancer
+            const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
+              cluster,
+              memoryLimitMiB: 512,
+              image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+            });
