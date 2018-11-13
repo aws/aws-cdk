@@ -14,7 +14,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
       });
 
       new ecs.FargateService(stack, "FargateService", {
@@ -107,7 +107,7 @@ export = {
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer("web", {
-        image: ecs.DockerHub.image("amazon/amazon-ecs-sample"),
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
       });
 
       new ecs.FargateService(stack, "FargateService", {
