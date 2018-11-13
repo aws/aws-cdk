@@ -60,10 +60,12 @@
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^0.16.0",
+    "@aws-cdk/cx-api": "^0.16.0",
     "@aws-cdk/cdk": "^0.16.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/cx-api": "^0.16.0",
     "@aws-cdk/cdk": "^0.16.0"
   }
 }
