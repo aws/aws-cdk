@@ -197,6 +197,8 @@ const service = new ecs.FargateService(this, 'Service', {
 balancers:
 
 ```ts
+import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+
 const service = new ecs.FargateService(this, 'Service', { /* ... */ });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
