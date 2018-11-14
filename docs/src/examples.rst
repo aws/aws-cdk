@@ -31,26 +31,17 @@ For more control you can host your tasks on a cluster of
 
 Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
-gives you a leg up on using these AWS services:
+gives you a leg up on using AWS services:
 
-
-
-* Automatic security group opening for LBs
-* Automatic ordering dependency between service and LB attaching to target group
-* Automatic userdata configuration on ASG
-* Early validation of some tricky param combinations, which saves you deployment time in CFN to discover issues
-* Automatic permissions added for ECR if you use an image from ECR
-* convenient api for autoscaling
-* Asset support, so deploying source from yer machine to ECS in one go
-
-
-
-- |IAM|
-- |EC2|
-- |ELB|
-- |ECR|
-- |CFN|
-
+* Automatic security group opening for load balancers
+* Automatic ordering dependency between service and load balancer attaching to a target group
+* Automatic userdata configuration on auto-scaling group
+* Early validation of parameter combinations,
+  which exposes |CFN| issues earlier,
+  thus saving you deployment time
+* Automatically adds permissions for |ECR| if you use an image from |ECR|
+* Convenient API for autoscaling
+* Asset support, so that you can deploy source from your machine to |ECS| in one step
 
 .. _creating_ecs_l2_example_1:
 
@@ -73,43 +64,43 @@ and create a new app in that directory.
 
             cdk init --language typescript
 
-    Update *my_ecs_construct.ts* in the *bin* directory to only contain the following code:
+        Update *my_ecs_construct.ts* in the *bin* directory to only contain the following code:
 
-    .. code-block:: ts
+        .. code-block:: ts
 
-        import cdk = require('@aws-cdk/cdk');
+            import cdk = require('@aws-cdk/cdk');
 
-        class MyEcsConstructStack extends cdk.Stack {
-          constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-            super(parent, name, props);
+            class MyEcsConstructStack extends cdk.Stack {
+              constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
+                super(parent, name, props);
 
 
-          }
-        }
+              }
+            }
 
-        const app = new cdk.App();
+            const app = new cdk.App();
 
-        new MyEcsConstructStack(app, 'MyEcsConstructStack');
+            new MyEcsConstructStack(app, 'MyEcsConstructStack');
 
-        app.run();
+            app.run();
 
-    Save it and make sure it builds and creates an empty stack.
+        Save it and make sure it builds and creates an empty stack.
 
-    .. code-block:: sh
+        .. code-block:: sh
 
-        npm run build
-        cdk synth
+            npm run build
+            cdk synth
 
-    You should see a stack like the following,
-    where CDK-VERSION is the version of the CDK.
+        You should see a stack like the following,
+        where CDK-VERSION is the version of the CDK.
 
-    .. code-block:: sh
+        .. code-block:: sh
 
-        Resources:
-          CDKMetadata:
-            Type: 'AWS::CDK::Metadata'
-            Properties:
-              Modules: @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_ecs_construct=0.1.0
+            Resources:
+              CDKMetadata:
+                Type: 'AWS::CDK::Metadata'
+                Properties:
+                  Modules: @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_ecs_construct=0.1.0
 
     .. group-tab:: Java
 
@@ -182,12 +173,12 @@ This requires a VPC, cluster, task definition, and security group.
               platformVersion: ecs.FargatePlatformVersion.Latest  // Default
             });
 
-    Save it and make sure it builds and creates a stack.
+        Save it and make sure it builds and creates a stack.
 
-    .. code-block:: sh
+        .. code-block:: sh
 
-        npm run build
-        cdk synth
+            npm run build
+            cdk synth
 
 You should see a stack of about 300 lines, so we won't show it here.
 
