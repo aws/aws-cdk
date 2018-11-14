@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import lambda = require('@aws-cdk/aws-lambda');
@@ -360,8 +361,112 @@ export = {
       test.equal(sourceAction.configuration.PollForSourceChanges, false);
 
       test.done();
-    }
-  }
+    },
+  },
+
+  'cross-region Pipeline': {
+    'generates the required Action & ArtifactStores properties in the template'(test: Test) {
+      const pipelineRegion = 'us-west-2';
+      const pipelineAccount = '123';
+
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: {
+          region: pipelineRegion,
+          account: pipelineAccount,
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+        crossRegionReplicationBuckets: {
+          'us-west-1': 'sfo-replication-bucket',
+        },
+      });
+
+      const stage1 = pipeline.addStage('Stage1');
+      const sourceAction = bucket.addToPipeline(stage1, 'BucketSource', {
+        bucketKey: '/some/key',
+      });
+
+      const stage2 = pipeline.addStage('Stage2');
+      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'Action1', {
+        stage: stage2,
+        changeSetName: 'ChangeSet',
+        templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+        stackName: 'SomeStack',
+        region: pipelineRegion,
+      });
+      new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action2', {
+        stage: stage2,
+        templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+        stackName: 'OtherStack',
+        region: 'us-east-1',
+      });
+      new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action3', {
+        stage: stage2,
+        changeSetName: 'ChangeSet',
+        stackName: 'SomeStack',
+        region: 'us-west-1',
+      });
+
+      expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+        "ArtifactStores": [
+          {
+            "Region": "us-east-1",
+            "ArtifactStore": {
+              "Type": "S3",
+            },
+          },
+          {
+            "Region": "us-west-1",
+            "ArtifactStore": {
+              "Location": "sfo-replication-bucket",
+              "Type": "S3",
+            },
+          },
+          {
+            "Region": "us-west-2",
+            "ArtifactStore": {
+              "Type": "S3",
+            },
+          },
+        ],
+        "Stages": [
+          {
+            "Name": "Stage1",
+          },
+          {
+            "Name": "Stage2",
+            "Actions": [
+              {
+                "Name": "Action1",
+                "Region": "us-west-2",
+              },
+              {
+                "Name": "Action2",
+                "Region": "us-east-1",
+              },
+              {
+                "Name": "Action3",
+                "Region": "us-west-1",
+              },
+            ],
+          },
+        ]
+      }));
+
+      test.equal(pipeline.crossRegionScaffoldStacks[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionScaffoldStacks['us-west-1'], undefined);
+
+      const usEast1ScaffoldStack = pipeline.crossRegionScaffoldStacks['us-east-1'];
+      test.notEqual(usEast1ScaffoldStack, undefined);
+      test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
+      test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
+      test.ok(usEast1ScaffoldStack.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1ScaffoldStack.id}' to contain 'us-east-1'`);
+
+      test.done();
+    },
+  },
 };
 
 function stageForTesting(stack: cdk.Stack): codepipeline.Stage {

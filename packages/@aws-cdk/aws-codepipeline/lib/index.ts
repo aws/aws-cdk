@@ -1,3 +1,4 @@
+export * from './cross-region-scaffold-stack';
 export * from './github-source-action';
 export * from './manual-approval-action';
 export * from './pipeline';
