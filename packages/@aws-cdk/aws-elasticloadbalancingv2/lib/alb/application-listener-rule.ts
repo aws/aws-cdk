@@ -127,7 +127,7 @@ export class ApplicationListenerRule extends cdk.Construct implements cdk.IDepen
       targetGroupArn: targetGroup.targetGroupArn,
       type: 'forward'
     });
-    targetGroup.registerListener(this.listener);
+    targetGroup.registerListener(this.listener, this);
   }
 
   /**
