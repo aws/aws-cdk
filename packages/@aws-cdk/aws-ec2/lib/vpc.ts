@@ -430,8 +430,8 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       }
 
       // These values will be used to recover the config upon provider import
-      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name);
-      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType));
+      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name, { propagate: false });
+      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { propagate: false });
     });
   }
 }
