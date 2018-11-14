@@ -137,14 +137,14 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: IApplicationListener) {
+  public registerListener(listener: IApplicationListener, dependable?: cdk.IDependable) {
     // Notify this listener of all connectables that we know about.
     // Then remember for new connectables that might get added later.
     for (const member of this.connectableMembers) {
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.dependableListeners.push(listener);
+    this.loadBalancerAssociationDependencies.push(dependable || listener);
   }
 }
 
@@ -172,18 +172,18 @@ export interface IApplicationTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: IApplicationListener): void;
+  registerListener(listener: IApplicationListener, dependable?: cdk.IDependable): void;
 }
 
 /**
  * An imported application target group
  */
 class ImportedApplicationTargetGroup extends BaseImportedTargetGroup implements IApplicationTargetGroup {
-  public registerListener(_listener: IApplicationListener) {
+  public registerListener(_listener: IApplicationListener, _dependable?: cdk.IDependable) {
     // Nothing to do, we know nothing of our members
   }
 
-  public listenerDependency(): cdk.IDependable {
+  public loadBalancerDependency(): cdk.IDependable {
     return new LazyDependable([]);
   }
 }

@@ -345,7 +345,7 @@ export = {
 
     // WHEN
     const resource = new cdk.Resource(stack, 'SomeResource', { type: 'Test::Resource' });
-    resource.addDependency(group.listenerDependency());
+    resource.addDependency(group.loadBalancerDependency());
 
     loadBalancer.addListener('Listener', {
       port: 80,
@@ -363,5 +363,40 @@ export = {
     }, MatchStyle.SUPERSET);
 
     test.done();
-  }
+  },
+
+  'Can add dependency on ListenerRule via TargetGroup'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc });
+    const group1 = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', { vpc, port: 80 });
+    const group2 = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', { vpc, port: 80 });
+    const listener = loadBalancer.addListener('Listener', {
+      port: 80,
+      defaultTargetGroups: [group1]
+    });
+
+    // WHEN
+    const resource = new cdk.Resource(stack, 'SomeResource', { type: 'Test::Resource' });
+    resource.addDependency(group2.loadBalancerDependency());
+
+    listener.addTargetGroups('SecondGroup', {
+      pathPattern: '/bla',
+      priority: 10,
+      targetGroups: [group2]
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        SomeResource: {
+          Type: "Test::Resource",
+          DependsOn: ["LoadBalancerListenerSecondGroupRuleF5FDC196"]
+        }
+      }
+    }, MatchStyle.SUPERSET);
+
+    test.done();
+  },
 };
