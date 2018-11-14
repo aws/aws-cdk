@@ -136,6 +136,8 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     // _attachAction should be idempotent in case a customer ever calls it directly
     if (!this._actions.includes(action)) {
       this._actions.push(action);
+
+      (this.pipeline as any)._attachActionToRegion(this, action);
     }
   }
 

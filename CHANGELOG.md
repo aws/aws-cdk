@@ -1,3 +1,32 @@
+## [0.17.0](https://github.com/awslabs/aws-cdk/compare/v0.16.0...v0.17.0) (2018-11-14)
+
+
+### Bug Fixes
+
+* **aws-ecs**: remove DockerHub constructor class ([#1153](https://github.com/awslabs/aws-cdk/issues/1153)) ([ed14638](https://github.com/awslabs/aws-cdk/commit/ed14638))
+* **aws-ec2:** add dependency on gateway attachment for public routes ([#1142](https://github.com/awslabs/aws-cdk/issues/1142)) ([15b255c](https://github.com/awslabs/aws-cdk/commit/15b255c)), closes [#1140](https://github.com/awslabs/aws-cdk/issues/1140)
+* **s3-deployment:** bundle modules correctly ([#1154](https://github.com/awslabs/aws-cdk/issues/1154)) ([0cb1adf](https://github.com/awslabs/aws-cdk/commit/0cb1adf))
+
+
+### Features
+
+* **aws-codedeploy:** add an `addToPipeline` method to Deployment Group. ([#1166](https://github.com/awslabs/aws-cdk/issues/1166)) ([bdbeb7c](https://github.com/awslabs/aws-cdk/commit/bdbeb7c))
+* **aws-codepipeline, aws-cloudformation:** support cross-region CloudFormation pipeline action ([#1152](https://github.com/awslabs/aws-cdk/issues/1152)) ([8e701ad](https://github.com/awslabs/aws-cdk/commit/8e701ad))
+* **toolkit:** print available templates when --language is omitted ([#1159](https://github.com/awslabs/aws-cdk/issues/1159)) ([5726c45](https://github.com/awslabs/aws-cdk/commit/5726c45))
+
+### BREAKING CHANGES
+
+* **aws-ec2:** Method signature of
+VpcPublicSubnet.addDefaultIGWRouteEntry changed in order to add a
+dependency on gateway attachment completing before creating the public
+route to the gateway. Instead of passing a gateway ID string, pass in a
+cloudformation.InternetGatewayResource object and a
+cloudformation.VPCGatewayAttachmentResource object.
+* If you were using `DockerHub.image()` to reference docker hub images,
+use `ContainerImage.fromDockerHub()` instead.
+
+
+
 <a name="0.16.0"></a>
 ## [0.16.0](https://github.com/awslabs/aws-cdk/compare/v0.15.2...v0.16.0) (2018-11-12)
 

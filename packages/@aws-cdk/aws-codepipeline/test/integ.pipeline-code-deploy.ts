@@ -36,9 +36,6 @@ bucket.addToPipeline(sourceStage, 'S3Source', {
 });
 
 const deployStage = new codepipeline.Stage(stack, 'Deploy', { pipeline });
-new codedeploy.PipelineDeployAction(stack, 'CodeDeploy', {
-  stage: deployStage,
-  deploymentGroup,
-});
+deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
 
 app.run();

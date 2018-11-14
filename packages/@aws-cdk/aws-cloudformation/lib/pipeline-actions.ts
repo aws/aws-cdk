@@ -33,6 +33,17 @@ export interface PipelineCloudFormationActionProps extends codepipeline.CommonAc
    * @default Automatically generated artifact name.
    */
   outputArtifactName?: string;
+
+  /**
+   * The AWS region the given Action resides in.
+   * Note that a cross-region Pipeline requires replication buckets to function correctly.
+   * You can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
+   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
+   *
+   * @default the Action resides in the same region as the Pipeline
+   */
+  region?: string;
 }
 
 /**
@@ -50,6 +61,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.Action {
     super(parent, id, {
       stage: props.stage,
       runOrder: props.runOrder,
+      region: props.region,
       artifactBounds: {
         minInputs: 0,
         maxInputs: 10,
@@ -358,14 +370,6 @@ export enum CloudFormationCapabilities {
   NamedIAM = 'CAPABILITY_NAMED_IAM'
 }
 
-function stackArnFromName(stackName: string): string {
-  return cdk.ArnUtils.fromComponents({
-    service: 'cloudformation',
-    resource: 'stack',
-    resourceName: `${stackName}/*`
-  });
-}
-
 /**
  * Manages a bunch of singleton-y statements on the policy of an IAM Role.
  * Dedicated methods can be used to add specific permissions to the role policy
@@ -394,7 +398,26 @@ class SingletonPolicy extends cdk.Construct {
     super(role, SingletonPolicy.UUID);
   }
 
-  public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean }): void {
+  public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
+    this.statementFor({
+      actions: ['cloudformation:ExecuteChangeSet'],
+      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
+    }).addResource(stackArnFromProps(props));
+  }
+
+  public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
+    this.statementFor({
+      actions: [
+        'cloudformation:CreateChangeSet',
+        'cloudformation:DeleteChangeSet',
+        'cloudformation:DescribeChangeSet',
+        'cloudformation:DescribeStacks',
+      ],
+      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
+    }).addResource(stackArnFromProps(props));
+  }
+
+  public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
     const actions = [
       'cloudformation:DescribeStack*',
       'cloudformation:CreateStack',
@@ -407,35 +430,16 @@ class SingletonPolicy extends cdk.Construct {
     if (props.replaceOnFailure) {
       actions.push('cloudformation:DeleteStack');
     }
-    this.statementFor({ actions }).addResource(stackArnFromName(props.stackName));
+    this.statementFor({ actions }).addResource(stackArnFromProps(props));
   }
 
-  public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string }): void {
-    this.statementFor({
-      actions: [
-        'cloudformation:CreateChangeSet',
-        'cloudformation:DeleteChangeSet',
-        'cloudformation:DescribeChangeSet',
-        'cloudformation:DescribeStacks',
-      ],
-      conditions: { StringEqualsIfExists: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromName(props.stackName));
-  }
-
-  public grantExecuteChangeSet(props: { stackName: string, changeSetName: string }): void {
-    this.statementFor({
-      actions: ['cloudformation:ExecuteChangeSet'],
-      conditions: { StringEquals: { 'cloudformation:ChangeSetName': props.changeSetName } },
-    }).addResource(stackArnFromName(props.stackName));
-  }
-
-  public grantDeleteStack(props: { stackName: string }): void {
+  public grantDeleteStack(props: { stackName: string, region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStack*',
         'cloudformation:DeleteStack',
       ]
-    }).addResource(stackArnFromName(props.stackName));
+    }).addResource(stackArnFromProps(props));
   }
 
   public grantPassRole(role: iam.Role): void {
@@ -481,3 +485,12 @@ interface StatementTemplate {
 }
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
+
+function stackArnFromProps(props: { stackName: string, region?: string }): string {
+  return cdk.ArnUtils.fromComponents({
+    region: props.region,
+    service: 'cloudformation',
+    resource: 'stack',
+    resourceName: `${props.stackName}/*`
+  });
+}
