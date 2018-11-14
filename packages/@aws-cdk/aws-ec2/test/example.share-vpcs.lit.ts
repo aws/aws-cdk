@@ -3,6 +3,16 @@ import ec2 = require("../lib");
 
 const app = new cdk.App();
 
+interface ConstructThatTakesAVpcProps {
+  vpc: ec2.VpcNetworkRef;
+}
+
+class ConstructThatTakesAVpc extends cdk.Construct {
+  constructor(parent: cdk.Construct, id: string, _props: ConstructThatTakesAVpcProps) {
+    super(parent, id);
+  }
+}
+
 /// !show
 class Stack1 extends cdk.Stack {
   public readonly vpcProps: ec2.VpcNetworkRefProps;
@@ -27,6 +37,10 @@ class Stack2 extends cdk.Stack {
 
     // Import the VPC from a set of properties
     const vpc = ec2.VpcNetworkRef.import(this, 'VPC', props.vpcProps);
+
+    new ConstructThatTakesAVpc(this, 'Construct', {
+      vpc
+    });
   }
 }
 
@@ -36,5 +50,6 @@ const stack2 = new Stack2(app, 'Stack2', {
 });
 /// !hide
 
-app.run();
+Array.isArray(stack2);
 
+app.run();
