@@ -37,10 +37,10 @@ gives you a leg up on using these AWS services:
 
 * Automatic security group opening for LBs
 * Automatic ordering dependency between service and LB attaching to target group
-* Automatic userdata configuration on ASG 
+* Automatic userdata configuration on ASG
 * Early validation of some tricky param combinations, which saves you deployment time in CFN to discover issues
 * Automatic permissions added for ECR if you use an image from ECR
-* convenient api for autoscaling 
+* convenient api for autoscaling
 * Asset support, so deploying source from yer machine to ECS in one go
 
 
@@ -64,7 +64,7 @@ and create a new app in that directory.
 
     mkdir MyEcsConstruct
     cd MyEcsConstruct
-    
+
 .. tabs::
 
     .. group-tab:: TypeScript
@@ -77,10 +77,9 @@ and create a new app in that directory.
 
     .. code-block:: ts
 
-        #!/usr/bin/env node
         import cdk = require('@aws-cdk/cdk');
 
-        class MyWidgetServiceStack extends cdk.Stack {
+        class MyEcsConstructStack extends cdk.Stack {
           constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
             super(parent, name, props);
 
@@ -88,11 +87,9 @@ and create a new app in that directory.
           }
         }
 
-        // Create a new CDK app
         const app = new cdk.App();
 
-        // Add your stack to it
-        new MyWidgetServiceStack(app, 'MyWidgetServiceStack');
+        new MyEcsConstructStack(app, 'MyEcsConstructStack');
 
         app.run();
 
@@ -112,9 +109,7 @@ and create a new app in that directory.
           CDKMetadata:
             Type: 'AWS::CDK::Metadata'
             Properties:
-              Modules: >-
-                @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0
-
+              Modules: @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_ecs_construct=0.1.0
 
     .. group-tab:: Java
 
@@ -124,8 +119,8 @@ and create a new app in that directory.
 
 .. _creating_ecs_l2_example_2:
 
-Step 2: Add the |ECS| Package and ???
--------------------------------------
+Step 2: Add the |EC2| and |ECS| Packages
+----------------------------------------
 
 Install support for |EC2| and |ECS|.
 
@@ -137,8 +132,8 @@ Install support for |EC2| and |ECS|.
 
             npm install @aws-cdk/aws-ec2 @aws-cdk/aws-ecs
 
-Create an |ECS| Fargate construct.
-Fargate ???
+Create a FargateService.
+This requires a VPC, cluster, task definition, and security group.
 
 .. tabs::
 
@@ -155,42 +150,44 @@ Fargate ???
 
         .. code-block:: typescript
 
-            // Create a VPC
-            const vpc = new ec2.VpcNetwork(this, 'VPC');const vpc = new ec2.VpcNetwork(this, 'TheVPC', {
-              cidr: '10.0.0.0/21',
-              subnetConfiguration: [
-                {
-                  cidrMask: 24,
-                  name: 'Ingress',
-                  subnetType: ec2.SubnetType.Public,
-                },
-                {
-                  cidrMask: 24,
-                  name: 'Application',
-                  subnetType: ec2.SubnetType.Private,
-                },
-                {
-                  cidrMask: 28,
-                  name: 'Database',
-                  subnetType: ec2.SubnetType.Isolated,
-                }
-              ],
+            const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
+              maxAZs: 2 // Default is all AZs in region
             });
 
             // Create an ECS cluster
-            const cluster = new ecs.Cluster(this, 'Cluster', {
-              vpc: vpc,
+            const cluster = new ecs.Cluster(this, 'MyCluster', {
+              vpc: vpc
             });
 
-            // Add capacity to the cluster
-            cluster.addDefaultAutoScalingGroupCapacity({
-              instanceType: new ec2.InstanceType("t2.xlarge"),
-              instanceCount: 3,
+            const taskDefinition = new ecs.FargateTaskDefinition(this, 'MyFargateTaskDefinition', {
+              cpu: '256',  // Default
+              memoryMiB: '2048'  // Default is 512
             });
 
-            // Instantiate an ECS Service with an automatic load balancer
-            const ecsService = new ecs.LoadBalancedEc2Service(this, 'Service', {
-              cluster,
-              memoryLimitMiB: 512,
-              image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+            // The task definition must have at least one container.
+            // Otherwise you cannot synthesize or deploy your app.
+            taskDefinition.addContainer('MyContainer', {
+              image: ecs.DockerHub.image('MyDockerImage')    // Required
             });
+
+            const securityGroup = new ec2.SecurityGroup(this, 'MySecurityGroup', {
+              vpc: vpc
+            });
+
+            new ecs.FargateService(this, 'MyFargateService', {
+              taskDefinition: taskDefinition,  // Required
+              cluster: cluster,  // Required
+              desiredCount: 6,  // Default is 1
+              securityGroup: securityGroup,  // Required
+              platformVersion: ecs.FargatePlatformVersion.Latest  // Default
+            });
+
+    Save it and make sure it builds and creates a stack.
+
+    .. code-block:: sh
+
+        npm run build
+        cdk synth
+
+You should see a stack of about 300 lines, so we won't show it here.
+
