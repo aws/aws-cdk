@@ -85,18 +85,6 @@ Save it and make sure it builds and creates an empty stack.
     npm run build
     cdk synth
 
-You should see a stack like the following,
-where CDK-VERSION is the version of the CDK.
-
-.. code-block:: sh
-
-    Resources:
-      CDKMetadata:
-        Type: 'AWS::CDK::Metadata'
-        Properties:
-          Modules: >-
-            @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0
-
 .. _create_lambda_functions:
 
 Step 2: Create a |LAM| Function to List all Widgets
