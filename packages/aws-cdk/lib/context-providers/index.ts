@@ -36,8 +36,8 @@ export async function provideContextValues(
 }
 
 const availableContextProviders: ProviderMap = {
-  'availability-zones': AZContextProviderPlugin,
-  'ssm': SSMContextProviderPlugin,
-  'hosted-zone': HostedZoneContextProviderPlugin,
+  [cxapi.AVAILABILITY_ZONE_PROVIDER]: AZContextProviderPlugin,
+  [cxapi.SSM_PARAMETER_PROVIDER]: SSMContextProviderPlugin,
+  [cxapi.HOSTED_ZONE_PROVIDER]: HostedZoneContextProviderPlugin,
   [cxapi.VPC_PROVIDER]: VpcNetworkContextProviderPlugin,
 };

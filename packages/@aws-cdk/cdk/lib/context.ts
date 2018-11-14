@@ -1,8 +1,6 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Stack } from './cloudformation/stack';
 import { Construct } from './core/construct';
-
-const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
-const SSM_PARAMETER_PROVIDER = 'ssm';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -136,7 +134,7 @@ export class AvailabilityZoneProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct) {
-    this.provider = new ContextProvider(context, AVAILABILITY_ZONES_PROVIDER);
+    this.provider = new ContextProvider(context, cxapi.AVAILABILITY_ZONE_PROVIDER);
   }
 
   /**
@@ -161,7 +159,7 @@ export class SSMParameterProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct, props: SSMParameterProviderProps) {
-    this.provider = new ContextProvider(context, SSM_PARAMETER_PROVIDER, props);
+    this.provider = new ContextProvider(context, cxapi.SSM_PARAMETER_PROVIDER, props);
   }
 
   /**
