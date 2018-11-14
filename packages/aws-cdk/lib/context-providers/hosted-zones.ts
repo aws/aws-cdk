@@ -1,36 +1,17 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Mode, SDK } from '../api';
 import { debug } from '../logging';
 import { ContextProviderPlugin } from './provider';
-
-export interface HostedZoneProviderProps {
-  /**
-   * The domain name e.g. example.com to lookup
-   */
-  domainName: string;
-
-  /**
-   * True if the zone you want to find is a private hosted zone
-   */
-  privateZone?: boolean;
-
-  /**
-   * The VPC ID to that the private zone must be associated with
-   *
-   * If you provide VPC ID and privateZone is false, this will return no results
-   * and raise an error.
-   */
-  vpcId?: string;
-}
 
 export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
 
   constructor(private readonly aws: SDK) {
   }
 
-  public async getValue(args: {[key: string]: any}) {
+  public async getValue(args: {[key: string]: any}): Promise<cxapi.HostedZoneContextResponse> {
     const account = args.account;
     const region = args.region;
-    if (!this.isHostedZoneProps(args)) {
+    if (!this.isHostedZoneQuery(args)) {
       throw new Error(`HostedZoneProvider requires domainName property to be set in ${args}`);
     }
     const domainName = args.domainName;
@@ -45,12 +26,16 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
       const filteProps = `dns:${domainName}, privateZone:${args.privateZone}, vpcId:${args.vpcId}`;
       throw new Error(`Found zones: ${JSON.stringify(candidateZones)} for ${filteProps}, but wanted exactly 1 zone`);
     }
-    return candidateZones[0];
+
+    return {
+      Id: candidateZones[0].Id,
+      Name: candidateZones[0].Name,
+    };
   }
 
   private async filterZones(
     r53: AWS.Route53, zones: AWS.Route53.HostedZone[],
-    props: HostedZoneProviderProps): Promise<AWS.Route53.HostedZone[]> {
+    props: cxapi.HostedZoneContextQuery): Promise<AWS.Route53.HostedZone[]> {
 
       let candidates: AWS.Route53.HostedZone[] = [];
       const domainName = props.domainName.endsWith('.') ? props.domainName : `${props.domainName}.`;
@@ -79,7 +64,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
       return candidates;
     }
 
-  private isHostedZoneProps(props: HostedZoneProviderProps | any): props is HostedZoneProviderProps {
-    return (props as HostedZoneProviderProps).domainName !== undefined;
+  private isHostedZoneQuery(props: cxapi.HostedZoneContextQuery | any): props is cxapi.HostedZoneContextQuery {
+    return (props as cxapi.HostedZoneContextQuery).domainName !== undefined;
   }
 }

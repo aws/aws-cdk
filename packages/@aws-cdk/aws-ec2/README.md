@@ -174,8 +174,8 @@ Application subnets will route to the NAT Gateway.
 
 #### Sharing VPCs across stacks
 
-If you are creating multiple `Stack`s inside the same CDK application,
-you can reuse a VPC from one Stack in another by using `export()` and
+If you are creating multiple `Stack`s inside the same CDK application, you
+can reuse a VPC defined in one Stack in another by using `export()` and
 `import()`:
 
 [sharing VPCs between stacks](test/example.share-vpcs.lit.ts)

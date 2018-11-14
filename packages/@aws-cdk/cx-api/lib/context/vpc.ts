@@ -1,8 +1,16 @@
 export const VPC_PROVIDER = 'vpc-provider';
 
 export interface VpcContextQuery {
-  region: string;
-  account: string;
+  /**
+   * Query account
+   */
+  account?: string;
+
+  /**
+   * Query region
+   */
+  region?: string;
+
   vpcId?: string;
   vpcName?: string;
   tags?: {[key: string]: string};

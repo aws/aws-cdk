@@ -26,7 +26,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const tags: {[key: string]: string} | undefined = args.tags;
     const isDefault: boolean | undefined = args.isDefault;
 
-    // Builter request filter
+    // Build request filter
     const filters: AWS.EC2.Filter[] = [];
     if (vpcId) { filters.push({ Name: 'vpc-id', Values: [vpcId] }); }
     if (vpcName) { filters.push({ Name: 'tag:Name', Values: [vpcName] }); }
@@ -61,20 +61,22 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
 
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
-    // - Type tag, we tag subnets with their type
-    // - Name tag, we tag subnets with their subnet group name
-    // - MapPublicIpOnLaunch in absence of tags => must be a Public subnet, anything else is either Isolated or Private
+    // - Type tag, we tag subnets with their type. In absence of this tag, we
+    //   fall back to MapPublicIpOnLaunch => must be a Public subnet, anything
+    //   else is considered Priate.
+    // - Name tag, we tag subnets with their subnet group name. In absence of this tag,
+    //   we use the type as the name.
 
     const azs = Array.from(new Set<string>(listedSubnets.map(s => s.AvailabilityZone!)));
     azs.sort();
 
     const subnets: Subnet[] = listedSubnets.map(subnet => {
-      let type = getTag('aws-cdk:SubnetType', subnet.Tags);
+      let type = getTag('aws-cdk:subnet-type', subnet.Tags);
       if (type === undefined) {
         type = subnet.MapPublicIpOnLaunch ? 'Public' : 'Private';
       }
 
-      const name = getTag('aws-cdk:SubnetName', subnet.Tags) || type;
+      const name = getTag('aws-cdk:subnet-name', subnet.Tags) || type;
 
       return { az: subnet.AvailabilityZone!, type: type as SubnetType, name, subnetId: subnet.SubnetId! };
     });

@@ -436,8 +436,8 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   }
 }
 
-const SUBNETTYPE_TAG = 'aws-cdk:SubnetType';
-const SUBNETNAME_TAG = 'aws-cdk:SubnetName';
+const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
 
 function subnetTypeTagValue(type: SubnetType) {
   switch (type) {
