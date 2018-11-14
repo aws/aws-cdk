@@ -169,7 +169,7 @@ Later on we'll show you how to launch an EC2 service.
             // The task definition must have at least one container.
             // Otherwise you cannot synthesize or deploy your app.
             taskDefinition.addContainer('MyContainer', {
-              image: ecs.DockerHub.image('MyDockerImage')    // Required
+              image: ecs.ContainerImage.fromDockerHub('MyDockerImage')    // Required
             });
 
             const securityGroup = new ec2.SecurityGroup(this, 'MySecurityGroup', {
