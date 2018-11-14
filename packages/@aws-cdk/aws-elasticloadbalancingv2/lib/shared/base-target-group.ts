@@ -147,9 +147,9 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   protected readonly defaultPort: string;
 
   /**
-   * List of listeners routing to this target group
+   * List of dependables that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  protected readonly dependableListeners = new Array<cdk.IDependable>();
+  protected readonly loadBalancerAssociationDependencies = new Array<cdk.IDependable>();
 
   /**
    * Attributes of this target group
@@ -250,9 +250,20 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
 
   /**
    * Return an object to depend on the listeners added to this target group
+   *
+   * @deprecated Use 'loadBalancerDependency' instead.
    */
   public listenerDependency(): cdk.IDependable {
-    return new LazyDependable(this.dependableListeners);
+    return this.loadBalancerDependency();
+  }
+
+  /**
+   * Return an object to depend on this TargetGroup being attached to a load balancer
+   *
+   * @deprecated Use 'loadBalancerDependency' instead.
+   */
+  public loadBalancerDependency(): cdk.IDependable {
+    return new LazyDependable(this.loadBalancerAssociationDependencies);
   }
 
   /**
@@ -297,7 +308,7 @@ export interface ITargetGroup {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  listenerDependency(): cdk.IDependable;
+  loadBalancerDependency(): cdk.IDependable;
 }
 
 /**
