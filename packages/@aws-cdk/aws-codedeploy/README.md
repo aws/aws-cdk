@@ -174,7 +174,13 @@ const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
 const deployStage = pipeline.addStage('Deploy');
 new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
     stage: deployStage,
-    applicationName: 'YourCodeDeployApplicationName',
-    deploymentGroupName: 'YourCodeDeployDeploymentGroupName',
+    deploymentGroup,
 });
+```
+
+You can also add the Deployment Group to the Pipeline directly:
+
+```ts
+// equivalent to the code above:
+deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
 ```

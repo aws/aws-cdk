@@ -88,7 +88,8 @@ export interface IPipeline extends events.IEventRuleTarget {
    */
   readonly role: iam.Role;
 
-  /* Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
+  /**
+   * Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
    *
    * @param identity the IAM Identity to grant the permissions to
    */

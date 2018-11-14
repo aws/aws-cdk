@@ -4,21 +4,28 @@ import cdk = require('@aws-cdk/cdk');
 import { ServerDeploymentGroupRef } from './deployment-group';
 
 /**
- * Construction properties of the {@link PipelineDeployAction CodeDeploy deploy CodePipeline Action}.
+ * Common properties for creating a {@link PipelineDeployAction},
+ * either directly, through its constructor,
+ * or through {@link ServerDeploymentGroupRef#addToPipeline}.
  */
-export interface PipelineDeployActionProps extends codepipeline.CommonActionProps,
-    codepipeline.CommonActionConstructProps {
-  /**
-   * The CodeDeploy Deployment Group to deploy to.
-   */
-  deploymentGroup: ServerDeploymentGroupRef;
-
+export interface CommonPipelineDeployActionProps extends codepipeline.CommonActionProps {
   /**
    * The source to use as input for deployment.
    *
    * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
   inputArtifact?: codepipeline.Artifact;
+}
+
+/**
+ * Construction properties of the {@link PipelineDeployAction CodeDeploy deploy CodePipeline Action}.
+ */
+export interface PipelineDeployActionProps extends CommonPipelineDeployActionProps,
+    codepipeline.CommonActionConstructProps {
+  /**
+   * The CodeDeploy Deployment Group to deploy to.
+   */
+  deploymentGroup: ServerDeploymentGroupRef;
 }
 
 export class PipelineDeployAction extends codepipeline.DeployAction {
