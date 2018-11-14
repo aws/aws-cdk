@@ -194,6 +194,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       healthCheckProtocol: new cdk.Token(() => this.healthCheck && this.healthCheck.protocol),
       healthCheckTimeoutSeconds: new cdk.Token(() => this.healthCheck && this.healthCheck.timeoutSeconds),
       healthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyThresholdCount),
+      unhealthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.unhealthyThresholdCount),
       matcher: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
         httpCode: this.healthCheck.healthyHttpCodes
       } : undefined),

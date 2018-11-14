@@ -1,3 +1,4 @@
+import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './cloudfront.generated';
@@ -476,7 +477,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct {
+export class CloudFrontWebDistribution extends cdk.Construct implements route53.IAliasRecordTarget {
 
   /**
    * The hosted zone Id if using an alias record in Route53.
@@ -657,6 +658,13 @@ export class CloudFrontWebDistribution extends cdk.Construct {
     const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.distributionDomainName;
     this.distributionId = distribution.distributionId;
+  }
+
+  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
+    return {
+      hostedZoneId: this.aliasHostedZoneId,
+      dnsName: this.domainName
+    };
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {

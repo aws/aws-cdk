@@ -88,7 +88,8 @@ export interface IPipeline extends events.IEventRuleTarget {
    */
   readonly role: iam.Role;
 
-  /* Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
+  /**
+   * Grants read permissions to the Pipeline's S3 Bucket to the given Identity.
    *
    * @param identity the IAM Identity to grant the permissions to
    */
@@ -153,6 +154,14 @@ export interface CommonActionConstructProps {
 export interface ActionProps extends CommonActionProps, CommonActionConstructProps {
   category: ActionCategory;
   provider: string;
+
+  /**
+   * The region this Action resides in.
+   *
+   * @default the Action resides in the same region as the Pipeline
+   */
+  region?: string;
+
   artifactBounds: ActionArtifactBounds;
   configuration?: any;
   version?: string;
@@ -176,6 +185,17 @@ export abstract class Action extends cdk.Construct {
    * The service provider that the action calls.
    */
   public readonly provider: string;
+
+  /**
+   * The AWS region the given Action resides in.
+   * Note that a cross-region Pipeline requires replication buckets to function correctly.
+   * You can provide their names with the {@link PipelineProps#crossRegionReplicationBuckets} property.
+   * If you don't, the CodePipeline Construct will create new Stacks in your CDK app containing those buckets,
+   * that you will need to `cdk deploy` before deploying the main, Pipeline-containing Stack.
+   *
+   * @default the Action resides in the same region as the Pipeline
+   */
+  public readonly region?: string;
 
   /**
    * The action's configuration. These are key-value pairs that specify input values for an action.
@@ -210,6 +230,7 @@ export abstract class Action extends cdk.Construct {
     this.version = props.version || '1';
     this.category = props.category;
     this.provider = props.provider;
+    this.region = props.region;
     this.configuration = props.configuration;
     this.artifactBounds = props.artifactBounds;
     this.runOrder = props.runOrder === undefined ? 1 : props.runOrder;
