@@ -42,3 +42,52 @@ The |cdk| currently supports the following context providers.
 .. code:: js
 
    const ami: string = new SSMParameterProvider(this).getString('my-awesome-value');
+
+
+###########################
+Viewing and managing context
+###########################
+
+Context is used to retrieve things like Availability Zones available to you, or
+AMI IDs used to start your instances. In order to avoid unexpected changes to
+your deployments-- let's say you were adding a ``Queue`` to your application but
+it happened that a new Amazon Linux AMI was released and all of a sudden your
+AutoScalingGroup will change-- we store the context values in ``cdk.json``, so
+after they've been retrieved once we can be sure we're using the same value on
+the next synthesis.
+
+To have a look at the context values stored for your application, run ``cdk
+context``. You will see something like the following:
+
+.. code::
+
+   $ cdk context
+
+   Context found in cdk.json:
+
+   ┌───┬────────────────────────────────────────────────────┬────────────────────────────────────────────────────┐
+   │ # │ Key                                                │ Value                                              │
+   ├───┼────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+   │ 1 │ availability-zones:account=123456789012:region=us- │ [ "us-east-1a", "us-east-1b", "us-east-1c",        │
+   │   │ east-1                                             │ "us-east-1d", "us-east-1e", "us-east-1f" ]         │
+   ├───┼────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
+   │ 2 │ ssm:account=123456789012:parameterName=/aws/       │ "ami-013be31976ca2c322"                            │
+   │   │ service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_ │                                                    │
+   │   │ 64-gp2:region=us-east-1                            │                                                    │
+   └───┴────────────────────────────────────────────────────┴────────────────────────────────────────────────────┘
+
+   Run cdk context --invalidate KEY_OR_NUMBER to invalidate a context key. It will be refreshed on the next CDK synthesis run.
+
+At some point, we *do* want to update to the latest version of the Amazon Linux
+AMI. To do a controlled update of the context value, invalidate it and
+synthesize again:
+
+.. code::
+
+   $ cdk context --invalidate 2
+   Context value
+   ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=us-east-1
+   invalidated. It will be refreshed on the next SDK synthesis run.
+
+   $ cdk synth
+   ...
