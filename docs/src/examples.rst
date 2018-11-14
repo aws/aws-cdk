@@ -123,8 +123,19 @@ Install support for |EC2| and |ECS|.
 
             npm install @aws-cdk/aws-ec2 @aws-cdk/aws-ecs
 
-Create a FargateService.
-This requires a VPC, cluster, task definition, and security group.
+.. _creating_ecs_l2_example_3:
+
+Step 3: Create a Fargate Service
+--------------------------------
+
+There are two different ways of creating a serverless infrastructure with |ECS|:
+
+- Using the **Fargate** launch type, where |ECS| manages your cluster resources
+- Using the **EC2** launch type, where you manage your cluster resources
+
+This example creates a Fargate service,
+which requires a VPC, a cluster, a task definition, and a security group.
+Later on we'll show you how to launch an EC2 service.
 
 .. tabs::
 
@@ -181,4 +192,3 @@ This requires a VPC, cluster, task definition, and security group.
             cdk synth
 
 You should see a stack of about 300 lines, so we won't show it here.
-
