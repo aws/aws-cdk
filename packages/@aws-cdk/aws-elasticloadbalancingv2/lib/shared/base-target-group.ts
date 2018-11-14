@@ -249,18 +249,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   }
 
   /**
-   * Return an object to depend on the listeners added to this target group
-   *
-   * @deprecated Use 'loadBalancerDependency' instead.
-   */
-  public listenerDependency(): cdk.IDependable {
-    return this.loadBalancerDependency();
-  }
-
-  /**
    * Return an object to depend on this TargetGroup being attached to a load balancer
-   *
-   * @deprecated Use 'loadBalancerDependency' instead.
    */
   public loadBalancerDependency(): cdk.IDependable {
     return new LazyDependable(this.loadBalancerAssociationDependencies);
