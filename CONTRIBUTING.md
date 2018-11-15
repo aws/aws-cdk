@@ -19,19 +19,19 @@ your contributions. Please read it carefully and let us know if it's not up-to-d
       into a single commit, so you can use that to frame your scope.
 1. Create a commit with the proposed change changes:
     * Commit title and message (and PR title and description) must adhere to [conventionalcommits].
-    * The title must begin with `feat(module): title`, `fix(module): title`, 
+    * The title must begin with `feat(module): title`, `fix(module): title`,
       `reactor(module): title` or `chore(module): title`.
     * Title should be lowercase.
     * No period at the end of the title.
-    * Commit message should describe _motivation_. Think about your code reviewers and what 
-      information they need in order to understand what you did. If it's a big commit (hopefully not), 
+    * Commit message should describe _motivation_. Think about your code reviewers and what
+      information they need in order to understand what you did. If it's a big commit (hopefully not),
       try to provide some good entry points so it will be easier to follow.
     * Commit message should indicate which issues are fixed: `fixes #<issue>` or `closes #<issue>`.
     * Shout out to collaborators.
     * If not obvious (i.e. from unit tests), describe how you verified that your
       change works.
     * If this commit includes a breaking change, the commit message must end with a
-      a single pragraph 
+      a single pragraph
       `BREAKING CHANGE: description of what broke and how to achieve this beahvior now`.
 2. Push to a fork or to a branch (naming convention: `<user>/<feature-bug-name>`)
 3. Submit a Pull Requests on GitHub and assign the PR for a review to the "awslabs/aws-cdk" team.
@@ -50,7 +50,7 @@ your contributions. Please read it carefully and let us know if it's not up-to-d
 ## Tools
 
 The CDK is a big project, and, at the moment, all of the CDK modules are mastered in a single monolithic
-repository (uses [lerna](https://github.com/lerna/lerna)). There are pros and cons to this approach, 
+repository (uses [lerna](https://github.com/lerna/lerna)). There are pros and cons to this approach,
 and it's especially valuable to maintain integrity in the early stage of thr project where things constantly change across the stack. In the future we believe many of these modules will be extracted to their own repositories.
 
 Another complexity is that the CDK is packaged using [jsii](https://github.com/awslabs/jsii) to multiple
@@ -58,7 +58,13 @@ programming languages. This means that when a full build is complete, there will
 module for each supported language.
 
 However, in many cases, you can probably get away with just building a portion of the
-project, based on areas that you want to work on. 
+project, based on areas that you want to work on.
+
+We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
+Be sure to install the [tslint extension](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
+for it as well, since we have strict linting rules that will prevent your code from compiling,
+but with VSCode and this extension can be automatically fixed for you by hitting `Ctrl-.` when
+your cursor is on a red underline.
 
 ### Main build scripts
 
@@ -66,16 +72,16 @@ The build process is divided into stages, so you can invoke them as needed:
 
 - __`install.sh`__: installs all external dependencies and symlinks internal dependencies (using `lerna link`).
 - __`build.sh`__: runs `npm build` and `npm test` in all modules (in topological order).
-- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory 
-  with all the outputs (running this script requires that you installed the [toolchains](#Toolchains) 
+- __`pack.sh`__: packages all modules to all supported languages and produces a `dist/` directory
+  with all the outputs (running this script requires that you installed the [toolchains](#Toolchains)
   for all target languages on your system).
 
 ### Partial build tools
 
 There are also two useful scripts in the `scripts` directory that can help you build part of the repo:
 
-- __`scripts/buildup`__: builds the current module and all of it's dependencies (in topological order).
-- __`scripts/builddown`__: builds the current module and all of it's consumers (in topological order).
+- __`scripts/buildup`__: builds the current module and all of its dependencies (in topological order).
+- __`scripts/builddown`__: builds the current module and all of its consumers (in topological order).
 
 ### Useful aliases
 
@@ -95,7 +101,7 @@ alias lw='lr watch'
 
 ### pkglint
 
-The `pkglint` tool "lints" package.json files across the repo according 
+The `pkglint` tool "lints" package.json files across the repo according
 to [rules.ts](tools/pkglint/lib/rules.ts).
 
 To evaluate (and attempt to fix) all package linting issues in the repo, run the following command from the root
@@ -131,7 +137,7 @@ $ ./install.sh
 $ ./build.sh
 ```
 
-If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains] 
+If you also wish to package to all languages, make sure you have all the [toolchains](#Toolchains]
 and now run:
 
 ```
@@ -140,7 +146,7 @@ $ ./pack.sh
 
 ### Partial build
 
-In many cases, you don't really need to build the entire project. Say you want to work 
+In many cases, you don't really need to build the entire project. Say you want to work
 on the `@aws-cdk/aws-ec2` module:
 
 ```console
@@ -175,7 +181,7 @@ $ nodeunit test/test.*.js
 
 ### Build Documentation Only
 
-The CDK documentation source is hosted under [`./docs/src`](./docs/src). 
+The CDK documentation source is hosted under [`./docs/src`](./docs/src).
 Module reference documentation is gathered after build from the `dist/sphinx` directory (generated by jsii from source via the `./pack.sh` script).
 
 To build the docs even if reference docs are not present:
@@ -238,6 +244,69 @@ We use `npm update` to
 `package-lock.json` files.
 5. Now, run `./build.sh` again to verify all tests pass.
 6. Submit a Pull Request.
+
+### Troubleshooting common issues
+
+Most build issues can be solved by doing a full clean rebuild:
+
+```shell
+$ git clean -fqdx .
+$ ./build.sh
+```
+
+However, this will be time consuming. In this section we'll describe some common issues you may encounter and some more
+targeted commands you can run to resolve your issue.
+
+* The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is
+  low and I didn't change anything.
+
+If you switch to a branch in which `.ts` files got renamed or deleted, the generated `.js` and `.d.ts` files from the
+previous compilation run are still around and may in some cases still be picked up by the compiler or test runners.
+
+Run the following to clear out stale build artifacts:
+
+```shell
+$ scripts/clean-stale-files.sh
+```
+
+* I added a dependency but it's not being picked up by the build
+
+You need to tell Lerna to update all dependencies:
+
+```shell
+$ node_modules/.bin/lerna bootstrap
+```
+
+* I added a dependency but it's not being picked up by a `watch` background compilation run.
+
+No it's not. After re-bootstrapping you need to restart the watch command.
+
+* I added a dependency but it's not being picked up by Visual Studio Code (I still get red underlines).
+
+The TypeScript compiler that's running has cached your dependency tree. After re-bootstrapping,
+restart the TypeScript compiler.
+
+Hit F1, type `> TypeScript: Restart TS Server`.
+
+* I'm doing refactorings between packages and compile times are killing me/I need to switch between
+  differently-verionsed branches a lot and rebuilds because of version errors are taking too long.
+
+Our build steps for each package do a couple of things, such as generating code and generating
+JSII assemblies. If you've done a full build at least once to generate all source files, you can
+do a quicker TypeScript-only rebuild of the entire source tree by doing the following:
+
+```shell
+# Only works after at least one full build to generate source files
+$ scripts/build-typescript.sh
+
+# Also works to start a project-wide watch compile
+$ scripts/build-typescript.sh -w
+```
+
+This does not do code generation and it does not do JSII checks and JSII assembly generation. Instead
+of doing a package-by-package ordered build, it compiles all `.ts` files in the repository all
+at once. This takes about the same time as it does to compile the biggest package all by itself,
+and on my machine is the difference between a 15 CPU-minute build and a 20 CPU-second build.
 
 ## Toolchains
 

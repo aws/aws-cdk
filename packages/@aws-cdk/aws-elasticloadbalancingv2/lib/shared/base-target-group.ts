@@ -143,6 +143,11 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
 
   /**
    * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
    */
   public readonly firstLoadBalancerFullName: string;
 
