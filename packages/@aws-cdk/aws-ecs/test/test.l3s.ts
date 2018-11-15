@@ -142,5 +142,56 @@ export = {
     }));
 
     test.done();
+  },
+
+  'test Fargateloadbalanced applet with TLS'(test: Test) {
+    // WHEN
+    const app = new cdk.App();
+    const stack = new ecs.LoadBalancedFargateServiceApplet(app, 'Service', {
+      image: 'test',
+      desiredCount: 2,
+      domainName: 'api.example.com',
+      domainZone: 'example.com',
+      certificate: 'helloworld'
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Certificates: [{
+        CertificateArn: "helloworld"
+      }]
+    }));
+
+    expect(stack).to(haveResource("AWS::ECS::Service", {
+      DesiredCount: 2,
+      LaunchType: "FARGATE",
+    }));
+
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      HostedZoneId: "/hostedzone/DUMMY",
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': [ 'FargateServiceLBB353E155', 'CanonicalHostedZoneID' ] },
+        DNSName: { 'Fn::GetAtt': [ 'FargateServiceLBB353E155', 'DNSName' ] },
+      }
+    }));
+
+    test.done();
+  },
+
+  "errors when setting domainName but not domainZone on applet"(test: Test) {
+    // THEN
+    test.throws(() => {
+      new ecs.LoadBalancedFargateServiceApplet(new cdk.App(), 'Service', {
+        image: 'test',
+        domainName: 'api.example.com'
+      });
+    });
+
+    test.done();
   }
 };
