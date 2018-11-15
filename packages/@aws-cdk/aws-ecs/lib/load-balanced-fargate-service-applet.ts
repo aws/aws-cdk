@@ -1,4 +1,6 @@
-import ec2 = require('@aws-cdk/aws-ec2');
+import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
+import { VpcNetwork } from '@aws-cdk/aws-ec2';
+import { HostedZoneProvider } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { Cluster } from './cluster';
 import { ContainerImage } from './container-image';
@@ -77,17 +79,43 @@ export interface LoadBalancedFargateServiceAppletProps extends cdk.StackProps {
    * @default 1
    */
   desiredCount?: number;
+
+  /*
+   * Domain name for the service, e.g. api.example.com
+   */
+  domainName?: string;
+
+  /**
+   * Route53 hosted zone for the domain, e.g. "example.com."
+   */
+  domainZone?: string;
+
+  /**
+   * Certificate Manager certificate to associate with the load balancer.
+   * Setting this option will set the load balancer port to 443.
+   */
+  certificate?: string;
 }
 
 /**
- * An applet for a LoadBalancedFargateService
+ * An applet for a LoadBalancedFargateService. Sets up a Fargate service, Application
+ * load balancer, ECS cluster, VPC, and (optionally) Route53 alias record.
  */
 export class LoadBalancedFargateServiceApplet extends cdk.Stack {
   constructor(parent: cdk.App, id: string, props: LoadBalancedFargateServiceAppletProps) {
     super(parent, id, props);
 
-    const vpc = new ec2.VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
+    const vpc = new VpcNetwork(this, 'MyVpc', { maxAZs: 2 });
     const cluster = new Cluster(this, 'Cluster', { vpc });
+
+    let domainZone;
+    if (props.domainZone) {
+      domainZone = new HostedZoneProvider(this, { domainName: props.domainZone }).findAndImport(this, 'Zone');
+    }
+    let certificate;
+    if (props.certificate) {
+      certificate = CertificateRef.import(this, 'Cert', { certificateArn: props.certificate });
+    }
 
     // Instantiate Fargate Service with just cluster and image
     new LoadBalancedFargateService(this, "FargateService", {
@@ -99,6 +127,9 @@ export class LoadBalancedFargateServiceApplet extends cdk.Stack {
       publicTasks: props.publicTasks,
       image: ContainerImage.fromDockerHub(props.image),
       desiredCount: props.desiredCount,
+      certificate,
+      domainName: props.domainName,
+      domainZone
     });
   }
 }
