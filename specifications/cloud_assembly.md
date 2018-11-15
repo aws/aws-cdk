@@ -145,11 +145,11 @@ Key    |Type    |Required|Description
 `value`|`any`   |Required|The value associated with this metadata.
 
 A common use-case for Metadata is reporting warning or error messages that were emitted during the creation of the
-*Cloud Assembly*, so that deployment systems can present this information to the user. Warning and error messages
+*Cloud Assembly*, so that deployment systems can present this information to users or logs. Warning and error messages
 **SHOULD** set the `kind` field to `warning` and `error` respectively, and the `value` field **SHOULD** contain a single
 `string`. Deployment systems **MAY** reject *Cloud Assemblies* that include [Drops](#drop) that carry one or more
-`error` Metadata entries, and they **SHOULD** surface `warning` messages to the user, either directly through their user
-interface, or in the execution log.
+`error` Metadata entries, and they **SHOULD** surface `warning` messages, either directly through their user interface,
+or in the execution log.
 
 ### Missing
 [Drops](#drop) may require contextual information to be available in order to correctly participate in a
@@ -166,7 +166,7 @@ Key            |Type             |Required|Description
 #### Signing
 *Cloud Assemblers* **SHOULD** support digital signature of *Cloud Assemblies*. When support for digital signature is
 present, *Cloud Assemblers*:
-* **MUST** require the user to specify which [PGP][RFC 4880] key should be used.
+* **MUST** require configuration of the [PGP][RFC 4880] key that will be used for signing.
 
 ##### Signing Algorithm
 <!--TODO-->
@@ -176,7 +176,7 @@ Deployment systems **SHOULD** support verifying signed *Cloud Assemblies*. If su
 present, a warning **MUST** be emitted when processing a *Cloud Assembly* that contains the `signature.asc` file.
 
 Deployment systems that support verifying signed *Cloud Assemblies*:
-* **SHOULD** allow the user to *require* that an assembly is signed. When this requirement is active, an error **MUST**
+* **SHOULD** be configurable to *require* that an assembly is signed. When this requirement is active, an error **MUST**
   be returned when attempting to deploy an un-signed *Cloud Assembly*.
 * **MUST** verify the integrity and authenticity of signed *Cloud Assemblies* prior to attempting to load any file
   included in it, except for `signature.asc`.
@@ -184,7 +184,7 @@ Deployment systems that support verifying signed *Cloud Assemblies*:
   * An error **MUST** be raised if the [PGP][RFC 4880] key has expired according to the signature timestamp.
   * An error **MUST** be raised if the [PGP][RFC 4880] key is known to have been revoked. Deployment systems **MAY**
     trust locally available information pertaining to the key's validity.
-* **SHOULD** allow the user to specify a list of trusted [PGP][RFC 4880] keys.
+* **SHOULD** allow configuration of a list of trusted [PGP][RFC 4880] keys.
 
 ## Annex
 ### Examples of Drops for the AWS Cloud
