@@ -40,6 +40,17 @@ export interface BaseTargetGroupProps {
    * @default No health check
    */
   healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  targetType?: TargetType;
 }
 
 /**
@@ -137,6 +148,21 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   public readonly targetGroupName: string;
 
   /**
+   * ARNs of load balancers load balancing to this TargetGroup
+   */
+  public readonly targetGroupLoadBalancerArns: string[];
+
+  /**
+   * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
+   */
+  public readonly firstLoadBalancerFullName: string;
+
+  /**
    * Health check for the members of this target group
    */
   /**
@@ -152,9 +178,9 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   protected readonly defaultPort: string;
 
   /**
-   * List of listeners routing to this target group
+   * List of dependables that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  protected readonly dependableListeners = new Array<cdk.IDependable>();
+  protected readonly loadBalancerAssociationDependencies = new Array<cdk.IDependable>();
 
   /**
    * Attributes of this target group
@@ -184,6 +210,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
     this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
@@ -207,11 +234,17 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
+    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns.toList();
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
+
+    const firstLoadBalancerArn = new cdk.FnSelect(0, this.targetGroupLoadBalancerArns);
+    // arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
+    const arnParts = new cdk.FnSplit('/', firstLoadBalancerArn);
+    this.firstLoadBalancerFullName = `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
   }
 
   /**
@@ -255,10 +288,10 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   }
 
   /**
-   * Return an object to depend on the listeners added to this target group
+   * Return an object to depend on this TargetGroup being attached to a load balancer
    */
-  public listenerDependency(): cdk.IDependable {
-    return new LazyDependable(this.dependableListeners);
+  public loadBalancerDependency(): cdk.IDependable {
+    return new LazyDependable(this.loadBalancerAssociationDependencies);
   }
 
   /**
@@ -313,7 +346,7 @@ export interface ITargetGroup {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  listenerDependency(): cdk.IDependable;
+  loadBalancerDependency(): cdk.IDependable;
 }
 
 /**

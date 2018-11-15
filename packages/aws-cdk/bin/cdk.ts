@@ -10,7 +10,7 @@ import yargs = require('yargs');
 import cdkUtil = require('../lib/util');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
-import contextplugins = require('../lib/contextplugins');
+import contextproviders = require('../lib/context-providers/index');
 import { printStackDiff } from '../lib/diff';
 import { execProgram } from '../lib/exec';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
@@ -115,12 +115,6 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const availableContextProviders: contextplugins.ProviderMap = {
-    'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
-    'ssm': new contextplugins.SSMContextProviderPlugin(aws),
-    'hosted-zone': new contextplugins.HostedZoneContextProviderPlugin(aws),
-  };
-
   const defaultConfig = new Settings({ versionReporting: true });
   const userConfig = await new Settings().load(PER_USER_DEFAULTS);
   const projectConfig = await new Settings().load(DEFAULTS);
@@ -206,7 +200,7 @@ async function initCommandLine() {
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE || 'default', language);
+          return await cliInit(args.TEMPLATE, language);
         }
 
       default:
@@ -281,8 +275,8 @@ async function initCommandLine() {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
         const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
-        const message = result.noOp ? ' ✅  Environment %s was already fully bootstrapped!'
-                      : ' ✅  Successfully bootstraped environment %s!';
+        const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
+                      : ' ✅  Environment %s bootstrapped.';
         success(message, colors.blue(environment.name));
       } catch (e) {
         error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment.name), e);
@@ -384,7 +378,7 @@ async function initCommandLine() {
       if (!cdkUtil.isEmpty(allMissing)) {
         debug(`Some context information is missing. Fetching...`);
 
-        await contextplugins.provideContextValues(allMissing, projectConfig, availableContextProviders);
+        await contextproviders.provideContextValues(allMissing, projectConfig, aws);
 
         // Cache the new context to disk
         await projectConfig.save(DEFAULTS);

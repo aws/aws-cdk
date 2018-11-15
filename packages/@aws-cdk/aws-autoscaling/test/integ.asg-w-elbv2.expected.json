@@ -28,6 +28,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-asg-integ/VPC/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -67,7 +75,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
@@ -108,6 +119,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-asg-integ/VPC/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -147,7 +166,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
@@ -188,6 +210,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -242,6 +272,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-asg-integ/VPC/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -450,7 +488,28 @@
               "Fn::Join": [
                 "",
                 [
-                  "app/",
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "/",
+                          {
+                            "Fn::Select": [
+                              0,
+                              {
+                                "Fn::GetAtt": [
+                                  "LBListenerTargetGroupF04FCF6D",
+                                  "LoadBalancerArns"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "/",
                   {
                     "Fn::Select": [
                       2,

@@ -1,5 +1,6 @@
 import { Construct, IDependable, Output } from "@aws-cdk/cdk";
 import { ExportSubnetGroup, ImportSubnetGroup, subnetName } from './util';
+import { VpcNetworkProvider, VpcNetworkProviderProps } from './vpc-network-provider';
 
 /**
  * The type of Subnet
@@ -79,6 +80,13 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
    */
   public static import(parent: Construct, name: string, props: VpcNetworkRefProps): VpcNetworkRef {
     return new ImportedVpcNetwork(parent, name, props);
+  }
+
+  /**
+   * Import an existing VPC from context
+   */
+  public static importFromContext(parent: Construct, name: string, props: VpcNetworkProviderProps): VpcNetworkRef {
+    return VpcNetworkRef.import(parent, name, new VpcNetworkProvider(parent, props).vpcProps);
   }
 
   /**

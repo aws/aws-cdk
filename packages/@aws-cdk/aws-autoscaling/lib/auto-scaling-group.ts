@@ -376,13 +376,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
     }
 
-    // We have the ARN of the load balanceR:  "arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188"
-    // and we must extract the part "app/my-load-balancer/50dc6c495c0c9188" out of it.
-    const firstArn = new cdk.FnSelect(0, this.albTargetGroup.loadBalancerArns);
-    // Can't use ArnUtils because it can't deal with multiple slashes in the last name part.
-    const parts = new cdk.FnSplit('/', firstArn);
-    const lbFullName = `app/${new cdk.FnSelect(2, parts)}/${new cdk.FnSelect(3, parts)}`;
-    const resourceLabel = `${lbFullName}/${this.albTargetGroup.targetGroupFullName}`;
+    const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
 
     const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
@@ -394,7 +388,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     // Target tracking policy can only be created after the load balancer has been
     // attached to the targetgroup (because we need its ARN).
-    policy.addDependency(this.albTargetGroup.listenerDependency());
+    policy.addDependency(this.albTargetGroup.loadBalancerDependency());
   }
 
   /**

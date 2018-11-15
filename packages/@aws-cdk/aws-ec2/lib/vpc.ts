@@ -319,7 +319,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       this.dependencyElements.push(igw, att);
 
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultIGWRouteEntry(igw.ref);
+        publicSubnet.addDefaultIGWRouteEntry(igw, att);
       });
 
       // if gateways are needed create them
@@ -407,21 +407,43 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
         tags: subnetConfig.tags,
       };
 
+      let subnet: VpcSubnet;
       switch (subnetConfig.subnetType) {
         case SubnetType.Public:
           const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
           this.publicSubnets.push(publicSubnet);
+          subnet = publicSubnet;
           break;
         case SubnetType.Private:
           const privateSubnet = new VpcPrivateSubnet(this, name, subnetProps);
           this.privateSubnets.push(privateSubnet);
+          subnet = privateSubnet;
           break;
         case SubnetType.Isolated:
           const isolatedSubnet = new VpcPrivateSubnet(this, name, subnetProps);
+          isolatedSubnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType));
           this.isolatedSubnets.push(isolatedSubnet);
+          subnet = isolatedSubnet;
           break;
+        default:
+          throw new Error(`Unrecognized subnet type: ${subnetConfig.subnetType}`);
       }
+
+      // These values will be used to recover the config upon provider import
+      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name, { propagate: false });
+      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { propagate: false });
     });
+  }
+}
+
+const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+
+function subnetTypeTagValue(type: SubnetType) {
+  switch (type) {
+    case SubnetType.Public: return 'Public';
+    case SubnetType.Private: return 'Private';
+    case SubnetType.Isolated: return 'Isolated';
   }
 }
 
@@ -520,12 +542,19 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     });
   }
 
-  protected addDefaultRouteToIGW(gatewayId: string) {
-    new cloudformation.RouteResource(this, `DefaultRoute`, {
+  /**
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
+   */
+  protected addDefaultRouteToIGW(
+    gateway: cloudformation.InternetGatewayResource,
+    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
+    const route = new cloudformation.RouteResource(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+      gatewayId: gateway.ref
     });
+    route.addDependency(gatewayAttachment);
   }
 }
 
@@ -538,10 +567,13 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 
   /**
-   * Create a default route that points to a passed IGW
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    */
-  public addDefaultIGWRouteEntry(gatewayId: string) {
-    this.addDefaultRouteToIGW(gatewayId);
+  public addDefaultIGWRouteEntry(
+    gateway: cloudformation.InternetGatewayResource,
+    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
+    this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
   /**

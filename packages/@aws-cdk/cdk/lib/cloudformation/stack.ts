@@ -175,6 +175,29 @@ export class Stack extends Construct {
   }
 
   /**
+   * Returns the AWS account ID of this Stack,
+   * or throws an exception if the account ID is not set in the environment.
+   *
+   * @param why more information about why is the account ID required
+   * @returns the AWS account ID of this Stack
+   */
+  public requireAccountId(why?: string): string {
+    if (!this.env.account) {
+      throw new Error(`${why ? why + '. ' : ''}Stack requires account information. ` +
+        'It can be supplied either via the "env" property when creating the Stack, or by using "aws configure"');
+    }
+
+    return this.env.account;
+  }
+
+  public parentApp(): App | undefined {
+    const parent = this.parent;
+    return parent instanceof App
+      ? parent
+      : undefined;
+  }
+
+  /**
    * Indicate that a context key was expected
    *
    * Contains instructions on how the key should be supplied.
