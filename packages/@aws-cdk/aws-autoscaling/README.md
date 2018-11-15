@@ -58,7 +58,7 @@ There are three ways to scale your capacity:
   might want to scale out if the CPU usage across your cluster starts to rise,
   and scale in when it drops again.
 * **By trying to keep a certain metric around a given value** (also known as
-  target tracking scaling); you might want to automatically scale out an in to
+  target tracking scaling); you might want to automatically scale out and in to
   keep your CPU usage around 50%.
 * **On a schedule**; you might want to organize your scaling around traffic
   flows you expect, by scaling out in the morning and scaling in in the
@@ -107,7 +107,7 @@ a possible one. You will have to determine what thresholds are right for you).
 
 Note that in order to set up this scaling strategy, you will have to emit a
 metric representing your worker utilization from your instances. After that,
-rou would configure the scaling something like this:
+you would configure the scaling something like this:
 
 ```ts
 const workerUtilizationMetric = new cloudwatch.Metric({
@@ -186,7 +186,7 @@ AutoScalingGroup, and so can be used for two purposes:
   the range they can scale over (by setting both `minCapacity` and
   `maxCapacity` but changing their range over time).
 
-A scheduled is expressed as a cron expression. There is a `Cron` helper class
+A schedule is expressed as a cron expression. There is a `Cron` helper class
 to help build cron expressions.
 
 The following example scales the fleet out in the morning, going back to natural
