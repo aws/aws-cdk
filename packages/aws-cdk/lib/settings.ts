@@ -9,6 +9,18 @@ export type SettingsMap = {[key: string]: any};
 export const DEFAULTS = 'cdk.json';
 export const PER_USER_DEFAULTS = '~/.cdk.json';
 
+export async function loadUserConfig() {
+   return new Settings().load(PER_USER_DEFAULTS);
+}
+
+export async function loadProjectConfig() {
+  return new Settings().load(DEFAULTS);
+}
+
+export async function saveProjectConfig(settings: Settings) {
+  return settings.save(DEFAULTS);
+}
+
 export class Settings {
   public static mergeAll(...settings: Settings[]): Settings {
     let ret = new Settings();

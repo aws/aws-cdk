@@ -38,6 +38,7 @@
     "@types/request": "^2.47.1",
     "@types/semver": "^5.5.0",
     "@types/uuid": "^3.4.3",
+    "@types/table": "^4.0.5",
     "@types/yaml": "^1.0.0",
     "@types/yargs": "^8.0.3",
     "cdk-build-tools": "^0.17.0",
@@ -61,6 +62,7 @@
     "request": "^2.83.0",
     "semver": "^5.5.0",
     "source-map-support": "^0.5.6",
+    "table": "^5.1.0",
     "yaml": "^1.0.1",
     "yargs": "^9.0.1"
   },
