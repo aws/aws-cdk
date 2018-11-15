@@ -1,3 +1,4 @@
+import cloudAssembly = require('@aws-cdk/cloud-assembly');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
@@ -42,14 +43,20 @@ export class App extends Root {
       return;
     }
 
-    const result: cxapi.SynthesizeResponse = {
-      version: cxapi.PROTO_RESPONSE_VERSION,
-      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
-      runtime: this.collectRuntimeInformation()
+    const manifest: cloudAssembly.Manifest = {
+      schema: 'cloud-assembly/1.0',
+      drops: { CDKMetadata: this.collectRuntimeInformation() },
     };
 
-    const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
-    fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
+    for (const stack of this.synthesizeStacks(Object.keys(this.stacks))) {
+      manifest.drops[`stacks/${stack.name}`] = {
+        type: 'npm://@aws-cdk/cdk/CloudFormationStackDroplet',
+        environment: `aws://${stack.environment.account}/${stack.environment.region}`,
+      };
+    }
+
+    const outfile = path.join(outdir, cloudAssembly.MANIFEST_FILE_NAME);
+    fs.writeFileSync(outfile, JSON.stringify(manifest, undefined, 2));
   }
 
   /**
@@ -123,7 +130,7 @@ export class App extends Root {
     }
   }
 
-  private collectRuntimeInformation(): cxapi.AppRuntime {
+  private collectRuntimeInformation(): cloudAssembly.Drop {
     const libraries: { [name: string]: string } = {};
 
     for (const fileName of Object.keys(require.cache)) {
@@ -133,7 +140,11 @@ export class App extends Root {
       }
     }
 
-    return { libraries };
+    return {
+      type: 'npm://@aws-cdk/cdk/CDKMetadataDroplet',
+      environment: '*',
+      properties: { libraries }
+    };
   }
 
   private getStack(stackname: string) {
