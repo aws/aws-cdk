@@ -59,6 +59,25 @@ export = {
       'vpc:account=12345:cidrBlock=192.168.0.16:igw=false:region=us-east-1:tags.Env=Preprod:tags.Name=MyVPC');
     test.done();
   },
+
+  'Key generation can contain arbitrarily deep structures'(test: Test) {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
+
+    // WHEN
+    const provider = new ContextProvider(stack, 'provider', {
+      list: [
+        { key: 'key1', value: 'value1' },
+        { key: 'key2', value: 'value2' },
+      ],
+    });
+
+    // THEN
+    test.equals(provider.key, 'provider:account=12345:list.0.key=key1:list.0.value=value1:list.1.key=key2:list.1.value=value2:region=us-east-1');
+
+    test.done();
+  },
+
   'SSM parameter provider will return context values if available'(test: Test) {
     const stack = new Stack(undefined, 'TestStack', { env: { account: '12345', region: 'us-east-1' } });
     new SSMParameterProvider(stack,  {parameterName: 'test'}).parameterValue();

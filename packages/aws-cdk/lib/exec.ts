@@ -81,7 +81,7 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
         if (code === 0) {
           return ok(path.join(outdir, cxapi.OUTFILE_NAME));
         } else {
-          return fail(new Error('Subprocess exited with error ' + code.toString()));
+          return fail(new Error(`Subprocess exited with error ${code}`));
         }
       });
     });

@@ -71,7 +71,7 @@ export class NetworkTargetGroup extends BaseTargetGroup {
    * Don't call this directly. It will be called by listeners.
    */
   public registerListener(listener: INetworkListener) {
-    this.dependableListeners.push(listener);
+    this.loadBalancerAssociationDependencies.push(listener);
   }
 }
 
@@ -96,7 +96,7 @@ class ImportedNetworkTargetGroup extends BaseImportedTargetGroup implements INet
     // Nothing to do, we know nothing of our members
   }
 
-  public listenerDependency(): cdk.IDependable {
+  public loadBalancerDependency(): cdk.IDependable {
     return new LazyDependable([]);
   }
 }

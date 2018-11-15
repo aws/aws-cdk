@@ -28,6 +28,14 @@
           {
             "Key": "Name",
             "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -59,6 +67,9 @@
     },
     "VpcPublicSubnet1DefaultRoute3DA9E72A": {
       "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
@@ -108,6 +119,14 @@
           {
             "Key": "Name",
             "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -139,6 +158,9 @@
     },
     "VpcPublicSubnet2DefaultRoute97F91067": {
       "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet2RouteTable94F7E489"
@@ -188,6 +210,14 @@
           {
             "Key": "Name",
             "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -242,6 +272,14 @@
           {
             "Key": "Name",
             "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }

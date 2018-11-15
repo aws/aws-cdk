@@ -37,8 +37,35 @@ The |cdk| currently supports the following context providers.
 
 :py:class:`SSMParameterProvider <@aws-cdk/cdk.SSMParameterProvider>`
    Use this provider to read values from the current Region's SSM parameter store.
-   For example, the follow code returns the value of the 'my-awesome-value' key:
+   For example, the follow code returns the value of the 'my-awesome-parameter' key:
 
 .. code:: js
 
-   const ami: string = new SSMParameterProvider(this).getString('my-awesome-value');
+   const ami: string = new SSMParameterProvider(this, {
+     parameterName: 'my-awesome-parameter'
+   }).parameterValue();
+
+:py:class:`HostedZoneProvider <@aws-cdk/aws-route53.HostedZoneProvider>`
+
+    Use this provider to discover existing hosted zones in your account.
+    For example, the following code imports an existing hosted zone into
+    your CDK app so you can add records to it:
+
+.. code:: js
+
+   const zone: HostedZoneRef = new HostedZoneProvider(this, {
+      domainName: 'test.com'
+   }).findAndImport(this, 'HostedZone');
+
+:py:class:`VpcNetworkProvider <@aws-cdk/aws-ec2.VpcNetworkProvider>`
+   Use this provider to look up and reference existing VPC in your accounts.
+   For example, the follow code imports a VPC by tag name:
+
+.. code:: js
+
+   const provider = new VpcNetworkProvider(this, {
+     tags: {
+       Purpose: 'WebServices'
+     }
+   });
+   const vpc = VpcNetworkRef.import(this, 'VPC', provider.vpcProps);

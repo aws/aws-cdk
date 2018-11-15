@@ -1,4 +1,6 @@
+import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
+import { AliasRecord, HostedZoneRef } from '@aws-cdk/aws-route53';
 import cdk = require('@aws-cdk/cdk');
 import { ICluster } from './cluster';
 import { IContainerImage } from './container-image';
@@ -83,6 +85,22 @@ export interface LoadBalancedFargateServiceProps {
    * @default 1
    */
   desiredCount?: number;
+
+  /*
+   * Domain name for the service, e.g. api.example.com
+   */
+  domainName?: string;
+
+  /**
+   * Route53 hosted zone for the domain, e.g. "example.com."
+   */
+  domainZone?: HostedZoneRef;
+
+  /**
+   * Certificate Manager certificate to associate with the load balancer.
+   * Setting this option will set the load balancer port to 443.
+   */
+  certificate?: CertificateRef;
 }
 
 /**
@@ -90,6 +108,10 @@ export interface LoadBalancedFargateServiceProps {
  */
 export class LoadBalancedFargateService extends cdk.Construct {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
+
+  public readonly targetGroup: elbv2.ApplicationTargetGroup;
+
+  public readonly service: FargateService;
 
   constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(parent, id);
@@ -114,6 +136,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       taskDefinition,
       assignPublicIp
     });
+    this.service = service;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
@@ -123,12 +146,33 @@ export class LoadBalancedFargateService extends cdk.Construct {
 
     this.loadBalancer = lb;
 
-    const listener = lb.addListener('PublicListener', { port: 80, open: true });
-    listener.addTargets('ECS', {
+    let listener;
+    if (typeof props.certificate !== 'undefined') {
+      listener = lb.addListener('PublicListener', {
+        port: 443,
+        open: true,
+        certificateArns: [props.certificate.certificateArn]
+      });
+    } else {
+      listener = lb.addListener('PublicListener', { port: 80, open: true });
+    }
+
+    this.targetGroup = listener.addTargets('ECS', {
       port: 80,
       targets: [service]
     });
 
     new cdk.Output(this, 'LoadBalancerDNS', { value: lb.dnsName });
+
+    if (typeof props.domainName !== 'undefined') {
+      if (typeof props.domainZone === 'undefined') {
+        throw new Error('A Route53 hosted domain zone name is required to configure the specified domain name');
+      }
+
+      new AliasRecord(props.domainZone, "DNS", {
+        recordName: props.domainName,
+        target: lb
+      });
+    }
   }
 }
