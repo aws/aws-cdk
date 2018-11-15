@@ -1,8 +1,6 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Stack } from './cloudformation/stack';
 import { Construct } from './core/construct';
-
-const AVAILABILITY_ZONES_PROVIDER = 'availability-zones';
-const SSM_PARAMETER_PROVIDER = 'ssm';
 
 type ContextProviderProps = {[key: string]: any};
 /**
@@ -136,7 +134,7 @@ export class AvailabilityZoneProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct) {
-    this.provider = new ContextProvider(context, AVAILABILITY_ZONES_PROVIDER);
+    this.provider = new ContextProvider(context, cxapi.AVAILABILITY_ZONE_PROVIDER);
   }
 
   /**
@@ -161,7 +159,7 @@ export class SSMParameterProvider {
   private provider: ContextProvider;
 
   constructor(context: Construct, props: SSMParameterProviderProps) {
-    this.provider = new ContextProvider(context, SSM_PARAMETER_PROVIDER, props);
+    this.provider = new ContextProvider(context, cxapi.SSM_PARAMETER_PROVIDER, props);
   }
 
   /**
@@ -181,27 +179,26 @@ function formatMissingScopeError(provider: string, props: {[key: string]: string
   return s;
 }
 
-function propsToArray(props: {[key: string]: any}): string[] {
-  const propArray: string[] = [];
-  const keys = Object.keys(props);
-  keys.sort();
-  for (const key of keys) {
+function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {
+  const ret: string[] = [];
+
+  for (const key of Object.keys(props)) {
     switch (typeof props[key]) {
       case 'object': {
-        const childObjStrs = propsToArray(props[key]);
-        const qualifiedChildStr = childObjStrs.map( child => (`${key}.${child}`)).join(':');
-        propArray.push(qualifiedChildStr);
+        ret.push(...propsToArray(props[key], `${keyPrefix}${key}.`));
         break;
       }
       case 'string': {
-        propArray.push(`${key}=${colonQuote(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${colonQuote(props[key])}`);
         break;
       }
       default: {
-        propArray.push(`${key}=${JSON.stringify(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${JSON.stringify(props[key])}`);
         break;
       }
     }
   }
-  return propArray;
+
+  ret.sort();
+  return ret;
 }
