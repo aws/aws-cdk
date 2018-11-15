@@ -303,10 +303,15 @@ $ scripts/build-typescript.sh
 $ scripts/build-typescript.sh -w
 ```
 
-This does not do code generation and it does not do JSII checks and JSII assembly generation. Instead
-of doing a package-by-package ordered build, it compiles all `.ts` files in the repository all
-at once. This takes about the same time as it does to compile the biggest package all by itself,
-and on my machine is the difference between a 15 CPU-minute build and a 20 CPU-second build.
+This does not do code generation and it does not do JSII checks and JSII assembly generation. Instead of doing a
+package-by-package ordered build, it compiles all `.ts` files in the repository all at once. This takes about the same
+time as it does to compile the biggest package all by itself, and on my machine is the difference between a 15
+CPU-minute build and a 20 CPU-second build. If you use this methods of recompiling and you want to run the test, you
+have to disable the built-in rebuild functionality of `lerna run test`:
+
+```shell
+$ CDK_TEST_BUILD=false lr test
+```
 
 ## Toolchains
 
