@@ -19,7 +19,7 @@ import { data, debug, error, highlight, print, setVerbose, success, warning } fr
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { deserializeStructure, serializeStructure } from '../lib/serialize';
-import { loadProjectConfig, loadUserConfig, PER_USER_DEFAULTS, saveProjectConfig, Settings } from '../lib/settings';
+import { DEFAULTS, loadProjectConfig, loadUserConfig, PER_USER_DEFAULTS, saveProjectConfig, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
