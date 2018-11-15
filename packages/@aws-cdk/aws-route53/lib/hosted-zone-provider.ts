@@ -22,7 +22,7 @@ export interface HostedZoneProviderProps {
   vpcId?: string;
 }
 
-const DEFAULT_HOSTED_ZONE: cxapi.HostedZoneContextResponse = {
+const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
   Id: '/hostedzone/DUMMY',
   Name: 'example.com',
 };
@@ -46,7 +46,7 @@ export class HostedZoneProvider {
    * Return the hosted zone meeting the filter
    */
   public findHostedZone(): HostedZoneRefProps {
-    const zone = this.provider.getValue(DEFAULT_HOSTED_ZONE) as cxapi.HostedZoneContextResponse;
+    const zone = this.provider.getValue(DEFAULT_HOSTED_ZONE) as HostedZoneContextResponse;
     // CDK handles the '.' at the end, so remove it here
     if (zone.Name.endsWith('.')) {
       zone.Name = zone.Name.substring(0, zone.Name.length - 1);
@@ -56,4 +56,13 @@ export class HostedZoneProvider {
       zoneName: zone.Name,
     };
   }
+}
+
+/**
+ * A mirror of the definition in cxapi, but can use the capital letters
+ * since it doesn't need to be published via JSII.
+ */
+interface HostedZoneContextResponse {
+  Id: string;
+  Name: string;
 }

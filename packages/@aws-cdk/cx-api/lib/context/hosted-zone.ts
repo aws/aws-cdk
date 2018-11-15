@@ -35,19 +35,23 @@ export interface HostedZoneContextQuery {
 
 /**
  * Hosted zone context
+ *
+ * This definition is for human reference. It is not machine-checked as the
+ * naming conventions used in it are not JSII compatible, and changing those
+ * introduces a backwards incompatibility.
  */
-export interface HostedZoneContextResponse {
-  /**
-   * The ID that Amazon Route 53 assigned to the hosted zone when you created
-   * it.
-   */
-  Id: string;
+// export interface HostedZoneContextResponse {
+//   /**
+//    * The ID that Amazon Route 53 assigned to the hosted zone when you created
+//    * it.
+//    */
+//   Id: string;
 
-  /**
-   * The name of the domain. For public hosted zones, this is the name that you
-   * have registered with your DNS registrar. For information about how to
-   * specify characters other than a-z, 0-9, and - (hyphen) and how to specify
-   * internationalized domain names, see CreateHostedZone.
-   */
-  Name: string;
-}
+//   /**
+//    * The name of the domain. For public hosted zones, this is the name that you
+//    * have registered with your DNS registrar. For information about how to
+//    * specify characters other than a-z, 0-9, and - (hyphen) and how to specify
+//    * internationalized domain names, see CreateHostedZone.
+//    */
+//   Name: string;
+// }

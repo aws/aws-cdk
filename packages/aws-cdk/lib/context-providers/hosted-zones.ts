@@ -8,7 +8,7 @@ export class HostedZoneContextProviderPlugin implements ContextProviderPlugin {
   constructor(private readonly aws: SDK) {
   }
 
-  public async getValue(args: {[key: string]: any}): Promise<cxapi.HostedZoneContextResponse> {
+  public async getValue(args: {[key: string]: any}): Promise<object> {
     const account = args.account;
     const region = args.region;
     if (!this.isHostedZoneQuery(args)) {
