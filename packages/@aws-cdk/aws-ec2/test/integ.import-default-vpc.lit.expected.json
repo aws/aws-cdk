@@ -1,0 +1,33 @@
+{
+  "Resources": {
+    "SecurityGroupDD263621": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-cdk-ec2-import/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [],
+        "VpcId": "vpc-60900905"
+      }
+    }
+  },
+  "Outputs": {
+    "PublicSubnets": {
+      "Value": "ids:subnet-e19455ca,subnet-e0c24797,subnet-ccd77395",
+      "Export": {
+        "Name": "aws-cdk-ec2-import:PublicSubnets"
+      }
+    },
+    "PrivateSubnets": {
+      "Value": "ids:",
+      "Export": {
+        "Name": "aws-cdk-ec2-import:PrivateSubnets"
+      }
+    }
+  }
+}
