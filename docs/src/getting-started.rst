@@ -500,7 +500,7 @@ Define a stack and add it to the app.
             {
                 public class MyStack: Stack
                 {
-                    public MyStack(App parent, string name) : base(parent, name, new StackProps())
+                    public MyStack(App parent, string name) : base(parent, name, null)
                     {
                     }
                 }
@@ -736,7 +736,7 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
             {
                 public class MyStack : Stack
                 {
-                    public MyStack(App parent, string name) : base(parent, name, new StackProps())
+                    public MyStack(App parent, string name) : base(parent, name, null)
                     {
                         new Bucket(this, "MyFirstBucket", new BucketProps
                         {
