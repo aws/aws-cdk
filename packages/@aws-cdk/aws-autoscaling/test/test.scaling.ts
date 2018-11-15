@@ -107,7 +107,8 @@ export = {
           PredefinedMetricSpecification: {
             PredefinedMetricType: "ALBRequestCountPerTarget",
             ResourceLabel: { "Fn::Join": [ "", [
-                  "app/",
+                  { "Fn::Select": [ 1, arnParts ] },
+                  "/",
                   { "Fn::Select": [ 2, arnParts ] },
                   "/",
                   { "Fn::Select": [ 3, arnParts ] },
