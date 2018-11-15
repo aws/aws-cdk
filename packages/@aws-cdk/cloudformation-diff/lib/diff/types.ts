@@ -15,45 +15,48 @@ export class TemplateDiff implements ITemplateDiff {
   /** The differences in unknown/unexpected parts of the template */
   public readonly unknown: DifferenceCollection<any, Difference<any>>;
 
-  public readonly count: number;
-
   constructor(args: ITemplateDiff) {
-    let count = 0;
     if (args.awsTemplateFormatVersion !== undefined) {
       this.awsTemplateFormatVersion = args.awsTemplateFormatVersion;
-      count += 1;
     }
     if (args.description !== undefined) {
       this.description = args.description;
-      count += 1;
     }
     if (args.transform !== undefined) {
       this.transform = args.transform;
-      count += 1;
     }
 
     this.conditions = args.conditions || new DifferenceCollection({});
-    count += this.conditions.count;
-
     this.mappings = args.mappings || new DifferenceCollection({});
-    count += this.mappings.count;
-
     this.metadata = args.metadata || new DifferenceCollection({});
-    count += this.metadata.count;
-
     this.outputs = args.outputs || new DifferenceCollection({});
-    count += this.outputs.count;
-
     this.parameters = args.parameters || new DifferenceCollection({});
-    count += this.parameters.count;
-
     this.resources = args.resources || new DifferenceCollection({});
-    count += this.resources.count;
-
     this.unknown = args.unknown || new DifferenceCollection({});
+  }
+
+  public get count() {
+    let count = 0;
+
+    if (this.awsTemplateFormatVersion !== undefined) {
+      count += 1;
+    }
+    if (this.description !== undefined) {
+      count += 1;
+    }
+    if (this.transform !== undefined) {
+      count += 1;
+    }
+
+    count += this.conditions.count;
+    count += this.mappings.count;
+    count += this.metadata.count;
+    count += this.outputs.count;
+    count += this.parameters.count;
+    count += this.resources.count;
     count += this.unknown.count;
 
-    this.count = count;
+    return count;
   }
 
   public get isEmpty(): boolean {
@@ -107,7 +110,7 @@ export class PropertyDifference<ValueType> extends Difference<ValueType> {
 }
 
 export class DifferenceCollection<V, T extends Difference<V>> {
-  constructor(public readonly changes: { [logicalId: string]: T | undefined }) {}
+  constructor(public changes: { [logicalId: string]: T | undefined }) {}
 
   public get count(): number {
     return this.logicalIds.length;
@@ -115,6 +118,22 @@ export class DifferenceCollection<V, T extends Difference<V>> {
 
   public get logicalIds(): string[] {
     return Object.keys(this.changes);
+  }
+
+  /**
+   * Removes all changes that do not match the specified filter.
+   */
+  public applyFilter(filter: (diff: T | undefined) => boolean) {
+    const newChanges: { [logicalId: string]: T | undefined } = { };
+    for (const id of Object.keys(this.changes)) {
+      const diff = this.changes[id];
+
+      if (filter(diff)) {
+        newChanges[id] = diff;
+      }
+    }
+
+    this.changes = newChanges;
   }
 
   public forEach(cb: (logicalId: string, change: T) => any): void {

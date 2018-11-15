@@ -65,7 +65,8 @@ async function parseCommandLineArguments() {
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
-      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' }))
+      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
+      .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
@@ -200,7 +201,7 @@ async function initCommandLine() {
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await diffStack(await findStack(args.STACK), args.template);
+        return await diffStack(await findStack(args.STACK), args.template, args.strict);
 
       case 'bootstrap':
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
@@ -592,10 +593,10 @@ async function initCommandLine() {
     }
   }
 
-  async function diffStack(stackName: string, templatePath?: string): Promise<number> {
+  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean): Promise<number> {
     const stack = await synthesizeStack(stackName);
     const currentTemplate = await readCurrentTemplate(stack, templatePath);
-    if (printStackDiff(currentTemplate, stack) === 0) {
+    if (printStackDiff(currentTemplate, stack, strict) === 0) {
       return 0;
     } else {
       return 1;
