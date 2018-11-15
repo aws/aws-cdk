@@ -15,6 +15,17 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
   const context = config.get(['context']);
   await populateDefaultEnvironmentIfNeeded(aws, context);
 
+  let pathMetadata: boolean = config.get(['pathMetadata']);
+  if (pathMetadata === undefined) {
+      pathMetadata = true; // default to true
+  }
+
+  if (pathMetadata) {
+    context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
+  }
+
+  debug('context:', context);
+
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
   const app = config.get(['app']);
