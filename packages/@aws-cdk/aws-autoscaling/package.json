@@ -59,6 +59,9 @@
     "pkglint": "^0.17.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-autoscaling-api": "^0.17.0",
+    "@aws-cdk/aws-autoscaling-common": "^0.17.0",
+    "@aws-cdk/aws-cloudwatch": "^0.17.0",
     "@aws-cdk/aws-ec2": "^0.17.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.17.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.17.0",
@@ -68,6 +71,8 @@
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-autoscaling-api": "^0.17.0",
+    "@aws-cdk/aws-cloudwatch": "^0.17.0",
     "@aws-cdk/aws-ec2": "^0.17.0",
     "@aws-cdk/aws-elasticloadbalancing": "^0.17.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "^0.17.0",

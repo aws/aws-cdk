@@ -10,9 +10,15 @@ export class BaseImportedTargetGroup extends cdk.Construct {
    */
   public readonly targetGroupArn: string;
 
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  public readonly loadBalancerArns: string;
+
   constructor(parent: cdk.Construct, id: string, props: TargetGroupRefProps) {
     super(parent, id);
 
     this.targetGroupArn = props.targetGroupArn;
+    this.loadBalancerArns = props.loadBalancerArns || new cdk.AwsNoValue().toString();
   }
 }

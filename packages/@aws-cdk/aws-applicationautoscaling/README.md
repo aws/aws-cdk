@@ -27,11 +27,12 @@ scaling actions might, see below).
 
 There are three ways to scale your capacity:
 
-* **In response to a metric**; for example, you might want to scale out
-  if the CPU usage across your cluster starts to rise, and scale in
-  when it drops again.
-* **By trying to keep a certain metric around a given value**; you might
-  want to automatically scale out an in to keep your CPU usage around 50%.
+* **In response to a metric** (also known as step scaling); for example, you
+  might want to scale out if the CPU usage across your cluster starts to rise,
+  and scale in when it drops again.
+* **By trying to keep a certain metric around a given value** (also known as
+  target tracking scaling); you might want to automatically scale out an in to
+  keep your CPU usage around 50%.
 * **On a schedule**; you might want to organize your scaling around traffic
   flows you expect, by scaling out in the morning and scaling in in the
   evening.
@@ -50,7 +51,7 @@ capacity.scaleToTrackMetric(...);
 capacity.scaleOnSchedule(...);
 ```
 
-### AutoScaling in response to a metric
+### Step Scaling
 
 This type of scaling scales in and out in deterministics steps that you
 configure, in response to metric values. For example, your scaling strategy
@@ -87,7 +88,7 @@ capacity.scaleOnMetric('ScaleToCPU', {
 The AutoScaling construct library will create the required CloudWatch alarms and
 AutoScaling policies for you.
 
-### AutoScaling by tracking a metric value
+### Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric (typically
 representing utilization) around a value you prefer. This type of scaling is
@@ -108,7 +109,7 @@ readCapacity.scaleOnUtilization({
 });
 ```
 
-### AutoScaling on a schedule
+### Scheduled Scaling
 
 This type of scaling is used to change capacities based on time. It works
 by changing the `minCapacity` and `maxCapacity` of the attribute, and so

@@ -165,6 +165,11 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * Health check for the members of this target group
    */
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  public readonly loadBalancerArns: string;
+
   public healthCheck: HealthCheck;
 
   /**
@@ -232,6 +237,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns.toList();
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
+    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
 
@@ -316,6 +322,11 @@ export interface TargetGroupRefProps {
    * Port target group is listening on
    */
   defaultPort: string;
+
+  /**
+   * A Token representing the list of ARNs for the load balancer routing to this target group
+   */
+  loadBalancerArns?: string;
 }
 
 /**
@@ -326,6 +337,11 @@ export interface ITargetGroup {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
+
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  readonly loadBalancerArns: string;
 
   /**
    * Return an object to depend on the listeners added to this target group

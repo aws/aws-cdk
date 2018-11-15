@@ -1,3 +1,4 @@
+import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -11,7 +12,13 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination {
+export abstract class TopicRef extends cdk.Construct
+  implements
+    events.IEventRuleTarget,
+    cloudwatch.IAlarmAction,
+    s3n.IBucketNotificationDestination,
+    autoscaling_api.ILifecycleHookTarget {
+
   /**
    * Import a Topic defined elsewhere
    */
@@ -220,6 +227,14 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
       id: this.id,
       arn: this.topicArn,
     };
+  }
+
+  /**
+   * Allow using SNS topics as lifecycle hook targets
+   */
+  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
+    this.grantPublish(lifecycleHook.role);
+    return { notificationTargetArn: this.topicArn };
   }
 
   public get alarmActionArn(): string {

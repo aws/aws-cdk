@@ -89,14 +89,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public readonly connections: ec2.Connections;
 
   /**
+   * Load balancer this listener is associated with
+   */
+  public readonly loadBalancer: IApplicationLoadBalancer;
+
+  /**
    * ARNs of certificates added to this listener
    */
   private readonly certificateArns: string[];
-
-  /**
-   * Load balancer this listener is associated with
-   */
-  private readonly loadBalancer: IApplicationLoadBalancer;
 
   /**
    * Listener protocol for this listener.

@@ -1,22 +1,22 @@
 {
-  "name": "@aws-cdk/aws-applicationautoscaling",
+  "name": "@aws-cdk/aws-autoscaling-common",
   "version": "0.17.0",
-  "description": "The CDK Construct Library for AWS::ApplicationAutoScaling",
+  "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.applicationautoscaling",
+        "package": "software.amazon.awscdk.services.autoscaling.common",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "applicationautoscaling"
+          "artifactId": "autoscaling-common"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
-        "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
+        "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+        "packageId": "Amazon.CDK.AWS.AutoScaling.Common",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
@@ -36,14 +36,11 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::ApplicationAutoScaling"
-  },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "applicationautoscaling"
+    "s3"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -54,19 +51,16 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.17.0",
     "cdk-build-tools": "^0.17.0",
-    "cfn2ts": "^0.17.0",
+    "cdk-integ-tools": "^0.17.0",
     "fast-check": "^1.6.1",
     "pkglint": "^0.17.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling-common": "^0.17.0",
-    "@aws-cdk/aws-cloudwatch": "^0.17.0",
     "@aws-cdk/aws-iam": "^0.17.0",
     "@aws-cdk/cdk": "^0.17.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "^0.17.0",
     "@aws-cdk/aws-iam": "^0.17.0",
     "@aws-cdk/cdk": "^0.17.0"
   }

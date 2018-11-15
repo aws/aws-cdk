@@ -1,4 +1,4 @@
-import { ScalingInterval } from "./step-scaling-policy";
+import { ScalingInterval } from "./types";
 
 export interface CompleteScalingInterval {
   lower: number;
