@@ -38,6 +38,9 @@ aws iam put-role-policy \
         }]
     }')
 
+echo "Sleeping a bit to improve chances of the role having propagated"
+sleep 5
+
 setup
 
 stack_arn=$(cdk --role-arn $role_arn deploy cdk-toolkit-integration-test-2)

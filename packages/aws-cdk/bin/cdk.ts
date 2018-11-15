@@ -19,7 +19,7 @@ import { data, debug, error, highlight, print, setVerbose, success, warning } fr
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { deserializeStructure, serializeStructure } from '../lib/serialize';
-import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../lib/settings';
+import { loadProjectConfig, loadUserConfig, PER_USER_DEFAULTS, saveProjectConfig, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
@@ -86,6 +86,13 @@ async function parseCommandLineArguments() {
  * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
  * options as appropriate.
  *
+ * Command handlers are supposed to be (args) => void, but ours are actually
+ * (args) => Promise<number>, so we deal with the asyncness by copying the actual
+ * handler object to `args.commandHandler` which will be 'await'ed later on
+ * (instead of awaiting 'main').
+ *
+ * Also adds exception handling so individual command handlers don't all have to do it.
+ *
  * @param commandObject is the command to be decorated.
  * @returns a decorated ``CommandModule``.
  */
@@ -96,7 +103,22 @@ function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModul
       if (args.verbose) {
         setVerbose();
       }
-      return args.result = commandObject.handler(args);
+      args.commandHandler = wrapExceptionHandler(args.verbose, commandObject.handler as any)(args);
+    }
+  };
+}
+
+function wrapExceptionHandler(verbose: boolean, fn: (args: any) => Promise<number>) {
+  return async (a: any) => {
+    try {
+      return await fn(a);
+    } catch (e) {
+      if (verbose) {
+        error(e);
+      } else {
+        error(e.message);
+      }
+      return 1;
     }
   };
 }
@@ -117,8 +139,8 @@ async function initCommandLine() {
   });
 
   const defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
-  const userConfig = await new Settings().load(PER_USER_DEFAULTS);
-  const projectConfig = await new Settings().load(DEFAULTS);
+  const userConfig = await loadUserConfig();
+  const projectConfig = await loadProjectConfig();
   const commandLineArguments = argumentsToSettings();
   const renames = parseRenames(argv.rename);
 
@@ -157,7 +179,7 @@ async function initCommandLine() {
 
   const cmd = argv._[0];
 
-  const returnValue = await (argv.result || main(cmd, argv));
+  const returnValue = await (argv.commandHandler || main(cmd, argv));
   if (typeof returnValue === 'object') {
     return toJsonOrYaml(returnValue);
   } else if (typeof returnValue === 'string') {
@@ -382,7 +404,7 @@ async function initCommandLine() {
         await contextproviders.provideContextValues(allMissing, projectConfig, aws);
 
         // Cache the new context to disk
-        await projectConfig.save(DEFAULTS);
+        await saveProjectConfig(projectConfig);
         config = completeConfig();
 
         continue;
