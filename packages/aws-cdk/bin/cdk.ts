@@ -281,7 +281,7 @@ async function initCommandLine() {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
         const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
-        const message = result.noOp ? ' ✅  Environment %s already bootstrapped, nothing to do.'
+        const message = result.noOp ? ' ✅  Nothing to do, environment %s already bootstrapped.'
                       : ' ✅  Successfully bootstrapped environment %s.';
         success(message, colors.blue(environment.name));
       } catch (e) {
