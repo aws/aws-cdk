@@ -148,6 +148,21 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   public readonly targetGroupName: string;
 
   /**
+   * ARNs of load balancers load balancing to this TargetGroup
+   */
+  public readonly targetGroupLoadBalancerArns: string[];
+
+  /**
+   * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
+   */
+  public readonly firstLoadBalancerFullName: string;
+
+  /**
    * Health check for the members of this target group
    */
   public healthCheck: HealthCheck;
@@ -214,10 +229,16 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
+    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns.toList();
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
+
+    const firstLoadBalancerArn = new cdk.FnSelect(0, this.targetGroupLoadBalancerArns);
+    // arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
+    const arnParts = new cdk.FnSplit('/', firstLoadBalancerArn);
+    this.firstLoadBalancerFullName = `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
   }
 
   /**
