@@ -407,21 +407,43 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
         tags: subnetConfig.tags,
       };
 
+      let subnet: VpcSubnet;
       switch (subnetConfig.subnetType) {
         case SubnetType.Public:
           const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
           this.publicSubnets.push(publicSubnet);
+          subnet = publicSubnet;
           break;
         case SubnetType.Private:
           const privateSubnet = new VpcPrivateSubnet(this, name, subnetProps);
           this.privateSubnets.push(privateSubnet);
+          subnet = privateSubnet;
           break;
         case SubnetType.Isolated:
           const isolatedSubnet = new VpcPrivateSubnet(this, name, subnetProps);
+          isolatedSubnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType));
           this.isolatedSubnets.push(isolatedSubnet);
+          subnet = isolatedSubnet;
           break;
+        default:
+          throw new Error(`Unrecognized subnet type: ${subnetConfig.subnetType}`);
       }
+
+      // These values will be used to recover the config upon provider import
+      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name, { propagate: false });
+      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { propagate: false });
     });
+  }
+}
+
+const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+
+function subnetTypeTagValue(type: SubnetType) {
+  switch (type) {
+    case SubnetType.Public: return 'Public';
+    case SubnetType.Private: return 'Private';
+    case SubnetType.Isolated: return 'Isolated';
   }
 }
 
