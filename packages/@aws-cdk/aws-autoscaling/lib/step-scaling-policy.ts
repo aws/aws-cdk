@@ -1,7 +1,7 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { ScalableTarget } from './scalable-target';
+import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
 export interface BasicStepScalingPolicyProps {
@@ -27,15 +27,16 @@ export interface BasicStepScalingPolicyProps {
   /**
    * Grace period after scaling activity.
    *
-   * Subsequent scale outs during the cooldown period are squashed so that only
-   * the biggest scale out happens.
-   *
-   * Subsequent scale ins during the cooldown period are ignored.
-   *
-   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
-   * @default No cooldown period
+   * @default Default cooldown period on your AutoScalingGroup
    */
-  cooldownSec?: number;
+  cooldownSeconds?: number;
+
+  /**
+   * Estimated time until a newly launched instance can send metrics to CloudWatch.
+   *
+   * @default Same as the cooldown
+   */
+  estimatedInstanceWarmupSeconds?: number;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -50,9 +51,9 @@ export interface BasicStepScalingPolicyProps {
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
-   * The scaling target
+   * The auto scaling group
    */
-  scalingTarget: ScalableTarget;
+  autoScalingGroup: IAutoScalingGroup;
 }
 
 /**
@@ -86,10 +87,10 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSec: props.cooldownSec,
+        cooldownSeconds: props.cooldownSeconds,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
-        scalingTarget: props.scalingTarget,
+        autoScalingGroup: props.autoScalingGroup,
       });
 
       for (let i = alarms.lowerAlarmIntervalIndex; i >= 0; i--) {
@@ -116,10 +117,10 @@ export class StepScalingPolicy extends cdk.Construct {
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType: props.adjustmentType,
-        cooldownSec: props.cooldownSec,
+        cooldownSeconds: props.cooldownSeconds,
         metricAggregationType: aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
-        scalingTarget: props.scalingTarget,
+        autoScalingGroup: props.autoScalingGroup,
       });
 
       for (let i = alarms.upperAlarmIntervalIndex; i < intervals.length; i++) {
@@ -140,6 +141,19 @@ export class StepScalingPolicy extends cdk.Construct {
       });
       this.upperAlarm.onAlarm(this.upperAction);
     }
+  }
+}
+
+function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregationType {
+  switch (metric.statistic) {
+    case 'Average':
+      return MetricAggregationType.Average;
+    case 'Minimum':
+      return MetricAggregationType.Minimum;
+    case 'Maximum':
+      return MetricAggregationType.Maximum;
+    default:
+      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
   }
 }
 
@@ -178,17 +192,4 @@ export interface ScalingInterval {
    *   be positive.
    */
   change: number;
-}
-
-function aggregationTypeFromMetric(metric: cloudwatch.Metric): MetricAggregationType {
-  switch (metric.statistic) {
-    case 'Average':
-      return MetricAggregationType.Average;
-    case 'Minimum':
-      return MetricAggregationType.Minimum;
-    case 'Maximum':
-      return MetricAggregationType.Maximum;
-    default:
-      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${metric.statistic}`);
-  }
 }
