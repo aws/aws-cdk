@@ -10,43 +10,48 @@
 
 .. _getting_started:
 
-#############
-Hello, |cdk|!
-#############
+#####################################
+Creating Your First |cdk| Application
+#####################################
 
 This topic walks you through creating and deploying your first |cdk| app.
 
 .. _setup:
 
-Setup
-=====
+Setting up the |cdk|
+====================
 
 .. _setup_prerequisites:
 
 Prerequisites
 -------------
 
-`Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ - required for the
-command-line toolkit and language bindings.
+You must install
+`Node.js (>= 8.11.x) <https://nodejs.org/en/download>`_ to use the command-line
+toolkit and language bindings.
 
-`AWS CLI <https://aws.amazon.com/cli>`_ - recommended in general, and can be
-used to setup the credentials and region for your AWS account,
-which must be specified to use the toolkit.
-See :ref:`credentials <credentials>` for information on using the AWS CLI to set your credentials.
+If you use Java, you must set the `JAVA_HOME` environment variable to the path to where you have
+installed the JDK on your machine to build an |cdk| app in Java.
+
+Specify your credentials and region with the
+`AWS CLI <https://aws.amazon.com/cli>`_.
+You must specify both your credentials and a region to use the toolkit.
+See :ref:`credentials <credentials>` for information on using the AWS CLI to
+specify your credentials.
 
 .. _setup_install:
 
-Install the command-line toolkit
---------------------------------
+Installing the Command-Line Toolkit
+-----------------------------------
 
-The toolkit can be installed via `npm <https://www.npmjs.org>`_ as follows:
+Install the toolkit using the following `npm <https://www.npmjs.org>`_ command:
 
 .. code-block:: sh
 
     npm install -g aws-cdk
 
-You can run this command to see the currently installed version of the toolkit
-(This guide is aligned with |version|):
+Run the following command to see the currently installed version of the toolkit
+(this guide was written for |version|):
 
 .. code-block:: sh
 
@@ -59,13 +64,16 @@ Initializing the Project
 
 .. note::
 
-    This guide walks you through the process of creating a |cdk| project
-    step-by-step to explain some of the reasoning and details
-    behind the project structure and tools. It is also possible to use the
-    :code:`cdk init` command to get started quickly from a project
-    template in supported languages.
+    This guide walks you through the process of creating an |cdk| project.
+    You can also use the
+    :code:`cdk init` command to create a skeleton project from a
+    template in any of the supported languages.
 
 Create an empty project structure for the |cdk| app.
+
+.. The cdk init -l typescript version of package.json also includes
+   a "cdk": "cdk"
+   entry in "scripts"
 
 .. tabs::
 
@@ -81,6 +89,13 @@ Create an empty project structure for the |cdk| app.
             git init
             npm init -y # creates package.json
 
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            *.js
+            node_modules
+
     .. group-tab:: TypeScript
 
         Create an empty source-controlled directory for your project and an
@@ -93,6 +108,25 @@ Create an empty project structure for the |cdk| app.
             git init
             npm init -y # creates package.json
 
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            *.js
+            *.d.ts
+            node_modules
+
+        Add the `build` and `watch` TypeScript commands to **package.json**:
+
+        .. code-block:: json
+
+            {
+                "scripts": {
+                    "build": "tsc",
+                    "watch": "tsc -w"
+                }
+            }
+
         Create a minimal **tsconfig.json**:
 
         .. code-block:: json
@@ -104,18 +138,28 @@ Create an empty project structure for the |cdk| app.
                 }
             }
 
-        Setup TypeScript build commands in **package.json**:
-
-        .. code-block:: json
-
-            {
-                "scripts": {
-                    "build": "tsc",
-                    "watch": "tsc -w"
-                }
-            }
-
     .. group-tab:: Java
+
+        Create an empty source-controlled directory for your project:
+
+        .. code-block:: sh
+
+            mkdir hello-cdk
+            cd hello-cdk
+            git init
+
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            .classpath.txt
+            target
+            .classpath
+            .project
+            .idea
+            .settings
+            .vscode
+            *.iml
 
         Use your favorite IDE to create a Maven-based empty Java 8 project.
 
@@ -140,8 +184,8 @@ Create an empty project structure for the |cdk| app.
 
 .. _add_core:
 
-Add @aws-cdk/cdk as a Dependency
-================================
+Adding @aws-cdk/cdk as a Dependency
+===================================
 
 Install the |cdk| core library (:py:mod:`@aws-cdk/cdk`). This
 library includes the basic classes needed to write |cdk| stacks and apps.
@@ -158,12 +202,11 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
     .. group-tab:: TypeScript
 
-        Install the **@aws-cdk/cdk** package and the **@types/node** (the latter
-        is needed because we reference **process.argv** in our code):
+        Install the **@aws-cdk/cdk** package:
 
         .. code-block:: sh
 
-            npm install @aws-cdk/cdk @types/node
+            npm install @aws-cdk/cdk
 
     .. group-tab:: Java
 
@@ -181,25 +224,25 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
 .. _define_app:
 
-Define the |cdk| App
-====================
+Defining the |cdk| App
+======================
 
-|cdk| apps are modeled as classes which extend the :py:class:`App <@aws-cdk/cdk.App>`
-class. Let's create our first, empty **App**:
+|cdk| apps are classes that extend the :py:class:`App <@aws-cdk/cdk.App>`
+class. Create an empty **App**:
 
 .. tabs::
 
     .. group-tab:: JavaScript
 
-        In **index.js**:
+        Create the file **bin/hello-cdk.js**:
 
         .. code-block:: js
 
             const cdk = require('@aws-cdk/cdk');
 
             class MyApp extends cdk.App {
-                constructor(argv) {
-                    super(argv);
+                constructor() {
+                    super();
                 }
             }
 
@@ -207,15 +250,15 @@ class. Let's create our first, empty **App**:
 
     .. group-tab:: TypeScript
 
-        In **index.ts**:
+        Create the file **bin/hello-cdk.ts**:
 
         .. code-block:: ts
 
             import cdk = require('@aws-cdk/cdk');
 
             class MyApp extends cdk.App {
-                constructor(argv: string[]) {
-                    super(argv);
+                constructor() {
+                    super();
                 }
             }
 
@@ -232,25 +275,19 @@ class. Let's create our first, empty **App**:
             import software.amazon.awscdk.App;
 
             import java.util.Arrays;
-            import java.util.List;
 
-            public class MyApp extends App {
-                public MyApp(final List<String> argv) {
-                    super(argv);
-                }
+            public class MyApp {
+                public static void main(final String argv[]) {
+                    App app = new App();
 
-                public static void main(final String[] argv) {
-                    System.out.println(new MyApp(Arrays.asList(argv)).run());
+                    app.run();
                 }
             }
 
-.. note:: The code that reads **argv**, runs the app and writes the output to **STDOUT** is
-    currently needed in order to allow the |cdk| Toolkit to interact with your app.
-
 .. _complie_code:
 
-Compile the Code
-================
+Compiling the Code
+==================
 
 If needed, compile the code:
 
@@ -284,14 +321,14 @@ If needed, compile the code:
 
             mvn compile
 
-This is it, you now created your first, alas empty, |cdk| app.
+You have now created your first |cdk| app.
 
 .. _credentials:
 
-Configure the |cdk| Toolkit
-===========================
+Configuring the |cdk| Toolkit
+=============================
 
-Use the |cdk| toolkit to view the contents of this app.
+Use the |cdk| toolkit to view the contents of an app.
 
 .. note::
 
@@ -299,8 +336,6 @@ Use the |cdk| toolkit to view the contents of this app.
 
     Use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html>`_
     ``aws configure`` command to specify your default credentials and region.
-
-    Important: make sure that you explicitly specify a **region**.
 
     You can also set environment variables for your default credentials and region.
     Environment variables take precedence over settings in the credentials or config file.
@@ -312,37 +347,37 @@ Use the |cdk| toolkit to view the contents of this app.
     See `Environment Variables <https://docs.aws.amazon.com/cli/latest/userguide/cli-environment.html>`_
     in the CLI User Guide for details.
 
-.. include:: region-note.rst    
+.. include:: region-note.rst
 
 The |cdk| toolkit needs to know how to execute your |cdk| app. It requires that the
 :code:`--app` command-line option points to an executable program that adheres
-to the toolkit's protocol (this is what the **ARGV/STDOUT** boilerplate
-implements). Alternatively, to explicitly specifying :code:`--app` every time you use
-the toolkit, we recommend that you create a :code:`cdk.json` file at the root of
-your project directory:
+to the toolkit's protocol.
+Although you can include an :code:`--app` option every time you use the toolkit,
+we recommend that you instead create a :code:`cdk.json` file at the root of
+your project directory with the following content:
 
 .. tabs::
 
     .. group-tab:: JavaScript
 
-        Define the :code:`--app` option in **cdk.json** to execute **index.js**
+        Define the :code:`--app` option in **cdk.json** to execute **hello-cdk.js**
         using **node**:
 
         .. code-block:: json
 
             {
-              "app": "node index.js"
+              "app": "node bin/hello-cdk.js"
             }
 
     .. group-tab:: TypeScript
 
-        Define the :code:`--app` option in **cdk.json** to execute **index.js**
+        Define the :code:`--app` option in **cdk.json** to execute **hello-cdk.js**
         using **node**:
 
         .. code-block:: json
 
             {
-              "app": "node index.js"
+              "app": "node bin/hello-cdk.js"
             }
 
     .. group-tab:: Java
@@ -490,10 +525,15 @@ Define a stack and add it to the app.
 
             import software.amazon.awscdk.App;
             import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
 
             public class MyStack extends Stack {
-                public MyStack(final App parent, final String id) {
-                    super(parent, id);
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
                 }
             }
 
@@ -505,19 +545,15 @@ Define a stack and add it to the app.
             package com.acme;
 
             import software.amazon.awscdk.App;
-
             import java.util.Arrays;
-            import java.util.List;
 
-            public class MyApp extends App {
-                public MyApp(final List<String> argv) {
-                    super(argv);
+            public class MyApp {
+                public static void main(final String argv[]) {
+                    App app = new App();
 
-                    new MyStack(this, "hello-cdk");
-                }
+                    new MyStack(app, "hello-cdk");
 
-                public static void main(final String[] argv) {
-                    System.out.println(new MyApp(Arrays.asList(argv)).run());
+                    app.run();
                 }
             }
 
@@ -666,12 +702,17 @@ the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
             import software.amazon.awscdk.App;
             import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
             import software.amazon.awscdk.services.s3.Bucket;
             import software.amazon.awscdk.services.s3.BucketProps;
 
             public class MyStack extends Stack {
-                public MyStack(final App parent, final String id) {
-                    super(parent, id);
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
 
                     new Bucket(this, "MyFirstBucket", BucketProps.builder()
                             .withVersioned(true)
