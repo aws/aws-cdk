@@ -104,7 +104,7 @@ export interface LoadBalancedFargateServiceProps {
 }
 
 /**
- * A single task running on an ECS cluster fronted by a load balancer
+ * A Fargate service running on an ECS cluster fronted by a load balancer
  */
 export class LoadBalancedFargateService extends cdk.Construct {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
