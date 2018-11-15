@@ -1,3 +1,4 @@
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
@@ -6,6 +7,10 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 
 import { cloudformation } from './autoscaling.generated';
+import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
+import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
+import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
+import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 
 /**
  * Name tag constant
@@ -134,6 +139,13 @@ export interface AutoScalingGroupProps {
    * The AWS resource tags to associate with the ASG.
    */
   tags?: cdk.Tags;
+
+  /**
+   * Default scaling cooldown for this AutoScalingGroup
+   *
+   * @default 300 (5 minutes)
+   */
+  cooldownSeconds?: number;
 }
 
 /**
@@ -147,7 +159,7 @@ export interface AutoScalingGroupProps {
  *
  * The ASG spans all availability zones.
  */
-export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
+export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup, cdk.ITaggable, elb.ILoadBalancerTarget, ec2.IConnectable,
   elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget {
   /**
    * The type of OS instances of this fleet are running.
@@ -169,15 +181,25 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    */
   public readonly tags: cdk.TagManager;
 
+  /**
+   * Name of the AutoScalingGroup
+   */
+  public readonly autoScalingGroupName: string;
+
   private readonly userDataLines = new Array<string>();
   private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
   private readonly securityGroup: ec2.SecurityGroupRef;
   private readonly securityGroups: ec2.SecurityGroupRef[] = [];
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
+  private albTargetGroup?: elbv2.ApplicationTargetGroup;
 
   constructor(parent: cdk.Construct, name: string, props: AutoScalingGroupProps) {
     super(parent, name);
+
+    if (props.cooldownSeconds !== undefined && props.cooldownSeconds < 0) {
+      throw new RangeError(`cooldownSeconds cannot be negative, got: ${props.cooldownSeconds}`);
+    }
 
     this.securityGroup = new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
       vpc: props.vpc,
@@ -221,6 +243,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     }
 
     const asgProps: cloudformation.AutoScalingGroupResourceProps = {
+      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
       minSize: minSize.toString(),
       maxSize: maxSize.toString(),
       desiredCapacity: desiredCapacity.toString(),
@@ -248,6 +271,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
 
     this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
+    this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
 
     this.applyUpdatePolicies(props);
   }
@@ -274,6 +298,7 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    */
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
+    this.albTargetGroup = targetGroup;
     targetGroup.registerConnectable(this);
     return { targetType: elbv2.TargetType.Instance };
   }
@@ -294,8 +319,94 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
     scriptLines.forEach(scriptLine => this.userDataLines.push(scriptLine));
   }
 
-  public autoScalingGroupName() {
-    return this.autoScalingGroup.ref;
+  /**
+   * Scale out or in based on time
+   */
+  public scaleOnSchedule(id: string, props: BasicScheduledActionProps) {
+    new ScheduledAction(this, `ScheduledAction${id}`, {
+      autoScalingGroup: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target CPU utilization
+   */
+  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
+      targetValue: props.targetUtilizationPercent,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target network ingress rate
+   */
+  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps) {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
+      targetValue: props.targetBytesPerSecond,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target network egress rate
+   */
+  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps) {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
+      targetValue: props.targetBytesPerSecond,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in to achieve a target request handling rate
+   *
+   * The AutoScalingGroup must have been attached to an Application Load Balancer
+   * in order to be able to call this.
+   */
+  public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
+    if (this.albTargetGroup === undefined) {
+      throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
+    }
+
+    const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
+
+    const policy = new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      predefinedMetric: PredefinedMetric.ALBRequestCountPerTarget,
+      targetValue: props.targetRequestsPerSecond,
+      resourceLabel,
+      ...props
+    });
+
+    // Target tracking policy can only be created after the load balancer has been
+    // attached to the targetgroup (because we need its ARN).
+    policy.addDependency(this.albTargetGroup.loadBalancerDependency());
+  }
+
+  /**
+   * Scale out or in in order to keep a metric around a target value
+   */
+  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps) {
+    new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+      autoScalingGroup: this,
+      customMetric: props.metric,
+      ...props
+    });
+  }
+
+  /**
+   * Scale out or in, in response to a metric
+   */
+  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
+    return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
 
   /**
@@ -303,6 +414,16 @@ export class AutoScalingGroup extends cdk.Construct implements cdk.ITaggable, el
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPolicy(statement);
+  }
+
+  /**
+   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
+   */
+  public onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+    return new LifecycleHook(this, `LifecycleHook${id}`, {
+      autoScalingGroup: this,
+      ...props
+    });
   }
 
   /**
@@ -505,6 +626,10 @@ class TagManager extends cdk.TagManager {
 function renderIsoDuration(seconds: number): string {
   const ret: string[] = [];
 
+  if (seconds === 0) {
+    return 'PT0S';
+  }
+
   if (seconds >= 3600) {
     ret.push(`${Math.floor(seconds / 3600)}H`);
     seconds %= 3600;
@@ -523,4 +648,63 @@ function renderIsoDuration(seconds: number): string {
 function validatePercentage(x?: number): number | undefined {
   if (x === undefined || (0 <= x && x <= 100)) { return x; }
   throw new Error(`Expected: a percentage 0..100, got: ${x}`);
+}
+
+/**
+ * An AutoScalingGroup
+ */
+export interface IAutoScalingGroup {
+  /**
+   * The name of the AutoScalingGroup
+   */
+  readonly autoScalingGroupName: string;
+}
+
+/**
+ * Properties for enabling scaling based on CPU utilization
+ */
+export interface CpuUtilizationScalingProps extends BaseTargetTrackingProps {
+  /**
+   * Target average CPU utilization across the task
+   */
+  targetUtilizationPercent: number;
+}
+
+/**
+ * Properties for enabling scaling based on network utilization
+ */
+export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps {
+  /**
+   * Target average bytes/seconds on each instance
+   */
+  targetBytesPerSecond: number;
+}
+
+/**
+ * Properties for enabling scaling based on request/second
+ */
+export interface RequestCountScalingProps extends BaseTargetTrackingProps {
+  /**
+   * Target average requests/seconds on each instance
+   */
+  targetRequestsPerSecond: number;
+}
+
+/**
+ * Properties for enabling tracking of an arbitrary metric
+ */
+export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
+  /**
+   * Metric to track
+   *
+   * The metric must represent a utilization, so that if it's higher than the
+   * target value, your ASG should scale out, and if it's lower it should
+   * scale in.
+   */
+  metric: cloudwatch.Metric;
+
+  /**
+   * Value to keep the metric around
+   */
+  targetValue: number;
 }
