@@ -77,6 +77,17 @@ Create an empty project structure for the |cdk| app.
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        Create a new empty, source controlled directory and then create a new
+        console application.
+
+        .. code-block:: sh
+
+            mkdir HelloCdk
+            cd HelloCdk
+            dotnet new console
+
     .. group-tab:: JavaScript
 
         Create an empty source-controlled directory for your project and an
@@ -192,6 +203,14 @@ library includes the basic classes needed to write |cdk| stacks and apps.
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        Install the **Amazon.CDK NuGet** package:
+
+        .. code-block:: sh
+
+            dotnet add package Amazon.CDK
+
     .. group-tab:: JavaScript
 
         Install the **@aws-cdk/cdk** package:
@@ -231,6 +250,26 @@ Defining the |cdk| App
 class. Create an empty **App**:
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        In **Program.cs**
+
+        .. code-block:: c#
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                class Program
+                {
+                    static void Main(string[] args)
+                    {
+                        var myApp = new App();
+                        myApp.Run();
+                    }
+                }
+            }
 
     .. group-tab:: JavaScript
 
@@ -292,6 +331,14 @@ Compiling the Code
 If needed, compile the code:
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        Compile the code using your IDE or via the dotnet CLI:
+
+        .. code-block:: sh
+
+            dotnet build
 
     .. group-tab:: JavaScript
 
@@ -357,6 +404,16 @@ we recommend that you instead create a :code:`cdk.json` file at the root of
 your project directory with the following content:
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        Define the :code:`--app` option in a **cdk.json** file:
+
+        .. code-block:: json
+
+            {
+              "app": "dotnet run --project HelloCdk.csproj"
+            }
 
     .. group-tab:: JavaScript
 
@@ -465,6 +522,44 @@ Define a Stack
 Define a stack and add it to the app.
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        Create **MyStack.cs**:
+
+        .. code-block:: c#
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                public class MyStack: Stack
+                {
+                    public MyStack(App parent, string name) : base(parent, name, new StackProps())
+                    {
+                    }
+                }
+            }
+
+        In **Program.cs**:
+
+        .. code-block:: c#
+            :emphasize-lines: 10
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                class Program
+                {
+                    static void Main(string[] args)
+                    {
+                        var myApp = new App();
+                        new MyStack(myApp, "hello-cdk");
+                        myApp.Run();
+                    }
+                }
+            }
 
     .. group-tab:: JavaScript
 
@@ -575,6 +670,12 @@ Compile your program:
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        We have configured cdk.json to run "dotnet run", which will
+        restore dependencies, build, and run your application.
+        Therefore, you just need to run the CDK command.
+
     .. group-tab:: JavaScript
 
         Nothing to compile.
@@ -622,6 +723,12 @@ Install the **@aws-cdk/aws-s3** package:
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        .. code-block:: sh
+
+            dotnet add package Amazon.CDK.AWS.S3
+
     .. group-tab:: JavaScript
 
         .. code-block:: sh
@@ -650,6 +757,30 @@ Next, define an |S3| bucket in the stack. |S3| buckets are represented by
 the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        Create **MyStack.cs**:
+
+        .. code-block:: c#
+            :emphasize-lines: 2,10,11,12,13
+
+            using Amazon.CDK;
+            using Amazon.CDK.AWS.S3;
+
+            namespace HelloCdk
+            {
+                public class MyStack : Stack
+                {
+                    public MyStack(App parent, string name) : base(parent, name, new StackProps())
+                    {
+                        new Bucket(this, "MyFirstBucket", new BucketProps
+                        {
+                            Versioned = true
+                        });
+                    }
+                }
+            }
 
     .. group-tab:: JavaScript
 
@@ -739,6 +870,12 @@ Compile your program:
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        We have configured cdk.json to run "dotnet run", which will
+        restore dependencies, build, and run your application.
+        Therefore, you just need to run the CDK command.
+
     .. group-tab:: JavaScript
 
         Nothing to compile.
@@ -818,6 +955,17 @@ Configure the bucket to use KMS managed encryption:
 
 .. tabs::
 
+    .. group-tab:: C#
+
+        .. code-block:: c#
+            :emphasize-lines: 4
+
+            new Bucket(this, "MyFirstBucket", new BucketProps
+            {
+                Versioned = true,
+                Encryption = BucketEncryption.KmsManaged
+            });
+
     .. group-tab:: JavaScript
 
         .. code-block:: js
@@ -851,6 +999,12 @@ Configure the bucket to use KMS managed encryption:
 Compile the program:
 
 .. tabs::
+
+    .. group-tab:: C#
+
+        We have configured cdk.json to run "dotnet run", which will
+        restore dependencies, build, and run your application.
+        Therefore, you just need to run the CDK command.
 
     .. group-tab:: JavaScript
 
