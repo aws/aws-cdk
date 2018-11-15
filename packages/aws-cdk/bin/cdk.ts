@@ -50,7 +50,8 @@ async function parseCommandLineArguments() {
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
-    .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
+    .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined })
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
@@ -121,7 +122,7 @@ async function initCommandLine() {
     'hosted-zone': new contextplugins.HostedZoneContextProviderPlugin(aws),
   };
 
-  const defaultConfig = new Settings({ versionReporting: true });
+  const defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
   const userConfig = await new Settings().load(PER_USER_DEFAULTS);
   const projectConfig = await new Settings().load(DEFAULTS);
   const commandLineArguments = argumentsToSettings();
@@ -629,7 +630,11 @@ async function initCommandLine() {
 
   function logDefaults() {
     if (!userConfig.empty()) {
-      debug('Defaults loaded from ', PER_USER_DEFAULTS, ':', JSON.stringify(userConfig.settings, undefined, 2));
+      debug(PER_USER_DEFAULTS + ':', JSON.stringify(userConfig.settings, undefined, 2));
+    }
+
+    if (!projectConfig.empty()) {
+      debug(DEFAULTS + ':', JSON.stringify(projectConfig.settings, undefined, 2));
     }
 
     const combined = userConfig.merge(projectConfig);
@@ -664,6 +669,7 @@ async function initCommandLine() {
       plugin: argv.plugin,
       toolkitStackName: argv.toolkitStackName,
       versionReporting: argv.versionReporting,
+      pathMetadata: argv.pathMetadata,
     });
   }
 

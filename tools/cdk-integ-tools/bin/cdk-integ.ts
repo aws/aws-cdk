@@ -18,7 +18,8 @@ async function main() {
     console.error(`Trying to deploy ${test.name}`);
 
     // injects "--verbose" to the command line of "cdk" if we are in verbose mode
-    const makeArgs = (...args: string[]) => !argv.verbose ? args : [ '--verbose', ...args ];
+    // inject "--no-path-metadata" so aws:cdk:path entries are not added to CFN metadata
+    const makeArgs = (...args: string[]) => !argv.verbose ? args : [ '--verbose', '--no-path-metadata', ...args ];
 
     try {
       await test.invoke(makeArgs('deploy'), { verbose: argv.verbose }); // Note: no context, so use default user settings!
