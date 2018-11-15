@@ -123,5 +123,46 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'Exercise metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const metrics = [];
+    metrics.push(lb.metricActiveConnectionCount());
+    metrics.push(lb.metricClientTlsNegotiationErrorCount());
+    metrics.push(lb.metricConsumedLCUs());
+    metrics.push(lb.metricElbAuthError());
+    metrics.push(lb.metricElbAuthFailure());
+    metrics.push(lb.metricElbAuthLatency());
+    metrics.push(lb.metricElbAuthSuccess());
+    metrics.push(lb.metricHttpCodeElb(elbv2.HttpCodeElb.Elb3xxCount));
+    metrics.push(lb.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(lb.metricHttpFixedResponseCount());
+    metrics.push(lb.metricHttpRedirectCount());
+    metrics.push(lb.metricHttpRedirectUrlLimitExceededCount());
+    metrics.push(lb.metricIPv6ProcessedBytes());
+    metrics.push(lb.metricIPv6RequestCount());
+    metrics.push(lb.metricNewConnectionCount());
+    metrics.push(lb.metricProcessedBytes());
+    metrics.push(lb.metricRejectedConnectionCount());
+    metrics.push(lb.metricRequestCount());
+    metrics.push(lb.metricRuleEvaluations());
+    metrics.push(lb.metricTargetConnectionErrorCount());
+    metrics.push(lb.metricTargetResponseTime());
+    metrics.push(lb.metricTargetTLSNegotiationErrorCount());
+
+    for (const metric of metrics) {
+      test.equal('AWS/ApplicationELB', metric.namespace);
+      test.deepEqual(cdk.resolve(metric.dimensions), {
+        LoadBalancer: { 'Fn::GetAtt': ['LB8A12904C', 'LoadBalancerFullName'] }
+      });
+    }
+
+    test.done();
+  },
 };

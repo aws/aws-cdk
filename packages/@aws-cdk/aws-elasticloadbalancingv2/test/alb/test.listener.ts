@@ -385,6 +385,44 @@ export = {
     test.done();
   },
 
+  'Exercise metrics'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+
+    // WHEN
+    const metrics = [];
+    metrics.push(group.metricHttpCodeTarget(elbv2.HttpCodeTarget.Target3xxCount));
+    metrics.push(group.metricIPv6RequestCount());
+    metrics.push(group.metricUnhealthyHostCount());
+    metrics.push(group.metricUnhealthyHostCount());
+    metrics.push(group.metricRequestCount());
+    metrics.push(group.metricTargetConnectionErrorCount());
+    metrics.push(group.metricTargetResponseTime());
+    metrics.push(group.metricTargetTLSNegotiationErrorCount());
+
+    for (const metric of metrics) {
+      test.equal('AWS/ApplicationELB', metric.namespace);
+      const firstArn = { "Fn::Select": [0, { "Fn::GetAtt": ["TargetGroup3D7CD9B8", "LoadBalancerArns"] }] };
+      test.deepEqual(cdk.resolve(metric.dimensions), {
+         TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
+         LoadBalancer: { 'Fn::Join':
+            [ '',
+              [ { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', firstArn ] } ] },
+                '/',
+                { 'Fn::Select': [ 2, { 'Fn::Split': [ '/', firstArn ] } ] },
+                '/',
+                { 'Fn::Select': [ 3, { 'Fn::Split': [ '/', firstArn ] } ] }
+              ]
+            ]
+         }
+      });
+    }
+
+    test.done();
+  },
+
   'Can add dependency on ListenerRule via TargetGroup'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
