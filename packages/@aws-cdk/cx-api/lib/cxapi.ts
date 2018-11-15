@@ -177,6 +177,17 @@ export const WARNING_METADATA_KEY = 'aws:cdk:warning';
 export const ERROR_METADATA_KEY = 'aws:cdk:error';
 
 /**
+ * The key used when CDK path is embedded in **CloudFormation template**
+ * metadata.
+ */
+export const PATH_METADATA_KEY = 'aws:cdk:path';
+
+/**
+ * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
+ */
+export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
+
+/**
  * Separator string that separates the prefix separator from the object key separator.
  *
  * Asset keys will look like:

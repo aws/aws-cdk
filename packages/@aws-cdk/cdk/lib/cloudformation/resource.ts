@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
@@ -86,6 +87,15 @@ export class Resource extends Referenceable {
 
     this.resourceType = props.type;
     this.properties = props.properties || { };
+
+    // if aws:cdk:enable-path-metadata is set, embed the current construct's
+    // path in the CloudFormation template, so it will be possible to trace
+    // back to the actual construct path.
+    if (this.getContext(cxapi.PATH_METADATA_ENABLE_CONTEXT)) {
+      this.options.metadata = {
+        [cxapi.PATH_METADATA_KEY]: this.path
+      };
+    }
   }
 
   /**

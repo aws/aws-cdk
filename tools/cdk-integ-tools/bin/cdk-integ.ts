@@ -17,16 +17,23 @@ async function main() {
   for (const test of tests) {
     console.error(`Trying to deploy ${test.name}`);
 
-    // injects "--verbose" to the command line of "cdk" if we are in verbose mode
-    const makeArgs = (...args: string[]) => !argv.verbose ? args : [ '--verbose', ...args ];
+    const args = new Array<string>();
+
+    // inject "--no-path-metadata" so aws:cdk:path entries are not added to CFN metadata
+    args.push('--no-path-metadata');
+
+    // inject "--verbose" to the command line of "cdk" if we are in verbose mode
+    if (argv.verbose) {
+      args.push('--verbose');
+    }
 
     try {
-      await test.invoke(makeArgs('deploy'), { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      await test.invoke([ ...args, 'deploy' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
 
       console.error(`Success! Writing out reference synth.`);
 
       // If this all worked, write the new expectation file
-      const actual = await test.invoke(makeArgs('--json', 'synth'), {
+      const actual = await test.invoke([ ...args, '--json', 'synth' ], {
         json: true,
         context: STATIC_TEST_CONTEXT,
         verbose: argv.verbose
