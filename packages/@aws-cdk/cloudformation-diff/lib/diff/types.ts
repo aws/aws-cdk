@@ -136,10 +136,40 @@ export class DifferenceCollection<V, T extends Difference<V>> {
     this.changes = newChanges;
   }
 
+  /**
+   * Invokes `cb` for all changes in this collection.
+   *
+   * Changes will be sorted as follows:
+   *  - Removed
+   *  - Added
+   *  - Updated
+   *  - Others
+   *
+   * @param cb
+   */
   public forEach(cb: (logicalId: string, change: T) => any): void {
+    const removed = new Array<{ logicalId: string, change: T }>();
+    const added = new Array<{ logicalId: string, change: T }>();
+    const updated = new Array<{ logicalId: string, change: T }>();
+    const others = new Array<{ logicalId: string, change: T }>();
+
     for (const logicalId of this.logicalIds) {
-      cb(logicalId, this.changes[logicalId]!);
+      const change: T = this.changes[logicalId]!;
+      if (change.isAddition) {
+        added.push({ logicalId, change });
+      } else if (change.isRemoval) {
+        removed.push({ logicalId, change });
+      } else if (change.isUpdate) {
+        updated.push({ logicalId, change });
+      } else {
+        others.push({ logicalId, change });
+      }
     }
+
+    removed.forEach(v => cb(v.logicalId, v.change));
+    added.forEach(v => cb(v.logicalId, v.change));
+    updated.forEach(v => cb(v.logicalId, v.change));
+    others.forEach(v => cb(v.logicalId, v.change));
   }
 }
 
