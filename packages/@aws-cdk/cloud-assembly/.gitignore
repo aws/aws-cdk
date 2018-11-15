@@ -1,0 +1,8 @@
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+.nyc_output
+coverage
+.nycrc

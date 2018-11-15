@@ -19,8 +19,8 @@ The design goals for the *Cloud Assembly Specification* are the following:
 
 ## Specification
 A *Cloud Assembly* is a ZIP archive that **SHOULD** conform to the [ISO/IEC 21320-1:2015] *Document Container File*
-standard. Use of the `deflate` compression method is **RECOMMENDED** in order to minimize the size of the resulting
-file. *Cloud Assembly* files **SHOULD** use the `.cloud` extension in order to make them easier to recognize by users.
+standard. *Cloud Assembly* files **SHOULD** use the `.cloud` extension in order to make them easier to recognize by
+users.
 
 Documents in the archive can be stored with any name and directory structure, however the following entries at the root
 of the archive are reserved for special use:
@@ -38,8 +38,8 @@ Key           |Type                 |Required|Description
 `missing`     |`Map<string,Missing>`|        |A mapping of context keys to [missing information](#missing).
 
 The [JSON] specification allows for keys to be specified multiple times in a given `object`. However, *Cloud Assembly*
-consumers **MAY** assume keys are unique, and [*Cloud Assemblers*](#cloud-assemblers) **SHOULD** avoid generating
-duplicate keys. If duplicate keys are present, the latest specified value **SHOULD** be preferred.
+consumers **MAY** assume keys are unique, and *Cloud Assemblers* **SHOULD** avoid generating duplicate keys. If
+duplicate keys are present and the manifest parser permits it, the latest specified value **SHOULD** be preferred.
 
 ### Logical ID
 *Logical IDs* are `string`s that uniquely identify [Drop](#drop)s in the context of a *Cloud Assembly*.
@@ -63,15 +63,16 @@ In other words, *Logical IDs* are expected to match the following regular expres
 
 ### Drop
 Clouds are made of Drops. Thet are the building blocks of *Cloud Assemblies*. They model a part of the
-*cloud application* that can be deployed independently, provided it's dependencies are fulfilled. Drops are specified
+*cloud application* that can be deployed independently, provided its dependencies are fulfilled. Drops are specified
 using [JSON] objects that **MUST** conform to the following schema:
 
-Key          |Type             |Required|Description
--------------|-----------------|:------:|-----------
-`type`       |`string`         |Required|The [*Drop Type*](#drop-type) specifier of this Drop.
-`environment`|`string`         |required|The target [environment](#environment) in which Drop is deployed.
-`metadata`   |`Map<string,any>`|        |Arbitrary key-value pairs associated with this Drop.
-`properties` |`Map<string,any>`|        |The properties of this Drop as documented by its maintainers.
+Key          |Type                  |Required|Description
+-------------|----------------------|:------:|-----------
+`type`       |`string`              |Required|The [*Drop Type*](#drop-type) specifier of this Drop.
+`environment`|`string`              |required|The target [environment](#environment) in which Drop is deployed.
+`dependsOn`  |`string[]`            |        |*Logical IDs* of other Drops that must be deployed before this one.
+`metadata`   |`Map<string,Metadata>`|        |Arbitrary named [metadata](#metadata) associated with this Drop.
+`properties` |`Map<string,any>`     |        |The properties of this Drop as documented by its maintainers.
 
 Each [Drop Type](#drop-type) can produce output strings that allow Drops to provide informations that other Drops can
 use when composing the *cloud application*. Each Drop implementer is responsible to document the output attributes it
@@ -89,8 +90,11 @@ The following escape sequences are valid:
 * `\\` encodes the `\` literal
 * `\${` encodes the `${` literal
 
-Deployment systems **SHOULD** return an error upon encountering an occurrence of the `/` literal that is not part of a
+Deployment systems **SHOULD** return an error upon encountering an occurrence of the `\` literal that is not part of a
 valid escape sequence.
+
+Drops **MUST NOT** cause circular dependencies. Deployment systems **SHOULD** detect cycles and fail upon discovering
+one.
 
 #### Drop Type
 Every Drop has a type specifier, which allows *Cloud Assembly* consumers to know how to deploy it. The type specifiers
@@ -129,7 +133,25 @@ aws://account/region
  └───────────────── AWS protocol specifier
 ```
 
-### `Missing`
+### Metadata
+Metadata can be attached to [Drops](#drop) to allow tools that work with *Cloud Assemblies* to share additional
+information about the *cloud application*. Metadata **SHOULD NOT** be used to convey data that is necessary for
+correctly process the *Cloud Assembly*, since any tool that consumes a *Cloud Assembly* **MAY** choose to ignore any or
+all Metadata.
+
+Key    |Type    |Required|Description
+-------|--------|:------:|-----------
+`kind` |`string`|Required|A token identifying the kind of metadata.
+`value`|`any`   |Required|The value associated with this metadata.
+
+A common use-case for Metadata is reporting warning or error messages that were emitted during the creation of the
+*Cloud Assembly*, so that deployment systems can present this information to the user. Warning and error messages
+**SHOULD** set the `kind` field to `warning` and `error` respectively, and the `value` field **SHOULD** contain a single
+`string`. Deployment systems **MAY** reject *Cloud Assemblies* that include [Drops](#drop) that carry one or more
+`error` Metadata entries, and they **SHOULD** surface `warning` messages to the user, either directly through their user
+interface, or in the execution log.
+
+### Missing
 [Drops](#drop) may require contextual information to be available in order to correctly participate in a
 *Cloud Assembly*. When information is missing, *Cloud Assembly* producers report the missing information by adding
 entries to the `missing` section of the [manifest document](#manifest-document). The values are [JSON] `object`s that
@@ -166,6 +188,8 @@ Deployment systems that support verifying signed *Cloud Assemblies*:
 
 ## Annex
 ### Examples of Drops for the AWS Cloud
+The Drop specifications provided in this section are for illustration purpose only.
+
 #### `@aws-cdk/aws-cloudformation.StackDrop`
 A [*CloudFormation* stack][CFN Stack].
 
@@ -177,10 +201,10 @@ Property     |Type                |Required|Description
 `stackPolicy`|`string`            |        |The assembly-relative path to the [Stack Policy][CFN Stack Policy].
 
 ##### Output Attributes
-Attribute |Type                |Description
-----------|--------------------|-----------
-`outputs` |`Map<string,string>`|Data returned by [*CloudFormation* Outputs][CFN Outputs] of the stack.
-`stackArn`|`string`            |The ARN of the [stack][CFN Stack].
+Attribute      |Type    |Description
+---------------|--------------------|-----------
+`output.<name>`|`string`|Data returned by the [*CloudFormation* Outputs][CFN Output] named `<name>` of the stack.
+`stackArn`     |`string`|The ARN of the [stack][CFN Stack].
 
 ##### Example
 ```json
@@ -190,8 +214,8 @@ Attribute |Type                |Description
   "properties": {
     "template": "my-stack/template.yml",
     "parameters": {
-      "bucketName": "${helperStack.bucketName}",
-      "objectKey": "${helperStack.objectKey}"
+      "bucketName": "${helperStack.output.bucketName}",
+      "objectKey": "${helperStack.output.objectKey}"
     },
     "stackPolicy": "my-stack/policy.json"
   }
@@ -225,7 +249,7 @@ Attribute   |Type    |Description
   "environment": "aws://000000000000/bermuda-triangle-1",
   "properties": {
     "file": "assets/file.bin",
-    "bucket": "${helperStack.bucketName}",
+    "bucket": "${helperStack.outputs.bucketName}",
     "objectKey": "assets/da39a3ee5e6b4b0d3255bfef95601890afd80709/nifty-asset.png"
   }
 }
@@ -238,7 +262,7 @@ A Docker image to be published to an *ECR* registry.
 Property    |Type    |Required|Description
 ------------|--------|:------:|-----------
 `savedImage`|`string`|Required|The assembly-relative path to the tar archive obtained from `docker image save`.
-`imageName` |`string`|Required|The name of the image (e.g: `000000000000.dkr.ecr.bermuda-triangle-1.amazon.com/name`).
+`pushTarget`|`string`|Required|Where the image should be pushed to (e.g: `<account>.dkr.ecr.<region>.amazon.com/<name>`).
 `tagName`   |`string`|        |The name of the tag to use when pushing the image (default: `latest`).
 
 ##### Output Attributes
@@ -254,7 +278,7 @@ Attribute     |Type    |Description
   "environment": "aws://000000000000/bermuda-triangle-1",
   "properties": {
     "savedImage": "docker/37e6de0b24fa.tar",
-    "imageName": "${helperStack.ecrImageName}",
+    "imageName": "${helperStack.output.ecrImageName}",
     "tagName": "latest"
   }
 }
@@ -323,7 +347,7 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "savedImage": "docker/docker-image.tar",
-        "imageName": "${PipelineStack.ecrImageName}"
+        "imageName": "${PipelineStack.output.ecrImageName}"
       }
     },
     "StaticFiles": {
@@ -331,7 +355,7 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "directory": "assets/static-website",
-        "bucketName": "${PipelineStack.stagingBucket}"
+        "bucketName": "${PipelineStack.output.stagingBucket}"
       }
     }
   }

@@ -1,0 +1,72 @@
+{
+  "name": "@aws-cdk/cloud-assembly",
+  "description": "Reference implementation for the Cloud Assembly specification",
+  "version": "0.17.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "targets": {
+      "java": {
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-cloud-assembly"
+        },
+        "package": "software.amazon.awscdk.cloudassembly"
+      },
+      "sphinx": {},
+      "dotnet": {
+        "namespace": "Amazon.CDK.CloudAssembly",
+        "packageId": "Amazon.CDK.CloudAssembly",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk"
+      }
+    },
+    "outdir": "dist"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "test": "cdk-test"
+  },
+  "cdk-build": {
+    "pre": [
+      "typescript-json-schema",
+      "lib/manifest.ts",
+      "Manifest",
+      "--excludePrivate",
+      "--noExtraProps",
+      "--required",
+      "--strictNullChecks",
+      "--topRef",
+      "--out=schema/manifest.schema.json"
+    ]
+  },
+  "dependencies": {
+    "jsonschema": "^1.2.4"
+  },
+  "devDependencies": {
+    "cdk-build-tools": "^0.17.0",
+    "pkglint": "^0.17.0",
+    "typescript-json-schema": "^0.33.0"
+  },
+  "bundleDependencies": [
+    "jsonschema"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/awslabs/aws-cdk.git"
+  },
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ]
+}
