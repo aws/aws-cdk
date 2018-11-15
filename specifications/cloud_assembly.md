@@ -169,7 +169,56 @@ present, *Cloud Assemblers*:
 * **MUST** require configuration of the [PGP][RFC 4880] key that will be used for signing.
 
 ##### Signing Algorithm
-<!--TODO-->
+The digital signature of *Cloud Assemblies* starts by establishing an attestation document that provides cryptographic
+summary information about the contents of the signed assembly. It is a [JSON] document composed of a single `object`
+with the following fields:
+
+Field      |Type                  |Description
+-----------|----------------------|-----------
+`timestamp`|`string`              |The [ISO 8601] timestamp of the attestation document creation time
+`algorithm`|`string`              |The hashing algorithm used to derive the `FileData` hashes.
+`nonce`    |`string`              |The nonce used when deriving the `FileData` hashes.
+`items`    |`Map<string,FileData>`|Summary information about the attested files.
+
+The `algorithm` field **MUST** be set to the standard identifier of a standard hashing algorithm, such as `SHA256`.
+Algorithms that are vulnerable to known collision attacks **SHOULD** not be used.
+
+The `nonce` field **MUST** be set to a byte array generated using a cryptographically secure random number generator. A
+`nonce` **MUST NOT** be re-used. It **MUST** be composed of at least `32` bytes, and **SHOULD** be the same length or
+larger than the size of the output of the chosen `algorithm`.
+
+The `items` field **MUST** contain one entry for each file in the *Cloud Assembly*, keyed on the relative path to the
+file within the container document, with a value that contains the following keys:
+Key   |Type    |Description
+------|--------|-----------
+`size`|`string`|The decimal representation of the file size in bytes.
+`hash`|`string`|The base-64 encoded result of hashing the file's content appended with the `nonce` using the `algorithm`.
+
+Here is a schematic example:
+```js
+{
+  // When this attestation doucment was created
+  "timestamp": "2018-11-15T11:08:52",
+  // The hashing algorithm for the attestation is SHA256
+  "algorithm": "SHA256",
+  // 32 bytes of cryptographically-secure randomness
+  "nonce": "2tDLdIoy1VtzLFjfzXVqzsNJHa9862y/WQgqKzC9+xs=",
+  "items": {
+    "data/data.bin": {
+      // The file is really 1024 times the character 'a'
+      "size": "1024",
+      // SHA256(<content of data/data.bin> + <nonce from above>)
+      "hash": "HIKJYDnT92EKILbFt2SOzA8dWF0YMEBHS72xLSw4lok="
+    },
+    /* ...other files of the assembly... */
+  }
+}
+```
+
+Once the attestation is ready, it is digitally *signed* using the configured [PGP][RFC 4880] key. The key **MUST** be
+valid as of the `timestamp` field included in the attestation. The siganture **MUST** not be detached, and is
+**RECOMMENDED** to use the *cleartext signature framework* described in section 7 of [RFC 4880] so the attestation can
+be read by a human.
 
 #### Verifying
 Deployment systems **SHOULD** support verifying signed *Cloud Assemblies*. If support for signature verification is not
@@ -420,3 +469,4 @@ Hash: SHA256
 [ISO/IEC 21320-1:2015]: https://www.iso.org/standard/60101.html
 [JSON]: https://www.json.org
 [RFC 4880]: https://tools.ietf.org/html/rfc4880
+[ISO 8601]: https://www.iso.org/standard/40874.html
