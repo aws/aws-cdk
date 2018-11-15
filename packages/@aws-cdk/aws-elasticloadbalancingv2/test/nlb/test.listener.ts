@@ -128,7 +128,7 @@ export = {
     const resource = new cdk.Resource(stack, 'MyResource', {
       type: 'SomeResource',
     });
-    resource.addDependency(group.listenerDependency());
+    resource.addDependency(group.loadBalancerDependency());
 
     // THEN
     expect(stack).toMatch({

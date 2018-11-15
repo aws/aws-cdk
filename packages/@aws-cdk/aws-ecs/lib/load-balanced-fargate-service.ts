@@ -109,6 +109,10 @@ export interface LoadBalancedFargateServiceProps {
 export class LoadBalancedFargateService extends cdk.Construct {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
 
+  public readonly targetGroup: elbv2.ApplicationTargetGroup;
+
+  public readonly service: FargateService;
+
   constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(parent, id);
 
@@ -132,6 +136,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       taskDefinition,
       assignPublicIp
     });
+    this.service = service;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
@@ -152,7 +157,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       listener = lb.addListener('PublicListener', { port: 80, open: true });
     }
 
-    listener.addTargets('ECS', {
+    this.targetGroup = listener.addTargets('ECS', {
       port: 80,
       targets: [service]
     });

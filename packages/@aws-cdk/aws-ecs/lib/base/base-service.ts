@@ -215,7 +215,7 @@ export abstract class BaseService extends cdk.Construct
       containerPort: this.taskDefinition.defaultContainer!.containerPort,
     });
 
-    this.resource.addDependency(targetGroup.listenerDependency());
+    this.resource.addDependency(targetGroup.loadBalancerDependency());
 
     const targetType = this.taskDefinition.networkMode === NetworkMode.AwsVpc ? elbv2.TargetType.Ip : elbv2.TargetType.Instance;
     return { targetType };
