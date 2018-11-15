@@ -7,16 +7,16 @@ import { DEFAULTS, loadProjectConfig, saveProjectConfig } from '../settings';
 export const command = 'context';
 export const describe = 'Manage cached context values';
 export const builder = {
-  invalidate: {
-    alias: 'd',
-    desc: 'The context key (or its index) to invalidate',
+  reset: {
+    alias: 'e',
+    desc: 'The context key (or its index) to reset',
     type: 'string',
     requiresArg: 'KEY'
   },
   clear: {
     desc: 'Clear all context',
     type: 'boolean',
-  }
+  },
 };
 
 export async function handler(args: yargs.Arguments): Promise<number> {
@@ -27,12 +27,17 @@ export async function handler(args: yargs.Arguments): Promise<number> {
     settings.set(['context'], {});
     await saveProjectConfig(settings);
     print('All context values cleared.');
-  } else if (args.invalidate) {
-    invalidateContext(context, args.invalidate);
+  } else if (args.reset) {
+    invalidateContext(context, args.reset);
     settings.set(['context'], context);
     await saveProjectConfig(settings);
   } else {
-    listContext(context);
+    // List -- support '--json' flag
+    if (args.json) {
+      process.stdout.write(JSON.stringify(context, undefined, 2));
+    } else {
+      listContext(context);
+    }
   }
 
   return 0;
@@ -59,7 +64,7 @@ function listContext(context: any) {
   }));
 
   // tslint:disable-next-line:max-line-length
-  print(`Run ${colors.blue('cdk context --invalidate KEY_OR_NUMBER')} to invalidate a context key. It will be refreshed on the next CDK synthesis run.`);
+  print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
 }
 
 function invalidateContext(context: any, key: string) {
@@ -70,13 +75,12 @@ function invalidateContext(context: any, key: string) {
   }
 
   // Unset!
-  if (!(key in context)) {
-    throw new Error(`No context value with key: ${key}`);
+  if (key in context) {
+    delete context[key];
+    print(`Context value ${colors.blue(key)} reset. It will be refreshed on the next SDK synthesis run.`);
+  } else {
+    print(`No context value with key ${colors.blue(key)}`);
   }
-
-  delete context[key];
-
-  print(`Context value ${colors.blue(key)} invalidated. It will be refreshed on the next SDK synthesis run.`);
 }
 
 function keyByNumber(context: any, n: number) {

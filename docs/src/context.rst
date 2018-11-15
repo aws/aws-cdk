@@ -48,7 +48,7 @@ The |cdk| currently supports the following context providers.
 Viewing and managing context
 ###########################
 
-Context is used to retrieve things like Availability Zones available to you, or
+Context is used to retrieve things like Availability Zones in your account, or
 AMI IDs used to start your instances. In order to avoid unexpected changes to
 your deployments-- let's say you were adding a ``Queue`` to your application but
 it happened that a new Amazon Linux AMI was released and all of a sudden your
@@ -76,18 +76,24 @@ context``. You will see something like the following:
    │   │ 64-gp2:region=us-east-1                            │                                                    │
    └───┴────────────────────────────────────────────────────┴────────────────────────────────────────────────────┘
 
-   Run cdk context --invalidate KEY_OR_NUMBER to invalidate a context key. It will be refreshed on the next CDK synthesis run.
+   Run cdk context --reset KEY_OR_NUMBER to remove a context key. It will be refreshed on the next CDK synthesis run.
 
 At some point, we *do* want to update to the latest version of the Amazon Linux
-AMI. To do a controlled update of the context value, invalidate it and
+AMI. To do a controlled update of the context value, reset it and
 synthesize again:
 
 .. code::
 
-   $ cdk context --invalidate 2
+   $ cdk context --reset 2
    Context value
    ssm:account=123456789012:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=us-east-1
-   invalidated. It will be refreshed on the next SDK synthesis run.
+   reset. It will be refreshed on the next SDK synthesis run.
 
    $ cdk synth
    ...
+
+To clear all context values, run:
+
+.. code::
+
+   $ cdk context --clear
