@@ -2,7 +2,10 @@
 dist
 .LAST_PACKAGE
 .LAST_BUILD
-*.snk
+.jsii
 .nyc_output
-coverage
 .nycrc
+*.snk
+*.js
+*.d.ts
+coverage
