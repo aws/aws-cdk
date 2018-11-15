@@ -115,7 +115,7 @@ export const STATIC_TEST_CONTEXT = {
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
   "ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region": "ami-1234",
   "ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region": "{\"image_id\": \"ami-1234\"}",
-  "vpc-provider:account=12345678:isDefault=true:region=test-region": {
+  "vpc-provider:account=12345678:filter.isDefault=true:region=test-region": {
     vpcId: "vpc-60900905",
     availabilityZones: [ "us-east-1a", "us-east-1b", "us-east-1c" ],
     publicSubnetIds: [ "subnet-e19455ca", "subnet-e0c24797", "subnet-ccd77395", ],

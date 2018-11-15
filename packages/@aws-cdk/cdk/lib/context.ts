@@ -179,27 +179,26 @@ function formatMissingScopeError(provider: string, props: {[key: string]: string
   return s;
 }
 
-function propsToArray(props: {[key: string]: any}): string[] {
-  const propArray: string[] = [];
-  const keys = Object.keys(props);
-  keys.sort();
-  for (const key of keys) {
+function propsToArray(props: {[key: string]: any}, keyPrefix = ''): string[] {
+  const ret: string[] = [];
+
+  for (const key of Object.keys(props)) {
     switch (typeof props[key]) {
       case 'object': {
-        const childObjStrs = propsToArray(props[key]);
-        const qualifiedChildStr = childObjStrs.map( child => (`${key}.${child}`)).join(':');
-        propArray.push(qualifiedChildStr);
+        ret.push(...propsToArray(props[key], `${keyPrefix}${key}.`));
         break;
       }
       case 'string': {
-        propArray.push(`${key}=${colonQuote(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${colonQuote(props[key])}`);
         break;
       }
       default: {
-        propArray.push(`${key}=${JSON.stringify(props[key])}`);
+        ret.push(`${keyPrefix}${key}=${JSON.stringify(props[key])}`);
         break;
       }
     }
   }
-  return propArray;
+
+  ret.sort();
+  return ret;
 }

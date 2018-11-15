@@ -51,7 +51,16 @@ export class VpcNetworkProvider {
   private provider: cdk.ContextProvider;
 
   constructor(context: cdk.Construct, props: VpcNetworkProviderProps) {
-    this.provider = new cdk.ContextProvider(context, cxapi.VPC_PROVIDER, props as cxapi.VpcContextQuery);
+    const filter: {[key: string]: string} = props.tags || {};
+
+    // We give special treatment to some tags
+    if (props.vpcId) { filter['vpc-id'] = props.vpcId; }
+    if (props.vpcName) { filter['tag:Name'] = props.vpcName; }
+    if (props.isDefault !== undefined) {
+      filter.isDefault = props.isDefault ? 'true' : 'false';
+    }
+
+    this.provider = new cdk.ContextProvider(context, cxapi.VPC_PROVIDER, { filter } as cxapi.VpcContextQuery);
   }
 
   /**

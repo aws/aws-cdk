@@ -67,7 +67,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet1EIP6AD938E8": {
       "Type": "AWS::EC2::EIP",
@@ -147,7 +150,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet2EIP4947BC00": {
       "Type": "AWS::EC2::EIP",
@@ -227,7 +233,10 @@
         "GatewayId": {
           "Ref": "VPCIGWB7E252D3"
         }
-      }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ]
     },
     "VPCPublicSubnet3EIPAD4BC883": {
       "Type": "AWS::EC2::EIP",
@@ -626,11 +635,11 @@
         "GroupDescription": "aws-cdk-codedeploy-server-dg/ELB/SecurityGroup",
         "SecurityGroupEgress": [
           {
-            "CidrIp":"255.255.255.255/32",
-            "Description":"Disallow all traffic",
-            "FromPort":252,
-            "IpProtocol":"icmp",
-            "ToPort":86
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86
           }
         ],
         "SecurityGroupIngress": [

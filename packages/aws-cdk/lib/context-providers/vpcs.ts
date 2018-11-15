@@ -10,8 +10,8 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
   }
 
   public async getValue(args: cxapi.VpcContextQuery) {
-    const account: string = args.account;
-    const region: string = args.region;
+    const account: string = args.account!;
+    const region: string = args.region!;
 
     const ec2 = await this.aws.ec2(account, region, Mode.ForReading);
 
@@ -20,24 +20,9 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return await this.readVpcProps(ec2, vpcId);
   }
 
-  private async findVpc(ec2: AWS.EC2, args: {[key: string]: any}): Promise<string> {
-    const vpcId: string | undefined = args.vpcId;
-    const vpcName: string | undefined = args.vpcName;
-    const tags: {[key: string]: string} | undefined = args.tags;
-    const isDefault: boolean | undefined = args.isDefault;
-
-    // Build request filter
-    const filters: AWS.EC2.Filter[] = [];
-    if (vpcId) { filters.push({ Name: 'vpc-id', Values: [vpcId] }); }
-    if (vpcName) { filters.push({ Name: 'tag:Name', Values: [vpcName] }); }
-    if (tags) {
-      for (const [tag, value] of Object.entries(tags)) {
-        filters.push({ Name: `tag:${tag}`, Values: [value] });
-      }
-    }
-    if (isDefault !== undefined) {
-      filters.push({ Name: 'isDefault', Values: [isDefault ? 'true' : 'false'] });
-    }
+  private async findVpc(ec2: AWS.EC2, args: cxapi.VpcContextQuery): Promise<string> {
+    // Build request filter (map { Name -> Value } to list of [{ Name, Values }])
+    const filters: AWS.EC2.Filter[] = Object.entries(args.filter).map(x => ({ Name: x[0], Values: [x[1]] }));
 
     debug(`Listing VPCs in ${args.account}:${args.region}`);
     const response = await ec2.describeVpcs({ Filters: filters }).promise();
