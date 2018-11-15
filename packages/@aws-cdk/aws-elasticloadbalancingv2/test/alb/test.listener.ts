@@ -93,6 +93,26 @@ export = {
     test.done();
   },
 
+  'Can configure targetType on TargetGroups'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      targetType: elbv2.TargetType.Ip
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetType: 'ip'
+    }));
+
+    test.done();
+  },
+
   'Can add target groups with and without conditions'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

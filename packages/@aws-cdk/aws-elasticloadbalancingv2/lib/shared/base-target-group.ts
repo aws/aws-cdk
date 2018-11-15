@@ -40,6 +40,17 @@ export interface BaseTargetGroupProps {
    * @default No health check
    */
   healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  targetType?: TargetType;
 }
 
 /**
@@ -179,6 +190,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
     this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
