@@ -59,6 +59,9 @@
     },
     "VPCPublicSubnet1DefaultRoute91CEF279": {
       "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
@@ -142,6 +145,9 @@
     },
     "VPCPublicSubnet2DefaultRouteB7481BBA": {
       "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
@@ -225,6 +231,9 @@
     },
     "VPCPublicSubnet3DefaultRouteA0D29D46": {
       "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VPCPublicSubnet3RouteTable98AE0E14"

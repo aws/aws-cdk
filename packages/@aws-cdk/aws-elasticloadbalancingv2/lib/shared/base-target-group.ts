@@ -40,6 +40,17 @@ export interface BaseTargetGroupProps {
    * @default No health check
    */
   healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  targetType?: TargetType;
 }
 
 /**
@@ -147,9 +158,9 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   protected readonly defaultPort: string;
 
   /**
-   * List of listeners routing to this target group
+   * List of dependables that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  protected readonly dependableListeners = new Array<cdk.IDependable>();
+  protected readonly loadBalancerAssociationDependencies = new Array<cdk.IDependable>();
 
   /**
    * Attributes of this target group
@@ -179,6 +190,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
     this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
@@ -249,10 +261,10 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   }
 
   /**
-   * Return an object to depend on the listeners added to this target group
+   * Return an object to depend on this TargetGroup being attached to a load balancer
    */
-  public listenerDependency(): cdk.IDependable {
-    return new LazyDependable(this.dependableListeners);
+  public loadBalancerDependency(): cdk.IDependable {
+    return new LazyDependable(this.loadBalancerAssociationDependencies);
   }
 
   /**
@@ -297,7 +309,7 @@ export interface ITargetGroup {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  listenerDependency(): cdk.IDependable;
+  loadBalancerDependency(): cdk.IDependable;
 }
 
 /**

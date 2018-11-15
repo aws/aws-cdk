@@ -200,7 +200,7 @@ async function initCommandLine() {
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE || 'default', language);
+          return await cliInit(args.TEMPLATE, language);
         }
 
       default:
@@ -276,7 +276,7 @@ async function initCommandLine() {
       try {
         const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
         const message = result.noOp ? ' ✅  Environment %s was already fully bootstrapped!'
-                      : ' ✅  Successfully bootstraped environment %s!';
+                      : ' ✅  Successfully bootstrapped environment %s!';
         success(message, colors.blue(environment.name));
       } catch (e) {
         error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment.name), e);
