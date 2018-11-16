@@ -67,7 +67,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
         MaxSize: "1",
-        MinSize: "0",
+        MinSize: "1",
         DesiredCapacity: "1",
         LaunchConfigurationName: {
           Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
