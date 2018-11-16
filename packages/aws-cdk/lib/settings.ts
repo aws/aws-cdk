@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import os = require('os');
 import fs_path = require('path');
-import { warning } from './logging';
+import { debug, warning } from './logging';
 import util = require('./util');
 
 export type SettingsMap = {[key: string]: any};
@@ -9,18 +9,62 @@ export type SettingsMap = {[key: string]: any};
 export const DEFAULTS = 'cdk.json';
 export const PER_USER_DEFAULTS = '~/.cdk.json';
 
-export async function loadUserConfig() {
-   return new Settings().load(PER_USER_DEFAULTS);
-}
+/**
+ * All sources of settings combined
+ */
+export class Configuration {
+  public readonly commandLineArguments: Settings;
+  public readonly defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
+  public readonly userConfig = new Settings();
+  public readonly projectConfig = new Settings();
 
-export async function loadProjectConfig() {
-  return new Settings().load(DEFAULTS);
+  constructor(commandLineArguments?: Settings) {
+    this.commandLineArguments = commandLineArguments || new Settings();
+  }
+
+  /**
+   * Load all config
+   */
+  public async load() {
+    await this.userConfig.load(PER_USER_DEFAULTS);
+    await this.projectConfig.load(DEFAULTS);
+  }
+
+  /**
+   * Save the project config
+   */
+  public async saveProjectConfig() {
+    await this.projectConfig.save(DEFAULTS);
+  }
+
+  /**
+   * Log the loaded defaults
+   */
+  public logDefaults() {
+    if (!this.userConfig.empty()) {
+      debug(PER_USER_DEFAULTS + ':', JSON.stringify(this.userConfig.settings, undefined, 2));
+    }
+
+    if (!this.projectConfig.empty()) {
+      debug(DEFAULTS + ':', JSON.stringify(this.projectConfig.settings, undefined, 2));
+    }
+  }
+
+  /**
+   * Return the combined config from all config sources
+   */
+  public get combined(): Settings {
+    return this.defaultConfig.merge(this.userConfig).merge(this.projectConfig).merge(this.commandLineArguments);
+  }
 }
 
 export async function saveProjectConfig(settings: Settings) {
   return settings.save(DEFAULTS);
 }
 
+/**
+ * A single set of settings
+ */
 export class Settings {
   public static mergeAll(...settings: Settings[]): Settings {
     let ret = new Settings();

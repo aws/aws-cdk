@@ -4,9 +4,9 @@ import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import semver = require('semver');
-import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../lib/settings';
-import { SDK } from './api';
-import { debug } from './logging';
+import { debug } from '../../logging';
+import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../../settings';
+import { SDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.SynthesizeResponse> {

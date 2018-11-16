@@ -4,34 +4,26 @@ import 'source-map-support/register';
 import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import minimatch = require('minimatch');
 import util = require('util');
 import yargs = require('yargs');
-import cdkUtil = require('../lib/util');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
-import contextproviders = require('../lib/context-providers/index');
+import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
+import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
 import { printStackDiff } from '../lib/diff';
-import { execProgram } from '../lib/exec';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { deserializeStructure, serializeStructure } from '../lib/serialize';
-import { DEFAULTS, loadProjectConfig, loadUserConfig, PER_USER_DEFAULTS, saveProjectConfig, Settings } from '../lib/settings';
+import { Configuration, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
 
 const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
-
-/**
- * Since app execution basically always synthesizes all the stacks,
- * we can invoke it once and cache the response for subsequent calls.
- */
-let cachedResponse: cxapi.SynthesizeResponse;
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -138,18 +130,13 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const defaultConfig = new Settings({ versionReporting: true, pathMetadata: true });
-  const userConfig = await loadUserConfig();
-  const projectConfig = await loadProjectConfig();
-  const commandLineArguments = argumentsToSettings();
+  const configuration = new Configuration(argumentsToSettings());
+  await configuration.load();
+  configuration.logDefaults();
+
+  const appStacks = new AppStacks(argv, configuration, aws);
+
   const renames = parseRenames(argv.rename);
-
-  logDefaults(); // Ignores command-line arguments
-
-  /** Function to return the complete merged config */
-  function completeConfig(): Settings {
-    return defaultConfig.merge(userConfig).merge(projectConfig).merge(commandLineArguments);
-  }
 
   /** Function to load plug-ins, using configurations additively. */
   function loadPlugins(...settings: Settings[]) {
@@ -175,7 +162,7 @@ async function initCommandLine() {
     }
   }
 
-  loadPlugins(userConfig, projectConfig, commandLineArguments);
+  loadPlugins(configuration.combined);
 
   const cmd = argv._[0];
 
@@ -189,7 +176,7 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
+    const toolkitStackName: string = configuration.combined.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
@@ -219,7 +206,7 @@ async function initCommandLine() {
         return await cliMetadata(await findStack(args.STACK));
 
       case 'init':
-        const language = completeConfig().get(['language']);
+        const language = configuration.combined.get(['language']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
@@ -232,45 +219,8 @@ async function initCommandLine() {
   }
 
   async function cliMetadata(stackName: string) {
-    const s = await synthesizeStack(stackName);
+    const s = await appStacks.synthesizeStack(stackName);
     return s.metadata;
-  }
-
-  /**
-   * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
-   */
-  function processMessages(stacks: cxapi.SynthesizeResponse): { errors: boolean, warnings: boolean } {
-    let warnings = false;
-    let errors = false;
-    for (const stack of stacks.stacks) {
-      for (const id of Object.keys(stack.metadata)) {
-        const metadata = stack.metadata[id];
-        for (const entry of metadata) {
-          switch (entry.type) {
-            case cxapi.WARNING_METADATA_KEY:
-              warnings = true;
-              printMessage(warning, 'Warning', id, entry);
-              break;
-            case cxapi.ERROR_METADATA_KEY:
-              errors = true;
-              printMessage(error, 'Error', id, entry);
-              break;
-            case cxapi.INFO_METADATA_KEY:
-              printMessage(print, 'Info', id, entry);
-              break;
-          }
-        }
-      }
-    }
-    return { warnings, errors };
-  }
-
-  function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
-    logFn(`[${prefix} at ${id}] ${entry.data}`);
-
-    if (argv.trace || argv.verbose) {
-      logFn(`  ${entry.trace.join('\n  ')}`);
-    }
   }
 
   /**
@@ -282,18 +232,15 @@ async function initCommandLine() {
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
   async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined): Promise<void> {
-    if (environmentGlobs.length === 0) {
-      environmentGlobs = [ '**' ]; // default to ALL
-    }
-    const stacks = await selectStacks();
-    const availableEnvironments = distinct(stacks.map(stack => stack.environment)
-                             .filter(env => env !== undefined) as cxapi.Environment[]);
-    const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
-    if (environments.length === 0) {
-      const globs = JSON.stringify(environmentGlobs);
-      const envList = availableEnvironments.length > 0 ? availableEnvironments.map(env => env!.name).join(', ') : '<none>';
-      throw new Error(`No environments were found when selecting across ${globs} (available: ${envList})`);
-    }
+    // Two modes of operation.
+    //
+    // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
+    // at their word that they know the name of the environment.
+
+    const app = configuration.combined.get(['app']);
+
+    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
+
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
@@ -306,24 +253,6 @@ async function initCommandLine() {
         throw e;
       }
     }));
-
-    /**
-     * De-duplicates a list of environments, such that a given account and region is only represented exactly once
-     * in the result.
-     *
-     * @param envs the possibly full-of-duplicates list of environments.
-     *
-     * @return a de-duplicated list of environments.
-     */
-    function distinct(envs: cxapi.Environment[]): cxapi.Environment[] {
-      const unique: { [id: string]: cxapi.Environment } = {};
-      for (const env of envs) {
-        const id = `${env.account || 'default'}/${env.region || 'default'}`;
-        if (id in unique) { continue; }
-        unique[id] = env;
-      }
-      return Object.values(unique);
-    }
   }
 
   /**
@@ -339,14 +268,14 @@ async function initCommandLine() {
                                doInteractive: boolean,
                                outputDir: string|undefined,
                                json: boolean): Promise<void> {
-    const stacks = await selectStacks(...stackNames);
+    const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
       if (stacks.length !== 1) {
         throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stacks)}`);
       }
-      return await interactive(stacks[0], argv.verbose, (stack) => synthesizeStack(stack));
+      return await interactive(stacks[0], argv.verbose, (stack) => appStacks.synthesizeStack(stack));
     }
 
     if (stacks.length > 1 && outputDir == null) {
@@ -370,130 +299,8 @@ async function initCommandLine() {
     return undefined; // Nothing to print
   }
 
-  /**
-   * Synthesize a single stack
-   */
-  async function synthesizeStack(stackName: string): Promise<cxapi.SynthesizedStack> {
-    const resp = await synthesizeStacks();
-    const stack = resp.stacks.find(s => s.name === stackName);
-    if (!stack) {
-      throw new Error(`Stack ${stackName} not found`);
-    }
-    return stack;
-  }
-
-  /**
-   * Synthesize a set of stacks
-   */
-  async function synthesizeStacks(): Promise<cxapi.SynthesizeResponse> {
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    let config = completeConfig();
-    const trackVersions: boolean = completeConfig().get(['versionReporting']);
-
-    // We may need to run the cloud executable multiple times in order to satisfy all missing context
-    while (true) {
-      const response: cxapi.SynthesizeResponse = await execProgram(aws, config);
-      const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
-
-      if (!cdkUtil.isEmpty(allMissing)) {
-        debug(`Some context information is missing. Fetching...`);
-
-        await contextproviders.provideContextValues(allMissing, projectConfig, aws);
-
-        // Cache the new context to disk
-        await saveProjectConfig(projectConfig);
-        config = completeConfig();
-
-        continue;
-      }
-
-      const { errors, warnings } = processMessages(response);
-
-      if (errors && !argv.ignoreErrors) {
-        throw new Error('Found errors');
-      }
-
-      if (argv.strict && warnings) {
-        throw new Error('Found warnings (--strict mode)');
-      }
-
-      if (trackVersions && response.runtime) {
-        const modules = formatModules(response.runtime);
-        for (const stack of response.stacks) {
-          if (!stack.template.Resources) {
-            stack.template.Resources = {};
-          }
-          if (!stack.template.Resources.CDKMetadata) {
-            stack.template.Resources.CDKMetadata = {
-              Type: 'AWS::CDK::Metadata',
-              Properties: {
-                Modules: modules
-              }
-            };
-          } else {
-            warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
-          }
-        }
-      }
-
-      // All good, return
-      cachedResponse = response;
-      return response;
-
-      function formatModules(runtime: cxapi.AppRuntime): string {
-        const modules = new Array<string>();
-        for (const key of Object.keys(runtime.libraries).sort()) {
-          modules.push(`${key}=${runtime.libraries[key]}`);
-        }
-        return modules.join(',');
-      }
-    }
-  }
-
-  /**
-   * List all stacks in the CX and return the selected ones
-   *
-   * It's an error if there are no stacks to select, or if one of the requested parameters
-   * refers to a nonexistant stack.
-   */
-  async function selectStacks(...selectors: string[]): Promise<cxapi.SynthesizedStack[]> {
-    selectors = selectors.filter(s => s != null); // filter null/undefined
-
-    const stacks: cxapi.SynthesizedStack[] = await listStacks();
-    if (stacks.length === 0) {
-      throw new Error('This app contains no stacks');
-    }
-
-    if (selectors.length === 0) {
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stacks));
-      return stacks;
-    }
-
-    // For every selector argument, pick stacks from the list.
-    const matched = new Set<string>();
-    for (const pattern of selectors) {
-      let found = false;
-
-      for (const stack of stacks) {
-        if (minimatch(stack.name, pattern)) {
-          matched.add(stack.name);
-          found = true;
-        }
-      }
-
-      if (!found) {
-        throw new Error(`No stack found matching '${pattern}'. Use "list" to print manifest`);
-      }
-    }
-
-    return stacks.filter(s => matched.has(s.name));
-  }
-
   async function cliList(options: { long?: boolean } = { }) {
-    const stacks = await listStacks();
+    const stacks = await appStacks.listStacks();
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
     if (options.long) {
@@ -515,13 +322,8 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function listStacks(): Promise<cxapi.SynthesizedStack[]> {
-    const response = await synthesizeStacks();
-    return response.stacks;
-  }
-
   async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined) {
-    const stacks = await selectStacks(...stackNames);
+    const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
     for (const stack of stacks) {
@@ -567,7 +369,7 @@ async function initCommandLine() {
   }
 
   async function cliDestroy(stackNames: string[], force: boolean, roleArn: string | undefined) {
-    const stacks = await selectStacks(...stackNames);
+    const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
     if (!force) {
@@ -593,7 +395,7 @@ async function initCommandLine() {
   }
 
   async function diffStack(stackName: string, templatePath?: string): Promise<number> {
-    const stack = await synthesizeStack(stackName);
+    const stack = await appStacks.synthesizeStack(stackName);
     const currentTemplate = await readCurrentTemplate(stack, templatePath);
     if (printStackDiff(currentTemplate, stack) === 0) {
       return 0;
@@ -634,7 +436,7 @@ async function initCommandLine() {
    * Match a single stack from the list of available stacks
    */
   async function findStack(name: string): Promise<string> {
-    const stacks = await selectStacks(name);
+    const stacks = await appStacks.selectStacks(name);
 
     // Could have been a glob so check that we evaluated to exactly one
     if (stacks.length > 1) {
@@ -642,21 +444,6 @@ async function initCommandLine() {
     }
 
     return stacks[0].name;
-  }
-
-  function logDefaults() {
-    if (!userConfig.empty()) {
-      debug(PER_USER_DEFAULTS + ':', JSON.stringify(userConfig.settings, undefined, 2));
-    }
-
-    if (!projectConfig.empty()) {
-      debug(DEFAULTS + ':', JSON.stringify(projectConfig.settings, undefined, 2));
-    }
-
-    const combined = userConfig.merge(projectConfig);
-    if (!combined.empty()) {
-      debug('Defaults:', JSON.stringify(combined.settings, undefined, 2));
-    }
   }
 
   /** Convert the command-line arguments into a Settings object */
@@ -687,13 +474,6 @@ async function initCommandLine() {
       versionReporting: argv.versionReporting,
       pathMetadata: argv.pathMetadata,
     });
-  }
-
-  /**
-   * Combine the names of a set of stacks using a comma
-   */
-  function listStackNames(stacks: cxapi.SynthesizedStack[]): string {
-    return stacks.map(s => s.name).join(', ');
   }
 
   function toJsonOrYaml(object: any): string {

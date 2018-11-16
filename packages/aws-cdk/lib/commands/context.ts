@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 import table = require('table');
 import yargs = require('yargs');
 import { print } from '../../lib/logging';
-import { DEFAULTS, loadProjectConfig, saveProjectConfig } from '../settings';
+import { Configuration, DEFAULTS } from '../settings';
 
 export const command = 'context';
 export const describe = 'Manage cached context values';
@@ -20,17 +20,19 @@ export const builder = {
 };
 
 export async function handler(args: yargs.Arguments): Promise<number> {
-  const settings = await loadProjectConfig();
-  const context = settings.get(['context']) || {};
+  const configuration = new Configuration();
+  await configuration.load();
+
+  const context = configuration.projectConfig.get(['context']) || {};
 
   if (args.clear) {
-    settings.set(['context'], {});
-    await saveProjectConfig(settings);
+    configuration.projectConfig.set(['context'], {});
+    await configuration.saveProjectConfig();
     print('All context values cleared.');
   } else if (args.reset) {
     invalidateContext(context, args.reset);
-    settings.set(['context'], context);
-    await saveProjectConfig(settings);
+    configuration.projectConfig.set(['context'], context);
+    await configuration.saveProjectConfig();
   } else {
     // List -- support '--json' flag
     if (args.json) {
