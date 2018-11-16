@@ -518,7 +518,7 @@ An empty array makes sense, since our app doesn't have any stacks.
 
     There is a known issue on Windows with the |cdk| .NET environment.
     Whenever you use a **cdk** command,
-    it issues a node:27508 warning:
+    it issues a node warning similar to the following:
 
     .. code-block:: sh
 
