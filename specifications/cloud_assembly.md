@@ -245,6 +245,7 @@ A [*CloudFormation* stack][CFN Stack].
 ##### Properties
 Property     |Type                |Required|Description
 -------------|--------------------|:------:|-----------
+`stackName`  |`string`            |Required|The name of the *CloudFormation* stack once deployed.
 `template`   |`string`            |Required|The assembly-relative path to the *CloudFormation* template document.
 `parameters` |`Map<string,string>`|        |Parameters to be passed to the [stack][CFN Stack] upon deployment.
 `stackPolicy`|`string`            |        |The assembly-relative path to the [Stack Policy][CFN Stack Policy].
