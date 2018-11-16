@@ -102,12 +102,6 @@ and create a new app in that directory.
                 Properties:
                   Modules: @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_ecs_construct=0.1.0
 
-    .. group-tab:: Java
-
-        .. code-block:: sh
-
-            cdk init --language java
-
 .. _creating_ecs_l2_example_2:
 
 Step 2: Add the |EC2| and |ECS| Packages
