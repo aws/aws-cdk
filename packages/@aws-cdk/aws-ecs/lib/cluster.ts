@@ -3,6 +3,7 @@ import cloudwatch = require ('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
+import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { cloudformation } from './ecs.generated';
 
 /**
@@ -70,19 +71,23 @@ export class Cluster extends cdk.Construct implements ICluster {
 
   /**
    * Add a default-configured AutoScalingGroup running the ECS-optimized AMI to this Cluster
+   *
+   * Returns the AutoScalingGroup so you can add autoscaling settings to it.
    */
-  public addDefaultAutoScalingGroupCapacity(options: AddDefaultAutoScalingGroupOptions) {
+  public addDefaultAutoScalingGroupCapacity(options: AddDefaultAutoScalingGroupOptions): autoscaling.AutoScalingGroup {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'DefaultAutoScalingGroup', {
       vpc: this.vpc,
       instanceType: options.instanceType,
       machineImage: new EcsOptimizedAmi(),
       updateType: autoscaling.UpdateType.ReplacingUpdate,
-      minSize: 0,
-      maxSize: options.instanceCount || 1,
-      desiredCapacity: options.instanceCount || 1
+      minSize: options.minCapacity,
+      maxSize: options.maxCapacity,
+      desiredCapacity: options.instanceCount,
     });
 
-    this.addAutoScalingGroupCapacity(autoScalingGroup);
+    this.addAutoScalingGroupCapacity(autoScalingGroup, options);
+
+    return autoScalingGroup;
   }
 
   /**
@@ -118,6 +123,15 @@ export class Cluster extends cdk.Construct implements ICluster {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ).addAllResources());
+
+    // 0 disables, otherwise forward to underlying implementation which picks the sane default
+    if (options.taskDrainTimeSeconds !== 0) {
+      new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
+        autoScalingGroup,
+        cluster: this,
+        drainTimeSeconds: options.taskDrainTimeSeconds
+      });
+    }
   }
 
   /**
@@ -291,12 +305,25 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default false
    */
   containersAccessInstanceRole?: boolean;
+
+  /**
+   * Give tasks this many seconds to complete when instances are being scaled in.
+   *
+   * Task draining adds a Lambda and a Lifecycle hook to your AutoScalingGroup
+   * that will delay instance termination until all ECS tasks have drained from
+   * the instance.
+   *
+   * Set to 0 to disable task draining.
+   *
+   * @default 300
+   */
+  taskDrainTimeSeconds?: number;
 }
 
 /**
  * Properties for adding autoScalingGroup
  */
-export interface AddDefaultAutoScalingGroupOptions {
+export interface AddDefaultAutoScalingGroupOptions extends AddAutoScalingGroupCapacityOptions {
 
   /**
    * The type of EC2 instance to launch into your Autoscaling Group
@@ -309,4 +336,18 @@ export interface AddDefaultAutoScalingGroupOptions {
    * @default 1
    */
   instanceCount?: number;
+
+  /**
+   * Maximum number of instances
+   *
+   * @default Same as instanceCount
+   */
+  maxCapacity?: number;
+
+  /**
+   * Minimum number of instances
+   *
+   * @default Same as instanceCount
+   */
+  minCapacity?: number;
 }

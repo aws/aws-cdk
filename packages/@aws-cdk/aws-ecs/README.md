@@ -236,10 +236,32 @@ containers are running on for you. If you're running an ECS cluster however,
 your EC2 instances might fill up as your number of Tasks goes up.
 
 To avoid placement errors, you will want to configure AutoScaling for your
-EC2 instance group so that your instance count scales with demand.
+EC2 instance group so that your instance count scales with demand. To keep
+your EC2 instances halfway loaded, scaling up to a maximum of 30 instances
+if required:
+
+```ts
+const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
+  instanceType: new ec2.InstanceType("t2.xlarge"),
+  minCapacity: 3,
+  maxCapacity: 30
+  instanceCount: 3,
+
+  // Give instances 5 minutes to drain running tasks when an instance is
+  // terminated. This is the default, turn this off by specifying 0 or
+  // change the timeout up to 900 seconds.
+  taskDrainTimeSeconds: 300,
+});
+
+autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
+  targetUtilizationPercent: 50
+});
+```
+
+See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
+you can configure on your instances.
 
 ### Roadmap
 
-- [ ] Instance AutoScaling
 - [ ] Service Discovery Integration
 - [ ] Private registry authentication

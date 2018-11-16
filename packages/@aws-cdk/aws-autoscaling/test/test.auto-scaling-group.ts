@@ -149,6 +149,54 @@ export = {
     test.done();
   },
 
+  'can specify only min capacity'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 10
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "10",
+        MaxSize: "10",
+        DesiredCapacity: "10",
+      }
+    ));
+
+    test.done();
+  },
+
+  'can specify only max capacity'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      maxSize: 10
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "10",
+        MaxSize: "10",
+        DesiredCapacity: "10",
+      }
+    ));
+
+    test.done();
+  },
+
   'addToRolePolicy can be used to add statements to the role policy'(test: Test) {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);

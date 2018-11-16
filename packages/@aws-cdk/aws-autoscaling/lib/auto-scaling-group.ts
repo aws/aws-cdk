@@ -28,13 +28,15 @@ export interface AutoScalingGroupProps {
 
   /**
    * Minimum number of instances in the fleet
-   * @default 1
+   *
+   * @default desiredCapacity
    */
   minSize?: number;
 
   /**
    * Maximum number of instances in the fleet
-   * @default 1
+   *
+   * @default desiredCapacity
    */
   maxSize?: number;
 
@@ -234,9 +236,12 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     launchConfig.addDependency(this.role);
 
-    const minSize = props.minSize !== undefined ? props.minSize : 1;
-    const maxSize = props.maxSize !== undefined ? props.maxSize : 1;
-    const desiredCapacity = props.desiredCapacity !== undefined ? props.desiredCapacity : 1;
+    const desiredCapacity =
+        (props.desiredCapacity !== undefined ? props.desiredCapacity :
+        (props.minSize !== undefined ? props.minSize :
+        (props.maxSize !== undefined ? props.maxSize : 1)));
+    const minSize = props.minSize !== undefined ? props.minSize : desiredCapacity;
+    const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
 
     if (desiredCapacity < minSize || desiredCapacity > maxSize) {
       throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
@@ -322,8 +327,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * Scale out or in based on time
    */
-  public scaleOnSchedule(id: string, props: BasicScheduledActionProps) {
-    new ScheduledAction(this, `ScheduledAction${id}`, {
+  public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
+    return new ScheduledAction(this, `ScheduledAction${id}`, {
       autoScalingGroup: this,
       ...props,
     });
@@ -332,7 +337,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * Scale out or in to achieve a target CPU utilization
    */
-  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
+  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASGAverageCPUUtilization,
@@ -344,7 +349,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * Scale out or in to achieve a target network ingress rate
    */
-  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps) {
+  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASGAverageNetworkIn,
@@ -356,7 +361,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * Scale out or in to achieve a target network egress rate
    */
-  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps) {
+  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASGAverageNetworkOut,
@@ -371,7 +376,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
    * The AutoScalingGroup must have been attached to an Application Load Balancer
    * in order to be able to call this.
    */
-  public scaleOnRequestCount(id: string, props: RequestCountScalingProps) {
+  public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
       throw new Error('Attach the AutoScalingGroup to an Application Load Balancer before calling scaleOnRequestCount()');
     }
@@ -389,13 +394,14 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     // Target tracking policy can only be created after the load balancer has been
     // attached to the targetgroup (because we need its ARN).
     policy.addDependency(this.albTargetGroup.loadBalancerDependency());
+    return policy;
   }
 
   /**
    * Scale out or in in order to keep a metric around a target value
    */
-  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps) {
-    new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
+  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy {
+    return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       customMetric: props.metric,
       ...props
@@ -405,7 +411,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   /**
    * Scale out or in, in response to a metric
    */
-  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps) {
+  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
     return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
   }
 
@@ -658,6 +664,41 @@ export interface IAutoScalingGroup {
    * The name of the AutoScalingGroup
    */
   readonly autoScalingGroupName: string;
+
+  /**
+   * Send a message to either an SQS queue or SNS topic when instances launch or terminate
+   */
+  onLifecycleTransition(id: string, props: BasicLifecycleHookProps): LifecycleHook;
+
+  /**
+   * Scale out or in based on time
+   */
+  scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction;
+
+  /**
+   * Scale out or in to achieve a target CPU utilization
+   */
+  scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy;
+
+  /**
+   * Scale out or in to achieve a target network ingress rate
+   */
+  scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy;
+
+  /**
+   * Scale out or in to achieve a target network egress rate
+   */
+  scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy;
+
+  /**
+   * Scale out or in in order to keep a metric around a target value
+   */
+  scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy;
+
+  /**
+   * Scale out or in, in response to a metric
+   */
+  scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy;
 }
 
 /**
