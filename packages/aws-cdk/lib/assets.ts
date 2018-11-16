@@ -17,7 +17,8 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
   }
 
   if (!toolkitInfo) {
-    throw new Error('Since this stack uses assets, the toolkit stack must be deployed to the environment ("cdk bootstrap")');
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
   }
 
   debug('Preparing assets');
