@@ -59,22 +59,24 @@ echo "Copying generated reference documentation..."
 rm -fr ${refdocsdir}/
 mkdir -p ${refdocsdir}
 
-if [ ! -d "${refsrc}" ]; then
-    echo "Cannot find ${refsrc} in the root directory of this repo"
-    echo "Did you run ./pack.sh?"
+if [ -z "${BUILD_DOCS_DEV:-}" ]; then
+    if [ ! -d "${refsrc}" ]; then
+        echo "Cannot find ${refsrc} in the root directory of this repo"
+        echo "Did you run ./pack.sh?"
 
-    if [ -z "${BUILD_DOCS_DEV:-}" ]; then
-      echo "Cannot build docs without reference. Set BUILD_DOCS_DEV=1 to allow this for development purposes"
-      exit 1
+        if [ -z "${BUILD_DOCS_DEV:-}" ]; then
+            echo "Cannot build docs without reference. Set BUILD_DOCS_DEV=1 to allow this for development purposes"
+            exit 1
+        fi
     else
-      echo "BUILD_DOCS_DEV is set, continuing without reference documentation..."
+        rsync -av ${refsrc}/ ${refdocsdir}/
+
+        echo "Generating reference docs toctree under ${refs_index}..."
+        cat ${refs_index}.template > ${refs_index}
+        ls -1 ${refdocsdir} | grep '.rst$' | sed -e 's/\.rst//' | sort | xargs -I{} echo "   ${refdocs}/{}" >> ${refs_index}
     fi
 else
-    rsync -av ${refsrc}/ ${refdocsdir}/
-
-    echo "Generating reference docs toctree under ${refs_index}..."
-    cat ${refs_index}.template > ${refs_index}
-    ls -1 ${refdocsdir} | grep '.rst$' | sed -e 's/\.rst//' | sort | xargs -I{} echo "   ${refdocs}/{}" >> ${refs_index}
+    echo "BUILD_DOCS_DEV is set, continuing without reference documentation..."
 fi
 
 export CDK_VERSION=$(../tools/pkgtools/bin/cdk-version)
