@@ -514,6 +514,22 @@ The result is an empty array:
 
 An empty array makes sense, since our app doesn't have any stacks.
 
+.. note::
+
+    There is a known issue on Windows with the |cdk| .NET environment.
+    Whenever you use a **cdk** command,
+    it issues a node warning similar to the following:
+
+    .. code-block:: sh
+
+        (node:27508) UnhandledPromiseRejectionWarning: Unhandled promise rejection
+        (rejection id: 1): Error: EPIPE: broken pipe, write
+        (node:27508) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated.
+        In the future, promise rejections that are not handled will terminate the
+        Node.js process with a non-zero exit code.
+
+    You can safely ignore this warning.
+
 .. _define_stack:
 
 Define a Stack
