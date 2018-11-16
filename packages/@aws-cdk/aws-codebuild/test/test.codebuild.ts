@@ -142,7 +142,7 @@ export = {
 
       const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
 
-      const source = new codebuild.CodeCommitSource(repo);
+      const source = new codebuild.CodeCommitSource({ repository: repo });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -295,7 +295,10 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
 
       new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource(bucket, 'path/to/source.zip'),
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'path/to/source.zip',
+        }),
         environment: {
           buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
         },
@@ -463,13 +466,26 @@ export = {
         }
       });
       test.done();
-    }
+    },
+    'fail creating a Project when no build spec is given'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+        });
+      }, /buildSpec/);
+
+      test.done();
+    },
   },
 
   'using timeout and path in S3 artifacts sets it correctly'(test: Test) {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'Bucket');
     new codebuild.Project(stack, 'Project', {
+      buildSpec: {
+        version: '0.2',
+      },
       artifacts: new codebuild.S3BucketBuildArtifacts({
         path: 'some/path',
         name: 'some_name',
@@ -488,6 +504,144 @@ export = {
     }));
 
     test.done();
+  },
+
+  'secondary sources': {
+    'require providing an identifier when creating a Project'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+          buildSpec: {
+            version: '0.2',
+          },
+          secondarySources: [
+            new codebuild.CodePipelineSource(),
+          ],
+        });
+      }, /identifier/);
+
+      test.done();
+    },
+
+    'are not allowed for a Project with CodePipeline as Source'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.CodePipelineSource(),
+      });
+
+      project.addSecondarySource(new codebuild.S3BucketSource({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'some/path',
+        identifier: 'id',
+      }));
+
+      test.throws(() => {
+        expect(stack);
+      }, /secondary sources/);
+
+      test.done();
+    },
+
+    'added with an identifer after the Project has been created are rendered in the template'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(new codebuild.S3BucketSource({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
+  },
+
+  'secondary artifacts': {
+    'require providing an identifier when creating a Project'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+          buildSpec: {
+            version: '0.2',
+          },
+          secondaryArtifacts: [
+            new codebuild.S3BucketBuildArtifacts({
+              bucket: new s3.Bucket(stack, 'MyBucket'),
+              path: 'some/path',
+              name: 'name',
+            }),
+          ],
+        });
+      }, /identifier/);
+
+      test.done();
+    },
+
+    'are not allowed for a Project with CodePipeline as Source'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.CodePipelineSource(),
+      });
+
+      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'some/path',
+        name: 'name',
+        identifier: 'id',
+      }));
+
+      test.throws(() => {
+        expect(stack);
+      }, /secondary artifacts/);
+
+      test.done();
+    },
+
+    'added with an identifer after the Project has been created are rendered in the template'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+        bucket,
+        path: 'another/path',
+        name: 'name',
+        identifier: 'artifact1',
+      }));
+
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        "SecondaryArtifacts": [
+          {
+            "ArtifactIdentifier": "artifact1",
+            "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'artifacts': {
@@ -564,7 +718,9 @@ export = {
           }), /Both source and artifacts must be set to CodePipeline/);
 
           test.throws(() => new codebuild.Project(stack, 'YourProject', {
-            source: new codebuild.CodeCommitSource(new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })),
+            source: new codebuild.CodeCommitSource({
+              repository: new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })
+            }),
             artifacts: new codebuild.CodePipelineBuildArtifacts()
           }), /Both source and artifacts must be set to CodePipeline/);
 

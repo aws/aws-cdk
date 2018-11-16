@@ -6,73 +6,150 @@ import { cloudformation } from './codebuild.generated';
 import { Project } from './project';
 
 /**
- * Source Provider definition for a CodeBuild project
- * TODO: Abstract class should be an interface
+ * Properties common to all Source classes.
+ */
+export interface BuildSourceProps {
+  /**
+   * The source identifier.
+   * This property is required on secondary sources.
+   */
+  identifier?: string;
+}
+
+/**
+ * Source provider definition for a CodeBuild Project.
  */
 export abstract class BuildSource {
+  public readonly identifier?: string;
+  public abstract readonly type: SourceType;
+
+  constructor(props: BuildSourceProps) {
+    this.identifier = props.identifier;
+  }
+
   /**
    * Called by the project when the source is added so that the source can perform
    * binding operations on the source. For example, it can grant permissions to the
    * code build project to read from the S3 bucket.
    */
-  public bind(_project: Project) {
+  public _bind(_project: Project) {
+    // by default, do nothing
     return;
   }
 
-  public abstract toSourceJSON(): cloudformation.ProjectResource.SourceProperty;
-}
-
-export class NoSource extends BuildSource {
-  constructor() {
-    super();
+  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+    const sourceProp = this.toSourceProperty();
+    return {
+      sourceIdentifier: this.identifier,
+      type: this.type,
+      ...sourceProp,
+    };
   }
 
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+  protected toSourceProperty(): any {
     return {
-      type: SourceType.None,
     };
   }
 }
 
 /**
- * CodeCommit Source definition for a CodeBuild project
+ * A `NO_SOURCE` CodeBuild Project Source definition.
+ * This is the default source type,
+ * if none was specified when creating the Project.
+ * *Note*: the `NO_SOURCE` type cannot be used as a secondary source,
+ * and because of that, you're not allowed to specify an identifier for it.
+ */
+export class NoSource extends BuildSource {
+  public readonly type: SourceType = SourceType.None;
+
+  constructor() {
+    super({});
+  }
+}
+
+/**
+ * Construction properties for {@link CodeCommitSource}.
+ */
+export interface CodeCommitSourceProps extends BuildSourceProps {
+  repository: codecommit.RepositoryRef;
+}
+
+/**
+ * CodeCommit Source definition for a CodeBuild project.
  */
 export class CodeCommitSource extends BuildSource {
-  constructor(private readonly repo: codecommit.RepositoryRef) {
-    super();
+  public readonly type: SourceType = SourceType.CodeCommit;
+  private readonly repo: codecommit.RepositoryRef;
+
+  constructor(props: CodeCommitSourceProps) {
+    super(props);
+    this.repo = props.repository;
   }
 
-  public bind(project: Project) {
+  public _bind(project: Project) {
     // https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html
     project.addToRolePolicy(new iam.PolicyStatement()
       .addAction('codecommit:GitPull')
       .addResource(this.repo.repositoryArn));
   }
 
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+  protected toSourceProperty(): any {
     return {
-      type: SourceType.CodeCommit,
       location: this.repo.repositoryCloneUrlHttp
     };
   }
 }
 
 /**
- * CodePipeline Source definition for a CodeBuild project
+ * Construction properties for {@link S3BucketSource}.
  */
-export class CodePipelineSource extends BuildSource {
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
-    return {
-      type: SourceType.CodePipeline
-    };
+export interface S3BucketSourceProps extends BuildSourceProps {
+  bucket: s3.BucketRef;
+  path: string;
+}
+
+/**
+ * S3 bucket definition for a CodeBuild project.
+ */
+export class S3BucketSource extends BuildSource {
+  public readonly type: SourceType = SourceType.S3;
+  private readonly bucket: s3.BucketRef;
+  private readonly path: string;
+
+  constructor(props: S3BucketSourceProps) {
+    super(props);
+    this.bucket = props.bucket;
+    this.path = props.path;
   }
 
-  public bind(_project: Project) {
-    // TODO: permissions on the pipeline bucket?
+  public _bind(project: Project) {
+    this.bucket.grantRead(project.role);
+  }
+
+  protected toSourceProperty(): any {
+    return {
+      location: `${this.bucket.bucketName}/${this.path}`,
+    };
   }
 }
 
-export interface GithubSourceProps {
+/**
+ * CodePipeline Source definition for a CodeBuild Project.
+ * *Note*: this type cannot be used as a secondary source,
+ * and because of that, you're not allowed to specify an identifier for it.
+ */
+export class CodePipelineSource extends BuildSource {
+  public readonly type: SourceType = SourceType.CodePipeline;
+
+  constructor() {
+    super({});
+  }
+}
+
+/**
+ * Construction properties for {@link GitHubSource} and {@link GitHubEnterpriseSource}.
+ */
+export interface GitHubSourceProps extends BuildSourceProps {
   /**
    * The git url to clone for this code build project.
    */
@@ -82,84 +159,75 @@ export interface GithubSourceProps {
    * The oAuthToken used to authenticate when cloning source git repo.
    */
   oauthToken: cdk.Secret;
-
 }
 
 /**
- * GitHub Source definition for a CodeBuild project
+ * GitHub Source definition for a CodeBuild project.
  */
 export class GitHubSource extends BuildSource {
-  private cloneUrl: string;
-  private oauthToken: cdk.Secret;
-  constructor(props: GithubSourceProps) {
-    super();
+  public readonly type: SourceType = SourceType.GitHub;
+  private readonly cloneUrl: string;
+  private readonly oauthToken: cdk.Secret;
+
+  constructor(props: GitHubSourceProps) {
+    super(props);
     this.cloneUrl = props.cloneUrl;
     this.oauthToken = props.oauthToken;
   }
 
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+  protected toSourceProperty(): any {
     return {
-      type: SourceType.GitHub,
-      auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
-      location: this.cloneUrl
+      auth: { type: 'OAUTH', resource: this.oauthToken },
+      location: this.cloneUrl,
     };
   }
 }
 
 /**
- * GitHub Enterprise Source definition for a CodeBuild project
+ * GitHub Enterprise Source definition for a CodeBuild project.
  */
 export class GitHubEnterpriseSource extends BuildSource {
-  private cloneUrl: string;
-  private oauthToken: cdk.Secret;
-  constructor(props: GithubSourceProps) {
-    super();
+  public readonly type: SourceType = SourceType.GitHubEnterPrise;
+  private readonly cloneUrl: string;
+  private readonly oauthToken: cdk.Secret;
+
+  constructor(props: GitHubSourceProps) {
+    super(props);
     this.cloneUrl = props.cloneUrl;
     this.oauthToken = props.oauthToken;
   }
 
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+  protected toSourceProperty(): any {
     return {
-      type: SourceType.GitHubEnterPrise,
+      auth: { type: 'OAUTH', resource: this.oauthToken },
       location: this.cloneUrl,
-      auth: this.oauthToken != null ? { type: 'OAUTH', resource: this.oauthToken } : undefined,
     };
   }
 }
 
 /**
- * BitBucket Source definition for a CodeBuild project
+ * Construction properties for {@link BitBucketSource}.
+ */
+export interface BitBucketSourceProps extends BuildSourceProps {
+  httpsCloneUrl: string;
+}
+
+/**
+ * BitBucket Source definition for a CodeBuild project.
  */
 export class BitBucketSource extends BuildSource {
-  constructor(private readonly httpsCloneUrl: string) {
-    super();
-    this.httpsCloneUrl = httpsCloneUrl;
+  public readonly type: SourceType = SourceType.BitBucket;
+  private readonly httpsCloneUrl: any;
+
+  constructor(props: BitBucketSourceProps) {
+    super(props);
+    this.httpsCloneUrl = props.httpsCloneUrl;
   }
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+
+  protected toSourceProperty(): any {
     return {
-      type: SourceType.BitBucket,
       location: this.httpsCloneUrl
     };
-  }
-}
-
-/**
- * S3 bucket definition for a CodeBuild project.
- */
-export class S3BucketSource extends BuildSource {
-  constructor(private readonly bucket: s3.BucketRef, private readonly path: string) {
-    super();
-  }
-
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
-    return {
-      type: SourceType.S3,
-      location: new cdk.FnConcat(this.bucket.bucketName, '/', this.path)
-    };
-  }
-
-  public bind(project: Project) {
-    this.bucket.grantRead(project.role);
   }
 }
 
