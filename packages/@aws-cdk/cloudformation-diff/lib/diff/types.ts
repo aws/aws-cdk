@@ -3,17 +3,17 @@ import { deepEqual } from './util';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
-  public readonly awsTemplateFormatVersion?: Difference<string>;
-  public readonly description?: Difference<string>;
-  public readonly transform?: Difference<string>;
-  public readonly conditions: DifferenceCollection<Condition, ConditionDifference>;
-  public readonly mappings: DifferenceCollection<Mapping, MappingDifference>;
-  public readonly metadata: DifferenceCollection<Metadata, MetadataDifference>;
-  public readonly outputs: DifferenceCollection<Output, OutputDifference>;
-  public readonly parameters: DifferenceCollection<Parameter, ParameterDifference>;
-  public readonly resources: DifferenceCollection<Resource, ResourceDifference>;
+  public awsTemplateFormatVersion?: Difference<string>;
+  public description?: Difference<string>;
+  public transform?: Difference<string>;
+  public conditions: DifferenceCollection<Condition, ConditionDifference>;
+  public mappings: DifferenceCollection<Mapping, MappingDifference>;
+  public metadata: DifferenceCollection<Metadata, MetadataDifference>;
+  public outputs: DifferenceCollection<Output, OutputDifference>;
+  public parameters: DifferenceCollection<Parameter, ParameterDifference>;
+  public resources: DifferenceCollection<Resource, ResourceDifference>;
   /** The differences in unknown/unexpected parts of the template */
-  public readonly unknown: DifferenceCollection<any, Difference<any>>;
+  public unknown: DifferenceCollection<any, Difference<any>>;
 
   constructor(args: ITemplateDiff) {
     if (args.awsTemplateFormatVersion !== undefined) {
@@ -110,7 +110,7 @@ export class PropertyDifference<ValueType> extends Difference<ValueType> {
 }
 
 export class DifferenceCollection<V, T extends Difference<V>> {
-  constructor(public changes: { [logicalId: string]: T | undefined }) {}
+  constructor(public readonly changes: { [logicalId: string]: T | undefined }) {}
 
   public get count(): number {
     return this.logicalIds.length;
@@ -121,19 +121,20 @@ export class DifferenceCollection<V, T extends Difference<V>> {
   }
 
   /**
-   * Removes all changes that do not match the specified filter.
+   * Returns a new TemplateDiff which only contains changes for which `predicate`
+   * returns `true`.
    */
-  public applyFilter(filter: (diff: T | undefined) => boolean) {
+  public filter(predicate: (diff: T | undefined) => boolean): DifferenceCollection<V, T> {
     const newChanges: { [logicalId: string]: T | undefined } = { };
     for (const id of Object.keys(this.changes)) {
       const diff = this.changes[id];
 
-      if (filter(diff)) {
+      if (predicate(diff)) {
         newChanges[id] = diff;
       }
     }
 
-    this.changes = newChanges;
+    return new DifferenceCollection<V, T>(newChanges);
   }
 
   public forEach(cb: (logicalId: string, change: T) => any): void {
