@@ -58,7 +58,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "^0.17.0",
     "@aws-cdk/aws-events": "^0.17.0",
-    "@types/lodash": "^4.14.116",
+    "@types/lodash": "^4.14.118",
     "cdk-build-tools": "^0.17.0",
     "cdk-integ-tools": "^0.17.0",
     "cfn2ts": "^0.17.0",

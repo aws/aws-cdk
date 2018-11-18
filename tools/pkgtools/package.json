@@ -26,13 +26,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^4.0.8",
+    "@types/fs-extra": "^5.0.4",
     "@types/yargs": "^8.0.3",
     "cdk-build-tools": "^0.17.0",
     "pkglint": "^0.17.0"
   },
   "dependencies": {
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^7.0.0",
     "yargs": "^9.0.1"
   },
   "keywords": [
