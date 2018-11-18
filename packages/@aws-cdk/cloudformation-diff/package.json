@@ -24,6 +24,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@aws-cdk/cfnspec": "^0.17.0",
+    "@aws-cdk/cx-api": "^0.17.0",
     "colors": "^1.2.1",
     "source-map-support": "^0.5.6"
   },
