@@ -11,8 +11,19 @@ import { print } from './logging';
  *
  * @returns the count of differences that were rendered.
  */
-export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack): number {
+export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean): number {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  // filter out 'AWS::CDK::Metadata' resources from the template
+  if (diff.resources && !strict) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
+  }
+
   if (!diff.isEmpty) {
     cfnDiff.formatDifferences(process.stderr, diff);
   } else {
