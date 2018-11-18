@@ -21,11 +21,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^4.0.8",
+    "@types/fs-extra": "^5.0.4",
     "pkglint": "^0.17.0"
   },
   "dependencies": {
-    "fs-extra": "^4.0.2"
+    "fs-extra": "^7.0.0"
   },
   "keywords": [
     "aws",

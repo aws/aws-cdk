@@ -81,7 +81,12 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
-    super(parent, name, props, {
+    super(parent, name, {
+      ...props,
+      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
+      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+    },
+    {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'EC2',

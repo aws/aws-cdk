@@ -12,7 +12,7 @@ import {
   CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
   PipelineBuildAction, PipelineTestAction
 } from './pipeline-actions';
-import { BuildSource, NoSource } from './source';
+import { BuildSource, NoSource, SourceType } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -422,6 +422,8 @@ export interface CommonProjectProps {
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
+   * *Note*: if {@link NoSource} is given as the source,
+   * then you need to provide an explicit `buildSpec`.
    *
    * @default NoSource
    */
@@ -434,6 +436,24 @@ export interface ProjectProps extends CommonProjectProps {
    * @default NoBuildArtifacts
    */
   artifacts?: BuildArtifacts;
+
+  /**
+   * The secondary sources for the Project.
+   * Can be also added after the Project has been created by using the {@link Project#addSecondarySource} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  secondarySources?: BuildSource[];
+
+  /**
+   * The secondary artifacts for the Project.
+   * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  secondaryArtifacts?: BuildArtifacts[];
 }
 
 /**
@@ -457,6 +477,8 @@ export class Project extends ProjectRef {
 
   private readonly source: BuildSource;
   private readonly buildImage: IBuildImage;
+  private readonly _secondarySources: BuildSource[];
+  private readonly _secondaryArtifacts: BuildArtifacts[];
 
   constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
     super(parent, name);
@@ -485,10 +507,10 @@ export class Project extends ProjectRef {
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
-    this.source.bind(this);
+    this.source._bind(this);
 
     const artifacts = this.parseArtifacts(props);
-    artifacts.bind(this);
+    artifacts._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -509,6 +531,18 @@ export class Project extends ProjectRef {
       // We have to pretty-print the buildspec, otherwise
       // CodeBuild will not recognize it as an inline buildspec.
       sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
+    } else if (this.source.type === SourceType.None) {
+      throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
+    }
+
+    this._secondarySources = [];
+    for (const secondarySource of props.secondarySources || []) {
+      this.addSecondarySource(secondarySource);
+    }
+
+    this._secondaryArtifacts = [];
+    for (const secondaryArtifact of props.secondaryArtifacts || []) {
+      this.addSecondaryArtifact(secondaryArtifact);
     }
 
     this.validateCodePipelineSettings(artifacts);
@@ -524,12 +558,32 @@ export class Project extends ProjectRef {
       cache,
       name: props.projectName,
       timeoutInMinutes: props.timeout,
+      secondarySources: new cdk.Token(() => this.renderSecondarySources()),
+      secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
     });
 
     this.projectArn = resource.projectArn;
     this.projectName = resource.ref;
 
     this.addToRolePolicy(this.createLoggingPermission());
+  }
+
+  /**
+   * @override
+   */
+  public validate(): string[] {
+    const ret = new Array<string>();
+    if (this.source.type === SourceType.CodePipeline) {
+      if (this._secondarySources.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+      }
+      if (this._secondaryArtifacts.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+      }
+    }
+    return ret;
   }
 
   /**
@@ -540,6 +594,34 @@ export class Project extends ProjectRef {
     if (this.role) {
       this.role.addToPolicy(statement);
     }
+  }
+
+  /**
+   * Adds a secondary source to the Project.
+   *
+   * @param secondarySource the source to add as a secondary source
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  public addSecondarySource(secondarySource: BuildSource): void {
+    if (!secondarySource.identifier) {
+      throw new Error('The identifier attribute is mandatory for secondary sources');
+    }
+    secondarySource._bind(this);
+    this._secondarySources.push(secondarySource);
+  }
+
+  /**
+   * Adds a secondary artifact to the Project.
+   *
+   * @param secondaryArtifact the artifact to add as a secondary artifact
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  public addSecondaryArtifact(secondaryArtifact: BuildArtifacts): any {
+    if (!secondaryArtifact.identifier) {
+      throw new Error("The identifier attribute is mandatory for secondary artifacts");
+    }
+    secondaryArtifact._bind(this);
+    this._secondaryArtifacts.push(secondaryArtifact);
   }
 
   private createLoggingPermission() {
@@ -597,6 +679,18 @@ export class Project extends ProjectRef {
         value: vars[name].value
       }))
     };
+  }
+
+  private renderSecondarySources(): cloudformation.ProjectResource.SourceProperty[] | undefined {
+    return this._secondarySources.length === 0
+      ? undefined
+      : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
+  }
+
+  private renderSecondaryArtifacts(): cloudformation.ProjectResource.ArtifactsProperty[] | undefined {
+    return this._secondaryArtifacts.length === 0
+      ? undefined
+      : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
   }
 
   private parseArtifacts(props: ProjectProps) {

@@ -16,12 +16,12 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
 
   // filter out 'AWS::CDK::Metadata' resources from the template
   if (diff.resources && !strict) {
-      diff.resources.applyFilter(change => {
-        if (!change) { return true; }
-        if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-        if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
-        return true;
-      });
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
   }
 
   if (!diff.isEmpty) {
