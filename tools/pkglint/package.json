@@ -38,7 +38,7 @@
   "dependencies": {
     "@types/semver": "^5.5.0",
     "case": "^1.5.5",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^7.0.0",
     "semver": "^5.6.0",
     "yargs": "^9.0.1"
   }
