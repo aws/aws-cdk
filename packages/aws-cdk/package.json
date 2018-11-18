@@ -32,7 +32,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^2.1.2",
-    "@types/fs-extra": "^4.0.8",
+    "@types/fs-extra": "^5.0.4",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/request": "^2.47.1",
@@ -54,7 +54,7 @@
     "camelcase": "^5.0.0",
     "colors": "^1.2.1",
     "decamelize": "^2.0.0",
-    "fs-extra": "^4.0.2",
+    "fs-extra": "^7.0.0",
     "json-diff": "^0.3.1",
     "minimatch": ">=3.0",
     "promptly": "^0.2.0",
