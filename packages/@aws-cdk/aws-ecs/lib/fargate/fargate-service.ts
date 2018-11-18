@@ -60,7 +60,10 @@ export class FargateService extends BaseService {
       throw new Error('Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
-    super(parent, name, props, {
+    super(parent, name, {
+      ...props,
+      desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+    }, {
       cluster: props.cluster.clusterName,
       taskDefinition: props.taskDefinition.taskDefinitionArn,
       launchType: 'FARGATE',

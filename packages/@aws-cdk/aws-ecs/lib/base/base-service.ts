@@ -104,7 +104,7 @@ export abstract class BaseService extends cdk.Construct
     this.taskDefinition = taskDefinition;
 
     this.resource = new cloudformation.ServiceResource(this, "Service", {
-      desiredCount: props.desiredCount || 1,
+      desiredCount: props.desiredCount,
       serviceName: props.serviceName,
       loadBalancers: new cdk.Token(() => this.loadBalancers),
       deploymentConfiguration: {
