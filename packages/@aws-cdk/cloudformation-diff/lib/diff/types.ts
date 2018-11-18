@@ -3,57 +3,60 @@ import { deepEqual } from './util';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
-  public readonly awsTemplateFormatVersion?: Difference<string>;
-  public readonly description?: Difference<string>;
-  public readonly transform?: Difference<string>;
-  public readonly conditions: DifferenceCollection<Condition, ConditionDifference>;
-  public readonly mappings: DifferenceCollection<Mapping, MappingDifference>;
-  public readonly metadata: DifferenceCollection<Metadata, MetadataDifference>;
-  public readonly outputs: DifferenceCollection<Output, OutputDifference>;
-  public readonly parameters: DifferenceCollection<Parameter, ParameterDifference>;
-  public readonly resources: DifferenceCollection<Resource, ResourceDifference>;
+  public awsTemplateFormatVersion?: Difference<string>;
+  public description?: Difference<string>;
+  public transform?: Difference<string>;
+  public conditions: DifferenceCollection<Condition, ConditionDifference>;
+  public mappings: DifferenceCollection<Mapping, MappingDifference>;
+  public metadata: DifferenceCollection<Metadata, MetadataDifference>;
+  public outputs: DifferenceCollection<Output, OutputDifference>;
+  public parameters: DifferenceCollection<Parameter, ParameterDifference>;
+  public resources: DifferenceCollection<Resource, ResourceDifference>;
   /** The differences in unknown/unexpected parts of the template */
-  public readonly unknown: DifferenceCollection<any, Difference<any>>;
-
-  public readonly count: number;
+  public unknown: DifferenceCollection<any, Difference<any>>;
 
   constructor(args: ITemplateDiff) {
-    let count = 0;
     if (args.awsTemplateFormatVersion !== undefined) {
       this.awsTemplateFormatVersion = args.awsTemplateFormatVersion;
-      count += 1;
     }
     if (args.description !== undefined) {
       this.description = args.description;
-      count += 1;
     }
     if (args.transform !== undefined) {
       this.transform = args.transform;
-      count += 1;
     }
 
     this.conditions = args.conditions || new DifferenceCollection({});
-    count += this.conditions.count;
-
     this.mappings = args.mappings || new DifferenceCollection({});
-    count += this.mappings.count;
-
     this.metadata = args.metadata || new DifferenceCollection({});
-    count += this.metadata.count;
-
     this.outputs = args.outputs || new DifferenceCollection({});
-    count += this.outputs.count;
-
     this.parameters = args.parameters || new DifferenceCollection({});
-    count += this.parameters.count;
-
     this.resources = args.resources || new DifferenceCollection({});
-    count += this.resources.count;
-
     this.unknown = args.unknown || new DifferenceCollection({});
+  }
+
+  public get count() {
+    let count = 0;
+
+    if (this.awsTemplateFormatVersion !== undefined) {
+      count += 1;
+    }
+    if (this.description !== undefined) {
+      count += 1;
+    }
+    if (this.transform !== undefined) {
+      count += 1;
+    }
+
+    count += this.conditions.count;
+    count += this.mappings.count;
+    count += this.metadata.count;
+    count += this.outputs.count;
+    count += this.parameters.count;
+    count += this.resources.count;
     count += this.unknown.count;
 
-    this.count = count;
+    return count;
   }
 
   public get isEmpty(): boolean {
@@ -115,6 +118,23 @@ export class DifferenceCollection<V, T extends Difference<V>> {
 
   public get logicalIds(): string[] {
     return Object.keys(this.changes);
+  }
+
+  /**
+   * Returns a new TemplateDiff which only contains changes for which `predicate`
+   * returns `true`.
+   */
+  public filter(predicate: (diff: T | undefined) => boolean): DifferenceCollection<V, T> {
+    const newChanges: { [logicalId: string]: T | undefined } = { };
+    for (const id of Object.keys(this.changes)) {
+      const diff = this.changes[id];
+
+      if (predicate(diff)) {
+        newChanges[id] = diff;
+      }
+    }
+
+    return new DifferenceCollection<V, T>(newChanges);
   }
 
   public forEach(cb: (logicalId: string, change: T) => any): void {
