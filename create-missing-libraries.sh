@@ -123,6 +123,9 @@ EOM
   },
   "dependencies": {
     "@aws-cdk/cdk": "^${VERSION}"
+  },
+  "peerDependencies": {
+    "@aws-cdk/cdk": "^${VERSION}"
   }
 }
 EOM
