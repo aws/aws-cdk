@@ -67,9 +67,6 @@
     },
     "VpcPublicSubnet1DefaultRoute3DA9E72A": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
@@ -78,7 +75,10 @@
         "GatewayId": {
           "Ref": "VpcIGWD7BA715C"
         }
-      }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
@@ -158,9 +158,6 @@
     },
     "VpcPublicSubnet2DefaultRoute97F91067": {
       "Type": "AWS::EC2::Route",
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ],
       "Properties": {
         "RouteTableId": {
           "Ref": "VpcPublicSubnet2RouteTable94F7E489"
@@ -169,7 +166,10 @@
         "GatewayId": {
           "Ref": "VpcIGWD7BA715C"
         }
-      }
+      },
+      "DependsOn": [
+        "VpcVPCGWBF912B6E"
+      ]
     },
     "VpcPublicSubnet2EIP3C605A87": {
       "Type": "AWS::EC2::EIP",

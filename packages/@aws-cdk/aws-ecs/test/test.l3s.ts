@@ -33,7 +33,7 @@ export = {
     test.done();
   },
 
-  'test Fargateloadbalanced construct'(test: Test) {
+  'test Fargate loadbalanced construct'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
@@ -48,6 +48,20 @@ export = {
 
     // THEN - stack contains a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
+    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-stream-prefix": "Service",
+              "awslogs-region": { Ref: "AWS::Region" }
+            }
+          },
+        }
+      ]
+    }));
 
     expect(stack).to(haveResource("AWS::ECS::Service", {
       DesiredCount: 2,
@@ -61,6 +75,38 @@ export = {
     test.done();
   },
 
+  'test Fargate loadbalanced construct opting out of log driver creation'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecs.LoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      image: ecs.ContainerImage.fromDockerHub('test'),
+      desiredCount: 2,
+      createLogs: false
+    });
+
+    // THEN - stack contains a load balancer and a service
+    expect(stack).notTo(haveResource('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          LogConfiguration: {
+            LogDriver: "awslogs",
+            Options: {
+              "awslogs-group": { Ref: "ServiceLoggingLogGroupC3D6A581" },
+              "awslogs-stream-prefix": "Service",
+              "awslogs-region": { Ref: "AWS::Region" }
+            }
+          },
+        }
+      ]
+    }));
+
+    test.done();
+  },
   'test Fargateloadbalanced construct with TLS'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

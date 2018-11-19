@@ -6,6 +6,7 @@ import { ICluster } from './cluster';
 import { IContainerImage } from './container-image';
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
+import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
 /**
  * Properties for a LoadBalancedEcsService
@@ -101,6 +102,12 @@ export interface LoadBalancedFargateServiceProps {
    * Setting this option will set the load balancer port to 443.
    */
   certificate?: CertificateRef;
+  /**
+   * Whether to create an AWS log driver
+   *
+   * @default true
+   */
+  createLogs?: boolean;
 }
 
 /**
@@ -121,8 +128,11 @@ export class LoadBalancedFargateService extends cdk.Construct {
       cpu: props.cpu
     });
 
+    const optIn = props.createLogs !== undefined ? props.createLogs : true;
+
     const container = taskDefinition.addContainer('web', {
       image: props.image,
+      logging: optIn ? this.createAWSLogDriver(this.id) : undefined
     });
 
     container.addPortMappings({
@@ -174,5 +184,9 @@ export class LoadBalancedFargateService extends cdk.Construct {
         target: lb
       });
     }
+  }
+
+  private createAWSLogDriver(prefix: string): AwsLogDriver {
+    return new AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 }
