@@ -1,3 +1,4 @@
+import colors = require('colors/safe');
 import fs = require('fs-extra');
 import path = require('path');
 
@@ -27,7 +28,8 @@ export function findPackageJsons(root: string): PackageJson[] {
       if (file !== 'node_modules' && (fs.lstatSync(fullPath)).isDirectory()) {
         recurse(fullPath);
       }
-    } }
+    }
+  }
 
   recurse(root);
   return ret;
@@ -36,6 +38,8 @@ export function findPackageJsons(root: string): PackageJson[] {
 export type Fixer = () => void;
 
 export interface Report {
+  ruleName: string;
+
   message: string;
 
   fix?: Fixer;
@@ -45,15 +49,40 @@ export interface Report {
  * Class representing a package.json file and the issues we found with it
  */
 export class PackageJson {
-  public readonly json: any;
+  public readonly json: { [key: string]: any };
   public readonly packageRoot: string;
   public readonly packageName: string;
+
+  private readonly includeRules: RegExp[];
+  private readonly excludeRules: RegExp[];
+
   private reports: Report[] = [];
 
   constructor(public readonly fullPath: string) {
     this.json = JSON.parse(fs.readFileSync(fullPath, { encoding: 'utf-8' }));
     this.packageRoot = path.dirname(path.resolve(fullPath));
     this.packageName = this.json.name;
+
+    const disabled = this.json.pkglint && this.json.pkglint.ignore;
+    this.includeRules = _forceArray(this.json.pkglint && this.json.pkglint.include) || [/^.*$/];
+    this.excludeRules = _forceArray(this.json.pkglint && this.json.pkglint.exclude) || (disabled ? [/^.*$/] : []);
+
+    function _forceArray(arg: string | string[] | undefined): RegExp[] | undefined {
+      if (arg == null) { return arg; }
+      if (Array.isArray(arg)) { return arg.map(_toRegExp); }
+      return [_toRegExp(arg)];
+    }
+
+    function _toRegExp(pattern: string): RegExp {
+      pattern = pattern.split('*').map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.*');
+      return new RegExp(`^${pattern}$`);
+    }
+  }
+
+  public shouldApply(rule: ValidationRule): boolean {
+    const included = this.includeRules.find(r => r.test(rule.name)) != null;
+    const excluded = this.excludeRules.find(r => r.test(rule.name)) != null;
+    return included && !excluded;
   }
 
   public save() {
@@ -93,10 +122,12 @@ export class PackageJson {
     this.reports = nonFixable;
   }
 
-  public displayReports() {
+  public displayReports(relativeTo: string) {
     if (this.hasReports) {
-      process.stderr.write(`${path.resolve(this.fullPath)}\n`);
-      this.reports.forEach(report => process.stderr.write(`- ${report.message}\n`));
+      process.stderr.write(`In package ${colors.blue(path.relative(relativeTo, this.fullPath))}\n`);
+      this.reports.forEach(report => {
+        process.stderr.write(`- [${colors.yellow(report.ruleName)}] ${report.message}${report.fix ? colors.green(' (fixable)') : ''}\n`);
+      });
     }
   }
 
@@ -160,6 +191,14 @@ export class PackageJson {
   }
 
   /**
+   * @param predicate the predicate to select dependencies to be extracted
+   * @returns the list of dependencies matching a pattern.
+   */
+  public getDependencies(predicate: (s: string) => boolean): Array<{ name: string, version: string }> {
+    return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
+  }
+
+  /**
    * Adds a devDependency to the package.
    */
   public addDevDependency(module: string, version = '*') {
@@ -168,6 +207,17 @@ export class PackageJson {
     }
 
     this.json.devDependencies[module] = version;
+  }
+
+  /**
+   * Adds a dependency to the package.
+   */
+  public addDependency(module: string, version = '*') {
+    if (!('dependencies' in this.json)) {
+      this.json.dependencies = {};
+    }
+
+    this.json.dependencies[module] = version;
   }
 
   public removeDevDependency(moduleOrPredicate: ((s: string) => boolean) | string) {
@@ -182,6 +232,22 @@ export class PackageJson {
     for (const m of Object.keys(this.json.devDependencies)) {
       if (predicate(m)) {
         delete this.json.devDependencies[m];
+      }
+    }
+  }
+
+  public removeDependency(moduleOrPredicate: ((s: string) => boolean) | string) {
+    if (!('dependencies' in this.json)) {
+      return;
+    }
+
+    const predicate: (s: string) => boolean = typeof(moduleOrPredicate) === 'string'
+      ? x => x === moduleOrPredicate
+      : moduleOrPredicate;
+
+    for (const m of Object.keys(this.json.dependencies)) {
+      if (predicate(m)) {
+        delete this.json.dependencies[m];
       }
     }
   }
@@ -250,6 +316,8 @@ export class PackageJson {
  * Interface for validation rules
  */
 export abstract class ValidationRule {
+  public abstract readonly name: string;
+
   /**
    * Will be executed for every package definition once, used to collect statistics
    */
