@@ -14,6 +14,7 @@ const source = new code.GitHubSourceAction(stack, 'GitHub', {
   owner: 'awslabs',
   repo: 'aws-cdk',
   oauthToken: new cdk.Secret('DummyToken'),
+  pollForSourceChanges: true,
 });
 new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
   stage: pipeline.addStage('Deploy'),
