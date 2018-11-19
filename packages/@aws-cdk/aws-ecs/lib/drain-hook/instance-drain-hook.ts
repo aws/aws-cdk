@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
+import fs = require('fs');
 import path = require('path');
 import { ICluster } from '../cluster';
 
@@ -31,7 +32,7 @@ export interface InstanceDrainHookProps {
    *
    * @default 900
    */
-  drainTimeSeconds?: number;
+  drainTimeSec?: number;
 }
 
 /**
@@ -41,7 +42,7 @@ export class InstanceDrainHook extends cdk.Construct {
   constructor(parent: cdk.Construct, id: string, props: InstanceDrainHookProps) {
     super(parent, id);
 
-    const drainTimeSeconds = props.drainTimeSeconds !== undefined ? props.drainTimeSeconds : 300;
+    const drainTimeSeconds = props.drainTimeSec !== undefined ? props.drainTimeSec : 300;
 
     if (drainTimeSeconds < 0 || drainTimeSeconds > 900) {
       throw new Error(`Drain time must be between 0 and 900 seconds, got: ${drainTimeSeconds}`);
@@ -50,7 +51,7 @@ export class InstanceDrainHook extends cdk.Construct {
     // Invoke Lambda via SNS Topic
     const topic = new sns.Topic(this, 'Topic');
     const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.directory(path.join(__dirname, 'lambda-source')),
+      code: lambda.Code.inline(fs.readFileSync(path.join(__dirname, 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
       handler: 'index.lambda_handler',
       runtime: lambda.Runtime.Python36,
       // Timeout: some extra margin for additional API calls made by the Lambda,
@@ -66,12 +67,9 @@ export class InstanceDrainHook extends cdk.Construct {
       lifecycleTransition: autoscaling.LifecycleTransition.InstanceTerminating,
       defaultResult: autoscaling.DefaultResult.Continue,
       notificationTarget: topic,
-      heartbeatTimeoutSeconds: drainTimeSeconds,
+      heartbeatTimeoutSec: drainTimeSeconds,
     });
     topic.subscribeLambda(fn);
-
-    // Permissions
-    topic.grantPublish(fn.role);
 
     // FIXME: These should probably be restricted usefully in some way, but I don't exactly
     // know how.

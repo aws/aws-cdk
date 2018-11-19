@@ -129,7 +129,7 @@ export class Cluster extends cdk.Construct implements ICluster {
       new InstanceDrainHook(autoScalingGroup, 'DrainECSHook', {
         autoScalingGroup,
         cluster: this,
-        drainTimeSeconds: options.taskDrainTimeSeconds
+        drainTimeSec: options.taskDrainTimeSeconds
       });
     }
   }

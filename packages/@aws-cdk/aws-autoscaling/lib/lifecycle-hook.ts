@@ -27,7 +27,7 @@ export interface BasicLifecycleHookProps {
    *
    * If the lifecycle hook times out, perform the action in DefaultResult.
    */
-  heartbeatTimeoutSeconds?: number;
+  heartbeatTimeoutSec?: number;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
@@ -87,7 +87,7 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
     const resource = new cloudformation.LifecycleHookResource(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
-      heartbeatTimeout: props.heartbeatTimeoutSeconds,
+      heartbeatTimeout: props.heartbeatTimeoutSec,
       lifecycleHookName: props.lifecycleHookName,
       lifecycleTransition: props.lifecycleTransition,
       notificationMetadata: props.notificationMetadata,

@@ -29,7 +29,7 @@ export interface AutoScalingGroupProps {
   /**
    * Minimum number of instances in the fleet
    *
-   * @default desiredCapacity
+   * @default 1
    */
   minSize?: number;
 
@@ -240,7 +240,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
         (props.desiredCapacity !== undefined ? props.desiredCapacity :
         (props.minSize !== undefined ? props.minSize :
         (props.maxSize !== undefined ? props.maxSize : 1)));
-    const minSize = props.minSize !== undefined ? props.minSize : desiredCapacity;
+    const minSize = props.minSize !== undefined ? props.minSize : 1;
     const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
 
     if (desiredCapacity < minSize || desiredCapacity > maxSize) {

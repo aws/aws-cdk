@@ -250,7 +250,7 @@ const autoScalingGroup = cluster.addDefaultAutoScalingGroupCapacity({
   // Give instances 5 minutes to drain running tasks when an instance is
   // terminated. This is the default, turn this off by specifying 0 or
   // change the timeout up to 900 seconds.
-  taskDrainTimeSeconds: 300,
+  taskDrainTimeSec: 300,
 });
 
 autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
