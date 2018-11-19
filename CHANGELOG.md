@@ -1,4 +1,4 @@
-# [0.18.0](https://github.com/awslabs/aws-cdk/compare/v0.17.0...v0.18.0) (2018-11-19)
+## [0.18.0](https://github.com/awslabs/aws-cdk/compare/v0.17.0...v0.18.0) (2018-11-19)
 
 ## Bug Fixes
 
