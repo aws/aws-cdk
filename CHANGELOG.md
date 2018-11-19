@@ -31,7 +31,7 @@
 - **aws-codebuild:** this changes the way CodeBuild Sources are constructed (we moved away from multiple parameters in the constructor, in favor of the more idiomatic property interface).
 - **aws-elasticloadbalancingv2:** `targetGroup.listenerDependency()` has been renamed to `targetGroup.loadBalancerDependency()`.
 
-# [0.17.0](https://github.com/awslabs/aws-cdk/compare/v0.16.0...v0.17.0) (2018-11-14)
+## [0.17.0](https://github.com/awslabs/aws-cdk/compare/v0.16.0...v0.17.0) (2018-11-14)
 
 ## Bug Fixes
 
