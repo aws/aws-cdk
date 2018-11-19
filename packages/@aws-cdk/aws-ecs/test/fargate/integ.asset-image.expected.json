@@ -525,6 +525,18 @@
               "Devices": [],
               "Tmpfs": []
             },
+            "LogConfiguration":{
+              "LogDriver":"awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "FargateServiceLoggingLogGroup9B16742A"
+                },
+                "awslogs-stream-prefix": "FargateService",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
             "MountPoints": [],
             "Name": "web",
             "PortMappings": [
@@ -611,6 +623,13 @@
           }
         ]
       }
+    },
+    "FargateServiceLoggingLogGroup9B16742A": {
+        "Type": "AWS::Logs::LogGroup",
+        "Properties": {
+          "RetentionInDays": 365
+        },
+        "DeletionPolicy": "Retain"
     },
     "FargateServiceECC8084D": {
       "Type": "AWS::ECS::Service",
