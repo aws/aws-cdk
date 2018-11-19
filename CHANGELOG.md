@@ -25,6 +25,7 @@
 - **toolkit:** add 'cdk context' command ([#1169](https://github.com/awslabs/aws-cdk/issues/1169)) ([2db536e](https://github.com/awslabs/aws-cdk/commit/2db536e)), closes [#311](https://github.com/awslabs/aws-cdk/issues/311)
 - **toolkit:** by default hide AWS::CDK::Metadata from "cdk diff" ([#1186](https://github.com/awslabs/aws-cdk/issues/1186)) ([ef0017a](https://github.com/awslabs/aws-cdk/commit/ef0017a)), closes [#465](https://github.com/awslabs/aws-cdk/issues/465)
 - **toolkit:** improve diff user interface ([#1187](https://github.com/awslabs/aws-cdk/issues/1187)) ([9c3c5c7](https://github.com/awslabs/aws-cdk/commit/9c3c5c7)), closes [#1121](https://github.com/awslabs/aws-cdk/issues/1121) [#1120](https://github.com/awslabs/aws-cdk/issues/1120)
+- **aws-codepipeline**: switch to webhooks instead of polling by default for the GitHub ([#1074](https://github.com/awslabs/aws-cdk/issues/1074))
 
 ## BREAKING CHANGES
 
