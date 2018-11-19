@@ -3755,6 +3755,66 @@
         ],
         "description": "Set RefKind of AWS::WorkSpaces::Workspace to Name"
       }
+    },
+    "AWS::DLM::LifecyclePolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::DLM::LifecyclePolicy to Id"
+      }
+    },
+    "AWS::SecretsManager::ResourcePolicy": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::ResourcePolicy to SecretArn"
+      }
+    },
+    "AWS::SecretsManager::RotationSchedule": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::RotationSchedule to SecretArn"
+      }
+    },
+    "AWS::SecretsManager::Secret": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Arn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::Secret to Arn"
+      }
+    },
+    "AWS::SecretsManager::SecretTargetAttachment": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "SecretArn"
+          }
+        ],
+        "description": "Set RefKind of AWS::SecretsManager::SecretTargetAttachment to SecretArn"
+      }
     }
   }
 }
