@@ -1,5 +1,7 @@
 export * from './cross-region-scaffold-stack';
 export * from './github-source-action';
+export * from './jenkins-actions';
+export * from './jenkins-provider';
 export * from './manual-approval-action';
 export * from './pipeline';
 export * from './stage';
