@@ -10,7 +10,7 @@ function cdk_diff() {
     cdk diff $1 2>&1 || true
 }
 
-assert_lines "$(cdk_diff cdk-toolkit-integration-test-1)" 1
-assert_lines "$(cdk_diff cdk-toolkit-integration-test-2)" 2
+assert_lines "$(cdk_diff cdk-toolkit-integration-test-1)" 2
+assert_lines "$(cdk_diff cdk-toolkit-integration-test-2)" 3
 
 echo "✅  success"
