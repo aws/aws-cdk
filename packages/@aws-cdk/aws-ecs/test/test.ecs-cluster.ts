@@ -67,7 +67,7 @@ export = {
 
       expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
         MaxSize: "1",
-        MinSize: "0",
+        MinSize: "1",
         DesiredCapacity: "1",
         LaunchConfigurationName: {
           Ref: "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
@@ -150,6 +150,32 @@ export = {
           ],
           Version: "2012-10-17"
         }
+      }));
+
+      test.done();
+    },
+
+    'lifecycle hook is automatically added'(test: Test) {
+      // GIVEN
+      const stack =  new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+      });
+
+      // WHEN
+      cluster.addDefaultAutoScalingGroupCapacity({
+        instanceType: new ec2.InstanceType('t2.micro')
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+        AutoScalingGroupName: { Ref: "EcsClusterDefaultAutoScalingGroupASGC1A785DB" },
+        LifecycleTransition: "autoscaling:EC2_INSTANCE_TERMINATING",
+        DefaultResult: "CONTINUE",
+        HeartbeatTimeout: 300,
+        NotificationTargetARN: { Ref: "EcsClusterDefaultAutoScalingGroupDrainECSHookTopicC705BD25" },
+        RoleARN: { "Fn::GetAtt": [ "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B", "Arn" ] }
       }));
 
       test.done();
