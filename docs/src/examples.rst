@@ -19,7 +19,7 @@ offered by the |cdk|.
 
 .. _creating_ecs_l2_example:
 
-Creating an |ECS| Construct
+Creating an |ECS| |cdk| App
 ===========================
 
 |ECSlong| (|ECS|) is a highly scalable, fast, container management service
@@ -31,7 +31,7 @@ For more control you can host your tasks on a cluster of
 
 Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
-gives you a leg up on using AWS services:
+gives you a leg up on using AWS services by providing the following benefits:
 
 * Automatic security group opening for load balancers
 * Automatic ordering dependency between service and load balancer attaching to a target group
@@ -122,14 +122,14 @@ Install support for |EC2| and |ECS|.
 Step 3: Create a Fargate Service
 --------------------------------
 
-There are two different ways of creating a serverless infrastructure with |ECS|:
+There are two different ways of running your container tasks with |ECS|:
 
 - Using the **Fargate** launch type, where |ECS| manages your cluster resources
 - Using the **EC2** launch type, where you manage your cluster resources
 
 This example creates a Fargate service,
 which requires a VPC, a cluster, a task definition, and a security group.
-Later on we'll show you how to launch an EC2 service.
+Later on we'll show you how to launch |EC2| instances that you manage.
 
 .. tabs::
 
@@ -147,7 +147,7 @@ Later on we'll show you how to launch an EC2 service.
         .. code-block:: typescript
 
             const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
-              maxAZs: 2 // Default is all AZs in region
+              maxAZs: 3 // Default is all AZs in region
             });
 
             // Create an ECS cluster
@@ -160,22 +160,15 @@ Later on we'll show you how to launch an EC2 service.
               memoryMiB: '2048'  // Default is 512
             });
 
-            // The task definition must have at least one container.
-            // Otherwise you cannot synthesize or deploy your app.
+            // The task definition for the container.
             taskDefinition.addContainer('MyContainer', {
-              image: ecs.ContainerImage.fromDockerHub('MyDockerImage')    // Required
-            });
-
-            const securityGroup = new ec2.SecurityGroup(this, 'MySecurityGroup', {
-              vpc: vpc
+              image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample')    // Required
             });
 
             new ecs.FargateService(this, 'MyFargateService', {
               taskDefinition: taskDefinition,  // Required
               cluster: cluster,  // Required
               desiredCount: 6,  // Default is 1
-              securityGroup: securityGroup,  // Required
-              platformVersion: ecs.FargatePlatformVersion.Latest  // Default
             });
 
         Save it and make sure it builds and creates a stack.
