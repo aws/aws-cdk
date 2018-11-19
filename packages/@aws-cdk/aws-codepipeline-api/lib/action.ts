@@ -74,6 +74,11 @@ export interface IInternalStage {
  */
 export interface IPipeline extends events.IEventRuleTarget {
   /**
+   * The name of the Pipeline.
+   */
+  readonly pipelineName: string;
+
+  /**
    * The ARN of the Pipeline.
    */
   readonly pipelineArn: string;

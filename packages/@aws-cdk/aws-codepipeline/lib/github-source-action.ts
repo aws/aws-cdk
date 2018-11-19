@@ -1,5 +1,6 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
+import { cloudformation } from './codepipeline.generated';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
@@ -44,9 +45,10 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
   oauthToken: cdk.Secret;
 
   /**
-   * Whether or not AWS CodePipeline should poll for source changes
+   * Whether AWS CodePipeline should poll for source changes.
+   * If this is `false`, the Pipeline will use a webhook to detect source changes instead.
    *
-   * @default true
+   * @default false
    */
   pollForSourceChanges?: boolean;
 }
@@ -66,9 +68,28 @@ export class GitHubSourceAction extends actions.SourceAction {
         Repo: props.repo,
         Branch: props.branch || "master",
         OAuthToken: props.oauthToken,
-        PollForSourceChanges: props.pollForSourceChanges || true
+        PollForSourceChanges: props.pollForSourceChanges || false,
       },
       outputArtifactName: props.outputArtifactName
     });
+
+    if (!props.pollForSourceChanges) {
+      new cloudformation.WebhookResource(this, 'WebhookResource', {
+        authentication: 'GITHUB_HMAC',
+        authenticationConfiguration: {
+          secretToken: props.oauthToken,
+        },
+        filters: [
+          {
+            jsonPath: '$.ref',
+            matchEquals: 'refs/heads/{Branch}',
+          },
+        ],
+        targetAction: this.id,
+        targetPipeline: props.stage.pipeline.pipelineName,
+        targetPipelineVersion: 1,
+        registerWithThirdParty: true,
+      });
+    }
   }
 }

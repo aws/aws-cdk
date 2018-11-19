@@ -275,11 +275,13 @@ function _stackArn(stackName: string): string {
 }
 
 class PipelineDouble implements cpapi.IPipeline {
+  public readonly pipelineName: string;
   public readonly pipelineArn: string;
   public readonly role: iam.Role;
 
   constructor({ pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
-    this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: pipelineName || 'TestPipeline' });
+    this.pipelineName = pipelineName || 'TestPipeline';
+    this.pipelineArn = cdk.ArnUtils.fromComponents({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
     this.role = role;
   }
 

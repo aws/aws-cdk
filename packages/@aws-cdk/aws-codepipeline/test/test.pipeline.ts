@@ -93,7 +93,7 @@ export = {
           "OAuthToken": {
             "Ref": "GitHubTokenParameterBB166B9D"
           },
-          "PollForSourceChanges": true
+          "PollForSourceChanges": false
           },
           "InputArtifacts": [],
           "Name": "GH",
