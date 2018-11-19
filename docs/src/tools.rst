@@ -45,7 +45,7 @@ Here are the actions you can take on your CDK app
 
 .. code-block:: sh
 
-       Usage: cdk -a <cdk-app> COMMAND
+    Usage: cdk -a <cdk-app> COMMAND
     
     Commands:
       list                        Lists all stacks in the app          [aliases: ls]
