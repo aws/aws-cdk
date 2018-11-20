@@ -29,20 +29,48 @@ You can host your cluster on a serverless infrastructure that is managed by
 For more control you can host your tasks on a cluster of
 |EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
 
+This example shows you how to launch some services using the Fargate launch type,
+similar to the `AWS ECS tutorial on creating a cluster and launching a sample web application <https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/>`_.
+This example replicates that tutorial in |cdk| code.
+Then we'll show you how to update the web app to be a simple greeting server.
+The front facing greeter service fetches a random greeting and a random name from two backend services.
+
 Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
 gives you a leg up on using AWS services by providing the following benefits:
 
-* Automatic security group opening for load balancers
-* Automatic ordering dependency between service and load balancer attaching to a target group
-* Automatic userdata configuration on auto-scaling group
-* Early validation of parameter combinations,
-  which exposes |CFN| issues earlier,
-  thus saving you deployment time
-* Automatically adds permissions for |ECR| if you use an image from |ECR|
-* Convenient API for autoscaling
-* Asset support, so that you can deploy source from your machine to |ECS| in one step
+* Automatic security group opening for load balancers,
+  which enables load balancers to communicate with instances
+  without you explictly creating a security group.
 
+* Automatic ordering dependency between service and load balancer attaching to a target group,
+  where the |cdk| enforces the correct order of creating the listener before an instance is created
+
+* Automatic userdata configuration on auto-scaling group,
+  which creates the correct configuration to associate a cluster to AMI(s).
+  
+* Early validation of parameter combinations, which exposes |CFN| issues earlier, thus saving you deployment time.
+  For example, depending upon the task, it is easy to mis-configure the memory settings.
+  Previously you would not encounter an error until you deployed your app,
+  but now the |cdk| can detect a misconfiguration and emit an error when you synthesize your app.
+
+* Automatically adds permissions for |ECR| if you use an image from |ECR|
+  When you use an image from |ECR|, the |cdk| adds the correct permissions.
+
+* Convenient API for autoscaling
+  The |cdk| supplies a method so you can autoscaling instances when you use an |EC2| cluster;
+  this functionality is done automatically when you use an instance in a Fargate cluster.
+
+  In addition, the |cdk| will prevent instances from being deleted when
+  autoscaling tries to kill an instance,
+  but either a task is running or is scheduled on that instance.
+
+  Previously, you had to create a Lambda function to have this functionality.
+  
+* Asset support, so that you can deploy source from your machine to |ECS| in one step
+  Previously, to use application source you had to perform a number of manual steps
+  (upload to |ECR|, create Docker image, etc.).
+ 
 .. _creating_ecs_l2_example_1:
 
 Step 1: Create the Directory and Initialze the |cdk|
@@ -128,8 +156,11 @@ There are two different ways of running your container tasks with |ECS|:
 - Using the **EC2** launch type, where you manage your cluster resources
 
 This example creates a Fargate service,
-which requires a VPC, a cluster, a task definition, and a security group.
-Later on we'll show you how to launch |EC2| instances that you manage.
+which requires a VPC, a cluster, and a task definition.
+You can read information about the Docker image **amazon/amazon-ecs-sample**
+at
+
+.. Todo task: Later on we'll show you how to launch |EC2| instances that you manage.
 
 .. tabs::
 
@@ -188,10 +219,13 @@ Later on we'll show you how to launch |EC2| instances that you manage.
 
             cdk deploy
 
+        |CFN| displays information abvout the 30 or so steps that
+        it makes as it deploys your app.
+
 .. _creating_ecs_l2_example_4:
 
-Step 4: Adding to the Fargate Service
--------------------------------------
+Step 4: Adding to the Service
+-----------------------------
 
 We've created about the simplest Fargate service,
 but it isn't very robust and might not be able to handle
