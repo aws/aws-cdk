@@ -8,7 +8,7 @@ import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
 async function main() {
   const argv = yargs
     .usage('Usage: cdk-integ [TEST...]')
-      .option('clean', { type: 'boolean', default: true, desc: 'Skipps stack clean up after test is completed (use --no-clean to negate)' })
+      .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
       .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
       .argv;
 

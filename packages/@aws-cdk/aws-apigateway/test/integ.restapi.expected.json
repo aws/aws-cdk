@@ -585,6 +585,64 @@
           ]
         }
       }
+    },
+    "UsagePlanC18B28F1": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "Stage": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            },
+            "Throttle": {
+              "/v1/toys/GET": {
+                "BurstLimit": 2,
+                "RateLimit": 10
+              }
+            }
+          }
+        ],
+        "Description": "Free tier monthly usage plan",
+        "Quota": {
+          "Limit": 10000,
+          "Period": "MONTH"
+        },
+        "Throttle": {
+          "BurstLimit": 5,
+          "RateLimit": 50
+        },
+        "UsagePlanName": "Basic"
+      }
+    },
+    "ApiKeyF9DDEE66": {
+      "Type": "AWS::ApiGateway::ApiKey",
+      "Properties": {
+        "StageKeys": [
+          {
+            "RestApiId": {
+              "Ref": "myapi4C7BF186"
+            },
+            "StageName": {
+              "Ref": "myapiDeploymentStagebeta96434BEB"
+            }
+          }
+        ]
+      }
+    },
+    "UsagePlanKey803D3BF7": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "ApiKeyF9DDEE66"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "UsagePlanC18B28F1"
+        }
+      }
     }
   },
   "Outputs": {
