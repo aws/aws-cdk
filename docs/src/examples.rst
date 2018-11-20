@@ -42,8 +42,6 @@ including:
   `Getting Started with Amazon ECS using Fargate <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html>`_
 
 This example creates a similar Fargate service in |cdk| code.
-.. Then we'll show you how to update the web app to be a simple greeting server.
-   The front facing greeter service fetches a random greeting and a random name from two backend services.
 
 Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
@@ -167,10 +165,6 @@ There are two different ways of running your container tasks with |ECS|:
 
 This example creates a Fargate service,
 which requires a VPC, a cluster, and a task definition.
-You can read information about the Docker image **amazon/amazon-ecs-sample**
-at
-
-.. Todo task: Later on we'll show you how to launch |EC2| instances that you manage.
 
 .. tabs::
 
@@ -230,16 +224,14 @@ at
             cdk deploy
 
         |CFN| displays information about the dozens of steps that
-        it makes as it deploys your app.
+        it takes as it deploys your app.
 
 .. _creating_ecs_l2_example_4:
 
 Step 4: Adding to the Service
 -----------------------------
 
-We've created about the simplest Fargate service,
-but it isn't very robust and might not be able to handle
-larger loads, so let's add an auto-scaling group.
+Let's add auto-scaling to our cluster.
 
 Add the following code just after you declare a cluster.
 This code creates a cluster that scales out to up to three **t2.xlarge** instances.
