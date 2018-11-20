@@ -20,5 +20,12 @@ cdk init sample-app -l typescript
 npm run build
 cdk synth
 
+rm -rf /tmp/cdk-integ-test
+mkdir -p /tmp/cdk-integ-test
+cd /tmp/cdk-integ-test
+
+cdk init lib -l typescript
+npm run build
+
 echo "✅  success"
 
