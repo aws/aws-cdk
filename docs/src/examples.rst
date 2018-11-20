@@ -39,11 +39,11 @@ including:
 * `How to Deploy Docker Containers - AWS <https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/>`_
 
 * `Setting up with Amazon ECS <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/get-set-up-for-amazon-ecs.html>`_ and 
-`Getting Started with Amazon ECS using Fargate <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html>`_
+  `Getting Started with Amazon ECS using Fargate <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html>`_
 
 This example creates a similar Fargate service in |cdk| code.
-Then we'll show you how to update the web app to be a simple greeting server.
-The front facing greeter service fetches a random greeting and a random name from two backend services.
+.. Then we'll show you how to update the web app to be a simple greeting server.
+   The front facing greeter service fetches a random greeting and a random name from two backend services.
 
 Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
@@ -219,9 +219,9 @@ at
             npm run build
             cdk synth
 
-        You should see a stack of about 300 lines, so we won't show it here.
-        The stack should contain one default instance, two public subnets,
-        and a security group.
+        You should see a stack of a couple hundred lines, so we won't show it here.
+        The stack should contain one default instance, a private subnet and a public subnet
+        for the three availability zones, and a security group.
 
         Deploy the stack.
 
@@ -229,7 +229,7 @@ at
 
             cdk deploy
 
-        |CFN| displays information abvout the 30 or so steps that
+        |CFN| displays information about the dozens of steps that
         it makes as it deploys your app.
 
 .. _creating_ecs_l2_example_4:
@@ -243,8 +243,7 @@ larger loads, so let's add an auto-scaling group.
 
 Add the following code just after you declare a cluster,
 but before you create the service.
-This code extends the |ECS| cluster with three t2.xlarge instances,
-instead of default of one ??? instance.
+This code creates a cluster that scales out to up to three **t2.xlarge** instances.
 
 .. code-block:: ts
 
