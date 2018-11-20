@@ -29,9 +29,19 @@ You can host your cluster on a serverless infrastructure that is managed by
 For more control you can host your tasks on a cluster of
 |EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
 
-This example shows you how to launch some services using the Fargate launch type,
-similar to the `AWS ECS tutorial on creating a cluster and launching a sample web application <https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/>`_.
-This example replicates that tutorial in |cdk| code.
+This example shows you how to launch some services using the Fargate launch type.
+If you've ever used the console to create a Fargate service,
+you know that there are many steps you must follow to accomplish that task.
+AWS has a number of tutorials and documentation topics that walk you through
+creating a Fargate service,
+including:
+
+* `How to Deploy Docker Containers - AWS <https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/>`_
+
+* `Setting up with Amazon ECS <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/get-set-up-for-amazon-ecs.html>`_ and 
+`Getting Started with Amazon ECS using Fargate <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html>`_
+
+This example creates a similar Fargate service in |cdk| code.
 Then we'll show you how to update the web app to be a simple greeting server.
 The front facing greeter service fetches a random greeting and a random name from two backend services.
 
