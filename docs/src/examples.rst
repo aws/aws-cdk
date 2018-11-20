@@ -156,7 +156,7 @@ Later on we'll show you how to launch |EC2| instances that you manage.
             });
 
             const taskDefinition = new ecs.FargateTaskDefinition(this, 'MyFargateTaskDefinition', {
-              cpu: '256',  // Default
+              cpu: '512',  // Default is 256
               memoryMiB: '2048'  // Default is 512
             });
 
@@ -178,4 +178,34 @@ Later on we'll show you how to launch |EC2| instances that you manage.
             npm run build
             cdk synth
 
-You should see a stack of about 300 lines, so we won't show it here.
+        You should see a stack of about 300 lines, so we won't show it here.
+        The stack should contain one default instance, two public subnets,
+        and a security group.
+
+        Deploy the stack.
+
+        .. code-block:: sh
+
+            cdk deploy
+
+.. _creating_ecs_l2_example_4:
+
+Step 4: Adding to the Fargate Service
+-------------------------------------
+
+We've created about the simplest Fargate service,
+but it isn't very robust and might not be able to handle
+larger loads, so let's add an auto-scaling group.
+
+Add the following code just after you declare a cluster,
+but before you create the service.
+This code extends the |ECS| cluster with three t2.xlarge instances,
+instead of default of one ??? instance.
+
+.. code-block:: ts
+
+    // Add capacity to it
+    cluster.addDefaultAutoScalingGroupCapacity({
+      instanceType: new ec2.InstanceType('t2.xlarge'),
+      instanceCount: 3  // default is 1
+    });
