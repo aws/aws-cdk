@@ -241,14 +241,46 @@ We've created about the simplest Fargate service,
 but it isn't very robust and might not be able to handle
 larger loads, so let's add an auto-scaling group.
 
-Add the following code just after you declare a cluster,
-but before you create the service.
+Add the following code just after you declare a cluster.
 This code creates a cluster that scales out to up to three **t2.xlarge** instances.
 
-.. code-block:: ts
+.. tabs::
 
-    // Add capacity to it
-    cluster.addDefaultAutoScalingGroupCapacity({
-      instanceType: new ec2.InstanceType('t2.xlarge'),
-      instanceCount: 3  // default is 1
-    });
+    .. group-tab:: TypeScript
+
+        Add the following import statements:
+
+        .. code-block:: typescript
+
+            .. code-block:: ts
+
+                // Add capacity to it
+                cluster.addDefaultAutoScalingGroupCapacity({
+                  instanceType: new ec2.InstanceType('t2.xlarge'),
+                  instanceCount: 3  // default is 1
+                });
+
+        Save it and make sure it builds and creates a stack.
+
+        .. code-block:: sh
+
+            npm run build
+            cdk synth
+
+        Another awesome |cdk| feature is being able to see what you've changed
+        in comparison to what you've already deployed:
+
+        .. code-block:: sh
+
+            cdk diff
+
+        You should see about a dozen resource changes, including the new auto-scaling resources,
+        such as a new **LifecycleHook**.
+
+        Deploy the stack.
+
+        .. code-block:: sh
+
+            cdk deploy
+
+That's how easy it is to create a Fargate service to run a Docker image with autoscaling.
