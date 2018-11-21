@@ -3,6 +3,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { cloudformation } from './autoscaling.generated';
+import { LazyDependable } from './util';
 
 /**
  * Basic properties for a lifecycle hook
@@ -94,6 +95,14 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
       notificationTargetArn: targetProps.notificationTargetArn,
       roleArn: this.role.roleArn,
     });
+
+    // A LifecycleHook resource is going to do a permissions test upon creation,
+    // so we have to make sure the role has full permissions before creating the
+    // lifecycle hook.
+    // The LazyDependable makes sure we take a dependency on anything that gets
+    // added to the dependencyElements array, even if it happens after this
+    // point.
+    resource.addDependency(new LazyDependable(this.role));
 
     this.lifecycleHookName = resource.lifecycleHookName;
   }
