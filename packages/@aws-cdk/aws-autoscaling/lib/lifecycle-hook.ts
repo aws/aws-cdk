@@ -102,7 +102,7 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
     // The LazyDependable makes sure we take a dependency on anything that gets
     // added to the dependencyElements array, even if it happens after this
     // point.
-    resource.addDependency(new LazyDependable(this.role.dependencyElements));
+    resource.addDependency(new LazyDependable(this.role));
 
     this.lifecycleHookName = resource.lifecycleHookName;
   }
