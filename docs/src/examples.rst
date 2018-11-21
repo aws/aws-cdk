@@ -81,8 +81,8 @@ gives you a leg up on using AWS services by providing the following benefits:
  
 .. _creating_ecs_l2_example_1:
 
-Step 1: Create the Directory and Initialze the |cdk|
-----------------------------------------------------
+Step 1: Create the Directory and Initialize the |cdk|
+-----------------------------------------------------
 
 Let's start with creating a new directory to hold our |cdk| code
 and create a new app in that directory.
@@ -160,8 +160,8 @@ Step 3: Create a Fargate Service
 
 There are two different ways of running your container tasks with |ECS|:
 
-- Using the **Fargate** launch type, where |ECS| manages your cluster resources
-- Using the **EC2** launch type, where you manage your cluster resources
+- Using the **Fargate** launch type, where |ECS| manages the physical machines that your containers are running on for you
+- Using the **EC2** launch type, where you do the managing, such as specifying autoscaling
 
 This example creates a Fargate service,
 which requires a VPC, a cluster, and a task definition.
@@ -226,53 +226,4 @@ which requires a VPC, a cluster, and a task definition.
         |CFN| displays information about the dozens of steps that
         it takes as it deploys your app.
 
-.. _creating_ecs_l2_example_4:
-
-Step 4: Adding to the Service
------------------------------
-
-Let's add auto-scaling to our cluster.
-
-Add the following code just after you declare a cluster.
-This code creates a cluster that scales out to up to three **t2.xlarge** instances.
-
-.. tabs::
-
-    .. group-tab:: TypeScript
-
-        Add the following import statements:
-
-        .. code-block:: typescript
-
-            .. code-block:: ts
-
-                // Add capacity to it
-                cluster.addDefaultAutoScalingGroupCapacity({
-                  instanceType: new ec2.InstanceType('t2.xlarge'),
-                  instanceCount: 3  // default is 1
-                });
-
-        Save it and make sure it builds and creates a stack.
-
-        .. code-block:: sh
-
-            npm run build
-            cdk synth
-
-        Another awesome |cdk| feature is being able to see what you've changed
-        in comparison to what you've already deployed:
-
-        .. code-block:: sh
-
-            cdk diff
-
-        You should see about a dozen resource changes, including the new auto-scaling resources,
-        such as a new **LifecycleHook**.
-
-        Deploy the stack.
-
-        .. code-block:: sh
-
-            cdk deploy
-
-That's how easy it is to create a Fargate service to run a Docker image with autoscaling.
+That's how easy it is to create a Fargate service to run a Docker image.
