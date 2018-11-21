@@ -1,3 +1,13 @@
+<a name="0.18.1"></a>
+## [0.18.1](https://github.com/awslabs/aws-cdk/compare/v0.18.0...v0.18.1) (2018-11-21)
+
+
+### Bug Fixes
+
+* **aws-autoscaling:** Add hook ordering dependency ([#1218](https://github.com/awslabs/aws-cdk/issues/1218)) ([7e6ad84](https://github.com/awslabs/aws-cdk/commit/7e6ad84)), closes [#1212](https://github.com/awslabs/aws-cdk/issues/1212)
+* **aws-elasticloadbalancingv2:** target group metrics ([#1226](https://github.com/awslabs/aws-cdk/issues/1226)) ([de488df](https://github.com/awslabs/aws-cdk/commit/de488df)), closes [#1213](https://github.com/awslabs/aws-cdk/issues/1213)
+
+
 ## [0.18.0](https://github.com/awslabs/aws-cdk/compare/v0.17.0...v0.18.0) (2018-11-19)
 
 ## Bug Fixes
