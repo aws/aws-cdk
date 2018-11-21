@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { InstanceProfile, Role, ServicePrincipal } from '../lib';
@@ -13,81 +13,16 @@ export = {
 
         new InstanceProfile(stack, 'TestEC2InstanceProfile', {
             instanceProfileName: "TestInstanceProfile",
-            roles: [ testEc2Role ],
+            role: testEc2Role,
             path: "/"
         });
-
-        expect(stack).toMatch({ Resources: {
-            TestEC2RoleBD27AEF4: {
-                Type: 'AWS::IAM::Role',
-                Properties: {
-                    AssumeRolePolicyDocument: {
-                        Statement: [{
-                            Action: 'sts:AssumeRole',
-                            Effect: 'Allow',
-                            Principal: {
-                                Service: 'ec2.amazonaws.com'
-                            }
-                        }],
-                        Version: '2012-10-17'
-                    }
-                }
-            },
-            TestEC2InstanceProfile8AF426F8: {
-                Type: 'AWS::IAM::InstanceProfile',
-                Properties: {
-                    Roles: [
-                       { Ref: "TestEC2RoleBD27AEF4" }
-                    ],
-                    InstanceProfileName: 'TestInstanceProfile',
-                    Path: '/'
-                }
-            }
-        }
-        });
-        test.done();
-    },
-
-    'test generated instance profile name'(test: Test) {
-        const stack = new Stack();
-
-        const testEc2Role = new Role(stack, 'TestEC2Role', {
-          assumedBy: new ServicePrincipal('ec2.amazonaws.com')
-        });
-
-        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
-            roles: [ testEc2Role ],
-            path: "/"
-        });
-
-        expect(stack).toMatch({ Resources: {
-            TestEC2RoleBD27AEF4: {
-                Type: 'AWS::IAM::Role',
-                Properties: {
-                    AssumeRolePolicyDocument: {
-                        Statement: [{
-                            Action: 'sts:AssumeRole',
-                            Effect: 'Allow',
-                            Principal: {
-                                Service: 'ec2.amazonaws.com'
-                            }
-                        }],
-                        Version: '2012-10-17'
-                    }
-                }
-            },
-            TestEC2InstanceProfile8AF426F8: {
-                Type: 'AWS::IAM::InstanceProfile',
-                Properties: {
-                    Roles: [
-                       { Ref: "TestEC2RoleBD27AEF4" }
-                    ],
-                    InstanceProfileName: "TestEC2InstanceProfile8AF426F8",
-                    Path: '/'
-                }
-            }
-        }
-        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ],
+            InstanceProfileName: 'TestInstanceProfile',
+            Path: '/'
+        }));
         test.done();
     },
 
@@ -100,36 +35,15 @@ export = {
 
         new InstanceProfile(stack, 'TestEC2InstanceProfile', {
             instanceProfileName: 'InstanceProfileWithoutPath',
-            roles: [ testEc2Role ]
+            role: testEc2Role
         });
 
-        expect(stack).toMatch({ Resources: {
-            TestEC2RoleBD27AEF4: {
-                Type: 'AWS::IAM::Role',
-                Properties: {
-                    AssumeRolePolicyDocument: {
-                        Statement: [{
-                            Action: 'sts:AssumeRole',
-                            Effect: 'Allow',
-                            Principal: {
-                                Service: 'ec2.amazonaws.com'
-                            }
-                        }],
-                        Version: '2012-10-17'
-                    }
-                }
-            },
-            TestEC2InstanceProfile8AF426F8: {
-                Type: 'AWS::IAM::InstanceProfile',
-                Properties: {
-                    Roles: [
-                       { Ref: "TestEC2RoleBD27AEF4" }
-                    ],
-                    InstanceProfileName: 'InstanceProfileWithoutPath'
-                }
-            }
-        }
-        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ],
+            InstanceProfileName: 'InstanceProfileWithoutPath'
+        }));
         test.done();
     },
 
@@ -141,54 +55,45 @@ export = {
         });
 
         new InstanceProfile(stack, 'TestEC2InstanceProfile', {
-            roles: [ testEc2Role ]
+            role: testEc2Role
         });
 
-        expect(stack).toMatch({ Resources: {
-            TestEC2RoleBD27AEF4: {
-                Type: 'AWS::IAM::Role',
-                Properties: {
-                    AssumeRolePolicyDocument: {
-                        Statement: [{
-                            Action: 'sts:AssumeRole',
-                            Effect: 'Allow',
-                            Principal: {
-                                Service: 'ec2.amazonaws.com'
-                            }
-                        }],
-                        Version: '2012-10-17'
-                    }
-                }
-            },
-            TestEC2InstanceProfile8AF426F8: {
-                Type: 'AWS::IAM::InstanceProfile',
-                Properties: {
-                    Roles: [
-                       { Ref: "TestEC2RoleBD27AEF4" }
-                    ],
-                    InstanceProfileName: "TestEC2InstanceProfile8AF426F8"
-                }
-            }
-        }
-        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ]
+        }));
         test.done();
     },
 
-    'test fails with multiple rolea'(test: Test) {
+    'test role other than ec2'(test: Test) {
         const stack = new Stack();
 
-        const testEc2Role = new Role(stack, 'TestEC2Role', {
-          assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+        const testEc2Role = new Role(stack, 'TestEC2SNSRole', {
+          assumedBy: new ServicePrincipal('sns.amazonaws.com')
         });
 
-        const testAnotherEc2Role = new Role(stack, 'TestAnotherEC2Role', {
-            assumedBy: new ServicePrincipal('ec2.amazonaws.com')
-          });
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            role: testEc2Role
+        });
 
-        test.throws(() =>
-            new InstanceProfile(stack, 'TestEC2InstanceProfile', { roles: [ testEc2Role, testAnotherEc2Role ] }),
-            'Currently, you can assign a maximum of one role to an instance profile.'
-        );
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2SNSRole3159CBC5" }
+            ]
+        }));
+        test.done();
+    },
+
+    'default ec2 role created'(test: Test) {
+        const stack = new Stack();
+
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {});
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2InstanceProfileEC2Role5106A065" }
+            ]
+        }));
         test.done();
     }
 };

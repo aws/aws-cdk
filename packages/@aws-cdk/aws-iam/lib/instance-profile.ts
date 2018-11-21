@@ -1,7 +1,7 @@
-import { Construct, Token } from '@aws-cdk/cdk';
+import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
+import { ServicePrincipal } from './policy-document';
 import { Role } from './role';
-import { generateInstanceProfileName, undefinedIfEmpty } from './util';
 
 export interface InstanceProfileProps {
 
@@ -14,8 +14,9 @@ export interface InstanceProfileProps {
   /**
    * The name of an existing IAM role to associate with this instance profile.
    * Currently, you can assign a maximum of one role to an instance profile.
+   * @default Creates a default ec2.amazonaws.com Assume Role.
    */
-  roles: Role[];
+  role?: Role;
 
   /**
    * The name of the instance profile that you want to create.
@@ -34,27 +35,25 @@ export interface InstanceProfileProps {
  */
 export class InstanceProfile extends Construct {
 
-    public readonly instanceProfileName: string;
-    public readonly roles: Role[];
+    public readonly roles = new Array<Role>();
+    public defaultRole = new Role(this, 'EC2Role', {
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+    });
 
-    constructor(parent: Construct, name: string, props: InstanceProfileProps) {
+    constructor(parent: Construct, name: string, props: InstanceProfileProps = {}) {
         super(parent, name);
-        this.validateMaxSessionDuration(props.roles);
-        const resource = new cloudformation.InstanceProfileResource(this, 'Resource', {
-            instanceProfileName: new Token(() => this.instanceProfileName),
-            path: props.path,
-            roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName))
+
+        if (props.role) {
+            this.defaultRole = props.role;
+        }
+        this.roles.push(this.defaultRole);
+
+        new cloudformation.InstanceProfileResource(this, 'Resource', {
+            instanceProfileName: props.instanceProfileName,
+            roles: this.roles.map(r => r.roleName),
+            path: props.path
         });
 
-        this.instanceProfileName = props.instanceProfileName || generateInstanceProfileName(resource.logicalId);
-        this.roles = props.roles;
-
-    }
-
-    private validateMaxSessionDuration(roles: Role[]) {
-        if (roles.length > 1) {
-            throw new Error('Currently, you can assign a maximum of one role to an instance profile.');
-        }
     }
 
 }
