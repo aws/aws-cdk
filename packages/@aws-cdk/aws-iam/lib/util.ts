@@ -21,6 +21,13 @@ export function generatePolicyName(logicalId: string) {
 }
 
 /**
+ * Used to generate a unique instance profile name based on the instance profile resource construct.
+ */
+export function generateInstanceProfileName(logicalId: string) {
+  return logicalId.substring(Math.max(logicalId.length - MAX_POLICY_NAME_LEN, 0), logicalId.length);
+}
+
+/**
  * Helper class that maintains the set of attached policies for a principal.
  */
 export class AttachedPolicies {

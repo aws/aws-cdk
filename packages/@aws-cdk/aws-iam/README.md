@@ -19,3 +19,23 @@ Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
    principal, the attachment will fail.
  * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
+
+
+### Instance Profile
+
+[AWS::IAM::InstanceProfile](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-instanceprofile.html)
+
+```ts
+import iam = require('@aws-cdk/aws-iam')
+
+const testRole = new iam.Role(stack, 'TestRole', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
+});
+
+const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+    instanceProfileName: "InstanceProfileName",
+    roles: [ testRole ],
+    path: "/"
+});
+
+```
