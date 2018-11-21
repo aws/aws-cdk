@@ -160,7 +160,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
    *
    * @example app/my-load-balancer/123456789
    */
-  public readonly firstLoadBalancerFullName: string;
+  public abstract readonly firstLoadBalancerFullName: string;
 
   /**
    * Health check for the members of this target group
@@ -240,11 +240,6 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
-
-    const firstLoadBalancerArn = new cdk.FnSelect(0, this.targetGroupLoadBalancerArns);
-    // arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-internal-load-balancer/50dc6c495c0c9188
-    const arnParts = new cdk.FnSplit('/', firstLoadBalancerArn);
-    this.firstLoadBalancerFullName = `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
   }
 
   /**
@@ -364,4 +359,20 @@ export interface LoadBalancerTargetProps {
    * May be omitted if the target is going to register itself later.
    */
   targetJson?: any;
+}
+
+/**
+ * Extract the full load balancer name (used for metrics) from the listener ARN:
+ *
+ * Turns
+ *
+ *     arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
+ *
+ * Into
+ *
+ *     app/my-load-balancer/50dc6c495c0c9188
+ */
+export function loadBalancerNameFromListenerArn(listenerArn: string) {
+    const arnParts = new cdk.FnSplit('/', listenerArn);
+    return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
 }
