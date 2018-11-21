@@ -12,7 +12,7 @@ Please check all boxes (including N/A items)
 tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh)
 manually executed (paste output to the PR description)
 - [ ] __Init template change?:__ coordinated update of integration tests
-(currently maintained a private repo).
+(currently maintained in a private repo).
 
 #### Documentation
 
@@ -27,9 +27,9 @@ manually executed (paste output to the PR description)
  * `chore(module): <title> ` won't appear in changelog
  * `build(module): <title>` won't appear in changelog
 - [ ] __Title format__: Title uses lower case and doesn't end with a period
-- [ ] __Breaking change?__: Description ends with: `BREAKING CHANGE: <one
-line which describes exactly what changed and how to achieve similar
-behavior after the change>`
+- [ ] __Breaking change?__: Last paragraph of description is: `BREAKING
+  CHANGE: <describe exactly what changed and how to achieve similar behavior +
+  link to documentation/gist/issue if more details are required>`
 - [ ] __References__: Indicate issues fixed via: `Fixes #xxx` or `Closes #xxx`
 
 ----
