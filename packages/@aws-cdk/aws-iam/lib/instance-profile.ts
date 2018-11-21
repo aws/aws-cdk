@@ -27,6 +27,11 @@ export interface InstanceProfileProps {
 
 }
 
+/**
+ * IAM Instance Profile
+ *
+ * Defines an IAM Instance Profile that can be used with IAM roles for EC2 instances.
+ */
 export class InstanceProfile extends Construct {
 
     public readonly instanceProfileName: string;
