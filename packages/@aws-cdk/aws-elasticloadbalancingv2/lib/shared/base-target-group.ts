@@ -361,8 +361,18 @@ export interface LoadBalancerTargetProps {
   targetJson?: any;
 }
 
+/**
+ * Extract the full load balancer name (used for metrics) from the listener ARN:
+ *
+ * Turns
+ *
+ *     arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
+ *
+ * Into
+ *
+ *     app/my-load-balancer/50dc6c495c0c9188
+ */
 export function loadBalancerNameFromListenerArn(listenerArn: string) {
-    // arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
     const arnParts = new cdk.FnSplit('/', listenerArn);
     return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
 }
