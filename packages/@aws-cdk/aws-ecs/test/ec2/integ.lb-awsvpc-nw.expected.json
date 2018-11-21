@@ -686,7 +686,11 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B",
+        "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy75002F88"
+      ]
     },
     "TaskDefTaskRole1EDB4A67": {
       "Type": "AWS::IAM::Role",
