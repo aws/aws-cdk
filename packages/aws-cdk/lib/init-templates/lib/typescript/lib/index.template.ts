@@ -13,7 +13,7 @@ export interface %name.PascalCased%Props {
 
 export class %name.PascalCased% extends cdk.Construct {
   /** @returns the ARN of the SQS queue */
-  public readonly queueArn: string;
+  public readonly queueArn: sqs.QueueArn;
 
   constructor(parent: cdk.Construct, name: string, props: %name.PascalCased%Props = {}) {
     super(parent, name);
