@@ -94,10 +94,7 @@ export = {
       const arnParts = {
         "Fn::Split": [
           "/",
-          { "Fn::Select": [
-            0,
-            { "Fn::GetAtt": [ "ALBListenerTargetsGroup01D7716A", "LoadBalancerArns" ] }
-          ]}
+          { Ref: "ALBListener3B99FF85" }
         ]};
 
       expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {

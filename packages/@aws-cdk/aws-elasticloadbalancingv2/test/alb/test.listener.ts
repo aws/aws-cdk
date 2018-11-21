@@ -389,7 +389,12 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.VpcNetwork(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
     const group = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+    lb.addListener('SomeListener', {
+      port: 80,
+      defaultTargetGroups: [group]
+    });
 
     // WHEN
     const metrics = [];
@@ -404,16 +409,17 @@ export = {
 
     for (const metric of metrics) {
       test.equal('AWS/ApplicationELB', metric.namespace);
-      const firstArn = { "Fn::Select": [0, { "Fn::GetAtt": ["TargetGroup3D7CD9B8", "LoadBalancerArns"] }] };
+      const loadBalancerArn = { Ref: "LBSomeListenerCA01F1A0" };
+
       test.deepEqual(cdk.resolve(metric.dimensions), {
          TargetGroup: { 'Fn::GetAtt': [ 'TargetGroup3D7CD9B8', 'TargetGroupFullName' ] },
          LoadBalancer: { 'Fn::Join':
             [ '',
-              [ { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', firstArn ] } ] },
+              [ { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
                 '/',
-                { 'Fn::Select': [ 2, { 'Fn::Split': [ '/', firstArn ] } ] },
+                { 'Fn::Select': [ 2, { 'Fn::Split': [ '/', loadBalancerArn ] } ] },
                 '/',
-                { 'Fn::Select': [ 3, { 'Fn::Split': [ '/', firstArn ] } ] }
+                { 'Fn::Select': [ 3, { 'Fn::Split': [ '/', loadBalancerArn ] } ] }
               ]
             ]
          }

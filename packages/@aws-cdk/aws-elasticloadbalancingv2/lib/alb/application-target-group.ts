@@ -1,7 +1,8 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
+import { BaseTargetGroup, BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn,
+         LoadBalancerTargetProps, TargetGroupRefProps } from '../shared/base-target-group';
 import { ApplicationProtocol } from '../shared/enums';
 import { BaseImportedTargetGroup } from '../shared/imported';
 import { determineProtocolAndPort, LazyDependable } from '../shared/util';
@@ -147,6 +148,16 @@ export class ApplicationTargetGroup extends BaseTargetGroup {
     }
     this.listeners.push(listener);
     this.loadBalancerAssociationDependencies.push(dependable || listener);
+  }
+
+  /**
+   * Full name of first load balancer
+   */
+  public get firstLoadBalancerFullName(): string {
+    if (this.listeners.length === 0) {
+      throw new Error('The TargetGroup needs to be attached to a LoadBalancer before you can call this method');
+    }
+    return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
 
   /**
