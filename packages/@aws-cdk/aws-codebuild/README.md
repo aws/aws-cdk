@@ -75,7 +75,7 @@ on `XxxBuildImage`:
 
 The following example shows how to define an image from a Docker asset:
 
-[Docker asset example](./test/integ.docker.asset.lit.ts)
+[Docker asset example](./test/integ.docker-asset.lit.ts)
 
 The following example shows how to define an image from an ECR repository:
 
