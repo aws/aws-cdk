@@ -495,6 +495,66 @@
           "Ref": "MyVpcIGW5C4A4F63"
         }
       }
+    },
+    "SGADB53937": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-cdk-ec2-vpc/SG",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ICMP PING",
+            "FromPort": 8,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ICMP Type 128",
+            "FromPort": 128,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ALL ICMP",
+            "FromPort": -1,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP ALL PORTS",
+            "FromPort": 0,
+            "IpProtocol": "udp",
+            "ToPort": 65535
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP 123",
+            "FromPort": 123,
+            "IpProtocol": "udp",
+            "ToPort": 123
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP 800-801",
+            "FromPort": 800,
+            "IpProtocol": "udp",
+            "ToPort": 801
+          }
+        ],
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
+        }
+      }
     }
   }
 }
