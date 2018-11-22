@@ -7,11 +7,12 @@ export interface UsagePlanKeyProps {
   /**
    * Represents the clients to apply a Usage Plan
    */
-  apiKey: ApiKey,
+  apiKey: ApiKey;
+
   /**
    * Usage Plan to be associated.
    */
-  usagePlan: UsagePlan
+  usagePlan: UsagePlan;
 }
 
 /**

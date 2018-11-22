@@ -6,19 +6,18 @@ import { Stage } from './stage';
 
 /**
  * Container for defining throttling parameters to API stages or methods.
- * See link for more API Gateway's Request Throttling.
- *
  * @link https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-request-throttling.html
  */
 export interface ThrottleSettings {
   /**
-   * Represents the steady-state rate for the API stage or method.
+   * The API request steady-state rate limit (average requests per second over an extended period of time)
    */
-  rateLimit?: number
+  rateLimit?: number;
+
   /**
-   * Represents the burst size (i.e. maximum bucket size) for the API stage or method.
+   * The maximum API request rate limit over a time ranging from one to a few seconds.
    */
-  burstLimit?: number,
+  burstLimit?: number;
 }
 
 /**
@@ -35,17 +34,19 @@ export enum Period {
  */
 export interface QuotaSettings {
   /**
-   * Maximum number of requests that can be made in a given time period.
+   * The maximum number of requests that users can make within the specified time period.
    */
-  limit?: number,
+  limit?: number;
+
   /**
-   * Number of requests to reduce from the limit for the first time period.
+   * For the initial time period, the number of requests to subtract from the specified limit.
    */
-  offset?: number,
+  offset?: number;
+
   /**
-   * Time period to which the maximum limit applies. Valid values are DAY, WEEK or MONTH.
+   * The time period for which the maximum limit of requests applies.
    */
-  period?: Period
+  period?: Period;
 }
 
 /**
@@ -70,18 +71,22 @@ export interface UsagePlanProps {
    * API Stages to be associated which the usage plan.
    */
   apiStages?: UsagePlanPerApiStage[],
+
   /**
    * Represents usage plan purpose.
    */
   description?: string,
+
   /**
    * Number of requests clients can make in a given time period.
    */
   quota?: QuotaSettings
+
   /**
    * Overall throttle settings for the API.
    */
   throttle?: ThrottleSettings,
+
   /**
    * Name for this usage plan.
    */
@@ -90,13 +95,14 @@ export interface UsagePlanProps {
 
 export class UsagePlan extends cdk.Construct {
   public readonly usagePlanId: string;
+
   constructor(parent: cdk.Construct, name: string, props?: UsagePlanProps) {
     super(parent, name);
     let resource: cloudformation.UsagePlanResource;
     if (props !== undefined) {
-      const overallThrottle: cloudformation.UsagePlanResource.ThrottleSettingsProperty = this.renderThrottle(props.throttle);
-      const quota: cloudformation.UsagePlanResource.QuotaSettingsProperty | undefined = this.renderQuota(props);
-      const apiStages: cloudformation.UsagePlanResource.ApiStageProperty[] | undefined = this.renderApiStages(props);
+      const overallThrottle = this.renderThrottle(props.throttle);
+      const quota = this.renderQuota(props);
+      const apiStages = this.renderApiStages(props);
 
       resource = new cloudformation.UsagePlanResource(this, 'Resource', {
         apiStages,
