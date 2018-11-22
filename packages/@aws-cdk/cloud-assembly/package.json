@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/cloud-assembly",
   "description": "Reference implementation for the Cloud Assembly specification",
-  "version": "0.17.0",
+  "version": "0.18.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -47,8 +47,8 @@
     "jsonschema": "^1.2.4"
   },
   "devDependencies": {
-    "cdk-build-tools": "^0.17.0",
-    "pkglint": "^0.17.0",
+    "cdk-build-tools": "^0.18.1",
+    "pkglint": "^0.18.1",
     "typescript-json-schema": "^0.33.0"
   },
   "bundleDependencies": [
