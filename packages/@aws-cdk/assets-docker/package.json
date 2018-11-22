@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/assets-docker",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Docker image assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
