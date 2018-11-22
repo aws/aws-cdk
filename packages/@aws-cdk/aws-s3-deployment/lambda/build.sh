@@ -28,7 +28,7 @@ cd ${staging}
 # Must use --prefix to because --target cannot be used on
 # platforms that have a default --prefix set.
 pip3 install --ignore-installed --prefix ${piptemp} -r ${staging}/requirements.txt
-mv ${piptemp}/lib/python*/site-packages/* .
+mv ${piptemp}/lib/python*/*-packages/* .
 
 # create archive
 zip -qr ${bundle_out} .
