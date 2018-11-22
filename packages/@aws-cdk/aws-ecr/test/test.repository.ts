@@ -140,7 +140,7 @@ export = {
       '.dkr.ecr.',
       { 'Fn::Select': [ 3, arnSplit ] },
       '.amazonaws.com/',
-      { 'Fn::Select': [ 1, { 'Fn::Split': [ '/', { 'Fn::Select': [ 5, arnSplit ] } ] } ] }
+      { Ref: 'Repo02AC86CF' }
     ]]});
 
     test.done();
@@ -154,13 +154,88 @@ export = {
     const stack2 = new cdk.Stack();
 
     // WHEN
-    const repo2 = ecr.RepositoryRef.import(stack2, 'Repo', repo1.export());
+    const repo2 = ecr.Repository.import(stack2, 'Repo', repo1.export());
 
     // THEN
     test.deepEqual(cdk.resolve(repo2.repositoryArn), {
       'Fn::ImportValue': 'RepoRepositoryArn7F2901C9'
     });
 
+    test.deepEqual(cdk.resolve(repo2.repositoryName), {
+      'Fn::ImportValue': 'RepoRepositoryName58A7E467'
+    });
+
+    test.done();
+  },
+
+  'import with concrete arn'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo2 = ecr.Repository.import(stack, 'Repo', {
+      repositoryArn: 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo'
+    });
+
+    // THEN
+    test.deepEqual(cdk.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+    test.deepEqual(cdk.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+
+    test.done();
+  },
+
+  'fails if importing with token arn and no name'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN
+    test.throws(() => ecr.Repository.import(stack, 'Repo', {
+      repositoryArn: new cdk.FnGetAtt('Boom', 'Boom').toString()
+    }), /repositoryArn is a late-bound value, and therefore repositoryName is required/);
+
+    test.done();
+  },
+
+  'import with token arn and repository name (see awslabs/aws-cdk#1232)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo = ecr.Repository.import(stack, 'Repo', {
+      repositoryArn: new cdk.FnGetAtt('Boom', 'Arn').toString(),
+      repositoryName: new cdk.FnGetAtt('Boom', 'Name').toString()
+    });
+
+    // THEN
+    test.deepEqual(cdk.resolve(repo.repositoryArn), { 'Fn::GetAtt': [ 'Boom', 'Arn' ] });
+    test.deepEqual(cdk.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.done();
+  },
+
+  'arnForLocalRepository can be used to render an ARN for a local repository'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repoName = new cdk.FnGetAtt('Boom', 'Name').toString();
+
+    // WHEN
+    const repo = ecr.Repository.import(stack, 'Repo', {
+      repositoryArn: ecr.Repository.arnForLocalRepository(repoName),
+      repositoryName: repoName
+    });
+
+    // THEN
+    test.deepEqual(cdk.resolve(repo.repositoryName), { 'Fn::GetAtt': [ 'Boom', 'Name' ] });
+    test.deepEqual(cdk.resolve(repo.repositoryArn), {
+    'Fn::Join': [ '', [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':ecr:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+      ':repository/',
+      { 'Fn::GetAtt': [ 'Boom', 'Name' ] } ] ]
+    });
     test.done();
   },
 

@@ -1,6 +1,8 @@
 import assets = require('@aws-cdk/assets');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
@@ -801,6 +803,13 @@ export interface IBuildImage {
  * If you need to use with an image that isn't in the named constants,
  * you can always instantiate it directly.
  *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - LinuxBuildImage.fromDockerHub(image)
+ * - LinuxBuildImage.fromEcrRepository(repo[, tag])
+ * - LinuxBuildImage.fromAsset(parent, id, props)
+ *
+ *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxBuildImage implements IBuildImage {
@@ -828,10 +837,48 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.0');
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.1');
 
+  /**
+   * @returns a Linux build image from a Docker Hub image.
+   */
+  public static fromDockerHub(name: string): LinuxBuildImage {
+    return new LinuxBuildImage(name);
+  }
+
+  /**
+   * @returns A Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
+    const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
+    repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    return image;
+  }
+
+  /**
+   * Uses an Docker image asset as a Linux build image.
+   */
+  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+    const asset = new DockerImageAsset(parent, id, props);
+    const image = new LinuxBuildImage(asset.imageUri);
+
+    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
+    // we can't use `asset.grantUseImage()`.
+    asset.repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+
+    return image;
+  }
+
   public readonly type = 'LINUX_CONTAINER';
   public readonly defaultComputeType = ComputeType.Small;
 
-  public constructor(public readonly imageId: string) {
+  private constructor(public readonly imageId: string) {
   }
 
   public validate(_: BuildEnvironment): string[] {
@@ -869,19 +916,63 @@ export class LinuxBuildImage implements IBuildImage {
 
 /**
  * A CodeBuild image running Windows.
+ *
  * This class has a bunch of public constants that represent the most popular images.
  * If you need to use with an image that isn't in the named constants,
  * you can always instantiate it directly.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - WindowsBuildImage.fromDockerHub(image)
+ * - WindowsBuildImage.fromEcrRepository(repo[, tag])
+ * - WindowsBuildImage.fromAsset(parent, id, props)
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
   public static readonly WIN_SERVER_CORE_2016_BASE = new WindowsBuildImage('aws/codebuild/windows-base:1.0');
 
+  /**
+   * @returns a Windows build image from a Docker Hub image.
+   */
+  public static fromDockerHub(name: string): WindowsBuildImage {
+    return new WindowsBuildImage(name);
+  }
+
+  /**
+   * @returns A Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
+    const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
+    repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    return image;
+  }
+
+  /**
+   * Uses an Docker image asset as a Windows build image.
+   */
+  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+    const asset = new DockerImageAsset(parent, id, props);
+    const image = new WindowsBuildImage(asset.imageUri);
+
+    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
+    // we can't use `asset.grantUseImage()`.
+    asset.repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+
+    return image;
+  }
   public readonly type = 'WINDOWS_CONTAINER';
   public readonly defaultComputeType = ComputeType.Medium;
 
-  public constructor(public readonly imageId: string) {
+  private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
@@ -969,4 +1060,13 @@ function extendBuildSpec(buildSpec: any, extend: any) {
     if (!(phase.commands)) { phase.commands = []; }
     phase.commands.push(...extend.phases[phaseName].commands);
   }
+}
+
+function resourcePolicyStatementForRepository() {
+  return new iam.PolicyStatement()
+    .describe('CodeBuild')
+    .addServicePrincipal('codebuild.amazonaws.com')
+    .addAction('ecr:GetDownloadUrlForLayer')
+    .addAction('ecr:BatchGetImage')
+    .addAction('ecr:BatchCheckLayerAvailability');
 }

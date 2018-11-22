@@ -13,8 +13,8 @@ exports.handler = async function(event, context, _callback, respond) {
       Principal: "*"
     };
 
-    function repoName(props) {
-      return props.RepositoryArn.split('/').slice(1).join('/');
+    function repoName(arn) {
+      return arn.split('/').slice(1).join('/');
     }
 
     // The repository must already exist
@@ -30,7 +30,7 @@ exports.handler = async function(event, context, _callback, respond) {
       }
     }
 
-    const repo = repoName(event.ResourceProperties);
+    const repo = repoName(event.ResourceProperties.RepositoryArn);
     const adopter = await getAdopter(repo);
     if (event.RequestType === 'Delete') {
       if (adopter.Sid !== markerStatement.Sid) {
@@ -51,16 +51,33 @@ exports.handler = async function(event, context, _callback, respond) {
         throw new Error(`This repository is already owned by another stack: ${adopter.Sid}`);
       }
       console.log('Adopting', repo);
-      await ecr.setRepositoryPolicy({ repositoryName: repo, policyText: JSON.stringify({
+
+      const policy = event.ResourceProperties.PolicyDocument || {
         Version: '2008-10-17',
-        Statement: [markerStatement]
-      }) }).promise();
+        Statement: [ ]
+      };
+
+      if (!policy.Version) {
+        policy.Version = '2008-10-17';
+      }
+
+      if (!policy.Statement) {
+        policy.Statement = [ ];
+      }
+
+      if (!Array.isArray(policy.Statement)) {
+        policy.Statement = [ policy.Statement ];
+      }
+
+      policy.Statement.push(markerStatement);
+
+      console.log('policy document:', JSON.stringify(policy, undefined, 2));
+
+      await ecr.setRepositoryPolicy({ repositoryName: repo, policyText: JSON.stringify(policy) }).promise();
     }
 
     const arn = event.ResourceProperties.RepositoryArn.split(':');
-    await respond("SUCCESS", "OK", repo, {
-      RepositoryUri: `${arn[4]}.dkr.ecr.${arn[3]}.amazonaws.com/${repoName(event.ResourceProperties)}`
-    });
+    await respond("SUCCESS", "OK", repo, {});
   } catch (e) {
     console.log(e);
     await respond("FAILED", e.message, context.logStreamName, {});

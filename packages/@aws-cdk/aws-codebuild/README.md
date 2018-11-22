@@ -1,6 +1,85 @@
 ## AWS CodeBuild Construct Library
 
-Define a project. This will also create an IAM Role and IAM Policy for CodeBuild to use.
+AWS CodeBuild is a fully managed continuous integration service that compiles
+source code, runs tests, and produces software packages that are ready to
+deploy. With CodeBuild, you don’t need to provision, manage, and scale your own
+build servers. CodeBuild scales continuously and processes multiple builds
+concurrently, so your builds are not left waiting in a queue. You can get
+started quickly by using prepackaged build environments, or you can create
+custom build environments that use your own build tools. With CodeBuild, you are
+charged by the minute for the compute resources you use.
+
+### Installation
+
+Install the module:
+
+```console
+$ npm i @aws-cdk/aws-codebuild
+```
+
+Import it into your code:
+
+```ts
+import codebuild = require('@aws-cdk/aws-codebuild');
+```
+
+The `codebuild.Project` construct represents a build project resource. See the
+reference documentation for a comprehensive list of initialization properties,
+methods and attributes.
+
+### Source
+
+Build projects are usually associated with a _source_, which is specified via
+the `source` property which accepts a class that extends the `BuildSource`
+abstract base class. The supported sources are:
+
+* `NoSource` (default, requires `buildSpec`)
+* `CodeCommitSource`
+* `S3BucketSource`
+* `CodePipelineSource`
+* `GitHubSource`
+* `GitHubEnterpriseSource`
+* `BitBucketSource`
+
+Here's an AWS CodeBuild project with no source which simply prints `Hello,
+CodeBuild!`:
+
+[Minimal Example](./test/integ.defaults.lit.ts)
+
+### Environment
+
+By default, projects will use a small instance with an Ubuntu 14.04 image. You can
+use the `environment` property to customize the build environment:
+
+* `buildImage` defines the Docker image used. See [Images](#images) below for details
+  on how to define build images.
+* `computeType` defines the instance type used for the build.
+* `privileged` can be set to `true` to allow privileged access.
+* `environmentVariables` can be set at this level (and also at the project level).
+
+### Images
+
+The AWS CodeBuild library supports both Linux and Windows images via the `LinuxBuildImage`
+and `WindowsBuildImage` classes, respectively.
+
+You can either specify one of the predefined Windows/Linux images by using
+one of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2016_BASE` or
+`LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1`.
+
+Alternatively, you can specify a custom image using one of the static methods
+on `XxxBuildImage`:
+
+* Use `.fromDockerHub(image)` to reference an image publicly available in Docker Hub.
+* Use `.fromEcrRepository(repo[, tag])` to reference an image available in an ECR repository.
+* Use `.fromAsset(this, id, { directory: dir })` to use an image created from a local asset.
+
+The following example shows how to define an image from a Docker asset:
+
+[Docker asset example](./test/integ.docker.asset.lit.ts)
+
+The following example shows how to define an image from an ECR repository:
+
+[ECR example](./test/integ.ecr.lit.ts)
 
 ### Using CodeBuild with other AWS services
 

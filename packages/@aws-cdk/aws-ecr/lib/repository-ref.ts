@@ -2,14 +2,98 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 
 /**
- * An ECR repository
+ * Represents an ECR repository.
  */
-export abstract class RepositoryRef extends cdk.Construct {
+export interface IRepository {
+    /**
+     * The name of the repository
+     */
+    readonly repositoryName: string;
+
+    /**
+     * The ARN of the repository
+     */
+    readonly repositoryArn: string;
+
+    /**
+     * The URI of this repository (represents the latest image):
+     *
+     *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
+     *
+     */
+    readonly repositoryUri: string;
+
+    /**
+     * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+     *
+     *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+     *
+     * @param tag Image tag to use (tools usually default to "latest" if omitted)
+     */
+    repositoryUriForTag(tag?: string): string;
+
+    /**
+     * Add a policy statement to the repository's resource policy
+     */
+    addToResourcePolicy(statement: iam.PolicyStatement): void;
+
+    /**
+     * Grant the given principal identity permissions to perform the actions on this repository
+     */
+    grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+
+    /**
+     * Grant the given identity permissions to pull images in this repository.
+     */
+    grantPull(identity?: iam.IPrincipal): void;
+
+    /**
+     * Grant the given identity permissions to pull and push images to this repository.
+     */
+    grantPullPush(identity?: iam.IPrincipal): void;
+}
+
+export interface ImportRepositoryProps {
+  /**
+   * The ARN of the repository to import.
+   *
+   * If you only have a repository name and the repository is in the same account/region
+   * as the current stack, you can use the static method `Repository.arnForLocalRepository(name)`
+   * to format an ARN from a name.
+   */
+  repositoryArn: string;
+
+  /**
+   * The full name of the repository to import.
+   *
+   * This is only needed if the repository ARN is not a concrete string, in which
+   * case it is impossible to safely parse the ARN and extract full repository
+   * names from it if it includes multiple components (e.g. `foo/bar/myrepo`).
+   */
+  repositoryName?: string;
+}
+
+/**
+ * Base class for ECR repository. Reused between imported repositories and owned repositories.
+ */
+export abstract class RepositoryBase extends cdk.Construct implements IRepository {
   /**
    * Import a repository
    */
-  public static import(parent: cdk.Construct, id: string, props: RepositoryRefProps): RepositoryRef {
+  public static import(parent: cdk.Construct, id: string, props: ImportRepositoryProps): IRepository {
     return new ImportedRepository(parent, id, props);
+  }
+
+  /**
+   * Returns an ECR ARN for a repository that resides in the same account/region
+   * as the current stack.
+   */
+  public static arnForLocalRepository(repositoryName: string): string {
+    return cdk.ArnUtils.fromComponents({
+      service: 'ecr',
+      resource: 'repository',
+      resourceName: repositoryName
+    });
   }
 
   /**
@@ -28,21 +112,36 @@ export abstract class RepositoryRef extends cdk.Construct {
   public abstract addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
-   * Export this repository from the stack
+   * The URI of this repository (represents the latest image):
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
+   *
    */
-  public export(): RepositoryRefProps {
-    return {
-      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
-    };
+  public get repositoryUri() {
+    return this.repositoryUriForTag();
   }
 
   /**
-   * The URI of the repository, for use in Docker/image references
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *
+   * @param tag Optional image tag
    */
-  public get repositoryUri(): string {
-    // Calculate this from the ARN
+  public repositoryUriForTag(tag?: string): string {
+    const tagSuffix = tag ? `:${tag}` : '';
     const parts = cdk.ArnUtils.parse(this.repositoryArn);
-    return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${parts.resourceName}`;
+    return `${parts.account}.dkr.ecr.${parts.region}.amazonaws.com/${this.repositoryName}${tagSuffix}`;
+  }
+
+  /**
+   * Export this repository from the stack
+   */
+  public export(): ImportRepositoryProps {
+    return {
+      repositoryArn: new cdk.Output(this, 'RepositoryArn', { value: this.repositoryArn }).makeImportValue().toString(),
+      repositoryName: new cdk.Output(this, 'RepositoryName', { value: this.repositoryName }).makeImportValue().toString()
+    };
   }
 
   /**
@@ -60,7 +159,7 @@ export abstract class RepositoryRef extends cdk.Construct {
   /**
    * Grant the given identity permissions to use the images in this repository
    */
-  public grantUseImage(identity?: iam.IPrincipal) {
+  public grantPull(identity?: iam.IPrincipal) {
     this.grant(identity, "ecr:BatchCheckLayerAvailability", "ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage");
 
     if (identity) {
@@ -69,23 +168,43 @@ export abstract class RepositoryRef extends cdk.Construct {
         .addAllResources());
     }
   }
-}
 
-export interface RepositoryRefProps {
-  repositoryArn: string;
+  /**
+   * Grant the given identity permissions to pull and push images to this repository.
+   */
+  public grantPullPush(identity?: iam.IPrincipal) {
+      this.grantPull(identity);
+      this.grant(identity,
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload");
+  }
 }
 
 /**
  * An already existing repository
  */
-class ImportedRepository extends RepositoryRef {
+class ImportedRepository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
 
-  constructor(parent: cdk.Construct, id: string, props: RepositoryRefProps) {
+  constructor(parent: cdk.Construct, id: string, props: ImportRepositoryProps) {
     super(parent, id);
     this.repositoryArn = props.repositoryArn;
-    this.repositoryName = cdk.ArnUtils.parse(props.repositoryArn).resourceName!;
+
+    // if repositoryArn is a token, the repository name is also required. this is because
+    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+    // parse the name from an ARN using CloudFormation's split/select.
+    if (cdk.unresolved(props.repositoryArn)) {
+        if (!props.repositoryName) {
+          throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
+        }
+
+        this.repositoryName = props.repositoryName;
+    } else {
+      this.repositoryName = props.repositoryArn.split('/').slice(1).join('/');
+    }
   }
 
   public addToResourcePolicy(_statement: iam.PolicyStatement) {

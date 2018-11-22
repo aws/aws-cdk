@@ -35,7 +35,7 @@ export class ContainerImage {
   /**
    * Reference an image in an ECR repository
    */
-  public static fromEcrRepository(repository: ecr.RepositoryRef, tag: string = 'latest') {
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
     return new EcrImage(repository, tag);
   }
 
