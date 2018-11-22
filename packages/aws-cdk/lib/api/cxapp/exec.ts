@@ -4,9 +4,9 @@ import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import semver = require('semver');
-import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../lib/settings';
-import { SDK } from './api';
-import { debug } from './logging';
+import { debug } from '../../logging';
+import { DEFAULTS, PER_USER_DEFAULTS, Settings } from '../../settings';
+import { SDK } from '../util/sdk';
 
 /** Invokes the cloud executable and returns JSON output */
 export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.SynthesizeResponse> {
@@ -14,6 +14,17 @@ export async function execProgram(aws: SDK, config: Settings): Promise<cxapi.Syn
 
   const context = config.get(['context']);
   await populateDefaultEnvironmentIfNeeded(aws, context);
+
+  let pathMetadata: boolean = config.get(['pathMetadata']);
+  if (pathMetadata === undefined) {
+      pathMetadata = true; // default to true
+  }
+
+  if (pathMetadata) {
+    context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
+  }
+
+  debug('context:', context);
 
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 

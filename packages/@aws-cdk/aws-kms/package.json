@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kms",
-  "version": "0.17.0",
+  "version": "0.18.1",
   "description": "CDK Constructs for AWS KMS",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,19 +52,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.17.0",
-    "cdk-build-tools": "^0.17.0",
-    "cdk-integ-tools": "^0.17.0",
-    "cfn2ts": "^0.17.0",
-    "pkglint": "^0.17.0"
+    "@aws-cdk/assert": "^0.18.1",
+    "cdk-build-tools": "^0.18.1",
+    "cdk-integ-tools": "^0.18.1",
+    "cfn2ts": "^0.18.1",
+    "pkglint": "^0.18.1"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.17.0",
-    "@aws-cdk/cdk": "^0.17.0"
+    "@aws-cdk/aws-iam": "^0.18.1",
+    "@aws-cdk/cdk": "^0.18.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.17.0",
-    "@aws-cdk/cdk": "^0.17.0"
+    "@aws-cdk/aws-iam": "^0.18.1",
+    "@aws-cdk/cdk": "^0.18.1"
   }
 }

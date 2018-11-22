@@ -1,6 +1,6 @@
+import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { findAlarmThresholds, normalizeIntervals } from './interval-utils';
 import { ScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
@@ -81,7 +81,7 @@ export class StepScalingPolicy extends cdk.Construct {
     const intervals = normalizeIntervals(props.scalingSteps, changesAreAbsolute);
     const alarms = findAlarmThresholds(intervals);
 
-    if (alarms.lowerAlarmIntervalIndex) {
+    if (alarms.lowerAlarmIntervalIndex !== undefined) {
       const threshold = intervals[alarms.lowerAlarmIntervalIndex].upper;
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
@@ -104,14 +104,14 @@ export class StepScalingPolicy extends cdk.Construct {
         // Recommended by AutoScaling
         metric: props.metric.with({ periodSec: 60 }),
         alarmDescription: 'Lower threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.LessThanThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.LessThanOrEqualToThreshold,
         evaluationPeriods: 1,
         threshold,
       });
       this.lowerAlarm.onAlarm(this.lowerAction);
     }
 
-    if (alarms.upperAlarmIntervalIndex) {
+    if (alarms.upperAlarmIntervalIndex !== undefined) {
       const threshold = intervals[alarms.upperAlarmIntervalIndex].lower;
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
@@ -134,7 +134,7 @@ export class StepScalingPolicy extends cdk.Construct {
         // Recommended by AutoScaling
         metric: props.metric.with({ periodSec: 60 }),
         alarmDescription: 'Upper threshold scaling alarm',
-        comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanThreshold,
+        comparisonOperator: cloudwatch.ComparisonOperator.GreaterThanOrEqualToThreshold,
         evaluationPeriods: 1,
         threshold,
       });
@@ -143,9 +143,40 @@ export class StepScalingPolicy extends cdk.Construct {
   }
 }
 
+/**
+ * A range of metric values in which to apply a certain scaling operation
+ */
 export interface ScalingInterval {
+  /**
+   * The lower bound of the interval.
+   *
+   * The scaling adjustment will be applied if the metric is higher than this value.
+   *
+   * @default Threshold automatically derived from neighbouring intervals
+   */
   lower?: number;
+
+  /**
+   * The upper bound of the interval.
+   *
+   * The scaling adjustment will be applied if the metric is lower than this value.
+   *
+   * @default Threshold automatically derived from neighbouring intervals
+   */
   upper?: number;
+
+  /**
+   * The capacity adjustment to apply in this interval
+   *
+   * The number is interpreted differently based on AdjustmentType:
+   *
+   * - ChangeInCapacity: add the adjustment to the current capacity.
+   *  The number can be positive or negative.
+   * - PercentChangeInCapacity: add or remove the given percentage of the current
+   *   capacity to itself. The number can be in the range [-100..100].
+   * - ExactCapacity: set the capacity to this number. The number must
+   *   be positive.
+   */
   change: number;
 }
 

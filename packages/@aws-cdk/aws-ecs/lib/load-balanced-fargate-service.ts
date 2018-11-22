@@ -6,6 +6,7 @@ import { ICluster } from './cluster';
 import { IContainerImage } from './container-image';
 import { FargateService } from './fargate/fargate-service';
 import { FargateTaskDefinition } from './fargate/fargate-task-definition';
+import { AwsLogDriver } from './log-drivers/aws-log-driver';
 
 /**
  * Properties for a LoadBalancedEcsService
@@ -101,13 +102,23 @@ export interface LoadBalancedFargateServiceProps {
    * Setting this option will set the load balancer port to 443.
    */
   certificate?: CertificateRef;
+  /**
+   * Whether to create an AWS log driver
+   *
+   * @default true
+   */
+  createLogs?: boolean;
 }
 
 /**
- * A single task running on an ECS cluster fronted by a load balancer
+ * A Fargate service running on an ECS cluster fronted by a load balancer
  */
 export class LoadBalancedFargateService extends cdk.Construct {
   public readonly loadBalancer: elbv2.ApplicationLoadBalancer;
+
+  public readonly targetGroup: elbv2.ApplicationTargetGroup;
+
+  public readonly service: FargateService;
 
   constructor(parent: cdk.Construct, id: string, props: LoadBalancedFargateServiceProps) {
     super(parent, id);
@@ -117,8 +128,11 @@ export class LoadBalancedFargateService extends cdk.Construct {
       cpu: props.cpu
     });
 
+    const optIn = props.createLogs !== undefined ? props.createLogs : true;
+
     const container = taskDefinition.addContainer('web', {
       image: props.image,
+      logging: optIn ? this.createAWSLogDriver(this.id) : undefined
     });
 
     container.addPortMappings({
@@ -132,6 +146,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       taskDefinition,
       assignPublicIp
     });
+    this.service = service;
 
     const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
@@ -152,7 +167,7 @@ export class LoadBalancedFargateService extends cdk.Construct {
       listener = lb.addListener('PublicListener', { port: 80, open: true });
     }
 
-    listener.addTargets('ECS', {
+    this.targetGroup = listener.addTargets('ECS', {
       port: 80,
       targets: [service]
     });
@@ -169,5 +184,9 @@ export class LoadBalancedFargateService extends cdk.Construct {
         target: lb
       });
     }
+  }
+
+  private createAWSLogDriver(prefix: string): AwsLogDriver {
+    return new AwsLogDriver(this, 'Logging', { streamPrefix: prefix });
   }
 }

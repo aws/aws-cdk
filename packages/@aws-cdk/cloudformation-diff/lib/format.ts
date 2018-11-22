@@ -1,51 +1,86 @@
+import cxapi = require('@aws-cdk/cx-api');
 import colors = require('colors/safe');
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
-import { TemplateDiff } from './diff/types';
+import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
 
 /**
  * Renders template differences to the process' console.
  *
  * @param templateDiff TemplateDiff to be rendered to the console.
+ * @param logicalToPathMap A map from logical ID to construct path. Useful in
+ *                         case there is no aws:cdk:path metadata in the template.
  */
-export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff) {
+export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: { [logicalId: string]: string } = { }) {
   function print(fmt: string, ...args: any[]) {
     stream.write(colors.white(format(fmt, ...args)) + '\n');
   }
 
-  const ADDITION = colors.green('[+]');
-  const UPDATE   = colors.yellow('[~]');
+  const ADDITION = colors.green('[+]'); const UPDATE   = colors.yellow('[~]');
   const REMOVAL  = colors.red('[-]');
 
-  formatDifference('AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
-  formatDifference('Transform', templateDiff.transform);
-  formatDifference('Description', templateDiff.description);
-  templateDiff.parameters.forEach(formatDifference);
-  templateDiff.metadata.forEach(formatDifference);
-  templateDiff.mappings.forEach(formatDifference);
-  templateDiff.conditions.forEach(formatDifference);
-  templateDiff.resources.forEach(formatResourceDifference);
-  templateDiff.outputs.forEach(formatDifference);
-  templateDiff.unknown.forEach(formatDifference);
+  if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
+    printSectionHeader('Template');
+    formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
+    formatDifference('Transform', 'Transform', templateDiff.transform);
+    formatDifference('Description', 'Description', templateDiff.description);
+    printSectionFooter();
+  }
+
+  formatSection('Parameters', 'Parameter', templateDiff.parameters);
+  formatSection('Metadata', 'Metadata', templateDiff.metadata);
+  formatSection('Mappings', 'Mapping', templateDiff.mappings);
+  formatSection('Conditions', 'Condition', templateDiff.conditions);
+  formatSection('Resources', 'Resource', templateDiff.resources, formatResourceDifference);
+  formatSection('Outputs', 'Output', templateDiff.outputs);
+  formatSection('Other Changes', 'Unknown', templateDiff.unknown);
+
+  function formatSection<V, T extends Difference<V>>(
+      title: string,
+      entryType: string,
+      collection: DifferenceCollection<V, T>,
+      formatter: (type: string, id: string, diff: T) => void = formatDifference) {
+
+    if (collection.count === 0) {
+      return;
+    }
+
+    printSectionHeader(title);
+    collection.forEach((id, diff) => formatter(entryType, id, diff));
+    printSectionFooter();
+  }
+
+  function printSectionHeader(title: string) {
+    print(colors.underline(colors.bold(title)));
+  }
+
+  function printSectionFooter() {
+    print('');
+  }
 
   /**
    * Print a simple difference for a given named entity.
    *
-   * @param name the name of the entity that is different.
+   * @param logicalId the name of the entity that is different.
    * @param diff the difference to be rendered.
    */
-  function formatDifference(name: string, diff: Difference<any> | undefined) {
+  function formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
     if (!diff) { return; }
+
+    let value;
+
     const oldValue = formatValue(diff.oldValue, colors.red);
     const newValue = formatValue(diff.newValue, colors.green);
     if (diff.isAddition) {
-      print('%s Added %s: %s', ADDITION, colors.blue(name), newValue);
+      value = newValue;
     } else if (diff.isUpdate) {
-      print('%s Updated %s: %s to %s', UPDATE, colors.blue(name), oldValue, newValue);
+      value = `${oldValue} to ${newValue}`;
     } else if (diff.isRemoval) {
-      print('%s Removed %s: %s', REMOVAL, colors.blue(name), oldValue);
+      value = oldValue;
     }
+
+    print(`${formatPrefix(diff)} ${colors.cyan(type)} ${formatLogicalId(logicalId)}: ${value}`);
   }
 
   /**
@@ -54,32 +89,26 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param logicalId the logical ID of the resource that changed.
    * @param diff    the change to be rendered.
    */
-  function formatResourceDifference(logicalId: string, diff: ResourceDifference) {
-    if (diff.isAddition) {
-      print('%s %s %s (type: %s)',
-        ADDITION,
-        formatImpact(diff.changeImpact),
-        colors.blue(logicalId),
-        formatValue(diff.newResourceType, colors.green));
-    } else if (diff.isUpdate) {
-      print('%s %s %s (type: %s)',
-        UPDATE,
-        formatImpact(diff.changeImpact),
-        colors.blue(logicalId),
-        formatValue(diff.newResourceType, colors.green));
+  function formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+    const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
+
+    // tslint:disable-next-line:max-line-length
+    print(`${formatPrefix(diff)} ${formatValue(resourceType, colors.cyan)} ${formatLogicalId(logicalId, diff)} ${formatImpact(diff.changeImpact)}`);
+
+    if (diff.isUpdate) {
       let processedCount = 0;
-      diff.forEach((type, name, values) => {
+      diff.forEach((_, name, values) => {
         processedCount += 1;
-        if (type === 'Property') { name = `.${name}`; }
         formatTreeDiff(name, values, processedCount === diff.count);
       });
-    } else if (diff.isRemoval) {
-      print('%s %s %s (type: %s)',
-        REMOVAL,
-        formatImpact(diff.changeImpact),
-        colors.blue(logicalId),
-        formatValue(diff.oldResourceType, colors.green));
     }
+  }
+
+  function formatPrefix<T>(diff: Difference<T>) {
+    if (diff.isAddition) { return ADDITION; }
+    if (diff.isUpdate) { return UPDATE; }
+    if (diff.isRemoval) { return REMOVAL; }
+    return colors.white('[?]');
   }
 
   /**
@@ -101,17 +130,16 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
   function formatImpact(impact: ResourceImpact) {
     switch (impact) {
     case ResourceImpact.MAY_REPLACE:
-      return colors.yellow('⚠️ May be replacing');
+      return colors.italic(colors.yellow('may be replaced'));
     case ResourceImpact.WILL_REPLACE:
-      return colors.bold(colors.yellow('⚠️ Replacing'));
+      return colors.italic(colors.bold(colors.yellow('replace')));
     case ResourceImpact.WILL_DESTROY:
-      return colors.bold(colors.red('☢️ Destroying'));
+      return colors.italic(colors.bold(colors.red('destroy')));
     case ResourceImpact.WILL_ORPHAN:
-      return colors.red('🗑 Orphaning');
+      return colors.italic(colors.yellow('orphan'));
     case ResourceImpact.WILL_UPDATE:
-      return colors.green('🛠 Updating');
     case ResourceImpact.WILL_CREATE:
-      return colors.green('🆕 Creating');
+      return ''; // no extra info is gained here
     }
   }
 
@@ -130,7 +158,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
         additionalInfo = ' (requires replacement)';
       }
     }
-    print(' %s─ %s %s%s:', last ? '└' : '├', changeTag(diff.oldValue, diff.newValue), colors.blue(`${name}`), additionalInfo);
+    print(' %s─ %s %s%s', last ? '└' : '├', changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
     return formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
   }
 
@@ -145,12 +173,12 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
   function formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
     if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
       if (oldObject !== undefined && newObject !== undefined) {
-        print('%s   ├─ %s Old value: %s', linePrefix, REMOVAL, formatValue(oldObject, colors.red));
-        print('%s   └─ %s New value: %s', linePrefix, ADDITION, formatValue(newObject, colors.green));
+        print('%s   ├─ %s %s', linePrefix, REMOVAL, formatValue(oldObject, colors.red));
+        print('%s   └─ %s %s', linePrefix, ADDITION, formatValue(newObject, colors.green));
       } else if (oldObject !== undefined /* && newObject === undefined */) {
-        print('%s   └─ Old value: %s', linePrefix, formatValue(oldObject, colors.red));
+        print('%s   └─ %s', linePrefix, formatValue(oldObject, colors.red));
       } else /* if (oldObject === undefined && newObject !== undefined) */ {
-        print('%s   └─ New value: %s', linePrefix, formatValue(newObject, colors.green));
+        print('%s   └─ %s', linePrefix, formatValue(newObject, colors.green));
       }
       return;
     }
@@ -187,6 +215,58 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
       return REMOVAL;
     } else /* if (oldValue === undefined && newValue !== undefined) */ {
       return ADDITION;
+    }
+  }
+
+  function formatLogicalId(logicalId: string, diff?: ResourceDifference) {
+    // if we have a path in the map, return it
+    const path = logicalToPathMap[logicalId];
+    if (path) {
+      // first component of path is the stack name, so let's remove that
+      return normalizePath(path);
+    }
+
+    // if we don't have in our map, it might be a deleted resource, so let's try the
+    // template metadata
+    const oldPathMetadata = diff && diff.oldValue && diff.oldValue.Metadata && diff.oldValue.Metadata[cxapi.PATH_METADATA_KEY];
+    if (oldPathMetadata) {
+      return normalizePath(oldPathMetadata);
+    }
+
+    const newPathMetadata = diff && diff.newValue && diff.newValue.Metadata && diff.newValue.Metadata[cxapi.PATH_METADATA_KEY];
+    if (newPathMetadata) {
+      return normalizePath(newPathMetadata);
+    }
+
+    // couldn't figure out the path, just return the logical ID
+    return logicalId;
+
+    /**
+     * Path is supposed to start with "/stack-name". If this is the case (i.e. path has more than
+     * two components, we remove the first part. Otherwise, we just use the full path.
+     * @param p
+     */
+    function normalizePath(p: string) {
+      if (p.startsWith('/')) {
+        p = p.substr(1);
+      }
+
+      let parts = p.split('/');
+      if (parts.length > 1) {
+        parts = parts.slice(1);
+
+        // remove the last component if it's "Resource" or "Default" (if we have more than a single component)
+        if (parts.length > 1) {
+          const last = parts[parts.length - 1];
+          if (last === 'Resource' || last === 'Default') {
+            parts = parts.slice(0, parts.length - 1);
+          }
+        }
+
+        p = parts.join('/');
+      }
+
+      return `${p} ${colors.gray(logicalId)}`;
     }
   }
 }

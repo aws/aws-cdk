@@ -1,3 +1,4 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
     FnEquals, FnNot, HashedAddressingScheme, IDependable,
@@ -570,6 +571,24 @@ export = {
         test.done();
       }
     }
+  },
+
+  '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
+    const stack = new Stack();
+    stack.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
+
+    const parent = new Construct(stack, 'Parent');
+
+    new Resource(parent, 'MyResource', {
+      type: 'MyResourceType',
+    });
+
+    test.deepEqual(stack.toCloudFormation(), { Resources:
+      { ParentMyResource4B1FDBCC:
+         { Type: 'MyResourceType',
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+
+    test.done();
   }
 };
 

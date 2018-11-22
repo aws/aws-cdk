@@ -3,12 +3,11 @@ import { namespaces } from '../lib/index';
 
 export = testCase({
   'expected namespaces are present'(test: Test) {
-    test.deepEqual(namespaces.sort(), expectedNamespaces);
+    test.deepEqual(namespaces.sort(), expectedNamespaces.sort());
     test.done();
   }
 });
 
-// Note: must be kept sorted!
 const expectedNamespaces = [
   'AWS::AmazonMQ',
   'AWS::ApiGateway',
@@ -33,6 +32,7 @@ const expectedNamespaces = [
   'AWS::Cognito',
   'AWS::Config',
   'AWS::DAX',
+  'AWS::DLM',
   'AWS::DMS',
   'AWS::DataPipeline',
   'AWS::DirectoryService',
@@ -74,6 +74,7 @@ const expectedNamespaces = [
   'AWS::SQS',
   'AWS::SSM',
   'AWS::SageMaker',
+  'AWS::SecretsManager',
   'AWS::Serverless',
   'AWS::ServiceCatalog',
   'AWS::ServiceDiscovery',

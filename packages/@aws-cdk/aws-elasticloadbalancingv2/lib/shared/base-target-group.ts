@@ -40,6 +40,17 @@ export interface BaseTargetGroupProps {
    * @default No health check
    */
   healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  targetType?: TargetType;
 }
 
 /**
@@ -137,8 +148,28 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   public readonly targetGroupName: string;
 
   /**
+   * ARNs of load balancers load balancing to this TargetGroup
+   */
+  public readonly targetGroupLoadBalancerArns: string[];
+
+  /**
+   * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
+   */
+  public abstract readonly firstLoadBalancerFullName: string;
+
+  /**
    * Health check for the members of this target group
    */
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  public readonly loadBalancerArns: string;
+
   public healthCheck: HealthCheck;
 
   /**
@@ -179,6 +210,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
     this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
@@ -202,8 +234,10 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
+    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns.toList();
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
+    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
   }
@@ -283,6 +317,11 @@ export interface TargetGroupRefProps {
    * Port target group is listening on
    */
   defaultPort: string;
+
+  /**
+   * A Token representing the list of ARNs for the load balancer routing to this target group
+   */
+  loadBalancerArns?: string;
 }
 
 /**
@@ -293,6 +332,11 @@ export interface ITargetGroup {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
+
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  readonly loadBalancerArns: string;
 
   /**
    * Return an object to depend on the listeners added to this target group
@@ -315,4 +359,20 @@ export interface LoadBalancerTargetProps {
    * May be omitted if the target is going to register itself later.
    */
   targetJson?: any;
+}
+
+/**
+ * Extract the full load balancer name (used for metrics) from the listener ARN:
+ *
+ * Turns
+ *
+ *     arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
+ *
+ * Into
+ *
+ *     app/my-load-balancer/50dc6c495c0c9188
+ */
+export function loadBalancerNameFromListenerArn(listenerArn: string) {
+    const arnParts = new cdk.FnSplit('/', listenerArn);
+    return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
 }

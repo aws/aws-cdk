@@ -11,12 +11,38 @@ import { print } from './logging';
  *
  * @returns the count of differences that were rendered.
  */
-export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack): number {
+export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, strict: boolean): number {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  // filter out 'AWS::CDK::Metadata' resources from the template
+  if (diff.resources && !strict) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
+  }
+
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(process.stderr, diff);
+    cfnDiff.formatDifferences(process.stderr, diff, buildLogicalToPathMap(newTemplate));
   } else {
     print(colors.green('There were no differences'));
   }
+
   return diff.count;
+}
+
+function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {
+  const map: { [id: string]: string } = {};
+  for (const path of Object.keys(template.metadata)) {
+    const md = template.metadata[path];
+    for (const e of md) {
+      if (e.type === 'aws:cdk:logicalId') {
+        const logical = e.data;
+        map[logical] = path;
+      }
+    }
+  }
+  return map;
 }

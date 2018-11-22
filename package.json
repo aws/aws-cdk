@@ -7,7 +7,7 @@
     "pkglint": "tools/pkglint/bin/pkglint -f ."
   },
   "devDependencies": {
-    "@types/node": "^8.11.38",
+    "@types/node": "^8.10.38",
     "@types/nodeunit": "^0.0.30",
     "conventional-changelog-cli": "^2.0.5",
     "lerna": "^3.3.0",

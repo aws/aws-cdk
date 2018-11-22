@@ -17,7 +17,7 @@ async function main() {
     }
 
     const expected = await test.readExpected();
-    const actual = await test.invoke(['--json', 'synth'], { json: true, context: STATIC_TEST_CONTEXT });
+    const actual = await test.invoke(['--json', '--no-path-metadata', 'synth'], { json: true, context: STATIC_TEST_CONTEXT });
 
     const diff = diffTemplate(expected, actual);
 

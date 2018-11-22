@@ -253,11 +253,11 @@ export class NodeCompatibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^8.11.')) {
+    if (atTypesNode && !atTypesNode.startsWith('^8.')) {
       pkg.report({
         ruleName: this.name,
         message: `packages must support node version 8 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^8.11.38')
+        fix: () => pkg.addDevDependency('@types/node', '^8.10.38')
       });
     }
   }

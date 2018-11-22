@@ -19,16 +19,26 @@ const listener = lb.addListener('Listener', {
   port: 80,
 });
 
-listener.addTargets('Target', {
+const group1 = listener.addTargets('Target', {
   port: 80,
   targets: [new elbv2.IpTarget('10.0.1.1')]
 });
 
-listener.addTargets('ConditionalTarget', {
+const group2 = listener.addTargets('ConditionalTarget', {
   priority: 10,
   hostHeader: 'example.com',
   port: 80,
   targets: [new elbv2.IpTarget('10.0.1.2')]
+});
+
+group1.metricTargetResponseTime().newAlarm(stack, 'ResponseTimeHigh1', {
+  threshold: 5,
+  evaluationPeriods: 2,
+});
+
+group2.metricTargetResponseTime().newAlarm(stack, 'ResponseTimeHigh2', {
+  threshold: 5,
+  evaluationPeriods: 2,
 });
 
 app.run();

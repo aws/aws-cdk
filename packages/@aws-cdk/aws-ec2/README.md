@@ -172,6 +172,18 @@ The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
+#### Sharing VPCs across stacks
+
+If you are creating multiple `Stack`s inside the same CDK application, you
+can reuse a VPC defined in one Stack in another by using `export()` and
+`import()`:
+
+[sharing VPCs between stacks](test/example.share-vpcs.lit.ts)
+
+If your VPC is created outside your CDK app, you can use `importFromContext()`:
+
+[importing existing VPCs](test/integ.import-default-vpc.lit.ts)
+
 ### Allowing Connections
 
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
