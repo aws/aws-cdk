@@ -24,6 +24,7 @@ Currently, you can get values into your app from outside your app through any of
 - Using a context variable
 - Using an environment variable
 - Using an SSM Parameter Store variable
+- Using a Secrets manager value
 - Using a value from another stack
 - Using a |CFN| parameter
 - Using a resource in an existing |CFN| template
@@ -83,15 +84,75 @@ which gets the value of the environment variable **MYBUCKET**.
 Getting a Value from an SSM Store Variable
 ==========================================
 
-To get the value of an SSM parameter store variable,
-use code like the following,
-which uses the value of the SSM variable **my-awesome-value**.
+There are three ways to get the value of an SSM parameter store variable, depending on whether you want
+the latest version of a plain string, a particular version of a plain string, or a particular version
+of a secret string. It is not possible to retrieve the latest version of a secure string. To read the
+latest version of a secret, you have to read the secret from SecretsManager (see `doc:using_value_from_secrets_manager`).
+The first two are not recommended for values that are supposed to be secrets, such as passwords.
+
+To retrieve the latest value once (as a context value, see the :doc:`context` topic), and keep on using the same value
+until the context value manually refreshed, use a :py:class:`SSMParameterProvider <@aws-cdk/cdk.SSMParameterProvider>`:
 
 .. code-block:: ts
 
-    const myvalue = new SSMParameterProvider(this).getString("my-awesome-value");
+    import cdk = require('@aws-cdk/cdk');
 
-See the :doc:`context` topic for information about the :py:class:`SSMParameterProvider <@aws-cdk/cdk.SSMParameterProvider>`.
+    const myvalue = new cdk.SSMParameterProvider(this).getString("my-parameter-name");
+
+To read a particular version of an SSM Parameter Store plain string value at CloudFormation deployment time,
+use :py:class:`SsmParameterStoreString <@aws-cdk/cdk.SsmParameterStoreString>`:
+
+.. code-block:: ts
+
+    import ssm = require('@aws-cdk/aws-ssm');
+
+    const parameterString = new ssm.ParameterStoreString(this, 'MyParameter', {
+        parameterName: 'my-parameter-name',
+        version: 1,
+    });
+    const myvalue = parameterString.value;
+
+To read a particular version of an SSM Parameter Store SecureString value at CloudFormation deployment time,
+use :py:class:`SsmParameterStoreSecureString <@aws-cdk/cdk.SsmParameterStoreSecureString>`:
+
+.. code-block:: ts
+
+    import ssm = require('@aws-cdk/aws-ssm');
+
+    const secureString = new ssm.ParameterStoreSecureString(this, 'MySecretParameter', {
+        parameterName: 'my-secret-parameter-name',
+        version: 1,
+    });
+    const myvalue = secureString.value;
+
+
+.. _using_value_from_secrets_manager:
+
+Getting a Value from AWS Secrets Manager
+========================================
+
+To use values from AWS Secrets Manager in your CDK app, create an instance of :py:class:`SecretsManagerValue
+<@aws-cdk/cdk.SecretsManagerValue>`. It represents a value that is retrieved from Secrets Manager and used
+at CloudFormation deployment time.
+
+.. code-block:: ts
+
+    import secretsmanager = require('@aws-cdk/aws-secretsmanager');
+
+    const loginSecret = new secretsmanager.SecretString(stack, 'Secret', {
+      secretId: 'MyLogin'
+
+      // By default, the latest version is retrieved. It's possible to
+      // use a specific version instead.
+      // versionStage: 'AWSCURRENT'
+    });
+
+    // Retrieve a value from the secret's JSON
+    const username = loginSecret.jsonValue('username');
+    const password = loginSecret.jsonValue('password');
+
+    // Retrieve the whole secret's string value
+    const fullValue = loginSecret.value;
 
 .. _passing_in_value_between_stacks:
 
@@ -115,14 +176,14 @@ in the stack property.
         // Property that defines the stack you are exporting from
         public readonly myBucketRefProps: s3.BucketRefProps;
 
-	constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
+        constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
             super(parent, name, props);
 
             const mybucket = new s3.Bucket(this, "MyFirstBucket");
 
             // Save bucket's *BucketRefProps*
             this.myBucketRefProps = mybucket.export();
-	}
+        }
     }
 
 Create an interface for the second stack's properties.
@@ -197,8 +258,8 @@ where **S3Bucket** is the logical ID of the bucket in your template:
       "Properties": {
           ...
       }
-   }   
-   
+   }
+
 You can include this bucket in your |cdk| app,
 as shown in the following example
 (note that you cannot use this method in an |l2| construct):
@@ -207,7 +268,7 @@ as shown in the following example
 
    import cdk = require("@aws-cdk/cdk");
    import fs = require("fs");
-   
+
    new cdk.Include(this, "ExistingInfrastructure", {
       template: JSON.parse(fs.readFileSync("my-template.json").toString())
    });
