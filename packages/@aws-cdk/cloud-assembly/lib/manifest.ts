@@ -16,7 +16,7 @@ export interface Drop {
    * @pattern ^[^:]+://.+$
    */
   environment: string;
-  metadata?: { [key: string]: Metadata };
+  metadata?: { [key: string]: Metadata[] };
   properties?: { [name: string]: any }
 }
 
