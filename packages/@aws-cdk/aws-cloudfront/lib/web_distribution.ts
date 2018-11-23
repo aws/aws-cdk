@@ -532,7 +532,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PriceClass100,
-      ipv6Enabled: (props.enableIpV6 != undefined) ? props.enableIpV6 : true,
+      ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
       // tslint:disable-next-line:max-line-length
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
