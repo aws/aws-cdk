@@ -1,9 +1,11 @@
 import cxapi = require('@aws-cdk/cx-api');
+import Table = require('cli-table');
 import colors = require('colors/safe');
 import { format } from 'util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
+import { IamChanges } from './iam/iam-changes';
 
 /**
  * Renders template differences to the process' console.
@@ -25,6 +27,12 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
     formatDifference('Transform', 'Transform', templateDiff.transform);
     formatDifference('Description', 'Description', templateDiff.description);
+    printSectionFooter();
+  }
+
+  if (!templateDiff.iamChanges.empty) {
+    printSectionHeader('Summary of IAM Changes');
+    formatIamChanges(templateDiff.iamChanges);
     printSectionFooter();
   }
 
@@ -268,5 +276,14 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
 
       return `${p} ${colors.gray(logicalId)}`;
     }
+  }
+
+  function formatIamChanges(changes: IamChanges) {
+    const summary = changes.summarize();
+    const head = summary.splice(0, 1)[0];
+
+    const table = new Table({ head, style: { head: [] } });
+    table.push(...summary);
+    print(table.toString());
   }
 }

@@ -1,4 +1,6 @@
+import cfnspec = require('@aws-cdk/cfnspec');
 import { AssertionError } from 'assert';
+import { IamChanges } from '../iam/iam-changes';
 import { deepEqual } from './util';
 
 /** Semantic differences between two CloudFormation templates. */
@@ -14,6 +16,11 @@ export class TemplateDiff implements ITemplateDiff {
   public resources: DifferenceCollection<Resource, ResourceDifference>;
   /** The differences in unknown/unexpected parts of the template */
   public unknown: DifferenceCollection<any, Difference<any>>;
+
+  /**
+   * Changes to IAM policies
+   */
+  public readonly iamChanges: IamChanges;
 
   constructor(args: ITemplateDiff) {
     if (args.awsTemplateFormatVersion !== undefined) {
@@ -33,6 +40,10 @@ export class TemplateDiff implements ITemplateDiff {
     this.parameters = args.parameters || new DifferenceCollection({});
     this.resources = args.resources || new DifferenceCollection({});
     this.unknown = args.unknown || new DifferenceCollection({});
+
+    this.iamChanges = new IamChanges(
+      this.scrutinizablePropertyChanges(cfnspec.schema.ScrutinyType.IdentityPolicy),
+      this.scrutinizablePropertyChanges(cfnspec.schema.ScrutinyType.ResourcePolicy));
   }
 
   public get count() {
@@ -62,6 +73,61 @@ export class TemplateDiff implements ITemplateDiff {
   public get isEmpty(): boolean {
     return this.count === 0;
   }
+
+  /**
+   * Return all property changes of a given scrutiny type
+   *
+   * We don't just look at property updates; we also look at resource additions and deletions (in which
+   * case there is no further detail on property values), and resource type changes.
+   */
+  public scrutinizablePropertyChanges(scrutinyType: cfnspec.schema.ScrutinyType): PropertyChange[] {
+    const ret = new Array<PropertyChange>();
+
+    for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
+      if (!resourceChange) { continue; }
+
+      const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyType);
+      for (const propertyName of props) {
+        ret.push({
+          resourceLogicalId, propertyName,
+          oldValue: resourceChange.oldProperties[propertyName],
+          newValue: resourceChange.newProperties[propertyName],
+        });
+      }
+    }
+
+    return ret;
+  }
+}
+
+/**
+ * A change in property values
+ *
+ * Not necessarily an update, it could be that there used to be no value there
+ * because there was no resource, and now there is (or vice versa).
+ *
+ * Therefore, we just contain plain values and not a PropertyDifference<any>.
+ */
+export interface PropertyChange {
+  /**
+   * Logical ID of the resource where this property change was found
+   */
+  resourceLogicalId: string;
+
+  /**
+   * Name of the property that is changing
+   */
+  propertyName: string;
+
+  /**
+   * The old property value
+   */
+  oldValue?: any;
+
+  /**
+   * The new property value
+   */
+  newValue?: any;
 }
 
 /**
@@ -260,8 +326,18 @@ export interface Resource {
   [key: string]: any;
 }
 export class ResourceDifference extends Difference<Resource> {
+  /**
+   * Old property values
+   */
+  public readonly oldProperties: { [name: string]: any };
+
+  /**
+   * New property values
+   */
+  public readonly newProperties: { [name: string]: any };
+
   /** Property-level changes on the resource */
-  public readonly propertyChanges: { [key: string]: PropertyDifference<any> };
+  public readonly propertyUpdates: { [key: string]: PropertyDifference<any> };
   /** Changes to non-property level attributes of the resource */
   public readonly otherChanges: { [key: string]: Difference<any> };
 
@@ -272,14 +348,18 @@ export class ResourceDifference extends Difference<Resource> {
               newValue: Resource | undefined,
               args: {
           resourceType: { oldType: string, newType: string },
-          propertyChanges: { [key: string]: Difference<any> },
+          oldProperties: { [name: string]: any },
+          newProperties: { [name: string]: any },
+          propertyUpdates: { [key: string]: PropertyDifference<any> },
           otherChanges: { [key: string]: Difference<any> }
         }
   ) {
     super(oldValue, newValue);
     this.resourceType = args.resourceType;
-    this.propertyChanges = args.propertyChanges;
+    this.propertyUpdates = args.propertyUpdates;
     this.otherChanges = args.otherChanges;
+    this.oldProperties = args.oldProperties;
+    this.newProperties = args.newProperties;
   }
 
   public get oldResourceType(): string | undefined {
@@ -302,19 +382,19 @@ export class ResourceDifference extends Difference<Resource> {
       return ResourceImpact.WILL_REPLACE;
     }
 
-    return Object.values(this.propertyChanges)
+    return Object.values(this.propertyUpdates)
            .map(elt => elt.changeImpact)
            .reduce(worstImpact, ResourceImpact.WILL_UPDATE);
   }
 
   public get count(): number {
-    return Object.keys(this.propertyChanges).length
+    return Object.keys(this.propertyUpdates).length
       + Object.keys(this.otherChanges).length;
   }
 
   public forEach(cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any) {
-    for (const key of Object.keys(this.propertyChanges).sort()) {
-      cb('Property', key, this.propertyChanges[key]);
+    for (const key of Object.keys(this.propertyUpdates).sort()) {
+      cb('Property', key, this.propertyUpdates[key]);
     }
     for (const key of Object.keys(this.otherChanges).sort()) {
       cb('Other', key, this.otherChanges[key]);

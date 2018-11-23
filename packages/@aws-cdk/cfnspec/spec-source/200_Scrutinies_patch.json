@@ -2,7 +2,7 @@
     "ResourceTypes": {
         "AWS::SNS::Subscription": {
             "patch": {
-                "description": "These are not IAM policies",
+                "description": "SNS: These are not IAM policies",
                 "operations": [
                     {
                         "op": "add",
@@ -17,9 +17,9 @@
                 ]
             }
         },
-        "AWS::SQS::RedrivePolicy": {
+        "AWS::SQS::Queue": {
             "patch": {
-                "description": "These are not IAM policies",
+                "description": "SQS: Not an IAM policy",
                 "operations": [
                     {
                         "op": "add",
