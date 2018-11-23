@@ -16,7 +16,7 @@ class PolicyExample extends cdk.Stack {
     // here's how to create an IAM Role with an assume policy for the Lambda
     // service principal.
     const role = new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazon.aws.com')
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
 
     // when you call `addToPolicy`, a default policy is defined and attached
