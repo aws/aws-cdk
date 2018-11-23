@@ -20,8 +20,7 @@ export const builder = {
 };
 
 export async function handler(args: yargs.Arguments): Promise<number> {
-  const configuration = new Configuration();
-  await configuration.load();
+  const configuration = await new Configuration().load();
 
   const context = configuration.projectConfig.get(['context']) || {};
 

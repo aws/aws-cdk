@@ -54,7 +54,6 @@
   "devDependencies": {
     "@types/js-base64": "^2.3.1",
     "@types/lodash": "^4.14.118",
-    "@types/yaml": "^1.0.1",
     "cdk-build-tools": "^0.18.1",
     "cfn2ts": "^0.18.1",
     "fast-check": "^1.7.0",
@@ -62,16 +61,13 @@
     "pkglint": "^0.18.1"
   },
   "dependencies": {
-    "@aws-cdk/cloud-assembly": "^0.18.1",
     "@aws-cdk/cx-api": "^0.18.1",
     "js-base64": "^2.4.5",
-    "json-diff": "^0.3.1",
-    "yaml": "^1.0.2"
+    "json-diff": "^0.3.1"
   },
   "bundledDependencies": [
     "json-diff",
-    "js-base64",
-    "yaml"
+    "js-base64"
   ],
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {

@@ -25,9 +25,12 @@ export class Configuration {
   /**
    * Load all config
    */
-  public async load() {
-    await this.userConfig.load(PER_USER_DEFAULTS);
-    await this.projectConfig.load(DEFAULTS);
+  public async load(): Promise<this> {
+    await Promise.all([
+      this.userConfig.load(PER_USER_DEFAULTS),
+      this.projectConfig.load(DEFAULTS)
+    ]);
+    return this;
   }
 
   /**
