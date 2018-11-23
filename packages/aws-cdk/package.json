@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@aws-cdk/applet-js": "^0.18.1",
+    "@aws-cdk/cloud-assembly": "^0.18.1",
     "@aws-cdk/cloudformation-diff": "^0.18.1",
     "@aws-cdk/cx-api": "^0.18.1",
     "archiver": "^2.1.1",

@@ -2,6 +2,7 @@ import cloudAssembly = require('@aws-cdk/cloud-assembly');
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
+import YAML = require('yaml');
 import { Stack } from './cloudformation/stack';
 import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
@@ -45,18 +46,84 @@ export class App extends Root {
 
     const manifest: cloudAssembly.Manifest = {
       schema: 'cloud-assembly/1.0',
-      drops: { CDKMetadata: this.collectRuntimeInformation() },
+      drops: {},
     };
 
+    const cdkMetadata = this.collectRuntimeInformation();
+
     for (const stack of this.synthesizeStacks(Object.keys(this.stacks))) {
-      manifest.drops[`stacks/${stack.name}`] = {
+      manifest.drops[stack.name] = {
         type: 'npm://@aws-cdk/cdk/CloudFormationStackDroplet',
         environment: `aws://${stack.environment.account}/${stack.environment.region}`,
+        properties: {
+          stackName: stack.name,
+          template: _saveTemplateSync(stack),
+          parameters: _wireAssetsSync(stack),
+        },
+        metadata: {
+          'aws:cdk:metadata': {
+            kind: 'aws:cdk:libraries',
+            value: cdkMetadata
+          }
+        }
       };
     }
 
     const outfile = path.join(outdir, cloudAssembly.MANIFEST_FILE_NAME);
     fs.writeFileSync(outfile, JSON.stringify(manifest, undefined, 2));
+
+    function _saveTemplateSync(stack: cxapi.SynthesizedStack): string {
+      const fileName = 'template.yml';
+      const stackDir = stack.name;
+
+      const absoluteDir = path.join(outdir!, stackDir);
+      if (!fs.existsSync(absoluteDir)) {
+        fs.mkdirSync(path.join(absoluteDir));
+      }
+      fs.writeFileSync(path.join(absoluteDir, fileName),
+                       YAML.stringify(stack.template),
+                       { encoding: 'utf-8' });
+      return path.join(stackDir, fileName);
+    }
+
+    function _wireAssetsSync(stack: cxapi.SynthesizedStack): { [name: string]: string } {
+      const result: { [name: string]: string} = {};
+      for (const key of Object.keys(stack.metadata)) {
+        const entries = stack.metadata[key];
+        for (const entry of entries.filter(md => md.type === cxapi.ASSET_METADATA && md.data != null)) {
+          const data = entry.data! as cxapi.AssetMetadataEntry;
+          const filePath = path.join(...key.split('/'));
+          const fileName = path.basename(data.path);
+          const absoluteFile = path.join(_mkdirp(path.join(outdir!, filePath)), fileName);
+          if (fs.existsSync(absoluteFile)) {
+            if (fs.lstatSync(absoluteFile).isDirectory()) {
+              fs.rmdirSync(absoluteFile);
+            } else {
+              fs.unlinkSync(absoluteFile);
+            }
+          }
+          fs.symlinkSync(data.path, absoluteFile);
+
+          const dropId = `${key}`;
+          manifest.drops[dropId] = {
+            type: `npm://@aws-cdk/asset/Asset`,
+            environment: `aws://${stack.environment.account}/${stack.environment.region}`,
+            properties: {
+              packaging: data.packaging,
+              path: path.join(filePath, fileName)
+            }
+          };
+          if (data.packaging === 'zip' || data.packaging === 'file') {
+            result[data.s3BucketParameter] = `\${${dropId}.s3BucketName}`;
+            result[data.s3KeyParameter] = `\${${dropId}.s3ObjectKey}`;
+          } else if (data.packaging === 'container-image') {
+            result[data.repositoryParameter] = `\${${dropId}.repository}`;
+            result[data.tagParameter] = `\${${dropId}.tag}`;
+          }
+        }
+      }
+      return result;
+    }
   }
 
   /**
@@ -130,7 +197,7 @@ export class App extends Root {
     }
   }
 
-  private collectRuntimeInformation(): cloudAssembly.Drop {
+  private collectRuntimeInformation(): { [name: string]: string } {
     const libraries: { [name: string]: string } = {};
 
     for (const fileName of Object.keys(require.cache)) {
@@ -140,11 +207,7 @@ export class App extends Root {
       }
     }
 
-    return {
-      type: 'npm://@aws-cdk/cdk/CDKMetadataDroplet',
-      environment: '*',
-      properties: { libraries }
-    };
+    return libraries;
   }
 
   private getStack(stackname: string) {
@@ -215,4 +278,12 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     }
     return s;
   }
+}
+
+function _mkdirp(pth: string): string {
+  if (!fs.existsSync(pth)) {
+    _mkdirp(path.dirname(pth));
+    fs.mkdirSync(pth);
+  }
+  return pth;
 }
