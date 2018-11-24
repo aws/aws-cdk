@@ -30,7 +30,15 @@ function setup() {
   cp -R app/* /tmp/cdk-integ-test
   cd /tmp/cdk-integ-test
 
-  npm i --no-save @aws-cdk/cdk @aws-cdk/aws-sns
+  # "install" symlinks to the cdk core and SNS modules
+  # we don't use "npm install" here so that the modules will
+  # be from the same version as the toolkit we are testing
+  mkdir -p node_modules/@aws-cdk
+  (
+    cd node_modules/@aws-cdk
+    ln -s ${scriptdir}/../../@aws-cdk/aws-sns
+    ln -s ${scriptdir}/../../@aws-cdk/cdk
+  )
 }
 
 function fail() {

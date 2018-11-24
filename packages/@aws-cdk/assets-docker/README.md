@@ -35,4 +35,6 @@ pull images from this repository.
 If the pulling principal is not in the same account or is an AWS service that
 doesn't assume a role in your account (e.g. AWS CodeBuild), pull permissions
 must be granted on the __resource policy__ (and not on the principal's policy).
-To do that, you can use `asset.repository.addToResourcePolicy(statement)`.
+To do that, you can use `asset.repository.addToResourcePolicy(statement)` to
+grant the desired principal the following permissions: "ecr:GetDownloadUrlForLayer",
+"ecr:BatchGetImage" and "ecr:BatchCheckLayerAvailability".
