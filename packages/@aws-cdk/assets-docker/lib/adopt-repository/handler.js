@@ -13,10 +13,6 @@ exports.handler = async function(event, context, _callback, respond) {
       Principal: "*"
     };
 
-    function repoName(arn) {
-      return arn.split('/').slice(1).join('/');
-    }
-
     // The repository must already exist
     async function getAdopter(name) {
       try {
@@ -30,7 +26,11 @@ exports.handler = async function(event, context, _callback, respond) {
       }
     }
 
-    const repo = repoName(event.ResourceProperties.RepositoryArn);
+    const repo = event.ResourceProperties.RepositoryName;
+    if (!repo) {
+      throw new Error('Missing required property "RepositoryName"');
+    }
+
     const adopter = await getAdopter(repo);
     if (event.RequestType === 'Delete') {
       if (adopter.Sid !== markerStatement.Sid) {
@@ -76,8 +76,12 @@ exports.handler = async function(event, context, _callback, respond) {
       await ecr.setRepositoryPolicy({ repositoryName: repo, policyText: JSON.stringify(policy) }).promise();
     }
 
-    const arn = event.ResourceProperties.RepositoryArn.split(':');
-    await respond("SUCCESS", "OK", repo, {});
+    // we reflect back the repository name as a resource attribute
+    // this will allow taking an implicit dependency in this custom resource by
+    // referencing this attribute via { "Fn::GetAtt": [ ID, "RepositoryName" ] }
+    await respond("SUCCESS", "OK", repo, {
+      RepositoryName: repo
+    });
   } catch (e) {
     console.log(e);
     await respond("FAILED", e.message, context.logStreamName, {});

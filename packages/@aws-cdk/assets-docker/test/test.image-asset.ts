@@ -64,7 +64,12 @@ export = {
                   ":",
                   { "Ref": "AWS::AccountId" },
                   ":repository/",
-                  { "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ] }
+                  {
+                      "Fn::GetAtt": [
+                        "ImageAdoptRepositoryE1E84E35",
+                        "RepositoryName"
+                      ]
+                  }
                 ]
               ]
             }
@@ -105,23 +110,9 @@ export = {
       .addPrincipal(new iam.ServicePrincipal('DAMN')));
 
     // THEN
-    expect(stack).to(haveResource('Custom::CDKECRRepositoryAdoption', {
-      "RepositoryArn": {
-        "Fn::Join": [
-          "",
-          [
-            "arn:",
-            { "Ref": "AWS::Partition" },
-            ":ecr:",
-            { "Ref": "AWS::Region" },
-            ":",
-            { "Ref": "AWS::AccountId" },
-            ":repository/",
-            {
-              "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ]
-            }
-          ]
-        ]
+    expect(stack).to(haveResource('Custom::ECRAdoptedRepository', {
+      "RepositoryName": {
+        "Fn::Select": [ 0, { "Fn::Split": [ ":", { "Ref": "ImageImageName5E684353" } ] } ]
       },
       "PolicyDocument": {
         "Statement": [
@@ -156,7 +147,7 @@ export = {
     await handler.handler({
       StackId: 'StackId',
       ResourceProperties: {
-        RepositoryArn: 'RepositoryArn',
+        RepositoryName: 'RepositoryName',
         PolicyDocument: {
           Version: '2008-10-01',
           My: 'Document'
@@ -179,8 +170,10 @@ export = {
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
       reason: 'OK',
-      physId: '',
-      data: { }
+      physId: 'RepositoryName',
+      data: {
+        RepositoryName: 'RepositoryName'
+      }
     });
 
     test.done();
@@ -202,7 +195,7 @@ export = {
     await handler.handler({
       StackId: 'StackId',
       ResourceProperties: {
-        RepositoryArn: 'RepositoryArn',
+        RepositoryName: 'RepositoryName',
         PolicyDocument: {
           Statement: { Action: 'boom' }
         }
@@ -224,8 +217,10 @@ export = {
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
       reason: 'OK',
-      physId: '',
-      data: { }
+      physId: 'RepositoryName',
+      data: {
+        RepositoryName: 'RepositoryName'
+      }
     });
 
     test.done();
@@ -247,7 +242,7 @@ export = {
     await handler.handler({
       StackId: 'StackId',
       ResourceProperties: {
-        RepositoryArn: 'RepositoryArn',
+        RepositoryName: 'RepositoryName',
         PolicyDocument: {
           Statement: [ { Action: 'boom' }, { Resource: "foo" }  ]
         }
@@ -270,8 +265,10 @@ export = {
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
       reason: 'OK',
-      physId: '',
-      data: { }
+      physId: 'RepositoryName',
+      data: {
+        RepositoryName: 'RepositoryName'
+      }
     });
 
     test.done();
@@ -293,7 +290,7 @@ export = {
     await handler.handler({
       StackId: 'StackId',
       ResourceProperties: {
-        RepositoryArn: 'RepositoryArn',
+        RepositoryName: 'RepositoryName',
       },
       RequestType: 'Create',
       ResponseURL: 'https://localhost/test'
@@ -304,8 +301,10 @@ export = {
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
       reason: 'OK',
-      physId: '',
-      data: { }
+      physId: 'RepositoryName',
+      data: {
+        RepositoryName: 'RepositoryName'
+      }
     });
 
     test.done();
@@ -324,7 +323,7 @@ export = {
     await handler.handler({
       StackId: 'StackId',
       ResourceProperties: {
-        RepositoryArn: 'RepositoryArn',
+        RepositoryName: 'RepositoryName',
       },
       RequestType: 'Delete',
       ResponseURL: 'https://localhost/test'
@@ -335,8 +334,10 @@ export = {
     test.deepEqual(output, {
       responseStatus: 'SUCCESS',
       reason: 'OK',
-      physId: '',
-      data: { }
+      physId: 'RepositoryName',
+      data: {
+        RepositoryName: 'RepositoryName'
+      }
     });
 
     test.done();
