@@ -28,7 +28,7 @@ export = {
     });
 
     // THEN
-    test.equal(cdk.resolve(ref.jsonValue('subkey')), '{{resolve:secretsmanager:SomeSecret:SecretString:subkey::}}');
+    test.equal(cdk.resolve(ref.jsonFieldValue('subkey')), '{{resolve:secretsmanager:SomeSecret:SecretString:subkey::}}');
 
     test.done();
   },

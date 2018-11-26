@@ -148,8 +148,8 @@ at CloudFormation deployment time.
     });
 
     // Retrieve a value from the secret's JSON
-    const username = loginSecret.jsonValue('username');
-    const password = loginSecret.jsonValue('password');
+    const username = loginSecret.jsonFieldValue('username');
+    const password = loginSecret.jsonFieldValue('password');
 
     // Retrieve the whole secret's string value
     const fullValue = loginSecret.value;

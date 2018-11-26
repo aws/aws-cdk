@@ -9,8 +9,8 @@ const loginSecret = new secretsmanager.SecretString(stack, 'Secret', { secretId:
 
 // DO NOT ACTUALLY DO THIS, as this will expose your secret.
 // This code only exists to show how the secret would be used.
-new cdk.Output(stack, 'SecretUsername', { value: loginSecret.jsonValue('username') });
-new cdk.Output(stack, 'SecretPassword', { value: loginSecret.jsonValue('password') });
+new cdk.Output(stack, 'SecretUsername', { value: loginSecret.jsonFieldValue('username') });
+new cdk.Output(stack, 'SecretPassword', { value: loginSecret.jsonFieldValue('password') });
 /// !hide
 
 app.run();

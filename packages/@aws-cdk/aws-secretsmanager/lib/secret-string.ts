@@ -45,21 +45,21 @@ export class SecretString extends cdk.DynamicReference {
    * Return the full value of the secret
    */
   public get value(): string {
-    return this.resolveStringForJsonKey();
+    return this.resolveStringForJsonKey('');
   }
 
   /**
-   * Return a key from the JSON object that is stored in the secret
+   * Interpret the secret as a JSON object and return a field's value from it
    */
-  public jsonValue(key: string) {
+  public jsonFieldValue(key: string) {
     return this.resolveStringForJsonKey(key);
   }
 
-  private resolveStringForJsonKey(jsonKey?: string) {
+  private resolveStringForJsonKey(jsonKey: string) {
     const parts = [
       this.props.secretId,
       'SecretString',
-      jsonKey || '',
+      jsonKey,
       this.props.versionStage || '',
       this.props.versionId || ''
     ];
