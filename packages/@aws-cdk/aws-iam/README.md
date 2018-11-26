@@ -16,10 +16,9 @@ Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
 
 ### Features
 
- * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
+* Policy name uniqueness is enforced. If two policies by the same name are attached to the same
    principal, the attachment will fail.
- * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
-
+* Policy names are not required - the CDK logical ID will be used and ensured to be unique.
 
 ### Instance Profile
 
@@ -34,7 +33,7 @@ const testRole = new iam.Role(stack, 'TestRole', {
 
 const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
     instanceProfileName: "InstanceProfileName",
-    roles: [ testRole ],
+    role: testRole,
     path: "/"
 });
 
