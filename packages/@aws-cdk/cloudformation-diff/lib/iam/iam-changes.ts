@@ -143,7 +143,20 @@ function renderTargets(targets: Targets): string {
  */
 function renderCondition(condition: any) {
   if (!condition || Object.keys(condition).length === 0) { return ''; }
-  return JSON.stringify(condition, undefined, 2);
+  const jsonRepresentation = JSON.stringify(condition, undefined, 2);
+
+  // The JSON representation looks like this:
+  //
+  //  {
+  //    "ArnLike": {
+  //      "AWS:SourceArn": "${MyTopic86869434}"
+  //    }
+  //  }
+  //
+  // We can make it more compact without losing information by getting rid of the outermost braces
+  // and the indentation.
+  const lines = jsonRepresentation.split('\n');
+  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
 }
 
 /**
