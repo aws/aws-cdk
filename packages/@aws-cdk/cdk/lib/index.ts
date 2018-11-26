@@ -16,6 +16,7 @@ export * from './cloudformation/resource';
 export * from './cloudformation/resource-policy';
 export * from './cloudformation/rule';
 export * from './cloudformation/stack';
+export * from './cloudformation/dynamic-reference';
 export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
 export * from './cloudformation/arn';

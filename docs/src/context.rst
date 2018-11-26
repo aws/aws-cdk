@@ -45,6 +45,10 @@ The |cdk| currently supports the following context providers.
      parameterName: 'my-awesome-parameter'
    }).parameterValue();
 
+
+This is only for reading plain strings, and not recommended for secrets. For reading secure strings from SSM Parmeter
+store, see the `:doc:passing_in_value_from_ssm` topic.
+
 :py:class:`HostedZoneProvider <@aws-cdk/aws-route53.HostedZoneProvider>`
 
     Use this provider to discover existing hosted zones in your account.
