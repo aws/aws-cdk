@@ -90,7 +90,7 @@ export class CloudAssembly {
           this._registerAsset(stack, asset, parameters);
         } else {
           stackMetadata[key] = stackMetadata[key] || [];
-          stackMetadata[key].push({ kind: metadata.type, value: { data: metadata.data, trace: metadata.trace } });
+          stackMetadata[key].push({ kind: metadata.type, value: { data: metadata.data, trace: metadata.trace } });
         }
       }
     }
@@ -106,6 +106,13 @@ export class CloudAssembly {
         parameters
       }
     };
+
+    for (const key of Object.keys(stack.missing || {})) {
+      const missingData = stack.missing![key];
+      this.manifest.missing = this.manifest.missing || {};
+      this.manifest.missing[key] = missingData;
+    }
+
     return this;
   }
 
