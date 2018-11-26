@@ -34,7 +34,7 @@ a single `object` that conforms to the following schema:
 Key           |Type                 |Required|Description
 --------------|---------------------|:------:|-----------
 `schema`      |`string`             |Required|The schema for the document. **MUST** be `cloud-assembly/1.0`.
-`drops`       |`Map<ID,Drop>`       |Required|A mapping of [*Logical ID*](#logical-id) to [Drop](#drop).
+`droplets`    |`Map<ID,Droplet>`    |Required|A mapping of [*Logical ID*](#logical-id) to [Droplet](#droplet).
 `missing`     |`Map<string,Missing>`|        |A mapping of context keys to [missing information](#missing).
 
 The [JSON] specification allows for keys to be specified multiple times in a given `object`. However, *Cloud Assembly*
@@ -42,7 +42,7 @@ consumers **MAY** assume keys are unique, and *Cloud Assemblers* **SHOULD** avoi
 duplicate keys are present and the manifest parser permits it, the latest specified value **SHOULD** be preferred.
 
 ### Logical ID
-*Logical IDs* are `string`s that uniquely identify [Drop](#drop)s in the context of a *Cloud Assembly*.
+*Logical IDs* are `string`s that uniquely identify [Droplet](#droplet)s in the context of a *Cloud Assembly*.
 * A *Logical ID* **MUST NOT** be empty.
 * A *Logical ID* **SHOULD NOT** exceed `256` characters.
 * A *Logical ID* **MUST** be composed of only the following ASCII printable characters:
@@ -54,36 +54,36 @@ duplicate keys are present and the manifest parser permits it, the latest specif
   + Forward-slash: `/` (`0x2F`)
   + Underscore: `_` (`0x5F`)
 * A *Logical ID* **MUST NOT** contain the `.` (`0x2E`) character as it is used in the string substitution pattern for
-  cross-drop references to separate the *Logical ID* from the *attribute* name.
+  cross-droplet references to separate the *Logical ID* from the *attribute* name.
 
 In other words, *Logical IDs* are expected to match the following regular expression:
 ```js
 /^[A-Za-z0-9+\/_-]{1,256}$/
 ```
 
-### Drop
-Clouds are made of Drops. Thet are the building blocks of *Cloud Assemblies*. They model a part of the
-*cloud application* that can be deployed independently, provided its dependencies are fulfilled. Drops are specified
+### Droplet
+Clouds are made of Droplets. Thet are the building blocks of *Cloud Assemblies*. They model a part of the
+*cloud application* that can be deployed independently, provided its dependencies are fulfilled. Droplets are specified
 using [JSON] objects that **MUST** conform to the following schema:
 
 Key          |Type                  |Required|Description
 -------------|----------------------|:------:|-----------
-`type`       |`string`              |Required|The [*Drop Type*](#drop-type) specifier of this Drop.
-`environment`|`string`              |required|The target [environment](#environment) in which Drop is deployed.
-`dependsOn`  |`string[]`            |        |*Logical IDs* of other Drops that must be deployed before this one.
-`metadata`   |`Map<string,Metadata>`|        |Arbitrary named [metadata](#metadata) associated with this Drop.
-`properties` |`Map<string,any>`     |        |The properties of this Drop as documented by its maintainers.
+`type`       |`string`              |Required|The [*Droplet Type*](#droplet-type) specifier of this Droplet.
+`environment`|`string`              |required|The target [environment](#environment) in which Droplet is deployed.
+`dependsOn`  |`string[]`            |        |*Logical IDs* of other Droplets that must be deployed before this one.
+`metadata`   |`Map<string,Metadata>`|        |Arbitrary named [metadata](#metadata) associated with this Droplet.
+`properties` |`Map<string,any>`     |        |The properties of this Droplet as documented by its maintainers.
 
-Each [Drop Type](#drop-type) can produce output strings that allow Drops to provide informations that other Drops can
-use when composing the *cloud application*. Each Drop implementer is responsible to document the output attributes it
-supports. References to these outputs are modeled using special `string` tokens within entries of the `properties`
-section of Drops:
+Each [Droplet Type](#droplet-type) can produce output strings that allow Droplets to provide informations that other
+[Droplets](#droplet) can use when composing the *cloud application*. Each Droplet implementer is responsible to document
+the output attributes it supports. References to these outputs are modeled using special `string` tokens within entries
+of the `properties` section of Droplets:
 
 ```
 ${LogicalId.attributeName}
   ╰───┬───╯ ╰─────┬─────╯
       │           └─ The name of the output attribute
-      └───────────── The Logical ID of the Drop
+      └───────────── The Logical ID of the Droplet
 ```
 
 The following escape sequences are valid:
@@ -93,13 +93,13 @@ The following escape sequences are valid:
 Deployment systems **SHOULD** return an error upon encountering an occurrence of the `\` literal that is not part of a
 valid escape sequence.
 
-Drops **MUST NOT** cause circular dependencies. Deployment systems **SHOULD** detect cycles and fail upon discovering
+Droplets **MUST NOT** cause circular dependencies. Deployment systems **SHOULD** detect cycles and fail upon discovering
 one.
 
-#### Drop Type
-Every Drop has a type specifier, which allows *Cloud Assembly* consumers to know how to deploy it. The type specifiers
-are `string`s that use an URI-like syntax (`protocol://path`), providing the coordinates to a reference implementation
-for the Drop behavior.
+#### Droplet Type
+Every Droplet has a type specifier, which allows *Cloud Assembly* consumers to know how to deploy it. The type
+specifiers are `string`s that use an URI-like syntax (`protocol://path`), providing the coordinates to a reference
+implementation for the Droplet behavior.
 
 Deployment systems **MUST** support at least one protocol, and **SHOULD** support all the protocols specified in
 the following sub-sections.
@@ -117,8 +117,8 @@ npm://[@namespace/]package/ClassName[@version]
 ```
 
 #### Environment
-Environments help Deployment systems determine where to deploy a particular Drop. They are referenced by `string`s that
-use an URI-like syntax (`protocol://path`).
+Environments help Deployment systems determine where to deploy a particular Droplet. They are referenced by `string`s
+that use an URI-like syntax (`protocol://path`).
 
 Deployment systems **MUST** support at least one protocol, and **SHOULD** support all the protocols specified in the
 following sub-sections.
@@ -134,7 +134,7 @@ aws://account/region
 ```
 
 ### Metadata
-Metadata can be attached to [Drops](#drop) to allow tools that work with *Cloud Assemblies* to share additional
+Metadata can be attached to [Droplets](#droplet) to allow tools that work with *Cloud Assemblies* to share additional
 information about the *cloud application*. Metadata **SHOULD NOT** be used to convey data that is necessary for
 correctly process the *Cloud Assembly*, since any tool that consumes a *Cloud Assembly* **MAY** choose to ignore any or
 all Metadata.
@@ -147,12 +147,12 @@ Key    |Type    |Required|Description
 A common use-case for Metadata is reporting warning or error messages that were emitted during the creation of the
 *Cloud Assembly*, so that deployment systems can present this information to users or logs. Warning and error messages
 **SHOULD** set the `kind` field to `warning` and `error` respectively, and the `value` field **SHOULD** contain a single
-`string`. Deployment systems **MAY** reject *Cloud Assemblies* that include [Drops](#drop) that carry one or more
+`string`. Deployment systems **MAY** reject *Cloud Assemblies* that include [Droplets](#droplet) that carry one or more
 `error` Metadata entries, and they **SHOULD** surface `warning` messages, either directly through their user interface,
 or in the execution log.
 
 ### Missing
-[Drops](#drop) may require contextual information to be available in order to correctly participate in a
+[Droplets](#droplet) may require contextual information to be available in order to correctly participate in a
 *Cloud Assembly*. When information is missing, *Cloud Assembly* producers report the missing information by adding
 entries to the `missing` section of the [manifest document](#manifest-document). The values are [JSON] `object`s that
 **MUST** conform to the following schema:
@@ -236,10 +236,10 @@ Deployment systems that support verifying signed *Cloud Assemblies*:
 * **SHOULD** allow configuration of a list of trusted [PGP][RFC 4880] keys.
 
 ## Annex
-### Examples of Drops for the AWS Cloud
-The Drop specifications provided in this section are for illustration purpose only.
+### Examples of Droplets for the AWS Cloud
+The Droplet specifications provided in this section are for illustration purpose only.
 
-#### `@aws-cdk/aws-cloudformation.StackDrop`
+#### `@aws-cdk/aws-cloudformation.StackDroplet`
 A [*CloudFormation* stack][CFN Stack].
 
 ##### Properties
@@ -259,7 +259,7 @@ Attribute      |Type    |Description
 ##### Example
 ```json
 {
-  "type": "npm://@aws-cdk/aws-cloudformation.StackDrop",
+  "type": "npm://@aws-cdk/aws-cloudformation.StackDroplet",
   "environment": "aws://000000000000/bermuda-triangle-1",
   "properties": {
     "template": "my-stack/template.yml",
@@ -276,7 +276,7 @@ Attribute      |Type    |Description
 [CFN Stack Policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/protect-stack-resources.html
 [CFN Outputs]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 
-#### `@aws-cdk/assets.FileDrop`
+#### `@aws-cdk/assets.FileDroplet`
 A file that needs to be uploaded to an *S3* bucket.
 
 ##### Properties
@@ -295,7 +295,7 @@ Attribute   |Type    |Description
 ##### Example
 ```json
 {
-  "type": "npm://@aws-cdk/assets.FileDrop",
+  "type": "npm://@aws-cdk/assets.FileDroplet",
   "environment": "aws://000000000000/bermuda-triangle-1",
   "properties": {
     "file": "assets/file.bin",
@@ -305,7 +305,7 @@ Attribute   |Type    |Description
 }
 ```
 
-#### `@aws-cdk/aws-ecr.DockerImageDrop`
+#### `@aws-cdk/aws-ecr.DockerImageDroplet`
 A Docker image to be published to an *ECR* registry.
 
 ##### Properties
@@ -324,7 +324,7 @@ Attribute     |Type    |Description
 ##### Example
 ```json
 {
-  "type": "npm://@aws-cdk/aws-ecr.DockerImageDrop",
+  "type": "npm://@aws-cdk/aws-ecr.DockerImageDroplet",
   "environment": "aws://000000000000/bermuda-triangle-1",
   "properties": {
     "savedImage": "docker/37e6de0b24fa.tar",
@@ -358,16 +358,16 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
 ```json
 {
   "schema": "cloud-assembly/1.0",
-  "drops": {
+  "droplets": {
     "PipelineStack": {
-      "type": "npm://@aws-cdk/aws-cloudformation.StackDrop",
+      "type": "npm://@aws-cdk/aws-cloudformation.StackDroplet",
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "template": "stacks/PipelineStack.yml"
       }
     },
     "ServiceStack-beta": {
-      "type": "npm://@aws-cdk/aws-cloudformation.StackDrop",
+      "type": "npm://@aws-cdk/aws-cloudformation.StackDroplet",
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "template": "stacks/ServiceStack-beta.yml",
@@ -380,7 +380,7 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
       }
     },
     "ServiceStack-prod": {
-      "type": "npm://@aws-cdk/aws-cloudformation.StackDrop",
+      "type": "npm://@aws-cdk/aws-cloudformation.StackDroplet",
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "template": "stacks/ServiceStack-prod.yml",
@@ -393,7 +393,7 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
       }
     },
     "DockerImage": {
-      "type": "npm://@aws-cdk/aws-ecr.DockerImageDrop",
+      "type": "npm://@aws-cdk/aws-ecr.DockerImageDroplet",
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "savedImage": "docker/docker-image.tar",
@@ -401,7 +401,7 @@ Here is an example the contents of a complete *Cloud Assembly* that deploys AWS 
       }
     },
     "StaticFiles": {
-      "type": "npm://@aws-cdk/assets.DirectoryDrop",
+      "type": "npm://@aws-cdk/assets.DirectoryDroplet",
       "environment": "aws://123456789012/eu-west-1",
       "properties": {
         "directory": "assets/static-website",

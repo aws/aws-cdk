@@ -40,7 +40,7 @@ export class CloudAssembly {
   private readonly archiver: archiver.Archiver;
   private readonly errorEmitter = new events.EventEmitter();
   private readonly fileData: { [path: string]: cloudAssembly.FileData } = {};
-  private readonly manifest: cloudAssembly.Manifest = { schema: 'cloud-assembly/1.0', drops: {} };
+  private readonly manifest: cloudAssembly.Manifest = { schema: 'cloud-assembly/1.0', droplets: {} };
   private readonly nonce = crypto.randomBytes(HASH_LENGTH);
   private readonly writer: fs.WriteStream;
 
@@ -97,7 +97,7 @@ export class CloudAssembly {
 
     const templatePath = `${stack.name}/template.yml`;
     this._addFile(templatePath, toYAML(stack.template)).catch(err => this.errorEmitter.emit('error', err));
-    this.manifest.drops[stack.name] = {
+    this.manifest.droplets[stack.name] = {
       type: 'npm://aws-cdk/cloudformation-stack',
       environment: _stackEnvironment(stack),
       metadata: stackMetadata,
@@ -183,7 +183,7 @@ export class CloudAssembly {
     switch (asset.packaging) {
     case 'file':
       this._addFile(filePath, fs.createReadStream(asset.path)).catch(e => { throw e; });
-      this.manifest.drops[dropName] = {
+      this.manifest.droplets[dropName] = {
         type: 'npm://aws-cdk/s3-object',
         environment: _stackEnvironment(stack),
         properties: { filePath },
@@ -195,7 +195,7 @@ export class CloudAssembly {
       const zip = archiver('zip', { zlib: { level: 9 } }).directory(asset.path, '');
       this._addFile(`${filePath}.zip`, zip).catch(e => { throw e; });
       zip.finalize();
-      this.manifest.drops[dropName] = {
+      this.manifest.droplets[dropName] = {
         type: 'npm://aws-cdk/s3-object',
         environment: _stackEnvironment(stack),
         properties: { filePath: `${filePath}.zip` }

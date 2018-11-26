@@ -1,5 +1,5 @@
 import nodeunit = require('nodeunit');
-import { validateManifest } from '../lib';
+import { Manifest, validateManifest } from '../lib';
 
 export = nodeunit.testCase({
   validateManifest: {
@@ -8,43 +8,43 @@ export = nodeunit.testCase({
       test.done();
     },
     'rejects a document where the schema is invalid'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      badManifest.schema = 'foo/1.0-bar';
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      (badManifest as any).schema = 'foo/1.0-bar';
       test.throws(() => validateManifest(badManifest),
                   /instance\.schema is not one of enum values/);
       test.done();
     },
-    'rejects a document without drops'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      delete badManifest.drops;
+    'rejects a document without droplets'(test: nodeunit.Test) {
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      delete badManifest.droplets;
       test.throws(() => validateManifest(badManifest),
-                  /instance requires property "drops"/);
+                  /instance requires property "droplets"/);
       test.done();
     },
     'rejects a document with an illegal Logical ID'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      badManifest.drops['Pipeline.Stack'] = badManifest.drops.PipelineStack;
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      badManifest.droplets['Pipeline.Stack'] = badManifest.droplets.PipelineStack;
       test.throws(() => validateManifest(badManifest),
                   /Invalid logical ID: Pipeline\.Stack/);
       test.done();
     },
     'rejects a document with unresolved dependsOn'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      badManifest.drops.PipelineStack.dependsOn = ['DoesNotExist'];
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      badManifest.droplets.PipelineStack.dependsOn = ['DoesNotExist'];
       test.throws(() => validateManifest(badManifest),
                   /PipelineStack depends on undefined drop through dependsOn DoesNotExist/);
       test.done();
     },
     'rejects a document with direct circular dependency via dependsOn'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      badManifest.drops.PipelineStack.dependsOn = ['PipelineStack'];
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      badManifest.droplets.PipelineStack.dependsOn = ['PipelineStack'];
       test.throws(() => validateManifest(badManifest),
                   /PipelineStack => dependsOn PipelineStack/);
       test.done();
     },
     'rejects a document with indirect circular dependency'(test: nodeunit.Test) {
-      const badManifest = JSON.parse(JSON.stringify(SAMPLE_MANIFEST));
-      badManifest.drops.StaticFiles.dependsOn = ['ServiceStack-beta'];
+      const badManifest = _clone(SAMPLE_MANIFEST);
+      badManifest.droplets.StaticFiles.dependsOn = ['ServiceStack-beta'];
       test.throws(() => validateManifest(badManifest),
                   // tslint:disable-next-line:max-line-length
                   /StaticFiles => dependsOn ServiceStack-beta => ServiceStack-beta\.properties\.parameters\.websiteFilesKeyPrefix "\${StaticFiles\.keyPrefix}"/);
@@ -53,9 +53,10 @@ export = nodeunit.testCase({
   }
 });
 
-const SAMPLE_MANIFEST = {
+/* Don't assume this has meaning beyond being a syntactically valid manifest document */
+const SAMPLE_MANIFEST: Manifest = {
   schema: "cloud-assembly/1.0",
-  drops: {
+  droplets: {
     "PipelineStack": {
       type: "npm://@aws-cdk/aws-cloudformation.StackDrop",
       environment: "aws://123456789012/eu-west-1",
@@ -107,3 +108,7 @@ const SAMPLE_MANIFEST = {
     }
   }
 };
+
+function _clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}

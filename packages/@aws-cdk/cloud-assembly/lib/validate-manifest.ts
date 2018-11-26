@@ -1,5 +1,5 @@
 import jsonschema = require('jsonschema');
-import { Drop, Manifest } from './manifest';
+import { Droplet, Manifest } from './manifest';
 
 // tslint:disable-next-line:no-var-requires
 export const schema: jsonschema.Schema = require('../schema/manifest.schema.json');
@@ -25,12 +25,12 @@ export function validateManifest(obj: unknown): Manifest {
 
 function validateSemantics(manifest: Manifest): Manifest {
   const dependencyGraph: { [id: string]: Reference[] } = {};
-  for (const logicalId of Object.keys(manifest.drops)) {
+  for (const logicalId of Object.keys(manifest.droplets)) {
     assertValidLogicalId(logicalId);
-    const drop = manifest.drops[logicalId];
+    const drop = manifest.droplets[logicalId];
     const references = dependencyGraph[logicalId] = listReferences(drop, logicalId);
     for (const ref of references) {
-      if (!(ref.logicalId in manifest.drops)) {
+      if (!(ref.logicalId in manifest.droplets)) {
         throw new Error(`${logicalId} depends on undefined drop through ${ref.context}.`);
       }
     }
@@ -78,7 +78,7 @@ function assertValidLogicalId(str: string): void {
   }
 }
 
-function listReferences(drop: Drop, dropId: string): Reference[] {
+function listReferences(drop: Droplet, dropId: string): Reference[] {
   const result = new Array<Reference>();
   for (const logicalId of drop.dependsOn || []) {
     result.push({ logicalId, context: `dependsOn ${logicalId}` });
