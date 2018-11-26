@@ -3,6 +3,7 @@ import colors = require('colors/safe');
 import process = require('process');
 import yargs = require('yargs');
 import { debug,  print, warning } from '../../lib/logging';
+import { CommandOptions } from '../command-api';
 
 export const command = 'docs';
 export const describe = 'Opens the documentation in a browser';
@@ -20,11 +21,15 @@ export interface Arguments extends yargs.Arguments {
   browser: string
 }
 
-export function handler(argv: Arguments): Promise<number> {
+export function handler(args: yargs.Arguments) {
+  args.commandHandler = realHandler;
+}
+
+export async function realHandler(options: CommandOptions): Promise<number> {
   const docVersion = require('../../package.json').version;
   const url = `https://awslabs.github.io/aws-cdk/versions/${docVersion}/`;
   print(colors.green(url));
-  const browserCommand = argv.browser.replace(/%u/g, url);
+  const browserCommand = options.args.browser.replace(/%u/g, url);
   debug(`Opening documentation ${colors.green(browserCommand)}`);
   return new Promise<number>((resolve, _reject) => {
     childProcess.exec(browserCommand, (err, stdout, stderr) => {

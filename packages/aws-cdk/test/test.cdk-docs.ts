@@ -1,7 +1,11 @@
 import mockery = require('mockery');
 import { ICallbackFunction, Test, testCase } from 'nodeunit';
+import { CommandHandler } from '../lib/command-api';
 
-const argv = { browser: 'echo %u' };
+const argv = {
+  browser: 'echo %u',
+  commandHandler: undefined as (CommandHandler | undefined),
+};
 
 module.exports = testCase({
   '`cdk docs`': {
@@ -22,7 +26,10 @@ module.exports = testCase({
     },
     async 'exits with 0 when everything is OK'(test: Test) {
       try {
-        const result = await require('../lib/commands/docs').handler(argv);
+        require('../lib/commands/docs').handler(argv);
+        const result = await argv.commandHandler!({
+          args: argv
+        } as any);
         test.equal(result, 0, 'exit status was 0');
       } catch (e) {
         test.doesNotThrow(() => { throw e; });
@@ -37,7 +44,10 @@ module.exports = testCase({
         }
       });
       try {
-        const result = await require('../lib/commands/docs').handler(argv);
+        require('../lib/commands/docs').handler(argv);
+        const result = await argv.commandHandler!({
+          args: argv
+        } as any);
         test.equal(result, 0, 'exit status was 0');
       } catch (e) {
         test.doesNotThrow(() => { throw e; });

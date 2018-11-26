@@ -63,7 +63,7 @@ async function parseCommandLineArguments() {
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
-    .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
+    .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(VERSION)
     .demandCommand(1, '') // just print help
     .help()
@@ -74,47 +74,6 @@ async function parseCommandLineArguments() {
     .argv;
 }
 // tslint:enable:no-shadowed-variable max-line-length
-
-/**
- * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
- * options as appropriate.
- *
- * Command handlers are supposed to be (args) => void, but ours are actually
- * (args) => Promise<number>, so we deal with the asyncness by copying the actual
- * handler object to `args.commandHandler` which will be 'await'ed later on
- * (instead of awaiting 'main').
- *
- * Also adds exception handling so individual command handlers don't all have to do it.
- *
- * @param commandObject is the command to be decorated.
- * @returns a decorated ``CommandModule``.
- */
-function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModule {
-  return {
-    ...commandObject,
-    handler(args: yargs.Arguments) {
-      if (args.verbose) {
-        setVerbose();
-      }
-      args.commandHandler = wrapExceptionHandler(args.verbose, commandObject.handler as any)(args);
-    }
-  };
-}
-
-function wrapExceptionHandler(verbose: boolean, fn: (args: any) => Promise<number>) {
-  return async (a: any) => {
-    try {
-      return await fn(a);
-    } catch (e) {
-      if (verbose) {
-        error(e);
-      } else {
-        error(e.message);
-      }
-      return 1;
-    }
-  };
-}
 
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
@@ -167,7 +126,10 @@ async function initCommandLine() {
 
   const cmd = argv._[0];
 
-  const returnValue = await (argv.commandHandler || main(cmd, argv));
+  // Bundle up global objects so the commands have access to them
+  const commandOptions = { args: argv, appStacks, configuration, aws };
+
+  const returnValue = argv.commandHandler ? await argv.commandHandler(commandOptions) : await main(cmd, argv);
   if (typeof returnValue === 'object') {
     return toJsonOrYaml(returnValue);
   } else if (typeof returnValue === 'string') {
