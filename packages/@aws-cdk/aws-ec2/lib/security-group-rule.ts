@@ -350,6 +350,7 @@ export class IcmpPing implements IPortRange {
     return {
       ipProtocol: Protocol.Icmp,
       fromPort: 8,
+      toPort: -1
     };
   }
 

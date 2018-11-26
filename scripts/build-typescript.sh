@@ -14,7 +14,7 @@ cat <<EOF > tsconfig.json
             "es2017.string"
         ],
         "module": "CommonJS",
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,

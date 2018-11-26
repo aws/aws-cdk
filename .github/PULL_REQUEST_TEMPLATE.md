@@ -22,10 +22,10 @@ manually executed (paste output to the PR description)
 ### Title and description
 
 - [ ] __Change type__: Title is prefixed with change type:
- * `fix(module): <title>` bug fix (_patch_)
- * `feat(module): <title>` feature/capability (_minor_)
- * `chore(module): <title> ` won't appear in changelog
- * `build(module): <title>` won't appear in changelog
+  * `fix(module): <title>` bug fix (_patch_)
+  * `feat(module): <title>` feature/capability (_minor_)
+  * `chore(module): <title> ` won't appear in changelog
+  * `build(module): <title>` won't appear in changelog
 - [ ] __Title format__: Title uses lower case and doesn't end with a period
 - [ ] __Breaking change?__: Last paragraph of description is: `BREAKING
   CHANGE: <describe exactly what changed and how to achieve similar behavior +

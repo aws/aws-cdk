@@ -58,10 +58,6 @@ export class Configuration {
   }
 }
 
-export async function saveProjectConfig(settings: Settings) {
-  return settings.save(DEFAULTS);
-}
-
 /**
  * A single set of settings
  */
