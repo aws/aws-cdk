@@ -61,7 +61,6 @@ export class InstanceProfile extends InstanceProfileRef {
         if (!this.role) {
           return;
         }
-        console.log('>>instance-profile-ref.addToRolePolicy');
         this.role.addToPolicy(statement);
     }
 

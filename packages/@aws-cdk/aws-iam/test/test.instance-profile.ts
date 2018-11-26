@@ -162,8 +162,6 @@ export = {
                 { Ref: "TestEC2RoleBD27AEF4" }
             ]
         }));
-
-        console.log('>>after.stack:', JSON.stringify(stack.toCloudFormation()));
         test.done();
     },
     'import/export': {
