@@ -125,6 +125,47 @@ export = {
         test.done();
     },
 
+    'test addToRolePolicy'(test: Test) {
+        const stack = new Stack();
+
+        const testEc2Role = new Role(stack, 'TestEC2Role', {
+            assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+          });
+
+        const instanceProfile = new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            role: testEc2Role
+        });
+
+        instanceProfile.addToRolePolicy(
+            new PolicyStatement().addAction('confirm:itsthesame')
+        );
+
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ],
+            Path: '/'
+        }));
+
+        expect(stack).to(haveResource('AWS::IAM::Policy', {
+            PolicyDocument: {
+                Statement: [
+                    {
+                        Action: "confirm:itsthesame",
+                        Effect: "Allow"
+                    }
+                ],
+                Version: "2012-10-17"
+            },
+            PolicyName: "TestEC2RoleDefaultPolicyD19D9935",
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ]
+        }));
+
+        console.log('>>after.stack:', JSON.stringify(stack.toCloudFormation()));
+        test.done();
+    },
     'import/export': {
         'default ec2 role created'(test: Test) {
             const stack = new Stack();

@@ -61,6 +61,8 @@ export abstract class InstanceProfileRef extends cdk.Construct {
      */
     public abstract readonly instanceProfileName?: string;
 
+    public abstract addToRolePolicy(statement: PolicyStatement): void;
+
     /**
      * Exports this InstanceProfile
      */
@@ -71,13 +73,7 @@ export abstract class InstanceProfileRef extends cdk.Construct {
             instanceProfileName: this.instanceProfileName
         };
     }
-
-    public addToRolePolicy(statement: PolicyStatement) {
-        if (!this.role) {
-          return;
-        }
-        this.role.addToPolicy(statement);
-    }
+    /* tslint:disable:no-console */
 }
 
 class InstanceProfileRefImport extends InstanceProfileRef {
@@ -90,6 +86,10 @@ class InstanceProfileRefImport extends InstanceProfileRef {
         this.path = props.path;
         this.role = props.role;
         this.instanceProfileName = props.instanceProfileName;
+    }
+
+    public addToRolePolicy(_statement: PolicyStatement) {
+        // ignore
     }
 
 }

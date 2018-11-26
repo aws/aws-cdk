@@ -1,7 +1,7 @@
 import { Construct } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
 import { InstanceProfileRef } from './instance-profile-ref';
-import { ServicePrincipal } from './policy-document';
+import { PolicyStatement, ServicePrincipal } from './policy-document';
 import { Role } from './role';
 
 export interface InstanceProfileProps {
@@ -56,6 +56,13 @@ export class InstanceProfile extends InstanceProfileRef {
             path: this.path
         });
 
+    }
+    public addToRolePolicy(statement: PolicyStatement) {
+        if (!this.role) {
+          return;
+        }
+        console.log('>>instance-profile-ref.addToRolePolicy');
+        this.role.addToPolicy(statement);
     }
 
 }
