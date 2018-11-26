@@ -1,13 +1,19 @@
 import colors = require('colors/safe');
 import process = require('process');
+import yargs = require('yargs');
 import { print } from '../../lib/logging';
 import { VERSION } from '../../lib/version';
+import { CommandOptions } from '../command-api';
 
 export const command = 'doctor';
 export const describe = 'Check your set-up for potential problems';
 export const builder = {};
 
-export async function handler(): Promise<number> {
+export function handler(args: yargs.Arguments) {
+  args.commandHandler = realHandler;
+}
+
+export async function realHandler(_options: CommandOptions): Promise<number> {
   let exitStatus: number = 0;
   for (const verification of verifications) {
     if (!await verification()) {
