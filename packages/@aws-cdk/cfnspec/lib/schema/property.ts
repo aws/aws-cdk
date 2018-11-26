@@ -22,7 +22,7 @@ export interface PropertyBase extends Documented {
    *
    * @default None
    */
-  ScrutinyType?: ScrutinyType;
+  ScrutinyType?: PropertyScrutinyType;
 }
 
 export interface PrimitiveProperty extends PropertyBase {
@@ -162,7 +162,7 @@ export function isUnionProperty(prop: Property): prop is UnionProperty {
   return !!(castProp.ItemTypes || castProp.PrimitiveTypes || castProp.Types);
 }
 
-export enum ScrutinyType {
+export enum PropertyScrutinyType {
   /**
    * No additional scrutiny
    */
@@ -179,6 +179,6 @@ export enum ScrutinyType {
   ResourcePolicy = 'ResourcePolicy',
 }
 
-export function isScrutinyType(str: string): str is ScrutinyType {
-  return (ScrutinyType as any)[str] !== undefined;
+export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType {
+  return (PropertyScrutinyType as any)[str] !== undefined;
 }

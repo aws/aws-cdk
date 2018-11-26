@@ -37,7 +37,7 @@ function validateProperties(typeName: string,
     test.notEqual(property.Documentation, '', `${typeName}.Properties.${name} is documented`);
     test.ok(schema.isUpdateType(property.UpdateType), `${typeName}.Properties.${name} has valid UpdateType`);
     if (property.ScrutinyType !== undefined) {
-      test.ok(schema.isScrutinyType(property.ScrutinyType), `${typeName}.Properties.${name} has valid ScrutinyType`);
+      test.ok(schema.isPropertyScrutinyType(property.ScrutinyType), `${typeName}.Properties.${name} has valid ScrutinyType`);
     }
     test.notEqual(property.Required, null, `${typeName}.Properties.${name} has required flag`);
 

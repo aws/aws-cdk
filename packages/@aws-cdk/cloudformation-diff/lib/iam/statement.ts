@@ -51,17 +51,54 @@ export class Statement {
       && this.principals.equal(other.principals)
       && deepEqual(this.condition, other.condition));
   }
-
 }
 
 /**
  * Parse a list of statements from undefined, a Statement, or a list of statements
- * @param x Pa
  */
 export function parseStatements(x: any): Statement[] {
   if (x === undefined) { x = []; }
   if (!Array.isArray(x)) { x = [x]; }
   return x.map((s: any) => new Statement(s));
+}
+
+/**
+ * Parse a Statement from a Lambda::Permission object
+ *
+ * This is actually what Lambda adds to the policy document if you call AddPermission.
+ */
+export function parseLambdaPermission(x: any): Statement {
+  // Construct a statement from
+  const statement: any = {
+    Effect: 'Allow',
+    Action: x.Action,
+    Resource: x.FunctionName,
+  };
+
+  if (x.Principal !== undefined) {
+    if (x.Principal === '*') {
+      // *
+      statement.Principal = '*';
+    } else if (/^\d{12}$/.test(x.Principal)) {
+      // Account number
+      statement.Principal = { AWS: `arn:aws:iam::${x.Principal}:root` };
+    } else {
+      // Assume it's a service principal
+      // We might get this wrong vs. the previous one for tokens. Nothing to be done
+      // about that. It's only for human readable consumption after all.
+      statement.Principal = { Service: x.Principal };
+    }
+  }
+  if (x.SourceArn !== undefined) {
+    if (statement.Condition === undefined) { statement.Condition = {}; }
+    statement.Condition.ArnLike = { 'AWS:SourceArn': x.SourceArn };
+  }
+  if (x.SourceAccount !== undefined) {
+    if (statement.Condition === undefined) { statement.Condition = {}; }
+    statement.Condition.StringEquals = { 'AWS:SourceAccount': x.SourceAccount };
+  }
+
+  return new Statement(statement);
 }
 
 /**
@@ -141,11 +178,12 @@ function expectEffect(x: unknown): Effect {
 function forceListOfStrings(x: unknown): string[] {
   if (typeof x === 'string') { return [x]; }
   if (typeof x === 'undefined' || x === null) { return []; }
+
   if (Array.isArray(x)) {
     return x.map(el => `${el}`);
   }
 
-  if (typeof x === 'object') {
+  if (typeof x === 'object' && x !== null) {
     const ret: string[] = [];
     for (const [key, value] of Object.entries(x)) {
       ret.push(...forceListOfStrings(value).map(s => `${key}:${s}`));

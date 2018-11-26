@@ -1,5 +1,17 @@
 {
     "ResourceTypes": {
+        "AWS::Lambda::Permission": {
+            "patch": {
+                "description": "Permission scrutiny",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/ScrutinyType",
+                        "value": "LambdaPermission"
+                    }
+                ]
+            }
+        },
         "AWS::SNS::Subscription": {
             "patch": {
                 "description": "SNS: These are not IAM policies",

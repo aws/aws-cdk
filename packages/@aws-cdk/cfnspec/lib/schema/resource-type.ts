@@ -19,6 +19,13 @@ export interface ResourceType extends Documented {
    * What kind of value the 'Ref' operator refers to, if any.
    */
   RefKind?: string;
+
+  /**
+   * During a stack update, what kind of additional scrutiny changes to this resource should be subjected to
+   *
+   * @default None
+   */
+  ScrutinyType?: ResourceScrutinyType;
 }
 
 export type Attribute = PrimitiveAttribute | ListAttribute;
@@ -70,4 +77,20 @@ export enum SpecialRefKind {
    * The generated class will inherit from the built-in 'Arn' type.
    */
   Arn = 'Arn'
+}
+
+export enum ResourceScrutinyType {
+  /**
+   * No additional scrutiny
+   */
+  None = 'None',
+
+  /**
+   * This is a Lambda Permission policy
+   */
+  LambdaPermission = 'LambdaPermission',
+}
+
+export function isResourceScrutinyType(str: string): str is ResourceScrutinyType {
+  return (ResourceScrutinyType as any)[str] !== undefined;
 }

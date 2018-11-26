@@ -68,15 +68,29 @@ function makePredicate(filter: string | RegExp | Filter): Filter {
 /**
  * Return the properties of the given type that require the given scrutiny type
  */
-export function scrutinizablePropertyNames(resourceType: string, scrutinyType: schema.ScrutinyType): string[] {
+export function scrutinizablePropertyNames(resourceType: string, scrutinyType: schema.PropertyScrutinyType): string[] {
   const impl = specification.ResourceTypes[resourceType];
   if (!impl) { return []; }
 
   const ret = new Array<string>();
 
   for (const [propertyName, propertySpec] of Object.entries(impl.Properties || {})) {
-    if ((propertySpec.ScrutinyType || schema.ScrutinyType.None) === scrutinyType) {
+    if ((propertySpec.ScrutinyType || schema.PropertyScrutinyType.None) === scrutinyType) {
       ret.push(propertyName);
+    }
+  }
+
+  return ret;
+}
+
+/**
+ * Return the names of the resource types that need to be subjected to additional scrutiny
+ */
+export function scrutinizableResourceTypes(scrutinyType: schema.ResourceScrutinyType): string[] {
+  const ret = new Array<string>();
+  for (const [resourceType, resourceSpec] of Object.entries(specification.ResourceTypes)) {
+    if ((resourceSpec.ScrutinyType || schema.PropertyScrutinyType.None) === scrutinyType) {
+      ret.push(resourceType);
     }
   }
 

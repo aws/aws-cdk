@@ -1,5 +1,5 @@
 import { schema } from '../lib';
-import { ScrutinyType } from '../lib/schema';
+import { PropertyScrutinyType } from '../lib/schema';
 
 /**
  * Auto-detect common properties to apply scrutiny to by using heuristics
@@ -24,7 +24,7 @@ export function detectScrutinyTypes(spec: schema.Specification) {
 
         if (nameContainsPolicy && primitiveType === 'Json') {
           const isIamResource = typeName.indexOf('::IAM::') > 1;
-          propertySpec.ScrutinyType = isIamResource ? ScrutinyType.IdentityPolicy : ScrutinyType.ResourcePolicy;
+          propertySpec.ScrutinyType = isIamResource ? PropertyScrutinyType.IdentityPolicy : PropertyScrutinyType.ResourcePolicy;
           continue;
         }
       }

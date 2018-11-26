@@ -1,6 +1,6 @@
 import colors = require('colors/safe');
-import { PropertyChange } from "../diff/types";
-import { parseStatements, Statement, Targets } from "./statement";
+import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
+import { parseLambdaPermission, parseStatements, Statement, Targets } from "./statement";
 import { unCloudFormation } from "./uncfn";
 
 /**
@@ -12,7 +12,7 @@ export class IamChanges {
   private oldStatements: Statement[] = [];
   private newStatements: Statement[] = [];
 
-  constructor(identityPolicyChanges: PropertyChange[], resourcePolicyChanges: PropertyChange[]) {
+  constructor(identityPolicyChanges: PropertyChange[], resourcePolicyChanges: PropertyChange[], lambdaPermissionChanges: ResourceChange[]) {
     for (const policyChange of identityPolicyChanges) {
       this.oldStatements.push(...this.readIdentityStatements(policyChange.oldValue, policyChange.propertyName, policyChange.resourceLogicalId));
       this.newStatements.push(...this.readIdentityStatements(policyChange.newValue, policyChange.propertyName, policyChange.resourceLogicalId));
@@ -20,6 +20,10 @@ export class IamChanges {
     for (const policyChange of resourcePolicyChanges) {
       this.oldStatements.push(...this.readResourceStatements(policyChange.oldValue, policyChange.resourceLogicalId));
       this.newStatements.push(...this.readResourceStatements(policyChange.newValue, policyChange.resourceLogicalId));
+    }
+    for (const lambdaChange of lambdaPermissionChanges) {
+      this.oldStatements.push(...this.readLambdaStatements(lambdaChange.oldProperties));
+      this.newStatements.push(...this.readLambdaStatements(lambdaChange.newProperties));
     }
 
     this.additions.push(...this.newStatements.filter(s => !hasStatement(s, this.oldStatements)));
@@ -111,6 +115,12 @@ export class IamChanges {
     statements.forEach(s => s.resources.replaceStar(rep));
 
     return statements;
+  }
+
+  private readLambdaStatements(properties?: PropertyMap): Statement[] {
+    if (!properties) { return []; }
+
+    return [parseLambdaPermission(unCloudFormation(properties))];
   }
 }
 

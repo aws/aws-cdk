@@ -26,7 +26,7 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
+export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
   const resourceType =  {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type
@@ -34,12 +34,12 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
   let propertyUpdates: { [key: string]: types.PropertyDifference<any> } = {};
   let otherChanges: { [key: string]: types.Difference<any> } = {};
 
-  if (resourceType.oldType === resourceType.newType) {
+  if (resourceType.oldType !== undefined && resourceType.oldType === resourceType.newType) {
     // Only makes sense to inspect deeper if the types stayed the same
     const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
     const impl = typeSpec.ResourceTypes[resourceType.oldType];
-    propertyUpdates = diffKeyedEntities(oldValue.Properties,
-                      newValue.Properties,
+    propertyUpdates = diffKeyedEntities(oldValue!.Properties,
+                      newValue!.Properties,
                       (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
     otherChanges = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherChanges.Properties;
@@ -47,8 +47,8 @@ export function diffResource(oldValue: types.Resource, newValue: types.Resource)
 
   return new types.ResourceDifference(oldValue, newValue, {
     resourceType, propertyUpdates, otherChanges,
-    oldProperties: (oldValue && oldValue.Properties) || {},
-    newProperties: (newValue && newValue.Properties) || {}
+    oldProperties: oldValue && oldValue.Properties,
+    newProperties: newValue && newValue.Properties,
   });
 
   function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: cfnspec.schema.ResourceType) {

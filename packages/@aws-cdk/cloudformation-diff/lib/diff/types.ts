@@ -3,6 +3,8 @@ import { AssertionError } from 'assert';
 import { IamChanges } from '../iam/iam-changes';
 import { deepEqual } from './util';
 
+export type PropertyMap = {[key: string]: any };
+
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
   public awsTemplateFormatVersion?: Difference<string>;
@@ -42,8 +44,10 @@ export class TemplateDiff implements ITemplateDiff {
     this.unknown = args.unknown || new DifferenceCollection({});
 
     this.iamChanges = new IamChanges(
-      this.scrutinizablePropertyChanges(cfnspec.schema.ScrutinyType.IdentityPolicy),
-      this.scrutinizablePropertyChanges(cfnspec.schema.ScrutinyType.ResourcePolicy));
+      this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IdentityPolicy),
+      this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ResourcePolicy),
+      this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.LambdaPermission),
+      );
   }
 
   public get count() {
@@ -80,7 +84,7 @@ export class TemplateDiff implements ITemplateDiff {
    * We don't just look at property updates; we also look at resource additions and deletions (in which
    * case there is no further detail on property values), and resource type changes.
    */
-  public scrutinizablePropertyChanges(scrutinyType: cfnspec.schema.ScrutinyType): PropertyChange[] {
+  public scrutinizablePropertyChanges(scrutinyType: cfnspec.schema.PropertyScrutinyType): PropertyChange[] {
     const ret = new Array<PropertyChange>();
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
@@ -90,9 +94,55 @@ export class TemplateDiff implements ITemplateDiff {
       for (const propertyName of props) {
         ret.push({
           resourceLogicalId, propertyName,
-          oldValue: resourceChange.oldProperties[propertyName],
-          newValue: resourceChange.newProperties[propertyName],
+          oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],
+          newValue: resourceChange.newProperties && resourceChange.newProperties[propertyName],
         });
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+   * Return all resource changes of a given scrutiny type
+   *
+   * We don't just look at resource updates; we also look at resource additions and deletions (in which
+   * case there is no further detail on property values), and resource type changes.
+   */
+  public scrutinizableResourceChanges(scrutinyType: cfnspec.schema.ResourceScrutinyType): ResourceChange[] {
+    const ret = new Array<ResourceChange>();
+
+    const scrutinizableTypes = new Set(cfnspec.scrutinizableResourceTypes(scrutinyType));
+
+    for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
+      if (!resourceChange) { continue; }
+
+      // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
+      if (resourceChange.resourceTypeChanged) {
+        // Treat as DELETE+ADD
+        if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
+          ret.push({
+            oldProperties: resourceChange.oldProperties,
+            resourceLogicalId,
+            resourceType: resourceChange.oldResourceType!
+          });
+        }
+        if (scrutinizableTypes.has(resourceChange.newResourceType!)) {
+          ret.push({
+            newProperties: resourceChange.newProperties,
+            resourceLogicalId,
+            resourceType: resourceChange.newResourceType!
+          });
+        }
+      } else {
+        if (scrutinizableTypes.has(resourceChange.resourceType)) {
+          ret.push({
+            oldProperties: resourceChange.oldProperties,
+            newProperties: resourceChange.newProperties,
+            resourceLogicalId,
+            resourceType: resourceChange.resourceType
+          });
+        }
       }
     }
 
@@ -128,6 +178,33 @@ export interface PropertyChange {
    * The new property value
    */
   newValue?: any;
+}
+
+/**
+ * A resource change
+ *
+ * Either a creation, deletion or update.
+ */
+export interface ResourceChange {
+  /**
+   * Logical ID of the resource where this property change was found
+   */
+  resourceLogicalId: string;
+
+  /**
+   * The type of the resource
+   */
+  resourceType: string;
+
+  /**
+   * The old properties value (might be undefined in case of creation)
+   */
+  oldProperties?: PropertyMap;
+
+  /**
+   * The new properties value (might be undefined in case of deletion)
+   */
+  newProperties?: PropertyMap;
 }
 
 /**
@@ -329,12 +406,12 @@ export class ResourceDifference extends Difference<Resource> {
   /**
    * Old property values
    */
-  public readonly oldProperties: { [name: string]: any };
+  public readonly oldProperties?: PropertyMap;
 
   /**
    * New property values
    */
-  public readonly newProperties: { [name: string]: any };
+  public readonly newProperties?: PropertyMap;
 
   /** Property-level changes on the resource */
   public readonly propertyUpdates: { [key: string]: PropertyDifference<any> };
@@ -342,20 +419,20 @@ export class ResourceDifference extends Difference<Resource> {
   public readonly otherChanges: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
-  private readonly resourceType: { readonly oldType: string, readonly newType: string };
+  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
   constructor(oldValue: Resource | undefined,
               newValue: Resource | undefined,
               args: {
-          resourceType: { oldType: string, newType: string },
-          oldProperties: { [name: string]: any },
-          newProperties: { [name: string]: any },
+          resourceType: { oldType?: string, newType?: string },
+          oldProperties?: PropertyMap,
+          newProperties?: PropertyMap,
           propertyUpdates: { [key: string]: PropertyDifference<any> },
           otherChanges: { [key: string]: Difference<any> }
         }
   ) {
     super(oldValue, newValue);
-    this.resourceType = args.resourceType;
+    this.resourceTypes = args.resourceType;
     this.propertyUpdates = args.propertyUpdates;
     this.otherChanges = args.otherChanges;
     this.oldProperties = args.oldProperties;
@@ -363,18 +440,42 @@ export class ResourceDifference extends Difference<Resource> {
   }
 
   public get oldResourceType(): string | undefined {
-    return this.resourceType.oldType;
+    return this.resourceTypes.oldType;
   }
 
   public get newResourceType(): string | undefined {
-    return this.resourceType.newType;
+    return this.resourceTypes.newType;
+  }
+
+  /**
+   * Return whether the resource type was changed in this diff
+   *
+   * This is not a valid operation in CloudFormation but to be defensive we're going
+   * to be aware of it anyway.
+   */
+  public get resourceTypeChanged(): boolean {
+    return (this.resourceTypes.oldType !== undefined
+        && this.resourceTypes.newType !== undefined
+        && this.resourceTypes.oldType !== this.resourceTypes.newType);
+  }
+
+  /**
+   * Return the resource type if it was unchanged
+   *
+   * If the resource type was changed, it's an error to call this.
+   */
+  public get resourceType(): string {
+    if (this.resourceTypeChanged) {
+      throw new Error('Cannot get .resourceType, because the type was changed');
+    }
+    return this.resourceTypes.oldType || this.resourceTypes.newType!;
   }
 
   public get changeImpact(): ResourceImpact {
     // Check the Type first
-    if (this.resourceType.oldType !== this.resourceType.newType) {
-      if (this.resourceType.oldType === undefined) { return ResourceImpact.WILL_CREATE; }
-      if (this.resourceType.newType === undefined) {
+    if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
+      if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }
+      if (this.resourceTypes.newType === undefined) {
         return this.oldValue!.DeletionPolicy === 'Retain'
           ? ResourceImpact.WILL_ORPHAN
           : ResourceImpact.WILL_DESTROY;
