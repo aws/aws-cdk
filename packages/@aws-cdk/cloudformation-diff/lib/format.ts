@@ -19,6 +19,8 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     stream.write(colors.white(format(fmt, ...args)) + '\n');
   }
 
+  completeLogicalPathMap();
+
   const ADDITION = colors.green('[+]'); const UPDATE   = colors.yellow('[~]');
   const REMOVAL  = colors.red('[-]');
 
@@ -101,7 +103,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // tslint:disable-next-line:max-line-length
-    print(`${formatPrefix(diff)} ${formatValue(resourceType, colors.cyan)} ${formatLogicalId(logicalId, diff)} ${formatImpact(diff.changeImpact)}`);
+    print(`${formatPrefix(diff)} ${formatValue(resourceType, colors.cyan)} ${formatLogicalId(logicalId)} ${formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
       let processedCount = 0;
@@ -226,28 +228,43 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     }
   }
 
-  function formatLogicalId(logicalId: string, diff?: ResourceDifference) {
+  /**
+   * Find 'aws:cdk:path' metadata in the diff and add it to the logicalToPathMap
+   *
+   * There are multiple sources of logicalID -> path mappings: synth metadata
+   * and resource metadata, and we combine all sources into a single map.
+   */
+  function completeLogicalPathMap() {
+    for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
+      if (!resourceDiff) { continue; }
+
+      const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[cxapi.PATH_METADATA_KEY];
+      if (oldPathMetadata && !(logicalId in logicalToPathMap)) {
+        logicalToPathMap[logicalId] = oldPathMetadata;
+      }
+
+      const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[cxapi.PATH_METADATA_KEY];
+      if (newPathMetadata && !(logicalId in logicalToPathMap)) {
+        logicalToPathMap[logicalId] = newPathMetadata;
+      }
+    }
+  }
+
+  function formatLogicalId(logicalId: string) {
+    // if we have a path in the map, return it
+    const normalized = normalizedLogicalIdPath(logicalId);
+
+    if (normalized) {
+      return `${normalized} ${colors.gray(logicalId)}`;
+    }
+
+    return logicalId;
+  }
+
+  function normalizedLogicalIdPath(logicalId: string): string | undefined {
     // if we have a path in the map, return it
     const path = logicalToPathMap[logicalId];
-    if (path) {
-      // first component of path is the stack name, so let's remove that
-      return normalizePath(path);
-    }
-
-    // if we don't have in our map, it might be a deleted resource, so let's try the
-    // template metadata
-    const oldPathMetadata = diff && diff.oldValue && diff.oldValue.Metadata && diff.oldValue.Metadata[cxapi.PATH_METADATA_KEY];
-    if (oldPathMetadata) {
-      return normalizePath(oldPathMetadata);
-    }
-
-    const newPathMetadata = diff && diff.newValue && diff.newValue.Metadata && diff.newValue.Metadata[cxapi.PATH_METADATA_KEY];
-    if (newPathMetadata) {
-      return normalizePath(newPathMetadata);
-    }
-
-    // couldn't figure out the path, just return the logical ID
-    return logicalId;
+    return path ? normalizePath(path) : undefined;
 
     /**
      * Path is supposed to start with "/stack-name". If this is the case (i.e. path has more than
@@ -273,8 +290,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
 
         p = parts.join('/');
       }
-
-      return `${p} ${colors.gray(logicalId)}`;
+      return p;
     }
   }
 
@@ -282,14 +298,27 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     const tables: string[] = [];
 
     if (changes.hasStatementChanges) {
-      tables.push(renderTable(changes.summarizeStatements()));
+      tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
     }
 
     if (changes.hasManagedPolicyChanges) {
-      tables.push(renderTable(changes.summarizeManagedPolicies()));
+      tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
     }
 
     print(tables.join('\n\n'));
+  }
+
+  function deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
+    return rows.map(row => row.map(substituteBracedLogicalIds));
+  }
+
+  /**
+   * Substitute all strings like ${LogId.xxx} with the path instead of the logical ID
+   */
+  function substituteBracedLogicalIds(source: string): string {
+    return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
+      return '${' + (normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
+  });
   }
 }
 
