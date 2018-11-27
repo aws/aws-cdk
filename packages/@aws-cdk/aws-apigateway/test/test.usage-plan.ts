@@ -86,8 +86,6 @@ export = {
   'usage plan with quota limits'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    // const api = new apigateway.RestApi(stack, 'my-api', { cloudWatchRole: false, deploy: true, deployOptions: { stageName: 'test' } });
-    // const method: apigateway.Method = api.root.addMethod('GET'); // Need at least one method on the api
 
     // WHEN
     new apigateway.UsagePlan(stack, 'my-usage-plan', {
@@ -107,5 +105,30 @@ export = {
 
     test.done();
 
+  },
+
+  'UsagePlanKey'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const usagePlan: apigateway.UsagePlan = new apigateway.UsagePlan(stack, 'my-usage-plan', {
+      name: 'Basic',
+    });
+    const apiKey: apigateway.ApiKey = new apigateway.ApiKey(stack, 'my-api-key');
+
+    // WHEN
+    usagePlan.addApiKey(apiKey);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::UsagePlanKey', {
+      KeyId: {
+        Ref: 'myapikey1B052F70'
+      },
+      KeyType: 'API_KEY',
+      UsagePlanId: {
+        Ref: 'myusageplan23AA1E32'
+      }
+    }, ResourcePart.Properties));
+
+    test.done();
   }
 };

@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { ApiKey } from './api-key';
 import { cloudformation } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApiResource } from './resource';
@@ -55,6 +56,13 @@ export interface QuotaSettings {
 export interface ThrottlingPerMethod {
   method: Method,
   throttle: ThrottleSettings
+}
+
+/**
+ * Type of Usage Plan Key. Currently the only supported type is 'API_KEY'
+ */
+export enum UsagePlanKeyType {
+  ApiKey = 'API_KEY'
 }
 
 /**
@@ -116,6 +124,14 @@ export class UsagePlan extends cdk.Construct {
     }
 
     this.usagePlanId = resource.ref;
+  }
+
+  public addApiKey(apiKey: ApiKey): void {
+    new cloudformation.UsagePlanKeyResource(this, 'UsagePlanKeyResource', {
+      keyId: apiKey.keyId,
+      keyType: UsagePlanKeyType.ApiKey,
+      usagePlanId: this.usagePlanId
+    });
   }
 
   private renderApiStages(props: UsagePlanProps): cloudformation.UsagePlanResource.ApiStageProperty[] | undefined {

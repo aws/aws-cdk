@@ -85,10 +85,7 @@ class Test extends cdk.Stack {
       resources: [api.root]
     });
 
-    new apigateway.UsagePlanKey(this, 'UsagePlanKey', {
-      apiKey,
-      usagePlan
-    });
+    usagePlan.addApiKey(apiKey);
   }
 }
 

@@ -617,6 +617,18 @@
         "UsagePlanName": "Basic"
       }
     },
+    "UsagePlanUsagePlanKeyResourceFB108041": {
+      "Type": "AWS::ApiGateway::UsagePlanKey",
+      "Properties": {
+        "KeyId": {
+          "Ref": "ApiKeyF9DDEE66"
+        },
+        "KeyType": "API_KEY",
+        "UsagePlanId": {
+          "Ref": "UsagePlanC18B28F1"
+        }
+      }
+    },
     "ApiKeyF9DDEE66": {
       "Type": "AWS::ApiGateway::ApiKey",
       "Properties": {
@@ -630,18 +642,6 @@
             }
           }
         ]
-      }
-    },
-    "UsagePlanKey803D3BF7": {
-      "Type": "AWS::ApiGateway::UsagePlanKey",
-      "Properties": {
-        "KeyId": {
-          "Ref": "ApiKeyF9DDEE66"
-        },
-        "KeyType": "API_KEY",
-        "UsagePlanId": {
-          "Ref": "UsagePlanC18B28F1"
-        }
       }
     }
   },
