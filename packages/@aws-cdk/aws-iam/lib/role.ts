@@ -192,6 +192,11 @@ export interface IRole extends IPrincipal, IDependable {
    * Returns the ARN of this role.
    */
   readonly roleArn: string;
+
+  /**
+   * Returns this role's Name.
+   */
+  readonly roleName: string;
 }
 
 function createAssumeRolePolicy(principal: PolicyPrincipal) {
@@ -219,6 +224,11 @@ export interface ImportedRoleProps {
    * The role's ARN
    */
   roleArn: string;
+
+  /**
+   * The role's Name
+   */
+  roleName: string;
 }
 
 /**
@@ -226,12 +236,14 @@ export interface ImportedRoleProps {
  */
 class ImportedRole extends Construct implements IRole {
   public readonly roleArn: string;
+  public readonly roleName: string;
   public readonly principal: PolicyPrincipal;
   public readonly dependencyElements: IDependable[] = [];
 
   constructor(parent: Construct, id: string, props: ImportedRoleProps) {
     super(parent, id);
     this.roleArn = props.roleArn;
+    this.roleName = props.roleName;
     this.principal = new ArnPrincipal(this.roleArn);
   }
 

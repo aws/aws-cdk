@@ -24,6 +24,28 @@ export = {
     test.done();
   },
 
+  'role with name'(test: Test) {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: "RollWithName"
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyRoleF48FFE04:
+         { Type: 'AWS::IAM::Role',
+         Properties:
+          { AssumeRolePolicyDocument:
+           { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'sns.amazonaws.com' } } ],
+             Version: '2012-10-17' },
+             RoleName: "RollWithName" } } } });
+    test.done();
+  },
+
   'policy is created automatically when permissions are added'(test: Test) {
     const stack = new Stack();
 

@@ -3,10 +3,69 @@ import { Construct } from '@aws-cdk/cdk';
 import { Stack } from '@aws-cdk/cdk';
 import assert = require('assert');
 import { Test } from 'nodeunit';
-import { InstanceProfile, InstanceProfileRef, PolicyStatement, Role, ServicePrincipal } from '../lib';
+import { InstanceProfile,
+    InstanceProfileRef,
+    PolicyStatement,
+    Role,
+    ServicePrincipal
+} from '../lib';
 
+/**
+ *  Test Cases:
+ *  parameters: role
+ *  parameters: role, path
+ *  parameters: role, path, instanceProfileName
+ *  parameters: role, instanceProfileName
+ *  parameters: path, instanceProfileName
+ *  parameters: path
+ *  parameters: instanceProfileName
+ *  no parameters
+ *  role other than ec2
+ *  path other than /
+ *  addRoleToPolicy
+ *  import/export
+ */
 export = {
-    'default instance profile'(test: Test) {
+    'parameters: role'(test: Test) {
+        const stack = new Stack();
+
+        const testEc2Role = new Role(stack, 'TestEC2Role', {
+          assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+        });
+
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            role: testEc2Role,
+        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ],
+            Path: '/'
+        }));
+        test.done();
+    },
+
+    'parameters: role, path'(test: Test) {
+        const stack = new Stack();
+
+        const testEc2Role = new Role(stack, 'TestEC2Role', {
+          assumedBy: new ServicePrincipal('ec2.amazonaws.com')
+        });
+
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            role: testEc2Role,
+            path: "/"
+        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2RoleBD27AEF4" }
+            ],
+            Path: '/'
+        }));
+        test.done();
+    },
+
+    'parameters: role, path, instanceProfileName'(test: Test) {
         const stack = new Stack();
 
         const testEc2Role = new Role(stack, 'TestEC2Role', {
@@ -28,7 +87,7 @@ export = {
         test.done();
     },
 
-    'test without path'(test: Test) {
+    'parameters: role, instanceProfileName'(test: Test) {
         const stack = new Stack();
 
         const testEc2Role = new Role(stack, 'TestEC2Role', {
@@ -36,41 +95,81 @@ export = {
         });
 
         new InstanceProfile(stack, 'TestEC2InstanceProfile', {
-            instanceProfileName: 'InstanceProfileWithoutPath',
-            role: testEc2Role
+            instanceProfileName: "TestInstanceProfile",
+            role: testEc2Role,
         });
-
         expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
             Roles: [
                 { Ref: "TestEC2RoleBD27AEF4" }
             ],
-            InstanceProfileName: 'InstanceProfileWithoutPath',
+            InstanceProfileName: 'TestInstanceProfile',
             Path: '/'
         }));
         test.done();
     },
 
-    'test role only'(test: Test) {
+    'parameters: path, instanceProfileName'(test: Test) {
         const stack = new Stack();
 
-        const testEc2Role = new Role(stack, 'TestEC2Role', {
-          assumedBy: new ServicePrincipal('ec2.amazonaws.com')
-        });
-
         new InstanceProfile(stack, 'TestEC2InstanceProfile', {
-            role: testEc2Role
+            instanceProfileName: "TestInstanceProfile",
+            path: '/'
         });
-
         expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
             Roles: [
-                { Ref: "TestEC2RoleBD27AEF4" }
+                { Ref: "TestEC2InstanceProfileEC2Role5106A065" }
+            ],
+            InstanceProfileName: 'TestInstanceProfile',
+            Path: '/'
+        }));
+        test.done();
+    },
+
+    'parameters: instanceProfileName'(test: Test) {
+        const stack = new Stack();
+
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            instanceProfileName: "TestInstanceProfile"
+        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2InstanceProfileEC2Role5106A065" }
+            ],
+            InstanceProfileName: 'TestInstanceProfile',
+            Path: '/'
+        }));
+        test.done();
+    },
+
+    'parameters: path'(test: Test) {
+        const stack = new Stack();
+
+        new InstanceProfile(stack, 'TestEC2InstanceProfile', {
+            path: '/'
+        });
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "TestEC2InstanceProfileEC2Role5106A065" }
             ],
             Path: '/'
         }));
         test.done();
     },
 
-    'test role other than ec2'(test: Test) {
+    'no parameters supplied'(test: Test) {
+        const stack = new Stack();
+
+        new InstanceProfile(stack, 'NakedTestEC2InstanceProfile', {});
+        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
+            Roles: [
+                { Ref: "NakedTestEC2InstanceProfileEC2Role59DF0EED" }
+            ],
+            Path: '/'
+        }));
+        test.done();
+    },
+
+    'role other than ec2'(test: Test) {
         const stack = new Stack();
 
         const testEc2Role = new Role(stack, 'TestEC2SNSRole', {
@@ -90,20 +189,7 @@ export = {
         test.done();
     },
 
-    'default ec2 role created'(test: Test) {
-        const stack = new Stack();
-
-        new InstanceProfile(stack, 'TestEC2InstanceProfile', {});
-        expect(stack).to(haveResource('AWS::IAM::InstanceProfile', {
-            Roles: [
-                { Ref: "TestEC2InstanceProfileEC2Role5106A065" }
-            ],
-            Path: '/'
-        }));
-        test.done();
-    },
-
-    'custom path'(test: Test) {
+    'custom path supplied'(test: Test) {
         const stack = new Stack();
 
         const testEc2Role = new Role(stack, 'TestEC2Role', {
@@ -125,7 +211,7 @@ export = {
         test.done();
     },
 
-    'test addToRolePolicy'(test: Test) {
+    'addToRolePolicy adds a policy'(test: Test) {
         const stack = new Stack();
 
         const testEc2Role = new Role(stack, 'TestEC2Role', {

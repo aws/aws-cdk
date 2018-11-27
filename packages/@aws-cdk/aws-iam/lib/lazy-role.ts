@@ -74,6 +74,13 @@ export class LazyRole extends cdk.Construct implements IRole {
   }
 
   /**
+   * Returns the Name of this role.
+   */
+  public get roleName(): string {
+    return this.instantiate().roleName;
+  }
+
+  /**
    * Returns a Principal object representing the ARN of this role.
    */
   public get principal(): PolicyPrincipal {

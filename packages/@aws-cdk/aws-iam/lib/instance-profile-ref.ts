@@ -1,27 +1,30 @@
 import cdk = require('@aws-cdk/cdk');
 import { PolicyStatement } from './policy-document';
-import { Role } from './role';
+import { IRole } from './role';
 
 export interface InstanceProfileRefProps {
 
     /**
      * The path associated with this instance profile. For information about IAM Instance Profiles, see
      * Friendly Names and Paths in IAM User Guide.
+     * @link http://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html#Identifiers_FriendlyNames
+     * @default / By default, AWS CloudFormation specifies '/' for the path.
      */
     path: string;
 
     /**
      * The name of an existing IAM role to associate with this instance profile.
      * Currently, you can assign a maximum of one role to an instance profile.
-     * @default Creates a default ec2.amazonaws.com Assume Role.
+     * @default Role a default Role with ServicePrincipal(ec2.amazonaws.com).
      */
-    role?: Role;
+    role: IRole;
 
     /**
      * The name of the instance profile that you want to create.
      * This parameter allows (per its regex pattern) a string consisting of
      * upper and lowercase alphanumeric characters with no spaces.
      * You can also include any of the following characters: = , . @ -
+     * @default none instance profile name does not have a default value.
      */
     instanceProfileName?: string;
 
@@ -40,27 +43,39 @@ export abstract class InstanceProfileRef extends cdk.Construct {
      * InstanceProfileName.
      * @param ref A reference to an Instance Profile.  Can be created manually (see example above) or
      * obtained through a call to `instanceProfile.export()`
+     * @returns InstanceProfileRef
      */
     public static import(parent: cdk.Construct, name: string, ref: InstanceProfileRefProps): InstanceProfileRef {
         return new InstanceProfileRefImport(parent, name, ref);
     }
+
     /**
      * Path for the Instance Profile
      * @link http://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html#Identifiers_FriendlyNames
+     * @default / If a path is not provided, CloudFormation defaults the path to '/'.
      */
     public abstract readonly path: string;
 
     /**
-     * The existing Role to associate with the Instance Profile.
+     * The name of an existing IAM role to associate with this instance profile.
+     * Currently, you can assign a maximum of one role to an instance profile.
+     * @default Role a default Role with ServicePrincipal(ec2.amazonaws.com).
      */
-    public abstract readonly role?: Role;
+    public abstract readonly role: IRole;
 
     /**
-     * The name of the Instance Profile.
-     * This is the InstanceProfileName element within the CloudFormation Resource.
+     * The name of the instance profile that you want to create.
+     * This parameter allows (per its regex pattern) a string consisting of
+     * upper and lowercase alphanumeric characters with no spaces.
+     * You can also include any of the following characters: = , . @ -
+     * @default none instance profile name does not have a default value.
      */
     public abstract readonly instanceProfileName?: string;
 
+    /**
+     * Adds a PolicyStatement to the Role associated with this InstanceProfile
+     * @param statement the statement to add
+     */
     public abstract addToRolePolicy(statement: PolicyStatement): void;
 
     /**
@@ -73,12 +88,12 @@ export abstract class InstanceProfileRef extends cdk.Construct {
             instanceProfileName: this.instanceProfileName
         };
     }
-    /* tslint:disable:no-console */
+
 }
 
 class InstanceProfileRefImport extends InstanceProfileRef {
     public readonly path: string;
-    public readonly role?: Role;
+    public readonly role: IRole;
     public readonly instanceProfileName?: string;
 
     constructor(parent: cdk.Construct, name: string, props: InstanceProfileRefProps) {
@@ -89,7 +104,7 @@ class InstanceProfileRefImport extends InstanceProfileRef {
     }
 
     public addToRolePolicy(_statement: PolicyStatement) {
-        // ignore
+        // FIXME: Add warning that we're ignoring this
     }
 
 }
