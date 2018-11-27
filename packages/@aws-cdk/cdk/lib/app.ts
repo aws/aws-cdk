@@ -1,7 +1,7 @@
 import cxapi = require('@aws-cdk/cx-api');
 import fs = require('fs');
 import path = require('path');
-import { isStack, Stack } from './cloudformation/stack';
+import { Stack } from './cloudformation/stack';
 import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
 
@@ -21,7 +21,7 @@ export class App extends Root {
   private get stacks() {
     const out: { [name: string]: Stack } = { };
     for (const child of this.children) {
-      if (!isStack(child)) {
+      if (!Stack.isStack(child)) {
         throw new Error(`The child ${child.toString()} of App must be a Stack`);
       }
 
