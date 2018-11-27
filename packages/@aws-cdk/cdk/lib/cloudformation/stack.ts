@@ -438,7 +438,7 @@ export abstract class Referenceable extends StackElement {
  *
  * We do attribute detection since we can't reliably use 'instanceof'.
  */
-function isStack(construct: Construct): construct is Stack {
+export function isStack(construct: Construct): construct is Stack {
   return (construct as any).isStack;
 }
 
