@@ -5,18 +5,23 @@ export { schema };
 /**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
  */
-// tslint:disable-next-line:no-var-requires
-export const specification: schema.Specification = require('../spec/specification.json');
+export function specification(): schema.Specification {
+  return require('../spec/specification.json');
+}
 
 /**
  * The list of resource type names defined in the ``specification``.
  */
-export const resourceTypes = Object.keys(specification.ResourceTypes);
+export function resourceTypes() {
+  return Object.keys(specification().ResourceTypes);
+}
 
 /**
  * The list of namespaces defined in the ``specification``, that is resource name prefixes down to the second ``::``.
  */
-export const namespaces = Array.from(new Set(resourceTypes.map(n => n.split('::', 2).join('::'))));
+export function namespaces() {
+  return Array.from(new Set(resourceTypes().map(n => n.split('::', 2).join('::'))));
+}
 
 /**
  * Obtain a filtered version of the AWS CloudFormation specification.
@@ -30,14 +35,16 @@ export const namespaces = Array.from(new Set(resourceTypes.map(n => n.split('::'
  *     to the selected resource types.
  */
 export function filteredSpecification(filter: string | RegExp | Filter): schema.Specification {
-  const result: schema.Specification = { ResourceTypes: {}, PropertyTypes: {}, Fingerprint: specification.Fingerprint };
+  const spec = specification();
+
+  const result: schema.Specification = { ResourceTypes: {}, PropertyTypes: {}, Fingerprint: spec.Fingerprint };
   const predicate: Filter = makePredicate(filter);
-  for (const type of resourceTypes) {
+  for (const type of resourceTypes()) {
     if (!predicate(type)) { continue; }
-    result.ResourceTypes[type] = specification.ResourceTypes[type];
+    result.ResourceTypes[type] = spec.ResourceTypes[type];
     const prefix = `${type}.`;
-    for (const propType of Object.keys(specification.PropertyTypes!).filter(n => n.startsWith(prefix))) {
-      result.PropertyTypes[propType] = specification.PropertyTypes![propType];
+    for (const propType of Object.keys(spec.PropertyTypes!).filter(n => n.startsWith(prefix))) {
+      result.PropertyTypes[propType] = spec.PropertyTypes![propType];
     }
   }
   result.Fingerprint = crypto.createHash('sha256').update(JSON.stringify(result)).digest('base64');
@@ -69,7 +76,7 @@ function makePredicate(filter: string | RegExp | Filter): Filter {
  * Return the properties of the given type that require the given scrutiny type
  */
 export function scrutinizablePropertyNames(resourceType: string, scrutinyType: schema.PropertyScrutinyType): string[] {
-  const impl = specification.ResourceTypes[resourceType];
+  const impl = specification().ResourceTypes[resourceType];
   if (!impl) { return []; }
 
   const ret = new Array<string>();
@@ -88,7 +95,7 @@ export function scrutinizablePropertyNames(resourceType: string, scrutinyType: s
  */
 export function scrutinizableResourceTypes(scrutinyType: schema.ResourceScrutinyType): string[] {
   const ret = new Array<string>();
-  for (const [resourceType, resourceSpec] of Object.entries(specification.ResourceTypes)) {
+  for (const [resourceType, resourceSpec] of Object.entries(specification().ResourceTypes)) {
     if ((resourceSpec.ScrutinyType || schema.PropertyScrutinyType.None) === scrutinyType) {
       ret.push(resourceType);
     }
