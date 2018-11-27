@@ -30,7 +30,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     printSectionFooter();
   }
 
-  if (!templateDiff.iamChanges.empty) {
+  if (templateDiff.iamChanges.hasChanges) {
     printSectionHeader('Summary of IAM Changes');
     formatIamChanges(templateDiff.iamChanges);
     printSectionFooter();
@@ -279,11 +279,24 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
   }
 
   function formatIamChanges(changes: IamChanges) {
-    const summary = changes.summarize();
-    const head = summary.splice(0, 1)[0];
+    const tables: string[] = [];
 
-    const table = new Table({ head, style: { head: [] } });
-    table.push(...summary);
-    print(table.toString());
+    if (changes.hasStatementChanges) {
+      tables.push(renderTable(changes.summarizeStatements()));
+    }
+
+    if (changes.hasManagedPolicyChanges) {
+      tables.push(renderTable(changes.summarizeManagedPolicies()));
+    }
+
+    print(tables.join('\n\n'));
   }
+}
+
+function renderTable(cells: string[][]): string {
+  const head = cells.splice(0, 1)[0];
+
+  const table = new Table({ head, style: { head: [] } });
+  table.push(...cells);
+  return table.toString();
 }

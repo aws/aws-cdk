@@ -30,4 +30,11 @@ export = {
 
     test.done();
   },
+
+  'check role managedpolicyarns'(test: Test) {
+    const prop = specification.ResourceTypes['AWS::IAM::Role'].Properties!.ManagedPolicyArns;
+    test.equals(prop.ScrutinyType, PropertyScrutinyType.ManagedPolicies);
+
+    test.done();
+  },
 };

@@ -177,6 +177,11 @@ export enum PropertyScrutinyType {
    * This is an IAM policy on a resource
    */
   ResourcePolicy = 'ResourcePolicy',
+
+  /**
+   * A list of managed policies on a resource
+   */
+  ManagedPolicies = 'ManagedPolicies',
 }
 
 export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType {

@@ -19,6 +19,13 @@ export function detectScrutinyTypes(spec: schema.Specification) {
       for (const [propertyName, propertySpec] of Object.entries(typeSpec.Properties || {})) {
         if (propertySpec.ScrutinyType !== undefined) { continue; } // Only for unassigned
 
+        // Detect fields named like ManagedPolicyArns
+        if (propertyName === 'ManagedPolicyArns') {
+          propertySpec.ScrutinyType = PropertyScrutinyType.ManagedPolicies;
+          continue;
+        }
+
+        // Detect fields named like '*Policy*'
         const nameContainsPolicy = propertyName.indexOf('Policy') > -1;
         const primitiveType = schema.isPrimitiveProperty(propertySpec) && propertySpec.PrimitiveType;
 

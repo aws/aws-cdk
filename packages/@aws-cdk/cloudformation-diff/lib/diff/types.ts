@@ -43,11 +43,12 @@ export class TemplateDiff implements ITemplateDiff {
     this.resources = args.resources || new DifferenceCollection({});
     this.unknown = args.unknown || new DifferenceCollection({});
 
-    this.iamChanges = new IamChanges(
-      this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IdentityPolicy),
-      this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ResourcePolicy),
-      this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.LambdaPermission),
-      );
+    this.iamChanges = new IamChanges({
+      identityPolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IdentityPolicy),
+      resourcePolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ResourcePolicy),
+      managedPolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ManagedPolicies),
+      lambdaPermissionChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.LambdaPermission),
+    });
   }
 
   public get count() {
