@@ -23,7 +23,7 @@ export interface CommonCodeBuildActionProps {
 /**
  * Common properties for creating {@link PipelineBuildAction} -
  * either directly, through its constructor,
- * or through {@link ProjectRef#addBuildToPipeline}.
+ * or through {@link ProjectRef#addToPipeline}.
  */
 export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
@@ -109,7 +109,7 @@ export class PipelineBuildAction extends codepipeline.BuildAction {
 /**
  * Common properties for creating {@link PipelineTestAction} -
  * either directly, through its constructor,
- * or through {@link ProjectRef#addTestToPipeline}.
+ * or through {@link ProjectRef#addToPipelineAsTest}.
  */
 export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProps,
     codepipeline.CommonActionProps {
