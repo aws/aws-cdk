@@ -52,9 +52,17 @@ const source = new codepipeline.GitHubSourceAction(pipelineStack, 'GitHub', {
   /* ... */
 });
 const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
-  /* ... */
+  /** 
+  * Choose an environment configuration that meets your use case. For NodeJS
+  * this might be
+  * environment: {
+  *  buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
+  * },
+  */
 });
-const synthesizedApp = project.outputArtifact;
+const buildStage = pipeline.addStage('build');
+const buildAction = project.addBuildToPipeline(buildStage, 'CodeBuild');
+const synthesizedApp = buildAction.outputArtifact;
 
 // Optionally, self-update the pipeline stack
 const selfUpdateStage = pipeline.addStage('SelfUpdate');
@@ -69,25 +77,39 @@ const deployStage = pipeline.addStage('Deploy');
 const serviceStackA = new MyServiceStackA(app, 'ServiceStackA', { /* ... */ });
 const serviceStackB = new MyServiceStackB(app, 'ServiceStackB', { /* ... */ });
 // Add actions to deploy the stacks in the deploy stage:
-new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
+const deployServiceAAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackA', {
   stage: deployStage,
   stack: serviceStackA,
   inputArtifact: synthesizedApp,
+  // See the note below for details about this option.
+  adminPermissions: false, 
 });
-new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
+
+// Add the necessary permissions for you service deploy action. This role is
+// is passed to CloudFormation and needs the permissions necessary to deploy
+// stack. Alternatively you can enable [Administrator](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator) permissions above, 
+// users should understand the privileged nature of this role.
+deployServiceAAction.addToRolePolicy(
+  new iam.PolicyStatement()
+    .addAction('service:SomeAction')
+    .addResource(myResource.myResourceArn)
+    // add more Action(s) and/or Resource(s) here, as needed
+);
+const deployServiceBAction = new cicd.PipelineDeployStackAction(pipelineStack, 'DeployServiceStackB', {
   stage: deployStage,
   stack: serviceStackB,
   inputArtifact: synthesizedApp,
   createChangeSetRunOrder: 998,
-});
+  adminPermissions: true, // no need to modify the role with admin
+}); 
 ```
 
 #### `buildspec.yml`
-The `PipelineDeployStackAction` expects it's `inputArtifact` to contain the result of synthesizing a CDK App using the
-`cdk synth -o <directory>` command.
+The repository can contain a file at the root level named `buildspec.yml`, or
+you can in-line the buildspec. Note that `buildspec.yaml` is not compatible.
 
-For example, a *TypeScript* or *Javascript* CDK App can add the following `buildspec.yml` at the root of the repository
-configured in the `Source` stage:
+For example, a *TypeScript* or *Javascript* CDK App can add the following `buildspec.yml`
+at the root of the repository:
 
 ```yml
 version: 0.2
@@ -109,3 +131,8 @@ artifacts:
   base-directory: dist
   files: '**/*'
 ```
+
+The `PipelineDeployStackAction` expects it's `inputArtifact` to contain the result of 
+synthesizing a CDK App using the `cdk synth -o <directory>`.
+
+

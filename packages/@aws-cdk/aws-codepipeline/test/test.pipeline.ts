@@ -394,12 +394,14 @@ export = {
         templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
         stackName: 'SomeStack',
         region: pipelineRegion,
+        adminPermissions: false,
       });
       new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action2', {
         stage: stage2,
         templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
         stackName: 'OtherStack',
         region: 'us-east-1',
+        adminPermissions: false,
       });
       new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action3', {
         stage: stage2,

@@ -30,7 +30,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(prodStage, 'PrepareChanges', {
   stage: prodStage,
   stackName,
   changeSetName,
-  fullPermissions: true,
+  adminPermissions: true,
   templatePath: source.outputArtifact.atPath('template.yaml'),
 });
 

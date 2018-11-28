@@ -1,3 +1,4 @@
+import cfn = require('@aws-cdk/aws-cloudformation');
 import code = require('@aws-cdk/aws-codepipeline');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -16,13 +17,16 @@ const source = new code.GitHubSourceAction(stack, 'GitHub', {
   oauthToken: new cdk.Secret('DummyToken'),
   pollForSourceChanges: true,
 });
+const stage = pipeline.addStage('Deploy');
 new cicd.PipelineDeployStackAction(stack, 'DeployStack', {
-  stage: pipeline.addStage('Deploy'),
+  stage,
   stack,
   changeSetName: 'CICD-ChangeSet',
   createChangeSetRunOrder: 10,
   executeChangeSetRunOrder: 999,
   inputArtifact: source.outputArtifact,
+  adminPermissions: false,
+  capabilities: cfn.CloudFormationCapabilities.None,
 });
 
 app.run();

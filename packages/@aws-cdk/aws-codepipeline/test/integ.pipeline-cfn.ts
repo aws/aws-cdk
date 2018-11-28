@@ -37,6 +37,7 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   stackName,
   role,
   templatePath: source.outputArtifact.atPath('test.yaml'),
+  adminPermissions: false,
 });
 
 app.run();

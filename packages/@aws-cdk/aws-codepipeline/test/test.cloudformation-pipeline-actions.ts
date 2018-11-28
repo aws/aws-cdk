@@ -64,7 +64,8 @@ export = {
     changeSetName,
     role: changeSetExecRole,
     templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
-    templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json')
+    templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
+    adminPermissions: false,
   });
 
   new PipelineExecuteChangeSetAction(stack, 'ExecuteChangeSetProd', {
@@ -205,7 +206,7 @@ export = {
     stage: stack.deployStage,
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
-    fullPermissions: true,
+    adminPermissions: true,
   });
 
   const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
@@ -259,6 +260,7 @@ export = {
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
+    adminPermissions: false,
   });
 
   // THEN: Action has output artifacts
@@ -290,6 +292,7 @@ export = {
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     replaceOnFailure: true,
+    adminPermissions: false,
   });
 
   // THEN: Action has output artifacts
@@ -322,6 +325,7 @@ export = {
     stage: stack.deployStage,
     stackName: 'MyStack',
     templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    adminPermissions: false,
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }
