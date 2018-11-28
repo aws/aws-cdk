@@ -8,52 +8,61 @@ import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipelin
  * Represents an ECR repository.
  */
 export interface IRepository {
-    /**
-     * The name of the repository
-     */
-    readonly repositoryName: string;
+  /**
+   * The name of the repository
+   */
+  readonly repositoryName: string;
 
-    /**
-     * The ARN of the repository
-     */
-    readonly repositoryArn: string;
+  /**
+   * The ARN of the repository
+   */
+  readonly repositoryArn: string;
 
-    /**
-     * The URI of this repository (represents the latest image):
-     *
-     *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
-     *
-     */
-    readonly repositoryUri: string;
+  /**
+   * The URI of this repository (represents the latest image):
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY
+   *
+   */
+  readonly repositoryUri: string;
 
-    /**
-     * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
-     *
-     *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
-     *
-     * @param tag Image tag to use (tools usually default to "latest" if omitted)
-     */
-    repositoryUriForTag(tag?: string): string;
+  /**
+   * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]
+   *
+   * @param tag Image tag to use (tools usually default to "latest" if omitted)
+   */
+  repositoryUriForTag(tag?: string): string;
 
-    /**
-     * Add a policy statement to the repository's resource policy
-     */
-    addToResourcePolicy(statement: iam.PolicyStatement): void;
+  /**
+   * Add a policy statement to the repository's resource policy
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): void;
 
-    /**
-     * Grant the given principal identity permissions to perform the actions on this repository
-     */
-    grant(identity?: iam.IPrincipal, ...actions: string[]): void;
+  /**
+   * Grant the given principal identity permissions to perform the actions on this repository
+   */
+  grant(identity?: iam.IPrincipal, ...actions: string[]): void;
 
-    /**
-     * Grant the given identity permissions to pull images in this repository.
-     */
-    grantPull(identity?: iam.IPrincipal): void;
+  /**
+   * Grant the given identity permissions to pull images in this repository.
+   */
+  grantPull(identity?: iam.IPrincipal): void;
 
-    /**
-     * Grant the given identity permissions to pull and push images to this repository.
-     */
-    grantPullPush(identity?: iam.IPrincipal): void;
+  /**
+   * Grant the given identity permissions to pull and push images to this repository.
+   */
+  grantPullPush(identity?: iam.IPrincipal): void;
+
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   * @param name The name of the rule
+   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
+   */
+  onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule;
 }
 
 export interface ImportRepositoryProps {
@@ -170,6 +179,13 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
     });
   }
 
+  /**
+   * Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this
+   * repository.
+   * @param name The name of the rule
+   * @param target An IEventRuleTarget to invoke when this event happens (you can add more targets using `addTarget`)
+   * @param imageTag Only trigger on the specific image tag
+   */
   public onImagePushed(name: string, target?: events.IEventRuleTarget, imageTag?: string): events.EventRule {
     return new events.EventRule(this, name, {
       targets: target ? [target] : undefined,
