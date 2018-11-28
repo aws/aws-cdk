@@ -27,7 +27,7 @@ const sourceAction2 = bucket.addToPipeline(sourceStage, 'Source2', {
 
 const project = new codebuild.PipelineProject(stack, 'MyBuildProject');
 const buildStage = pipeline.addStage('Build');
-const buildAction = project.addBuildToPipeline(buildStage, 'Build1', {
+const buildAction = project.addToPipeline(buildStage, 'Build1', {
   inputArtifact: sourceAction1.outputArtifact,
   additionalInputArtifacts: [
     sourceAction2.outputArtifact,
@@ -36,7 +36,7 @@ const buildAction = project.addBuildToPipeline(buildStage, 'Build1', {
     'CustomOutput1',
   ],
 });
-const testAction = project.addTestToPipeline(buildStage, 'Build2', {
+const testAction = project.addToPipelineAsTest(buildStage, 'Build2', {
   inputArtifact: sourceAction2.outputArtifact,
   additionalInputArtifacts: [
     sourceAction1.outputArtifact,
