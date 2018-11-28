@@ -28,7 +28,7 @@ async function main() {
     }
 
     try {
-      await test.invoke([ ...args, 'deploy' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
+      await test.invoke([ ...args, 'deploy', '--prompt', 'never' ], { verbose: argv.verbose }); // Note: no context, so use default user settings!
 
       console.error(`Success! Writing out reference synth.`);
 

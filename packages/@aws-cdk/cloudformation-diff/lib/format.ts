@@ -16,55 +16,74 @@ import { SecurityGroupChanges } from './network/security-group-changes';
  *                         case there is no aws:cdk:path metadata in the template.
  */
 export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: { [logicalId: string]: string } = { }) {
-  function print(fmt: string, ...args: any[]) {
-    stream.write(colors.white(format(fmt, ...args)) + '\n');
-  }
+  const formatter = new Formatter(stream, logicalToPathMap);
 
-  completeLogicalPathMap();
-
-  const ADDITION = colors.green('[+]'); const UPDATE   = colors.yellow('[~]');
-  const REMOVAL  = colors.red('[-]');
+  formatter.readConstructPathsFrom(templateDiff);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
-    printSectionHeader('Template');
-    formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
-    formatDifference('Transform', 'Transform', templateDiff.transform);
-    formatDifference('Description', 'Description', templateDiff.description);
-    printSectionFooter();
+    formatter.printSectionHeader('Template');
+    formatter.formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
+    formatter.formatDifference('Transform', 'Transform', templateDiff.transform);
+    formatter.formatDifference('Description', 'Description', templateDiff.description);
+    formatter.printSectionFooter();
   }
 
-  formatIamChanges(templateDiff.iamChanges);
-  formatSecurityGroupChanges(templateDiff.securityGroupChanges);
+  formatter.formatIamChanges(templateDiff.iamChanges);
+  formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatSection('Parameters', 'Parameter', templateDiff.parameters);
-  formatSection('Metadata', 'Metadata', templateDiff.metadata);
-  formatSection('Mappings', 'Mapping', templateDiff.mappings);
-  formatSection('Conditions', 'Condition', templateDiff.conditions);
-  formatSection('Resources', 'Resource', templateDiff.resources, formatResourceDifference);
-  formatSection('Outputs', 'Output', templateDiff.outputs);
-  formatSection('Other Changes', 'Unknown', templateDiff.unknown);
+  formatter.formatSection('Parameters', 'Parameter', templateDiff.parameters);
+  formatter.formatSection('Metadata', 'Metadata', templateDiff.metadata);
+  formatter.formatSection('Mappings', 'Mapping', templateDiff.mappings);
+  formatter.formatSection('Conditions', 'Condition', templateDiff.conditions);
+  formatter.formatSection('Resources', 'Resource', templateDiff.resources, formatter.formatResourceDifference.bind(formatter));
+  formatter.formatSection('Outputs', 'Output', templateDiff.outputs);
+  formatter.formatSection('Other Changes', 'Unknown', templateDiff.unknown);
+}
 
-  function formatSection<V, T extends Difference<V>>(
+/**
+ * Renders a diff of security changes to the given stream
+ */
+export function formatSecurityChanges(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: {[logicalId: string]: string} = {}) {
+  const formatter = new Formatter(stream, logicalToPathMap);
+  formatter.readConstructPathsFrom(templateDiff);
+
+  formatter.formatIamChanges(templateDiff.iamChanges);
+  formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
+}
+
+const ADDITION = colors.green('[+]');
+const UPDATE   = colors.yellow('[~]');
+const REMOVAL  = colors.red('[-]');
+
+class Formatter {
+  constructor(private readonly stream: NodeJS.WriteStream, private readonly logicalToPathMap: { [logicalId: string]: string }) {
+  }
+
+  public print(fmt: string, ...args: any[]) {
+    this.stream.write(colors.white(format(fmt, ...args)) + '\n');
+  }
+
+  public formatSection<V, T extends Difference<V>>(
       title: string,
       entryType: string,
       collection: DifferenceCollection<V, T>,
-      formatter: (type: string, id: string, diff: T) => void = formatDifference) {
+      formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
 
     if (collection.count === 0) {
       return;
     }
 
-    printSectionHeader(title);
+    this.printSectionHeader(title);
     collection.forEach((id, diff) => formatter(entryType, id, diff));
-    printSectionFooter();
+    this.printSectionFooter();
   }
 
-  function printSectionHeader(title: string) {
-    print(colors.underline(colors.bold(title)));
+  public printSectionHeader(title: string) {
+    this.print(colors.underline(colors.bold(title)));
   }
 
-  function printSectionFooter() {
-    print('');
+  public printSectionFooter() {
+    this.print('');
   }
 
   /**
@@ -73,13 +92,13 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param logicalId the name of the entity that is different.
    * @param diff the difference to be rendered.
    */
-  function formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
+  public formatDifference(type: string, logicalId: string, diff: Difference<any> | undefined) {
     if (!diff) { return; }
 
     let value;
 
-    const oldValue = formatValue(diff.oldValue, colors.red);
-    const newValue = formatValue(diff.newValue, colors.green);
+    const oldValue = this.formatValue(diff.oldValue, colors.red);
+    const newValue = this.formatValue(diff.newValue, colors.green);
     if (diff.isAddition) {
       value = newValue;
     } else if (diff.isUpdate) {
@@ -88,7 +107,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
       value = oldValue;
     }
 
-    print(`${formatPrefix(diff)} ${colors.cyan(type)} ${formatLogicalId(logicalId)}: ${value}`);
+    this.print(`${this.formatPrefix(diff)} ${colors.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`);
   }
 
   /**
@@ -97,22 +116,22 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param logicalId the logical ID of the resource that changed.
    * @param diff    the change to be rendered.
    */
-  function formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+  public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // tslint:disable-next-line:max-line-length
-    print(`${formatPrefix(diff)} ${formatValue(resourceType, colors.cyan)} ${formatLogicalId(logicalId)} ${formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
       let processedCount = 0;
       diff.forEach((_, name, values) => {
         processedCount += 1;
-        formatTreeDiff(name, values, processedCount === diff.count);
+        this.formatTreeDiff(name, values, processedCount === diff.count);
       });
     }
   }
 
-  function formatPrefix<T>(diff: Difference<T>) {
+  public formatPrefix<T>(diff: Difference<T>) {
     if (diff.isAddition) { return ADDITION; }
     if (diff.isUpdate) { return UPDATE; }
     if (diff.isRemoval) { return REMOVAL; }
@@ -125,7 +144,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    *
    * @returns the formatted string, with color applied.
    */
-  function formatValue(value: any, color: (str: string) => string) {
+  public formatValue(value: any, color: (str: string) => string) {
     if (value == null) { return undefined; }
     if (typeof value === 'string') { return color(value); }
     return color(JSON.stringify(value));
@@ -135,7 +154,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param impact the impact to be formatted
    * @returns a user-friendly, colored string representing the impact.
    */
-  function formatImpact(impact: ResourceImpact) {
+  public formatImpact(impact: ResourceImpact) {
     switch (impact) {
     case ResourceImpact.MAY_REPLACE:
       return colors.italic(colors.yellow('may be replaced'));
@@ -157,7 +176,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param diff the difference on the tree.
    * @param last whether this is the last node of a parent tree.
    */
-  function formatTreeDiff(name: string, diff: Difference<any>, last: boolean) {
+  public formatTreeDiff(name: string, diff: Difference<any>, last: boolean) {
     let additionalInfo = '';
     if (isPropertyDifference(diff)) {
       if (diff.changeImpact === ResourceImpact.MAY_REPLACE) {
@@ -166,8 +185,8 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
         additionalInfo = ' (requires replacement)';
       }
     }
-    print(' %s─ %s %s%s', last ? '└' : '├', changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
-    return formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
+    this.print(' %s─ %s %s%s', last ? '└' : '├', this.changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
+    return this.formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
   }
 
   /**
@@ -178,15 +197,15 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @param newObject  the new object.
    * @param linePrefix a prefix (indent-like) to be used on every line.
    */
-  function formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
+  public formatObjectDiff(oldObject: any, newObject: any, linePrefix: string) {
     if ((typeof oldObject !== typeof newObject) || Array.isArray(oldObject) || typeof oldObject === 'string' || typeof oldObject === 'number') {
       if (oldObject !== undefined && newObject !== undefined) {
-        print('%s   ├─ %s %s', linePrefix, REMOVAL, formatValue(oldObject, colors.red));
-        print('%s   └─ %s %s', linePrefix, ADDITION, formatValue(newObject, colors.green));
+        this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
+        this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
       } else if (oldObject !== undefined /* && newObject === undefined */) {
-        print('%s   └─ %s', linePrefix, formatValue(oldObject, colors.red));
+        this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, colors.red));
       } else /* if (oldObject === undefined && newObject !== undefined) */ {
-        print('%s   └─ %s', linePrefix, formatValue(newObject, colors.green));
+        this.print('%s   └─ %s', linePrefix, this.formatValue(newObject, colors.green));
       }
       return;
     }
@@ -199,12 +218,12 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
       const newValue = newObject[key];
       const treePrefix = key === lastKey ? '└' : '├';
       if (oldValue !== undefined && newValue !== undefined) {
-        print('%s   %s─ %s %s:', linePrefix, treePrefix, changeTag(oldValue, newValue), colors.blue(`.${key}`));
-        formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
+        this.print('%s   %s─ %s %s:', linePrefix, treePrefix, this.changeTag(oldValue, newValue), colors.blue(`.${key}`));
+        this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else if (oldValue !== undefined /* && newValue === undefined */) {
-        print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, colors.blue(`.${key}`));
+        this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, colors.blue(`.${key}`));
       } else /* if (oldValue === undefined && newValue !== undefined */ {
-        print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, colors.blue(`.${key}`));
+        this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, colors.blue(`.${key}`));
       }
     }
   }
@@ -216,7 +235,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * @returns a tag to be rendered in the diff, reflecting whether the difference
    *      was an ADDITION, UPDATE or REMOVAL.
    */
-  function changeTag(oldValue: any | undefined, newValue: any | undefined): string {
+  public changeTag(oldValue: any | undefined, newValue: any | undefined): string {
     if (oldValue !== undefined && newValue !== undefined) {
       return UPDATE;
     } else if (oldValue !== undefined /* && newValue === undefined*/) {
@@ -232,25 +251,25 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
    * There are multiple sources of logicalID -> path mappings: synth metadata
    * and resource metadata, and we combine all sources into a single map.
    */
-  function completeLogicalPathMap() {
+  public readConstructPathsFrom(templateDiff: TemplateDiff) {
     for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
       if (!resourceDiff) { continue; }
 
       const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[cxapi.PATH_METADATA_KEY];
-      if (oldPathMetadata && !(logicalId in logicalToPathMap)) {
-        logicalToPathMap[logicalId] = oldPathMetadata;
+      if (oldPathMetadata && !(logicalId in this.logicalToPathMap)) {
+        this.logicalToPathMap[logicalId] = oldPathMetadata;
       }
 
       const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[cxapi.PATH_METADATA_KEY];
-      if (newPathMetadata && !(logicalId in logicalToPathMap)) {
-        logicalToPathMap[logicalId] = newPathMetadata;
+      if (newPathMetadata && !(logicalId in this.logicalToPathMap)) {
+        this.logicalToPathMap[logicalId] = newPathMetadata;
       }
     }
   }
 
-  function formatLogicalId(logicalId: string) {
+  public formatLogicalId(logicalId: string) {
     // if we have a path in the map, return it
-    const normalized = normalizedLogicalIdPath(logicalId);
+    const normalized = this.normalizedLogicalIdPath(logicalId);
 
     if (normalized) {
       return `${normalized} ${colors.gray(logicalId)}`;
@@ -259,9 +278,9 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     return logicalId;
   }
 
-  function normalizedLogicalIdPath(logicalId: string): string | undefined {
+  public normalizedLogicalIdPath(logicalId: string): string | undefined {
     // if we have a path in the map, return it
-    const path = logicalToPathMap[logicalId];
+    const path = this.logicalToPathMap[logicalId];
     return path ? normalizePath(path) : undefined;
 
     /**
@@ -292,46 +311,49 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     }
   }
 
-  function formatIamChanges(changes: IamChanges) {
+  public formatIamChanges(changes: IamChanges) {
     if (!changes.hasChanges) { return; }
 
-    const tables: string[] = [];
-
     if (changes.statements.hasChanges) {
-      tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
+      this.printSectionHeader('IAM Statement Changes');
+      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
     }
 
     if (changes.managedPolicies.hasChanges) {
-      tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
+      this.printSectionHeader('IAM Policy Changes');
+      this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
     }
 
-    printSectionHeader('Summary of IAM Changes');
-    print(tables.join('\n\n'));
-    printSectionFooter();
+    this.printSectionFooter();
   }
 
-  function formatSecurityGroupChanges(changes: SecurityGroupChanges) {
+  public formatSecurityGroupChanges(changes: SecurityGroupChanges) {
     if (!changes.hasChanges) { return; }
 
-    printSectionHeader('Summary of Security Group Changes');
-    print(renderTable(deepSubstituteBracedLogicalIds(changes.summarize())));
-    printSectionFooter();
+    this.printSectionHeader('Summary of Security Group Changes');
+    this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarize())));
+    this.printSectionFooter();
   }
 
-  function deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
-    return rows.map(row => row.map(substituteBracedLogicalIds));
+  public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
+    return rows.map(row => row.map(this.substituteBracedLogicalIds.bind(this)));
   }
 
   /**
    * Substitute all strings like ${LogId.xxx} with the path instead of the logical ID
    */
-  function substituteBracedLogicalIds(source: string): string {
+  public substituteBracedLogicalIds(source: string): string {
     return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
-      return '${' + (normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
+      return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
   });
   }
 }
 
+/**
+ * Render a two-dimensional array to a visually attractive table
+ *
+ * First row is considered the table header.
+ */
 function renderTable(cells: string[][]): string {
   const head = cells.splice(0, 1)[0];
 
