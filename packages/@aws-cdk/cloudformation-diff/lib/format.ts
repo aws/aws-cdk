@@ -6,6 +6,7 @@ import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } 
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
 import { IamChanges } from './iam/iam-changes';
+import { SecurityGroupChanges } from './network/security-group-changes';
 
 /**
  * Renders template differences to the process' console.
@@ -32,11 +33,8 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     printSectionFooter();
   }
 
-  if (templateDiff.iamChanges.hasChanges) {
-    printSectionHeader('Summary of IAM Changes');
-    formatIamChanges(templateDiff.iamChanges);
-    printSectionFooter();
-  }
+  formatIamChanges(templateDiff.iamChanges);
+  formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
   formatSection('Parameters', 'Parameter', templateDiff.parameters);
   formatSection('Metadata', 'Metadata', templateDiff.metadata);
@@ -295,17 +293,29 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
   }
 
   function formatIamChanges(changes: IamChanges) {
+    if (!changes.hasChanges) { return; }
+
     const tables: string[] = [];
 
-    if (changes.hasStatementChanges) {
+    if (changes.statements.hasChanges) {
       tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeStatements())));
     }
 
-    if (changes.hasManagedPolicyChanges) {
+    if (changes.managedPolicies.hasChanges) {
       tables.push(renderTable(deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
     }
 
+    printSectionHeader('Summary of IAM Changes');
     print(tables.join('\n\n'));
+    printSectionFooter();
+  }
+
+  function formatSecurityGroupChanges(changes: SecurityGroupChanges) {
+    if (!changes.hasChanges) { return; }
+
+    printSectionHeader('Summary of Security Group Changes');
+    print(renderTable(deepSubstituteBracedLogicalIds(changes.summarize())));
+    printSectionFooter();
   }
 
   function deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -327,5 +337,33 @@ function renderTable(cells: string[][]): string {
 
   const table = new Table({ head, style: { head: [] } });
   table.push(...cells);
-  return table.toString();
+  return stripHorizontalLines(table.toString());
+}
+
+/**
+ * Strip horizontal lines in the table rendering if the second-column values are the same
+ *
+ * We couldn't find a table library that BOTH does newlines-in-cells correctly AND
+ * has an option to enable/disable separator lines on a per-row basis. So we're
+ * going to do some character post-processing on the table instead.
+ */
+function stripHorizontalLines(tableRendering: string) {
+  const lines = tableRendering.split('\n');
+
+  let i = 3;
+  while (i < lines.length - 3) {
+    if (secondColumnValue(lines[i]) === secondColumnValue(lines[i + 2])) {
+      lines.splice(i + 1, 1);
+      i += 1;
+    } else {
+      i += 2;
+    }
+  }
+
+  return lines.join('\n');
+
+  function secondColumnValue(line: string) {
+    const cols = colors.stripColors(line).split('│').filter(x => x !== '');
+    return cols[1];
+  }
 }

@@ -182,6 +182,16 @@ export enum PropertyScrutinyType {
    * A list of managed policies on a resource
    */
   ManagedPolicies = 'ManagedPolicies',
+
+  /**
+   * A set of ingress rules
+   */
+  IngressRules = 'IngressRules',
+
+  /**
+   * A set of egress rules
+   */
+  EgressRules = 'EgressRules',
 }
 
 export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType {

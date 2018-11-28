@@ -1,6 +1,7 @@
 import cfnspec = require('@aws-cdk/cfnspec');
 import { AssertionError } from 'assert';
 import { IamChanges } from '../iam/iam-changes';
+import { SecurityGroupChanges } from '../network/security-group-changes';
 import { deepEqual } from './util';
 
 export type PropertyMap = {[key: string]: any };
@@ -23,6 +24,11 @@ export class TemplateDiff implements ITemplateDiff {
    * Changes to IAM policies
    */
   public readonly iamChanges: IamChanges;
+
+  /**
+   * Changes to Security Group ingress and egress rules
+   */
+  public readonly securityGroupChanges: SecurityGroupChanges;
 
   constructor(args: ITemplateDiff) {
     if (args.awsTemplateFormatVersion !== undefined) {
@@ -48,6 +54,13 @@ export class TemplateDiff implements ITemplateDiff {
       resourcePolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ResourcePolicy),
       managedPolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ManagedPolicies),
       lambdaPermissionChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.LambdaPermission),
+    });
+
+    this.securityGroupChanges = new SecurityGroupChanges({
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.EgressRules),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IngressRules),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.EgressRuleResource),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.IngressRuleResource),
     });
   }
 

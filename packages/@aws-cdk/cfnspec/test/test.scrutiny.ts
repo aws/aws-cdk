@@ -37,4 +37,22 @@ export = {
 
     test.done();
   },
+
+  'check securityGroup scrutinies'(test: Test) {
+    const inProp = specification().ResourceTypes['AWS::EC2::SecurityGroup'].Properties!.SecurityGroupIngress;
+    test.equals(inProp.ScrutinyType, PropertyScrutinyType.IngressRules);
+
+    const eProp = specification().ResourceTypes['AWS::EC2::SecurityGroup'].Properties!.SecurityGroupEgress;
+    test.equals(eProp.ScrutinyType, PropertyScrutinyType.EgressRules);
+
+    test.done();
+  },
+
+  'check securityGroupRule scrutinies'(test: Test) {
+    const inRes = specification().ResourceTypes['AWS::EC2::SecurityGroupIngress'];
+    test.equals(inRes.ScrutinyType, ResourceScrutinyType.IngressRuleResource);
+
+    const eRes = specification().ResourceTypes['AWS::EC2::SecurityGroupEgress'];
+    test.equals(eRes.ScrutinyType, ResourceScrutinyType.EgressRuleResource);
+  }
 };

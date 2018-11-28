@@ -89,6 +89,16 @@ export enum ResourceScrutinyType {
    * This is a Lambda Permission policy
    */
   LambdaPermission = 'LambdaPermission',
+
+  /**
+   * An ingress rule object
+   */
+  IngressRuleResource = 'IngressRuleResource',
+
+  /**
+   * A set of egress rules
+   */
+  EgressRuleResource = 'EgressRuleResource',
 }
 
 export function isResourceScrutinyType(str: string): str is ResourceScrutinyType {

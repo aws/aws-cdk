@@ -1,5 +1,6 @@
 import colors = require('colors/safe');
 import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
+import { DiffableCollection } from '../diffable';
 import { ManagedPolicyAttachment, parseManagedPolicies } from './managed-policy';
 import { parseLambdaPermission, parseStatements, Statement, Targets } from "./statement";
 import { unCloudFormation } from "./uncfn";
@@ -15,67 +16,33 @@ export interface IamChangesProps {
  * Changes to IAM statements
  */
 export class IamChanges {
-  public readonly statementAdditions: Statement[] = [];
-  public readonly statementRemovals: Statement[] = [];
-  public readonly managedPolicyAdditions: ManagedPolicyAttachment[] = [];
-  public readonly managedPolicyRemovals: ManagedPolicyAttachment[] = [];
-
-  private oldStatements: Statement[] = [];
-  private newStatements: Statement[] = [];
-  private oldPolicyAttachments: ManagedPolicyAttachment[] = [];
-  private newPolicyAttachments: ManagedPolicyAttachment[] = [];
+  public readonly statements = new DiffableCollection<Statement>();
+  public readonly managedPolicies = new DiffableCollection<ManagedPolicyAttachment>();
 
   constructor(props: IamChangesProps) {
     for (const policyChange of props.identityPolicyChanges) {
-      this.oldStatements.push(...this.readIdentityStatements(policyChange.oldValue, policyChange.propertyName, policyChange.resourceLogicalId));
-      this.newStatements.push(...this.readIdentityStatements(policyChange.newValue, policyChange.propertyName, policyChange.resourceLogicalId));
+      this.statements.addOld(...this.readIdentityStatements(policyChange.oldValue, policyChange.propertyName, policyChange.resourceLogicalId));
+      this.statements.addNew(...this.readIdentityStatements(policyChange.newValue, policyChange.propertyName, policyChange.resourceLogicalId));
     }
     for (const policyChange of props.resourcePolicyChanges) {
-      this.oldStatements.push(...this.readResourceStatements(policyChange.oldValue, policyChange.resourceLogicalId));
-      this.newStatements.push(...this.readResourceStatements(policyChange.newValue, policyChange.resourceLogicalId));
+      this.statements.addOld(...this.readResourceStatements(policyChange.oldValue, policyChange.resourceLogicalId));
+      this.statements.addNew(...this.readResourceStatements(policyChange.newValue, policyChange.resourceLogicalId));
     }
     for (const lambdaChange of props.lambdaPermissionChanges) {
-      this.oldStatements.push(...this.readLambdaStatements(lambdaChange.oldProperties));
-      this.newStatements.push(...this.readLambdaStatements(lambdaChange.newProperties));
+      this.statements.addOld(...this.readLambdaStatements(lambdaChange.oldProperties));
+      this.statements.addNew(...this.readLambdaStatements(lambdaChange.newProperties));
     }
     for (const managedPolicyChange of props.managedPolicyChanges) {
-      this.oldPolicyAttachments.push(...this.readManagedPolicies(managedPolicyChange.oldValue, managedPolicyChange.resourceLogicalId));
-      this.newPolicyAttachments.push(...this.readManagedPolicies(managedPolicyChange.newValue, managedPolicyChange.resourceLogicalId));
+      this.managedPolicies.addOld(...this.readManagedPolicies(managedPolicyChange.oldValue, managedPolicyChange.resourceLogicalId));
+      this.managedPolicies.addNew(...this.readManagedPolicies(managedPolicyChange.newValue, managedPolicyChange.resourceLogicalId));
     }
 
-    this.statementAdditions.push(...difference(this.newStatements, this.oldStatements));
-    this.statementRemovals.push(...difference(this.oldStatements, this.newStatements));
-
-    this.managedPolicyAdditions.push(...difference(this.newPolicyAttachments, this.oldPolicyAttachments));
-    this.managedPolicyAdditions.push(...difference(this.oldPolicyAttachments, this.newPolicyAttachments));
+    this.statements.calculateDiff();
+    this.managedPolicies.calculateDiff();
   }
 
   public get hasChanges() {
-    return this.hasManagedPolicyChanges || this.hasStatementChanges;
-  }
-
-  public get hasStatementChanges() {
-    return this.statementAdditions.length + this.statementRemovals.length > 0;
-  }
-
-  public get hasStatementAdditions() {
-    return this.statementAdditions.length > 0;
-  }
-
-  public get hasStatementRemovals() {
-    return this.statementRemovals.length > 0;
-  }
-
-  public get hasManagedPolicyChanges() {
-    return this.managedPolicyAdditions.length + this.managedPolicyRemovals.length > 0;
-  }
-
-  public get hasManagedPolicyAdditions() {
-    return this.managedPolicyAdditions.length > 0;
-  }
-
-  public get hasManagedPolicyRemovals() {
-    return this.managedPolicyRemovals.length > 0;
+    return this.statements.hasChanges || this.managedPolicies.hasChanges;
   }
 
   /**
@@ -87,7 +54,7 @@ export class IamChanges {
     const header = ['', 'Resource', 'Effect', 'Action', 'Principal', 'Condition'];
 
     // First generate all lines, then sort on Resource so that similar resources are together
-    for (const statement of this.statementAdditions) {
+    for (const statement of this.statements.additions) {
       ret.push([
         '+',
         renderTargets(statement.resources),
@@ -97,7 +64,7 @@ export class IamChanges {
         renderCondition(statement.condition)
       ].map(s => colors.green(s)));
     }
-    for (const statement of this.statementRemovals) {
+    for (const statement of this.statements.removals) {
       ret.push([
         colors.red('-'),
         renderTargets(statement.resources),
@@ -109,7 +76,7 @@ export class IamChanges {
     }
 
     // Sort by 2nd column
-    ret.sort(makeComparator((row: string[]) => row[1]));
+    ret.sort(makeComparator((row: string[]) => [row[1]]));
 
     ret.splice(0, 0, header);
 
@@ -120,14 +87,14 @@ export class IamChanges {
     const ret: string[][] = [];
     const header = ['', 'Resource', 'Managed Policy ARN'];
 
-    for (const att of this.managedPolicyAdditions) {
+    for (const att of this.managedPolicies.additions) {
       ret.push([
         '+',
         att.identityArn,
         att.managedPolicyArn,
       ].map(s => colors.green(s)));
     }
-    for (const att of this.managedPolicyRemovals) {
+    for (const att of this.managedPolicies.removals) {
       ret.push([
         '-',
         att.identityArn,
@@ -136,7 +103,7 @@ export class IamChanges {
     }
 
     // Sort by 2nd column
-    ret.sort(makeComparator((row: string[]) => row[1]));
+    ret.sort(makeComparator((row: string[]) => [row[1]]));
 
     ret.splice(0, 0, header);
 
@@ -195,27 +162,6 @@ export class IamChanges {
 }
 
 /**
- * Things that can be compared to themselves (by value)
- */
-interface Eq<T> {
-  equal(other: T): boolean;
-}
-
-/**
- * Whether a collection contains some element (by value)
- */
-function contains<T extends Eq<T>>(element: T, xs: T[]) {
-  return xs.some(x => x.equal(element));
-}
-
-/**
- * Return collection except for elements
- */
-function difference<T extends Eq<T>>(collection: T[], elements: T[]) {
-  return collection.filter(x => !contains(x, elements));
-}
-
-/**
  * Render into a summary table cell
  */
 function renderTargets(targets: Targets): string {
@@ -247,15 +193,26 @@ function renderCondition(condition: any) {
 }
 
 /**
- * Turn a key extraction function into a comparator for use in Array.sort()
+ * Turn a (multi-key) extraction function into a comparator for use in Array.sort()
  */
-function makeComparator<T, U>(keyFn: (x: T) => U) {
+export function makeComparator<T, U>(keyFn: (x: T) => U[]) {
   return (a: T, b: T) => {
     const keyA = keyFn(a);
     const keyB = keyFn(b);
+    const len = Math.min(keyA.length, keyB.length);
 
-    if (keyA < keyB) { return -1; }
-    if (keyB < keyA) { return 1; }
-    return 0;
+    for (let i = 0; i < len; i++) {
+      const c = compare(keyA[i], keyB[i]);
+      if (c !== 0) { return c; }
+    }
+
+    // Arrays are the same up to the min length -- shorter array sorts first
+    return keyA.length - keyB.length;
   };
+}
+
+function compare<T>(a: T, b: T) {
+  if (a < b) { return -1; }
+  if (b < a) { return 1; }
+  return 0;
 }

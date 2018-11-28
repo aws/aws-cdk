@@ -12,6 +12,9 @@ function validateResourceTypes(test: Test, specification: Specification) {
     test.ok(typeName, 'Resource type name is not empty');
     const type = specification.ResourceTypes[typeName];
     test.notEqual(type.Documentation, null, `${typeName} is documented`);
+    if (type.ScrutinyType) {
+      test.ok(schema.isResourceScrutinyType(type.ScrutinyType), `${typeName}.ScrutinyType is not a valid ResourceScrutinyType`);
+    }
     if (type.Properties) { validateProperties(typeName, test, type.Properties, specification); }
     if (type.Attributes) { validateAttributes(typeName, test, type.Attributes, specification); }
   }
