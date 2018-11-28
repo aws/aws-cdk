@@ -42,8 +42,14 @@ export class AdoptedRepository extends ecr.RepositoryBase {
     });
 
     fn.addToRolePolicy(new iam.PolicyStatement()
-      .addActions('ecr:GetRepositoryPolicy', 'ecr:SetRepositoryPolicy', 'ecr:DeleteRepository', 'ecr:ListImages', 'ecr:BatchDeleteImage')
-      .addResource(ecr.Repository.arnForLocalRepository(props.repositoryName)));
+      .addResource(ecr.Repository.arnForLocalRepository(props.repositoryName))
+      .addActions(
+        'ecr:GetRepositoryPolicy',
+        'ecr:SetRepositoryPolicy',
+        'ecr:DeleteRepository',
+        'ecr:ListImages',
+        'ecr:BatchDeleteImage'
+      ));
 
     const adopter = new cfn.CustomResource(this, 'Resource', {
       resourceType: 'Custom::ECRAdoptedRepository',

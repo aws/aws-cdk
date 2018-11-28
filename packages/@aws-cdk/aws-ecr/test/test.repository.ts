@@ -212,6 +212,31 @@ export = {
     test.done();
   },
 
+  'import only with a repository name (arn is deduced)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const repo = ecr.Repository.import(stack, 'Repo', {
+      repositoryName: 'my-repo'
+    });
+
+    // THEN
+    test.deepEqual(cdk.resolve(repo.repositoryArn), {
+      'Fn::Join': [ '', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ecr:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':repository/my-repo' ]
+      ]
+    });
+    test.deepEqual(cdk.resolve(repo.repositoryName), 'my-repo');
+    test.done();
+  },
+
   'arnForLocalRepository can be used to render an ARN for a local repository'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

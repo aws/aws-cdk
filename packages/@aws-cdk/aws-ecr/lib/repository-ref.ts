@@ -57,11 +57,13 @@ export interface ImportRepositoryProps {
   /**
    * The ARN of the repository to import.
    *
-   * If you only have a repository name and the repository is in the same account/region
-   * as the current stack, you can use the static method `Repository.arnForLocalRepository(name)`
-   * to format an ARN from a name.
+   * At least one of `repositoryArn` or `repositoryName` is required.
+   *
+   * @default If you only have a repository name and the repository is in the same
+   * account/region as the current stack, you can set `repositoryName` instead
+   * and the ARN will be formatted with the current region and account.
    */
-  repositoryArn: string;
+  repositoryArn?: string;
 
   /**
    * The full name of the repository to import.
@@ -69,6 +71,9 @@ export interface ImportRepositoryProps {
    * This is only needed if the repository ARN is not a concrete string, in which
    * case it is impossible to safely parse the ARN and extract full repository
    * names from it if it includes multiple components (e.g. `foo/bar/myrepo`).
+   *
+   * If the repository is in the same region/account as the stack, it is sufficient
+   * to only specify the repository name.
    */
   repositoryName?: string;
 }
@@ -191,19 +196,29 @@ class ImportedRepository extends RepositoryBase {
 
   constructor(parent: cdk.Construct, id: string, props: ImportRepositoryProps) {
     super(parent, id);
-    this.repositoryArn = props.repositoryArn;
 
-    // if repositoryArn is a token, the repository name is also required. this is because
-    // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
-    // parse the name from an ARN using CloudFormation's split/select.
-    if (cdk.unresolved(props.repositoryArn)) {
-        if (!props.repositoryName) {
-          throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
-        }
-
-        this.repositoryName = props.repositoryName;
+    if (props.repositoryArn) {
+      this.repositoryArn = props.repositoryArn;
     } else {
-      this.repositoryName = props.repositoryArn.split('/').slice(1).join('/');
+      if (!props.repositoryName) {
+        throw new Error('If "repositoruyArn" is not specified, you must specify "repositoryName", ' +
+          'which also implies that the repository resides in the same region/account as this stack');
+      }
+
+      this.repositoryArn = RepositoryBase.arnForLocalRepository(props.repositoryName);
+    }
+
+    if (props.repositoryName) {
+      this.repositoryName = props.repositoryName;
+    } else {
+      // if repositoryArn is a token, the repository name is also required. this is because
+      // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
+      // parse the name from an ARN using CloudFormation's split/select.
+      if (cdk.unresolved(this.repositoryArn)) {
+        throw new Error('repositoryArn is a late-bound value, and therefore repositoryName is required');
+      }
+
+      this.repositoryName = this.repositoryArn.split('/').slice(1).join('/');
     }
   }
 

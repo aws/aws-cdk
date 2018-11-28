@@ -799,9 +799,8 @@ export interface IBuildImage {
 
 /**
  * A CodeBuild image running Linux.
+ *
  * This class has a bunch of public constants that represent the most popular images.
- * If you need to use with an image that isn't in the named constants,
- * you can always instantiate it directly.
  *
  * You can also specify a custom image using one of the static methods:
  *
@@ -857,7 +856,7 @@ export class LinuxBuildImage implements IBuildImage {
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
     const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
     return image;
   }
 
@@ -870,7 +869,7 @@ export class LinuxBuildImage implements IBuildImage {
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
     // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
 
     return image;
   }
@@ -918,8 +917,6 @@ export class LinuxBuildImage implements IBuildImage {
  * A CodeBuild image running Windows.
  *
  * This class has a bunch of public constants that represent the most popular images.
- * If you need to use with an image that isn't in the named constants,
- * you can always instantiate it directly.
  *
  * You can also specify a custom image using one of the static methods:
  *
@@ -952,7 +949,7 @@ export class WindowsBuildImage implements IBuildImage {
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
     const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
-    repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
     return image;
   }
 
@@ -965,7 +962,7 @@ export class WindowsBuildImage implements IBuildImage {
 
     // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
     // we can't use `asset.grantUseImage()`.
-    asset.repository.addToResourcePolicy(resourcePolicyStatementForRepository());
+    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
 
     return image;
   }
@@ -1062,11 +1059,13 @@ function extendBuildSpec(buildSpec: any, extend: any) {
   }
 }
 
-function resourcePolicyStatementForRepository() {
+function ecrAccessForCodeBuildService(): iam.PolicyStatement {
   return new iam.PolicyStatement()
     .describe('CodeBuild')
     .addServicePrincipal('codebuild.amazonaws.com')
-    .addAction('ecr:GetDownloadUrlForLayer')
-    .addAction('ecr:BatchGetImage')
-    .addAction('ecr:BatchCheckLayerAvailability');
+    .addActions(
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage',
+      'ecr:BatchCheckLayerAvailability'
+    );
 }

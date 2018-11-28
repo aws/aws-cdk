@@ -9,7 +9,13 @@ class TestStack extends cdk.Stack {
     new codebuild.Project(this, 'MyProject', {
       buildSpec: {
         version: '0.2',
-        phases: { build: { commands: [ 'echo "Hello, CodeBuild!"' ] } }
+        phases: {
+          build: {
+            commands: [
+              'echo "Hello, CodeBuild!"'
+            ]
+          }
+        }
       }
     });
     /// !hide
