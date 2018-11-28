@@ -227,6 +227,7 @@ export abstract class BaseService extends cdk.Construct
   private makeAutoScalingRole(): iam.IRole {
     // Use a Service Linked Role.
     return iam.Role.import(this, 'ScalingRole', {
+      roleName: 'ECSServiceAutoScalingRole',
       roleArn: cdk.ArnUtils.fromComponents({
         service: 'iam',
         resource: 'role/aws-service-role/ecs.application-autoscaling.amazonaws.com',
