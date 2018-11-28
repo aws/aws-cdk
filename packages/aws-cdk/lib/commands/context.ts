@@ -2,7 +2,8 @@ import colors = require('colors/safe');
 import table = require('table');
 import yargs = require('yargs');
 import { print } from '../../lib/logging';
-import { Configuration, DEFAULTS } from '../settings';
+import { CommandOptions } from '../command-api';
+import { DEFAULTS } from '../settings';
 
 export const command = 'context';
 export const describe = 'Manage cached context values';
@@ -19,9 +20,12 @@ export const builder = {
   },
 };
 
-export async function handler(args: yargs.Arguments): Promise<number> {
-  const configuration = new Configuration();
-  await configuration.load();
+export function handler(args: yargs.Arguments) {
+  args.commandHandler = realHandler;
+}
+
+export async function realHandler(options: CommandOptions): Promise<number> {
+  const { configuration, args } = options;
 
   const context = configuration.projectConfig.get(['context']) || {};
 

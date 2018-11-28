@@ -4,6 +4,8 @@ import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecr = require('../lib');
 
+// tslint:disable:object-literal-key-quotes
+
 export = {
   'construct repository'(test: Test) {
     // GIVEN
@@ -286,5 +288,36 @@ export = {
     }));
 
     test.done();
-  }
+  },
+
+  'events': {
+    'onImagePushed without target or imageTag creates the correct event'(test: Test) {
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      repo.onImagePushed('EventRule');
+
+      expect(stack).to(haveResource('AWS::Events::Rule', {
+        "EventPattern": {
+          "source": [
+            "aws.ecr",
+          ],
+          "detail": {
+            "eventName": [
+              "PutImage",
+            ],
+            "requestParameters": {
+              "repositoryName": [
+                {
+                },
+              ],
+            },
+          },
+        },
+        "State": "ENABLED",
+      }));
+
+      test.done();
+    }
+  },
 };
