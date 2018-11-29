@@ -33,16 +33,20 @@ exports.handler = async function(event, context, _callback, respond) {
 
     const adopter = await getAdopter(repo);
     if (event.RequestType === 'Delete') {
-      if (adopter.Sid !== markerStatement.Sid) {
-        throw new Error(`This repository is already owned by another stack: ${adopter.Sid}`);
-      }
-      try {
-        console.log('Deleting', repo);
-        const ids = (await ecr.listImages({ repositoryName: repo }).promise()).imageIds;
-        await ecr.batchDeleteImage({ repositoryName: repo, imageIds: ids }).promise();
-        await ecr.deleteRepository({ repositoryName: repo }).promise();
-      } catch(e) {
-        if (e.code !== 'RepositoryNotFoundException') { throw e; }
+      if (!adopter.Sid) {
+        console.log(`Repository '${repo}' not found. Delete is no-op`);
+      } else {
+        if (adopter.Sid !== markerStatement.Sid) {
+          throw new Error(`This repository is already owned by another stack: ${adopter.Sid}`);
+        }
+        try {
+          console.log('Deleting', repo);
+          const ids = (await ecr.listImages({ repositoryName: repo }).promise()).imageIds;
+          await ecr.batchDeleteImage({ repositoryName: repo, imageIds: ids }).promise();
+          await ecr.deleteRepository({ repositoryName: repo }).promise();
+        } catch(e) {
+          if (e.code !== 'RepositoryNotFoundException') { throw e; }
+        }
       }
     }
 
