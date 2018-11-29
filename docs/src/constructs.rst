@@ -71,7 +71,7 @@ to instantiate the ``StorageLayer`` construct.
 When you initialize a construct,
 add the construct to the construct tree by specifying the parent construct as the first initializer parameter,
 an identifier for the construct as the second parameter,
-and an set of properties for the final parameter,
+and a set of properties for the final parameter,
 as shown in the following example.
 
 .. code-block:: js
