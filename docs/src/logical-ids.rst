@@ -30,8 +30,8 @@ to each resource in the stack.
 
 Each resource in the construct tree has a unique path that represents its
 location within the tree.
-Since logical IDs can only use alphanumeric characters and also restricted in
-length, the CDK is unable to simply use a delimited path as the logical ID.
+Since logical IDs can only use alphanumeric characters and cannot exceed 255 characters,
+the CDK is unable to simply use a delimited path as the logical ID.
 Instead, logical IDs are allocated by concatenating a human-friendly rendition
 from the path (concatenation, de-duplicate, trim) with an eight-character MD5
 hash of the delimited path.
@@ -72,7 +72,7 @@ The |cdk| applies some heuristics to improve the human-friendliness of the prefi
   that wraps an existing one. By naming the inner construct **Default**, you
   ensure that the logical identifiers of resources in already-deployed copy of
   that construct do not change.
-- If a path component is **Resource**, it is omitted from the human readable portion.
+- If a path component is **Resource**, it is omitted from the human readable portion
   of the logical ID. This postfix does not normally contribute any additional useful information to the ID.
 - If two subsequent names in the path are the same, only one is retained.
 - If the prefix exceeds 240 characters, it is trimmed to 240 characters.
@@ -85,7 +85,7 @@ Renaming Logical IDs
 ====================
 
 The :py:meth:`aws-cdk.Stack.renameLogical` method can be used to explicitly assign
-logical IDs to certain resources, given either their full path or
+logical IDs to certain resources.
 
 .. code-block:: javascript
 
