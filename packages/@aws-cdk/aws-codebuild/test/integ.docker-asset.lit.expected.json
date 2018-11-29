@@ -15,7 +15,7 @@
   },
   "Resources": {
     "MyImageAdoptRepository6CA902F6": {
-      "Type": "Custom::CDKECRRepositoryAdoption",
+      "Type": "Custom::ECRAdoptedRepository",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -23,37 +23,17 @@
             "Arn"
           ]
         },
-        "RepositoryArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":ecr:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":repository/",
-              {
-                "Fn::Select": [
-                  0,
-                  {
-                    "Fn::Split": [
-                      ":",
-                      {
-                        "Ref": "MyImageImageName953AD232"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+        "RepositoryName": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Split": [
+                ":",
+                {
+                  "Ref": "MyImageImageName953AD232"
+                }
+              ]
+            }
           ]
         },
         "PolicyDocument": {
@@ -347,16 +327,9 @@
                               },
                               ":repository/",
                               {
-                                "Fn::Select": [
-                                  0,
-                                  {
-                                    "Fn::Split": [
-                                      ":",
-                                      {
-                                        "Ref": "MyImageImageName953AD232"
-                                      }
-                                    ]
-                                  }
+                                "Fn::GetAtt": [
+                                  "MyImageAdoptRepository6CA902F6",
+                                  "RepositoryName"
                                 ]
                               }
                             ]
@@ -391,16 +364,9 @@
                               },
                               ":repository/",
                               {
-                                "Fn::Select": [
-                                  0,
-                                  {
-                                    "Fn::Split": [
-                                      ":",
-                                      {
-                                        "Ref": "MyImageImageName953AD232"
-                                      }
-                                    ]
-                                  }
+                                "Fn::GetAtt": [
+                                  "MyImageAdoptRepository6CA902F6",
+                                  "RepositoryName"
                                 ]
                               }
                             ]
@@ -412,16 +378,9 @@
                 },
                 ".amazonaws.com/",
                 {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        ":",
-                        {
-                          "Ref": "MyImageImageName953AD232"
-                        }
-                      ]
-                    }
+                  "Fn::GetAtt": [
+                    "MyImageAdoptRepository6CA902F6",
+                    "RepositoryName"
                   ]
                 },
                 ":",
