@@ -61,7 +61,7 @@ const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild', {
   */
 });
 const buildStage = pipeline.addStage('build');
-const buildAction = project.addBuildToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
 const synthesizedApp = buildAction.outputArtifact;
 
 // Optionally, self-update the pipeline stack
