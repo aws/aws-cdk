@@ -118,10 +118,10 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * IAM role to assume when deploying changes.
    *
    * If not specified, a fresh role is created. The role is created with zero
-   * permissions unless `fullPermissions` is true, in which case the role will have
+   * permissions unless `adminPermissions` is true, in which case the role will have
    * full permissions.
    *
-   * @default A fresh role with full or no permissions (depending on the value of `fullPermissions`).
+   * @default A fresh role with full or no permissions (depending on the value of `adminPermissions`).
    */
   role?: iam.Role;
 
@@ -129,13 +129,14 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * Acknowledge certain changes made as part of deployment
    *
    * For stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation
-   * might create or update those resources. For example, you must specify CAPABILITY_IAM if your
-   * stack template contains AWS Identity and Access Management (IAM) resources. For more
-   * information, see [Acknowledging IAM Resources in AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities).
+   * might create or update those resources. For example, you must specify `AnonymousIAM` or `NamedIAM`
+   * if your stack template contains AWS Identity and Access Management (IAM) resources. For more
+   * information see the link below.
    *
-   * @default No capabitilities passed, unless `fullPermissions` is true
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
+   * @default None, unless `adminPermissions` is true
    */
-  capabilities?: CloudFormationCapabilities[];
+  capabilities?: CloudFormationCapabilities;
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -151,10 +152,8 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    * are deployed in this pipeline. If you want more fine-grained permissions,
    * use `addToRolePolicy` and `capabilities` to control what the CloudFormation
    * deployment is allowed to do.
-   *
-   * @default false
    */
-  fullPermissions?: boolean;
+  adminPermissions: boolean;
 
   /**
    * Input artifact to use for template parameters values and stack policy.
@@ -198,12 +197,11 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
   public readonly role: iam.Role;
 
   constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
-    const capabilities = props.fullPermissions && props.capabilities === undefined ? [CloudFormationCapabilities.NamedIAM] : props.capabilities;
-
+    const capabilities = props.adminPermissions && props.capabilities === undefined ? CloudFormationCapabilities.NamedIAM : props.capabilities;
     super(parent, id, props, {
       ...configuration,
-      // This must be a string, so flatten the list to a comma-separated string.
-      Capabilities: (capabilities && capabilities.join(',')) || undefined,
+      // None evaluates to empty string which is falsey and results in undefined
+      Capabilities: (capabilities && capabilities.toString()) || undefined,
       RoleArn: new cdk.Token(() => this.role.roleArn),
       ParameterOverrides: cdk.CloudFormationJSON.stringify(props.parameterOverrides),
       TemplateConfiguration: props.templateConfiguration ? props.templateConfiguration.location : undefined,
@@ -217,7 +215,7 @@ export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFo
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com')
       });
 
-      if (props.fullPermissions) {
+      if (props.adminPermissions) {
         this.role.addToPolicy(new iam.PolicyStatement().addAction('*').addAllResources());
       }
     }
@@ -353,11 +351,20 @@ export class PipelineDeleteStackAction extends PipelineCloudFormationDeployActio
  */
 export enum CloudFormationCapabilities {
   /**
+   * No IAM Capabilities
+   *
+   * Pass this capability if you wish to block the creation IAM resources.
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
+   */
+  None = '',
+
+  /**
    * Capability to create anonymous IAM resources
    *
    * Pass this capability if you're only creating anonymous resources.
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  IAM = 'CAPABILITY_IAM',
+  AnonymousIAM = 'CAPABILITY_IAM',
 
   /**
    * Capability to create named IAM resources.
@@ -366,8 +373,9 @@ export enum CloudFormationCapabilities {
    * names.
    *
    * `CloudFormationCapabilities.NamedIAM` implies `CloudFormationCapabilities.IAM`; you don't have to pass both.
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    */
-  NamedIAM = 'CAPABILITY_NAMED_IAM'
+  NamedIAM = 'CAPABILITY_NAMED_IAM',
 }
 
 /**
