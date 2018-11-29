@@ -347,7 +347,7 @@
       "Type": "AWS::ECS::Cluster"
     },
     "ImageAdoptRepositoryE1E84E35": {
-      "Type": "Custom::CDKECRRepositoryAdoption",
+      "Type": "Custom::ECRAdoptedRepository",
       "Properties": {
         "ServiceToken": {
           "Fn::GetAtt": [
@@ -355,37 +355,17 @@
             "Arn"
           ]
         },
-        "RepositoryArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":ecr:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":repository/",
-              {
-                "Fn::Select": [
-                  0,
-                  {
-                    "Fn::Split": [
-                      ":",
-                      {
-                        "Ref": "ImageImageName5E684353"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+        "RepositoryName": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::Split": [
+                ":",
+                {
+                  "Ref": "ImageImageName5E684353"
+                }
+              ]
+            }
           ]
         }
       }
@@ -587,16 +567,9 @@
                                 },
                                 ":repository/",
                                 {
-                                  "Fn::Select": [
-                                    0,
-                                    {
-                                      "Fn::Split": [
-                                        ":",
-                                        {
-                                          "Ref": "ImageImageName5E684353"
-                                        }
-                                      ]
-                                    }
+                                  "Fn::GetAtt": [
+                                    "ImageAdoptRepositoryE1E84E35",
+                                    "RepositoryName"
                                   ]
                                 }
                               ]
@@ -631,16 +604,9 @@
                                 },
                                 ":repository/",
                                 {
-                                  "Fn::Select": [
-                                    0,
-                                    {
-                                      "Fn::Split": [
-                                        ":",
-                                        {
-                                          "Ref": "ImageImageName5E684353"
-                                        }
-                                      ]
-                                    }
+                                  "Fn::GetAtt": [
+                                    "ImageAdoptRepositoryE1E84E35",
+                                    "RepositoryName"
                                   ]
                                 }
                               ]
@@ -652,16 +618,9 @@
                   },
                   ".amazonaws.com/",
                   {
-                    "Fn::Select": [
-                      0,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Ref": "ImageImageName5E684353"
-                          }
-                        ]
-                      }
+                    "Fn::GetAtt": [
+                      "ImageAdoptRepositoryE1E84E35",
+                      "RepositoryName"
                     ]
                   },
                   ":",
@@ -783,16 +742,9 @@
                     },
                     ":repository/",
                     {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::Split": [
-                            ":",
-                            {
-                              "Ref": "ImageImageName5E684353"
-                            }
-                          ]
-                        }
+                      "Fn::GetAtt": [
+                        "ImageAdoptRepositoryE1E84E35",
+                        "RepositoryName"
                       ]
                     }
                   ]
