@@ -46,7 +46,7 @@ following lookup procedure:
   - You can set these defaults manually, but we recommend you use ``aws
     configure``, as described in the :doc:`getting-started` topic.
 
-We recommend you use the default environment for development stacks,
+We recommend that you use the default environment for development stacks,
 and explicitly specify accounts and Regions for production stacks.
 
 .. note::
