@@ -30,6 +30,7 @@ new cloudformation.PipelineCreateUpdateStackAction(stack, 'CFN_Deploy', {
   stage: cfnStage,
   stackName: 'aws-cdk-codepipeline-cross-region-deploy-stack',
   templatePath: sourceAction.outputArtifact.atPath('template.yml'),
+  adminPermissions: false,
   region,
 });
 

@@ -166,8 +166,8 @@ The following example creates a bucket on one stack
 and passes a reference to that bucket to the other stack through an interface.
 
 First create a stack with a bucket.
-The stack includes a a property we use to pass the bucket's properties to the other stack.
-Note how we use the **export** method on the bucket to get it's properties and save them
+The stack includes a property we use to pass the bucket's properties to the other stack.
+Note how we use the **export** method on the bucket to get its properties and save them
 in the stack property.
 
 .. code-block:: ts

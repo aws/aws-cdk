@@ -196,7 +196,7 @@ You can also add the Project to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const buildAction = project.addBuildToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
 ```
 
 In addition to the build Action, there is also a test Action. It works very
@@ -215,9 +215,9 @@ new codebuild.PipelineTestAction(this, 'IntegrationTest', {
 });
 
 // equivalent to the code above:
-project.addTestToPipeline(buildStage, 'IntegrationTest', {
-  // of course, this property is optional here as well
-  outputArtifactName: 'IntegrationTestOutput',
+project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
+    // of course, this property is optional here as well
+    outputArtifactName: 'IntegrationTestOutput',
 });
 ```
 
@@ -302,15 +302,15 @@ const sourceAction2 = repository2.addToPipeline(sourceStage, 'Source2', {
 });
 
 const buildStage = pipeline.addStage('Build');
-const buildAction = project.addBuildToPipeline(buildStage, 'Build', {
-  inputArtifact: sourceAction1.outputArtifact,
-  outputArtifactName: 'artifact1', // for better buildspec readability - see below
-  additionalInputArtifacts: [
-    sourceAction2.outputArtifact, // this is where 'source2' comes from
-  ],
-  additionalOutputArtifactNames: [
-    'artifact2',
-  ],
+const buildAction = project.addToPipeline(buildStage, 'Build', {
+    inputArtifact: sourceAction1.outputArtifact,
+    outputArtifactName: 'artifact1', // for better buildspec readability - see below
+    additionalInputArtifacts: [
+        sourceAction2.outputArtifact, // this is where 'source2' comes from
+    ],
+    additionalOutputArtifactNames: [
+        'artifact2',
+    ],
 });
 ```
 
