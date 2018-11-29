@@ -315,7 +315,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
 
   const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild');
   const buildStage = pipeline.addStage('build');
-  const buildAction = project.addBuildToPipeline(buildStage, 'CodeBuild');
+  const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
   const synthesizedApp = buildAction.outputArtifact;
   return {synthesizedApp, pipeline};
 }
