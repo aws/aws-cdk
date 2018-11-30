@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { cloudformation } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
-import { RepositoryRef } from "./repository-ref";
+import { RepositoryBase } from "./repository-ref";
 
 export interface RepositoryProps {
   /**
@@ -41,7 +41,7 @@ export interface RepositoryProps {
 /**
  * Define an ECR repository
  */
-export class Repository extends RepositoryRef {
+export class Repository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
