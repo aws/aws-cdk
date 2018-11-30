@@ -45,8 +45,8 @@ export = {
   'Stack.isStack indicates that a construct is a stack'(test: Test) {
     const stack = new Stack();
     const c = new Construct(stack, 'Construct');
-    test.ok(stack.isStack);
-    test.ok(!(c as any).isStack);
+    test.ok(Stack.isStack(stack));
+    test.ok(!Stack.isStack(c));
     test.done();
   },
 

@@ -21,8 +21,8 @@ export class App extends Root {
   private get stacks() {
     const out: { [name: string]: Stack } = { };
     for (const child of this.children) {
-      if (!(child instanceof Stack)) {
-        throw new Error(`The child ${child.toString()} of Program must be a Stack`);
+      if (!Stack.isStack(child)) {
+        throw new Error(`The child ${child.toString()} of App must be a Stack`);
       }
 
       out[child.id] = child as Stack;
