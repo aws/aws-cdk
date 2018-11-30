@@ -169,27 +169,27 @@ export enum PropertyScrutinyType {
   None = 'None',
 
   /**
-   * This is an IAM policy on an identity resource
+   * This is an IAM policy directly on a resource
    */
-  IdentityPolicy = 'IdentityPolicy',
+  InlineResourcePolicy = 'InlineResourcePolicy',
 
   /**
-   * This is an IAM policy on a resource
+   * Either an AssumeRolePolicyDocument or a dictionary of policy documents
    */
-  ResourcePolicy = 'ResourcePolicy',
+  InlineIdentityPolicies = 'InlineIdentityPolicies',
 
   /**
-   * A list of managed policies on a resource
+   * A list of managed policies (on an identity resource)
    */
   ManagedPolicies = 'ManagedPolicies',
 
   /**
-   * A set of ingress rules
+   * A set of ingress rules (on a security group)
    */
   IngressRules = 'IngressRules',
 
   /**
-   * A set of egress rules
+   * A set of egress rules (on a security group)
    */
   EgressRules = 'EgressRules',
 }

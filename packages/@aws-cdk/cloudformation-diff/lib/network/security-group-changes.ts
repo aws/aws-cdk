@@ -1,9 +1,9 @@
 import colors = require('colors/safe');
 import { PropertyChange, ResourceChange } from "../diff/types";
 import { DiffableCollection } from "../diffable";
-import { makeComparator } from '../iam/iam-changes';
-import { unCloudFormation } from "../iam/uncfn";
-import { SecurityGroupRule } from "./security-group-rule";
+import { unCloudFormation } from "../uncfn";
+import { dropIfEmpty, makeComparator } from '../util';
+import { RuleJson, SecurityGroupRule } from "./security-group-rule";
 
 export interface SecurityGroupChangesProps {
   ingressRulePropertyChanges: PropertyChange[];
@@ -82,6 +82,15 @@ export class SecurityGroupChanges {
     return ret;
   }
 
+  public toJson(): SecurityGroupChangesJson {
+    return {
+      ingressRuleAdditions: dropIfEmpty(this.ingress.additions.map(s => s.toJson())),
+      ingressRuleRemovals: dropIfEmpty(this.ingress.removals.map(s => s.toJson())),
+      egressRuleAdditions: dropIfEmpty(this.egress.additions.map(s => s.toJson())),
+      egressRuleRemovals: dropIfEmpty(this.egress.removals.map(s => s.toJson())),
+    };
+  }
+
   private readInlineRules(rules: any, logicalId: string): SecurityGroupRule[] {
     if (!rules) { return []; }
 
@@ -98,4 +107,11 @@ export class SecurityGroupChanges {
 
     return [new SecurityGroupRule(unCloudFormation(resource))];
   }
+}
+
+export interface SecurityGroupChangesJson {
+  ingressRuleAdditions?: RuleJson[];
+  ingressRuleRemovals?: RuleJson[];
+  egressRuleAdditions?: RuleJson[];
+  egressRuleRemovals?: RuleJson[];
 }

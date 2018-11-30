@@ -50,17 +50,15 @@ export class TemplateDiff implements ITemplateDiff {
     this.unknown = args.unknown || new DifferenceCollection({});
 
     this.iamChanges = new IamChanges({
-      identityPolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IdentityPolicy),
-      resourcePolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ResourcePolicy),
-      managedPolicyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.ManagedPolicies),
-      lambdaPermissionChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.LambdaPermission),
+      propertyChanges: this.scrutinizablePropertyChanges(IamChanges.IamPropertyScrutinies),
+      resourceChanges: this.scrutinizableResourceChanges(IamChanges.IamResourceScrutinies),
     });
 
     this.securityGroupChanges = new SecurityGroupChanges({
-      egressRulePropertyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.EgressRules),
-      ingressRulePropertyChanges: this.scrutinizablePropertyChanges(cfnspec.schema.PropertyScrutinyType.IngressRules),
-      egressRuleResourceChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.EgressRuleResource),
-      ingressRuleResourceChanges: this.scrutinizableResourceChanges(cfnspec.schema.ResourceScrutinyType.IngressRuleResource),
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.EgressRules]),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.IngressRules]),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.EgressRuleResource]),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.IngressRuleResource]),
     });
   }
 
@@ -93,21 +91,32 @@ export class TemplateDiff implements ITemplateDiff {
   }
 
   /**
+   * Return true if any of the permissions objects involve a broadening of permissions
+   */
+  public get permissionsBroadened(): boolean {
+    return this.iamChanges.permissionsBroadened
+        || this.securityGroupChanges.ingress.hasAdditions
+        || this.securityGroupChanges.egress.hasAdditions;
+  }
+
+  /**
    * Return all property changes of a given scrutiny type
    *
    * We don't just look at property updates; we also look at resource additions and deletions (in which
    * case there is no further detail on property values), and resource type changes.
    */
-  public scrutinizablePropertyChanges(scrutinyType: cfnspec.schema.PropertyScrutinyType): PropertyChange[] {
+  private scrutinizablePropertyChanges(scrutinyTypes: cfnspec.schema.PropertyScrutinyType[]): PropertyChange[] {
     const ret = new Array<PropertyChange>();
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
       if (!resourceChange) { continue; }
 
-      const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyType);
+      const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
       for (const propertyName of props) {
         ret.push({
           resourceLogicalId, propertyName,
+          resourceType: resourceChange.resourceType,
+          scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
           oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],
           newValue: resourceChange.newProperties && resourceChange.newProperties[propertyName],
         });
@@ -123,39 +132,33 @@ export class TemplateDiff implements ITemplateDiff {
    * We don't just look at resource updates; we also look at resource additions and deletions (in which
    * case there is no further detail on property values), and resource type changes.
    */
-  public scrutinizableResourceChanges(scrutinyType: cfnspec.schema.ResourceScrutinyType): ResourceChange[] {
+  private scrutinizableResourceChanges(scrutinyTypes: cfnspec.schema.ResourceScrutinyType[]): ResourceChange[] {
     const ret = new Array<ResourceChange>();
 
-    const scrutinizableTypes = new Set(cfnspec.scrutinizableResourceTypes(scrutinyType));
+    const scrutinizableTypes = new Set(cfnspec.scrutinizableResourceTypes(scrutinyTypes));
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
       if (!resourceChange) { continue; }
+
+      const commonProps = {
+        scrutinyType: cfnspec.resourceSpecification(resourceChange.resourceType).ScrutinyType!,
+        oldProperties: resourceChange.oldProperties,
+        newProperties: resourceChange.newProperties,
+        resourceLogicalId
+      };
 
       // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
       if (resourceChange.resourceTypeChanged) {
         // Treat as DELETE+ADD
         if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
-          ret.push({
-            oldProperties: resourceChange.oldProperties,
-            resourceLogicalId,
-            resourceType: resourceChange.oldResourceType!
-          });
+          ret.push({ ...commonProps, newProperties: undefined, resourceType: resourceChange.oldResourceType! });
         }
         if (scrutinizableTypes.has(resourceChange.newResourceType!)) {
-          ret.push({
-            newProperties: resourceChange.newProperties,
-            resourceLogicalId,
-            resourceType: resourceChange.newResourceType!
-          });
+          ret.push({ ...commonProps, oldProperties: undefined, resourceType: resourceChange.newResourceType! });
         }
       } else {
         if (scrutinizableTypes.has(resourceChange.resourceType)) {
-          ret.push({
-            oldProperties: resourceChange.oldProperties,
-            newProperties: resourceChange.newProperties,
-            resourceLogicalId,
-            resourceType: resourceChange.resourceType
-          });
+          ret.push({ ...commonProps, resourceType: resourceChange.resourceType });
         }
       }
     }
@@ -177,6 +180,16 @@ export interface PropertyChange {
    * Logical ID of the resource where this property change was found
    */
   resourceLogicalId: string;
+
+  /**
+   * Type of the resource
+   */
+  resourceType: string;
+
+  /**
+   * Scrutiny type for this property change
+   */
+  scrutinyType: cfnspec.schema.PropertyScrutinyType;
 
   /**
    * Name of the property that is changing
@@ -204,6 +217,11 @@ export interface ResourceChange {
    * Logical ID of the resource where this property change was found
    */
   resourceLogicalId: string;
+
+  /**
+   * Scrutiny type for this resource change
+   */
+  scrutinyType: cfnspec.schema.ResourceScrutinyType;
 
   /**
    * The type of the resource
@@ -416,6 +434,7 @@ export interface Resource {
 
   [key: string]: any;
 }
+
 export class ResourceDifference extends Difference<Resource> {
   /**
    * Old property values

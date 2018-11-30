@@ -78,6 +78,16 @@ export class SecurityGroupRule {
 
     return '?';
   }
+
+  public toJson(): RuleJson {
+    return {
+      groupId: this.groupId,
+      ipProtocol: this.ipProtocol,
+      fromPort: this.fromPort,
+      toPort: this.toPort,
+      peer: this.peer
+    };
+  }
 }
 
 export interface CidrIpPeer {
@@ -116,4 +126,12 @@ function findFirst<T>(obj: any, keys: string[], fn: (x: string) => T): T | undef
     }
   }
   return undefined;
+}
+
+export interface RuleJson {
+  groupId: string;
+  ipProtocol: string;
+  fromPort?: number;
+  toPort?: number;
+  peer?: RulePeer;
 }

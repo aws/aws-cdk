@@ -1,40 +1,42 @@
+import cfnspec = require('@aws-cdk/cfnspec');
 import colors = require('colors/safe');
 import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
 import { DiffableCollection } from '../diffable';
-import { ManagedPolicyAttachment, parseManagedPolicies } from './managed-policy';
-import { parseLambdaPermission, parseStatements, Statement, Targets } from "./statement";
-import { unCloudFormation } from "./uncfn";
+import { unCloudFormation } from "../uncfn";
+import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
+import { ManagedPolicyAttachment, ManagedPolicyJson, parseManagedPolicies } from './managed-policy';
+import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from "./statement";
 
 export interface IamChangesProps {
-  identityPolicyChanges: PropertyChange[];
-  resourcePolicyChanges: PropertyChange[];
-  lambdaPermissionChanges: ResourceChange[];
-  managedPolicyChanges: PropertyChange[];
+  propertyChanges: PropertyChange[];
+  resourceChanges: ResourceChange[];
 }
 
 /**
  * Changes to IAM statements
  */
 export class IamChanges {
+  public static IamPropertyScrutinies = [
+    cfnspec.schema.PropertyScrutinyType.InlineIdentityPolicies,
+    cfnspec.schema.PropertyScrutinyType.InlineResourcePolicy,
+    cfnspec.schema.PropertyScrutinyType.ManagedPolicies,
+  ];
+
+  public static IamResourceScrutinies = [
+    cfnspec.schema.ResourceScrutinyType.ResourcePolicyResource,
+    cfnspec.schema.ResourceScrutinyType.IdentityPolicyResource,
+    cfnspec.schema.ResourceScrutinyType.LambdaPermission,
+  ];
+
   public readonly statements = new DiffableCollection<Statement>();
   public readonly managedPolicies = new DiffableCollection<ManagedPolicyAttachment>();
 
   constructor(props: IamChangesProps) {
-    for (const policyChange of props.identityPolicyChanges) {
-      this.statements.addOld(...this.readIdentityStatements(policyChange.oldValue, policyChange.propertyName, policyChange.resourceLogicalId));
-      this.statements.addNew(...this.readIdentityStatements(policyChange.newValue, policyChange.propertyName, policyChange.resourceLogicalId));
+    for (const propertyChange of props.propertyChanges) {
+      this.readPropertyChange(propertyChange);
     }
-    for (const policyChange of props.resourcePolicyChanges) {
-      this.statements.addOld(...this.readResourceStatements(policyChange.oldValue, policyChange.resourceLogicalId));
-      this.statements.addNew(...this.readResourceStatements(policyChange.newValue, policyChange.resourceLogicalId));
-    }
-    for (const lambdaChange of props.lambdaPermissionChanges) {
-      this.statements.addOld(...this.readLambdaStatements(lambdaChange.oldProperties));
-      this.statements.addNew(...this.readLambdaStatements(lambdaChange.newProperties));
-    }
-    for (const managedPolicyChange of props.managedPolicyChanges) {
-      this.managedPolicies.addOld(...this.readManagedPolicies(managedPolicyChange.oldValue, managedPolicyChange.resourceLogicalId));
-      this.managedPolicies.addNew(...this.readManagedPolicies(managedPolicyChange.newValue, managedPolicyChange.resourceLogicalId));
+    for (const resourceChange of props.resourceChanges) {
+      this.readResourceChange(resourceChange);
     }
 
     this.statements.calculateDiff();
@@ -43,6 +45,18 @@ export class IamChanges {
 
   public get hasChanges() {
     return this.statements.hasChanges || this.managedPolicies.hasChanges;
+  }
+
+  /**
+   * Return whether the changes include broadened permissions
+   *
+   * Permissions are broadened if positive statements are added or
+   * negative statements are removed, or if managed policies are added.
+   */
+  public get permissionsBroadened(): boolean {
+    return this.statements.additions.some(s => !s.isNegativeStatement)
+        || this.statements.removals.some(s => s.isNegativeStatement)
+        || this.managedPolicies.hasAdditions;
   }
 
   /**
@@ -110,41 +124,114 @@ export class IamChanges {
     return ret;
   }
 
-  private readIdentityStatements(policy: any, propertyName: string, logicalId: string): Statement[] {
-    if (!policy) { return []; }
+  /**
+   * Return a machine-readable version of the changes
+   */
+  public toJson(): IamChangesJson {
+    return deepRemoveUndefined({
+      statementAdditions: dropIfEmpty(this.statements.additions.map(s => s.toJson())),
+      statementRemovals: dropIfEmpty(this.statements.removals.map(s => s.toJson())),
+      managedPolicyAdditions: dropIfEmpty(this.managedPolicies.additions.map(s => s.toJson())),
+      managedPolicyRemovals: dropIfEmpty(this.managedPolicies.removals.map(s => s.toJson())),
+    });
+  }
 
-    // Stringify CloudFormation intrinsics so that the IAM parser has an easier domain to work in,
-    // then parse.
-    const statements = parseStatements(unCloudFormation(policy.Statement));
-
-    // If this is an assumeRolePolicy and the Resource list is empty, add in the logicalId into Resources,
-    // because that's what this statement is applying to.
-    if (propertyName === 'AssumeRolePolicyDocument') {
-      const rep = '${' + logicalId + '.Arn}';
-      statements.forEach(s => s.resources.replaceEmpty(rep));
+  private readPropertyChange(propertyChange: PropertyChange) {
+    switch (propertyChange.scrutinyType) {
+      case cfnspec.schema.PropertyScrutinyType.InlineIdentityPolicies:
+        // AWS::IAM::{ Role | User | Group }.Policies
+        this.statements.addOld(...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
+        this.statements.addNew(...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
+        break;
+      case cfnspec.schema.PropertyScrutinyType.InlineResourcePolicy:
+        // Any PolicyDocument on a resource (including AssumeRolePolicyDocument)
+        this.statements.addOld(...this.readResourceStatements(propertyChange.oldValue, propertyChange.resourceLogicalId));
+        this.statements.addNew(...this.readResourceStatements(propertyChange.newValue, propertyChange.resourceLogicalId));
+        break;
+      case cfnspec.schema.PropertyScrutinyType.ManagedPolicies:
+        // Just a list of managed policies
+        this.managedPolicies.addOld(...this.readManagedPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
+        this.managedPolicies.addNew(...this.readManagedPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
+        break;
     }
+  }
 
-    return statements;
+  private readResourceChange(resourceChange: ResourceChange) {
+    switch (resourceChange.scrutinyType) {
+      case cfnspec.schema.ResourceScrutinyType.IdentityPolicyResource:
+        // AWS::IAM::Policy
+        this.statements.addOld(...this.readIdentityPolicyResource(resourceChange.oldProperties));
+        this.statements.addNew(...this.readIdentityPolicyResource(resourceChange.newProperties));
+        break;
+      case cfnspec.schema.ResourceScrutinyType.ResourcePolicyResource:
+        // AWS::*::{Bucket,Queue,Topic}Policy
+        this.statements.addOld(...this.readResourcePolicyResource(resourceChange.oldProperties));
+        this.statements.addNew(...this.readResourcePolicyResource(resourceChange.newProperties));
+        break;
+      case cfnspec.schema.ResourceScrutinyType.LambdaPermission:
+        this.statements.addOld(...this.readLambdaStatements(resourceChange.oldProperties));
+        this.statements.addNew(...this.readLambdaStatements(resourceChange.newProperties));
+        break;
+    }
+  }
+
+  /**
+   * Parse a list of policies on an identity
+   */
+  private readIdentityPolicies(policies: any, logicalId: string): Statement[] {
+    if (policies === undefined) { return []; }
+
+    const appliesToPrincipal = '${' + logicalId + '.Arn}';
+
+    return flatMap(policies, (policy: any) => {
+      return defaultPrincipal(appliesToPrincipal, parseStatements(unCloudFormation(policy.PolicyDocument.Statement)));
+    });
+  }
+
+  /**
+   * Parse an IAM::Policy resource
+   */
+  private readIdentityPolicyResource(properties: any): Statement[] {
+    if (properties === undefined) { return []; }
+
+    properties = unCloudFormation(properties);
+
+    const principals = (properties.Groups || []).concat(properties.Users || []).concat(properties.Roles || []);
+    return flatMap(principals, (principal: string) => {
+      const ref = 'AWS:' + principal;
+      return defaultPrincipal(ref, parseStatements(properties.PolicyDocument.Statement));
+    });
   }
 
   private readResourceStatements(policy: any, logicalId: string): Statement[] {
-    // Stringify CloudFormation intrinsics so that the IAM parser has an easier domain to work in,
-    // then parse.
-    const statements = parseStatements(unCloudFormation(policy.Statement));
+    if (policy === undefined) { return []; }
 
-    // Since this is a ResourcePolicy, the meaning of the '*' in a Resource field
-    // actually scoped to the resource it's on, so replace * resources with what
-    // they're scoped to.
-    //
-    // We replace with the ARN of the resource, exemplified by a "GetAtt"
-    // expression. This might not strictly work in CFN for all resource types
-    // (because {X.Arn} might not exist, or it might have to be {Ref}), and for
-    // example for Buckets a * implies both the bucket and the resources in the
-    // bucket, but for human consumpion this is sufficient to be intelligible.
-    const rep = '${' + logicalId + '.Arn}';
-    statements.forEach(s => s.resources.replaceStar(rep));
+    const appliesToResource = '${' + logicalId + '.Arn}';
+    return defaultResource(appliesToResource, parseStatements(unCloudFormation(policy.Statement)));
+  }
 
-    return statements;
+  /**
+   * Parse an AWS::*::{Bucket,Topic,Queue}policy
+   */
+  private readResourcePolicyResource(properties: any): Statement[] {
+    if (properties === undefined) { return []; }
+
+    properties = unCloudFormation(properties);
+
+    const policyKeys = Object.keys(properties).filter(key => key.indexOf('Policy') > -1);
+
+    // Find the key that identifies the resource(s) this policy applies to
+    const resourceKeys = Object.keys(properties).filter(key => !policyKeys.includes(key) && !key.endsWith('Name'));
+    let resources = resourceKeys.length === 1 ? properties[resourceKeys[0]] : ['???'];
+
+    // For some resources, this is a singleton string, for some it's an array
+    if (!Array.isArray(resources)) {
+      resources = [resources];
+    }
+
+    return flatMap(resources, (resource: string) => {
+      return defaultResource(resource, parseStatements(properties[policyKeys[0]].Statement));
+    });
   }
 
   private readManagedPolicies(policyArns: string[] | undefined, logicalId: string): ManagedPolicyAttachment[] {
@@ -162,6 +249,24 @@ export class IamChanges {
 }
 
 /**
+ * Set an undefined or wildcarded principal on these statements
+ */
+function defaultPrincipal(principal: string, statements: Statement[]) {
+  statements.forEach(s => s.principals.replaceEmpty(principal));
+  statements.forEach(s => s.principals.replaceStar(principal));
+  return statements;
+}
+
+/**
+ * Set an undefined or wildcarded resource on these statements
+ */
+function defaultResource(resource: string, statements: Statement[]) {
+  statements.forEach(s => s.resources.replaceEmpty(resource));
+  statements.forEach(s => s.resources.replaceStar(resource));
+  return statements;
+}
+
+/**
  * Render into a summary table cell
  */
 function renderTargets(targets: Targets): string {
@@ -171,48 +276,9 @@ function renderTargets(targets: Targets): string {
   return targets.values.join('\n');
 }
 
-/**
- * Render the Condition column
- */
-function renderCondition(condition: any) {
-  if (!condition || Object.keys(condition).length === 0) { return ''; }
-  const jsonRepresentation = JSON.stringify(condition, undefined, 2);
-
-  // The JSON representation looks like this:
-  //
-  //  {
-  //    "ArnLike": {
-  //      "AWS:SourceArn": "${MyTopic86869434}"
-  //    }
-  //  }
-  //
-  // We can make it more compact without losing information by getting rid of the outermost braces
-  // and the indentation.
-  const lines = jsonRepresentation.split('\n');
-  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
-}
-
-/**
- * Turn a (multi-key) extraction function into a comparator for use in Array.sort()
- */
-export function makeComparator<T, U>(keyFn: (x: T) => U[]) {
-  return (a: T, b: T) => {
-    const keyA = keyFn(a);
-    const keyB = keyFn(b);
-    const len = Math.min(keyA.length, keyB.length);
-
-    for (let i = 0; i < len; i++) {
-      const c = compare(keyA[i], keyB[i]);
-      if (c !== 0) { return c; }
-    }
-
-    // Arrays are the same up to the min length -- shorter array sorts first
-    return keyA.length - keyB.length;
-  };
-}
-
-function compare<T>(a: T, b: T) {
-  if (a < b) { return -1; }
-  if (b < a) { return 1; }
-  return 0;
+export interface IamChangesJson {
+  statementAdditions?: StatementJson[];
+  statementRemovals?: StatementJson[];
+  managedPolicyAdditions?: ManagedPolicyJson[];
+  managedPolicyRemovals?: ManagedPolicyJson[];
 }

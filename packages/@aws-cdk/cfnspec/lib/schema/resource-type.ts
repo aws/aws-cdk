@@ -86,6 +86,20 @@ export enum ResourceScrutinyType {
   None = 'None',
 
   /**
+   * An externally attached policy document to a resource
+   *
+   * (Common for SQS, SNS, S3, ...)
+   */
+  ResourcePolicyResource = 'ResourcePolicyResource',
+
+  /**
+   * This is an IAM policy on an identity resource
+   *
+   * (Basically saying: this is AWS::IAM::Policy)
+   */
+  IdentityPolicyResource = 'IdentityPolicyResource',
+
+  /**
    * This is a Lambda Permission policy
    */
   LambdaPermission = 'LambdaPermission',

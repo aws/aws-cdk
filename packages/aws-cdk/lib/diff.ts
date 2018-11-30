@@ -53,10 +53,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.Synthesiz
  * us to pick minimum "severities" to alert on.
  */
 function diffHasSecurityImpact(diff: cfnDiff.TemplateDiff) {
-  return diff.iamChanges.statements.hasAdditions
-      || diff.iamChanges.managedPolicies.hasAdditions
-      || diff.securityGroupChanges.ingress.hasAdditions
-      || diff.securityGroupChanges.egress.hasAdditions;
+  return diff.permissionsBroadened;
 }
 
 function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {

@@ -10,6 +10,31 @@ export function specification(): schema.Specification {
 }
 
 /**
+ * Return the resource specification for the given typename
+ *
+ * Validates that the resource exists. If you don't this validating behavior, read from
+ * specification() directly.
+ */
+export function resourceSpecification(typeName: string): schema.ResourceType {
+  const ret = specification().ResourceTypes[typeName];
+  if (!ret) {
+    throw new Error(`No such resource type: ${typeName}`);
+  }
+  return ret;
+}
+
+/**
+ * Return the property specification for the given resource's property
+ */
+export function propertySpecification(typeName: string, propertyName: string): schema.Property {
+  const ret = resourceSpecification(typeName).Properties![propertyName];
+  if (!ret) {
+    throw new Error(`Resource ${typeName} has no property: ${propertyName}`);
+  }
+  return ret;
+}
+
+/**
  * The list of resource type names defined in the ``specification``.
  */
 export function resourceTypes() {
@@ -75,14 +100,14 @@ function makePredicate(filter: string | RegExp | Filter): Filter {
 /**
  * Return the properties of the given type that require the given scrutiny type
  */
-export function scrutinizablePropertyNames(resourceType: string, scrutinyType: schema.PropertyScrutinyType): string[] {
+export function scrutinizablePropertyNames(resourceType: string, scrutinyTypes: schema.PropertyScrutinyType[]): string[] {
   const impl = specification().ResourceTypes[resourceType];
   if (!impl) { return []; }
 
   const ret = new Array<string>();
 
   for (const [propertyName, propertySpec] of Object.entries(impl.Properties || {})) {
-    if ((propertySpec.ScrutinyType || schema.PropertyScrutinyType.None) === scrutinyType) {
+    if (scrutinyTypes.includes(propertySpec.ScrutinyType || schema.PropertyScrutinyType.None)) {
       ret.push(propertyName);
     }
   }
@@ -93,10 +118,10 @@ export function scrutinizablePropertyNames(resourceType: string, scrutinyType: s
 /**
  * Return the names of the resource types that need to be subjected to additional scrutiny
  */
-export function scrutinizableResourceTypes(scrutinyType: schema.ResourceScrutinyType): string[] {
+export function scrutinizableResourceTypes(scrutinyTypes: schema.ResourceScrutinyType[]): string[] {
   const ret = new Array<string>();
   for (const [resourceType, resourceSpec] of Object.entries(specification().ResourceTypes)) {
-    if ((resourceSpec.ScrutinyType || schema.PropertyScrutinyType.None) === scrutinyType) {
+    if (scrutinyTypes.includes(resourceSpec.ScrutinyType || schema.ResourceScrutinyType.None)) {
       ret.push(resourceType);
     }
   }

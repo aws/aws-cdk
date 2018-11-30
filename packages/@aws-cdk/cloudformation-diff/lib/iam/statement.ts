@@ -1,4 +1,5 @@
 import deepEqual = require('fast-deep-equal');
+import { deepRemoveUndefined } from '../util';
 
 export class Statement {
   /**
@@ -51,6 +52,42 @@ export class Statement {
       && this.principals.equal(other.principals)
       && deepEqual(this.condition, other.condition));
   }
+
+  public toJson(): StatementJson {
+    return deepRemoveUndefined({
+      sid: this.sid,
+      effect: this.effect,
+      resources: this.resources.toJson(),
+      principals: this.principals.toJson(),
+      actions: this.actions.toJson(),
+      condition: this.condition,
+    });
+  }
+
+  /**
+   * Whether this is a negative statement
+   *
+   * A statement is negative if any of its targets are negative, inverted
+   * if the Effect is Deny.
+   */
+  public get isNegativeStatement(): boolean {
+    const notTarget = this.actions.not || this.principals.not || this.resources.not;
+    return this.effect === Effect.Allow ? notTarget : !notTarget;
+  }
+}
+
+export interface StatementJson {
+  sid?: string;
+  effect: string;
+  resources: TargetsJson;
+  actions: TargetsJson;
+  principals: TargetsJson;
+  condition?: any;
+}
+
+export interface TargetsJson {
+  not: boolean;
+  values: string[];
 }
 
 /**
@@ -96,6 +133,10 @@ export function parseLambdaPermission(x: any): Statement {
   if (x.SourceAccount !== undefined) {
     if (statement.Condition === undefined) { statement.Condition = {}; }
     statement.Condition.StringEquals = { 'AWS:SourceAccount': x.SourceAccount };
+  }
+  if (x.EventSourceToken !== undefined) {
+    if (statement.Condition === undefined) { statement.Condition = {}; }
+    statement.Condition.StringEquals = { 'lambda:EventSourceToken': x.EventSourceToken };
   }
 
   return new Statement(statement);
@@ -157,11 +198,16 @@ export class Targets {
     }
     this.values.sort();
   }
+
+  public toJson(): TargetsJson {
+    return { not: this.not, values: this.values };
+  }
 }
 
 type UnknownMap = {[key: string]: unknown};
 
 export enum Effect {
+  Unknown = 'Unknown',
   Allow = 'Allow',
   Deny = 'Deny',
 }
@@ -172,7 +218,7 @@ function expectString(x: unknown): string | undefined {
 
 function expectEffect(x: unknown): Effect {
   if (x === Effect.Allow || x === Effect.Deny) { return x as Effect; }
-  throw new Error(`Unknown effect: ${x}`);
+  return Effect.Unknown;
 }
 
 function forceListOfStrings(x: unknown): string[] {
@@ -180,7 +226,7 @@ function forceListOfStrings(x: unknown): string[] {
   if (typeof x === 'undefined' || x === null) { return []; }
 
   if (Array.isArray(x)) {
-    return x.map(el => `${el}`);
+    return x.map(e => forceListOfStrings(e).join(','));
   }
 
   if (typeof x === 'object' && x !== null) {
@@ -192,4 +238,25 @@ function forceListOfStrings(x: unknown): string[] {
   }
 
   return [`${x}`];
+}
+
+/**
+ * Render the Condition column
+ */
+export function renderCondition(condition: any) {
+  if (!condition || Object.keys(condition).length === 0) { return ''; }
+  const jsonRepresentation = JSON.stringify(condition, undefined, 2);
+
+  // The JSON representation looks like this:
+  //
+  //  {
+  //    "ArnLike": {
+  //      "AWS:SourceArn": "${MyTopic86869434}"
+  //    }
+  //  }
+  //
+  // We can make it more compact without losing information by getting rid of the outermost braces
+  // and the indentation.
+  const lines = jsonRepresentation.split('\n');
+  return lines.slice(1, lines.length - 1).map(s => s.substr(2)).join('\n');
 }
