@@ -64,7 +64,7 @@ export class Stack extends Construct {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(construct: Construct): construct is Stack {
-    return (construct as any).isStack;
+    return (construct as any)._isStack;
   }
 
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -82,11 +82,6 @@ export class Stack extends Construct {
   public readonly env: Environment;
 
   /**
-   * Used to determine if this construct is a stack.
-   */
-  public readonly isStack = true;
-
-  /**
    * Logical ID generation strategy
    */
   public readonly logicalIds: LogicalIDs;
@@ -100,6 +95,11 @@ export class Stack extends Construct {
    * The CloudFormation stack name.
    */
   public readonly name: string;
+
+  /**
+   * Used to determine if this construct is a stack.
+   */
+  protected readonly _isStack = true;
 
   /**
    * Creates a new stack.
