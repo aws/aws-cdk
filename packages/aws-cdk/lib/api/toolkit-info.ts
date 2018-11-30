@@ -123,7 +123,7 @@ export class ToolkitInfo {
         return {
           alreadyExists: true,
           repositoryUri: repository.repositoryUri!,
-          repositoryArn: repository.repositoryArn!,
+          repositoryName
         };
       } catch (e) {
         if (e.code !== 'ImageNotFoundException') { throw e; }
@@ -152,7 +152,7 @@ export class ToolkitInfo {
     return {
       alreadyExists: false,
       repositoryUri: repository.repositoryUri!,
-      repositoryArn: repository.repositoryArn!,
+      repositoryName,
       username,
       password,
       endpoint: authData[0].proxyEndpoint!,
@@ -164,13 +164,13 @@ export type EcrRepositoryInfo = CompleteEcrRepositoryInfo | UploadableEcrReposit
 
 export interface CompleteEcrRepositoryInfo {
   repositoryUri: string;
-  repositoryArn: string;
+  repositoryName: string;
   alreadyExists: true;
 }
 
 export interface UploadableEcrRepositoryInfo {
   repositoryUri: string;
-  repositoryArn: string;
+  repositoryName: string;
   alreadyExists: false;
   username: string;
   password: string;

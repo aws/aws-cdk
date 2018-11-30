@@ -50,30 +50,7 @@
             },
             ".amazonaws.com/",
             {
-              "Fn::Select": [
-                1,
-                {
-                  "Fn::Split": [
-                    "/",
-                    {
-                      "Fn::Select": [
-                        5,
-                        {
-                          "Fn::Split": [
-                            ":",
-                            {
-                              "Fn::GetAtt": [
-                                "Repo02AC86CF",
-                                "Arn"
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "Ref": "Repo02AC86CF"
             }
           ]
         ]

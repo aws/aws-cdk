@@ -70,7 +70,7 @@ export = {
     delete response.runtime;
 
     test.deepEqual(response, {
-      version: '0.14.0',
+      version: '0.19.0',
       stacks:
       [ { name: 'stack1',
           environment:

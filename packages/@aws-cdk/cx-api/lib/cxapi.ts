@@ -20,7 +20,7 @@ import { Environment } from './environment';
  *   updated (as the current verison in package.json has already been released!)
  * - The request does not have versioning yet, only the response.
  */
-export const PROTO_RESPONSE_VERSION = '0.14.0';
+export const PROTO_RESPONSE_VERSION = '0.19.0';
 
 export const OUTFILE_NAME = 'cdk.out';
 export const OUTDIR_ENV = 'CDK_OUTDIR';
