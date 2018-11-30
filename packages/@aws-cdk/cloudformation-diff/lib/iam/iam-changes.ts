@@ -181,7 +181,7 @@ export class IamChanges {
   private readIdentityPolicies(policies: any, logicalId: string): Statement[] {
     if (policies === undefined) { return []; }
 
-    const appliesToPrincipal = '${' + logicalId + '.Arn}';
+    const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
     return flatMap(policies, (policy: any) => {
       return defaultPrincipal(appliesToPrincipal, parseStatements(unCloudFormation(policy.PolicyDocument.Statement)));
@@ -237,7 +237,7 @@ export class IamChanges {
   private readManagedPolicies(policyArns: string[] | undefined, logicalId: string): ManagedPolicyAttachment[] {
     if (!policyArns) { return []; }
 
-    const rep = '${' + logicalId + '.Arn}';
+    const rep = '${' + logicalId + '}';
     return parseManagedPolicies(rep, unCloudFormation(policyArns));
   }
 

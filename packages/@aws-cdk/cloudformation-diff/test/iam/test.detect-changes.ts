@@ -60,6 +60,40 @@ export = {
     test.done();
   },
 
+  'policies on an identity object'(test: Test) {
+    for (const resourceType of ['Role', 'User', 'Group']) {
+      // WHEN
+      const diff = diffTemplate({}, template({
+        MyIdentity: resource(`AWS::IAM::${resourceType}`, {
+          Policies: [
+            {
+              PolicyName: 'Polly',
+              PolicyDocument: poldoc({
+                Effect: 'Allow',
+                Action: 's3:DoThatThing',
+                Resource: '*'
+              })
+            }
+          ],
+        })
+      }));
+
+      // THEN
+      test.deepEqual(diff.iamChanges.toJson(), {
+        statementAdditions: [
+          {
+            effect: 'Allow',
+            resources: { not: false, values: [ '*' ] },
+            principals: { not: false, values: [ 'AWS:${MyIdentity}' ] },
+            actions: { not: false, values: [ 's3:DoThatThing' ] },
+          }
+        ]
+      });
+    }
+
+    test.done();
+  },
+
   'if policy is attached to multiple roles all are shown'(test: Test) {
     // WHEN
     const diff = diffTemplate({}, template({
@@ -194,7 +228,7 @@ export = {
     test.deepEqual(diff.iamChanges.toJson(), {
       managedPolicyAdditions: [
         {
-          identityArn: '${SomeRole.Arn}',
+          identityArn: '${SomeRole}',
           managedPolicyArn: 'arn:policy'
         }
       ]
