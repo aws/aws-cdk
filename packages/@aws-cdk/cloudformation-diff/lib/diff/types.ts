@@ -94,9 +94,7 @@ export class TemplateDiff implements ITemplateDiff {
    * Return true if any of the permissions objects involve a broadening of permissions
    */
   public get permissionsBroadened(): boolean {
-    return this.iamChanges.permissionsBroadened
-        || this.securityGroupChanges.ingress.hasAdditions
-        || this.securityGroupChanges.egress.hasAdditions;
+    return this.iamChanges.permissionsBroadened || this.securityGroupChanges.rulesAdded;
   }
 
   /**

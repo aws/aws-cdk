@@ -2,7 +2,7 @@ import colors = require('colors/safe');
 import { PropertyChange, ResourceChange } from "../diff/types";
 import { DiffableCollection } from "../diffable";
 import { unCloudFormation } from "../uncfn";
-import { dropIfEmpty, makeComparator } from '../util';
+import { deepRemoveUndefined, dropIfEmpty, makeComparator } from '../util';
 import { RuleJson, SecurityGroupRule } from "./security-group-rule";
 
 export interface SecurityGroupChangesProps {
@@ -83,12 +83,17 @@ export class SecurityGroupChanges {
   }
 
   public toJson(): SecurityGroupChangesJson {
-    return {
+    return deepRemoveUndefined({
       ingressRuleAdditions: dropIfEmpty(this.ingress.additions.map(s => s.toJson())),
       ingressRuleRemovals: dropIfEmpty(this.ingress.removals.map(s => s.toJson())),
       egressRuleAdditions: dropIfEmpty(this.egress.additions.map(s => s.toJson())),
       egressRuleRemovals: dropIfEmpty(this.egress.removals.map(s => s.toJson())),
-    };
+    });
+  }
+
+  public get rulesAdded(): boolean {
+    return this.ingress.hasAdditions
+        || this.egress.hasAdditions;
   }
 
   private readInlineRules(rules: any, logicalId: string): SecurityGroupRule[] {
