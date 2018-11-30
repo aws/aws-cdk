@@ -141,7 +141,6 @@ export class TemplateDiff implements ITemplateDiff {
       if (!resourceChange) { continue; }
 
       const commonProps = {
-        scrutinyType: cfnspec.resourceSpecification(resourceChange.resourceType).ScrutinyType!,
         oldProperties: resourceChange.oldProperties,
         newProperties: resourceChange.newProperties,
         resourceLogicalId
@@ -151,14 +150,28 @@ export class TemplateDiff implements ITemplateDiff {
       if (resourceChange.resourceTypeChanged) {
         // Treat as DELETE+ADD
         if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
-          ret.push({ ...commonProps, newProperties: undefined, resourceType: resourceChange.oldResourceType! });
+          ret.push({
+            ...commonProps,
+            newProperties: undefined,
+            resourceType: resourceChange.oldResourceType!,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.oldResourceType!).ScrutinyType!,
+          });
         }
         if (scrutinizableTypes.has(resourceChange.newResourceType!)) {
-          ret.push({ ...commonProps, oldProperties: undefined, resourceType: resourceChange.newResourceType! });
+          ret.push({
+            ...commonProps,
+            oldProperties: undefined,
+            resourceType: resourceChange.newResourceType!,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.newResourceType!).ScrutinyType!,
+          });
         }
       } else {
         if (scrutinizableTypes.has(resourceChange.resourceType)) {
-          ret.push({ ...commonProps, resourceType: resourceChange.resourceType });
+          ret.push({
+            ...commonProps,
+            resourceType: resourceChange.resourceType,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.resourceType).ScrutinyType!,
+          });
         }
       }
     }
