@@ -1,8 +1,8 @@
 import colors = require('colors/safe');
-import table = require('table');
 import yargs = require('yargs');
-import { print } from '../../lib/logging';
+import { print } from '../logging';
 import { Configuration, DEFAULTS } from '../settings';
+import { renderTable } from '../util';
 
 export const command = 'context';
 export const describe = 'Manage cached context values';
@@ -57,13 +57,7 @@ function listContext(context: any) {
 
   print(`Context found in ${colors.blue(DEFAULTS)}:\n`);
 
-  print(table.table(data, {
-      border: table.getBorderCharacters('norc'),
-      columns: {
-        1: { width: 50, wrapWord: true } as any,
-        2: { width: 50, wrapWord: true } as any
-      }
-  }));
+  print(renderTable(data, colWidths: [2, 50, 50]));
 
   // tslint:disable-next-line:max-line-length
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
