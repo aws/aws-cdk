@@ -35,7 +35,7 @@ export class Stack extends Construct {
    */
   public static find(node: Construct): Stack {
     let curr: Construct | undefined = node;
-    while (curr != null && !isStack(curr)) {
+    while (curr != null && !Stack.isStack(curr)) {
       curr = curr.parent;
     }
 
@@ -58,6 +58,15 @@ export class Stack extends Construct {
     construct.addMetadata('aws:cdk:physical-name', physicalName);
   }
 
+  /**
+   * Return whether the given object is a Stack.
+   *
+   * We do attribute detection since we can't reliably use 'instanceof'.
+   */
+  public static isStack(construct: Construct): construct is Stack {
+    return (construct as any)._isStack;
+  }
+
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
   /**
@@ -73,11 +82,6 @@ export class Stack extends Construct {
   public readonly env: Environment;
 
   /**
-   * Used to determine if this construct is a stack.
-   */
-  public readonly isStack = true;
-
-  /**
    * Logical ID generation strategy
    */
   public readonly logicalIds: LogicalIDs;
@@ -91,6 +95,11 @@ export class Stack extends Construct {
    * The CloudFormation stack name.
    */
   public readonly name: string;
+
+  /**
+   * Used to determine if this construct is a stack.
+   */
+  protected readonly _isStack = true;
 
   /**
    * Creates a new stack.
@@ -431,15 +440,6 @@ export abstract class Referenceable extends StackElement {
   public get ref(): string {
     return new Ref(this).toString();
   }
-}
-
-/**
- * Return whether the given object is a Stack.
- *
- * We do attribute detection since we can't reliably use 'instanceof'.
- */
-function isStack(construct: Construct): construct is Stack {
-  return (construct as any).isStack;
 }
 
 /**
