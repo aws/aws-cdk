@@ -59,8 +59,7 @@ export async function prepareContainerAsset(asset: ContainerImageAssetMetadataEn
     }
 
     return [
-      { ParameterKey: asset.repositoryParameter, ParameterValue: ecr.repositoryArn },
-      { ParameterKey: asset.tagParameter, ParameterValue: tag },
+      { ParameterKey: asset.imageNameParameter, ParameterValue: `${ecr.repositoryName}:${tag}` },
     ];
   } catch (e) {
     if (e.code === 'ENOENT') {

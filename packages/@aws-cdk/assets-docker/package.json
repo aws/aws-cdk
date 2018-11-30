@@ -1,22 +1,22 @@
 {
-  "name": "@aws-cdk/aws-ecs",
+  "name": "@aws-cdk/assets-docker",
   "version": "0.18.1",
-  "description": "The CDK Construct Library for AWS::ECS",
+  "description": "Docker image assets",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.ecs",
+        "package": "software.amazon.awscdk.assets.docker",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "ecs"
+          "artifactId": "cdk-assets-docker"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.ECS",
-        "packageId": "Amazon.CDK.AWS.ECS",
+        "namespace": "Amazon.CDK.Assets.Docker",
+        "packageId": "Amazon.CDK.Assets.Docker",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk"
       },
@@ -36,14 +36,12 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::ECS"
-  },
   "keywords": [
     "aws",
     "cdk",
     "constructs",
-    "ecs"
+    "assets",
+    "docker"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -53,45 +51,27 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "^0.18.1",
-    "@types/proxyquire": "^1.3.28",
+    "aws-cdk": "^0.18.1",
     "cdk-build-tools": "^0.18.1",
     "cdk-integ-tools": "^0.18.1",
-    "cfn2ts": "^0.18.1",
     "pkglint": "^0.18.1",
+    "@types/proxyquire": "^1.3.28",
     "proxyquire": "^2.1.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.18.1",
-    "@aws-cdk/aws-autoscaling": "^0.18.1",
-    "@aws-cdk/aws-certificatemanager": "^0.18.1",
-    "@aws-cdk/aws-cloudformation": "^0.18.1",
-    "@aws-cdk/aws-cloudwatch": "^0.18.1",
-    "@aws-cdk/aws-ec2": "^0.18.1",
-    "@aws-cdk/aws-ecr": "^0.18.1",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.18.1",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.18.1",
-    "@aws-cdk/assets-docker": "^0.18.1",
-    "@aws-cdk/aws-iam": "^0.18.1",
     "@aws-cdk/aws-lambda": "^0.18.1",
-    "@aws-cdk/aws-logs": "^0.18.1",
-    "@aws-cdk/aws-route53": "^0.18.1",
-    "@aws-cdk/aws-sns": "^0.18.1",
+    "@aws-cdk/aws-cloudformation": "^0.18.1",
+    "@aws-cdk/aws-ecr": "^0.18.1",
+    "@aws-cdk/aws-iam": "^0.18.1",
+    "@aws-cdk/aws-s3": "^0.18.1",
     "@aws-cdk/cdk": "^0.18.1",
     "@aws-cdk/cx-api": "^0.18.1"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-applicationautoscaling": "^0.18.1",
-    "@aws-cdk/aws-autoscaling": "^0.18.1",
-    "@aws-cdk/aws-certificatemanager": "^0.18.1",
-    "@aws-cdk/aws-cloudwatch": "^0.18.1",
-    "@aws-cdk/aws-ec2": "^0.18.1",
-    "@aws-cdk/aws-ecr": "^0.18.1",
-    "@aws-cdk/aws-elasticloadbalancing": "^0.18.1",
-    "@aws-cdk/aws-elasticloadbalancingv2": "^0.18.1",
     "@aws-cdk/aws-iam": "^0.18.1",
-    "@aws-cdk/aws-logs": "^0.18.1",
-    "@aws-cdk/aws-route53": "^0.18.1",
-    "@aws-cdk/cdk": "^0.18.1"
+    "@aws-cdk/aws-s3": "^0.18.1",
+    "@aws-cdk/cdk": "^0.18.1",
+    "@aws-cdk/aws-ecr": "^0.18.1"
   }
 }

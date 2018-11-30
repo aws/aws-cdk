@@ -7,14 +7,14 @@ import { IContainerImage } from '../container-image';
  */
 export class EcrImage implements IContainerImage {
   public readonly imageName: string;
-  private readonly repository: ecr.RepositoryRef;
+  private readonly repository: ecr.IRepository;
 
-  constructor(repository: ecr.RepositoryRef, tag: string) {
-    this.imageName = `${repository.repositoryUri}:${tag}`;
+  constructor(repository: ecr.IRepository, tag: string) {
+    this.imageName = repository.repositoryUriForTag(tag);
     this.repository = repository;
   }
 
   public bind(containerDefinition: ContainerDefinition): void {
-    this.repository.grantUseImage(containerDefinition.taskDefinition.obtainExecutionRole());
+    this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 }
