@@ -57,7 +57,7 @@ function listContext(context: any) {
 
   print(`Context found in ${colors.blue(DEFAULTS)}:\n`);
 
-  print(renderTable(data, colWidths: [2, 50, 50]));
+  print(renderTable(data, { colWidths: [2, 50, 50] }));
 
   // tslint:disable-next-line:max-line-length
   print(`Run ${colors.blue('cdk context --reset KEY_OR_NUMBER')} to remove a context key. It will be refreshed on the next CDK synthesis run.`);
