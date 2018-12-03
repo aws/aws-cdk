@@ -888,7 +888,10 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VpcIGWD7BA715C"
+      ]
     },
     "FargateServiceLBSecurityGroup5F444C78": {
       "Type": "AWS::EC2::SecurityGroup",
