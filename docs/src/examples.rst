@@ -160,11 +160,12 @@ Step 3: Create a Fargate Service
 
 There are two different ways of running your container tasks with |ECS|:
 
-- Using the **Fargate** launch type, where |ECS| manages the physical machines that your containers are running on for you
+- Using the **Fargate** launch type,
+  where |ECS| manages the physical machines that your containers are running on for you
 - Using the **EC2** launch type, where you do the managing, such as specifying autoscaling
 
-This example creates a Fargate service,
-which requires a VPC, a cluster, and a task definition.
+The following example creates a Fargate service running on an ECS cluster fronted by an internet-facing
+application load balancer.
 
 .. tabs::
 
@@ -185,25 +186,24 @@ which requires a VPC, a cluster, and a task definition.
               maxAZs: 3 // Default is all AZs in region
             });
 
-            // Create an ECS cluster
             const cluster = new ecs.Cluster(this, 'MyCluster', {
               vpc: vpc
             });
 
-            const taskDefinition = new ecs.FargateTaskDefinition(this, 'MyFargateTaskDefinition', {
-              cpu: '512',  // Default is 256
-              memoryMiB: '2048'  // Default is 512
+            // Add capacity to it
+            cluster.addDefaultAutoScalingGroupCapacity({
+              instanceType: new ec2.InstanceType('t2.xlarge'),
+              instanceCount: 3  // default is 1
             });
-
-            // The task definition for the container.
-            taskDefinition.addContainer('MyContainer', {
-              image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample')    // Required
-            });
-
-            new ecs.FargateService(this, 'MyFargateService', {
-              taskDefinition: taskDefinition,  // Required
+    
+            // Create a load-balanced Fargate service and make it public
+            new ecs.LoadBalancedFargateService(this, 'MyFargateService', {
               cluster: cluster,  // Required
+              cpu: '512', // Default is 256
               desiredCount: 6,  // Default is 1
+              image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample'), // Required
+              memoryMiB: '2048',  // Default is 512
+              publicLoadBalancer: true  // Default is false
             });
 
         Save it and make sure it builds and creates a stack.
