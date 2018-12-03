@@ -17,7 +17,8 @@ export = nodeunit.testCase({
         stage,
         changeSetName: 'MyChangeSet',
         stackName: 'MyStack',
-        templatePath: artifact.atPath('path/to/file')
+        templatePath: artifact.atPath('path/to/file'),
+        adminPermissions: false,
       });
 
       _assertPermissionGranted(test, pipelineRole.statements, 'iam:PassRole', action.role.roleArn);
@@ -50,6 +51,7 @@ export = nodeunit.testCase({
         stage,
         changeSetName: 'MyChangeSet',
         stackName: 'StackA',
+        adminPermissions: false,
         templatePath: artifact.atPath('path/to/file')
       });
 
@@ -57,6 +59,7 @@ export = nodeunit.testCase({
         stage,
         changeSetName: 'MyChangeSet',
         stackName: 'StackB',
+        adminPermissions: false,
         templatePath: artifact.atPath('path/to/other/file')
       });
 
@@ -162,6 +165,7 @@ export = nodeunit.testCase({
       stage: new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) }),
       templatePath: new cpapi.Artifact(stack as any, 'TestArtifact').atPath('some/file'),
       stackName: 'MyStack',
+        adminPermissions: false,
       replaceOnFailure: true,
     });
     const stackArn = _stackArn('MyStack');
@@ -181,6 +185,7 @@ export = nodeunit.testCase({
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
     const action = new cloudformation.PipelineDeleteStackAction(stack, 'Action', {
       stage: new StageDouble({ pipeline: new PipelineDouble({ role: pipelineRole }) }),
+        adminPermissions: false,
       stackName: 'MyStack',
     });
     const stackArn = _stackArn('MyStack');

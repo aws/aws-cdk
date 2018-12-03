@@ -1,7 +1,8 @@
 import colors = require('colors/safe');
 import yargs = require('yargs');
+import { CommandOptions } from '../command-api';
 import { print } from '../logging';
-import { Configuration, DEFAULTS } from '../settings';
+import { DEFAULTS } from '../settings';
 import { renderTable } from '../util';
 
 export const command = 'context';
@@ -19,9 +20,12 @@ export const builder = {
   },
 };
 
-export async function handler(args: yargs.Arguments): Promise<number> {
-  const configuration = new Configuration();
-  await configuration.load();
+export function handler(args: yargs.Arguments) {
+  args.commandHandler = realHandler;
+}
+
+export async function realHandler(options: CommandOptions): Promise<number> {
+  const { configuration, args } = options;
 
   const context = configuration.projectConfig.get(['context']) || {};
 

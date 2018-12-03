@@ -63,6 +63,7 @@
     "@aws-cdk/aws-codebuild": "^0.18.1",
     "@aws-cdk/aws-codecommit": "^0.18.1",
     "@aws-cdk/aws-codedeploy": "^0.18.1",
+    "@aws-cdk/aws-ecr": "^0.18.1",
     "@aws-cdk/aws-lambda": "^0.18.1",
     "@aws-cdk/aws-sns": "^0.18.1",
     "cdk-build-tools": "^0.18.1",

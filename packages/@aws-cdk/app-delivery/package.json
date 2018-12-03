@@ -35,10 +35,12 @@
     "@aws-cdk/aws-cloudformation": "^0.18.1",
     "@aws-cdk/aws-codebuild": "^0.18.1",
     "@aws-cdk/aws-codepipeline-api": "^0.18.1",
+    "@aws-cdk/aws-iam": "^0.18.1",
     "@aws-cdk/cdk": "^0.18.1",
     "@aws-cdk/cx-api": "^0.18.1"
   },
   "devDependencies": {
+    "@aws-cdk/assert": "^0.18.1",
     "@aws-cdk/aws-codepipeline": "^0.18.1",
     "@aws-cdk/aws-s3": "^0.18.1",
     "cdk-build-tools": "^0.18.1",
@@ -62,7 +64,9 @@
     "cdk"
   ],
   "peerDependencies": {
+    "@aws-cdk/aws-cloudformation": "^0.18.1",
     "@aws-cdk/aws-codepipeline-api": "^0.18.1",
+    "@aws-cdk/aws-iam": "^0.18.1",
     "@aws-cdk/cdk": "^0.18.1"
   }
 }

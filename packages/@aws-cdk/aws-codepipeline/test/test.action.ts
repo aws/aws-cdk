@@ -76,7 +76,7 @@ export = {
 
     const project = new codebuild.PipelineProject(stack, 'Project');
     const buildStage = pipeline.addStage('Build');
-    project.addBuildToPipeline(buildStage, 'CodeBuild');
+    project.addToPipeline(buildStage, 'CodeBuild');
 
     expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
       "Stages": [

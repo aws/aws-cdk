@@ -1,0 +1,17 @@
+*.js
+*.js.map
+*.d.ts
+node_modules
+dist
+tsconfig.json
+tslint.json
+
+.LAST_BUILD
+.nyc_output
+coverage
+
+.jsii
+
+.nycrc
+.LAST_PACKAGE
+*.snk
