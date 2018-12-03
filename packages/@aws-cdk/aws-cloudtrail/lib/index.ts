@@ -138,7 +138,7 @@ export class CloudTrail extends cdk.Construct {
       .addServicePrincipal(cloudTrailPrincipal));
 
     s3bucket.addToResourcePolicy(new iam.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('/AWSLogs/', new cdk.AwsAccountId())))
+      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('AWSLogs/', new cdk.AwsAccountId(), "/*")))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
@@ -182,6 +182,8 @@ export class CloudTrail extends cdk.Construct {
       eventSelectors: this.eventSelectors
     });
     this.cloudTrailArn = trail.trailArn;
+    const s3BucketPolicy = s3bucket.findChild("Policy").findChild("Resource") as s3.cloudformation.BucketPolicyResource;
+    trail.addDependency(s3BucketPolicy);
   }
 
   /**
