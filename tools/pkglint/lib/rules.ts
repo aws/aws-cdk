@@ -299,9 +299,10 @@ function cdkModuleName(name: string) {
 
   return {
     javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
-    mavenArtifactId: isCdkPkg ? 'cdk'
-                  : name.startsWith('aws-') ? name.replace(/^aws-/, '')
-                              : `cdk-${name}`,
+    mavenArtifactId:
+      isCdkPkg ? 'cdk'
+               : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
+                                                                      : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
   };
 }
