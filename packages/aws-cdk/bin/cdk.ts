@@ -67,6 +67,7 @@ async function parseCommandLineArguments() {
     .version(VERSION)
     .demandCommand(1, '') // just print help
     .help()
+    .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
