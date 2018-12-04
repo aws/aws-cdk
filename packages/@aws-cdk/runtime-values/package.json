@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/runtime-values",
-  "version": "0.18.1",
+  "version": "0.19.0",
   "description": "Runtime values support for the AWS CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -48,22 +48,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.18.1",
-    "@aws-cdk/aws-ec2": "^0.18.1",
-    "@aws-cdk/aws-lambda": "^0.18.1",
-    "@aws-cdk/aws-sqs": "^0.18.1",
-    "cdk-build-tools": "^0.18.1",
-    "cdk-integ-tools": "^0.18.1",
-    "pkglint": "^0.18.1"
+    "@aws-cdk/assert": "^0.19.0",
+    "@aws-cdk/aws-ec2": "^0.19.0",
+    "@aws-cdk/aws-lambda": "^0.19.0",
+    "@aws-cdk/aws-sqs": "^0.19.0",
+    "cdk-build-tools": "^0.19.0",
+    "cdk-integ-tools": "^0.19.0",
+    "pkglint": "^0.19.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.18.1",
-    "@aws-cdk/aws-ssm": "^0.18.1",
-    "@aws-cdk/cdk": "^0.18.1"
+    "@aws-cdk/aws-iam": "^0.19.0",
+    "@aws-cdk/aws-ssm": "^0.19.0",
+    "@aws-cdk/cdk": "^0.19.0"
   },
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "^0.18.1",
-    "@aws-cdk/cdk": "^0.18.1"
+    "@aws-cdk/aws-iam": "^0.19.0",
+    "@aws-cdk/cdk": "^0.19.0"
   }
 }
