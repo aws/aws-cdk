@@ -19,6 +19,15 @@ export function haveResource(resourceType: string,
   return new HaveResourceAssertion(resourceType, properties, comparison, allowValueExtension);
 }
 
+/**
+ * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
+ */
+export function haveResourceLike(resourceType: string,
+                                 properties?: any,
+                                 comparison?: ResourcePart) {
+  return haveResource(resourceType, properties, comparison, true);
+}
+
 type PropertyPredicate = (props: any, inspection: InspectionFailure) => boolean;
 
 class HaveResourceAssertion extends Assertion<StackInspector> {

@@ -51,16 +51,15 @@ passingExample('expect <stack> to match (no replaces) <template>', () => {
 passingExample('expect <stack> to be a superset of <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
+    // Expected
     new TestResource(stack, 'TestResourceA', { type: resourceType });
     new TestResource(stack, 'TestResourceB', { type: resourceType, properties: { Foo: 'Bar' } });
   });
   const expected = {
     Resources: {
-      // Added
-      NewResource: { Type: 'AWS::S3::Bucket' },
-      // Not changed
       TestResourceA: { Type: 'Test::Resource' },
-      // Not changed
       TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } }
     }
   };
@@ -126,17 +125,17 @@ failingExample('expect <stack> to match (no replaces) <template>', () => {
 failingExample('expect <stack> to be a superset of <template>', () => {
   const resourceType = 'Test::Resource';
   const synthStack = synthesizedStack(stack => {
+    // Added
+    new TestResource(stack, 'NewResource', { type: 'AWS::S3::Bucket' });
+    // Expected
     new TestResource(stack, 'TestResourceA', { type: resourceType });
-    new TestResource(stack, 'TestResourceB', { type: resourceType });
+    // Expected, but has different properties - will break
+    new TestResource(stack, 'TestResourceB', { type: resourceType, properties: { Foo: 'Bar' } });
   });
   const expected = {
     Resources: {
-      // Added
-      NewResource: { Type: 'AWS::S3::Bucket' },
-      // Not changed
       TestResourceA: { Type: 'Test::Resource' },
-      // Updated - that breaks the assertion (superset doesn't allow this)
-      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Bar' } }
+      TestResourceB: { Type: 'Test::Resource', Properties: { Foo: 'Baz' } }
     }
   };
   expect(synthStack).to(matchTemplate(expected, MatchStyle.SUPERSET));

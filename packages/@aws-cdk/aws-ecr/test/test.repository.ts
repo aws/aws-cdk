@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -297,7 +297,7 @@ export = {
 
       repo.onImagePushed('EventRule');
 
-      expect(stack).to(haveResource('AWS::Events::Rule', {
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
         "EventPattern": {
           "source": [
             "aws.ecr",

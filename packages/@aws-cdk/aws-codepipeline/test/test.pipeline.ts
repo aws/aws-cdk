@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
@@ -63,7 +63,7 @@ export = {
     const s2 = new codepipeline.Stage(stack, 'Two', { pipeline: p });
     new codepipeline.ManualApprovalAction(stack, 'Boo', { stage: s2 });
 
-    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
       "Location": {
         "Ref": "PArtifactsBucket5E711C12"
@@ -224,7 +224,7 @@ export = {
           projectName: 'MyProject',
         });
 
-        expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           "Name": "MyProject",
           "Source": {
           "Type": "CODEPIPELINE"
@@ -270,7 +270,7 @@ export = {
       userParameters: 'foo-bar/42'
     });
 
-    expect(stack, /* skip validation */ true).to(haveResource('AWS::CodePipeline::Pipeline', {
+    expect(stack, /* skip validation */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
         "Location": {
         "Ref": "PipelineArtifactsBucket22248F97"
@@ -410,7 +410,7 @@ export = {
         region: 'us-west-1',
       });
 
-      expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "ArtifactStores": [
           {
             "Region": "us-east-1",

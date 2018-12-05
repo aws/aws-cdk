@@ -41,6 +41,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "sts:AssumeRole",
@@ -53,6 +54,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "action:Work",

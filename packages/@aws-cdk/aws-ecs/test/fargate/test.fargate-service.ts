@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -117,7 +117,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::Service", {
+      expect(stack).to(haveResourceLike("AWS::ECS::Service", {
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: "ENABLED",

@@ -521,7 +521,9 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
+      Version: '2012-10-17',
       Statement: [{
+        "Sid": "0",
         "Action": "sns:*",
         "Effect": "Allow",
         "Principal": { "AWS": "arn" },
@@ -545,6 +547,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
     "PolicyDocument": {
+      Version: '2012-10-17',
       "Statement": [
       {
         "Action": "sns:Publish",
@@ -682,20 +685,22 @@ export = {
     "TopicArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" },
     }));
     expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
-    "PolicyDocument": {
-      "Statement": [
-      {
-        "Action": "sqs:SendMessage",
-        "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" }
-        }
-        },
-        "Principal": { "Service": "sns.amazonaws.com" },
-        "Effect": "Allow",
-      }
-      ],
-    },
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            "Action": "sqs:SendMessage",
+            "Condition": {
+              "ArnEquals": {
+                "aws:SourceArn": resolve(imported.topicArn)
+              }
+            },
+            "Principal": { "Service": "sns.amazonaws.com" },
+            "Resource": resolve(queue.queueArn),
+            "Effect": "Allow",
+          }
+        ],
+      },
     }));
 
     test.done();

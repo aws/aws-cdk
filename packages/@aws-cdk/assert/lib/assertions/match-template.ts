@@ -38,7 +38,7 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
   }
 
   public assertUsing(inspector: StackInspector): boolean {
-    const diff = cfnDiff.diffTemplate(inspector.value, this.template);
+    const diff = cfnDiff.diffTemplate(this.template, inspector.value);
     const acceptable = this.isDiffAcceptable(diff);
     if (!acceptable) {
       // Print the diff
