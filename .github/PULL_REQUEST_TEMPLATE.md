@@ -3,16 +3,13 @@
 
 ### Pull Request Checklist
 
-Please check all boxes (including N/A items)
+Please check all boxes, including N/A items:
 
 #### Testing
 
 - [ ] Unit test and/or integration test added
-- [ ] __Toolkit change?:__ [integration
-tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh)
-manually executed (paste output to the PR description)
-- [ ] __Init template change?:__ coordinated update of integration tests
-(currently maintained in a private repo).
+- [ ] __Toolkit change?:__ [integration tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh) manually executed (paste output to the PR description)
+- [ ] __Init template change?:__ coordinated update of integration tests (currently maintained in a private repo).
 
 #### Documentation
 
@@ -27,9 +24,7 @@ manually executed (paste output to the PR description)
   * `chore(module): <title> ` won't appear in changelog
   * `build(module): <title>` won't appear in changelog
 - [ ] __Title format__: Title uses lower case and doesn't end with a period
-- [ ] __Breaking change?__: Last paragraph of description is: `BREAKING
-  CHANGE: <describe exactly what changed and how to achieve similar behavior +
-  link to documentation/gist/issue if more details are required>`
+- [ ] __Breaking change?__: Last paragraph of description is: `BREAKING CHANGE: <describe exactly what changed and how to achieve similar behavior + link to documentation/gist/issue if more details are required>`
 - [ ] __References__: Indicate issues fixed via: `Fixes #xxx` or `Closes #xxx`
 
 ----
