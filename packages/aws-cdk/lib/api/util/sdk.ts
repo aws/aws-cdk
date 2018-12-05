@@ -228,17 +228,6 @@ class DefaultAWSAccount {
       // crash if the file does not exist though. So set the environment variable if we can find that file.
       await setConfigVariable();
 
-      // support these
-      // This might try to load a profile which as AssumeRole credentials. This will normally work for the JS SDK
-      // if AWS_PROFILE/AWS_SDK_LOAD_CONFIG are set, but we don't set those (we work directly from the API).
-      //
-      // Since there is no way to pass a { region } argument to the STS client used for AssumeRole credentials
-      // (https://github.com/aws/aws-sdk-js/issues/2377), we must now configure the region globally so that it will
-      // be picked up there.
-      // AWS.config.update({
-      //   region: await this.region
-      // });
-
       debug('Resolving default credentials');
       const credentialProvider = await this.defaultCredentialsProvider;
       const creds = await credentialProvider.resolvePromise();
