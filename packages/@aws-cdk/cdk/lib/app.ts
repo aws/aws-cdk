@@ -136,7 +136,30 @@ export class App extends Root {
     // add jsii runtime version
     libraries['jsii-runtime'] = getJsiiAgentVersion();
 
+    // filter out any non-CDK libraries
+    for (const name of Object.keys(libraries)) {
+      if (!filterCDKLibraries(name)) {
+        delete libraries[name];
+      }
+    }
+
     return { libraries };
+
+    function filterCDKLibraries(name: string) {
+      if (name.startsWith('@aws-cdk')) {
+        return true;
+      }
+
+      if (name === 'aws-cdk') {
+        return true;
+      }
+
+      if (name.startsWith('jsii-')) {
+        return true;
+      }
+
+      return false;
+    }
   }
 
   private getStack(stackname: string) {
