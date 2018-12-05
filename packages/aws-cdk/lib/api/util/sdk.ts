@@ -72,7 +72,7 @@ export class SDK {
       });
     }
 
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider);
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegion(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
@@ -206,7 +206,9 @@ class DefaultAWSAccount {
   private defaultAccountId?: string = undefined;
   private readonly accountCache = new AccountAccessKeyCache();
 
-  constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>) {
+  constructor(
+      private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
+      private readonly region: Promise<string | undefined>) {
   }
 
   /**
@@ -222,6 +224,10 @@ class DefaultAWSAccount {
 
   private async lookupDefaultAccount(): Promise<string | undefined> {
     try {
+      // There just is *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set. The SDK
+      // crash if the file does not exist though. So set the environment variable if we can find that file.
+      await setConfigVariable();
+
       debug('Resolving default credentials');
       const credentialProvider = await this.defaultCredentialsProvider;
       const creds = await credentialProvider.resolvePromise();
@@ -234,7 +240,7 @@ class DefaultAWSAccount {
       const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ credentials: creds }).getCallerIdentity().promise();
+        const result = await new AWS.STS({ credentials: creds, region: await this.region }).getCallerIdentity().promise();
         const aid = result.Account;
         if (!aid) {
           debug('STS didn\'t return an account ID');
@@ -387,6 +393,15 @@ async function hasEc2Credentials() {
 
   debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
   return instance;
+}
+
+async function setConfigVariable() {
+  const homeDir = process.env.HOME || process.env.USERPROFILE
+    || (process.env.HOMEPATH ? ((process.env.HOMEDRIVE || 'C:/') + process.env.HOMEPATH) : null) || os.homedir();
+
+  if (await fs.pathExists(path.resolve(homeDir, '.aws', 'config'))) {
+    process.env.AWS_SDK_LOAD_CONFIG = '1';
+  }
 }
 
 async function readIfPossible(filename: string): Promise<string | undefined> {
