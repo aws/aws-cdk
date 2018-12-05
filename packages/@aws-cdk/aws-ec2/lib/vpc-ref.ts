@@ -120,6 +120,11 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
   public readonly dependencyElements: IDependable[] = [];
 
   /**
+   * Dependencies for internet connectivity
+   */
+  protected readonly internetDependencies = new Array<IDependable>();
+
+  /**
    * Return the subnets appropriate for the placement strategy
    */
   public subnets(placement: VpcPlacementStrategy = {}): VpcSubnetRef[] {
@@ -176,6 +181,19 @@ export abstract class VpcNetworkRef extends Construct implements IDependable {
    */
   public isPublicSubnet(subnet: VpcSubnetRef) {
     return this.publicSubnets.indexOf(subnet) > -1;
+  }
+
+  /**
+   * Take a dependency on internet connectivity having been added to this VPC
+   *
+   * Take a dependency on this if your constructs need an Internet Gateway
+   * added to the VPC before they can be constructed.
+   *
+   * This method is for construct authors; application builders should not
+   * need to call this.
+   */
+  public internetDependency(): IDependable {
+    return new DependencyList(this.internetDependencies);
   }
 }
 
@@ -339,4 +357,16 @@ export interface VpcSubnetRefProps {
    * The subnetId for this particular subnet
    */
   subnetId: string;
+}
+
+/**
+ * Allows using an array as a list of dependables.
+ */
+class DependencyList implements IDependable {
+  constructor(private readonly dependenclyElements: IDependable[]) {
+  }
+
+  public get dependencyElements(): IDependable[] {
+    return this.dependenclyElements;
+  }
 }
