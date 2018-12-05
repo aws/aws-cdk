@@ -3,6 +3,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
+import { ContainerImage } from '../../lib';
 
 export = {
   "When creating a Fargate Service": {
@@ -127,5 +128,32 @@ export = {
 
       test.done();
     },
-  }
+  },
+
+  "When setting up a health check": {
+    'grace period is respected'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.VpcNetwork(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('MainContainer', {
+        image: ContainerImage.fromDockerHub('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'Svc', {
+        cluster,
+        taskDefinition,
+        healthCheckGracePeriodSeconds: 10
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        HealthCheckGracePeriodSeconds: 10
+      }));
+
+      test.done();
+    },
+  },
 };
