@@ -7,7 +7,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecr-source');
 
-const bucket = new s3.Bucket(stack, 'MyBucket');
+const bucket = new s3.Bucket(stack, 'MyBucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy,
+});
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
 });

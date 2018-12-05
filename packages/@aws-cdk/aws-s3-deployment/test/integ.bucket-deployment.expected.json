@@ -343,7 +343,8 @@
       ]
     },
     "Destination281A09BDF": {
-      "Type": "AWS::S3::Bucket"
+      "Type": "AWS::S3::Bucket",
+      "DeletionPolicy": "Retain"
     },
     "DeployWithPrefixCustomResource9CF7C694": {
       "Type": "Custom::CDKBucketDeployment",

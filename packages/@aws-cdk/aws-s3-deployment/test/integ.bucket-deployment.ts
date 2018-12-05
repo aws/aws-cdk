@@ -10,6 +10,7 @@ class TestBucketDeployment extends cdk.Stack {
     const destinationBucket = new s3.Bucket(this, 'Destination', {
       websiteIndexDocument: 'index.html',
       publicReadAccess: true,
+      removalPolicy: cdk.RemovalPolicy.Destroy
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
