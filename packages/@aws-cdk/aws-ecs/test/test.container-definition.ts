@@ -281,6 +281,18 @@ export = {
       ]
     }));
 
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "LoggingLogGroupC6B8E20B", "Arn" ] }
+          }
+        ]
+      }
+    }));
+
     test.done();
   },
   'can set Health Check with defaults'(test: Test) {

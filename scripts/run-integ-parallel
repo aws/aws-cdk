@@ -4,7 +4,9 @@ set -euo pipefail
 lerna=${LERNA:-node_modules/.bin/lerna}
 
 # Only regions that support most services
-regions=(eu-west-1 eu-west-2 us-east-1 us-east-2 us-west-1 us-west-2 eu-central-1 ca-central-1)
+tokyo=ap-northeast-1
+sydney=ap-southeast-2
+regions=(eu-west-1 eu-west-2 us-east-1 us-east-2 us-west-1 us-west-2 eu-central-1 ca-central-1 $tokyo $sydney)
 
 if ! which parallel > /dev/null; then
     echo "Please install GNU Parallel." >&2
