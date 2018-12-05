@@ -111,6 +111,7 @@ export abstract class BaseService extends cdk.Construct
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent || 50
       },
+      healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
       ...additionalProps
