@@ -312,6 +312,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
       const igw = new cloudformation.InternetGatewayResource(this, 'IGW', {
         tags: new cdk.TagManager(this),
       });
+      this.internetDependencies.push(igw);
       const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref

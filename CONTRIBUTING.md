@@ -169,6 +169,27 @@ $ nodeunit test/test.*.js
 <BOOM>
 ```
 
+### Running integration tests in parallel
+
+Integration tests may take a long time to complete. We can speed this up by running them in parallel
+in different regions.
+
+```shell
+# Install GNU parallel (may require uninstall 'moreutils' if you have it)
+$ apt-get install parallel
+$ brew install parallel
+
+$ scripts/run-integ-parallel @aws-cdk/aws-ec2 @aws-cdk/aws-autoscaling ...
+```
+
+### Visualizing dependencies in a CloudFormation Template
+
+Use GraphViz with `template-deps-to-dot`:
+
+```shell
+$ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > deps.png
+```
+
 ### Build Documentation Only
 
 The CDK documentation source is hosted under [`./docs/src`](./docs/src). Module reference documentation is gathered
@@ -200,7 +221,7 @@ Guidelines:
    updates to automatically be picked up.
  * Make sure `package-lock.json` files are included in your commit.
 
-### Finding Dependency Cycles
+### Finding dependency cycles between packages
 
 You can use `find-cycles` to print a list of internal dependency cycles:
 

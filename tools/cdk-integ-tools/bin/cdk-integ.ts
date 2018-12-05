@@ -8,11 +8,17 @@ import { IntegrationTests, STATIC_TEST_CONTEXT } from '../lib/integ-helpers';
 async function main() {
   const argv = yargs
     .usage('Usage: cdk-integ [TEST...]')
-      .option('clean', { type: 'boolean', default: true, desc: 'Skipps stack clean up after test is completed (use --no-clean to negate)' })
+      .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
+      .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
       .option('verbose', { type: 'boolean', default: false, alias: 'v', desc: 'Verbose logs' })
       .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._);
+
+  if (argv.list) {
+    process.stdout.write(tests.map(t => t.name).join(' ') + '\n');
+    return;
+  }
 
   for (const test of tests) {
     console.error(`Trying to deploy ${test.name}`);

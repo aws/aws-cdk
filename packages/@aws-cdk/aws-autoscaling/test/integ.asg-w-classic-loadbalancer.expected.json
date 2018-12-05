@@ -708,7 +708,10 @@
             "Ref": "VPCPublicSubnet3Subnet631C5E25"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "VPCIGWB7E252D3"
+      ]
     }
   }
 }

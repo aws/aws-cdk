@@ -12,12 +12,20 @@ export class IntegrationTests {
   constructor(private readonly directory: string) {
   }
 
-  public fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
+  public async fromCliArgs(tests?: string[]): Promise<IntegrationTest[]> {
+    let allTests = await this.discover();
+
     if (tests && tests.length > 0) {
-      return this.request(tests);
-    } else {
-      return this.discover();
+      // Pare down found tests to filter
+      allTests = allTests.filter(t => tests.includes(t.name));
+
+      const selectedNames = allTests.map(t => t.name);
+      for (const unmatched of tests.filter(t => !selectedNames.includes(t))) {
+        process.stderr.write(`No such integ test: ${unmatched}\n`);
+      }
     }
+
+    return allTests;
   }
 
   public async discover(): Promise<IntegrationTest[]> {
