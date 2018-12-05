@@ -11,7 +11,8 @@ export enum RuntimeFamily {
   Java,
   Python,
   DotNetCore,
-  Go
+  Go,
+  Ruby
 }
 
 /**
@@ -32,6 +33,7 @@ export class Runtime {
   public static readonly DotNetCore2 =  new Runtime('dotnetcore2.0',  RuntimeFamily.DotNetCore);
   public static readonly DotNetCore21 = new Runtime('dotnetcore2.1',  RuntimeFamily.DotNetCore);
   public static readonly Go1x =         new Runtime('go1.x',          RuntimeFamily.Go);
+  public static readonly Ruby25 =       new Runtime('ruby2.5',        RuntimeFamily.Ruby, { supportsInlineCode: true });
 
   /**
    * The name of this runtime, as expected by the Lambda resource.
