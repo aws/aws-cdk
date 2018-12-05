@@ -140,6 +140,11 @@ export class AppStacks {
 
       function formatModules(runtime: cxapi.AppRuntime): string {
         const modules = new Array<string>();
+
+        const toolkitVersion = require('../../../package.json').version;
+
+        modules.push(`aws-cdk=${toolkitVersion}`);
+
         for (const key of Object.keys(runtime.libraries).sort()) {
           modules.push(`${key}=${runtime.libraries[key]}`);
         }
