@@ -104,7 +104,7 @@ interface InspectionFailure {
  *
  * A super-object has the same or more property values, recursing into sub properties if ``allowValueExtension`` is true.
  */
-export function isSuperObject(superObj: any, obj: any, errors: string[], allowValueExtension: boolean): boolean {
+export function isSuperObject(superObj: any, obj: any, errors: string[] = [], allowValueExtension: boolean = false): boolean {
   if (obj == null) { return true; }
   if (Array.isArray(superObj) !== Array.isArray(obj)) {
     errors.push('Array type mismatch');
