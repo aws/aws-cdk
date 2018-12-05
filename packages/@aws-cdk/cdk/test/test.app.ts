@@ -296,7 +296,25 @@ export = {
 
     delete process.env.JSII_AGENT;
     test.done();
-  }
+  },
+
+  'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
+    const response = withApp({}, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    const libs = response.runtime.libraries;
+
+    const version = require('../package.json').version;
+    test.deepEqual(libs, {
+      '@aws-cdk/cdk': version,
+      '@aws-cdk/cx-api': version,
+      'jsii-runtime': `node.js/${process.version}`
+    });
+
+    test.done();
+  },
 };
 
 class MyConstruct extends Construct {

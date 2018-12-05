@@ -133,6 +133,13 @@ export class App extends Root {
       }
     }
 
+    // include only libraries that are in the @aws-cdk npm scope
+    for (const name of Object.keys(libraries)) {
+      if (!name.startsWith('@aws-cdk/')) {
+        delete libraries[name];
+      }
+    }
+
     // add jsii runtime version
     libraries['jsii-runtime'] = getJsiiAgentVersion();
 
