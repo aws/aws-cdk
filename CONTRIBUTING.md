@@ -41,6 +41,30 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 7. Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
    commit message.
 
+## Design Process
+
+In order to enable efficient collaboration over design documents, the following process should be followed:
+
+1. Open an issue describing the requirements and constraints the design must satisfy
+   + Provide a clear list of use-cases that the design intends to address
+2. Open a pull request with a Markdown document describing the proposed design. The document should be placed in the
+   `design` directory at the root of the repository.
+   + Design discussions are tracked using the comment stream of the pull request
+   + The design document will be merged in and retained as if it were code
+
+## Style Guide
+
+### Markdown
+
+* Adhere to the [GitHub Flavored Markdown](https://github.github.com/gfm/) syntax
+* `120` character lines
+* ATX style headings (e.g: `## H2 heading`)
+
+### Typescript and Javascript
+
+* `2` space indentation
+* `120` character lines
+
 ## Tools
 
 The CDK is a big project, and, at the moment, all of the CDK modules are mastered in a single monolithic repository
