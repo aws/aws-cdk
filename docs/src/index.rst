@@ -22,6 +22,19 @@ To get started see :doc:`getting-started`
 
 .. image:: screencast.gif
 
+.. npm install -g aws-cdk
+   ADDED: mkdir ~/hello-cdk; cd ~/hello-cdk
+   cdk init --language typescript
+   npm run build
+   ADDED: cdk synth
+   cdk deploy
+   ADDED: 
+   vim bin/aws-cdk.ts -> lib/hello-cdk-stack.ts
+   // add SNS, SQS, queue, topic, topic.subscribeQueue
+   cdk diff
+   cdk deploy
+   cdk diff
+
 Developers can use one of the supported programming languages to define reusable
 cloud components called :doc:`constructs`, which are composed together into
 :doc:`stacks` and :doc:`apps`.
@@ -63,10 +76,11 @@ In addition to this guide, the following are other resources available to |cdk| 
 * `Stack Overflow <https://stackoverflow.com/questions/tagged/aws-cdk>`_
 * `GitHub repository <https://github.com/awslabs/aws-cdk>`_
 
+  * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
+  * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
+  * `Releases <https://github.com/awslabs/aws-cdk/releases>`_
   * `Examples <https://github.com/awslabs/aws-cdk/tree/master/examples>`_
   * `Documentation source <https://github.com/awslabs/aws-cdk/tree/master/docs/src>`_
-  * `Issues <https://github.com/awslabs/aws-cdk/issues>`_
-  * `License <https://github.com/awslabs/aws-cdk/blob/master/LICENSE>`_
 
 * `AWS CDK Sample for Cloud9 <https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-cdk.html>`_
 * `AWS CloudFormation Concepts <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html>`_
@@ -94,10 +108,10 @@ To obtain an AWS account, go to `aws.amazon.com <https://aws.amazon.com>`_ and c
 
    Getting Started <getting-started>
    Tutorial <tutorial>
+   Examples <examples>
    Concepts <concepts>
    AWS Construct Library <aws-construct-lib>
    AWS CloudFormation Library <cloudformation>
-   Examples <examples>
    Tools <tools>
    Writing Constructs <writing-constructs>
    Reference <reference>

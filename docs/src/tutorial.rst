@@ -10,456 +10,978 @@
 
 .. _tutorial:
 
-##############
-|cdk| Tutorial
-##############
+######################################
+Tutorial: Creating a |cdk| Application
+######################################
 
-This topic steps you through creating the resources for a simple widget dispensing
-service using the |cdk|.
+This topic walks you through creating and deploying a |cdk| app,
+by using the `cdk init` command, as described in `Creating a Project from the Template`_,
+or manually, as described in `Manually Creating a Project`_.
 
-.. _overview:
-
-Overview
-========
-
-This tutorial contains the following steps.
-
-1. Create a |cdk| app
-
-2. Create a |LAMlong| function that gets a list of widgets with: GET /
-
-3. Create the service that calls the |LAM| function
-
-4. Add the service to the |cdk| app
-
-5. Test the app
-
-6. Add |LAM| functions to:
-
-    * create an widget based with: POST /{name}
-    * get an widget by name with: GET /{name}
-    * delete an widget by name with: DELETE /{name}
-
-.. _create_app:
-
-Step 1: Create a |cdk| App
-==========================
-
-Let's create the TypeScript app **MyWidgetService** in in the current folder.
+In either case, the first step is to create the directory for your project,
+with an empty Git repository.
+All of these instructions use this directory:
 
 .. code-block:: sh
 
-    mkdir MyWidgetService
-    cd MyWidgetService
-    cdk init --language typescript
+    mkdir hello-cdk
+    cd hello-cdk
+    git init
 
-This creates *my_widget_service.ts* in the *bin* directory.
-We don't need most of this code,
-so for now change it to the following:
+.. _cdk_init_project:
 
-.. code-block:: ts
+Creating a Project from the Template
+====================================
 
-    #!/usr/bin/env node
-    import cdk = require('@aws-cdk/cdk');
+As mentioned previously,
+you can use the :code:`cdk init` command to create a skeleton project from a
+template in any of the supported languages.
+In this section we'll do just that.
 
-    class MyWidgetServiceStack extends cdk.Stack {
-      constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-        super(parent, name, props);
+.. _initialize:
 
+Initializing the Project
+------------------------
 
-      }
-    }
-
-    // Create a new CDK app
-    const app = new cdk.App();
-
-    // Add your stack to it
-    new MyWidgetServiceStack(app, 'MyWidgetServiceStack');
-
-    app.run();
-
-Save it and make sure it builds and creates an empty stack.
+Run the `cdk init` command to initialize an empty project.
+The |cdk| contains templates for all of the supported languages.
+To create an empty (no AWS resources in the resulting |CFN| stack),
+run the following command, where LANGUAGE is one of the supported programming languages:
+**csharp** (C#), **java** (Java), or **typescript** (TypeScript).
 
 .. code-block:: sh
 
-    npm run build
-    cdk synth
+    cdk init --language LANGUAGE
 
-You should see a stack like the following,
-where CDK-VERSION is the version of the CDK.
+.. _compile_project:
+
+Compiling the Project
+---------------------
+
+If needed, compile the code:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Compile the code using your IDE or via the dotnet CLI:
+
+        .. code-block:: sh
+
+            dotnet build
+
+    .. group-tab:: JavaScript
+
+        No need to compile
+
+    .. group-tab:: TypeScript
+
+        To compile your program from **.ts** to **.js**:
+
+        .. code-block:: sh
+
+            npm run build
+
+        You can also use the **watch** command to continuously compile your code
+        as it changes, so you don't have to invoke the compiler explicitly:
+
+        .. code-block:: sh
+
+            # run in another terminal session
+            npm run watch
+
+    .. group-tab:: Java
+
+        Compile your code using your IDE or via the command line via **mvn**:
+
+        .. code-block:: sh
+
+            mvn compile
+
+You have now created your first |cdk| app.
+Since the next section manually creates the same, empty project,
+you can skip forward to `Listing the Stacks in the App`_.
+
+.. _manual_project:
+
+Manually Creating a Project
+===========================
+
+In this section we create a new |cdk| project using explicit command-line commands.
+Be sure to navigate to the *hello-cdk* directory before you start.
+
+.. _initializing_manually:
+
+Initializing the Project
+------------------------
+
+Create an empty project for the |cdk| app.
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Create a new console application.
+
+        .. code-block:: sh
+
+            dotnet new console
+
+    .. group-tab:: JavaScript
+
+        Create an initial npm **package.json** file:
+
+        .. code-block:: sh
+
+            npm init -y # creates package.json
+
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            *.js
+            node_modules
+
+    .. group-tab:: TypeScript
+
+        Create an initial npm **package.json** file:
+
+        .. code-block:: sh
+
+            npm init -y # creates package.json
+
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            *.js
+            *.d.ts
+            node_modules
+
+        Add the `build` and `watch` TypeScript commands to **package.json**:
+
+        .. code-block:: json
+
+            {
+                "scripts": {
+                    "build": "tsc",
+                    "watch": "tsc -w"
+                }
+            }
+
+        Create a minimal **tsconfig.json**:
+
+        .. code-block:: json
+
+            {
+                "compilerOptions": {
+                    "target": "es2018",
+                    "module": "commonjs"
+                }
+            }
+
+        Create a minimal **cdk.json** (this saves you from including `--app node bin/hello-cdk.js` in every `cdk` command):
+
+        .. code-block:: json
+            
+            {
+                "app": "node bin/hello-cdk.js"
+            }
+
+    .. group-tab:: Java
+
+        Create a **.gitignore** file with the following content:
+
+        .. code-block:: sh
+
+            .classpath.txt
+            target
+            .classpath
+            .project
+            .idea
+            .settings
+            .vscode
+            *.iml
+
+        Use your favorite IDE to create a Maven-based empty Java 8 project.
+
+        Set the Java **source** and **target** to 1.8 in your **pom.xml** file:
+
+        .. code-block:: xml
+
+            <!-- pom.xml -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+.. _add_core:
+
+Adding the CDK Core as a Dependency
+-----------------------------------
+
+Install the |cdk| core library (:py:mod:`@aws-cdk/cdk`)
+This library includes the basic classes needed to write |cdk| stacks and apps.
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Install the **Amazon.CDK NuGet** package:
+
+        .. code-block:: sh
+
+            dotnet add package Amazon.CDK
+
+    .. group-tab:: JavaScript
+
+        Install the **@aws-cdk/cdk** package:
+
+        .. code-block:: sh
+
+            npm install @aws-cdk/cdk
+
+    .. group-tab:: TypeScript
+
+        Install the **@aws-cdk/cdk** package:
+
+        .. code-block:: sh
+
+            npm install @aws-cdk/cdk
+
+    .. group-tab:: Java
+
+        Add the following to your project's `pom.xml` file:
+
+        .. code-block:: xml
+
+            <dependencies>
+                <dependency>
+                    <groupId>software.amazon.awscdk</groupId>
+                    <artifactId>cdk</artifactId>
+                    <version><!-- cdk-version --></version>
+                </dependency>
+            </dependencies>
+
+.. _define_app:
+
+Defining the |cdk| App
+----------------------
+
+|cdk| apps are classes that extend the :py:class:`App <@aws-cdk/cdk.App>`
+class. Create an empty **App**:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        In **Program.cs**
+
+        .. code-block:: c#
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                class Program
+                {
+                    static void Main(string[] args)
+                    {
+                        var myApp = new App();
+                        myApp.Run();
+                    }
+                }
+            }
+
+    .. group-tab:: JavaScript
+
+        Create the file **bin/hello-cdk.js**:
+
+        .. code-block:: js
+
+            const cdk = require('@aws-cdk/cdk');
+
+            class MyApp extends cdk.App {
+                constructor() {
+                    super();
+                }
+            }
+
+            new MyApp().run();
+
+    .. group-tab:: TypeScript
+
+        Create the file **bin/hello-cdk.ts**:
+
+        .. code-block:: ts
+
+            import cdk = require('@aws-cdk/cdk');
+            import { HelloCdkStack } from '../lib/hello-cdkstack';
+
+            const app = new cdk.App();
+            new HelloCdkStack(app, 'HelloCdkStack');
+            app.run();
+
+        Create the file **lib/hello-cdkstack.ts**:
+
+        .. code-block:: ts
+
+            import cdk = require('@aws-cdk/cdk');
+
+            export class HelloCdkStack extends cdk.Stack {
+                constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
+                    super(parent, name, props);
+
+                    // The code that defines your stack goes here
+                }
+            }
+            
+    .. group-tab:: Java
+
+        In **src/main/java/com/acme/MyApp.java**:
+
+        .. code-block:: java
+
+            package com.acme;
+
+            import software.amazon.awscdk.App;
+
+            import java.util.Arrays;
+
+            public class MyApp {
+                public static void main(final String argv[]) {
+                    App app = new App();
+
+                    app.run();
+                }
+            }
+
+.. _compile_code:
+
+Compiling the Code
+------------------
+
+If needed, compile the code:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Compile the code using your IDE or via the dotnet CLI:
+
+        .. code-block:: sh
+
+            dotnet build
+
+    .. group-tab:: JavaScript
+
+        No need to compile
+
+    .. group-tab:: TypeScript
+
+        To compile your program from **.ts** to **.js**:
+
+        .. code-block:: sh
+
+            npm run build
+
+        You can also use the **watch** command to continuously compile your code
+        as it changes, so you don't have to invoke the compiler explicitly:
+
+        .. code-block:: sh
+
+            # run in another terminal session
+            npm run watch
+
+    .. group-tab:: Java
+
+        Compile your code using your IDE or via the command line via **mvn**:
+
+        .. code-block:: sh
+
+            mvn compile
+
+You have now created your first |cdk| app.
+
+.. _list_stacks:
+
+Listing the Stacks in the App
+=============================
+
+Use the |cdk| toolkit's **ls** command to list the stacks in the app.
 
 .. code-block:: sh
+
+    cdk ls
+
+The result is just the name of the stack:
+
+.. code-block:: sh
+
+    HelloCdkStack
+
+.. note::
+
+    There is a known issue on Windows with the |cdk| .NET environment.
+    Whenever you use a **cdk** command,
+    it issues a node warning similar to the following:
+
+    .. code-block:: sh
+
+        (node:27508) UnhandledPromiseRejectionWarning: Unhandled promise rejection
+        (rejection id: 1): Error: EPIPE: broken pipe, write
+        (node:27508) [DEP0018] DeprecationWarning: Unhandled promise rejections are deprecated.
+        In the future, promise rejections that are not handled will terminate the
+        Node.js process with a non-zero exit code.
+
+    You can safely ignore this warning.
+
+.. _define_stack:
+
+Define a Stack
+==============
+
+Define a stack and add it to the app.
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Create **MyStack.cs**:
+
+        .. code-block:: c#
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                public class MyStack: Stack
+                {
+                    public MyStack(App parent, string name) : base(parent, name, null)
+                    {
+                    }
+                }
+            }
+
+        In **Program.cs**:
+
+        .. code-block:: c#
+            :emphasize-lines: 10
+
+            using Amazon.CDK;
+
+            namespace HelloCdk
+            {
+                class Program
+                {
+                    static void Main(string[] args)
+                    {
+                        var myApp = new App();
+                        new MyStack(myApp, "hello-cdk");
+                        myApp.Run();
+                    }
+                }
+            }
+
+    .. group-tab:: JavaScript
+
+        In **index.js**:
+
+        .. code-block:: js
+            :emphasize-lines: 3,4,5,6,7,13
+
+            const cdk = require('@aws-cdk/cdk');
+
+            class MyStack extends cdk.Stack {
+                constructor(parent, id, props) {
+                    super(parent, id, props);
+                }
+            }
+
+            class MyApp extends cdk.App {
+                constructor(argv) {
+                    super(argv);
+
+                    new MyStack(this, 'hello-cdk');
+                }
+            }
+
+            new MyApp().run();
+
+    .. group-tab:: TypeScript
+
+        Nothing to do.
+
+    .. group-tab:: Java
+
+        In **src/main/java/com/acme/MyStack.java**:
+
+        .. code-block:: java
+
+            package com.acme;
+
+            import software.amazon.awscdk.App;
+            import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
+
+            public class MyStack extends Stack {
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
+                }
+            }
+
+        In **src/main/java/com/acme/MyApp.java**:
+
+        .. code-block:: java
+            :emphasize-lines: 12
+
+            package com.acme;
+
+            import software.amazon.awscdk.App;
+            import java.util.Arrays;
+
+            public class MyApp {
+                public static void main(final String argv[]) {
+                    App app = new App();
+
+                    new MyStack(app, "hello-cdk");
+
+                    app.run();
+                }
+            }
+
+The initializer signature of **cdk.Stack** includes the arguments: **parent**,
+**id**, and **props**. This is the signature for every class in the |cdk|
+framework. These classes are called **"constructs"** and they are composed
+together into a tree:
+
+* **parent** represents the parent construct. By specifying the parent construct
+  upon initialization, constructs can obtain contextual information when they
+  are initialized. For example, the region a stack is deployed to can be
+  obtained via a call to :py:meth:`Stack.find(this).requireRegion() <@aws-cdk/cdk.Stack.requireRegion>`.
+  See :doc:`context` for more information.
+* **id** is a string that locally identifies this construct within the tree.
+  Constructs must have a unique ID amongst their siblings.
+* **props** is the set of initialization properties for this construct.
+
+Compile your program:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        We configured *cdk.json* to run `dotnet run`, which
+        restores dependencies, builds, and runs your application,
+        run `cdk`.
+
+        .. code-block:: sh
+
+            cdk
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+.. _define_bucket:
+
+Define an |S3| Bucket
+=====================
+
+Now, what can we do with this app? Nothing yet. Our stack is still empty, so
+there's nothing to deploy.
+
+Let's define an |S3| bucket.
+
+Install the **@aws-cdk/aws-s3** package:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        .. code-block:: sh
+
+            dotnet add package Amazon.CDK.AWS.S3
+
+    .. group-tab:: JavaScript
+
+        .. code-block:: sh
+
+            npm install @aws-cdk/aws-s3
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm install @aws-cdk/aws-s3
+
+    .. group-tab:: Java
+
+        Edit your **pom.xml** file:
+
+        .. code-block:: sh
+
+            <dependency>
+                <groupId>software.amazon.awscdk</groupId>
+                <artifactId>s3</artifactId>
+                <version><!-- cdk-version --></version>
+            </dependency>
+
+Next, define an |S3| bucket in the stack. |S3| buckets are represented by
+the :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` class:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        Create **MyStack.cs**:
+
+        .. code-block:: c#
+            :emphasize-lines: 2,10,11,12,13
+
+            using Amazon.CDK;
+            using Amazon.CDK.AWS.S3;
+
+            namespace HelloCdk
+            {
+                public class MyStack : Stack
+                {
+                    public MyStack(App parent, string name) : base(parent, name, null)
+                    {
+                        new Bucket(this, "MyFirstBucket", new BucketProps
+                        {
+                            Versioned = true
+                        });
+                    }
+                }
+            }
+
+    .. group-tab:: JavaScript
+
+        In **index.js**:
+
+        .. code-block:: js
+            :emphasize-lines: 2,8,9,10
+
+            const cdk = require('@aws-cdk/cdk');
+            const s3 = require('@aws-cdk/aws-s3');
+
+            class MyStack extends cdk.Stack {
+                constructor(parent, id, props) {
+                    super(parent, id, props);
+
+                    new s3.Bucket(this, 'MyFirstBucket', {
+                        versioned: true
+                    });
+                }
+            }
+
+    .. group-tab:: TypeScript
+
+        In **lib/**:
+
+        .. code-block:: ts
+            :emphasize-lines: 2,8,9,10
+
+            import cdk = require('@aws-cdk/cdk');
+            import s3 = require('@aws-cdk/aws-s3');
+
+            export class HelloCdkStack extends cdk.Stack {
+                constructor(parent: cdk.App, id: string, props?: cdk.StackProps) {
+                    super(parent, id, props);
+
+                    new s3.Bucket(this, 'MyFirstBucket', {
+                        versioned: true
+                    });
+                }
+            }
+
+    .. group-tab:: Java
+
+        In **src/main/java/com/acme/MyStack.java**:
+
+        .. code-block:: java
+            :emphasize-lines: 6,7,13,14,15
+
+            package com.acme;
+
+            import software.amazon.awscdk.App;
+            import software.amazon.awscdk.Stack;
+            import software.amazon.awscdk.StackProps;
+            import software.amazon.awscdk.services.s3.Bucket;
+            import software.amazon.awscdk.services.s3.BucketProps;
+
+            public class MyStack extends Stack {
+                public MyStack(final App parent, final String name) {
+                    this(parent, name, null);
+                }
+
+                public MyStack(final App parent, final String name, final StackProps props) {
+                    super(parent, name, props);
+
+                    new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                            .withVersioned(true)
+                            .build());
+                }
+            }
+
+A few things to notice:
+
+* :py:class:`Bucket <@aws-cdk/aws-s3.Bucket>` is a construct.
+  This means it's initialization signature has **parent**, **id**, and **props**.
+  In this case, the bucket is an immediate child of **MyStack**.
+* ``MyFirstBucket`` is the **logical id** of the bucket construct, **not** the physical name of the
+  S3 bucket. The logical ID is used to uniquely identify resources in your stack
+  across deployments. See :doc:`logical-ids` for more details on how to work
+  with logical IDs. To specify a physical name for your bucket, you can set the
+  :py:meth:`bucketName <@aws-cdk/aws-s3.BucketProps.bucketName>` property when
+  you define your bucket.
+* Since the bucket's :py:meth:`versioned <@aws-cdk/aws-s3.BucketProps.versioned>`
+  property is :code:`true`, `versioning <https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html>`_
+  is enabled on the bucket.
+
+Compile your program:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        We configured *cdk.json* to run `dotnet run`, which
+        restores dependencies, builds, and runs your application,
+        run `cdk`.
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+.. _synthesize_template:
+
+Synthesize an |CFN| Template
+============================
+
+Synthesize a |cfn| template for the stack:
+
+.. code-block:: sh
+
+    cdk synth HelloCdkStack
+
+.. note:: Since the |cdk| app only contains a single stack, you can omit :code:`HelloCdkStack`.
+
+This command executes the |cdk| app and synthesize an |CFN| template for the
+**HelloCdkStack** stack.
+You should see something similar to the following,
+where VERSION is the version of the |cdk|.
+
+.. code-block:: yaml
 
     Resources:
-      CDKMetadata:
-        Type: 'AWS::CDK::Metadata'
+      MyFirstBucketB8884501:
+        Type: AWS::S3::Bucket
         Properties:
-          Modules: >-
-            @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0
+          VersioningConfiguration:
+            Status: Enabled
+        Metadata:
+          aws:cdk:path: HelloCdkStack/MyFirstBucket/Resource
+      CDKMetadata:
+        Type: AWS::CDK::Metadata
+        Properties:
+          Modules: "@aws-cdk/aws-codepipeline-api=VERSION,@aws-cdk/aws-events=VERSION,@aws-c\
+            dk/aws-iam=VERSION,@aws-cdk/aws-kms=VERSION,@aws-cdk/aws-s3=VERSION,@aws-c\
+            dk/aws-s3-notifications=VERSION,@aws-cdk/cdk=VERSION,@aws-cdk/cx-api=VERSION\
+            .0,hello-cdk=0.1.0"
 
-.. _create_lambda_functions:
+You can see that the stack contains an **AWS::S3::Bucket** resource with the desired
+versioning configuration.
 
-Step 2: Create a |LAM| Function to List all Widgets
-===================================================
+.. note::
 
-The next step is to create a |LAM| function to list all of the widgets in our
-|S3| bucket.
+    The **AWS::CDK::Metadata** resource was automatically added to your template
+    by the toolkit. This allows us to learn which libraries were used in your
+    stack. See :ref:`version_reporting` for more details and how to
+    :ref:`opt-out <version_reporting_opt_out>`.
 
-Create the directory *resources* at the same level as the *bin* directory.
+.. _deploy_stack:
 
-.. code-block:: sh
+Deploying the Stack
+===================
 
-    mkdir resources
-
-Create the following Javascript file, *widgets.js*,
-in the *resources* directory.
-
-.. code-block:: js
-
-    const AWS = require('aws-sdk');
-    const S3 = new AWS.S3();
-
-    const bucketName = process.env.BUCKET;
-
-    exports.main = async function(event, context) {
-      try {
-        var method = event.httpMethod;
-
-        if (method === "GET") {
-          if (event.path === "/") {
-            const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
-            var body = {
-              widgets: data.Contents.map(function(e) { return e.Key })
-            };
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-        }
-
-        // We only accept GET for now
-        return {
-          statusCode: 400,
-          headers: {},
-          body: "We only accept GET /"
-        };
-      } catch(error) {
-        var body = error.stack || JSON.stringify(error, null, 2);
-        return {
-          statusCode: 400,
-            headers: {},
-            body: JSON.stringify(body)
-        }
-      }
-    }
-
-Save it and make sure it builds and creates an empty stack.
-Note that since we haven't wired the function to our app,
-the Lambda file does not appear in the output.
-
-.. code-block:: sh
-
-    npm run build
-    cdk synth
-
-.. _create_widgets_service:
-
-Step 3: Create Widgets Service
-==============================
-
-Add the |ABP|, |LAM|, and |S3| packages to our app.
-
-.. code-block:: sh
-
-    npm install @aws-cdk/aws-apigateway @aws-cdk/aws-lambda @aws-cdk/aws-s3
-
-Create the directory *lib* at the same level as the *bin* and *resources*
-directories.
-
-.. code-block:: sh
-
-    mkdir lib
-
-Create the following Typescript file, *widget_service.ts*,
-in the *lib* directory.
-
-.. code-block:: ts
-
-    import cdk = require('@aws-cdk/cdk');
-    import apigateway = require('@aws-cdk/aws-apigateway');
-    import lambda = require('@aws-cdk/aws-lambda');
-    import s3 = require('@aws-cdk/aws-s3');
-
-    export class WidgetService extends cdk.Construct {
-      constructor(parent: cdk.Construct, name: string) {
-        super(parent, name);
-
-        // Use S3 bucket to store our widgets
-        const bucket = new s3.Bucket(this, 'WidgetStore');
-
-        // Create a handler that calls the function main
-        // in the source file widgets(.js) in the resources directory
-        // to handle requests through API Gateway
-        const handler = new lambda.Function(this, 'WidgetHandler', {
-          runtime: lambda.Runtime.NodeJS810,
-          code: lambda.Code.directory('resources'),
-          handler: 'widgets.main',
-          environment: {
-            BUCKET: bucket.bucketName // So runtime has the bucket name
-          }
-        });
-
-        bucket.grantReadWrite(handler.role);
-
-        // Create an API Gateway REST API
-        const api = new apigateway.RestApi(this, 'widgets-api', {
-          restApiName: 'Widget Service',
-          description: 'This service serves widgets.'
-        });
-
-        // Pass the request to the handler
-        const getWidgetsIntegration = new apigateway.LambdaIntegration(handler);
-
-        // Use the getWidgetsIntegration when there is a GET request
-        api.root.addMethod('GET', getWidgetsIntegration);   // GET /
-      }
-    }
-
-Save it and make sure it builds and creates a (still empty) stack.
-
-.. code-block:: sh
-
-    npm run build
-    cdk synth
-
-.. _add_service:
-
-Step 4: Add the Service to the App
-==================================
-
-To add the service to our app,
-add the following line of code after the existing **import** statement in
-*my_widget_service.ts*.
-
-.. code-block:: ts
-
-    import widget_service = require('../lib/widget_service');
-
-Add the following line of code at the end of the constructor in *my_widget_service.ts*.
-
-.. code-block:: ts
-
-    new widget_service.WidgetService(this, 'Widgets');
-
-Make sure it builds and creates a stack
-(we don't show the stack as it's almost 300 lines).
-
-.. code-block:: sh
-
-    npm run build
-    cdk synth
-
-.. _deploy_and_test:
-
-Step 5: Deploy and Test the App
-===============================
-
-Before you can deploy your first |cdk| app,
-you must bootstrap your deployment,
-which creates some AWS infracture that the |cdk|
-needs.
-See the **bootstrap** section of the :doc:`tools` topic for details.
-
-.. code-block:: sh
-
-    cdk bootstrap
-
-Run the following command to deploy your app.
+Use **cdk deploy** to deploy the stack:
 
 .. code-block:: sh
 
     cdk deploy
 
-If the deployment is successfull,
-save the URL for your server, which appears in the last line in the window,
-where GUID is an alpha-numeric GUID and REGION is your region.
+The **deploy** command synthesizes an |CFN| template from the stack
+and then invokes the |CFN| create/update API to deploy it into your AWS
+account. The command displays information as it progresses.
+
+.. _modify_cde:
+
+Modifying the Code
+==================
+
+Configure the bucket to use KMS managed encryption:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        .. code-block:: c#
+            :emphasize-lines: 4
+
+            new Bucket(this, "MyFirstBucket", new BucketProps
+            {
+                Versioned = true,
+                Encryption = BucketEncryption.KmsManaged
+            });
+
+    .. group-tab:: JavaScript
+
+        .. code-block:: js
+            :emphasize-lines: 3
+
+            new s3.Bucket(this, 'MyFirstBucket', {
+                versioned: true,
+                encryption: s3.BucketEncryption.KmsManaged
+            });
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: ts
+            :emphasize-lines: 3
+
+            new s3.Bucket(this, 'MyFirstBucket', {
+                versioned: true,
+                encryption: s3.BucketEncryption.KmsManaged
+            });
+
+    .. group-tab:: Java
+
+        .. code-block:: java
+            :emphasize-lines: 3
+
+            new Bucket(this, "MyFirstBucket", BucketProps.builder()
+                    .withVersioned(true)
+                    .withEncryption(BucketEncryption.KmsManaged)
+                    .build());
+
+Compile the program:
+
+.. tabs::
+
+    .. group-tab:: C#
+
+        We configured *cdk.json* to run `dotnet run`, which
+        restores dependencies, builds, and runs your application,
+        run `cdk`.                   
+
+    .. group-tab:: JavaScript
+
+        Nothing to compile.
+
+    .. group-tab:: TypeScript
+
+        .. code-block:: sh
+
+            npm run build
+
+    .. group-tab:: Java
+
+        .. code-block:: sh
+
+            mvn compile
+
+.. _prepare_deployment:
+
+Preparing for Deployment
+========================
+
+Before you deploy the updated stack, use the ``cdk diff`` command to evaluate
+the difference between the |cdk| app and the deployed stack:
 
 .. code-block:: sh
 
-    https://GUID.execute-REGION.amazonaws.com/prod/
+    cdk diff
 
-You can test your app by getting the list of widgets (currently empty) by navigating to this URL in a
-browser or use the following **curl** command.
-
-.. code-block:: sh
-
-    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
-
-You can also open the |console|,
-navigate to the |ABP| service,
-find **Widget Service** in the list.
-Select **GET** and **Test** to test the function.
-Since we haven't stored any widgets yet, the output should be similar to the following
-(there may be some slight differences in whitespace and quotation marks).
+The toolkit queries your AWS account for the current |CFN| template for the
+**hello-cdk** stack, and compares the result with the template synthesized from the app.
+The output should look like the following:
 
 .. code-block:: sh
 
-    { "widgets": [] }
+    [~] 🛠 Updating MyFirstBucketB8884501 (type: AWS::S3::Bucket)
+    └─ [+] .BucketEncryption:
+        └─ New value: {"ServerSideEncryptionConfiguration":[{"ServerSideEncryptionByDefault":{"SSEAlgorithm":"aws:kms"}}]}
 
-.. _adding_functions:
+As you can see, the diff indicates that the
+**ServerSideEncryptionConfiguration** property of the bucket is now set to
+enable server-side encryption.
 
-Step 6: Add the Individual Widget Functions
-===========================================
+You can also see that the bucket is not going to be replaced but rather updated
+("**Updating MyFirstBucketB8884501**").
 
-The next step is to create |LAM| functions to create, show, and delete
-individual widgets.
-Replace the existing **exports.main** function in *widgets.js* with the following code.
-
-.. code-block:: js
-
-    exports.main = async function(event, context) {
-      try {
-        var method = event.httpMethod;
-        // Get name, if present
-        var widgetName = event.path.startsWith('/') ? event.path.substring(1) : event.path;
-
-        if (method === "GET") {
-          // GET / to get the names of all widgets
-          if (event.path === "/") {
-            const data = await S3.listObjectsV2({ Bucket: bucketName }).promise();
-            var body = {
-              widgets: data.Contents.map(function(e) { return e.Key })
-            };
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-
-          if (widgetName) {
-            // GET /name to get info on widget name
-            const data = await S3.getObject({ Bucket: bucketName, Key: widgetName}).promise();
-            var body = data.Body.toString('utf-8');
-
-            return {
-              statusCode: 200,
-              headers: {},
-              body: JSON.stringify(body)
-            };
-          }
-        }
-
-        if (method === "POST") {
-          // POST /name
-          // Return error if we do not have a name
-          if (!widgetName) {
-            return {
-              statusCode: 400,
-              headers: {},
-              body: "Widget name missing"
-            };
-          }
-
-          // Create some dummy data to populate object
-          const now = new Date();
-          var data = widgetName + " created: " + now;
-
-          var base64data = new Buffer(data, 'binary');
-
-          await S3.putObject({
-            Bucket: bucketName,
-            Key: widgetName,
-            Body: base64data,
-            ContentType: 'application/json'
-          }).promise();
-
-          return {
-            statusCode: 200,
-            headers: {},
-            body: JSON.stringify(event.widgets)
-          };
-        }
-
-        if (method === "DELETE") {
-          // DELETE /name
-          // Return an error if we do not have a name
-          if (!widgetName) {
-            return {
-              statusCode: 400,
-              headers: {},
-              body: "Widget name missing"
-            };
-          }
-
-          await S3.deleteObject({
-            Bucket: bucketName, Key: widgetName
-          }).promise();
-
-          return {
-            statusCode: 200,
-            headers: {},
-            body: "Successfully deleted widget " + widgetName
-          };
-        }
-
-        // We got something besides a GET, POST, or DELETE
-        return {
-          statusCode: 400,
-          headers: {},
-          body: "We only accept GET, POST, and DELETE, not " + method
-        };
-      } catch(error) {
-        var body = error.stack || JSON.stringify(error, null, 2);
-        return {
-          statusCode: 400,
-          headers: {},
-          body: body
-        }
-      }
-    }
-
-Wire these functions up to our |ABP| code in *widget_service.ts*
-by adding the following code at the end of the constructor.
-
-.. code-block:: ts
-
-    const widget = api.root.addResource('{name}');
-
-    // Add new widget to bucket with: POST /{name}
-    const postWidgetIntegration = new apigateway.LambdaIntegration(handler);
-
-    // Get a specific widget from bucket with: GET /{name}
-    const getWidgetIntegration = new apigateway.LambdaIntegration(handler);
-
-    // Remove a specific widget from the bucket with: DELETE /{name}
-    const deleteWidgetIntegration = new apigateway.LambdaIntegration(handler);
-
-    widget.addMethod('POST', postWidgetIntegration);    // POST /{name}
-    widget.addMethod('GET', getWidgetIntegration);       // GET /{name}
-    widget.addMethod('DELETE', deleteWidgetIntegration); // DELETE /{name}
-
-Save, build, and deploy the app.
-
-Now we should be able to store, show, or delete an individual widget.
-Use the following **curl** commands to list the widgets,
-create the widget *dummy*,
-list all of the widgets,
-show the contents of *dummy* (it should show today's date),
-and delete *dummy*,
-and again show the list of widgets.
+Run **cdk deploy** to update the stack:
 
 .. code-block:: sh
 
-    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
-    curl -X POST 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
-    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
-    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
-    curl -X DELETE 'https://GUID.execute-REGION.amazonaws.com/prod/dummy'
-    curl -X GET 'https://GUID.execute-REGION.amazonaws.com/prod'
+    cdk deploy
 
-You can also use the |ABP| console to test these functions.
-You'll have to set the **name** entry to the name of an widget,
-such as **dummy**.
+The toolkit updates the bucket configuration to enable server-side KMS
+encryption for the bucket:
+
+.. code-block:: sh
+
+    ⏳  Starting deployment of stack hello-cdk...
+    [0/2] UPDATE_IN_PROGRESS  [AWS::S3::Bucket] MyFirstBucketB8884501
+    [1/2] UPDATE_COMPLETE     [AWS::S3::Bucket] MyFirstBucketB8884501
+    [1/2] UPDATE_COMPLETE_CLEANUP_IN_PROGRESS  [AWS::CloudFormation::Stack] hello-cdk
+    [2/2] UPDATE_COMPLETE     [AWS::CloudFormation::Stack] hello-cdk
+    ✅  Deployment of stack hello-cdk completed successfully
+
+.. _whats_next:
+
+What Next?
+==========
+
+ * Learn more about :doc:`CDK Concepts <concepts>`
+ * Check out the `examples directory <https://github.com/awslabs/aws-cdk/tree/master/examples>`_ in your GitHub repository
+ * Learn about the rich APIs offered by the :doc:`AWS Construct Library <aws-construct-lib>`
+ * Work directly with CloudFormation using the :doc:`AWS CloudFormation Library <cloudformation>`
+ * Come talk to us on `Gitter <https://gitter.im/awslabs/aws-cdk>`_
+
