@@ -220,11 +220,12 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
-        "Statement": [
-          { "Action": "confirm:itsthesame", "Effect": "Allow" },
-          { "Action": "inline:inline", "Effect": "Allow" },
-          { "Action": "explicit:explicit", "Effect": "Allow" }
-        ],
+          "Version": "2012-10-17",
+          "Statement": [
+            { "Action": "confirm:itsthesame", "Effect": "Allow" },
+            { "Action": "inline:inline", "Effect": "Allow" },
+            { "Action": "explicit:explicit", "Effect": "Allow" }
+          ],
         },
       }));
 
@@ -1049,9 +1050,11 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
             Resource: { "Fn::GetAtt": [ "Function76856677", "Arn" ] }
           }
         ]
@@ -1083,6 +1086,40 @@ export = {
 
     // THEN
     test.same(bindTarget, fn);
+    test.done();
+  },
+  'support inline code for Ruby runtime'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.Ruby25,
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'ruby2.5' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
     test.done();
   }
 };

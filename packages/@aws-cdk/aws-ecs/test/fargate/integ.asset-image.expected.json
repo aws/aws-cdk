@@ -759,6 +759,19 @@
               ],
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FargateServiceLoggingLogGroup9B16742A",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -888,7 +901,10 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VpcIGWD7BA715C"
+      ]
     },
     "FargateServiceLBSecurityGroup5F444C78": {
       "Type": "AWS::EC2::SecurityGroup",

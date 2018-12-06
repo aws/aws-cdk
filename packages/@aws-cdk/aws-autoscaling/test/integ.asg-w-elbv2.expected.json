@@ -569,7 +569,10 @@
           }
         ],
         "Type": "application"
-      }
+      },
+      "DependsOn": [
+        "VPCIGWB7E252D3"
+      ]
     },
     "LBSecurityGroup8A41EA2B": {
       "Type": "AWS::EC2::SecurityGroup",

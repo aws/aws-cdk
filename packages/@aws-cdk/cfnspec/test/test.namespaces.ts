@@ -67,6 +67,7 @@ const expectedNamespaces = [
   'AWS::RDS',
   'AWS::Redshift',
   'AWS::Route53',
+  'AWS::Route53Resolver',
   'AWS::S3',
   'AWS::SDB',
   'AWS::SES',
@@ -81,5 +82,6 @@ const expectedNamespaces = [
   'AWS::StepFunctions',
   'AWS::WAF',
   'AWS::WAFRegional',
-  'AWS::WorkSpaces'
+  'AWS::WorkSpaces',
+  'Alexa::ASK'
 ];

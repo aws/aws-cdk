@@ -17,6 +17,7 @@ function withApp(context: { [key: string]: any } | undefined, block: (app: App) 
   }
 
   const app = new App();
+
   block(app);
 
   app.run();
@@ -262,6 +263,54 @@ export = {
           foo: 'bar',
         },
       },
+    });
+
+    test.done();
+  },
+
+  'runtime library versions'(test: Test) {
+    const response = withApp({}, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    const libs = response.runtime.libraries;
+
+    const version = require('../package.json').version;
+    test.deepEqual(libs['@aws-cdk/cdk'], version);
+    test.deepEqual(libs['@aws-cdk/cx-api'], version);
+    test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
+    test.done();
+  },
+
+  'jsii-runtime version loaded from JSII_AGENT'(test: Test) {
+    process.env.JSII_AGENT = 'Java/1.2.3.4';
+
+    const response = withApp({}, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    const libs = response.runtime.libraries;
+    test.deepEqual(libs['jsii-runtime'], `Java/1.2.3.4`);
+
+    delete process.env.JSII_AGENT;
+    test.done();
+  },
+
+  'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
+    const response = withApp({}, app => {
+      const stack = new Stack(app, 'stack1');
+      new Resource(stack, 'MyResource', { type: 'Resource::Type' });
+    });
+
+    const libs = response.runtime.libraries;
+
+    const version = require('../package.json').version;
+    test.deepEqual(libs, {
+      '@aws-cdk/cdk': version,
+      '@aws-cdk/cx-api': version,
+      'jsii-runtime': `node.js/${process.version}`
     });
 
     test.done();

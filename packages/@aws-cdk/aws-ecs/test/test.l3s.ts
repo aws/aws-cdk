@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { CertificateRef } from '@aws-cdk/aws-certificatemanager';
 import ec2 = require('@aws-cdk/aws-ec2');
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
@@ -48,7 +48,7 @@ export = {
 
     // THEN - stack contains a load balancer and a service
     expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {

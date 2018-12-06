@@ -145,8 +145,8 @@ export function packageName(module: SpecName | string): string {
 
   const parts = module.split('::');
 
-  if (parts[0] !== 'AWS' || parts.length !== 2) {
-    throw new Error(`Module component name must be "AWS::Xxx" (module: ${module})`);
+  if (['AWS', 'Alexa'].indexOf(parts[0]) === -1 || parts.length !== 2) {
+    throw new Error(`Module component name must be "AWS::Xxx" or "Alexa::Xxx" (module: ${module})`);
   }
 
   return parts[parts.length - 1].toLowerCase();

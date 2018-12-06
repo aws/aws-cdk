@@ -1,4 +1,5 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
 import { cloudformation } from './logs.generated';
@@ -109,6 +110,26 @@ export abstract class LogGroupRef extends cdk.Construct {
     });
 
     return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
+  }
+
+  /**
+   * Give permissions to write to create and write to streams in this log group
+   */
+  public grantWrite(principal?: iam.IPrincipal) {
+    this.grant(principal, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  }
+
+  /**
+   * Give the indicated permissions on this log group and all streams
+   */
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    if (!principal) { return; }
+
+    principal.addToPolicy(new iam.PolicyStatement()
+      .addActions(...actions)
+      // This ARN includes a ':*' at the end to include the log streams.
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
+      .addResource(`${this.logGroupArn}`));
   }
 }
 

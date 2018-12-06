@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -18,7 +18,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: 'hello.yml'
       }
@@ -38,7 +38,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
       }
@@ -112,7 +112,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
         ComputeType: "BUILD_GENERAL1_SMALL",
         EnvironmentVariables: [
