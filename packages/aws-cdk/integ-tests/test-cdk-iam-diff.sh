@@ -17,6 +17,7 @@ IAM Statement Changes
 ├───┼─────────────────┼────────┼────────────────┼────────────────────────────┼───────────┤
 │ + │ \${SomeRole.Arn} │ Allow  │ sts:AssumeRole │ Service:ec2.amazon.aws.com │           │
 └───┴─────────────────┴────────┴────────────────┴────────────────────────────┴───────────┘
+(This feature is experimental -- it might not be complete. See http://bit.ly/cdk-2EhF7Np)
 
 Resources
 [+] AWS::IAM::Role SomeRole SomeRole6DDC54DD
