@@ -63,6 +63,7 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupIngress: [
         {
+          Description: 'Allow from anyone on port 80',
           CidrIp: "0.0.0.0/0",
           FromPort: 80,
           IpProtocol: "tcp",

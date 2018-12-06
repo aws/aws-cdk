@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
 import { AvailabilityZoneProvider, Construct, resolve, Stack, Tags } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { DefaultInstanceTenancy, SubnetType, VpcNetwork, VpcNetworkRef } from '../lib';
@@ -243,7 +243,7 @@ export = {
           CidrBlock: `10.0.${i * 64}.0/18`
         }));
       }
-      expect(stack).to(haveResource("AWS::EC2::Route", {
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
         NatGatewayId: { },
       }));
@@ -257,7 +257,7 @@ export = {
       expect(stack).to(countResources("AWS::EC2::Subnet", 6));
       expect(stack).to(countResources("AWS::EC2::Route", 6));
       expect(stack).to(countResources("AWS::EC2::NatGateway", 1));
-      expect(stack).to(haveResource("AWS::EC2::Route", {
+      expect(stack).to(haveResourceLike("AWS::EC2::Route", {
         DestinationCidrBlock: '0.0.0.0/0',
         NatGatewayId: { },
       }));
