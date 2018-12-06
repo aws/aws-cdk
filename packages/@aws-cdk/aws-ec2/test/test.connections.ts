@@ -83,9 +83,11 @@ export = {
       GroupDescription: "SecurityGroup1",
       SecurityGroupIngress: [
         {
+          Description: "from 0.0.0.0/0:88",
           CidrIp: "0.0.0.0/0",
           FromPort: 88,
-          ToPort: 88
+          ToPort: 88,
+          IpProtocol: 'tcp'
         }
       ]
     }));
@@ -94,9 +96,11 @@ export = {
       GroupDescription: "SecurityGroup2",
       SecurityGroupIngress: [
         {
+          Description: "from 0.0.0.0/0:88",
           CidrIp: "0.0.0.0/0",
           FromPort: 88,
-          ToPort: 88
+          ToPort: 88,
+          IpProtocol: 'tcp'
         }
       ]
     }));

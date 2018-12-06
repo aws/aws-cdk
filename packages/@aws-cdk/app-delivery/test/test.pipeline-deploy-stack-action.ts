@@ -153,6 +153,7 @@ export = nodeunit.testCase({
     });
     expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: '*',
@@ -228,6 +229,7 @@ export = nodeunit.testCase({
     expect(pipelineStack).to(countResources('AWS::IAM::Policy', 3));
     expect(pipelineStack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: [
@@ -324,7 +326,7 @@ function hasPipelineAction(expectedAction: any): (props: any) => boolean {
   return (props: any) => {
     for (const stage of props.Stages) {
       for (const action of stage.Actions) {
-        if (isSuperObject(action, expectedAction)) {
+        if (isSuperObject(action, expectedAction, [], true)) {
           return true;
         }
       }

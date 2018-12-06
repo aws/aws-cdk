@@ -27,8 +27,10 @@ export = {
     // THEN: we have a role to write to the Lambda
     expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
         Statement: [{
           Action: "sts:AssumeRole",
+          Effect: 'Allow',
           Principal: { Service: { "Fn::Join": ["", ["logs.", {Ref: "AWS::Region"}, ".amazonaws.com"]] }}
         }],
       }
@@ -36,6 +38,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "kinesis:PutRecord",

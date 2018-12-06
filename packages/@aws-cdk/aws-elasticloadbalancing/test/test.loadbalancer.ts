@@ -83,6 +83,7 @@ export = {
     expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
+          Description: 'Port 8080 LB to fleet',
           CidrIp: "666.666.666.666/666",
           FromPort: 8080,
           IpProtocol: "tcp",

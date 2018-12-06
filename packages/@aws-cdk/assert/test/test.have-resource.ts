@@ -34,7 +34,59 @@ export = {
     }, /PropA/);
 
     test.done();
-  }
+  },
+
+  'haveResource value matching is strict by default'(test: Test) {
+    const synthStack = mkStack({
+      Resources: {
+        SomeResource: {
+          Type: 'Some::Resource',
+          Properties: {
+            PropA: {
+              foo: 'somevalue',
+              bar: 'This is unexpected, so the value of PropA doesn\'t strictly match - it shouldn\'t pass'
+            },
+            PropB: 'This property is unexpected, but it\'s allowed'
+          }
+        }
+      }
+    });
+
+    test.throws(() => {
+      expect(synthStack).to(haveResource('Some::Resource', {
+        PropA: {
+          foo: 'somevalue'
+        }
+      }));
+    }, /PropA/);
+
+    test.done();
+  },
+
+  'haveResource allows to opt in value extension'(test: Test) {
+    const synthStack = mkStack({
+      Resources: {
+        SomeResource: {
+          Type: 'Some::Resource',
+          Properties: {
+            PropA: {
+              foo: 'somevalue',
+              bar: 'Additional value is permitted, as we opted in'
+            },
+            PropB: 'Additional properties is always okay!'
+          }
+        }
+      }
+    });
+
+    expect(synthStack).to(haveResource('Some::Resource', {
+      PropA: {
+        foo: 'somevalue'
+      }
+    }, undefined, true));
+
+    test.done();
+  },
 };
 
 function mkStack(template: any) {

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
@@ -11,7 +11,7 @@ export = {
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "FargateTaskDef",
         ContainerDefinitions: [],
         Volumes: [],
