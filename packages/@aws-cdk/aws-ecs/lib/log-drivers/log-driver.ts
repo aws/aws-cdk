@@ -1,4 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
+import { ContainerDefinition } from '../container-definition';
 import { cloudformation } from '../ecs.generated';
 
 /**
@@ -9,4 +10,9 @@ export abstract class LogDriver extends cdk.Construct {
    * Return the log driver CloudFormation JSON
    */
   public abstract renderLogDriver(): cloudformation.TaskDefinitionResource.LogConfigurationProperty;
+
+  /**
+   * Called when the log driver is configured on a container
+   */
+  public abstract bind(containerDefinition: ContainerDefinition): void;
 }
