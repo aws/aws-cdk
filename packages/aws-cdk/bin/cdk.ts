@@ -54,7 +54,7 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
-      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], default: RequireApproval.Broadening, desc: 'what security-sensitive changes need manual approval' })
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' })
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -159,7 +159,7 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, args.requireApproval);
+        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']));
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.force, args.roleArn);
@@ -289,6 +289,8 @@ async function initCommandLine() {
   }
 
   async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, requireApproval: RequireApproval) {
+    if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
+
     const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
@@ -448,6 +450,7 @@ async function initCommandLine() {
       plugin: argv.plugin,
       toolkitStackName: argv.toolkitStackName,
       versionReporting: argv.versionReporting,
+      requireApproval: argv.requireApproval,
       pathMetadata: argv.pathMetadata,
     });
   }
