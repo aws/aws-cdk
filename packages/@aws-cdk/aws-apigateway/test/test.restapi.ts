@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -617,7 +617,7 @@ export = {
     // THEN
 
     // CASE #1
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
       Integration: { Type: 'AWS' },
@@ -626,7 +626,7 @@ export = {
     }));
 
     // CASE #2
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: "myapichildA0A65412" },
       Integration: { Type: 'AWS' },
@@ -635,7 +635,7 @@ export = {
     }));
 
     // CASE #3
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
@@ -643,7 +643,7 @@ export = {
     }));
 
     // CASE #4
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',

@@ -1,4 +1,4 @@
-import { expect, haveResource, not } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -118,7 +118,7 @@ export = {
     api.root.addMethod('GET', integ);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Type: 'AWS'
       }

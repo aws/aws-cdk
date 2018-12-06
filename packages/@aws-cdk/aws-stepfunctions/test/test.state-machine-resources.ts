@@ -20,6 +20,7 @@ export = {
         // THEN
         expect(stack).to(haveResource('AWS::IAM::Policy', {
             PolicyDocument: {
+                Version: '2012-10-17',
                 Statement: [
                     {
                         Action: "resource:Everything",
@@ -51,6 +52,7 @@ export = {
         // THEN
         expect(stack).to(haveResource('AWS::IAM::Policy', {
             PolicyDocument: {
+                Version: '2012-10-17',
                 Statement: [
                     {
                         Action: "resource:Everything",

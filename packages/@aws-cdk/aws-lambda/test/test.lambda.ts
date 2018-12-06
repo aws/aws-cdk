@@ -220,11 +220,12 @@ export = {
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
-        "Statement": [
-          { "Action": "confirm:itsthesame", "Effect": "Allow" },
-          { "Action": "inline:inline", "Effect": "Allow" },
-          { "Action": "explicit:explicit", "Effect": "Allow" }
-        ],
+          "Version": "2012-10-17",
+          "Statement": [
+            { "Action": "confirm:itsthesame", "Effect": "Allow" },
+            { "Action": "inline:inline", "Effect": "Allow" },
+            { "Action": "explicit:explicit", "Effect": "Allow" }
+          ],
         },
       }));
 
@@ -1049,9 +1050,11 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
             Resource: { "Fn::GetAtt": [ "Function76856677", "Arn" ] }
           }
         ]

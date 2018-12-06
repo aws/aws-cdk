@@ -131,9 +131,11 @@ export = {
     }));
     expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "s3:PutObject",
+            Effect: 'Allow',
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
             Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
           }

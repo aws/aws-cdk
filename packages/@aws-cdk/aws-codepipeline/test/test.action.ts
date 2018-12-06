@@ -1,5 +1,5 @@
 // import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import actions = require('@aws-cdk/aws-codepipeline-api');
@@ -78,7 +78,7 @@ export = {
     const buildStage = pipeline.addStage('Build');
     project.addToPipeline(buildStage, 'CodeBuild');
 
-    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "Stages": [
         {
           "Name": "Source",
