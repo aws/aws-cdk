@@ -47,6 +47,8 @@ Since |ECS| can be used with a number of AWS services,
 you should understand how the |ECS| construct that we use in this example
 gives you a leg up on using AWS services by providing the following benefits:
 
+* Automatically configures a load balancer.
+
 * Automatic security group opening for load balancers,
   which enables load balancers to communicate with instances
   without you explictly creating a security group.
@@ -65,7 +67,7 @@ gives you a leg up on using AWS services by providing the following benefits:
 * Automatically adds permissions for |ECR| if you use an image from |ECR|
   When you use an image from |ECR|, the |cdk| adds the correct permissions.
 
-* Convenient API for autoscaling
+* Automatic autoscaling
   The |cdk| supplies a method so you can autoscaling instances when you use an |EC2| cluster;
   this functionality is done automatically when you use an instance in a Fargate cluster.
 
@@ -100,27 +102,7 @@ and create a new app in that directory.
 
             cdk init --language typescript
 
-        Update *my_ecs_construct.ts* in the *bin* directory to only contain the following code:
-
-        .. code-block:: ts
-
-            import cdk = require('@aws-cdk/cdk');
-
-            class MyEcsConstructStack extends cdk.Stack {
-              constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-                super(parent, name, props);
-
-
-              }
-            }
-
-            const app = new cdk.App();
-
-            new MyEcsConstructStack(app, 'MyEcsConstructStack');
-
-            app.run();
-
-        Save it and make sure it builds and creates an empty stack.
+        Build the app and confirm that it creates an empty stack.
 
         .. code-block:: sh
 
@@ -171,14 +153,14 @@ application load balancer.
 
     .. group-tab:: TypeScript
 
-        Add the following import statements:
+        Add the following import statements to *lib/my_ecs_construct-stack.ts*:
 
         .. code-block:: typescript
 
             import ec2 = require('@aws-cdk/aws-ec2');
             import ecs = require('@aws-cdk/aws-ecs');
 
-        Add the following code to the end of the constructor:
+        Replace the comment at the end of the constructor with the following code:
 
         .. code-block:: typescript
 
@@ -190,12 +172,6 @@ application load balancer.
               vpc: vpc
             });
 
-            // Add capacity to it
-            cluster.addDefaultAutoScalingGroupCapacity({
-              instanceType: new ec2.InstanceType('t2.xlarge'),
-              instanceCount: 3  // default is 1
-            });
-    
             // Create a load-balanced Fargate service and make it public
             new ecs.LoadBalancedFargateService(this, 'MyFargateService', {
               cluster: cluster,  // Required
@@ -213,7 +189,7 @@ application load balancer.
             npm run build
             cdk synth
 
-        You should see a stack of a couple hundred lines, so we won't show it here.
+        The stack is hundreds of lines, so we won't show it here.
         The stack should contain one default instance, a private subnet and a public subnet
         for the three availability zones, and a security group.
 
