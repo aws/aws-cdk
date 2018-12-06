@@ -1,5 +1,6 @@
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
+import { ContainerDefinition } from '../container-definition';
 import { cloudformation } from '../ecs.generated';
 import { LogDriver } from "./log-driver";
 
@@ -59,6 +60,13 @@ export class AwsLogDriver extends LogDriver {
     this.logGroup = props.logGroup || new logs.LogGroup(this, 'LogGroup', {
         retentionDays: 365,
     });
+  }
+
+  /**
+   * Called when the log driver is configured on a container
+   */
+  public bind(containerDefinition: ContainerDefinition): void {
+    this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
   }
 
   /**

@@ -229,6 +229,7 @@ export class ContainerDefinition extends cdk.Construct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
 
     props.image.bind(this);
+    if (props.logging) { props.logging.bind(this); }
   }
 
   /**

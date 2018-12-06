@@ -343,180 +343,10 @@
         }
       }
     },
-    "ClusterEB0386A7": {
+    "FargateCluster7CCD5F93": {
       "Type": "AWS::ECS::Cluster"
     },
-    "ImageAdoptRepositoryE1E84E35": {
-      "Type": "Custom::ECRAdoptedRepository",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
-            "Arn"
-          ]
-        },
-        "RepositoryName": {
-          "Fn::Select": [
-            0,
-            {
-              "Fn::Split": [
-                ":",
-                {
-                  "Ref": "ImageImageName5E684353"
-                }
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:GetRepositoryPolicy",
-                "ecr:SetRepositoryPolicy",
-                "ecr:DeleteRepository",
-                "ecr:ListImages",
-                "ecr:BatchDeleteImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
-                    {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::Split": [
-                            ":",
-                            {
-                              "Ref": "ImageImageName5E684353"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "Roles": [
-          {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-          }
-        ]
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Handler": "handler.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs8.10",
-        "Timeout": 300
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C"
-      ]
-    },
-    "FargateServiceTaskDefTaskRole8CDCF85E": {
+    "L3TaskDefTaskRole21C75D10": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -533,113 +363,13 @@
         }
       }
     },
-    "FargateServiceTaskDef940E3A80": {
+    "L3TaskDef48D8ACB8": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
         "ContainerDefinitions": [
           {
             "Essential": true,
-            "Image": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Select": [
-                      4,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "ImageAdoptRepositoryE1E84E35",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  ".dkr.ecr.",
-                  {
-                    "Fn::Select": [
-                      3,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":ecr:",
-                                {
-                                  "Ref": "AWS::Region"
-                                },
-                                ":",
-                                {
-                                  "Ref": "AWS::AccountId"
-                                },
-                                ":repository/",
-                                {
-                                  "Fn::GetAtt": [
-                                    "ImageAdoptRepositoryE1E84E35",
-                                    "RepositoryName"
-                                  ]
-                                }
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  ".amazonaws.com/",
-                  {
-                    "Fn::GetAtt": [
-                      "ImageAdoptRepositoryE1E84E35",
-                      "RepositoryName"
-                    ]
-                  },
-                  ":",
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          ":",
-                          {
-                            "Ref": "ImageImageName5E684353"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              ]
-            },
+            "Image": "amazon/amazon-ecs-sample",
             "Links": [],
             "LinuxParameters": {
               "Capabilities": {
@@ -653,9 +383,9 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "FargateServiceLoggingLogGroup9B16742A"
+                  "Ref": "L3LoggingLogGroupBD1F02DD"
                 },
-                "awslogs-stream-prefix": "FargateService",
+                "awslogs-stream-prefix": "L3",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
@@ -665,7 +395,7 @@
             "Name": "web",
             "PortMappings": [
               {
-                "ContainerPort": 8000,
+                "ContainerPort": 80,
                 "Protocol": "tcp"
               }
             ],
@@ -673,29 +403,29 @@
             "VolumesFrom": []
           }
         ],
-        "Cpu": "256",
+        "Cpu": "512",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "FargateServiceTaskDefExecutionRole9194820E",
+            "L3TaskDefExecutionRole49AF0996",
             "Arn"
           ]
         },
-        "Family": "awsecsintegFargateServiceTaskDefE1C73F14",
-        "Memory": "512",
+        "Family": "awsecsintegL3TaskDefAA25240E",
+        "Memory": "1GB",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
           "FARGATE"
         ],
         "TaskRoleArn": {
           "Fn::GetAtt": [
-            "FargateServiceTaskDefTaskRole8CDCF85E",
+            "L3TaskDefTaskRole21C75D10",
             "Arn"
           ]
         },
         "Volumes": []
       }
     },
-    "FargateServiceTaskDefExecutionRole9194820E": {
+    "L3TaskDefExecutionRole49AF0996": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -712,54 +442,11 @@
         }
       }
     },
-    "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2": {
+    "L3TaskDefExecutionRoleDefaultPolicy4656E642": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
-            {
-              "Action": [
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
-                    {
-                      "Fn::GetAtt": [
-                        "ImageAdoptRepositoryE1E84E35",
-                        "RepositoryName"
-                      ]
-                    }
-                  ]
-                ]
-              }
-            },
-            {
-              "Action": [
-                "ecr:GetAuthorizationToken",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
             {
               "Action": [
                 "logs:CreateLogStream",
@@ -768,7 +455,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "FargateServiceLoggingLogGroup9B16742A",
+                  "L3LoggingLogGroupBD1F02DD",
                   "Arn"
                 ]
               }
@@ -776,29 +463,29 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "FargateServiceTaskDefExecutionRoleDefaultPolicy827E7CA2",
+        "PolicyName": "L3TaskDefExecutionRoleDefaultPolicy4656E642",
         "Roles": [
           {
-            "Ref": "FargateServiceTaskDefExecutionRole9194820E"
+            "Ref": "L3TaskDefExecutionRole49AF0996"
           }
         ]
       }
     },
-    "FargateServiceLoggingLogGroup9B16742A": {
+    "L3LoggingLogGroupBD1F02DD": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "RetentionInDays": 365
       },
       "DeletionPolicy": "Retain"
     },
-    "FargateServiceECC8084D": {
+    "L3Service616D5A93": {
       "Type": "AWS::ECS::Service",
       "Properties": {
         "TaskDefinition": {
-          "Ref": "FargateServiceTaskDef940E3A80"
+          "Ref": "L3TaskDef48D8ACB8"
         },
         "Cluster": {
-          "Ref": "ClusterEB0386A7"
+          "Ref": "FargateCluster7CCD5F93"
         },
         "DeploymentConfiguration": {
           "MaximumPercent": 200,
@@ -809,9 +496,9 @@
         "LoadBalancers": [
           {
             "ContainerName": "web",
-            "ContainerPort": 8000,
+            "ContainerPort": 80,
             "TargetGroupArn": {
-              "Ref": "FargateServiceLBPublicListenerECSGroupBE57E081"
+              "Ref": "L3LBPublicListenerECSGroup648EEA11"
             }
           }
         ],
@@ -821,7 +508,7 @@
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "FargateServiceSecurityGroup262B61DD",
+                  "L3ServiceSecurityGroup677B0897",
                   "GroupId"
                 ]
               }
@@ -838,13 +525,13 @@
         }
       },
       "DependsOn": [
-        "FargateServiceLBPublicListener4B4929CA"
+        "L3LBPublicListener156FFC0F"
       ]
     },
-    "FargateServiceSecurityGroup262B61DD": {
+    "L3ServiceSecurityGroup677B0897": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ/FargateService/Service/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ/L3/Service/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -858,28 +545,28 @@
         }
       }
     },
-    "FargateServiceSecurityGroupfromawsecsintegFargateServiceLBSecurityGroup129467A18000AD32AE25": {
+    "L3ServiceSecurityGroupfromawsecsintegL3LBSecurityGroupA70DA46C80DBDFBCD6": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
         "IpProtocol": "tcp",
         "Description": "Load balancer to target",
-        "FromPort": 8000,
+        "FromPort": 80,
         "GroupId": {
           "Fn::GetAtt": [
-            "FargateServiceSecurityGroup262B61DD",
+            "L3ServiceSecurityGroup677B0897",
             "GroupId"
           ]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
-            "FargateServiceLBSecurityGroup5F444C78",
+            "L3LBSecurityGroupEDE61198",
             "GroupId"
           ]
         },
-        "ToPort": 8000
+        "ToPort": 80
       }
     },
-    "FargateServiceLBB353E155": {
+    "L3LB212FC0E0": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
         "LoadBalancerAttributes": [],
@@ -887,7 +574,7 @@
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
-              "FargateServiceLBSecurityGroup5F444C78",
+              "L3LBSecurityGroupEDE61198",
               "GroupId"
             ]
           }
@@ -906,10 +593,10 @@
         "VpcIGWD7BA715C"
       ]
     },
-    "FargateServiceLBSecurityGroup5F444C78": {
+    "L3LBSecurityGroupEDE61198": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatically created Security Group for ELB awsecsintegFargateServiceLB5FE4725D",
+        "GroupDescription": "Automatically created Security Group for ELB awsecsintegL3LB6453BA0A",
         "SecurityGroupEgress": [],
         "SecurityGroupIngress": [
           {
@@ -925,12 +612,12 @@
         }
       }
     },
-    "FargateServiceLBSecurityGrouptoawsecsintegFargateServiceSecurityGroup8930AEB880001FF8BADE": {
+    "L3LBSecurityGrouptoawsecsintegL3ServiceSecurityGroup7B96C87F8094933E0A": {
       "Type": "AWS::EC2::SecurityGroupEgress",
       "Properties": {
         "GroupId": {
           "Fn::GetAtt": [
-            "FargateServiceLBSecurityGroup5F444C78",
+            "L3LBSecurityGroupEDE61198",
             "GroupId"
           ]
         },
@@ -938,34 +625,34 @@
         "Description": "Load balancer to target",
         "DestinationSecurityGroupId": {
           "Fn::GetAtt": [
-            "FargateServiceSecurityGroup262B61DD",
+            "L3ServiceSecurityGroup677B0897",
             "GroupId"
           ]
         },
-        "FromPort": 8000,
-        "ToPort": 8000
+        "FromPort": 80,
+        "ToPort": 80
       }
     },
-    "FargateServiceLBPublicListener4B4929CA": {
+    "L3LBPublicListener156FFC0F": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
         "DefaultActions": [
           {
             "TargetGroupArn": {
-              "Ref": "FargateServiceLBPublicListenerECSGroupBE57E081"
+              "Ref": "L3LBPublicListenerECSGroup648EEA11"
             },
             "Type": "forward"
           }
         ],
         "LoadBalancerArn": {
-          "Ref": "FargateServiceLBB353E155"
+          "Ref": "L3LB212FC0E0"
         },
         "Port": 80,
         "Protocol": "HTTP",
         "Certificates": []
       }
     },
-    "FargateServiceLBPublicListenerECSGroupBE57E081": {
+    "L3LBPublicListenerECSGroup648EEA11": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
         "Port": 80,
@@ -979,41 +666,16 @@
       }
     }
   },
-  "Parameters": {
-    "ImageImageName5E684353": {
-      "Type": "String",
-      "Description": "ECR repository name and tag asset \"aws-ecs-integ/Image\""
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3Bucket92AB06B6": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cCodeS3VersionKey393B7276": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"aws-ecs-integ/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code\""
-    }
-  },
   "Outputs": {
-    "FargateServiceLoadBalancerDNS9433D5F6": {
+    "L3LoadBalancerDNSC6CB4A70": {
       "Value": {
         "Fn::GetAtt": [
-          "FargateServiceLBB353E155",
+          "L3LB212FC0E0",
           "DNSName"
         ]
       },
       "Export": {
-        "Name": "aws-ecs-integ:FargateServiceLoadBalancerDNS9433D5F6"
-      }
-    },
-    "LoadBalancerDNS": {
-      "Value": {
-        "Fn::GetAtt": [
-          "FargateServiceLBB353E155",
-          "DNSName"
-        ]
-      },
-      "Export": {
-        "Name": "aws-ecs-integ:LoadBalancerDNS"
+        "Name": "aws-ecs-integ:L3LoadBalancerDNSC6CB4A70"
       }
     }
   }
