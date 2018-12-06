@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -289,7 +289,8 @@ export = {
             Effect: "Allow",
             Resource: { "Fn::GetAtt": [ "LoggingLogGroupC6B8E20B", "Arn" ] }
           }
-        ]
+        ],
+        Version: "2012-10-17"
       }
     }));
 
