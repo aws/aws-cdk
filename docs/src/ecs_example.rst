@@ -8,211 +8,193 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _cdk_examples:
+.. _ecs_example:
 
-##############
-|cdk| Examples
-##############
+#############
+|ECS| Example
+#############
 
-This topic contains some usage examples to help you get started understanding
-the |cdk|.
+This example walks you through creating a Fargate service running on an ECS cluster fronted by an internet-facing
+application load balancer.
 
-.. We'll include this if we ever implement DeploymentPipeline
-   _multiple_stacks_example:
+|ECSlong| (|ECS|) is a highly scalable, fast, container management service
+that makes it easy to run, stop, and manage Docker containers on a cluster.
+You can host your cluster on a serverless infrastructure that is managed by
+|ECS| by launching your services or tasks using the Fargate launch type.
+For more control you can host your tasks on a cluster of
+|EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
 
-   Creating an App with Multiple Stacks
-   ====================================
+This example shows you how to launch some services using the Fargate launch type.
+If you've ever used the console to create a Fargate service,
+you know that there are many steps you must follow to accomplish that task.
+AWS has a number of tutorials and documentation topics that walk you through
+creating a Fargate service,
+including:
 
-   The following example creates the following stacks and one deployment pipeline:
+* `How to Deploy Docker Containers - AWS <https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/>`_
 
-   - **Dev** uses the default environment
-   - **PreProd** in the **us-west-2** Region
-   - **NAEast** in the **us-east-1** Region
-   - **NAWest** in the **us-west-2** Region
-   - **EU** in the **eu-west-1** Region
-   - **DeploymentPipeline** in the **us-east-1** Region
+* `Setting up with Amazon ECS <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/get-set-up-for-amazon-ecs.html>`_ and 
+  `Getting Started with Amazon ECS using Fargate <https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html>`_
 
-   Implement the class **MyStack** in the *my-stack* sub-folder,
-   that extends the |stack-class| class
-   (this is the same code as shown in the :doc:`concepts` topic).
+This example creates a similar Fargate service in |cdk| code.
 
-   code-block:: js
+Since |ECS| can be used with a number of AWS services,
+you should understand how the |ECS| construct that we use in this example
+gives you a leg up on using AWS services by providing the following benefits:
 
-   import { Stack, StackProps } from '@aws-cdk/cdk'
+* Automatically configures a load balancer.
 
-   interface MyStackProps extends StackProps {
-     encryptedStorage: boolean;
-   }
+* Automatic security group opening for load balancers,
+  which enables load balancers to communicate with instances
+  without you explictly creating a security group.
 
-   export class MyStack extends Stack {
-     constructor(parent: Construct, name: string, props?: MyStackProps) {
-       super(parent, name, props);
+* Automatic ordering dependency between service and load balancer attaching to a target group,
+  where the |cdk| enforces the correct order of creating the listener before an instance is created
 
-       new MyStorageLayer(this, 'Storage', { encryptedStorage: props.encryptedStorage });
-       new MyControlPlane(this, 'CPlane');
-       new MyDataPlane(this, 'DPlane');
-     }
-   }
+* Automatic userdata configuration on auto-scaling group,
+  which creates the correct configuration to associate a cluster to AMI(s).
+  
+* Early validation of parameter combinations, which exposes |CFN| issues earlier, thus saving you deployment time.
+  For example, depending upon the task, it is easy to mis-configure the memory settings.
+  Previously you would not encounter an error until you deployed your app,
+  but now the |cdk| can detect a misconfiguration and emit an error when you synthesize your app.
 
-   Implement the class **DeploymentPipeline** in the *my-deployment* sub-folder,
-   that extends the |stack-class| class
-   (this is the same code as shown in the :doc:`concepts` topic).
+* Automatically adds permissions for |ECR| if you use an image from |ECR|
+  When you use an image from |ECR|, the |cdk| adds the correct permissions.
 
-   code-block:: js
+* Automatic autoscaling
+  The |cdk| supplies a method so you can autoscaling instances when you use an |EC2| cluster;
+  this functionality is done automatically when you use an instance in a Fargate cluster.
 
-   Use **MyStack** and **DeploymentPipeline** to create the stacks and deployment pipeline.
+  In addition, the |cdk| will prevent instances from being deleted when
+  autoscaling tries to kill an instance,
+  but either a task is running or is scheduled on that instance.
 
-   code-block:: js
+  Previously, you had to create a Lambda function to have this functionality.
+  
+* Asset support, so that you can deploy source from your machine to |ECS| in one step
+  Previously, to use application source you had to perform a number of manual steps
+  (upload to |ECR|, create Docker image, etc.).
+ 
+.. _creating_ecs_l2_example_1:
 
-   import { App } from '@aws-cdk/cdk'
-   import { MyStack } from './my-stack'
-   import { DeploymentPipeline } from './my-deployment'
+Step 1: Create the Directory and Initialize the |cdk|
+-----------------------------------------------------
 
-   const app = new App();
+Let's start with creating a new directory to hold our |cdk| code
+and create a new app in that directory.
 
-   // Use the default environment
-   new MyStack(app, { name: 'Dev' });
+.. code-block:: sh
 
-   // Pre-production stack
-   const preProd = new MyStack(app, {
-     name: 'PreProd',
-     env: { region: 'us-west-2' },
-     preProd: true
-   });
+    mkdir MyEcsConstruct
+    cd MyEcsConstruct
 
-   // Production stacks
-   const prod = [
-     new MyStack(app, {
-       name: 'NAEast',
-       env: { region: 'us-east-1' }
-   }),
+.. tabs::
 
-   new MyStack(app, {
-     name: 'NAWest',
-     env: { region: 'us-west-2' }
-   }),
+    .. group-tab:: TypeScript
 
-   new MyStack(app, {
-     name: 'EU',
-     env: { region: 'eu-west-1' },
-       encryptedStorage: true
-     })
-   ]
+        .. code-block:: sh
 
-   // CI/CD pipeline stack
-   new DeploymentPipeline(app, {
-     env: { region: 'us-east-1' },
-      strategy: DeploymentStrategy.Waved,
-      preProdStages: [ preProd ],
-      prodStages: prod
-   });
+            cdk init --language typescript
 
-   app.run();
+        Build the app and confirm that it creates an empty stack.
 
-.. _dynamodb_example:
+        .. code-block:: sh
 
-Creating a |DDB| Table
-======================
+            npm run build
+            cdk synth
 
-The following example creates a
-|DDB| table with the partition key **Alias**
-and sort key **Timestamp**.
+        You should see a stack like the following,
+        where CDK-VERSION is the version of the CDK.
 
-.. code-block:: js
+        .. code-block:: sh
 
-   import dynamodb = require('@aws-cdk/aws-dynamodb');
-   import cdk = require('@aws-cdk/cdk');
+            Resources:
+              CDKMetadata:
+                Type: 'AWS::CDK::Metadata'
+                Properties:
+                  Modules: @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_ecs_construct=0.1.0
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+.. _creating_ecs_l2_example_2:
 
-       const table = new dynamodb.Table(this, 'Table', {
-         tableName: 'MyAppTable',
-         readCapacity: 5,
-         writeCapacity: 5
-       });
+Step 2: Add the |EC2| and |ECS| Packages
+----------------------------------------
 
-       table.addPartitionKey({ name: 'Alias', type: dynamodb.AttributeType.String });
-       table.addSortKey({ name: 'Timestamp', type: dynamodb.AttributeType.String });
-     }
-   }
+Install support for |EC2| and |ECS|.
 
-   const app = new cdk.App();
+.. tabs::
 
-   new MyStack(app, 'MyStack');
+    .. group-tab:: TypeScript
 
-    app.run();
+        .. code-block:: sh
 
-.. _creating_rds_example:
+            npm install @aws-cdk/aws-ec2 @aws-cdk/aws-ecs
 
-Creating an |RDS| Database
-==========================
+.. _creating_ecs_l2_example_3:
 
-The following example creates the Aurora database **MyAuroraDatabase**.
+Step 3: Create a Fargate Service
+--------------------------------
 
-.. code-block:: js
+There are two different ways of running your container tasks with |ECS|:
 
-   import ec2 = require('@aws-cdk/aws-ec2');
-   import rds = require('@aws-cdk/aws-rds');
-   import cdk = require('@aws-cdk/cdk');
+- Using the **Fargate** launch type,
+  where |ECS| manages the physical machines that your containers are running on for you
+- Using the **EC2** launch type, where you do the managing, such as specifying autoscaling
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+The following example creates a Fargate service running on an ECS cluster fronted by an internet-facing
+application load balancer.
 
-       const vpc = new ec2.VpcNetwork(this, 'VPC');
+.. tabs::
 
-       new rds.DatabaseCluster(this, 'MyRdsDb', {
-         defaultDatabaseName: 'MyAuroraDatabase',
-         masterUser: {
-           username: 'admin',
-           password: '123456'
-         },
-         engine: rds.DatabaseClusterEngine.Aurora,
-         instanceProps: {
-           instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.Burstable2, ec2.InstanceSize.Small),
-           vpc: vpc,
-           vpcPlacement: {
-             subnetsToUse: ec2.SubnetType.Public
-           }
-         }
-       });
-     }
-   }
+    .. group-tab:: TypeScript
 
-   const app = new cdk.App();
+        Add the following import statements to *lib/my_ecs_construct-stack.ts*:
 
-   new MyStack(app, 'MyStack');
+        .. code-block:: typescript
 
-   app.run();
+            import ec2 = require('@aws-cdk/aws-ec2');
+            import ecs = require('@aws-cdk/aws-ecs');
 
-.. _creating_s3_example:
+        Replace the comment at the end of the constructor with the following code:
 
-Creating an |S3| Bucket
-=======================
+        .. code-block:: typescript
 
-The following example creates the |S3| bucket **MyS3Bucket** with server-side KMS
-encryption provided by |S3|.
+            const vpc = new ec2.VpcNetwork(this, 'MyVpc', {
+              maxAZs: 3 // Default is all AZs in region
+            });
 
-.. code-block:: js
+            const cluster = new ecs.Cluster(this, 'MyCluster', {
+              vpc: vpc
+            });
 
-   import s3 = require('@aws-cdk/aws-s3');
-   import cdk = require('@aws-cdk/cdk');
+            // Create a load-balanced Fargate service and make it public
+            new ecs.LoadBalancedFargateService(this, 'MyFargateService', {
+              cluster: cluster,  // Required
+              cpu: '512', // Default is 256
+              desiredCount: 6,  // Default is 1
+              image: ecs.ContainerImage.fromDockerHub('amazon/amazon-ecs-sample'), // Required
+              memoryMiB: '2048',  // Default is 512
+              publicLoadBalancer: true  // Default is false
+            });
 
-   class MyStack extends cdk.Stack {
-     constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-       super(parent, name, props);
+        Save it and make sure it builds and creates a stack.
 
-       new s3.Bucket(this, 'MyBucket', {
-         bucketName: 'MyS3Bucket',
-         encryption: s3.BucketEncryption.KmsManaged
-       });
-     }
-   }
+        .. code-block:: sh
 
-   const app = new cdk.App();
+            npm run build
+            cdk synth
 
-   new MyStack(app, 'MyStack');
+        The stack is hundreds of lines, so we won't show it here.
+        The stack should contain one default instance, a private subnet and a public subnet
+        for the three availability zones, and a security group.
 
-   app.run()
+        Deploy the stack.
+
+        .. code-block:: sh
+
+            cdk deploy
+
+        |CFN| displays information about the dozens of steps that
+        it takes as it deploys your app.
+
+That's how easy it is to create a Fargate service to run a Docker image.

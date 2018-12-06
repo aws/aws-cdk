@@ -8,14 +8,20 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _tutorial:
+.. _apples_example:
 
 ##############
-|cdk| Tutorial
+
 ##############
 
-This topic steps you through creating the resources for a simple widget dispensing
-service using the |cdk|.
+This example walks you through creating the resources for a simple widget dispensing service.
+It includes:
+
+* A |LAMlong| function
+
+* An |ABP| API to call our |LAM| function
+
+* An |S3| bucket that contains our |LAM| function code
 
 .. _overview:
 
@@ -26,7 +32,7 @@ This tutorial contains the following steps.
 
 1. Create a |cdk| app
 
-2. Create a |LAMlong| function that gets a list of widgets with: GET /
+2. Create a |LAM| function that gets a list of widgets with: GET /
 
 3. Create the service that calls the |LAM| function
 
