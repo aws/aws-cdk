@@ -139,7 +139,8 @@ export = {
             Effect: "Allow",
             Resource: { "Fn::GetAtt": [ "LogGroupF5B46931", "Arn" ] }
           }
-        ]
+        ],
+        Version: "2012-10-17"
       }
     }));
 
