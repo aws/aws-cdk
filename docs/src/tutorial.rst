@@ -105,7 +105,7 @@ so you can skip it and continue with the
 
 .. _manual_create_project:
 
-Manually Creating a Project
+Creating a Project Manually
 ===========================
 
 In this section we create a new |cdk| project using explicit command-line commands.
