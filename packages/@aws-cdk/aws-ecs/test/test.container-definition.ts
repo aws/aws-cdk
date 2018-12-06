@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../lib');
@@ -281,7 +281,7 @@ export = {
       ]
     }));
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
