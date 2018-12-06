@@ -10,13 +10,13 @@
 
 .. _tutorial:
 
-######################################
-Tutorial: Creating a |cdk| Application
-######################################
+#######################################
+Tutorial: Creating an |cdk| Application
+#######################################
 
-This topic walks you through creating and deploying a |cdk| app,
-by using the `cdk init` command, as described in `Creating a Project from the Template`_,
-or manually, as described in `Manually Creating a Project`_.
+This topic walks you through creating and deploying an |cdk| app,
+by using the `cdk init` command, as described in the **Template** tab,
+or manually, as described in the **Manual** tab.
 
 In either case, the first step is to create the directory for your project,
 with an empty Git repository.
@@ -30,11 +30,11 @@ All of these instructions use this directory:
 
 .. tabs::
 
-    .. group-tab:: template
+    .. tab:: template
 
         .. include:: template.txt
 
-   .. group-tab:: manual
+   .. tab:: manual
 
        .. include:: manual.txt
 

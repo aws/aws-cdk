@@ -4,10 +4,8 @@
         Creating a Project from the Template
         ====================================
         
-        As mentioned previously,
-        you can use the :code:`cdk init` command to create a skeleton project from a
+        In this section we use the :code:`cdk init` command to create a skeleton project from a
         template in any of the supported languages.
-        In this section we'll do just that.
         
         .. _initialize:
         
