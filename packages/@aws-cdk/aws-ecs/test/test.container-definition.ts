@@ -281,7 +281,7 @@ export = {
       ]
     }));
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -289,7 +289,8 @@ export = {
             Effect: "Allow",
             Resource: { "Fn::GetAtt": [ "LoggingLogGroupC6B8E20B", "Arn" ] }
           }
-        ]
+        ],
+        Version: "2012-10-17"
       }
     }));
 
