@@ -30,13 +30,13 @@ All of these instructions use this directory:
 
 .. tabs::
 
-    .. tab:: template
+   .. tab:: template
         
-        This is a template
+      .. include:: template.txt
 
    .. tab:: manual
 
-        This is manual
+      .. include:: manual.txt
         
 .. _list_stacks:
 

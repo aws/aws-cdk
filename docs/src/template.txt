@@ -1,70 +1,60 @@
-        
-        .. _cdk_init_project:
-        
-        Creating a Project from the Template
-        ====================================
-        
-        In this section we use the :code:`cdk init` command to create a skeleton project from a
-        template in any of the supported languages.
-        
-        .. _initialize:
-        
-        Initializing the Project
-        ------------------------
-        
-        Run the `cdk init` command to initialize an empty project.
-        The |cdk| contains templates for all of the supported languages.
-        To create an empty (no AWS resources in the resulting |CFN| stack),
-        run the following command, where LANGUAGE is one of the supported programming languages:
-        **csharp** (C#), **java** (Java), or **typescript** (TypeScript).
-        
-        .. code-block:: sh
-        
-            cdk init --language LANGUAGE
-        
-        .. _compile_project:
-        
-        Compiling the Project
-        ---------------------
-        
-        If needed, compile the code:
-        
-        .. tabs::
-        
-            .. group-tab:: C#
-        
-                Compile the code using your IDE or via the dotnet CLI:
-        
-                .. code-block:: sh
-        
-                    dotnet build
-        
-            .. group-tab:: JavaScript
-        
-                No need to compile
-        
-            .. group-tab:: TypeScript
-        
-                To compile your program from **.ts** to **.js**:
-        
-                .. code-block:: sh
-        
-                    npm run build
-        
-                You can also use the **watch** command to continuously compile your code
-                as it changes, so you don't have to invoke the compiler explicitly:
-        
-                .. code-block:: sh
-        
-                    # run in another terminal session
-                    npm run watch
-        
-            .. group-tab:: Java
-        
-                Compile your code using your IDE or via the command line via **mvn**:
-        
-                .. code-block:: sh
-        
-                    mvn compile
-        
-        You have now created your first |cdk| app.
+      **Creating a Project from the Template**
+      
+      In this section we use the :code:`cdk init` command to create a skeleton project from a
+      template in any of the supported languages.
+      
+      **Initializing the Project**
+      
+      Run the `cdk init` command to initialize an empty project.
+      The |cdk| contains templates for all of the supported languages.
+      To create an empty (no AWS resources in the resulting |CFN| stack),
+      run the following command, where LANGUAGE is one of the supported programming languages:
+      **csharp** (C#), **java** (Java), or **typescript** (TypeScript).
+      
+      .. code-block:: sh
+      
+          cdk init --language LANGUAGE
+      
+      **Compiling the Project**
+      
+      If needed, compile the code:
+      
+      .. tabs::
+      
+          .. group-tab:: C#
+      
+              Compile the code using your IDE or via the dotnet CLI:
+      
+              .. code-block:: sh
+      
+                  dotnet build
+      
+          .. group-tab:: JavaScript
+      
+              No need to compile
+      
+          .. group-tab:: TypeScript
+      
+              To compile your program from **.ts** to **.js**:
+      
+              .. code-block:: sh
+      
+                  npm run build
+      
+              You can also use the **watch** command to continuously compile your code
+              as it changes, so you don't have to invoke the compiler explicitly:
+      
+              .. code-block:: sh
+      
+                  # run in another terminal session
+                  npm run watch
+      
+          .. group-tab:: Java
+      
+              Compile your code using your IDE or via the command line via **mvn**:
+      
+              .. code-block:: sh
+      
+                  mvn compile
+      
+      You have now created your first |cdk| app.
