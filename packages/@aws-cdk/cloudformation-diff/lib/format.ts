@@ -28,8 +28,7 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
     formatter.printSectionFooter();
   }
 
-  formatter.formatIamChanges(templateDiff.iamChanges);
-  formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
+  formatSecurityChangesWithBanner(formatter, templateDiff);
 
   formatter.formatSection('Parameters', 'Parameter', templateDiff.parameters);
   formatter.formatSection('Metadata', 'Metadata', templateDiff.metadata);
@@ -47,6 +46,11 @@ export function formatSecurityChanges(stream: NodeJS.WriteStream, templateDiff: 
   const formatter = new Formatter(stream, logicalToPathMap);
   formatter.readConstructPathsFrom(templateDiff);
 
+  formatSecurityChangesWithBanner(formatter, templateDiff);
+}
+
+function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: TemplateDiff) {
+  // if (templateDiff.iamChanges.
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 }
