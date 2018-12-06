@@ -60,7 +60,7 @@ Run the following command to see the currently installed version of the toolkit
 
     cdk --version
 
-.. _configuring_cdk:
+.. _credentials:
 
 Configuring the |cdk|
 =====================
