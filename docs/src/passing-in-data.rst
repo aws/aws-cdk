@@ -257,7 +257,7 @@ where **S3Bucket** is the logical ID of the bucket in your template:
        "S3Bucket": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-              ...
+              "prop1": "value1"
           }
        }
     }
