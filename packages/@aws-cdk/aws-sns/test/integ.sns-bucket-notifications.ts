@@ -8,7 +8,9 @@ class MyStack extends cdk.Stack {
 
     const objectCreateTopic = new sns.Topic(this, 'ObjectCreatedTopic');
     const objectRemovedTopic = new sns.Topic(this, 'ObjectDeletedTopic');
-    const bucket = new s3.Bucket(this, 'MyBucket');
+    const bucket = new s3.Bucket(this, 'MyBucket', {
+        removalPolicy: cdk.RemovalPolicy.Destroy
+    });
 
     bucket.onObjectCreated(objectCreateTopic);
     bucket.onObjectRemoved(objectRemovedTopic, { prefix: 'foo/', suffix: '.txt' });

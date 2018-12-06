@@ -367,7 +367,7 @@ export interface BucketProps {
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
-   * @default By default, the bucket will be destroyed if it is removed from the stack.
+   * @default The bucket will be orphaned
    */
   removalPolicy?: cdk.RemovalPolicy;
 
@@ -435,7 +435,7 @@ export class Bucket extends BucketRef {
       websiteConfiguration: this.renderWebsiteConfiguration(props)
     });
 
-    cdk.applyRemovalPolicy(resource, props.removalPolicy);
+    cdk.applyRemovalPolicy(resource, props.removalPolicy !== undefined ? props.removalPolicy : cdk.RemovalPolicy.Orphan);
 
     this.versioned = props.versioned;
     this.encryptionKey = encryptionKey;

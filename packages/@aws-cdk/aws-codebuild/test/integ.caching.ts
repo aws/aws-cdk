@@ -7,7 +7,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild');
 
-const bucket = new s3.Bucket(stack, 'CacheBucket');
+const bucket = new s3.Bucket(stack, 'CacheBucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 new codebuild.Project(stack, 'MyProject', {
   cacheBucket: bucket,

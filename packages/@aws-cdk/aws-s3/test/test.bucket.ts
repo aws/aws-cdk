@@ -17,7 +17,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
         }
       }
     });
@@ -34,7 +35,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
         }
       }
     });
@@ -62,7 +64,8 @@ export = {
             }
           ]
           }
-        }
+        },
+        "DeletionPolicy": "Retain",
         }
       }
     });
@@ -168,7 +171,8 @@ export = {
             }
           ]
           }
-        }
+        },
+        "DeletionPolicy": "Retain",
         }
       }
     });
@@ -189,7 +193,8 @@ export = {
             "VersioningConfiguration": {
               "Status": "Enabled"
             }
-          }
+          },
+        "DeletionPolicy": "Retain",
         }
       }
     });
@@ -207,7 +212,8 @@ export = {
       expect(stack).toMatch({
         "Resources": {
           "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
           },
           "MyBucketPolicyE7FBAC7B": {
           "Type": "AWS::S3::BucketPolicy",
@@ -225,7 +231,7 @@ export = {
             ],
             "Version": "2012-10-17"
             }
-          }
+          },
           }
         }
       });
@@ -409,7 +415,7 @@ export = {
             "Ref": "MyUserDC45028B"
             }
           ]
-          }
+          },
         }
         }
       });
@@ -425,7 +431,8 @@ export = {
       expect(stack1).toMatch({
         "Resources": {
         "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
         }
         },
         "Outputs": {
@@ -574,7 +581,8 @@ export = {
         }
       },
       "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain"
       },
       }
     });
@@ -591,7 +599,8 @@ export = {
       expect(stack).toMatch({
         "Resources": {
           "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
           },
           "MyUserDC45028B": {
           "Type": "AWS::IAM::User"
@@ -728,6 +737,7 @@ export = {
           },
           "MyBucketF68F3FF0": {
           "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Retain",
           "Properties": {
             "BucketEncryption": {
             "ServerSideEncryptionConfiguration": [
@@ -854,7 +864,8 @@ export = {
     expect(stackA).toMatch({
       "Resources": {
       "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Retain",
       }
       },
       "Outputs": {
@@ -953,7 +964,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
       "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain"
       }
       },
       "Outputs": {

@@ -23,6 +23,7 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployG
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
   versioned: true,
+  removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {

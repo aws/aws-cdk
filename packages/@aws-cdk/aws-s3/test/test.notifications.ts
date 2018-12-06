@@ -18,7 +18,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
       "MyBucketF68F3FF0": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain"
       }
       }
     });

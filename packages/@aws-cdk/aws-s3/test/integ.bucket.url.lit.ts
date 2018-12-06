@@ -6,7 +6,9 @@ class TestStack extends cdk.Stack {
     super(parent, id);
 
     /// !show
-    const bucket = new s3.Bucket(this, 'MyBucket');
+    const bucket = new s3.Bucket(this, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.Destroy
+    });
 
     new cdk.Output(this, 'BucketURL', { value: bucket.bucketUrl });
     new cdk.Output(this, 'ObjectURL', { value: bucket.urlForObject('myfolder/myfile.txt') });

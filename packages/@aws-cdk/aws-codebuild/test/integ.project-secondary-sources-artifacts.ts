@@ -6,7 +6,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codebuild-secondary-sources-artifacts');
 
-const bucket = new s3.Bucket(stack, 'MyBucket');
+const bucket = new s3.Bucket(stack, 'MyBucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 new codebuild.Project(stack, 'MyProject', {
   buildSpec: {
