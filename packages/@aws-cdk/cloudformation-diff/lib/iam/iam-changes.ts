@@ -2,7 +2,7 @@ import cfnspec = require('@aws-cdk/cfnspec');
 import colors = require('colors/safe');
 import { PropertyChange, PropertyMap, ResourceChange } from "../diff/types";
 import { DiffableCollection } from '../diffable';
-import { unCloudFormation } from "../uncfn";
+import { renderIntrinsics } from "../render-intrinsics";
 import { deepRemoveUndefined, dropIfEmpty, flatMap, makeComparator } from '../util';
 import { ManagedPolicyAttachment, ManagedPolicyJson, parseManagedPolicies } from './managed-policy';
 import { parseLambdaPermission, parseStatements, renderCondition, Statement, StatementJson, Targets } from "./statement";
@@ -184,7 +184,7 @@ export class IamChanges {
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
     return flatMap(policies, (policy: any) => {
-      return defaultPrincipal(appliesToPrincipal, parseStatements(unCloudFormation(policy.PolicyDocument.Statement)));
+      return defaultPrincipal(appliesToPrincipal, parseStatements(renderIntrinsics(policy.PolicyDocument.Statement)));
     });
   }
 
@@ -194,7 +194,7 @@ export class IamChanges {
   private readIdentityPolicyResource(properties: any): Statement[] {
     if (properties === undefined) { return []; }
 
-    properties = unCloudFormation(properties);
+    properties = renderIntrinsics(properties);
 
     const principals = (properties.Groups || []).concat(properties.Users || []).concat(properties.Roles || []);
     return flatMap(principals, (principal: string) => {
@@ -207,7 +207,7 @@ export class IamChanges {
     if (policy === undefined) { return []; }
 
     const appliesToResource = '${' + logicalId + '.Arn}';
-    return defaultResource(appliesToResource, parseStatements(unCloudFormation(policy.Statement)));
+    return defaultResource(appliesToResource, parseStatements(renderIntrinsics(policy.Statement)));
   }
 
   /**
@@ -216,7 +216,7 @@ export class IamChanges {
   private readResourcePolicyResource(properties: any): Statement[] {
     if (properties === undefined) { return []; }
 
-    properties = unCloudFormation(properties);
+    properties = renderIntrinsics(properties);
 
     const policyKeys = Object.keys(properties).filter(key => key.indexOf('Policy') > -1);
 
@@ -238,13 +238,13 @@ export class IamChanges {
     if (!policyArns) { return []; }
 
     const rep = '${' + logicalId + '}';
-    return parseManagedPolicies(rep, unCloudFormation(policyArns));
+    return parseManagedPolicies(rep, renderIntrinsics(policyArns));
   }
 
   private readLambdaStatements(properties?: PropertyMap): Statement[] {
     if (!properties) { return []; }
 
-    return [parseLambdaPermission(unCloudFormation(properties))];
+    return [parseLambdaPermission(renderIntrinsics(properties))];
   }
 }
 

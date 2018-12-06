@@ -33,11 +33,25 @@ export function printStackDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedS
   return diff.count;
 }
 
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack): boolean {
+export enum RequireApproval {
+  Never = 'never',
+
+  AnyChange = 'any-change',
+
+  Broadening = 'broadening'
+}
+
+/**
+ * Print the security changes of this diff, if the change is impactful enough according to the approval level
+ *
+ * Returns true if the changes are prompt-worthy, false otherwise.
+ */
+export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.SynthesizedStack, requireApproval: RequireApproval): boolean {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
-  if (diffHasSecurityImpact(diff)) {
-    warning(`This deployment will make potentially sensitive changes.`);
+  if (difRequiresApproval(diff, requireApproval)) {
+    // tslint:disable-next-line:max-line-length
+    warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning(`Please confirm you intend to make the following modifications:\n`);
 
     cfnDiff.formatSecurityChanges(process.stderr, diff, buildLogicalToPathMap(newTemplate));
@@ -52,8 +66,13 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.Synthesiz
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function diffHasSecurityImpact(diff: cfnDiff.TemplateDiff) {
-  return diff.permissionsBroadened;
+function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: RequireApproval) {
+  switch (requireApproval) {
+    case RequireApproval.Never: return false;
+    case RequireApproval.AnyChange: return diff.permissionsAnyChanges;
+    case RequireApproval.Broadening: return diff.permissionsBroadened;
+    default: throw new Error(`Unrecognized approval level: ${requireApproval}`);
+  }
 }
 
 function buildLogicalToPathMap(template: cxapi.SynthesizedStack) {

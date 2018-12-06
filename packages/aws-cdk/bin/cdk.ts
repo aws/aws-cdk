@@ -10,7 +10,7 @@ import yargs = require('yargs');
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
-import { printSecurityDiff, printStackDiff } from '../lib/diff';
+import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
 import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
@@ -54,7 +54,7 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
-      .option('prompt', { type: 'string', choices: ['never', 'on-add'], default: 'on-add', desc: 'prompt if security-sensitive changes are about to be deployed' })
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], default: RequireApproval.Broadening, desc: 'what security-sensitive changes need manual approval' })
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -159,7 +159,7 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, args.prompt);
+        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, args.requireApproval);
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.force, args.roleArn);
@@ -288,7 +288,7 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, prompt: string) {
+  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, requireApproval: RequireApproval) {
     const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
@@ -301,9 +301,9 @@ async function initCommandLine() {
       const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
       const deployName = renames.finalName(stack.name);
 
-      if (prompt !== 'never') {
+      if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack)) {
+        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
           if (!confirmed) { throw new Error('Aborted by user'); }
         }

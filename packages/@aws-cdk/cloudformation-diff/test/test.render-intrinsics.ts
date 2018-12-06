@@ -1,10 +1,10 @@
 import { Test } from 'nodeunit';
-import { unCloudFormation } from '../lib/uncfn';
+import { renderIntrinsics } from '../lib/render-intrinsics';
 
 export = {
   'resolves Ref'(test: Test) {
     test.equals(
-      unCloudFormation({ Ref: 'SomeLogicalId' }),
+      renderIntrinsics({ Ref: 'SomeLogicalId' }),
       '${SomeLogicalId}'
     );
     test.done();
@@ -12,7 +12,7 @@ export = {
 
   'resolves Fn::GetAtt'(test: Test) {
     test.equals(
-      unCloudFormation({ 'Fn::GetAtt': ['SomeLogicalId', 'Attribute'] }),
+      renderIntrinsics({ 'Fn::GetAtt': ['SomeLogicalId', 'Attribute'] }),
       '${SomeLogicalId.Attribute}'
     );
     test.done();
@@ -20,7 +20,7 @@ export = {
 
   'resolves Fn::Join'(test: Test) {
     test.equals(
-      unCloudFormation({ 'Fn::Join': ['/', ['a', 'b', 'c']] }),
+      renderIntrinsics({ 'Fn::Join': ['/', ['a', 'b', 'c']] }),
       'a/b/c'
     );
 
@@ -29,7 +29,7 @@ export = {
 
   'does not resolve Fn::Join if the second argument is not a list literal'(test: Test) {
     test.equals(
-      unCloudFormation({ 'Fn::Join': ['/', { Ref: 'ListParameter' }] }),
+      renderIntrinsics({ 'Fn::Join': ['/', { Ref: 'ListParameter' }] }),
       '{"Fn::Join":["/","${ListParameter}"]}'
     );
 
@@ -38,7 +38,7 @@ export = {
 
   'deep resolves intrinsics in object'(test: Test) {
     test.deepEqual(
-      unCloudFormation({
+      renderIntrinsics({
         Deeper1: { Ref: 'SomeLogicalId' },
         Deeper2: 'Do not replace',
       }),
@@ -52,7 +52,7 @@ export = {
 
   'deep resolves intrinsics in array'(test: Test) {
     test.deepEqual(
-      unCloudFormation([
+      renderIntrinsics([
         { Ref: 'SomeLogicalId' },
         'Do not replace',
       ]),

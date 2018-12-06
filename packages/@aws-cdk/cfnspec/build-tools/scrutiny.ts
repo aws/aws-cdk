@@ -36,7 +36,7 @@ function detectResourceScrutiny(typeName: string, typeSpec: schema.ResourceType)
   const properties = Object.entries(typeSpec.Properties || {});
 
   // If this resource is named like *Policy and has a PolicyDocument property
-  if (typeName.endsWith('Policy') && properties.some(app2(isPolicyDocumentProperty))) {
+  if (typeName.endsWith('Policy') && properties.some(apply2(isPolicyDocumentProperty))) {
     typeSpec.ScrutinyType = isIamType(typeName) ? ResourceScrutinyType.IdentityPolicyResource : ResourceScrutinyType.ResourcePolicyResource;
     return;
   }
@@ -84,6 +84,6 @@ function isPolicyDocumentProperty(propertyName: string, propertySpec: schema.Pro
  * me to overload this type declaration so we need a different function for
  * every # of arguments.
  */
-function app2<T1, T2, R>(fn: (a1: T1, a2: T2) => R): (as: [T1, T2]) => R {
+function apply2<T1, T2, R>(fn: (a1: T1, a2: T2) => R): (as: [T1, T2]) => R {
   return (as) => fn.apply(fn, as);
 }

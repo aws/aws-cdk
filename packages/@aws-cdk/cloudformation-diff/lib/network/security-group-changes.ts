@@ -1,7 +1,7 @@
 import colors = require('colors/safe');
 import { PropertyChange, ResourceChange } from "../diff/types";
 import { DiffableCollection } from "../diffable";
-import { unCloudFormation } from "../uncfn";
+import { renderIntrinsics } from "../render-intrinsics";
 import { deepRemoveUndefined, dropIfEmpty, makeComparator } from '../util';
 import { RuleJson, SecurityGroupRule } from "./security-group-rule";
 
@@ -102,7 +102,7 @@ export class SecurityGroupChanges {
     // UnCloudFormation so the parser works in an easier domain
 
     const ref = '${' + logicalId + '.GroupId}';
-    return rules.map((r: any) => new SecurityGroupRule(unCloudFormation(r), ref));
+    return rules.map((r: any) => new SecurityGroupRule(renderIntrinsics(r), ref));
   }
 
   private readRuleResource(resource: any): SecurityGroupRule[] {
@@ -110,7 +110,7 @@ export class SecurityGroupChanges {
 
     // UnCloudFormation so the parser works in an easier domain
 
-    return [new SecurityGroupRule(unCloudFormation(resource))];
+    return [new SecurityGroupRule(renderIntrinsics(resource))];
   }
 }
 

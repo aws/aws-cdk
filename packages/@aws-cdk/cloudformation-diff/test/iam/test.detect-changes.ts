@@ -187,7 +187,7 @@ export = {
     test.done();
   },
 
-  'finds statement removals'(test: Test) {
+  'finds sole statement removals'(test: Test) {
     // WHEN
     const diff = diffTemplate(template({
       BucketPolicy: resource('AWS::S3::BucketPolicy', {
@@ -200,6 +200,52 @@ export = {
         })
       })
     }), {});
+
+    // THEN
+    test.deepEqual(diff.iamChanges.toJson(), {
+      statementRemovals: [
+        {
+          effect: 'Allow',
+          resources: { not: false, values: [ '${MyBucket}' ] },
+          principals: { not: false, values: [ 'AWS:me' ] },
+          actions: { not: false, values: [ 's3:PutObject' ] },
+        }
+      ]
+    });
+
+    test.done();
+  },
+
+  'finds one of many statement removals'(test: Test) {
+    // WHEN
+    const diff = diffTemplate(
+      template({
+        BucketPolicy: resource('AWS::S3::BucketPolicy', {
+          Bucket: { Ref: 'MyBucket' },
+          PolicyDocument: poldoc({
+            Effect: 'Allow',
+            Action: 's3:PutObject',
+            Resource: '*',
+            Principal: { AWS: 'me' }
+          }, {
+            Effect: 'Allow',
+            Action: 's3:LookAtObject',
+            Resource: '*',
+            Principal: { AWS: 'me' }
+          })
+        })
+      }),
+      template({
+        BucketPolicy: resource('AWS::S3::BucketPolicy', {
+          Bucket: { Ref: 'MyBucket' },
+          PolicyDocument: poldoc({
+            Effect: 'Allow',
+            Action: 's3:LookAtObject',
+            Resource: '*',
+            Principal: { AWS: 'me' }
+          })
+        })
+      }));
 
     // THEN
     test.deepEqual(diff.iamChanges.toJson(), {
@@ -238,6 +284,29 @@ export = {
   },
 
   'finds policy removals'(test: Test) {
+    // WHEN
+    const diff = diffTemplate(
+      template({
+        SomeRole: resource('AWS::IAM::Role', {
+          ManagedPolicyArns: ['arn:policy', 'arn:policy2'],
+        })
+      }),
+      template({
+        SomeRole: resource('AWS::IAM::Role', {
+          ManagedPolicyArns: ['arn:policy2'],
+        })
+    }));
+
+    // THEN
+    test.deepEqual(diff.iamChanges.toJson(), {
+      managedPolicyRemovals: [
+        {
+          identityArn: '${SomeRole}',
+          managedPolicyArn: 'arn:policy'
+        }
+      ]
+    });
+
     test.done();
   },
 

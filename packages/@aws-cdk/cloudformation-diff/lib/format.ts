@@ -16,9 +16,7 @@ import { SecurityGroupChanges } from './network/security-group-changes';
  *                         case there is no aws:cdk:path metadata in the template.
  */
 export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: { [logicalId: string]: string } = { }) {
-  const formatter = new Formatter(stream, logicalToPathMap);
-
-  formatter.readConstructPathsFrom(templateDiff);
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
@@ -43,16 +41,18 @@ export function formatDifferences(stream: NodeJS.WriteStream, templateDiff: Temp
  * Renders a diff of security changes to the given stream
  */
 export function formatSecurityChanges(stream: NodeJS.WriteStream, templateDiff: TemplateDiff, logicalToPathMap: {[logicalId: string]: string} = {}) {
-  const formatter = new Formatter(stream, logicalToPathMap);
-  formatter.readConstructPathsFrom(templateDiff);
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff);
 
   formatSecurityChangesWithBanner(formatter, templateDiff);
 }
 
 function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: TemplateDiff) {
-  // if (templateDiff.iamChanges.
+  if (!templateDiff.iamChanges.hasChanges && !templateDiff.securityGroupChanges.hasChanges) { return; }
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
+
+  formatter.warning(`(This feature is experimental -- it might not be complete. See http://bit.ly/cdk-2EhF7Np)`);
+  formatter.printSectionFooter();
 }
 
 const ADDITION = colors.green('[+]');
@@ -60,11 +60,19 @@ const UPDATE   = colors.yellow('[~]');
 const REMOVAL  = colors.red('[-]');
 
 class Formatter {
-  constructor(private readonly stream: NodeJS.WriteStream, private readonly logicalToPathMap: { [logicalId: string]: string }) {
+  constructor(private readonly stream: NodeJS.WriteStream, private readonly logicalToPathMap: { [logicalId: string]: string }, diff?: TemplateDiff) {
+    // Read additional construct paths from the diff if it is supplied
+    if (diff) {
+      this.readConstructPathsFrom(diff);
+    }
   }
 
   public print(fmt: string, ...args: any[]) {
     this.stream.write(colors.white(format(fmt, ...args)) + '\n');
+  }
+
+  public warning(fmt: string, ...args: any[]) {
+    this.stream.write(colors.yellow(format(fmt, ...args)) + '\n');
   }
 
   public formatSection<V, T extends Difference<V>>(
@@ -327,16 +335,13 @@ class Formatter {
       this.printSectionHeader('IAM Policy Changes');
       this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarizeManagedPolicies())));
     }
-
-    this.printSectionFooter();
   }
 
   public formatSecurityGroupChanges(changes: SecurityGroupChanges) {
     if (!changes.hasChanges) { return; }
 
-    this.printSectionHeader('Summary of Security Group Changes');
+    this.printSectionHeader('Security Group Changes');
     this.print(renderTable(this.deepSubstituteBracedLogicalIds(changes.summarize())));
-    this.printSectionFooter();
   }
 
   public deepSubstituteBracedLogicalIds(rows: string[][]): string[][] {
@@ -363,7 +368,7 @@ function renderTable(cells: string[][]): string {
 
   const table = new Table({ head, style: { head: [] } });
   table.push(...cells);
-  return stripHorizontalLines(table.toString());
+  return stripHorizontalLines(table.toString()).trimRight();
 }
 
 /**

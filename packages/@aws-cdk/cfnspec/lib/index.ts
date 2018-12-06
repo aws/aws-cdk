@@ -12,7 +12,7 @@ export function specification(): schema.Specification {
 /**
  * Return the resource specification for the given typename
  *
- * Validates that the resource exists. If you don't this validating behavior, read from
+ * Validates that the resource exists. If you don't want this validating behavior, read from
  * specification() directly.
  */
 export function resourceSpecification(typeName: string): schema.ResourceType {

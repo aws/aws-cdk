@@ -98,6 +98,13 @@ export class TemplateDiff implements ITemplateDiff {
   }
 
   /**
+   * Return true if any of the permissions objects have changed
+   */
+  public get permissionsAnyChanges(): boolean {
+    return this.iamChanges.hasChanges || this.securityGroupChanges.hasChanges;
+  }
+
+  /**
    * Return all property changes of a given scrutiny type
    *
    * We don't just look at property updates; we also look at resource additions and deletions (in which

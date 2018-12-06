@@ -16,9 +16,9 @@
  * For other intrinsics we choose a string representation that CloudFormation
  * cannot actually parse, but is comprehensible to humans.
  */
-export function unCloudFormation(x: any): any {
+export function renderIntrinsics(x: any): any {
   if (Array.isArray(x)) {
-    return x.map(unCloudFormation);
+    return x.map(renderIntrinsics);
   }
 
   const intrinsic = getIntrinsic(x);
@@ -32,7 +32,7 @@ export function unCloudFormation(x: any): any {
   if (typeof x === 'object' && x !== null) {
     const ret: any = {};
     for (const [key, value] of Object.entries(x)) {
-      ret[key] = unCloudFormation(value);
+      ret[key] = renderIntrinsics(value);
     }
     return ret;
   }
@@ -41,13 +41,13 @@ export function unCloudFormation(x: any): any {
 
 function unCloudFormationFnJoin(separator: string, args: any) {
   if (Array.isArray(args)) {
-    return args.map(unCloudFormation).join(separator);
+    return args.map(renderIntrinsics).join(separator);
   }
   return stringifyIntrinsic('Fn::Join', [separator, args]);
 }
 
 function stringifyIntrinsic(fn: string, args: any) {
-  return JSON.stringify({ [fn]: unCloudFormation(args) });
+  return JSON.stringify({ [fn]: renderIntrinsics(args) });
 }
 
 function getIntrinsic(x: any): Intrinsic | undefined {
