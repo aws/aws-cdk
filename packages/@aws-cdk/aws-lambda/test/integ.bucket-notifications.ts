@@ -6,7 +6,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'lambda-bucket-notifications');
 
-const bucketA = new s3.Bucket(stack, 'MyBucket');
+const bucketA = new s3.Bucket(stack, 'MyBucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 const fn = new lambda.Function(stack, 'MyFunction', {
   runtime: lambda.Runtime.NodeJS610,
@@ -14,7 +16,9 @@ const fn = new lambda.Function(stack, 'MyFunction', {
   code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
 });
 
-const bucketB = new s3.Bucket(stack, 'YourBucket');
+const bucketB = new s3.Bucket(stack, 'YourBucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 bucketA.onObjectCreated(fn, { suffix: '.png' });
 bucketB.onEvent(s3.EventType.ObjectRemoved, fn);
