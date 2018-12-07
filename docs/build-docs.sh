@@ -83,6 +83,13 @@ export CDK_VERSION=$(../tools/pkgtools/bin/cdk-version)
 echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
 # Update tools.rst
+# First compile cdk.ts if cdk.js does not exist
+if [ -z ../packages/aws-cdk/bin/cdk.js ]; then
+    echo "cdk.js not found; building"
+    pushd ../packages/aws-cdk/bin
+    tsc cdk.js
+fi
+popd 
 pushd src
 rm cdk_help.txt 2> /dev/null
 
