@@ -11,16 +11,14 @@
 .. _apples_example:
 
 ##############
-
+Apples Example
 ##############
 
 This example walks you through creating the resources for a simple widget dispensing service.
 It includes:
 
-* A |LAMlong| function
-
+* An |LAMlong| function
 * An |ABP| API to call our |LAM| function
-
 * An |S3| bucket that contains our |LAM| function code
 
 .. _overview:
@@ -59,30 +57,10 @@ Let's create the TypeScript app **MyWidgetService** in in the current folder.
     cd MyWidgetService
     cdk init --language typescript
 
-This creates *my_widget_service.ts* in the *bin* directory.
-We don't need most of this code,
-so for now change it to the following:
+This creates *my_widget_service.ts* in the *bin* directory
+and *my_widget_service-stack.ts* in the *lib*.
 
-.. code-block:: ts
-
-    import cdk = require('@aws-cdk/cdk');
-
-    class MyWidgetServiceStack extends cdk.Stack {
-      constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
-        super(parent, name, props);
-
-      }
-    }
-
-    // Create a new CDK app
-    const app = new cdk.App();
-
-    // Add your stack to it
-    new MyWidgetServiceStack(app, 'MyWidgetServiceStack');
-
-    app.run();
-
-Save it and make sure it builds and creates an empty stack.
+Make sure it builds and creates an empty stack.
 
 .. code-block:: sh
 
@@ -96,10 +74,9 @@ where CDK-VERSION is the version of the CDK.
 
     Resources:
       CDKMetadata:
-        Type: 'AWS::CDK::Metadata'
+        Type: AWS::CDK::Metadata
         Properties:
-          Modules: >-
-            @aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0
+          Modules: "@aws-cdk/cdk=CDK-VERSION,@aws-cdk/cx-api=CDK-VERSION,my_widget_service=0.1.0"
 
 .. _create_lambda_functions:
 
@@ -179,13 +156,6 @@ Add the |ABP|, |LAM|, and |S3| packages to our app.
 
     npm install @aws-cdk/aws-apigateway @aws-cdk/aws-lambda @aws-cdk/aws-s3
 
-Create the directory *lib* at the same level as the *bin* and *resources*
-directories.
-
-.. code-block:: sh
-
-    mkdir lib
-
 Create the following Typescript file, *widget_service.ts*,
 in the *lib* directory.
 
@@ -244,21 +214,21 @@ Step 4: Add the Service to the App
 ==================================
 
 To add the service to our app,
-add the following line of code after the existing **import** statement in
-*my_widget_service.ts*.
+we need to first modify *my_widget_service-stack.ts*.
+Add the following line of code after the existing **import** statement.
 
 .. code-block:: ts
 
     import widget_service = require('../lib/widget_service');
 
-Add the following line of code at the end of the constructor in *my_widget_service.ts*.
+Replace the comment in the constructor with the following line of code.
 
 .. code-block:: ts
 
     new widget_service.WidgetService(this, 'Widgets');
 
 Make sure it builds and creates a stack
-(we don't show the stack as it's almost 300 lines).
+(we don't show the stack as it's over 250 lines).
 
 .. code-block:: sh
 
@@ -274,7 +244,8 @@ Before you can deploy your first |cdk| app,
 you must bootstrap your deployment,
 which creates some AWS infracture that the |cdk|
 needs.
-See the **bootstrap** section of the :doc:`tools` topic for details.
+See the **bootstrap** section of the :doc:`tools` topic for details
+(you'll get a warning and nothing changes if you may have done this already).
 
 .. code-block:: sh
 
@@ -287,7 +258,7 @@ Run the following command to deploy your app.
     cdk deploy
 
 If the deployment is successfull,
-save the URL for your server, which appears in the last line in the window,
+save the URL for your server, which appears in one of the last lines in the window,
 where GUID is an alpha-numeric GUID and REGION is your region.
 
 .. code-block:: sh
@@ -446,6 +417,11 @@ by adding the following code at the end of the constructor.
     widget.addMethod('DELETE', deleteWidgetIntegration); // DELETE /{name}
 
 Save, build, and deploy the app.
+
+.. code-block:: sh
+
+    npm run build
+    cdk deploy
 
 Now we should be able to store, show, or delete an individual widget.
 Use the following **curl** commands to list the widgets,
