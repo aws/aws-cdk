@@ -82,4 +82,14 @@ fi
 export CDK_VERSION=$(../tools/pkgtools/bin/cdk-version)
 echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
+# Update tools.rst
+pushd src
+rm cdk_help.txt 2> /dev/null
+
+echo ".. code-block:: sh" > cdk_help.txt
+echo "" >> cdk_help.txt
+
+../../packages/aws-cdk/bin/cdk --help | sed 's/^/    /' >> cdk_help.txt
+popd
+
 sphinx-build -b html $staging $output
