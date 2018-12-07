@@ -84,12 +84,20 @@ echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
 # Update tools.rst
 # First compile cdk.ts if cdk.js does not exist
-if [ -z ../packages/aws-cdk/bin/cdk.js ]; then
+PATH=$PWD/../node_modules/.bin:$PATH
+echo "PATH:"
+echo $PATH
+if [ ! -d ../packages/aws-cdk/bin/cdk.js ]; then
     echo "cdk.js not found; building"
     pushd ../packages/aws-cdk/bin
-    tsc cdk.js
+    PATH=$PWD/../node_modules/.bin:$PATH
+    echo "PATH:"
+    echo $PATH
+    tsc  # DOESN'T WORK:--p ./tsconfig.json cdk.ts
+    popd
+else
+    echo "Found cdk.js"
 fi
-popd 
 pushd src
 rm cdk_help.txt 2> /dev/null
 

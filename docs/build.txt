@@ -1,0 +1,45 @@
+Staging Sphinx doc site under .staging
+building file list ... done
+./
+
+sent 879 bytes  received 26 bytes  1810.00 bytes/sec
+total size is 1877884  speedup is 2075.01
+Copying generated reference documentation...
+BUILD_DOCS_DEV is set, continuing without reference documentation...
+Set CDK_VERSION=0.18.1 (consumed by conf.py)...
+PATH:
+/Users/dougsch/src/aws-cdk/docs/../node_modules/.bin:/Users/dougsch/src/aws-cdk/docs/python-deps/bin:/Users/dougsch/.toolbox/bin::/Library/Frameworks/Python.framework/Versions/4.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/dougsch/bin:/Users/dougsch/Downloads/apache-maven-3.5.4/bin
+cdk.js not found; building
+~/src/aws-cdk/packages/aws-cdk/bin ~/src/aws-cdk/docs
+PATH:
+/Users/dougsch/src/aws-cdk/packages/aws-cdk/bin/../node_modules/.bin:/Users/dougsch/src/aws-cdk/docs/../node_modules/.bin:/Users/dougsch/src/aws-cdk/docs/python-deps/bin:/Users/dougsch/.toolbox/bin::/Library/Frameworks/Python.framework/Versions/4.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/dougsch/bin:/Users/dougsch/Downloads/apache-maven-3.5.4/bin
+cdk.ts(4,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+cdk.ts(21,25): error TS2307: Cannot find module '../lib/version'.
+../lib/api/bootstrap-environment.ts(1,47): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/cxapp/environments.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/cxapp/exec.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/cxapp/stacks.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/deploy-stack.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/toolkit-info.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/util/cloudformation/stack-activity-monitor.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/api/util/sdk.ts(1,28): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/assets.ts(2,133): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/context-providers/hosted-zones.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/context-providers/index.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/context-providers/vpcs.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/context-providers/vpcs.ts(25,11): error TS2322: Type '{ Name: string; Values: {}[]; }[]' is not assignable to type 'Filter[]'.
+  Type '{ Name: string; Values: {}[]; }' is not assignable to type 'Filter'.
+    Types of property 'Values' are incompatible.
+      Type '{}[]' is not assignable to type 'string[]'.
+        Type '{}' is not assignable to type 'string'.
+../lib/diff.ts(1,26): error TS2307: Cannot find module '@aws-cdk/cloudformation-diff'.
+../lib/diff.ts(2,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/docker.ts(1,50): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/docker.ts(48,27): error TS2339: Property 'username' does not exist on type 'EcrRepositoryInfo'.
+  Property 'username' does not exist on type 'CompleteEcrRepositoryInfo'.
+../lib/docker.ts(49,27): error TS2339: Property 'password' does not exist on type 'EcrRepositoryInfo'.
+  Property 'password' does not exist on type 'CompleteEcrRepositoryInfo'.
+../lib/docker.ts(50,13): error TS2339: Property 'endpoint' does not exist on type 'EcrRepositoryInfo'.
+  Property 'endpoint' does not exist on type 'CompleteEcrRepositoryInfo'.
+../lib/renames.ts(1,24): error TS2307: Cannot find module '@aws-cdk/cx-api'.
+../lib/serialize.ts(1,23): error TS2307: Cannot find module 'yaml'.
