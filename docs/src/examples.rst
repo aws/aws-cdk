@@ -67,8 +67,8 @@ gives you a leg up on using AWS services by providing the following benefits:
 * Automatically adds permissions for |ECR| if you use an image from |ECR|
   When you use an image from |ECR|, the |cdk| adds the correct permissions.
 
-* Automatic autoscaling
-  The |cdk| supplies a method so you can autoscaling instances when you use an |EC2| cluster;
+* Convenient API for autoscaling
+  The |cdk| supplies a method so you can autoscale instances when you use an |EC2| cluster;
   this functionality is done automatically when you use an instance in a Fargate cluster.
 
   In addition, the |cdk| will prevent instances from being deleted when
