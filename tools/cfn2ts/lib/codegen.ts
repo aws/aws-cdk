@@ -72,12 +72,9 @@ export default class CodeGenerator {
       const cfnName = SpecName.parse(name);
       const resourceName = genspec.CodeName.forResource(cfnName);
       this.code.line();
-      this.code.openBlock('export namespace cloudformation');
       const attributeTypes = this.emitResourceType(resourceName, resourceType);
 
       this.emitPropertyTypes(name);
-
-      this.code.closeBlock();
 
       for (const attributeType of attributeTypes) {
         this.emitAttributeType(attributeType);

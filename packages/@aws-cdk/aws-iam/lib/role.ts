@@ -1,5 +1,5 @@
 import { Construct, IDependable } from '@aws-cdk/cdk';
-import { cloudformation } from './iam.generated';
+import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -125,7 +125,7 @@ export class Role extends Construct implements IRole {
 
     validateMaxSessionDuration(props.maxSessionDurationSec);
 
-    const role = new cloudformation.RoleResource(this, 'Resource', {
+    const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
       policies: _flatten(props.inlinePolicies),
@@ -143,7 +143,7 @@ export class Role extends Construct implements IRole {
       if (policies == null || Object.keys(policies).length === 0) {
         return undefined;
       }
-      const result = new Array<cloudformation.RoleResource.PolicyProperty>();
+      const result = new Array<CfnRole.PolicyProperty>();
       for (const policyName of Object.keys(policies)) {
         const policyDocument = policies[policyName];
         result.push({ policyName, policyDocument });

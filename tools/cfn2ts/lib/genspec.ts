@@ -7,7 +7,7 @@ import codemaker = require('codemaker');
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
 import util = require('./util');
 
-const RESOURCE_CLASS_POSTFIX = 'Resource';
+const RESOURCE_CLASS_PREFIX = 'Cfn';
 
 export const CORE_NAMESPACE = 'cdk';
 
@@ -20,17 +20,7 @@ export const CORE_NAMESPACE = 'cdk';
  */
 export class CodeName {
   public static forResource(specName: SpecName): CodeName {
-    let className = specName.resourceName;
-
-    // add a "Resource" postfix to the class name (unless there is already a resource postfix).
-    if (!className.endsWith(RESOURCE_CLASS_POSTFIX)) {
-      className += RESOURCE_CLASS_POSTFIX;
-    } else {
-      // tslint:disable:no-console
-      console.error('INFO: Resource class %s already had a %s postfix, so we didn\'t add one', className, RESOURCE_CLASS_POSTFIX);
-      // tslint:enable:no-console
-    }
-
+    const className = RESOURCE_CLASS_PREFIX + specName.resourceName;
     return new CodeName(packageName(specName), '', className, specName);
   }
 
@@ -45,11 +35,8 @@ export class CodeName {
     }
 
     // These are in a namespace named after the resource
-    let resourceClassName = specName.resourceName;
-    if (!resourceClassName.endsWith(RESOURCE_CLASS_POSTFIX)) {
-      resourceClassName += RESOURCE_CLASS_POSTFIX;
-    }
-    return new CodeName(packageName(specName), `${resourceClassName}`, `${specName.propAttrName}Property`, specName);
+    const resourceClassName = RESOURCE_CLASS_PREFIX + specName.resourceName;
+    return new CodeName(packageName(specName), resourceClassName, `${specName.propAttrName}Property`, specName);
   }
 
   public static forPrimitive(primitiveName: string): CodeName {
