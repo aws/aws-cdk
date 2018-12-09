@@ -1,7 +1,7 @@
 import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, LazyDependable, renderAttributes } from './util';
 
@@ -200,7 +200,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * The target group resource
    */
-  private readonly resource: cloudformation.TargetGroupResource;
+  private readonly resource: CfnTargetGroup;
 
   constructor(parent: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(parent, id);
@@ -212,7 +212,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     this.healthCheck = baseProps.healthCheck || {};
     this.targetType = baseProps.targetType;
 
-    this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
+    this.resource = new CfnTargetGroup(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
       targetGroupAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       targetType: new cdk.Token(() => this.targetType),

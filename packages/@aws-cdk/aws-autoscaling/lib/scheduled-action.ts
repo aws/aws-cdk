@@ -1,7 +1,7 @@
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
 
-import { cloudformation } from './autoscaling.generated';
+import { CfnScheduledAction } from './autoscaling.generated';
 
 /**
  * Properties for a scheduled scaling action
@@ -93,7 +93,7 @@ export class ScheduledAction extends cdk.Construct {
       throw new Error('At least one of minCapacity, maxCapacity, or desiredCapacity is required');
     }
 
-    new cloudformation.ScheduledActionResource(this, 'Resource', {
+    new CfnScheduledAction(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       startTime: formatISO(props.startTime),
       endTime: formatISO(props.endTime),

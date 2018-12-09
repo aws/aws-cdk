@@ -1,6 +1,6 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnWebhook } from './codepipeline.generated';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
@@ -74,7 +74,7 @@ export class GitHubSourceAction extends actions.SourceAction {
     });
 
     if (!props.pollForSourceChanges) {
-      new cloudformation.WebhookResource(this, 'WebhookResource', {
+      new CfnWebhook(this, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
           secretToken: props.oauthToken,

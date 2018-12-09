@@ -1,7 +1,7 @@
 import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
 
 /**
@@ -109,7 +109,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     return this.validateHasActions();
   }
 
-  public render(): cloudformation.PipelineResource.StageDeclarationProperty {
+  public render(): CfnPipeline.StageDeclarationProperty {
     return {
       name: this.id,
       actions: this._actions.map(action => this.renderAction(action)),
@@ -149,7 +149,7 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     return (this.pipeline as any)._findInputArtifact(this, action);
   }
 
-  private renderAction(action: cpapi.Action): cloudformation.PipelineResource.ActionDeclarationProperty {
+  private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
     return {
       name: action.id,
       inputArtifacts: action._inputArtifacts.map(a => ({ name: a.name })),

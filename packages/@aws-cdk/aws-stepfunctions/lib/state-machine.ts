@@ -3,7 +3,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { StateGraph } from './state-graph';
-import { cloudformation } from './stepfunctions.generated';
+import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
 
 /**
@@ -78,7 +78,7 @@ export class StateMachine extends cdk.Construct implements IStateMachine {
         const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
         graph.timeoutSeconds = props.timeoutSec;
 
-        const resource = new cloudformation.StateMachineResource(this, 'Resource', {
+        const resource = new CfnStateMachine(this, 'Resource', {
             stateMachineName: props.stateMachineName,
             roleArn: this.role.roleArn,
             definitionString: cdk.CloudFormationJSON.stringify(graph.toGraphJson()),

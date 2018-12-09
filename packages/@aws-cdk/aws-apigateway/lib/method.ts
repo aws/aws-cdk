@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { MockIntegration } from './integrations/mock';
 import { IRestApiResource } from './resource';
@@ -83,7 +83,7 @@ export class Method extends cdk.Construct {
 
     const defaultMethodOptions = props.resource.defaultMethodOptions || {};
 
-    const methodProps: cloudformation.MethodResourceProps = {
+    const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
       restApiId: this.restApi.restApiId,
       httpMethod: props.httpMethod,
@@ -94,7 +94,7 @@ export class Method extends cdk.Construct {
       integration: this.renderIntegration(props.integration)
     };
 
-    const resource = new cloudformation.MethodResource(this, 'Resource', methodProps);
+    const resource = new CfnMethod(this, 'Resource', methodProps);
 
     this.methodId = resource.ref;
 
@@ -134,7 +134,7 @@ export class Method extends cdk.Construct {
     return this.restApi.executeApiArn(this.httpMethod, this.resource.resourcePath, 'test-invoke-stage');
   }
 
-  private renderIntegration(integration?: Integration): cloudformation.MethodResource.IntegrationProperty {
+  private renderIntegration(integration?: Integration): CfnMethod.IntegrationProperty {
     if (!integration) {
       // use defaultIntegration from API if defined
       if (this.resource.defaultIntegration) {

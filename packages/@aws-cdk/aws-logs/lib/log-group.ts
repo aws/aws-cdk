@@ -2,7 +2,7 @@ import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
-import { cloudformation } from './logs.generated';
+import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
@@ -191,7 +191,7 @@ export class LogGroup extends LogGroupRef {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
-    const resource = new cloudformation.LogGroupResource(this, 'Resource', {
+    const resource = new CfnLogGroup(this, 'Resource', {
       logGroupName: props.logGroupName,
       retentionInDays,
     });
