@@ -6,7 +6,16 @@ export function zipDirectory(directory: string, outputFile: string): Promise<voi
   return new Promise((ok, fail) => {
     const output = fs.createWriteStream(outputFile);
     const archive = archiver('zip');
-    archive.directory(directory, false);
+    // The below options are needed to support following symlinks when building zip files:
+    // -  nodir: This will prevent symlinks themselves from being copied into the zip.
+    // - follow: This will follow symlinks and copy the files within.
+    const globOptions = {
+      dot: true,
+      nodir: true,
+      follow: true,
+      cwd: directory
+    };
+    archive.glob('**', globOptions);
     archive.pipe(output);
     archive.finalize();
 
