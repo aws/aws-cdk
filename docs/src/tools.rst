@@ -46,7 +46,7 @@ Here are the actions you can take on your CDK app
 .. code-block:: sh
 
     Usage: cdk -a <cdk-app> COMMAND
-    
+
     Commands:
       list                        Lists all stacks in the app          [aliases: ls]
       synthesize [STACKS..]       Synthesizes and prints the CloudFormation template
@@ -64,7 +64,7 @@ Here are the actions you can take on your CDK app
                                   used.
       docs                        Opens the documentation in a browser[aliases: doc]
       doctor                      Check your set-up for potential problems
-    
+
     Options:
       --app, -a            REQUIRED: Command-line for executing your CDK app (e.g.
                            "node bin/my-app.js")                            [string]
@@ -90,11 +90,42 @@ Here are the actions you can take on your CDK app
       --role-arn, -r       ARN of Role to use when invoking CloudFormation  [string]
       --version            Show version number                             [boolean]
       --help               Show help                                       [boolean]
-    
+
     If your app has a single stack, there is no need to specify the stack name
-    
+
     If one of cdk.json or ~/.cdk.json exists, options specified there will be used
     as defaults. Settings in cdk.json take precedence.
+
+.. _security-changes:
+
+Security-related changes
+========================
+
+In order to protect you against unintended changes that affect your security posture,
+the CDK toolkit will prompt you to approve security-related changes before deploying
+them.
+
+You change the level of changes that requires approval by specifying:
+
+.. code-block::
+
+   cdk deploy --require-approval LEVEL
+
+Where ``LEVEL`` can be one of:
+
+* ``never`` - approval is never required.
+* ``any-change`` - require approval on any IAM or security-group related change.
+* ``broadening`` (default) - require approval when IAM statements or traffic rules are added. Removals
+  do not require approval.
+
+The setting also be configured in **cdk.json**:
+
+.. code-block:: js
+
+    {
+        "app": "...",
+        "requireApproval": "never"
+    }
 
 .. _version-reporting:
 

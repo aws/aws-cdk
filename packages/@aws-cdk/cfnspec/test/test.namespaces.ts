@@ -3,7 +3,7 @@ import { namespaces } from '../lib/index';
 
 export = testCase({
   'expected namespaces are present'(test: Test) {
-    test.deepEqual(namespaces.sort(), expectedNamespaces.sort());
+    test.deepEqual(namespaces().sort(), expectedNamespaces.sort());
     test.done();
   }
 });

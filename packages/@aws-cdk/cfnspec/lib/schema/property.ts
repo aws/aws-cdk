@@ -16,6 +16,13 @@ export interface PropertyBase extends Documented {
    * example, which other properties you updated.
    */
   UpdateType: UpdateType;
+
+  /**
+   * During a stack update, what kind of additional scrutiny changes to this property should be subjected to
+   *
+   * @default None
+   */
+  ScrutinyType?: PropertyScrutinyType;
 }
 
 export interface PrimitiveProperty extends PropertyBase {
@@ -153,4 +160,40 @@ export function isComplexMapProperty(prop: Property): prop is ComplexMapProperty
 export function isUnionProperty(prop: Property): prop is UnionProperty {
   const castProp = prop as UnionProperty;
   return !!(castProp.ItemTypes || castProp.PrimitiveTypes || castProp.Types);
+}
+
+export enum PropertyScrutinyType {
+  /**
+   * No additional scrutiny
+   */
+  None = 'None',
+
+  /**
+   * This is an IAM policy directly on a resource
+   */
+  InlineResourcePolicy = 'InlineResourcePolicy',
+
+  /**
+   * Either an AssumeRolePolicyDocument or a dictionary of policy documents
+   */
+  InlineIdentityPolicies = 'InlineIdentityPolicies',
+
+  /**
+   * A list of managed policies (on an identity resource)
+   */
+  ManagedPolicies = 'ManagedPolicies',
+
+  /**
+   * A set of ingress rules (on a security group)
+   */
+  IngressRules = 'IngressRules',
+
+  /**
+   * A set of egress rules (on a security group)
+   */
+  EgressRules = 'EgressRules',
+}
+
+export function isPropertyScrutinyType(str: string): str is PropertyScrutinyType {
+  return (PropertyScrutinyType as any)[str] !== undefined;
 }

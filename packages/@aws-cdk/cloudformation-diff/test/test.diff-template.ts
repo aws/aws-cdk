@@ -142,7 +142,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
+    test.deepEqual(difference && difference.propertyUpdates,
              { BucketName: { oldValue: bucketName, newValue: newBucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
     test.done();
@@ -210,7 +210,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
+    test.deepEqual(difference && difference.propertyUpdates,
              { BucketName: { oldValue: bucketName, newValue: undefined, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
     test.done();
@@ -249,7 +249,7 @@ exports.diffTemplate = {
     const difference = differences.resources.changes.BucketResource;
     test.notStrictEqual(difference, undefined, 'the difference is on the BucketResource logical ID');
     test.equal(difference && difference.oldResourceType, 'AWS::S3::Bucket', 'the difference reports the resource type');
-    test.deepEqual(difference && difference.propertyChanges,
+    test.deepEqual(difference && difference.propertyUpdates,
              { BucketName: { oldValue: undefined, newValue: bucketName, changeImpact: ResourceImpact.WILL_REPLACE } },
              'the difference reports property-level changes');
     test.done();
