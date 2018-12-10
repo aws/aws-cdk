@@ -6,5 +6,5 @@
 # will be requested to review.
 
 *                               @awslabs/aws-cdk-team
-docs/*                          @Doug-AWS
-packages/@aws-cdk/aws-code*     @RomainMuller @skinny85
+/docs/                          @Doug-AWS
+/packages/@aws-cdk/aws-code*/   @RomainMuller @skinny85
