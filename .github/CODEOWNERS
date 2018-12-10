@@ -1,0 +1,10 @@
+# Each line is a file pattern followed by one or more owners (@username or
+# email@address).
+#
+# Order is important. The last matching pattern has the most precedence.
+# So if a pull request only touches javascript files, only these owners
+# will be requested to review.
+
+*                               @eladb @rix0rrr @RomainMuller
+docs/*                          @Doug-AWS
+packages/@aws-cdk/aws-code*     @RomainMuller @skinny85
