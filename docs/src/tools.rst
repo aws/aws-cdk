@@ -115,7 +115,7 @@ Where ``LEVEL`` can be one of:
 
 * ``never`` - approval is never required.
 * ``any-change`` - require approval on any IAM or security-group related change.
-* ``broadening`` - require approval when IAM statements or traffic rules are added. Removals
+* ``broadening`` (default) - require approval when IAM statements or traffic rules are added. Removals
   do not require approval.
 
 The setting also be configured in **cdk.json**:

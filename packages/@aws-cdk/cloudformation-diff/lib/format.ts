@@ -51,7 +51,7 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
 
-  formatter.warning(`(This feature is experimental -- it might not be complete. See http://bit.ly/cdk-2EhF7Np)`);
+  formatter.warning(`(NOTE: There may be security-related changes not in this list. See http://bit.ly/cdk-2EhF7Np)`);
   formatter.printSectionFooter();
 }
 
