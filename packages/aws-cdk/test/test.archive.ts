@@ -43,5 +43,24 @@ export = {
 
     test.deepEqual(hash1, hash2, 'md5 hash of two zips of the same content are not the same');
     test.done();
+  },
+
+  async 'zipDirectory follows symlinks'(test: Test) {
+    const originalDir = path.join(__dirname, 'test-archive-follow', 'data');
+    const stagingDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive'));
+    const zipFile = path.join(stagingDir, 'output.zip');
+    const extractDir = await fs.mkdtemp(path.join(os.tmpdir(), 'test.archive.follow'));
+
+    try {
+      await zipDirectory(originalDir, zipFile);
+      await exec(`unzip ${zipFile}`, { cwd: extractDir });
+      await exec(`diff -bur ${originalDir} ${extractDir}`);
+    } catch (e) {
+      test.ok(false, `extracted directory ${extractDir} differs from original ${originalDir}, symlinks not followed.`);
+    }
+
+    await fs.remove(stagingDir);
+    await fs.remove(extractDir);
+    test.done();
   }
 };
