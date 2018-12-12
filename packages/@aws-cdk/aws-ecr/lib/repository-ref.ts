@@ -41,6 +41,18 @@ export interface IRepository {
   addToResourcePolicy(statement: iam.PolicyStatement): void;
 
   /**
+   * Convenience method for creating a new {@link PipelineSourceAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the optional construction properties of the new Action
+   * @returns the newly created {@link PipelineSourceAction}
+   */
+  addToPipeline(stage: codepipeline.IStage, name: string, props?: CommonPipelineSourceActionProps):
+      PipelineSourceAction;
+
+  /**
    * Grant the given principal identity permissions to perform the actions on this repository
    */
   grant(identity?: iam.IPrincipal, ...actions: string[]): void;
@@ -161,15 +173,6 @@ export abstract class RepositoryBase extends cdk.Construct implements IRepositor
     };
   }
 
-  /**
-   * Convenience method for creating a new {@link PipelineSourceAction},
-   * and adding it to the given Stage.
-   *
-   * @param stage the Pipeline Stage to add the new Action to
-   * @param name the name of the newly created Action
-   * @param props the optional construction properties of the new Action
-   * @returns the newly created {@link PipelineSourceAction}
-   */
   public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineSourceActionProps = {}):
       PipelineSourceAction {
     return new PipelineSourceAction(this, name, {
