@@ -82,29 +82,7 @@ fi
 export CDK_VERSION=$(../tools/pkgtools/bin/cdk-version)
 echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
-# Update tools.rst
-# First compile cdk.ts if cdk.js does not exist
-PATH=$PWD/../node_modules/.bin:$PATH
-echo "PATH:"
-echo $PATH
-if [ ! -d ../packages/aws-cdk/bin/cdk.js ]; then
-    echo "cdk.js not found; building"
-    pushd ../packages/aws-cdk/bin
-    PATH=$PWD/../node_modules/.bin:$PATH
-    echo "PATH:"
-    echo $PATH
-    tsc  # DOESN'T WORK:--p ./tsconfig.json cdk.ts
-    popd
-else
-    echo "Found cdk.js"
-fi
-pushd src
-rm cdk_help.txt 2> /dev/null
-
-echo ".. code-block:: sh" > cdk_help.txt
-echo "" >> cdk_help.txt
-
-../../packages/aws-cdk/bin/cdk --help | sed 's/^/    /' >> cdk_help.txt
-popd
+# Prod user to update tools.rst
+echo "Build the cdk then run update-tools.sh to update tools.rst"
 
 sphinx-build -b html $staging $output
