@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { PipelineCreateReplaceChangeSetAction, PipelineCreateUpdateStackAction, PipelineExecuteChangeSetAction } from '@aws-cdk/aws-cloudformation';
 import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Project } from '@aws-cdk/aws-codebuild';
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
@@ -74,7 +74,7 @@ export = {
     changeSetName,
   });
 
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "ArtifactStore": {
     "Location": {
       "Ref": "MagicPipelineArtifactsBucket212FE7BF"
@@ -212,7 +212,7 @@ export = {
   const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
 
   // THEN: Action in Pipeline has named IAM capabilities
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -237,12 +237,14 @@ export = {
   // THEN: Role is created with full permissions
   expect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
-    Statement: [
-      {
-      Action: "*",
-      Resource: "*"
-      }
-    ],
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: "*",
+          Effect: 'Allow',
+          Resource: "*"
+        }
+      ],
     },
     Roles: [{ Ref: roleId }]
   }));
@@ -264,7 +266,7 @@ export = {
   });
 
   // THEN: Action has output artifacts
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -296,7 +298,7 @@ export = {
   });
 
   // THEN: Action has output artifacts
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -332,7 +334,7 @@ export = {
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {

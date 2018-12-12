@@ -759,6 +759,19 @@
               ],
               "Effect": "Allow",
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "FargateServiceLoggingLogGroup9B16742A",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

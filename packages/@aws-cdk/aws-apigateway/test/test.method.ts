@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -45,12 +45,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        ApiKeyRequired: true,
-        OperationName: "MyOperation"
-      }
-    }, ResourcePart.CompleteDefinition));
+      ApiKeyRequired: true,
+      OperationName: "MyOperation"
+    }));
 
     test.done();
   },
@@ -69,23 +66,20 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        Integration: {
-          IntegrationHttpMethod: "POST",
-          Type: "AWS",
-          Uri: {
-            "Fn::Join": [
-            "",
-            [
-              "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
-              { Ref: "AWS::Region" }, ":s3:path/bucket/key"
-            ]
-            ]
-          }
+      Integration: {
+        IntegrationHttpMethod: "POST",
+        Type: "AWS",
+        Uri: {
+          "Fn::Join": [
+          "",
+          [
+            "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
+            { Ref: "AWS::Region" }, ":s3:path/bucket/key"
+          ]
+          ]
         }
       }
-    }, ResourcePart.CompleteDefinition));
+    }));
 
     test.done();
   },
@@ -211,7 +205,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { "Fn::GetAtt": [ "MyRoleF48FFE04", "Arn" ] }
       }
@@ -233,7 +227,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::*:user/*" ] ] }
       }

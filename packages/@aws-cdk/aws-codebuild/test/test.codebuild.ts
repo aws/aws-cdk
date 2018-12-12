@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import codecommit = require('@aws-cdk/aws-codecommit');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -307,7 +307,8 @@ export = {
       expect(stack).toMatch({
         "Resources": {
         "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Retain"
         },
         "MyProjectRole9BBE5233": {
           "Type": "AWS::IAM::Role",
@@ -494,7 +495,7 @@ export = {
       timeout: 123,
     });
 
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       "Artifacts": {
         "Path": "some/path",
         "Name": "some_name",
@@ -559,7 +560,7 @@ export = {
         identifier: 'source1',
       }));
 
-      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         "SecondarySources": [
           {
             "SourceIdentifier": "source1",
@@ -614,7 +615,7 @@ export = {
       test.done();
     },
 
-    'added with an identifer after the Project has been created are rendered in the template'(test: Test) {
+    'added with an identifier after the Project has been created are rendered in the template'(test: Test) {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const project = new codebuild.Project(stack, 'MyProject', {
@@ -631,7 +632,7 @@ export = {
         identifier: 'artifact1',
       }));
 
-      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         "SecondaryArtifacts": [
           {
             "ArtifactIdentifier": "artifact1",

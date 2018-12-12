@@ -117,7 +117,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "Bucket83908E77": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
         "Type": "AWS::CloudFront::Distribution",
@@ -191,7 +192,8 @@ export = {
     expect(stack).toMatch({
       "Resources": {
         "Bucket83908E77": {
-        "Type": "AWS::S3::Bucket"
+        "Type": "AWS::S3::Bucket",
+        "DeletionPolicy": "Retain",
         },
         "AnAmazingWebsiteProbablyCFDistribution47E3983B": {
         "Type": "AWS::CloudFront::Distribution",

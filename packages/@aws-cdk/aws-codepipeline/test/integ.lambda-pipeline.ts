@@ -12,6 +12,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
+  removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
