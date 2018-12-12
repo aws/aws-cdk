@@ -1,4 +1,6 @@
 #!/bin/bash
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+
 rm -f packages/@aws-cdk/*/lib/*.generated.*
 node_modules/.bin/lerna --scope @aws-cdk/cfnspec run build
 node_modules/.bin/lerna --scope cfn2ts run build
