@@ -130,10 +130,15 @@ export = {
       path: path.join(__dirname, 'sample-asset-directory', 'sample-zip-asset.zip')
     });
 
+    const jarFileAsset = new FileAsset(stack, 'JarFileAsset', {
+      path: path.join(__dirname, 'sample-asset-directory', 'sample-jar-asset.jar')
+    });
+
     // THEN
     test.equal(nonZipAsset.isZipArchive, false);
     test.equal(zipDirectoryAsset.isZipArchive, true);
     test.equal(zipFileAsset.isZipArchive, true);
+    test.equal(jarFileAsset.isZipArchive, true);
     test.done();
   }
 };

@@ -88,9 +88,10 @@ export class Asset extends cdk.Construct {
     this.assetPath = path.resolve(props.path);
 
     // sets isZipArchive based on the type of packaging and file extension
+    const allowedExtensions: string[] = ['.jar', '.zip'];
     this.isZipArchive = props.packaging === AssetPackaging.ZipDirectory
       ? true
-      : this.assetPath.toLowerCase().endsWith('.zip');
+      : allowedExtensions.some(ext => this.assetPath.toLowerCase().endsWith(ext));
 
     validateAssetOnDisk(this.assetPath, props.packaging);
 
