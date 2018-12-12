@@ -27,6 +27,7 @@
           ],
           "detail": {
             "event": [
+              "referenceCreated",
               "referenceUpdated"
             ],
             "referenceName": [
