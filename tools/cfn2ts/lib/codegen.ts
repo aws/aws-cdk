@@ -114,10 +114,8 @@ export default class CodeGenerator {
 
   private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string, deprecation?: string) {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
-    this.docLink(docLink);
-    if (deprecation) {
-      this.code.line(`@deprecated ${deprecation}`);
-    }
+    const before = !deprecation ? '' : `@deprecated ${deprecation}`; 
+    this.docLink(docLink, before);
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
   }
