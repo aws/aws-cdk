@@ -79,5 +79,8 @@
     "@aws-cdk/aws-s3-notifications": "^0.20.0",
     "@aws-cdk/aws-sqs": "^0.20.0",
     "@aws-cdk/cdk": "^0.20.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
   }
 }

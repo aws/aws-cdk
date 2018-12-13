@@ -67,5 +67,8 @@
   "peerDependencies": {
     "@aws-cdk/cdk": "^0.20.0",
     "@aws-cdk/cx-api": "^0.20.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
   }
 }

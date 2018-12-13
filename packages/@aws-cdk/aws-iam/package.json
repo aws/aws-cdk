@@ -66,5 +66,8 @@
   "homepage": "https://github.com/awslabs/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cdk": "^0.20.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
   }
 }
