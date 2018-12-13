@@ -114,8 +114,8 @@ export default class CodeGenerator {
 
   private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string, deprecation?: string) {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
-    const before = !deprecation ? '' : `@deprecated ${deprecation}`;
-    this.docLink(docLink, before);
+    const before = deprecation ? [ `@deprecated ${deprecation}` ] : [ ];
+    this.docLink(docLink, ...before);
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
   }
@@ -190,7 +190,7 @@ export default class CodeGenerator {
     }
 
     const deprecation = deprecated &&
-      `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
+      `"cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
       `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
 
     this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS, deprecation);
@@ -298,7 +298,7 @@ export default class CodeGenerator {
     }
 
     if (deprecated) {
-      this.code.line(`this.addWarning('${deprecation}');`);
+      this.code.line(`this.addWarning('DEPRECATION: ${deprecation}');`);
     }
 
     this.code.closeBlock();
