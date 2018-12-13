@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { CfnSubscriptionFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
 /**
@@ -69,7 +69,7 @@ export class SubscriptionFilter extends cdk.Construct {
 
     const destProps = props.destination.logSubscriptionDestination(props.logGroup);
 
-    new cloudformation.SubscriptionFilterResource(this, 'Resource', {
+    new CfnSubscriptionFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       destinationArn: destProps.arn,
       roleArn: destProps.role && destProps.role.roleArn,

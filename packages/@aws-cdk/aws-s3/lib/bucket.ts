@@ -8,7 +8,7 @@ import { BucketNotifications } from './notifications-resource';
 import perms = require('./perms');
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 import { LifecycleRule } from './rule';
-import { cloudformation } from './s3.generated';
+import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 /**
@@ -427,7 +427,7 @@ export class Bucket extends BucketRef {
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
-    const resource = new cloudformation.BucketResource(this, 'Resource', {
+    const resource = new CfnBucket(this, 'Resource', {
       bucketName: props && props.bucketName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
@@ -523,7 +523,7 @@ export class Bucket extends BucketRef {
    * user's configuration.
    */
   private parseEncryption(props: BucketProps): {
-    bucketEncryption?: cloudformation.BucketResource.BucketEncryptionProperty,
+    bucketEncryption?: CfnBucket.BucketEncryptionProperty,
     encryptionKey?: kms.EncryptionKeyRef
   } {
 
@@ -583,14 +583,14 @@ export class Bucket extends BucketRef {
    * Parse the lifecycle configuration out of the uucket props
    * @param props Par
    */
-  private parseLifecycleConfiguration(): cloudformation.BucketResource.LifecycleConfigurationProperty | undefined {
+  private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
     if (!this.lifecycleRules || this.lifecycleRules.length === 0) {
       return undefined;
     }
 
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
-    function parseLifecycleRule(rule: LifecycleRule): cloudformation.BucketResource.RuleProperty {
+    function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled !== undefined ? rule.enabled : true;
 
       const x = {
@@ -622,7 +622,7 @@ export class Bucket extends BucketRef {
     }
   }
 
-  private renderWebsiteConfiguration(props: BucketProps): cloudformation.BucketResource.WebsiteConfigurationProperty | undefined {
+  private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
     if (!props.websiteErrorDocument && !props.websiteIndexDocument) {
       return undefined;
     }

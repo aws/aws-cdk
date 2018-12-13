@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { IStepFunctionsTaskResource, StepFunctionsTaskResourceProps, Task } from './states/task';
-import { cloudformation } from './stepfunctions.generated';
+import { CfnActivity } from './stepfunctions.generated';
 
 export interface ActivityProps {
     /**
@@ -22,7 +22,7 @@ export class Activity extends cdk.Construct implements IStepFunctionsTaskResourc
     constructor(parent: cdk.Construct, id: string, props: ActivityProps = {}) {
         super(parent, id);
 
-        const resource = new cloudformation.ActivityResource(this, 'Resource', {
+        const resource = new CfnActivity(this, 'Resource', {
             name: props.activityName || this.generateName()
         });
 

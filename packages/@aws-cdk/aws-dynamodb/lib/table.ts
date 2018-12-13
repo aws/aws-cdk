@@ -2,7 +2,7 @@ import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
-import { cloudformation as dynamodb } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
@@ -160,12 +160,12 @@ export class Table extends Construct {
   public readonly tableName: string;
   public readonly tableStreamArn: string;
 
-  private readonly table: dynamodb.TableResource;
+  private readonly table: CfnTable;
 
-  private readonly keySchema = new Array<dynamodb.TableResource.KeySchemaProperty>();
-  private readonly attributeDefinitions = new Array<dynamodb.TableResource.AttributeDefinitionProperty>();
-  private readonly globalSecondaryIndexes = new Array<dynamodb.TableResource.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Array<dynamodb.TableResource.LocalSecondaryIndexProperty>();
+  private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
+  private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
+  private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
@@ -180,7 +180,7 @@ export class Table extends Construct {
   constructor(parent: Construct, name: string, props: TableProps = {}) {
     super(parent, name);
 
-    this.table = new dynamodb.TableResource(this, 'Resource', {
+    this.table = new CfnTable(this, 'Resource', {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
@@ -481,9 +481,9 @@ export class Table extends Construct {
     });
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): dynamodb.TableResource.KeySchemaProperty[] {
+  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
-    const indexKeySchema: dynamodb.TableResource.KeySchemaProperty[] = [
+    const indexKeySchema: CfnTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE }
     ];
 
@@ -495,7 +495,7 @@ export class Table extends Construct {
     return indexKeySchema;
   }
 
-  private buildIndexProjection(props: SecondaryIndexProps): dynamodb.TableResource.ProjectionProperty {
+  private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.Include && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
       throw new Error(`non-key attributes should be specified when using ${ProjectionType.Include} projection type`);

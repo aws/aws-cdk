@@ -1,5 +1,5 @@
 import s3 = require('@aws-cdk/aws-s3');
-import { cloudformation } from './codebuild.generated';
+import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
 /**
@@ -28,7 +28,7 @@ export abstract class BuildArtifacts {
     return;
   }
 
-  public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
+  public toArtifactsJSON(): CfnProject.ArtifactsProperty {
     const artifactsProp = this.toArtifactsProperty();
     return {
       artifactIdentifier: this.identifier,
