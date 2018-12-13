@@ -15,4 +15,3 @@ export class ExampleConstruct extends cdk.Construct {
     Array.isArray(role);
   }
 }
-
