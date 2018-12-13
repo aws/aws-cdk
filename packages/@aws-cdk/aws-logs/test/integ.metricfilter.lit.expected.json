@@ -3,7 +3,7 @@
     "LogGroupF5B46931": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "RetentionInDays": 730
+        "RetentionInDays": 731
       }
     },
     "MetricFilter1B93B6E5": {

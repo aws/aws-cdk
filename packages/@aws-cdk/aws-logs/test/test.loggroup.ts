@@ -31,7 +31,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 730
+      RetentionInDays: 731
     }));
 
     test.done();
