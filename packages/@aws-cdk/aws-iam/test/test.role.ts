@@ -1,8 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Resource, Stack } from '@aws-cdk/cdk';
+import { resolve, Resource, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
+/* tslint:disable:no-console */
 export = {
   'default role'(test: Test) {
     const stack = new Stack();
@@ -197,6 +198,55 @@ export = {
 
       test.done();
     }
-  }
+  },
+  'import/export':  {
+
+    'import with name'(test: Test) {
+      const stack = new Stack();
+      const stack2 = new Stack();
+
+      const role = new Role(stack, 'TestRole', {
+        assumedBy: new ServicePrincipal('bla'),
+        roleName: 'RoleImportMe'
+      });
+
+      const role2 = Role.import(stack2, 'SecondStack', role.export());
+
+      test.deepEqual(resolve(role2.roleArn), {
+        'Fn::ImportValue': 'TestRoleRoleArn4584711D'
+      });
+
+      test.deepEqual(resolve(role2.roleName), {
+        'Fn::ImportValue': 'TestRoleRoleNameA06B1198'
+      });
+
+      test.done();
+    }
+  },
+
+  'import with arn'(test: Test) {
+    const stack = new Stack();
+    const stack2 = new Stack();
+
+    new Role(stack, 'TestRole', {
+      assumedBy: new ServicePrincipal('bla')
+    });
+
+    const role2 = Role.import(stack2, 'SecondStack', {
+      roleArn: 'arn:aws:iam::123456789012:role/service-role/test-service-role'
+    });
+
+    test.deepEqual(resolve(role2.roleArn), 'arn:aws:iam::123456789012:role/service-role/test-service-role');
+    test.deepEqual(resolve(role2.roleName), 'service-role/test-service-role');
+
+    test.done();
+  },
+
+  'fails with no arn or name'(test: Test) {
+    const stack = new Stack();
+    test.throws(() => Role.import(stack, 'BadRole', {}),
+      /If "roleArn" is not specified, you must specify "roleName"/);
+    test.done();
+    }
 
 };

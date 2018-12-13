@@ -1,4 +1,4 @@
-import { Construct, IDependable } from '@aws-cdk/cdk';
+import { ArnUtils, Construct, IDependable, Output, unresolved } from '@aws-cdk/cdk';
 import { cloudformation } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
@@ -182,6 +182,14 @@ export class Role extends Construct implements IRole {
     this.attachedPolicies.attach(policy);
     policy.attachToRole(this);
   }
+
+  public export(): ImportedRoleProps {
+    return {
+      roleArn: new Output(this, 'RoleArn', { value: this.roleArn }).makeImportValue().toString(),
+      roleName: new Output(this, 'RoleName', { value: this.roleName }).makeImportValue().toString()
+    };
+  }
+
 }
 
 /**
@@ -223,12 +231,12 @@ export interface ImportedRoleProps {
   /**
    * The role's ARN
    */
-  roleArn: string;
+  roleArn?: string;
 
   /**
    * The role's Name
    */
-  roleName: string;
+  roleName?: string;
 }
 
 /**
@@ -242,8 +250,26 @@ class ImportedRole extends Construct implements IRole {
 
   constructor(parent: Construct, id: string, props: ImportedRoleProps) {
     super(parent, id);
-    this.roleArn = props.roleArn;
-    this.roleName = props.roleName;
+    if (props.roleArn) {
+      this.roleArn = props.roleArn;
+    } else {
+      if (!props.roleName) {
+        throw new Error('If "roleArn" is not specified, you must specify "roleName"');
+      }
+      this.roleArn = ArnUtils.fromComponents({
+        service: 'iam',
+        resource: 'role'
+      });
+    }
+
+    if (props.roleName) {
+      this.roleName = props.roleName;
+    } else {
+      if (unresolved(this.roleArn)) {
+        throw new Error('roleArn is a late-bound value, and therefore roleName is required');
+      }
+      this.roleName = this.roleArn.split('/').slice(1).join('/');
+    }
     this.principal = new ArnPrincipal(this.roleArn);
   }
 
