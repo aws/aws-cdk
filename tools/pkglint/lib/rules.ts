@@ -522,6 +522,17 @@ export class MustUseCDKTest extends ValidationRule {
 }
 
 /**
+ * Must declare minimum node version
+ */
+export class MustHaveNodeEnginesDeclaration extends ValidationRule {
+  public readonly name = 'package-info/engines';
+
+  public validate(pkg: PackageJson): void {
+    expectJSON(this.name, pkg, 'engines.node', '>= 8.10.0');
+  }
+}
+
+/**
  * Scripts that run integ tests must also have the individual 'integ' script to update them
  *
  * This commands comes from the dev-dependency cdk-integ-tools.

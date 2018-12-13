@@ -65,5 +65,8 @@
   "peerDependencies": {
     "@aws-cdk/aws-iam": "^0.20.0",
     "@aws-cdk/cdk": "^0.20.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
   }
 }
