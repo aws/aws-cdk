@@ -348,7 +348,7 @@ export interface Volume {
   name?: string;
 
   /**
-   *   Specifies the configuration of a Docker volume
+   * Specifies the configuration of a Docker volume
    */
   dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
@@ -367,23 +367,23 @@ export interface DockerVolumeConfiguration {
   /**
    * If true, the Docker volume is created if it does not already exist
    */
-  autoprovision?: boolean,
+  autoprovision?: boolean;
   /**
    * The Docker volume driver to use
    */
-  driver?: string,
+  driver?: string;
   /**
    * A map of Docker driver specific options passed through
    */
-  driverOpts?: string[],
+  driverOpts?: string[];
   /**
    * Custom metadata to add to your Docker volume
    */
-  labels?: string[],
+  labels?: string[];
   /**
    * The scope for the Docker volume which determines it's lifecycle
    */
-  scope?: string
+  scope?: string;
 }
 
 /**
