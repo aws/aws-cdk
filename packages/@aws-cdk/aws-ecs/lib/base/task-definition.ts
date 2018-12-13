@@ -141,7 +141,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * All volumes
    */
-  private readonly volumes: cloudformation.TaskDefinitionResource.VolumeProperty[] = [];
+  private readonly volumes: Volume[] = [];
 
   /**
    * Execution role for this task definition
@@ -346,7 +346,11 @@ export interface Volume {
    * A name for the volume
    */
   name?: string;
-  // FIXME add dockerVolumeConfiguration
+
+  /**
+   *   Specifies the configuration of a Docker volume
+   */
+  dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
 
 /**
@@ -357,6 +361,29 @@ export interface Host {
    * Source path on the host
    */
   sourcePath?: string;
+}
+
+export interface DockerVolumeConfiguration {
+  /**
+   * If true, the Docker volume is created if it does not already exist
+   */
+  autoprovision?: boolean,
+  /**
+   * The Docker volume driver to use
+   */
+  driver?: string,
+  /**
+   * A map of Docker driver specific options passed through
+   */
+  driverOpts?: string[],
+  /**
+   * Custom metadata to add to your Docker volume
+   */
+  labels?: string[],
+  /**
+   * The scope for the Docker volume which determines it's lifecycle
+   */
+  scope?: string
 }
 
 /**
