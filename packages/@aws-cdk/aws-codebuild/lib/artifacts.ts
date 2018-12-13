@@ -30,6 +30,8 @@ export abstract class BuildArtifacts {
 
   public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
     const artifactsProp = this.toArtifactsProperty();
+    // tslint:disable-next-line
+    console.error('artifactsProp.namespaceType:', artifactsProp.namespaceType);
     return {
       artifactIdentifier: this.identifier,
       type: this.type,
@@ -92,7 +94,7 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
    * The name of the build output ZIP file or folder inside the bucket.
    *
    * The full S3 object key will be "<path>/<build-id>/<name>" or
-   * "<path>/<name>" depending on whether `includeBuildID` is set to true.
+   * "<path>/<name>" depending on whether `includeBuildId` is set to true.
    */
   name: string;
 
@@ -102,7 +104,7 @@ export interface S3BucketBuildArtifactsProps extends BuildArtifactsProps {
    *
    * @default true
    */
-  includeBuildID?: boolean;
+  includeBuildId?: boolean;
 
   /**
    * If this is true, all build output will be packaged into a single .zip file.
@@ -128,10 +130,12 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
   }
 
   protected toArtifactsProperty(): any {
+    // tslint:disable-next-line
+    console.error("this.props.includeBuildId:", this.props.includeBuildId);
     return {
       location: this.props.bucket.bucketName,
       path: this.props.path,
-      namespaceType: this.props.includeBuildID === false ? 'NONE' : 'BUILD_ID',
+      namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
       name: this.props.name,
       packaging: this.props.packageZip === false ? 'NONE' : 'ZIP',
     };
