@@ -24,6 +24,36 @@ export = {
     test.done();
   },
 
+  'can supply externalId'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      externalId: 'SomeSecret',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: { "sts:ExternalId": "SomeSecret" }
+            },
+            Effect: "Allow",
+            Principal: { Service: "sns.amazonaws.com" }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
+
   'policy is created automatically when permissions are added'(test: Test) {
     const stack = new Stack();
 

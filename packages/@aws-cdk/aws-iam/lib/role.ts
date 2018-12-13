@@ -15,6 +15,16 @@ export interface RoleProps {
   assumedBy: PolicyPrincipal;
 
   /**
+   * ID that the role assumer needs to provide when assuming this role
+   *
+   * If the configured and provided external IDs do not match, the
+   * AssumeRole operation will fail.
+   *
+   * @default No external ID required
+   */
+  externalId?: string;
+
+  /**
    * A list of ARNs for managed policies associated with this role.
    * You can add managed policies later using `attachManagedPolicy(arn)`.
    * @default No managed policies.
@@ -120,7 +130,7 @@ export class Role extends Construct implements IRole {
   constructor(parent: Construct, name: string, props: RoleProps) {
     super(parent, name);
 
-    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
+    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
 
     validateMaxSessionDuration(props.maxSessionDurationSec);
@@ -194,11 +204,17 @@ export interface IRole extends IPrincipal, IDependable {
   readonly roleArn: string;
 }
 
-function createAssumeRolePolicy(principal: PolicyPrincipal) {
-  return new PolicyDocument()
-    .addStatement(new PolicyStatement()
+function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
+  const statement = new PolicyStatement();
+  statement
       .addPrincipal(principal)
-      .addAction(principal.assumeRoleAction));
+      .addAction(principal.assumeRoleAction);
+
+  if (externalId !== undefined) {
+    statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
+  }
+
+  return new PolicyDocument().addStatement(statement);
 }
 
 function validateMaxSessionDuration(duration?: number) {
