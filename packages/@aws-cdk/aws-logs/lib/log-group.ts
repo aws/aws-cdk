@@ -149,7 +149,7 @@ export interface LogGroupProps {
    *
    * To retain all logs, set this value to Infinity.
    *
-   * @default 730 days (2 years)
+   * @default 731 days (2 years)
    */
   retentionDays?: number;
 
@@ -184,7 +184,7 @@ export class LogGroup extends LogGroupRef {
     super(parent, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 730; }
+    if (retentionInDays === undefined) { retentionInDays = 731; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
