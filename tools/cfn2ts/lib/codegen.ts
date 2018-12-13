@@ -192,7 +192,7 @@ export default class CodeGenerator {
     }
     
     const deprecation = deprecated && 
-      `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in the next release ` +
+      `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in a future release ` +
       `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
     
     this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS, deprecation);
