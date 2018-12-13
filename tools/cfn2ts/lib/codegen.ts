@@ -70,11 +70,20 @@ export default class CodeGenerator {
       this.validateRefKindPresence(name, resourceType);
 
       const cfnName = SpecName.parse(name);
-      const resourceName = genspec.CodeName.forResource(cfnName);
+      const resourceName = genspec.CodeName.forCfnResource(cfnName);
+      const legacyResourceName = genspec.CodeName.forLegacyResource(cfnName);
       this.code.line();
-      const attributeTypes = this.emitResourceType(resourceName, resourceType);
 
-      this.emitPropertyTypes(name);
+      const attributeTypes = this.emitResourceType(resourceName, resourceType);
+      this.emitPropertyTypes(name, resourceName);
+
+      // emit the "cloudformation.XxxResource" classes for backwards compatibility
+      // those will also include a deprecation warning.
+      this.code.line('// legacy "cloudformation" namespace (will be deprecated soon)');
+      this.code.openBlock('export namespace cloudformation');
+      this.emitResourceType(legacyResourceName, resourceType, resourceName);
+      this.emitPropertyTypes(name, legacyResourceName);
+      this.code.closeBlock();
 
       for (const attributeType of attributeTypes) {
         this.emitAttributeType(attributeType);
@@ -93,13 +102,13 @@ export default class CodeGenerator {
   /**
    * Emits classes for all property types
    */
-  private emitPropertyTypes(resourceName: string) {
+  private emitPropertyTypes(resourceName: string, resourceClass: genspec.CodeName) {
     const prefix = `${resourceName}.`;
     for (const name of Object.keys(this.spec.PropertyTypes).sort()) {
       if (!name.startsWith(prefix)) { continue; }
       const cfnName = PropertyAttributeName.parse(name);
-      const propTypeName = genspec.CodeName.forPropertyType(cfnName);
-      this.emitPropertyType(propTypeName, this.spec.PropertyTypes[name]);
+      const propTypeName = genspec.CodeName.forPropertyType(cfnName, resourceClass);
+      this.emitPropertyType(resourceClass, propTypeName, this.spec.PropertyTypes[name]);
     }
   }
 
@@ -121,14 +130,14 @@ export default class CodeGenerator {
     this.docLink(spec.Documentation);
     this.code.openBlock(`export interface ${name.className}`);
 
-    const conversionTable = this.emitPropsTypeProperties(resourceName.specName!, spec.Properties);
+    const conversionTable = this.emitPropsTypeProperties(resourceName, spec.Properties);
 
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(name, spec.Properties, conversionTable);
+    this.emitValidator(resourceName, name, spec.Properties, conversionTable);
     this.code.line();
-    this.emitCloudFormationMapper(name, spec.Properties, conversionTable);
+    this.emitCloudFormationMapper(resourceName, name, spec.Properties, conversionTable);
 
     return name;
   }
@@ -138,15 +147,13 @@ export default class CodeGenerator {
    *
    * Return a mapping of { originalName -> newName }.
    */
-  private emitPropsTypeProperties(resourceName: SpecName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
+  private emitPropsTypeProperties(resource: genspec.CodeName, propertiesSpec: { [name: string]: schema.Property }): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
       const propSpec = propertiesSpec[propName];
-      const additionalDocs = resourceName.relativeName(propName).fqn;
-
-      const resourceCodeName = genspec.CodeName.forResource(resourceName);
-      const newName = this.emitProperty(resourceCodeName, propName, propSpec, quoteCode(additionalDocs));
+      const additionalDocs = resource.specName!.relativeName(propName).fqn;
+      const newName = this.emitProperty(resource, propName, propSpec, quoteCode(additionalDocs));
       propertyMap[propName] = newName;
     });
     return propertyMap;
@@ -169,7 +176,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType) {
+  private emitResourceType(resourceName: genspec.CodeName, spec: schema.ResourceType, deprecated?: genspec.CodeName) {
     this.beginNamespace(resourceName);
 
     //
@@ -238,6 +245,7 @@ export default class CodeGenerator {
     //
     // Constructor
     //
+
     this.code.line();
     this.code.line('/**');
     this.code.line(` * Creates a new ${quoteCode(resourceName.specName!.fqn)}.`);
@@ -283,7 +291,18 @@ export default class CodeGenerator {
       }
     }
 
+    if (deprecated) {
+      this.code.line(`this.addWarning('` +
+        `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in the next release ` +
+        `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)` +
+      `');`);
+    }
+
     this.code.closeBlock();
+
+    //
+    // propertyOverrides
+    //
 
     if (propsType) {
       this.code.line();
@@ -331,7 +350,8 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitCloudFormationMapper(typeName: genspec.CodeName,
+  private emitCloudFormationMapper(resource: genspec.CodeName,
+                                   typeName: genspec.CodeName,
                                    propSpecs: { [name: string]: schema.Property },
                                    nameConversionTable: Dictionary<string>) {
     const mapperName = genspec.cfnMapperName(typeName);
@@ -362,7 +382,7 @@ export default class CodeGenerator {
       const propName = nameConversionTable[cfnName];
       const propSpec = propSpecs[cfnName];
 
-      const mapperExpression = genspec.typeDispatch(typeName.specName!, propSpec, {
+      const mapperExpression = genspec.typeDispatch(resource, propSpec, {
         visitScalar(type: genspec.CodeName) {
           return mapperNames([type]);
         },
@@ -402,7 +422,8 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(typeName: genspec.CodeName,
+  private emitValidator(resource: genspec.CodeName,
+                        typeName: genspec.CodeName,
                         propSpecs: { [name: string]: schema.Property },
                         nameConversionTable: Dictionary<string>) {
     const validatorName = genspec.validatorName(typeName);
@@ -428,7 +449,7 @@ export default class CodeGenerator {
       }
 
       const self = this;
-      const validatorExpression = genspec.typeDispatch<string>(typeName.specName!, propSpec, {
+      const validatorExpression = genspec.typeDispatch<string>(resource, propSpec, {
         visitScalar(type: genspec.CodeName) {
           return  validatorNames([type]);
         },
@@ -509,7 +530,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitPropertyType(typeName: genspec.CodeName, propTypeSpec: schema.PropertyType) {
+  private emitPropertyType(resourceName: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyType) {
     this.code.line();
     this.beginNamespace(typeName);
 
@@ -532,9 +553,9 @@ export default class CodeGenerator {
     this.endNamespace(typeName);
 
     this.code.line();
-    this.emitValidator(typeName, propTypeSpec.Properties, conversionTable);
+    this.emitValidator(resourceName, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
-    this.emitCloudFormationMapper(typeName, propTypeSpec.Properties, conversionTable);
+    this.emitCloudFormationMapper(resourceName, typeName, propTypeSpec.Properties, conversionTable);
   }
 
   /**
@@ -545,7 +566,7 @@ export default class CodeGenerator {
 
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
-      const itemTypes = genspec.specTypesToCodeTypes(resource.specName!, itemTypeNames(propSpec));
+      const itemTypes = genspec.specTypesToCodeTypes(resource, itemTypeNames(propSpec));
       // Always accept a token in place of any list element
       itemTypes.push(genspec.TOKEN_NAME);
 
@@ -568,7 +589,7 @@ export default class CodeGenerator {
     if (schema.isScalarPropery(propSpec)) {
       // Scalar type
       const typeNames = scalarTypeNames(propSpec);
-      const types = genspec.specTypesToCodeTypes(resource.specName!, typeNames);
+      const types = genspec.specTypesToCodeTypes(resource, typeNames);
       alternatives.push(this.renderTypeUnion(resource, types));
     }
 
