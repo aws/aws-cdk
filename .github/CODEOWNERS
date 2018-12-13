@@ -8,5 +8,5 @@
 # @See https://help.github.com/articles/about-codeowners/
 
 *                               @awslabs/aws-cdk-team
-/docs/                          @Doug-AWS
-/packages/@aws-cdk/aws-code*/   @RomainMuller @skinny85
+/docs/                          @awslabs/aws-cdk-team @Doug-AWS
+/packages/@aws-cdk/aws-code*/   @awslabs/aws-cdk-team @RomainMuller @skinny85
