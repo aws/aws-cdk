@@ -30,8 +30,6 @@ export abstract class BuildArtifacts {
 
   public toArtifactsJSON(): cloudformation.ProjectResource.ArtifactsProperty {
     const artifactsProp = this.toArtifactsProperty();
-    // tslint:disable-next-line
-    console.error('artifactsProp.namespaceType:', artifactsProp.namespaceType);
     return {
       artifactIdentifier: this.identifier,
       type: this.type,
@@ -130,8 +128,6 @@ export class S3BucketBuildArtifacts extends BuildArtifacts {
   }
 
   protected toArtifactsProperty(): any {
-    // tslint:disable-next-line
-    console.error("this.props.includeBuildId:", this.props.includeBuildId);
     return {
       location: this.props.bucket.bucketName,
       path: this.props.path,
