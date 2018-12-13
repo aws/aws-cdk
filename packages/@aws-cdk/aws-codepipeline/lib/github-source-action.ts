@@ -38,9 +38,8 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
    * It is recommended to use a `SecretParameter` to obtain the token from the SSM
    * Parameter Store:
    *
-   *   const oauth = new SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token });
-   *   new GitHubSource(stage, 'GH' { oauthToken: oauth });
-   *
+   *   const oauth = new cdk.SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token' });
+   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
   oauthToken: cdk.Secret;
 
