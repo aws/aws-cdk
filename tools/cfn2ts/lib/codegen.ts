@@ -123,21 +123,21 @@ export default class CodeGenerator {
     this.code.closeBlock();
   }
 
-  private emitPropsType(resourceName: genspec.CodeName, spec: schema.ResourceType): genspec.CodeName | undefined {
+  private emitPropsType(resourceContext: genspec.CodeName, spec: schema.ResourceType): genspec.CodeName | undefined {
     if (!spec.Properties || Object.keys(spec.Properties).length === 0) { return; }
-    const name = genspec.CodeName.forResourceProperties(resourceName);
+    const name = genspec.CodeName.forResourceProperties(resourceContext);
 
     this.docLink(spec.Documentation);
     this.code.openBlock(`export interface ${name.className}`);
 
-    const conversionTable = this.emitPropsTypeProperties(resourceName, spec.Properties);
+    const conversionTable = this.emitPropsTypeProperties(resourceContext, spec.Properties);
 
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(resourceName, name, spec.Properties, conversionTable);
+    this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
-    this.emitCloudFormationMapper(resourceName, name, spec.Properties, conversionTable);
+    this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
 
     return name;
   }
@@ -530,7 +530,7 @@ export default class CodeGenerator {
     }
   }
 
-  private emitPropertyType(resourceName: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyType) {
+  private emitPropertyType(resourceContext: genspec.CodeName, typeName: genspec.CodeName, propTypeSpec: schema.PropertyType) {
     this.code.line();
     this.beginNamespace(typeName);
 
@@ -544,7 +544,7 @@ export default class CodeGenerator {
       Object.keys(propTypeSpec.Properties).forEach(propName => {
         const propSpec = propTypeSpec.Properties[propName];
         const additionalDocs = quoteCode(`${typeName.fqn}.${propName}`);
-        const newName = this.emitProperty(typeName, propName, propSpec, additionalDocs);
+        const newName = this.emitProperty(resourceContext, propName, propSpec, additionalDocs);
         conversionTable[propName] = newName;
       });
     }
@@ -553,24 +553,24 @@ export default class CodeGenerator {
     this.endNamespace(typeName);
 
     this.code.line();
-    this.emitValidator(resourceName, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
-    this.emitCloudFormationMapper(resourceName, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
   }
 
   /**
    * Return the native type expression for the given propSpec
    */
-  private findNativeType(resource: genspec.CodeName, propSpec: schema.Property): string {
+  private findNativeType(resourceContext: genspec.CodeName, propSpec: schema.Property): string {
     const alternatives: string[] = [];
 
     if (schema.isCollectionProperty(propSpec)) {
       // render the union of all item types
-      const itemTypes = genspec.specTypesToCodeTypes(resource, itemTypeNames(propSpec));
+      const itemTypes = genspec.specTypesToCodeTypes(resourceContext, itemTypeNames(propSpec));
       // Always accept a token in place of any list element
       itemTypes.push(genspec.TOKEN_NAME);
 
-      const union = this.renderTypeUnion(resource, itemTypes);
+      const union = this.renderTypeUnion(resourceContext, itemTypes);
 
       if (schema.isMapProperty(propSpec)) {
         alternatives.push(`{ [key: string]: (${union}) }`);
@@ -589,8 +589,8 @@ export default class CodeGenerator {
     if (schema.isScalarPropery(propSpec)) {
       // Scalar type
       const typeNames = scalarTypeNames(propSpec);
-      const types = genspec.specTypesToCodeTypes(resource, typeNames);
-      alternatives.push(this.renderTypeUnion(resource, types));
+      const types = genspec.specTypesToCodeTypes(resourceContext, typeNames);
+      alternatives.push(this.renderTypeUnion(resourceContext, types));
     }
 
     // Always

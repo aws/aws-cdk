@@ -288,7 +288,7 @@ export function isPrimitive(type: CodeName): boolean {
     || type.className === 'Date';
 }
 
-function specTypeToCodeType(resource: CodeName, type: string): CodeName {
+function specTypeToCodeType(resourceContext: CodeName, type: string): CodeName {
   if (schema.isPrimitiveType(type)) {
     return specPrimitiveToCodePrimitive(type);
   } else if (type === 'Tag') {
@@ -297,18 +297,18 @@ function specTypeToCodeType(resource: CodeName, type: string): CodeName {
     return TAG_NAME;
   }
 
-  const typeName = resource.specName!.relativeName(type);
-  return CodeName.forPropertyType(typeName, resource);
+  const typeName = resourceContext.specName!.relativeName(type);
+  return CodeName.forPropertyType(typeName, resourceContext);
 }
 
 /**
  * Translate a list of type references in a resource context to a list of code names
  */
-export function specTypesToCodeTypes(resource: CodeName, types: string[]): CodeName[] {
+export function specTypesToCodeTypes(resourceContext: CodeName, types: string[]): CodeName[] {
   const ret = [];
 
   for (const type of types) {
-    ret.push(specTypeToCodeType(resource, type));
+    ret.push(specTypeToCodeType(resourceContext, type));
   }
 
   return ret;
@@ -324,9 +324,9 @@ export interface PropertyVisitor<T> {
   visitListOrScalar(scalarTypes: CodeName[], itemTypes: CodeName[]): any;
 }
 
-export function typeDispatch<T>(resource: CodeName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
-  const scalarTypes = specTypesToCodeTypes(resource, scalarTypeNames(spec));
-  const itemTypes = specTypesToCodeTypes(resource, itemTypeNames(spec));
+export function typeDispatch<T>(resourceContext: CodeName, spec: schema.Property, visitor: PropertyVisitor<T>): T {
+  const scalarTypes = specTypesToCodeTypes(resourceContext, scalarTypeNames(spec));
+  const itemTypes = specTypesToCodeTypes(resourceContext, itemTypeNames(spec));
 
   if (scalarTypes.length && itemTypes.length) {
     // Can accept both a list and a scalar
