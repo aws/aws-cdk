@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import route53 = require('@aws-cdk/aws-route53');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 import { Attributes, ifUndefined, renderAttributes } from './util';
 
 /**
@@ -103,7 +103,7 @@ export abstract class BaseLoadBalancer extends cdk.Construct implements route53.
 
     this.vpc = baseProps.vpc;
 
-    const resource = new cloudformation.LoadBalancerResource(this, 'Resource', {
+    const resource = new CfnLoadBalancer(this, 'Resource', {
       loadBalancerName: baseProps.loadBalancerName,
       subnets: subnets.map(s => s.subnetId),
       scheme: internetFacing ? 'internet-facing' : 'internal',

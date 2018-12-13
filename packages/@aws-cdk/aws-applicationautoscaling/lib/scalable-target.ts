@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './applicationautoscaling.generated';
+import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 
@@ -74,7 +74,7 @@ export class ScalableTarget extends cdk.Construct {
    */
   public readonly role: iam.IRole;
 
-  private readonly actions = new Array<cloudformation.ScalableTargetResource.ScheduledActionProperty>();
+  private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
 
   constructor(parent: cdk.Construct, id: string, props: ScalableTargetProps) {
     super(parent, id);
@@ -93,7 +93,7 @@ export class ScalableTarget extends cdk.Construct {
       assumedBy: new iam.ServicePrincipal('application-autoscaling.amazonaws.com')
     });
 
-    const resource = new cloudformation.ScalableTargetResource(this, 'Resource', {
+    const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,
       minCapacity: props.minCapacity,
       resourceId: props.resourceId,

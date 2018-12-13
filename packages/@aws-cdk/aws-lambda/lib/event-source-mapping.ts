@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { FunctionRef } from './lambda-ref';
-import { cloudformation } from './lambda.generated';
+import { CfnEventSourceMapping } from './lambda.generated';
 
 export interface EventSourceMappingProps {
   /**
@@ -58,7 +58,7 @@ export class EventSourceMapping extends cdk.Construct {
   constructor(parent: cdk.Construct, id: string, props: EventSourceMappingProps) {
     super(parent, id);
 
-    new cloudformation.EventSourceMappingResource(this, 'Resource', {
+    new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       enabled: props.enabled,
       eventSourceArn: props.eventSourceArn,

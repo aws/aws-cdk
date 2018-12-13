@@ -3,7 +3,7 @@ import cdk = require('@aws-cdk/cdk');
 import { ClusterParameterGroupRef } from './cluster-parameter-group-ref';
 import { DatabaseClusterRef, Endpoint } from './cluster-ref';
 import { BackupProps, DatabaseClusterEngine, InstanceProps, Login } from './props';
-import { cloudformation } from './rds.generated';
+import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './rds.generated';
 
 /**
  * Properties for a new database cluster
@@ -139,7 +139,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
       throw new Error(`Cluster requires at least 2 subnets, got ${subnets.length}`);
     }
 
-    const subnetGroup = new cloudformation.DBSubnetGroupResource(this, 'Subnets', {
+    const subnetGroup = new CfnDBSubnetGroup(this, 'Subnets', {
       dbSubnetGroupDescription: `Subnets for ${name} database`,
       subnetIds: subnets.map(s => s.subnetId)
     });
@@ -150,7 +150,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
     });
     this.securityGroupId = securityGroup.securityGroupId;
 
-    const cluster = new cloudformation.DBClusterResource(this, 'Resource', {
+    const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engine: props.engine,
       dbClusterIdentifier: props.clusterIdentifier,
@@ -188,7 +188,7 @@ export class DatabaseCluster extends DatabaseClusterRef {
 
       const publiclyAccessible = props.instanceProps.vpcPlacement && props.instanceProps.vpcPlacement.subnetsToUse === ec2.SubnetType.Public;
 
-      const instance = new cloudformation.DBInstanceResource(this, `Instance${instanceIndex}`, {
+      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
         engine: props.engine,
         dbClusterIdentifier: cluster.ref,

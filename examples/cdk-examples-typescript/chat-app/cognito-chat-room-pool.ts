@@ -6,7 +6,7 @@ export class CognitoChatRoomPool extends cdk.Construct {
     super(parent, name);
 
     // Create chat room user pool
-    const chatPool = new cognito.cloudformation.UserPoolResource(this, 'UserPool', {
+    const chatPool = new cognito.CfnUserPool(this, 'UserPool', {
       adminCreateUserConfig: {
         allowAdminCreateUserOnly: false
       },
@@ -26,7 +26,7 @@ export class CognitoChatRoomPool extends cdk.Construct {
     });
 
     // Now for the client
-    new cognito.cloudformation.UserPoolClientResource(this, 'UserPoolClient', {
+    new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
       clientName: 'Chat-Room',
       explicitAuthFlows: [ 'ADMIN_NO_SRP_AUTH' ],
       refreshTokenValidity: 30,

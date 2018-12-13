@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { HostedZoneRef } from '../hosted-zone-ref';
-import { cloudformation } from '../route53.generated';
+import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 /**
@@ -48,7 +48,7 @@ export class AliasRecord extends Construct {
   constructor(parent: HostedZoneRef, id: string, props: AliasRecordProps) {
     super(parent, id);
 
-    new cloudformation.RecordSetResource(this, 'Resource', {
+    new CfnRecordSet(this, 'Resource', {
       hostedZoneId: parent.hostedZoneId,
       name: determineFullyQualifiedDomainName(props.recordName, parent),
       type: 'A',  // ipv4

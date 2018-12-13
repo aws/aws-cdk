@@ -1,7 +1,7 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codecommit.generated';
+import { CfnRepository } from './codecommit.generated';
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
@@ -222,13 +222,13 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryRef {
-  private readonly repository: cloudformation.RepositoryResource;
-  private readonly triggers = new Array<cloudformation.RepositoryResource.RepositoryTriggerProperty>();
+  private readonly repository: CfnRepository;
+  private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(parent: cdk.Construct, name: string, props: RepositoryProps) {
     super(parent, name);
 
-    this.repository = new cloudformation.RepositoryResource(this, 'Resource', {
+    this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: this.triggers
