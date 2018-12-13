@@ -1,7 +1,7 @@
 import { PolicyDocument } from '@aws-cdk/aws-iam';
 import { Construct, IDependable } from '@aws-cdk/cdk';
 import { QueueRef } from './queue-ref';
-import { cloudformation } from './sqs.generated';
+import { CfnQueuePolicy } from './sqs.generated';
 
 export interface QueuePolicyProps {
   /**
@@ -27,7 +27,7 @@ export class QueuePolicy extends Construct implements IDependable {
   constructor(parent: Construct, name: string, props: QueuePolicyProps) {
     super(parent, name);
 
-    const resource = new cloudformation.QueuePolicyResource(this, 'Resource', {
+    const resource = new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,
       queues: props.queues.map(q => q.queueUrl)
     });

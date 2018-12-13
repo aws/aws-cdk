@@ -1,7 +1,7 @@
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { HostedZoneRef } from './hosted-zone-ref';
-import { cloudformation, HostedZoneNameServers } from './route53.generated';
+import { CfnHostedZone, HostedZoneNameServers } from './route53.generated';
 import { validateZoneName } from './util';
 
 /**
@@ -52,7 +52,7 @@ export class PublicHostedZone extends HostedZoneRef {
 
     validateZoneName(props.zoneName);
 
-    const hostedZone = new cloudformation.HostedZoneResource(this, 'Resource', {
+    const hostedZone = new CfnHostedZone(this, 'Resource', {
       ...determineHostedZoneProps(props)
     });
 
@@ -92,14 +92,14 @@ export class PrivateHostedZone extends HostedZoneRef {
   /**
    * VPCs to which this hosted zone will be added
    */
-  private readonly vpcs: cloudformation.HostedZoneResource.VPCProperty[] = [];
+  private readonly vpcs: CfnHostedZone.VPCProperty[] = [];
 
   constructor(parent: cdk.Construct, name: string, props: PrivateHostedZoneProps) {
     super(parent, name);
 
     validateZoneName(props.zoneName);
 
-    const hostedZone = new cloudformation.HostedZoneResource(this, 'Resource', {
+    const hostedZone = new CfnHostedZone(this, 'Resource', {
       vpcs: new cdk.Token(() => this.vpcs ? this.vpcs : undefined),
       ...determineHostedZoneProps(props)
     });
@@ -120,7 +120,7 @@ export class PrivateHostedZone extends HostedZoneRef {
   }
 }
 
-function toVpcProperty(vpc: ec2.VpcNetworkRef): cloudformation.HostedZoneResource.VPCProperty {
+function toVpcProperty(vpc: ec2.VpcNetworkRef): CfnHostedZone.VPCProperty {
   return { vpcId: vpc.vpcId, vpcRegion: new cdk.AwsRegion() };
 }
 

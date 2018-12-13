@@ -2,7 +2,7 @@ import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
 import fs = require('fs');
 import { Function as Func } from './lambda';
-import { cloudformation } from './lambda.generated';
+import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {
   /**
@@ -54,7 +54,7 @@ export abstract class Code {
    * Called during stack synthesis to render the CodePropery for the
    * Lambda function.
    */
-  public abstract toJSON(): cloudformation.FunctionResource.CodeProperty;
+  public abstract toJSON(): CfnFunction.CodeProperty;
 
   /**
    * Called when the lambda is initialized to allow this object to
@@ -81,7 +81,7 @@ export class S3Code extends Code {
     this.bucketName = bucket.bucketName;
   }
 
-  public toJSON(): cloudformation.FunctionResource.CodeProperty {
+  public toJSON(): CfnFunction.CodeProperty {
     return {
       s3Bucket: this.bucketName,
       s3Key: this.key,
@@ -108,7 +108,7 @@ export class InlineCode extends Code {
     }
   }
 
-  public toJSON(): cloudformation.FunctionResource.CodeProperty {
+  public toJSON(): CfnFunction.CodeProperty {
     return {
       zipFile: this.code
     };
@@ -156,7 +156,7 @@ export class AssetCode extends Code {
     }
   }
 
-  public toJSON(): cloudformation.FunctionResource.CodeProperty {
+  public toJSON(): CfnFunction.CodeProperty {
     return  {
       s3Bucket: this.asset!.s3BucketName,
       s3Key: this.asset!.s3ObjectKey

@@ -1,7 +1,7 @@
 import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './cloudfront.generated';
+import { CfnCloudFrontOriginAccessIdentity, CfnDistribution } from './cloudfront.generated';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -242,7 +242,7 @@ export interface S3OriginConfig {
   /**
    * The optional origin identity cloudfront will use when calling your s3 bucket.
    */
-  readonly originAccessIdentity?: cloudformation.CloudFrontOriginAccessIdentityResource
+  readonly originAccessIdentity?: CfnCloudFrontOriginAccessIdentity
 }
 
 /**
@@ -328,7 +328,7 @@ export interface Behavior {
    * @default none (no cookies - no headers)
    *
    */
-  forwardedValues?: cloudformation.DistributionResource.ForwardedValuesProperty;
+  forwardedValues?: CfnDistribution.ForwardedValuesProperty;
 
   /**
    * The minimum amount of time that you want objects to stay in the cache
@@ -431,7 +431,7 @@ export interface CloudFrontWebDistributionProps {
   /**
    * How CloudFront should handle requests that are no successful (eg PageNotFound)
    */
-  errorConfigurations?: cloudformation.DistributionResource.CustomErrorResponseProperty[];
+  errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
 
   /**
    * Optional AWS WAF WebACL to associate with this CloudFront distribution
@@ -526,7 +526,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
   constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
     super(parent, name);
 
-    const distributionConfig: cloudformation.DistributionResource.DistributionConfigProperty = {
+    const distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
@@ -540,7 +540,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
 
     const behaviors: BehaviorWithOrigin[] = [];
 
-    const origins: cloudformation.DistributionResource.OriginProperty[] = [];
+    const origins: CfnDistribution.OriginProperty[] = [];
 
     let originIndex = 1;
     for (const originConfig of props.originConfigs) {
@@ -552,10 +552,10 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
         throw new Error("There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.");
       }
 
-      const originHeaders: cloudformation.DistributionResource.OriginCustomHeaderProperty[] = [];
+      const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
       if (originConfig.originHeaders) {
         Object.keys(originConfig.originHeaders).forEach(key => {
-          const oHeader: cloudformation.DistributionResource.OriginCustomHeaderProperty = {
+          const oHeader: CfnDistribution.OriginCustomHeaderProperty = {
             headerName: key,
             headerValue: originConfig.originHeaders![key]
           };
@@ -563,7 +563,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
         });
       }
 
-      const originProperty: cloudformation.DistributionResource.OriginProperty = {
+      const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource ?
           originConfig.s3OriginSource.s3BucketSource.domainName :
@@ -611,12 +611,12 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
     }
     distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0]);
-    const otherBehaviors: cloudformation.DistributionResource.CacheBehaviorProperty[] = [];
+    const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
         throw new Error("pathPattern is required for all non-default behaviors");
       }
-      otherBehaviors.push(this.toBehavior(behavior) as cloudformation.DistributionResource.CacheBehaviorProperty);
+      otherBehaviors.push(this.toBehavior(behavior) as CfnDistribution.CacheBehaviorProperty);
     }
     distributionConfig.cacheBehaviors = otherBehaviors;
 
@@ -655,7 +655,7 @@ export class CloudFrontWebDistribution extends cdk.Construct implements route53.
       };
     }
 
-    const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', { distributionConfig });
+    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
     this.domainName = distribution.distributionDomainName;
     this.distributionId = distribution.distributionId;
   }

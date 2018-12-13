@@ -1,7 +1,7 @@
 import kms = require('@aws-cdk/aws-kms');
 import cdk = require('@aws-cdk/cdk');
 import { QueueRef } from './queue-ref';
-import { cloudformation } from './sqs.generated';
+import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 
 /**
@@ -216,7 +216,7 @@ export class Queue extends QueueRef {
 
     const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
 
-    const queue = new cloudformation.QueueResource(this, 'Resource', {
+    const queue = new CfnQueue(this, 'Resource', {
       queueName: props.queueName,
       ...this.determineFifoProps(props),
       ...encryptionProps,

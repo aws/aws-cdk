@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codedeploy.generated';
+import { CfnDeploymentConfig } from './codedeploy.generated';
 
 /**
  * The Deployment Configuration of an EC2/on-premise Deployment Group.
@@ -121,7 +121,7 @@ export class ServerDeploymentConfig extends ServerDeploymentConfigRef {
   constructor(parent: cdk.Construct, id: string, props: ServerDeploymentConfigProps) {
     super(parent, id);
 
-    const resource = new cloudformation.DeploymentConfigResource(this, 'Resource', {
+    const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: props.deploymentConfigName,
       minimumHealthyHosts: this.minimumHealthyHosts(props),
     });
@@ -131,7 +131,7 @@ export class ServerDeploymentConfig extends ServerDeploymentConfigRef {
   }
 
   private minimumHealthyHosts(props: ServerDeploymentConfigProps):
-      cloudformation.DeploymentConfigResource.MinimumHealthyHostsProperty {
+      CfnDeploymentConfig.MinimumHealthyHostsProperty {
     if (props.minHealthyHostCount === undefined && props.minHealthyHostPercentage === undefined) {
       throw new Error('At least one of minHealthyHostCount or minHealthyHostPercentage must be specified when creating ' +
         'a custom Server DeploymentConfig');

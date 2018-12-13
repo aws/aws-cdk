@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { ITargetGroup } from './base-target-group';
 
 /**
@@ -13,7 +13,7 @@ export abstract class BaseListener extends cdk.Construct implements cdk.IDependa
   constructor(parent: cdk.Construct, id: string, additionalProps: any) {
     super(parent, id);
 
-    const resource = new cloudformation.ListenerResource(this, 'Resource', {
+    const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
       defaultActions: new cdk.Token(() => this.defaultActions),
     });

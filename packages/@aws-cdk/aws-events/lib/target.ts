@@ -1,4 +1,4 @@
-import { cloudformation } from './events.generated';
+import { CfnRule } from './events.generated';
 
 export interface EventRuleTargetProps {
   /**
@@ -25,20 +25,20 @@ export interface EventRuleTargetProps {
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
-  ecsParameters?: cloudformation.RuleResource.EcsParametersProperty;
+  ecsParameters?: CfnRule.EcsParametersProperty;
 
   /**
    * Settings that control shard assignment, when the target is a Kinesis
    * stream. If you don't include this parameter, eventId is used as the
    * partition key.
    */
-  kinesisParameters?: cloudformation.RuleResource.KinesisParametersProperty;
+  kinesisParameters?: CfnRule.KinesisParametersProperty;
 
   /**
    * Parameters used when the rule invokes Amazon EC2 Systems Manager Run
    * Command.
    */
-  runCommandParameters?: cloudformation.RuleResource.RunCommandParametersProperty;
+  runCommandParameters?: CfnRule.RunCommandParametersProperty;
 }
 
 /**

@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { cloudformation } from './iam.generated';
+import { CfnGroup } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { User } from './user';
@@ -59,7 +59,7 @@ export class Group extends Construct implements IPrincipal {
 
     this.managedPolicies = props.managedPolicyArns || [];
 
-    const group = new cloudformation.GroupResource(this, 'Resource', {
+    const group = new CfnGroup(this, 'Resource', {
       groupName: props.groupName,
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicies),
       path: props.path,

@@ -2,7 +2,7 @@ import api = require('@aws-cdk/aws-autoscaling-api');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
-import { cloudformation } from './autoscaling.generated';
+import { CfnLifecycleHook } from './autoscaling.generated';
 import { LazyDependable } from './util';
 
 /**
@@ -85,7 +85,7 @@ export class LifecycleHook extends cdk.Construct implements api.ILifecycleHook {
 
     const targetProps = props.notificationTarget.asLifecycleHookTarget(this);
 
-    const resource = new cloudformation.LifecycleHookResource(this, 'Resource', {
+    const resource = new CfnLifecycleHook(this, 'Resource', {
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       defaultResult: props.defaultResult,
       heartbeatTimeout: props.heartbeatTimeoutSec,

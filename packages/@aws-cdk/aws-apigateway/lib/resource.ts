@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
@@ -101,12 +101,12 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 
     validateResourcePathPart(props.pathPart);
 
-    const resourceProps: cloudformation.ResourceProps = {
+    const resourceProps: CfnResourceProps = {
       restApiId: props.parent.resourceApi.restApiId,
       parentId: props.parent.resourceId,
       pathPart: props.pathPart
     };
-    const resource = new cloudformation.Resource(this, 'Resource', resourceProps);
+    const resource = new CfnResource(this, 'Resource', resourceProps);
 
     this.resourceId = resource.resourceId;
     this.resourceApi = props.parent.resourceApi;

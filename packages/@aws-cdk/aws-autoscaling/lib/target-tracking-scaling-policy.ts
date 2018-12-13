@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
-import { cloudformation } from './autoscaling.generated';
+import { CfnScalingPolicy } from './autoscaling.generated';
 
 /**
  * Base interface for target tracking props
@@ -107,7 +107,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
   /**
    * The resource object
    */
-  private resource: cloudformation.ScalingPolicyResource;
+  private resource: CfnScalingPolicy;
 
   constructor(parent: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
@@ -128,7 +128,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
 
     super(parent, id);
 
-    this.resource = new cloudformation.ScalingPolicyResource(this, 'Resource', {
+    this.resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'TargetTrackingScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
@@ -156,7 +156,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct implements cdk.ID
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
   return {
     dimensions: metric.dimensionsAsList(),

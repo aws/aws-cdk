@@ -1,6 +1,6 @@
 import { Construct, ITaggable, Output, TagManager, Tags, Token } from '@aws-cdk/cdk';
 import { Connections, IConnectable } from './connections';
-import { cloudformation } from './ec2.generated';
+import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPortRange, ISecurityGroupRule } from './security-group-rule';
 import { VpcNetworkRef } from './vpc-ref';
 
@@ -40,7 +40,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
 
     // Skip duplicates
     if (this.tryFindChild(id) === undefined) {
-      new cloudformation.SecurityGroupIngressResource(this, id, {
+      new CfnSecurityGroupIngress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toIngressRuleJSON(),
         ...connection.toRuleJSON(),
@@ -58,7 +58,7 @@ export abstract class SecurityGroupRef extends Construct implements ISecurityGro
 
     // Skip duplicates
     if (this.tryFindChild(id) === undefined) {
-      new cloudformation.SecurityGroupEgressResource(this, id, {
+      new CfnSecurityGroupEgress(this, id, {
         groupId: this.securityGroupId,
         ...peer.toEgressRuleJSON(),
         ...connection.toRuleJSON(),
@@ -156,9 +156,9 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
    */
   public readonly tags: TagManager;
 
-  private readonly securityGroup: cloudformation.SecurityGroupResource;
-  private readonly directIngressRules: cloudformation.SecurityGroupResource.IngressProperty[] = [];
-  private readonly directEgressRules: cloudformation.SecurityGroupResource.EgressProperty[] = [];
+  private readonly securityGroup: CfnSecurityGroup;
+  private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
+  private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
 
   private readonly allowAllOutbound: boolean;
 
@@ -170,7 +170,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
 
     this.allowAllOutbound = props.allowAllOutbound !== false;
 
-    this.securityGroup = new cloudformation.SecurityGroupResource(this, 'Resource', {
+    this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: props.groupName,
       groupDescription,
       securityGroupIngress: new Token(() => this.directIngressRules),
@@ -246,7 +246,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   /**
    * Add a direct ingress rule
    */
-  private addDirectIngressRule(rule: cloudformation.SecurityGroupResource.IngressProperty) {
+  private addDirectIngressRule(rule: CfnSecurityGroup.IngressProperty) {
     if (!this.hasIngressRule(rule)) {
       this.directIngressRules.push(rule);
     }
@@ -255,14 +255,14 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   /**
    * Return whether the given ingress rule exists on the group
    */
-  private hasIngressRule(rule: cloudformation.SecurityGroupResource.IngressProperty): boolean {
+  private hasIngressRule(rule: CfnSecurityGroup.IngressProperty): boolean {
     return this.directIngressRules.findIndex(r => ingressRulesEqual(r, rule)) > -1;
   }
 
   /**
    * Add a direct egress rule
    */
-  private addDirectEgressRule(rule: cloudformation.SecurityGroupResource.EgressProperty) {
+  private addDirectEgressRule(rule: CfnSecurityGroup.EgressProperty) {
     if (!this.hasEgressRule(rule)) {
       this.directEgressRules.push(rule);
     }
@@ -271,7 +271,7 @@ export class SecurityGroup extends SecurityGroupRef implements ITaggable {
   /**
    * Return whether the given egress rule exists on the group
    */
-  private hasEgressRule(rule: cloudformation.SecurityGroupResource.EgressProperty): boolean {
+  private hasEgressRule(rule: CfnSecurityGroup.EgressProperty): boolean {
     return this.directEgressRules.findIndex(r => egressRulesEqual(r, rule)) > -1;
   }
 
@@ -391,7 +391,7 @@ class ImportedSecurityGroup extends SecurityGroupRef {
 /**
  * Compare two ingress rules for equality the same way CloudFormation would (discarding description)
  */
-function ingressRulesEqual(a: cloudformation.SecurityGroupResource.IngressProperty, b: cloudformation.SecurityGroupResource.IngressProperty) {
+function ingressRulesEqual(a: CfnSecurityGroup.IngressProperty, b: CfnSecurityGroup.IngressProperty) {
   return a.cidrIp === b.cidrIp
     && a.cidrIpv6 === b.cidrIpv6
     && a.fromPort === b.fromPort
@@ -405,7 +405,7 @@ function ingressRulesEqual(a: cloudformation.SecurityGroupResource.IngressProper
 /**
  * Compare two egress rules for equality the same way CloudFormation would (discarding description)
  */
-function egressRulesEqual(a: cloudformation.SecurityGroupResource.EgressProperty, b: cloudformation.SecurityGroupResource.EgressProperty) {
+function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGroup.EgressProperty) {
   return a.cidrIp === b.cidrIp
     && a.cidrIpv6 === b.cidrIpv6
     && a.fromPort === b.fromPort

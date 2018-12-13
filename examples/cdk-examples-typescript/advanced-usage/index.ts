@@ -1,4 +1,4 @@
-import { cloudformation } from '@aws-cdk/aws-cloudformation';
+import { CfnStack } from '@aws-cdk/aws-cloudformation';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
@@ -55,7 +55,7 @@ class EnvContextExample extends cdk.Stack {
       // render construct name based on it's availablity zone
       const constructName = `InstanceFor${az.replace(/-/g, '').toUpperCase()}`;
 
-      new ec2.cloudformation.InstanceResource(this, constructName, {
+      new ec2.CfnInstance(this, constructName, {
         imageId: ami.imageId,
         availabilityZone: az,
       });
@@ -90,7 +90,7 @@ class IncludeExample extends cdk.Stack {
 
     // add constructs (and resources) programmatically
     new EnvContextExample(parent, 'Example');
-    new sqs.cloudformation.QueueResource(this, 'CDKQueue', {});
+    new sqs.CfnQueue(this, 'CDKQueue', {});
   }
 }
 
@@ -104,7 +104,7 @@ class NestedStackExample extends cdk.Stack {
     // add an "AWS::CloudFormation::Stack" resource which uses the MongoDB quickstart
     // https://aws.amazon.com/quickstart/architecture/mongodb/
     // only non-default values are provided here.
-    new cloudformation.StackResource(this, 'NestedStack', {
+    new CfnStack(this, 'NestedStack', {
       templateUrl: 'https://s3.amazonaws.com/quickstart-reference/mongodb/latest/templates/mongodb-master.template',
       parameters: {
         KeyPairName: 'my-key-pair',
@@ -125,10 +125,10 @@ class ResourceReferencesExample extends cdk.Stack {
   constructor(parent: cdk.App, name: string, props?: cdk.StackProps) {
     super(parent, name, props);
 
-    const topic = new sns.cloudformation.TopicResource(this, 'Topic', {});
-    const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
+    const topic = new sns.CfnTopic(this, 'Topic', {});
+    const queue = new sqs.CfnQueue(this, 'Queue', {});
 
-    new sns.cloudformation.SubscriptionResource(this, 'Subscription', {
+    new sns.CfnSubscription(this, 'Subscription', {
       topicArn: topic.ref, // resolves to { Ref: <topic-id> }
       protocol: 'sqs',
       endpoint: queue.queueArn // resolves to { "Fn::GetAtt": [ <queue-id>, "Arn" ] }

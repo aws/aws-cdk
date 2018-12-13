@@ -8,7 +8,7 @@ import s3n = require('@aws-cdk/aws-s3-notifications');
 import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
 import { IEventSource } from './event-source';
-import { cloudformation } from './lambda.generated';
+import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
 import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
@@ -175,7 +175,7 @@ export abstract class FunctionRef extends cdk.Construct
     const principal = this.parsePermissionPrincipal(permission.principal);
     const action = permission.action || 'lambda:InvokeFunction';
 
-    new cloudformation.PermissionResource(this, id, {
+    new CfnPermission(this, id, {
       action,
       principal,
       functionName: this.functionName,

@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { FunctionRef } from './lambda-ref';
-import { cloudformation } from './lambda.generated';
+import { CfnVersion } from './lambda.generated';
 
 /**
  * Properties for a new Lambda version
@@ -58,7 +58,7 @@ export class FunctionVersion extends Construct {
   constructor(parent: Construct, name: string, props: FunctionVersionProps) {
     super(parent, name);
 
-    const version = new cloudformation.VersionResource(this, 'Resource', {
+    const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName

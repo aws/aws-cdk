@@ -9,7 +9,7 @@ import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { cloudformation } from './codebuild.generated';
+import { CfnProject } from './codebuild.generated';
 import {
   CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
   PipelineBuildAction, PipelineTestAction
@@ -493,7 +493,7 @@ export class Project extends ProjectRef {
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
 
-    let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
+    let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
       const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue();
       cache = {
@@ -549,7 +549,7 @@ export class Project extends ProjectRef {
 
     this.validateCodePipelineSettings(artifacts);
 
-    const resource = new cloudformation.ProjectResource(this, 'Resource', {
+    const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: sourceJson,
       artifacts: artifacts.toArtifactsJSON(),
@@ -649,7 +649,7 @@ export class Project extends ProjectRef {
 
   private renderEnvironment(env: BuildEnvironment = {},
                             projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-      cloudformation.ProjectResource.EnvironmentProperty {
+      CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -683,13 +683,13 @@ export class Project extends ProjectRef {
     };
   }
 
-  private renderSecondarySources(): cloudformation.ProjectResource.SourceProperty[] | undefined {
+  private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
     return this._secondarySources.length === 0
       ? undefined
       : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
   }
 
-  private renderSecondaryArtifacts(): cloudformation.ProjectResource.ArtifactsProperty[] | undefined {
+  private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
     return this._secondaryArtifacts.length === 0
       ? undefined
       : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());

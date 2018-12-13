@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { EncryptionKeyRef } from './key';
-import { cloudformation } from './kms.generated';
+import { CfnAlias } from './kms.generated';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'AWS';
@@ -51,7 +51,7 @@ export class EncryptionKeyAlias extends Construct {
       throw new Error(`Alias cannot start with ${DISALLOWED_PREFIX}: ${props.alias}`);
     }
 
-    const resource = new cloudformation.AliasResource(this, 'Resource', {
+    const resource = new CfnAlias(this, 'Resource', {
       aliasName: props.alias,
       targetKeyId: props.key.keyArn
     });

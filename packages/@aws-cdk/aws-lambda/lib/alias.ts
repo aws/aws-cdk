@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation } from './lambda.generated';
+import { CfnAlias } from './lambda.generated';
 import { Permission } from './permission';
 
 /**
@@ -85,7 +85,7 @@ export class Alias extends FunctionRef {
 
     this.underlyingLambda = props.version.lambda;
 
-    const alias = new cloudformation.AliasResource(this, 'Resource', {
+    const alias = new CfnAlias(this, 'Resource', {
       name: props.aliasName,
       description: props.description,
       functionName: this.underlyingLambda.functionName,

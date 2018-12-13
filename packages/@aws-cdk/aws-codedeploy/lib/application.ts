@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codedeploy.generated';
+import { CfnApplication } from './codedeploy.generated';
 
 /**
  * Properties of a reference to a CodeDeploy EC2/on-premise Application.
@@ -84,7 +84,7 @@ export class ServerApplication extends ServerApplicationRef {
   constructor(parent: cdk.Construct, id: string, props?: ServerApplicationProps) {
     super(parent, id);
 
-    const resource = new cloudformation.ApplicationResource(this, 'Resource', {
+    const resource = new CfnApplication(this, 'Resource', {
       applicationName: props && props.applicationName,
       computePlatform: 'Server',
     });

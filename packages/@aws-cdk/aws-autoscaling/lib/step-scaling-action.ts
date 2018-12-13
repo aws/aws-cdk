@@ -1,7 +1,7 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
 import { IAutoScalingGroup } from './auto-scaling-group';
-import { cloudformation } from './autoscaling.generated';
+import { CfnScalingPolicy } from './autoscaling.generated';
 
 /**
  * Properties for a scaling policy
@@ -71,12 +71,12 @@ export class StepScalingAction extends cdk.Construct implements cloudwatch.IAlar
    */
   public readonly alarmActionArn: string;
 
-  private readonly adjustments = new Array<cloudformation.ScalingPolicyResource.StepAdjustmentProperty>();
+  private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
   constructor(parent: cdk.Construct, id: string, props: StepScalingActionProps) {
     super(parent, id);
 
-    const resource = new cloudformation.ScalingPolicyResource(this, 'Resource', {
+    const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,

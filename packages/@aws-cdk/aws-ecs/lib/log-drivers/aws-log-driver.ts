@@ -1,7 +1,7 @@
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition } from '../container-definition';
-import { cloudformation } from '../ecs.generated';
+import { CfnTaskDefinition } from '../ecs.generated';
 import { LogDriver } from "./log-driver";
 
 /**
@@ -72,7 +72,7 @@ export class AwsLogDriver extends LogDriver {
   /**
    * Return the log driver CloudFormation JSON
    */
-  public renderLogDriver(): cloudformation.TaskDefinitionResource.LogConfigurationProperty {
+  public renderLogDriver(): CfnTaskDefinition.LogConfigurationProperty {
     return {
       logDriver: 'awslogs',
       options: removeEmpty({

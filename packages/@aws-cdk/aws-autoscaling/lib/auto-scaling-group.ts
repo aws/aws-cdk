@@ -6,7 +6,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 
-import { cloudformation } from './autoscaling.generated';
+import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -189,7 +189,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
   public readonly autoScalingGroupName: string;
 
   private readonly userDataLines = new Array<string>();
-  private readonly autoScalingGroup: cloudformation.AutoScalingGroupResource;
+  private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup: ec2.SecurityGroupRef;
   private readonly securityGroups: ec2.SecurityGroupRef[] = [];
   private readonly loadBalancerNames: string[] = [];
@@ -216,7 +216,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
     });
 
-    const iamProfile = new iam.cloudformation.InstanceProfileResource(this, 'InstanceProfile', {
+    const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
       roles: [ this.role.roleName ]
     });
 
@@ -225,7 +225,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
     const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
-    const launchConfig = new cloudformation.LaunchConfigurationResource(this, 'LaunchConfig', {
+    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: machineImage.imageId,
       keyName: props.keyName,
       instanceType: props.instanceType.toString(),
@@ -247,7 +247,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
     }
 
-    const asgProps: cloudformation.AutoScalingGroupResourceProps = {
+    const asgProps: CfnAutoScalingGroupProps = {
       cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
       minSize: minSize.toString(),
       maxSize: maxSize.toString(),
@@ -274,7 +274,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     const subnets = props.vpc.subnets(props.vpcPlacement);
     asgProps.vpcZoneIdentifier = subnets.map(n => n.subnetId);
 
-    this.autoScalingGroup = new cloudformation.AutoScalingGroupResource(this, 'ASG', asgProps);
+    this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
     this.osType = machineImage.os.type;
     this.autoScalingGroupName = this.autoScalingGroup.autoScalingGroupName;
 

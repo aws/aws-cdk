@@ -7,7 +7,7 @@ import iam = require('@aws-cdk/aws-iam');
 import s3 = require("@aws-cdk/aws-s3");
 import cdk = require("@aws-cdk/cdk");
 import { ServerApplication, ServerApplicationRef } from "./application";
-import { cloudformation } from './codedeploy.generated';
+import { CfnDeploymentGroup } from './codedeploy.generated';
 import { IServerDeploymentConfig, ServerDeploymentConfig } from "./deployment-config";
 import { CommonPipelineDeployActionProps, PipelineDeployAction } from "./pipeline-action";
 
@@ -314,7 +314,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
 
     this.alarms = props.alarms || [];
 
-    const resource = new cloudformation.DeploymentGroupResource(this, 'Resource', {
+    const resource = new CfnDeploymentGroup(this, 'Resource', {
       applicationName: this.application.applicationName,
       deploymentGroupName: props.deploymentGroupName,
       serviceRoleArn: this.role.roleArn,
@@ -406,7 +406,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   }
 
   private loadBalancerInfo(lbProvider?: codedeploylb.ILoadBalancer):
-      cloudformation.DeploymentGroupResource.LoadBalancerInfoProperty | undefined {
+      CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     if (!lbProvider) {
       return undefined;
     }
@@ -430,7 +430,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   }
 
   private ec2TagSet(tagSet?: InstanceTagSet):
-      cloudformation.DeploymentGroupResource.EC2TagSetProperty | undefined {
+      CfnDeploymentGroup.EC2TagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -439,14 +439,14 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
       ec2TagSetList: tagSet.instanceTagGroups.map(tagGroup => {
         return {
           ec2TagGroup: this.tagGroup2TagsArray(tagGroup) as
-            cloudformation.DeploymentGroupResource.EC2TagFilterProperty[],
+            CfnDeploymentGroup.EC2TagFilterProperty[],
         };
       }),
     };
   }
 
   private onPremiseTagSet(tagSet?: InstanceTagSet):
-      cloudformation.DeploymentGroupResource.OnPremisesTagSetProperty | undefined {
+      CfnDeploymentGroup.OnPremisesTagSetProperty | undefined {
     if (!tagSet || tagSet.instanceTagGroups.length === 0) {
       return undefined;
     }
@@ -455,7 +455,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
       onPremisesTagSetList: tagSet.instanceTagGroups.map(tagGroup => {
         return {
           onPremisesTagGroup: this.tagGroup2TagsArray(tagGroup) as
-            cloudformation.DeploymentGroupResource.TagFilterProperty[],
+            CfnDeploymentGroup.TagFilterProperty[],
         };
       }),
     };
@@ -499,7 +499,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   }
 
   private renderAlarmConfiguration(ignorePollAlarmFailure?: boolean):
-      cloudformation.DeploymentGroupResource.AlarmConfigurationProperty | undefined {
+      CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
     return this.alarms.length === 0
       ? undefined
       : {
@@ -510,7 +510,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupRef {
   }
 
   private renderAutoRollbackConfiguration(autoRollbackConfig: AutoRollbackConfig = {}):
-      cloudformation.DeploymentGroupResource.AutoRollbackConfigurationProperty | undefined {
+      CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
     const events = new Array<string>();
 
     // we roll back failed deployments by default

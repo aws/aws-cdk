@@ -5,7 +5,7 @@ class CloudFormationExample extends cdk.Stack {
   constructor(parent: cdk.App) {
     super(parent);
 
-    new sqs.cloudformation.QueueResource(this, 'MyQueue', {
+    new sqs.CfnQueue(this, 'MyQueue', {
       visibilityTimeout: 300
     });
   }

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
@@ -175,7 +175,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
   constructor(parent: cdk.Construct, id: string, props: RestApiProps = { }) {
     super(parent, id);
 
-    const resource = new cloudformation.RestApiResource(this, 'Resource', {
+    const resource = new CfnRestApi(this, 'Resource', {
       name: props.restApiName || id,
       description: props.description,
       policy: props.policy,
@@ -315,7 +315,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
     }
   }
 
-  private configureCloudWatchRole(apiResource: cloudformation.RestApiResource) {
+  private configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicyArns: [ cdk.ArnUtils.fromComponents({
@@ -328,7 +328,7 @@ export class RestApi extends RestApiRef implements cdk.IDependable {
       }) ]
     });
 
-    const resource = new cloudformation.AccountResource(this, 'Account', {
+    const resource = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn
     });
 

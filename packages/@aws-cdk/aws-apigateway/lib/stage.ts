@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
 import { RestApiRef } from './restapi-ref';
 import { parseMethodOptionsPath } from './util';
@@ -147,7 +147,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
     }
 
     const cacheClusterSize = props.cacheClusterEnabled ? (props.cacheClusterSize || '0.5') : undefined;
-    const resource = new cloudformation.StageResource(this, 'Resource', {
+    const resource = new CfnStage(this, 'Resource', {
       stageName: props.stageName || 'prod',
       cacheClusterEnabled: props.cacheClusterEnabled,
       cacheClusterSize,
@@ -176,8 +176,8 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
     return `https://${this.restApi.restApiId}.execute-api.${new cdk.AwsRegion()}.amazonaws.com/${this.stageName}${path}`;
   }
 
-  private renderMethodSettings(props: StageProps): cloudformation.StageResource.MethodSettingProperty[] | undefined {
-    const settings = new Array<cloudformation.StageResource.MethodSettingProperty>();
+  private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {
+    const settings = new Array<CfnStage.MethodSettingProperty>();
 
     // extract common method options from the stage props
     const commonMethodOptions: MethodDeploymentOptions = {
@@ -205,7 +205,7 @@ export class Stage extends cdk.Construct implements cdk.IDependable {
 
     return settings.length === 0 ? undefined : settings;
 
-    function renderEntry(path: string, options: MethodDeploymentOptions): cloudformation.StageResource.MethodSettingProperty {
+    function renderEntry(path: string, options: MethodDeploymentOptions): CfnStage.MethodSettingProperty {
       if (options.cachingEnabled) {
         if (props.cacheClusterEnabled === undefined) {
           props.cacheClusterEnabled = true;

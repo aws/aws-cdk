@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './kinesis.generated';
+import { CfnStream } from './kinesis.generated';
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call
@@ -283,7 +283,7 @@ export class Stream extends StreamRef {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.EncryptionKeyRef;
 
-  private readonly stream: cloudformation.StreamResource;
+  private readonly stream: CfnStream;
 
   constructor(parent: cdk.Construct, name: string, props: StreamProps = {}) {
     super(parent, name);
@@ -296,7 +296,7 @@ export class Stream extends StreamRef {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new cloudformation.StreamResource(this, "Resource", {
+    this.stream = new CfnStream(this, "Resource", {
       name: props.streamName,
       retentionPeriodHours,
       shardCount,
@@ -314,7 +314,7 @@ export class Stream extends StreamRef {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: cloudformation.StreamResource.StreamEncryptionProperty,
+    streamEncryption?: CfnStream.StreamEncryptionProperty,
     encryptionKey?: kms.EncryptionKeyRef
   } {
 
@@ -335,7 +335,7 @@ export class Stream extends StreamRef {
         description: `Created by ${this.path}`
       });
 
-      const streamEncryption: cloudformation.StreamResource.StreamEncryptionProperty = {
+      const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',
         keyId: encryptionKey.keyArn
       };

@@ -9,7 +9,7 @@ export = {
     const stack = new cdk.Stack();
 
     // WHEN
-    new ssm.cloudformation.AssociationResource(stack, 'Assoc', {
+    new ssm.CfnAssociation(stack, 'Assoc', {
       name: 'document',
     });
 

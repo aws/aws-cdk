@@ -1,4 +1,4 @@
-import { cloudformation } from './ecs.generated';
+import { CfnTaskDefinition } from './ecs.generated';
 
 /**
  * Linux parameter setup in a container
@@ -69,7 +69,7 @@ export class LinuxParameters {
   /**
    * Render the Linux parameters to a CloudFormation object
    */
-  public renderLinuxParameters(): cloudformation.TaskDefinitionResource.LinuxParametersProperty {
+  public renderLinuxParameters(): CfnTaskDefinition.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
@@ -107,7 +107,7 @@ export interface Device {
   permissions?: DevicePermission[]
 }
 
-function renderDevice(device: Device): cloudformation.TaskDefinitionResource.DeviceProperty {
+function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
   return {
     containerPath: device.containerPath,
     hostPath: device.hostPath,
@@ -135,7 +135,7 @@ export interface Tmpfs {
   mountOptions?: TmpfsMountOption[],
 }
 
-function renderTmpfs(tmpfs: Tmpfs): cloudformation.TaskDefinitionResource.TmpfsProperty {
+function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
   return {
     containerPath: tmpfs.containerPath,
     size: tmpfs.size,

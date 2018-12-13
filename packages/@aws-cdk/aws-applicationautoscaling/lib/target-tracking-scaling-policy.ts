@@ -1,6 +1,6 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './applicationautoscaling.generated';
+import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { ScalableTarget } from './scalable-target';
 
 /**
@@ -118,7 +118,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
 
     super(parent, id);
 
-    const resource = new cloudformation.ScalingPolicyResource(this, 'Resource', {
+    const resource = new CfnScalingPolicy(this, 'Resource', {
       policyName: props.policyName || this.uniqueId,
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
@@ -139,7 +139,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
   }
 }
 
-function renderCustomMetric(metric?: cloudwatch.Metric): cloudformation.ScalingPolicyResource.CustomizedMetricSpecificationProperty | undefined {
+function renderCustomMetric(metric?: cloudwatch.Metric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
   return {
     dimensions: metric.dimensionsAsList(),
