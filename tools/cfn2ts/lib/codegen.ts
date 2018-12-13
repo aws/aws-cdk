@@ -112,9 +112,12 @@ export default class CodeGenerator {
     }
   }
 
-  private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string) {
+  private openClass(name: genspec.CodeName, docLink?: string, superClasses?: string, deprecation?: string) {
     const extendsPostfix = superClasses ? ` extends ${superClasses}` : '';
     this.docLink(docLink);
+    if (deprecation) {
+      this.code.line(`@deprecated ${deprecation}`);
+    }
     this.code.openBlock(`export class ${name.className}${extendsPostfix}`);
     return name.className;
   }
@@ -187,7 +190,12 @@ export default class CodeGenerator {
     if (propsType) {
       this.code.line();
     }
-    this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS);
+    
+    const deprecation = deprecated && 
+      `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in the next release ` +
+      `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)`;
+    
+    this.openClass(resourceName, spec.Documentation, RESOURCE_BASE_CLASS, deprecation);
 
     //
     // Static inspectors.
@@ -292,10 +300,7 @@ export default class CodeGenerator {
     }
 
     if (deprecated) {
-      this.code.line(`this.addWarning('` +
-        `DEPRECATED: "cloudformation.${resourceName.fqn}" will be deprecated in the next release ` +
-        `in favor of "${deprecated.fqn}" (see https://github.com/awslabs/aws-cdk/issues/878)` +
-      `');`);
+      this.code.line(`this.addWarning('${deprecation}');`);
     }
 
     this.code.closeBlock();
