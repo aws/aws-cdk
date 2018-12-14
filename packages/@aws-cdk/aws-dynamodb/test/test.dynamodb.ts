@@ -5,6 +5,7 @@ import { Test } from 'nodeunit';
 import {
   Attribute,
   AttributeType,
+  BillingMode,
   GlobalSecondaryIndexProps,
   LocalSecondaryIndexProps,
   ProjectionType,
@@ -388,6 +389,7 @@ export = {
       writeCapacity: 1337,
       pitrEnabled: true,
       sseEnabled: true,
+      billingMode: BillingMode.Provisioned,
       streamSpecification: StreamViewType.KeysOnly,
       tags: { Environment: 'Production' },
       ttlAttributeName: 'timeToLive'
@@ -424,6 +426,60 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'when specifying PAY_PER_REQUEST billing mode'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PayPerRequest,
+      partitionKey: TABLE_PARTITION_KEY
+    });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+            ],
+            BillingMode: 'PAY_PER_REQUEST',
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+            ],
+            TableName: 'MyTable',
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'error when specifying read or write capacity with a PAY_PER_REQUEST billing mode'(test: Test) {
+    const app = new TestApp();
+    test.throws(() => new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PayPerRequest,
+      partitionKey: TABLE_PARTITION_KEY,
+      readCapacity: 1
+    }));
+    test.throws(() => new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PayPerRequest,
+      partitionKey: TABLE_PARTITION_KEY,
+      writeCapacity: 1
+    }));
+    test.throws(() => new Table(app.stack, CONSTRUCT_NAME, {
+      tableName: TABLE_NAME,
+      billingMode: BillingMode.PayPerRequest,
+      partitionKey: TABLE_PARTITION_KEY,
+      readCapacity: 1,
+      writeCapacity: 1
+    }));
     test.done();
   },
 
@@ -623,6 +679,50 @@ export = {
     test.done();
   },
 
+  'when adding a global secondary index on a table with PAY_PER_REQUEST billing mode'(test: Test) {
+    const app = new TestApp();
+    new Table(app.stack, CONSTRUCT_NAME, {
+      billingMode: BillingMode.PayPerRequest,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY
+    }).addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+    });
+    const template = app.synthesizeTemplate();
+
+    test.deepEqual(template, {
+      Resources: {
+        MyTable794EDED1: {
+          Type: 'AWS::DynamoDB::Table',
+          Properties: {
+            AttributeDefinitions: [
+              { AttributeName: 'hashKey', AttributeType: 'S' },
+              { AttributeName: 'sortKey', AttributeType: 'N' },
+              { AttributeName: 'gsiHashKey', AttributeType: 'S' },
+            ],
+            BillingMode: 'PAY_PER_REQUEST',
+            KeySchema: [
+              { AttributeName: 'hashKey', KeyType: 'HASH' },
+              { AttributeName: 'sortKey', KeyType: 'RANGE' }
+            ],
+            GlobalSecondaryIndexes: [
+              {
+                IndexName: 'MyGSI',
+                KeySchema: [
+                  { AttributeName: 'gsiHashKey', KeyType: 'HASH' },
+                ],
+                Projection: { ProjectionType: 'ALL' }
+              }
+            ]
+          }
+        }
+      }
+    });
+
+    test.done();
+  },
+
   'error when adding a global secondary index with projection type INCLUDE, but without specifying non-key attributes'(test: Test) {
     const app = new TestApp();
     const table = new Table(app.stack, CONSTRUCT_NAME)
@@ -708,6 +808,36 @@ export = {
       nonKeyAttributes: [GSI_NON_KEY, TABLE_PARTITION_KEY.name]
       // tslint:disable-next-line:max-line-length
     }), /a key attribute, hashKey, is part of a list of non-key attributes, gsiNonKey,hashKey, which is not allowed since all key attributes are added automatically and this configuration causes stack creation failure/);
+
+    test.done();
+  },
+
+  'error when adding a global secondary index with read or write capacity on a PAY_PER_REQUEST table'(test: Test) {
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PayPerRequest
+    });
+
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      readCapacity: 1
+    }));
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      writeCapacity: 1
+    }));
+    test.throws(() => table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+      readCapacity: 1,
+      writeCapacity: 1
+    }));
 
     test.done();
   },
@@ -1118,6 +1248,31 @@ export = {
     test.throws(() => {
       table.autoScaleReadCapacity({ minCapacity: 50, maxCapacity: 500 });
     });
+
+    test.done();
+  },
+
+  'error when enabling AutoScaling on the PAY_PER_REQUEST table'(test: Test) {
+    // GIVEN
+    const app = new TestApp();
+    const table = new Table(app.stack, CONSTRUCT_NAME, { billingMode: BillingMode.PayPerRequest });
+    table.addPartitionKey(TABLE_PARTITION_KEY);
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY
+    });
+
+    // WHEN
+    test.throws(() => {
+      table.autoScaleReadCapacity({ minCapacity: 50, maxCapacity: 500 });
+    });
+    test.throws(() => {
+      table.autoScaleWriteCapacity({ minCapacity: 50, maxCapacity: 500 });
+    });
+    test.throws(() => table.autoScaleGlobalSecondaryIndexReadCapacity(GSI_NAME, {
+      minCapacity: 1,
+      maxCapacity: 5
+    }));
 
     test.done();
   },
