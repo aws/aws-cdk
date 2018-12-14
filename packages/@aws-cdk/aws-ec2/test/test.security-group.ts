@@ -165,6 +165,7 @@ export = {
     for (const peer of peers) {
       for (const port of ports) {
         sg.connections.allowTo(peer, port);
+        sg.connections.allowFrom(peer, port);
       }
     }
 
