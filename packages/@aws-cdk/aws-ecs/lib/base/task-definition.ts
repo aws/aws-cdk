@@ -345,7 +345,7 @@ export interface Volume {
   /**
    * A name for the volume
    */
-  name?: string;
+  name: string;
 
   /**
    * Specifies this configuration when using Docker volumes
