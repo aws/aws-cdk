@@ -348,7 +348,7 @@ export interface Volume {
   name?: string;
 
   /**
-   * Specifies the configuration of a Docker volume
+   * Specifies this configuration when using Docker volumes
    */
   dockerVolumeConfiguration?: DockerVolumeConfiguration;
 }
@@ -363,6 +363,9 @@ export interface Host {
   sourcePath?: string;
 }
 
+/**
+ * A configuration of a Docker volume
+ */
 export interface DockerVolumeConfiguration {
   /**
    * If true, the Docker volume is created if it does not already exist
