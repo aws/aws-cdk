@@ -149,7 +149,7 @@ The ``AWS::CDK::Metadata`` resource looks like the following:
      Properties:
        Modules: "@aws-cdk/core=0.7.2-beta,@aws-cdk/s3=0.7.2-beta,lodash=4.17.10"
 
-.. _version-reporting-opt-out:
+.. _version_reporting_opt_out:
 
 Opting-out from Version Reporting
 ---------------------------------

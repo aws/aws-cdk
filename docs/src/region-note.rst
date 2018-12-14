@@ -12,5 +12,5 @@
 
     The China regions (cn-north-1 and cn-northwest-1) do not support version reporting.
 
-    See :ref:`version-reporting` for more details and how to
-    :ref:`opt-out <version-reporting-opt-out>`
+    See :ref:`version_reporting` for more details and how to
+    :ref:`opt-out <version_reporting_opt_out>`

@@ -8,35 +8,18 @@
    either express or implied. See the License for the specific language governing permissions and
    limitations under the License.
 
-.. _cdk_examples:
+.. _ecs_example:
 
-##############
-|cdk| Examples
-##############
+#############
+|ECS| Example
+#############
 
-This topic contains some examples to help you get started using some of the advanced constructs
-offered by the |cdk|.
-
-* :doc:`ecs_example` walks you through creating a Fargate service running on an ECS cluster fronted by an internet-facing
+This example walks you through creating a Fargate service running on an ECS cluster fronted by an internet-facing
 application load balancer.
-
-* :doc:`apples_example` walks you through creating the resources for a simple widget dispensing service.
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
-   ECS Example <ecs_example>
-   Apples Example <apples_example>
-
-.. _creating_ecs_l2_example:
-
-Creating an |ECS| |cdk| App
-===========================
 
 |ECSlong| (|ECS|) is a highly scalable, fast, container management service
 that makes it easy to run, stop, and manage Docker containers on a cluster.
-You can host your cluster on infrastructure that is managed by
+You can host your cluster on a serverless infrastructure that is managed by
 |ECS| by launching your services or tasks using the Fargate launch type.
 For more control you can host your tasks on a cluster of
 |EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
@@ -79,8 +62,8 @@ gives you a leg up on using AWS services by providing the following benefits:
 * Automatically adds permissions for |ECR| if you use an image from |ECR|
   When you use an image from |ECR|, the |cdk| adds the correct permissions.
 
-* Convenient API for autoscaling
-  The |cdk| supplies a method so you can autoscale instances when you use an |EC2| cluster;
+* Automatic autoscaling
+  The |cdk| supplies a method so you can autoscaling instances when you use an |EC2| cluster;
   this functionality is done automatically when you use an instance in a Fargate cluster.
 
   In addition, the |cdk| will prevent instances from being deleted when

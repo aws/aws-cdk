@@ -329,21 +329,23 @@ Synthesizes to:
 
 .. code-block:: json
 
-   "MyBucketF68F3FF0": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-         "BucketEncryption": {
-            "ServerSideEncryptionConfiguration": [
-               {
-                  "EncryptEverythingAndAlways": true
-               }
-            ]
-         },
-         "VersioningConfiguration": {
-            "Status": "Enabled"
-         }
-      }
-   }
+    {
+       "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+             "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                   {
+                      "EncryptEverythingAndAlways": true
+                   }
+                ]
+             },
+             "VersioningConfiguration": {
+                "Status": "Enabled"
+             }
+          }
+       }
+     }
 
 Directly Defining CloudFormation Resources
 -------------------------------------------
