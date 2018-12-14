@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { ContainerDefinition, ContainerDefinitionProps } from '../container-definition';
-import { cloudformation } from '../ecs.generated';
+import { CfnTaskDefinition } from '../ecs.generated';
 import { isEc2Compatible, isFargateCompatible } from '../util';
 
 /**
@@ -153,7 +153,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Placement constraints for task instances
    */
-  private readonly placementConstraints = new Array<cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty>();
+  private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
   constructor(parent: cdk.Construct, name: string, props: TaskDefinitionProps) {
     super(parent, name);
@@ -185,7 +185,7 @@ export class TaskDefinition extends cdk.Construct {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
-    const taskDef = new cloudformation.TaskDefinitionResource(this, 'Resource', {
+    const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: new cdk.Token(() => this.containers.map(x => x.renderContainerDefinition())),
       volumes: new cdk.Token(() => this.volumes),
       executionRoleArn: new cdk.Token(() => this.executionRole && this.executionRole.roleArn),
@@ -297,7 +297,7 @@ export class TaskDefinition extends cdk.Construct {
   /**
    * Render the placement constraints
    */
-  private renderPlacementConstraint(pc: PlacementConstraint): cloudformation.TaskDefinitionResource.TaskDefinitionPlacementConstraintProperty {
+  private renderPlacementConstraint(pc: PlacementConstraint): CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty {
     return {
       type: pc.type,
       expression: pc.expression

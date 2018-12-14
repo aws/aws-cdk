@@ -1,6 +1,6 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnWebhook } from './codepipeline.generated';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
@@ -38,9 +38,8 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps,
    * It is recommended to use a `SecretParameter` to obtain the token from the SSM
    * Parameter Store:
    *
-   *   const oauth = new SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token });
-   *   new GitHubSource(stage, 'GH' { oauthToken: oauth });
-   *
+   *   const oauth = new cdk.SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token' });
+   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
   oauthToken: cdk.Secret;
 
@@ -74,7 +73,7 @@ export class GitHubSourceAction extends actions.SourceAction {
     });
 
     if (!props.pollForSourceChanges) {
-      new cloudformation.WebhookResource(this, 'WebhookResource', {
+      new CfnWebhook(this, 'WebhookResource', {
         authentication: 'GITHUB_HMAC',
         authenticationConfiguration: {
           secretToken: props.oauthToken,

@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './ecr.generated';
+import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
 import { RepositoryBase } from "./repository-ref";
 
@@ -51,7 +51,7 @@ export class Repository extends RepositoryBase {
   constructor(parent: cdk.Construct, id: string, props: RepositoryProps = {}) {
     super(parent, id);
 
-    const resource = new cloudformation.RepositoryResource(this, 'Resource', {
+    const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: new cdk.Token(() => this.policyDocument),
@@ -110,7 +110,7 @@ export class Repository extends RepositoryBase {
   /**
    * Render the life cycle policy object
    */
-  private renderLifecyclePolicy(): cloudformation.RepositoryResource.LifecyclePolicyProperty | undefined {
+  private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
     let lifecyclePolicyText: any;
 
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }

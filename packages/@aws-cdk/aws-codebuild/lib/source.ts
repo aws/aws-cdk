@@ -2,7 +2,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codebuild.generated';
+import { CfnProject } from './codebuild.generated';
 import { Project } from './project';
 
 /**
@@ -37,7 +37,7 @@ export abstract class BuildSource {
     return;
   }
 
-  public toSourceJSON(): cloudformation.ProjectResource.SourceProperty {
+  public toSourceJSON(): CfnProject.SourceProperty {
     const sourceProp = this.toSourceProperty();
     return {
       sourceIdentifier: this.identifier,

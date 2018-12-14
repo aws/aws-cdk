@@ -21,9 +21,9 @@ the :py:class:`@aws-cdk/aws-sns.Topic` construct can be used to define SNS
 Topics, etc.
 
 Under the hood, these constructs are implemented using CloudFormation resources,
-which are available under the **cloudformation** namespace of each library. For
+which are available under the **CfnXxx** classes in each library. For
 example, the :py:class:`@aws-cdk/aws-s3.Bucket` construct uses the
-:py:class:`@aws-cdk/aws-s3.cloudformation.BucketResource` resource (as well as
+:py:class:`@aws-cdk/aws-s3.CfnBucket` resource (as well as
 other resources, depending on what bucket APIs are used).
 
 .. important::
@@ -39,7 +39,7 @@ Resources
 CloudFormation resource classes are automatically generated from the `AWS
 CloudFormation Resource Specification
 <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html>`_
-and available under the **cloudformation** namespace of each AWS library. Their
+and available under the **CfnXxx** classes of each AWS library. Their
 API matches 1:1 with how you would use these resources in CloudFormation.
 
 When defining CloudFormation resource, the **props** argument of the class
@@ -51,11 +51,11 @@ resource encrypted with an AWS managed key you can directly specify the
 `KmsMasterKeyId <https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-kmsmasterkeyid>`_
 property.
 
-.. code-block:: js
+.. code-block:: ts
 
-    import { cloudformation } from '@aws-cdk/aws-sqs';
+    import sqs = require('@aws-cdk/aws-sqs');
 
-    new cloudformation.QueueResource(this, 'MyQueueResource', {
+    new sqs.CfnQueue(this, 'MyQueueResource', {
         kmsMasterKeyId: 'alias/aws/sqs'
     });
 
@@ -82,14 +82,14 @@ use one of the properties available on the resource object.
 The following example configures a |LAM| function's dead letter queue to use a
 the ARN of an |SQS| queue resource.
 
-.. code-block:: js
+.. code-block:: ts
 
-   import { cloudformation as sqscfn } from '@aws-cdk/aws-sqs';
-   import { cloudformation as lambdacfn } from '@aws-cdk/aws-lambda';
+   import sqs = require('@aws-cdk/aws-sqs');
+   import lambda = require('@aws-cdk/aws-lambda');
 
-   const dlq = new sqscfn.QueueResource(this, { name: 'DLQ' });
+   const dlq = new sqs.CfnQueue(this, { name: 'DLQ' });
 
-   new lambdacfn.FunctionResource(this, {
+   new lambda.CfnFunction(this, {
       deadLetterConfig: {
          targetArn: dlq.queueArn
       }
@@ -118,13 +118,13 @@ Parameters
 
 .. NEEDS SOME INTRO TEXT
 
-.. code-block:: js
+.. code-block:: ts
 
-    import { cloudformation } from '@aws-cdk/aws-sns';
+    import sns = require('@aws-cdk/aws-sns');
     import cdk = require('@aws-cdk/cdk');
 
     const p = new cdk.Parameter(this, 'MyParam', { type: 'String' });
-    new cloudformation.TopicResource(this, 'MyTopic', { displayName: p.ref });
+    new sns.CfnTopic(this, 'MyTopic', { displayName: p.ref });
 
 .. _outputs:
 
@@ -135,10 +135,10 @@ Outputs
 
 .. code-block:: js
 
-    import { cloudformation } from '@aws-cdk/aws-sqs';
+    import sqs = require('@aws-cdk/aws-sqs');
     import cdk = require('@aws-cdk/cdk');
 
-    const queue = new cloudformation.QueueResource(this, 'MyQueue');
+    const queue = new sqs.CfnQueue(this, 'MyQueue');
     const out = new cdk.Output(this, 'MyQueueArn', { value: queue.queueArn });
 
     const import = out.makeImportValue();
@@ -153,13 +153,13 @@ Conditions
 
 .. code-block:: js
 
-    import { cloudformation } from '@aws-cdk/aws-sqs';
+    import sqs = require('@aws-cdk/aws-sqs');
     import cdk = require('@aws-cdk/cdk');
     const cond = new cdk.Condition(this, 'MyCondition', {
         expression: new cdk.FnIf(...)
     });
 
-    const queue = new cloudformation.QueueResource(this, 'MyQueue');
+    const queue = new sqs.CfnQueue(this, 'MyQueue');
     queue.options.condition = cond;
 
 .. _intrinsic_functions:

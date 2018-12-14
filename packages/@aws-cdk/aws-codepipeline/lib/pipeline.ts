@@ -3,7 +3,7 @@ import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionScaffoldStack } from './cross-region-scaffold-stack';
 import { CommonStageProps, Stage, StagePlacement } from './stage';
 
@@ -83,7 +83,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
 
   private readonly stages = new Array<Stage>();
   private eventsRole?: iam.Role;
-  private readonly pipelineResource: cloudformation.PipelineResource;
+  private readonly pipelineResource: CfnPipeline;
   private readonly crossRegionReplicationBuckets: { [region: string]: string };
   private readonly artifactStores: { [region: string]: any };
   private readonly _crossRegionScaffoldStacks: { [region: string]: CrossRegionScaffoldStack } = {};
@@ -107,7 +107,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
     });
 
-    const codePipeline = new cloudformation.PipelineResource(this, 'Resource', {
+    const codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: new cdk.Token(() => this.renderArtifactStore()) as any,
       stages: new cdk.Token(() => this.renderStages()) as any,
       roleArn: this.role.roleArn,
@@ -431,8 +431,8 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     return [];
   }
 
-  private renderArtifactStore(): cloudformation.PipelineResource.ArtifactStoreProperty {
-    let encryptionKey: cloudformation.PipelineResource.EncryptionKeyProperty | undefined;
+  private renderArtifactStore(): CfnPipeline.ArtifactStoreProperty {
+    let encryptionKey: CfnPipeline.EncryptionKeyProperty | undefined;
     const bucketKey = this.artifactBucket.encryptionKey;
     if (bucketKey) {
       encryptionKey = {
@@ -453,7 +453,7 @@ export class Pipeline extends cdk.Construct implements cpapi.IPipeline {
     };
   }
 
-  private renderStages(): cloudformation.PipelineResource.StageDeclarationProperty[] {
+  private renderStages(): CfnPipeline.StageDeclarationProperty[] {
     // handle cross-region CodePipeline overrides here
     let crossRegion = false;
     this.stages.forEach((stage, i) => {

@@ -1,7 +1,7 @@
 import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Construct, DeletionPolicy, Output, resolve } from '@aws-cdk/cdk';
 import { EncryptionKeyAlias } from './alias';
-import { cloudformation } from './kms.generated';
+import { CfnKey } from './kms.generated';
 
 export interface EncryptionKeyRefProps {
   /**
@@ -128,7 +128,7 @@ export class EncryptionKey extends EncryptionKeyRef {
       this.allowAccountToAdmin();
     }
 
-    const resource = new cloudformation.KeyResource(this, 'Resource', {
+    const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
