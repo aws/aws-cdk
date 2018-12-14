@@ -19,11 +19,10 @@ export class Configuration {
   public readonly userConfig = new Settings();
   public readonly projectConfig = new Settings();
 
-  constructor(commandLineArguments?: Settings | yargs.Arguments) {
-    if (commandLineArguments && !(commandLineArguments instanceof Settings)) {
-      commandLineArguments = Settings.fromCommandLineArguments(commandLineArguments);
-    }
-    this.commandLineArguments = commandLineArguments || new Settings();
+  constructor(commandLineArguments?: yargs.Arguments) {
+    this.commandLineArguments = commandLineArguments
+                              ? Settings.fromCommandLineArguments(commandLineArguments)
+                              : new Settings();
   }
 
   /**
@@ -95,10 +94,11 @@ export class Settings {
       browser: argv.browser,
       context,
       language: argv.language,
+      pathMetadata: argv.pathMetadata,
       plugin: argv.plugin,
+      requireApproval: argv.requireApproval,
       toolkitStackName: argv.toolkitStackName,
       versionReporting: argv.versionReporting,
-      pathMetadata: argv.pathMetadata,
     });
   }
 

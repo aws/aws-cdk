@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk",
   "description": "CDK Toolkit, the command line tool for CDK apps",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "bin": {
@@ -32,26 +32,27 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/archiver": "^2.1.2",
+    "@types/cli-table": "^0.3.0",
     "@types/fs-extra": "^5.0.4",
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/request": "^2.47.1",
     "@types/semver": "^5.5.0",
-    "@types/table": "^4.0.5",
     "@types/uuid": "^3.4.3",
     "@types/yaml": "^1.0.0",
     "@types/yargs": "^8.0.3",
-    "cdk-build-tools": "^0.19.0",
+    "cdk-build-tools": "^0.20.0",
     "mockery": "^2.1.0",
-    "pkglint": "^0.19.0"
+    "pkglint": "^0.20.0"
   },
   "dependencies": {
-    "@aws-cdk/applet-js": "^0.19.0",
-    "@aws-cdk/cloudformation-diff": "^0.19.0",
-    "@aws-cdk/cx-api": "^0.19.0",
+    "@aws-cdk/applet-js": "^0.20.0",
+    "@aws-cdk/cloudformation-diff": "^0.20.0",
+    "@aws-cdk/cx-api": "^0.20.0",
     "archiver": "^2.1.1",
     "aws-sdk": "^2.259.1",
     "camelcase": "^5.0.0",
+    "cli-table": "^0.3.1",
     "colors": "^1.2.1",
     "decamelize": "^2.0.0",
     "fs-extra": "^7.0.0",
@@ -63,7 +64,7 @@
     "semver": "^5.5.0",
     "source-map-support": "^0.5.6",
     "table": "^5.1.0",
-    "yaml": "^1.0.1",
+    "yaml": "^1.1.0",
     "yargs": "^9.0.1"
   },
   "repository": {
@@ -74,5 +75,8 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

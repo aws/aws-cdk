@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { BaseService, BaseServiceProps } from '../base/base-service';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { cloudformation } from '../ecs.generated';
+import { CfnService } from '../ecs.generated';
 import { isEc2Compatible } from '../util';
 
 /**
@@ -67,8 +67,8 @@ export class Ec2Service extends BaseService implements elb.ILoadBalancerTarget {
    */
   public readonly clusterName: string;
 
-  private readonly constraints: cloudformation.ServiceResource.PlacementConstraintProperty[];
-  private readonly strategies: cloudformation.ServiceResource.PlacementStrategyProperty[];
+  private readonly constraints: CfnService.PlacementConstraintProperty[];
+  private readonly strategies: CfnService.PlacementStrategyProperty[];
   private readonly daemon: boolean;
   private readonly cluster: ICluster;
 
