@@ -47,31 +47,59 @@ export = {
     test.done();
   },
 
-  'github auth test'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
+  'GitHub source': {
+    'has reportBuildStatus on by default'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    new codebuild.Project(stack, 'Project', {
-      source: new codebuild.GitHubSource({
-        cloneUrl: "https://github.com/testowner/testrepo",
-        oauthToken: new cdk.Secret("test_oauth_token")
-      })
-    });
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          oauthToken: new cdk.Secret("test_oauth_token")
+        })
+      });
 
-    // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
-      Source: {
-        Type: "GITHUB",
-        Auth: {
-          Type: 'OAUTH',
-          Resource: 'test_oauth_token'
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Auth: {
+            Type: 'OAUTH',
+            Resource: 'test_oauth_token'
+          },
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: true,
+        }
+      }));
+
+      test.done();
+    },
+
+    'can explicitly set reportBuildStatus to false'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          oauthToken: new cdk.Secret('test_oauth_token'),
+          reportBuildStatus: false,
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Source: {
+          ReportBuildStatus: false,
         },
-        Location: 'https://github.com/testowner/testrepo'
-      }
-    }));
+      }));
 
-    test.done();
+      test.done();
+    },
   },
 
   'github enterprise auth test'(test: Test) {
@@ -81,7 +109,8 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.GitHubEnterpriseSource({
-        cloneUrl: "https://github.testcompany.com/testowner/testrepo",
+        httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+        ignoreSslErrors: true,
         oauthToken: new cdk.Secret("test_oauth_token")
       })
     });
@@ -94,8 +123,32 @@ export = {
           Type: 'OAUTH',
           Resource: 'test_oauth_token'
         },
+        InsecureSsl: true,
         Location: 'https://github.testcompany.com/testowner/testrepo'
       }
+    }));
+
+    test.done();
+  },
+
+  'bitbucket auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.BitBucketSource({
+        owner: 'testowner',
+        repo: 'testrepo',
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'BITBUCKET',
+        Location: 'https://bitbucket.org/testowner/testrepo.git',
+      },
     }));
 
     test.done();

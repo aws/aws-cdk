@@ -151,14 +151,32 @@ export class CodePipelineSource extends BuildSource {
  */
 export interface GitHubSourceProps extends BuildSourceProps {
   /**
-   * The git url to clone for this code build project.
+   * The GitHub account/user that owns the repo.
+   *
+   * @example 'awslabs'
    */
-  cloneUrl: string;
+  owner: string;
+
+  /**
+   * The name of the repo (without the username).
+   *
+   * @example 'aws-cdk'
+   */
+  repo: string;
 
   /**
    * The oAuthToken used to authenticate when cloning source git repo.
+   * Note that you need to give CodeBuild permissions to your GitHub account in order for the token to work.
+   * That is a one-time operation that can be done through the AWS Console for CodeBuild.
    */
   oauthToken: cdk.Secret;
+
+  /**
+   * Whether to send GitHub notifications on your build's start and end.
+   *
+   * @default true
+   */
+  reportBuildStatus?: boolean;
 }
 
 /**
@@ -166,21 +184,46 @@ export interface GitHubSourceProps extends BuildSourceProps {
  */
 export class GitHubSource extends BuildSource {
   public readonly type: SourceType = SourceType.GitHub;
-  private readonly cloneUrl: string;
+  private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
+  private readonly reportBuildStatus: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
-    this.cloneUrl = props.cloneUrl;
+    this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
+    this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
   }
 
   protected toSourceProperty(): any {
     return {
       auth: { type: 'OAUTH', resource: this.oauthToken },
-      location: this.cloneUrl,
+      location: this.httpsCloneUrl,
+      reportBuildStatus: this.reportBuildStatus,
     };
   }
+}
+
+/**
+ * Construction properties for {@link GitHubEnterpriseSource}.
+ */
+export interface GitHubEnterpriseSourceProps extends BuildSourceProps {
+  /**
+   * The HTTPS URL of the repository in your GitHub Enterprise installation.
+   */
+  httpsCloneUrl: string;
+
+  /**
+   * The OAuth token used to authenticate when cloning the git repository.
+   */
+  oauthToken: cdk.Secret;
+
+  /**
+   * Whether to ignore SSL errors when connecting to the repository.
+   *
+   * @default false
+   */
+  ignoreSslErrors?: boolean;
 }
 
 /**
@@ -188,19 +231,22 @@ export class GitHubSource extends BuildSource {
  */
 export class GitHubEnterpriseSource extends BuildSource {
   public readonly type: SourceType = SourceType.GitHubEnterPrise;
-  private readonly cloneUrl: string;
+  private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
+  private readonly ignoreSslErrors?: boolean;
 
-  constructor(props: GitHubSourceProps) {
+  constructor(props: GitHubEnterpriseSourceProps) {
     super(props);
-    this.cloneUrl = props.cloneUrl;
+    this.httpsCloneUrl = props.httpsCloneUrl;
     this.oauthToken = props.oauthToken;
+    this.ignoreSslErrors = props.ignoreSslErrors;
   }
 
   protected toSourceProperty(): any {
     return {
       auth: { type: 'OAUTH', resource: this.oauthToken },
-      location: this.cloneUrl,
+      location: this.httpsCloneUrl,
+      insecureSsl: this.ignoreSslErrors,
     };
   }
 }
@@ -209,7 +255,19 @@ export class GitHubEnterpriseSource extends BuildSource {
  * Construction properties for {@link BitBucketSource}.
  */
 export interface BitBucketSourceProps extends BuildSourceProps {
-  httpsCloneUrl: string;
+  /**
+   * The BitBucket account/user that owns the repo.
+   *
+   * @example 'awslabs'
+   */
+  owner: string;
+
+  /**
+   * The name of the repo (without the username).
+   *
+   * @example 'aws-cdk'
+   */
+  repo: string;
 }
 
 /**
@@ -221,7 +279,7 @@ export class BitBucketSource extends BuildSource {
 
   constructor(props: BitBucketSourceProps) {
     super(props);
-    this.httpsCloneUrl = props.httpsCloneUrl;
+    this.httpsCloneUrl = `https://bitbucket.org/${props.owner}/${props.repo}.git`;
   }
 
   protected toSourceProperty(): any {
