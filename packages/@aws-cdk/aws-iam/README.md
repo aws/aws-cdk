@@ -14,6 +14,14 @@ Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
 
 [attaching managed policies](test/example.managedpolicy.lit.ts)
 
+### Configuring an ExternalId
+
+If you need to create roles that will be assumed by 3rd parties, it is generally a good idea to [require an `ExternalId`
+to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).  Configuring
+an `ExternalId` works like this:
+
+[supplying an external ID](test/example.external-id.lit.ts)
+
 ### Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same

@@ -1,5 +1,5 @@
 import { App, Stack } from "@aws-cdk/cdk";
-import { Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
+import { AccountRootPrincipal, Policy, PolicyStatement, Role, ServicePrincipal } from "../lib";
 
 const app = new App();
 
@@ -14,5 +14,11 @@ role.addToPolicy(new PolicyStatement().addResource('*').addAction('sqs:SendMessa
 const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
 policy.addStatement(new PolicyStatement().addAction('ec2:*').addResource('*'));
 policy.attachToRole(role);
+
+// Role with an external ID
+new Role(stack, 'TestRole2', {
+  assumedBy: new AccountRootPrincipal(),
+  externalId: 'supply-me',
+});
 
 app.run();
