@@ -24,7 +24,7 @@ Creating an |ECS| |cdk| App
 
 |ECSlong| (|ECS|) is a highly scalable, fast, container management service
 that makes it easy to run, stop, and manage Docker containers on a cluster.
-You can host your cluster on a serverless infrastructure that is managed by
+You can host your cluster on infrastructure that is managed by
 |ECS| by launching your services or tasks using the Fargate launch type.
 For more control you can host your tasks on a cluster of
 |EC2long| (|EC2|) instances that you manage by using the EC2 launch type.
