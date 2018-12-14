@@ -369,18 +369,24 @@ export interface Host {
 export interface DockerVolumeConfiguration {
   /**
    * If true, the Docker volume is created if it does not already exist
+   *
+   * @default false
    */
   autoprovision?: boolean;
   /**
    * The Docker volume driver to use
    */
-  driver?: string;
+  driver: string;
   /**
    * A map of Docker driver specific options passed through
+   *
+   * @default No options
    */
   driverOpts?: string[];
   /**
    * Custom metadata to add to your Docker volume
+   *
+   * @default No labels
    */
   labels?: string[];
   /**
