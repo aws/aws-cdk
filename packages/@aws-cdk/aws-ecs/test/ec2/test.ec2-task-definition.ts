@@ -245,7 +245,7 @@ export = {
         name: "scratch",
         dockerVolumeConfiguration: {
           driver: "local",
-          scope: 'task'
+          scope: ecs.Scope.Task
         }
       };
 

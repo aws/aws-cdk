@@ -386,7 +386,19 @@ export interface DockerVolumeConfiguration {
   /**
    * The scope for the Docker volume which determines it's lifecycle
    */
-  scope?: string;
+  scope: Scope;
+}
+
+export enum Scope {
+  /**
+   * Docker volumes are automatically provisioned when the task starts and destroyed when the task stops
+   */
+  Task = "task",
+
+  /**
+   * Docker volumes are persist after the task stops
+   */
+  Shared = "shared"
 }
 
 /**
