@@ -1,6 +1,6 @@
 {
   "name": "y-npm",
-  "version": "0.18.1",
+  "version": "0.20.0",
   "description": "Run npm commands using a local registry overlay",
   "private": true,
   "author": {
@@ -35,12 +35,15 @@
     "@types/colors": "^1.2.1",
     "@types/fs-extra": "^5.0.4",
     "@types/semver": "^5.5.0",
-    "cdk-build-tools": "^0.18.1",
-    "pkglint": "^0.18.1"
+    "cdk-build-tools": "^0.20.0",
+    "pkglint": "^0.20.0"
   },
   "keywords": [
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

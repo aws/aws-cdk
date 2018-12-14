@@ -133,6 +133,16 @@ export class App extends Root {
       }
     }
 
+    // include only libraries that are in the @aws-cdk npm scope
+    for (const name of Object.keys(libraries)) {
+      if (!name.startsWith('@aws-cdk/')) {
+        delete libraries[name];
+      }
+    }
+
+    // add jsii runtime version
+    libraries['jsii-runtime'] = getJsiiAgentVersion();
+
     return { libraries };
   }
 
@@ -204,4 +214,16 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     }
     return s;
   }
+}
+
+function getJsiiAgentVersion() {
+  let jsiiAgent = process.env.JSII_AGENT;
+
+  // if JSII_AGENT is not specified, we will assume this is a node.js runtime
+  // and plug in our node.js version
+  if (!jsiiAgent) {
+    jsiiAgent = `node.js/${process.version}`;
+  }
+
+  return jsiiAgent;
 }

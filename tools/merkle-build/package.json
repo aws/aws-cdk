@@ -1,7 +1,7 @@
 {
   "name": "merkle-build",
   "private": true,
-  "version": "0.18.1",
+  "version": "0.20.0",
   "description": "Build tool helper for calculating hashes of a Merkle tree",
   "main": "lib/index.js",
   "types": "lib/index.ts",
@@ -22,7 +22,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
-    "pkglint": "^0.18.1"
+    "pkglint": "^0.20.0"
   },
   "dependencies": {
     "fs-extra": "^7.0.0"
@@ -31,5 +31,8 @@
     "aws",
     "cdk"
   ],
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

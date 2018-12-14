@@ -45,6 +45,37 @@ Here are the actions you can take on your CDK app
 
 .. include:: cdk_help.txt
 
+.. _security-changes:
+
+Security-related changes
+========================
+
+In order to protect you against unintended changes that affect your security posture,
+the CDK toolkit will prompt you to approve security-related changes before deploying
+them.
+
+You change the level of changes that requires approval by specifying:
+
+.. code-block::
+
+   cdk deploy --require-approval LEVEL
+
+Where ``LEVEL`` can be one of:
+
+* ``never`` - approval is never required.
+* ``any-change`` - require approval on any IAM or security-group related change.
+* ``broadening`` (default) - require approval when IAM statements or traffic rules are added. Removals
+  do not require approval.
+
+The setting also be configured in **cdk.json**:
+
+.. code-block:: js
+
+    {
+        "app": "...",
+        "requireApproval": "never"
+    }
+
 .. _version-reporting:
 
 Version Reporting
@@ -67,7 +98,7 @@ The ``AWS::CDK::Metadata`` resource looks like the following:
      Properties:
        Modules: "@aws-cdk/core=0.7.2-beta,@aws-cdk/s3=0.7.2-beta,lodash=4.17.10"
 
-.. _version-reporting-opt-out:
+.. _version_reporting_opt_out:
 
 Opting-out from Version Reporting
 ---------------------------------

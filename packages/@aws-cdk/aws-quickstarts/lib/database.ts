@@ -28,14 +28,14 @@ export class SqlServer extends cdk.Construct implements ec2.IConnectable {
       description: 'Database security group',
     });
 
-    const subnetGroup = new rds.cloudformation.DBSubnetGroupResource(this, 'Subnet', {
+    const subnetGroup = new rds.CfnDBSubnetGroup(this, 'Subnet', {
       subnetIds: props.vpc.privateSubnets.map(privateSubnet => privateSubnet.subnetId),
       dbSubnetGroupDescription: 'Database subnet group',
     });
 
     const allocatedStorage = props.allocatedStorage !== undefined ? props.allocatedStorage : 200;
 
-    new rds.cloudformation.DBInstanceResource(this, 'Resource', {
+    new rds.CfnDBInstance(this, 'Resource', {
       allocatedStorage: allocatedStorage.toString(),
       dbInstanceClass: props.instanceClass || 'db.m4.large',
       engine: props.engine || 'sqlserver-se',

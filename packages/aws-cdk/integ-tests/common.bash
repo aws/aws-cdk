@@ -37,6 +37,7 @@ function setup() {
   (
     cd node_modules/@aws-cdk
     ln -s ${scriptdir}/../../@aws-cdk/aws-sns
+    ln -s ${scriptdir}/../../@aws-cdk/aws-iam
     ln -s ${scriptdir}/../../@aws-cdk/cdk
   )
 }
@@ -51,7 +52,7 @@ function assert_diff() {
   local actual=$2
   local expected=$3
 
-  diff ${actual} ${expected} || {
+  diff -w ${actual} ${expected} || {
     echo
     echo "+-----------"
     echo "| expected:"
@@ -94,4 +95,8 @@ function assert_lines() {
     echo "${data}"
     fail "response has ${lines} lines and we expected ${expected} lines to be returned"
   fi
+}
+
+function strip_color_codes() {
+    perl -pe 's/\e\[?.*?[\@-~]//g'
 }

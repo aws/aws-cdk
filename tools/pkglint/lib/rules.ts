@@ -299,9 +299,10 @@ function cdkModuleName(name: string) {
 
   return {
     javaPackage: `software.amazon.awscdk${isCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
-    mavenArtifactId: isCdkPkg ? 'cdk'
-                  : name.startsWith('aws-') ? name.replace(/^aws-/, '')
-                              : `cdk-${name}`,
+    mavenArtifactId:
+      isCdkPkg ? 'cdk'
+               : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
+                                                                      : `cdk-${name}`,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`
   };
 }
@@ -517,6 +518,17 @@ export class MustUseCDKTest extends ValidationRule {
     fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
     fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
     fileShouldContain(this.name, pkg, '.gitignore', '.nycrc');
+  }
+}
+
+/**
+ * Must declare minimum node version
+ */
+export class MustHaveNodeEnginesDeclaration extends ValidationRule {
+  public readonly name = 'package-info/engines';
+
+  public validate(pkg: PackageJson): void {
+    expectJSON(this.name, pkg, 'engines.node', '>= 8.10.0');
   }
 }
 

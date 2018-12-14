@@ -253,12 +253,14 @@ where **S3Bucket** is the logical ID of the bucket in your template:
 
 .. code-block:: json
 
-   "S3Bucket": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-          ...
-      }
-   }
+    {
+       "S3Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+              "prop1": "value1"
+          }
+       }
+    }
 
 You can include this bucket in your |cdk| app,
 as shown in the following example

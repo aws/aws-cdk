@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -27,6 +27,25 @@ export = {
       ],
       Type: "application"
     }));
+
+    test.done();
+  },
+
+  'internet facing load balancer has dependency on IGW'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      DependsOn: ['StackIGW2F0A1126']
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -112,9 +131,11 @@ export = {
     }));
     expect(stack).to(haveResource('AWS::S3::BucketPolicy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "s3:PutObject",
+            Effect: 'Allow',
             Principal: { AWS: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::127311923021:root" ] ] } },
             Resource: { "Fn::Join": [ "", [ { "Fn::GetAtt": [ "AccessLoggingBucketA6D88F29", "Arn" ] }, "/*" ] ] }
           }

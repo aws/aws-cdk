@@ -2,7 +2,7 @@ import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import { AnyIPv4, Connections, IConnectable, IPortRange, SecurityGroup, SecurityGroupRef,
   TcpPort, VpcNetworkRef, VpcSubnetRef  } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './elasticloadbalancing.generated';
+import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
  * Construction properties for a LoadBalancer
@@ -197,9 +197,9 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
    */
   public readonly listenerPorts: ListenerPort[] = [];
 
-  private readonly elb: cloudformation.LoadBalancerResource;
+  private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
-  private readonly listeners: cloudformation.LoadBalancerResource.ListenersProperty[] = [];
+  private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
@@ -213,13 +213,16 @@ export class LoadBalancer extends cdk.Construct implements IConnectable, codedep
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
-    this.elb = new cloudformation.LoadBalancerResource(this, 'Resource', {
+    this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
       listeners: new cdk.Token(() => this.listeners),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });
+    if (props.internetFacing) {
+      this.elb.addDependency(props.vpc.internetDependency());
+    }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
     ifUndefined(props.targets, []).forEach(t => this.addTarget(t));
@@ -375,7 +378,7 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 /**
  * Turn health check parameters into a parameter blob for the LB
  */
-function healthCheckToJSON(healthCheck: HealthCheck): cloudformation.LoadBalancerResource.HealthCheckProperty {
+function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
            ifUndefined(tryWellKnownProtocol(healthCheck.port),
            LoadBalancingProtocol.Tcp));

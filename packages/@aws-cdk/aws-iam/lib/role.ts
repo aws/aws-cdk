@@ -1,5 +1,5 @@
 import { Construct, IDependable } from '@aws-cdk/cdk';
-import { cloudformation } from './iam.generated';
+import { CfnRole } from './iam.generated';
 import { IPrincipal, Policy } from './policy';
 import { ArnPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { AttachedPolicies, undefinedIfEmpty } from './util';
@@ -13,6 +13,16 @@ export interface RoleProps {
    * the `assumeRolePolicy` property.
    */
   assumedBy: PolicyPrincipal;
+
+  /**
+   * ID that the role assumer needs to provide when assuming this role
+   *
+   * If the configured and provided external IDs do not match, the
+   * AssumeRole operation will fail.
+   *
+   * @default No external ID required
+   */
+  externalId?: string;
 
   /**
    * A list of ARNs for managed policies associated with this role.
@@ -120,12 +130,12 @@ export class Role extends Construct implements IRole {
   constructor(parent: Construct, name: string, props: RoleProps) {
     super(parent, name);
 
-    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy);
+    this.assumeRolePolicy = createAssumeRolePolicy(props.assumedBy, props.externalId);
     this.managedPolicyArns = props.managedPolicyArns || [ ];
 
     validateMaxSessionDuration(props.maxSessionDurationSec);
 
-    const role = new cloudformation.RoleResource(this, 'Resource', {
+    const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
       managedPolicyArns: undefinedIfEmpty(() => this.managedPolicyArns),
       policies: _flatten(props.inlinePolicies),
@@ -143,7 +153,7 @@ export class Role extends Construct implements IRole {
       if (policies == null || Object.keys(policies).length === 0) {
         return undefined;
       }
-      const result = new Array<cloudformation.RoleResource.PolicyProperty>();
+      const result = new Array<CfnRole.PolicyProperty>();
       for (const policyName of Object.keys(policies)) {
         const policyDocument = policies[policyName];
         result.push({ policyName, policyDocument });
@@ -194,11 +204,17 @@ export interface IRole extends IPrincipal, IDependable {
   readonly roleArn: string;
 }
 
-function createAssumeRolePolicy(principal: PolicyPrincipal) {
-  return new PolicyDocument()
-    .addStatement(new PolicyStatement()
+function createAssumeRolePolicy(principal: PolicyPrincipal, externalId?: string) {
+  const statement = new PolicyStatement();
+  statement
       .addPrincipal(principal)
-      .addAction(principal.assumeRoleAction));
+      .addAction(principal.assumeRoleAction);
+
+  if (externalId !== undefined) {
+    statement.addCondition('StringEquals', { 'sts:ExternalId': externalId });
+  }
+
+  return new PolicyDocument().addStatement(statement);
 }
 
 function validateMaxSessionDuration(duration?: number) {

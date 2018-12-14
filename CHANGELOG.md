@@ -1,3 +1,81 @@
+## [0.20.0](https://github.com/awslabs/aws-cdk/compare/v0.19.0...v0.20.0) (2018-12-13)
+
+
+### Bug Fixes
+
+* **assert:** Adjust assertion behavior to be stricter ([#1289](https://github.com/awslabs/aws-cdk/issues/1289)) ([0919bf4](https://github.com/awslabs/aws-cdk/commit/0919bf4)), closes [awslabs/cdk-ops#186](https://github.com/awslabs/cdk-ops/issues/186)
+* **aws-cdk:** fix profile use in non-'aws' partitions ([#1283](https://github.com/awslabs/aws-cdk/issues/1283)) ([5478913](https://github.com/awslabs/aws-cdk/commit/5478913)), closes [#1262](https://github.com/awslabs/aws-cdk/issues/1262) [#1109](https://github.com/awslabs/aws-cdk/issues/1109)
+* upgrade jsii to v0.7.12 ([#1328](https://github.com/awslabs/aws-cdk/issues/1328)) ([62b7941](https://github.com/awslabs/aws-cdk/commit/62b7941))
+* **aws-cdk:** fix YAML line wrapping issue ([#1334](https://github.com/awslabs/aws-cdk/issues/1334)) ([48b9bdd](https://github.com/awslabs/aws-cdk/commit/48b9bdd)), closes [#1309](https://github.com/awslabs/aws-cdk/issues/1309)
+* **aws-codecommit:** make the onCommit CloudWatch Event respect creating the branch as well. ([#1320](https://github.com/awslabs/aws-cdk/issues/1320)) ([cb1aed9](https://github.com/awslabs/aws-cdk/commit/cb1aed9))
+* **aws-ecr:** add the `addToPipeline` method to IRepository. ([#1329](https://github.com/awslabs/aws-cdk/issues/1329)) ([c4a9b74](https://github.com/awslabs/aws-cdk/commit/c4a9b74))
+* **aws-ecs:** fix healthCheckGracePeriodSeconds ([#1266](https://github.com/awslabs/aws-cdk/issues/1266)) ([3a89e21](https://github.com/awslabs/aws-cdk/commit/3a89e21)), closes [#1265](https://github.com/awslabs/aws-cdk/issues/1265)
+* **aws-ecs:** set permissions for 'awslogs' log driver ([#1291](https://github.com/awslabs/aws-cdk/issues/1291)) ([f5bc59b](https://github.com/awslabs/aws-cdk/commit/f5bc59b)), closes [#1279](https://github.com/awslabs/aws-cdk/issues/1279)
+* **aws-lambda:** code.asset now supports jar files, fixes [#1294](https://github.com/awslabs/aws-cdk/issues/1294) ([#1330](https://github.com/awslabs/aws-cdk/issues/1330)) ([3076070](https://github.com/awslabs/aws-cdk/commit/3076070))
+* **aws-logs:** set default log retention of LogGroup to 731 instead of 730 ([#1344](https://github.com/awslabs/aws-cdk/issues/1344)) ([71dc09f](https://github.com/awslabs/aws-cdk/commit/71dc09f)), closes [#1343](https://github.com/awslabs/aws-cdk/issues/1343)
+
+
+### Features
+
+* **aws-cdk:** directory assets follow symlinks ([#1318](https://github.com/awslabs/aws-cdk/issues/1318)) ([2dfd593](https://github.com/awslabs/aws-cdk/commit/2dfd593)), closes [#731](https://github.com/awslabs/aws-cdk/issues/731)
+* **aws-s3:** orphan buckets by default ([#1273](https://github.com/awslabs/aws-cdk/issues/1273)) ([2eb47ad](https://github.com/awslabs/aws-cdk/commit/2eb47ad)), closes [#1269](https://github.com/awslabs/aws-cdk/issues/1269)
+* **core:** include jsii runtime version in analytics ([#1288](https://github.com/awslabs/aws-cdk/issues/1288)) ([f06de18](https://github.com/awslabs/aws-cdk/commit/f06de18)), closes [awslabs/jsii#325](https://github.com/awslabs/jsii/issues/325) [#1258](https://github.com/awslabs/aws-cdk/issues/1258) [awslabs/cdk-ops#127](https://github.com/awslabs/cdk-ops/issues/127)
+* **core:** only include cdk libs in version reporting ([#1290](https://github.com/awslabs/aws-cdk/issues/1290)) ([6184423](https://github.com/awslabs/aws-cdk/commit/6184423)), closes [awslabs/cdk-ops#172](https://github.com/awslabs/cdk-ops/issues/172)
+* **docs:** add design process description & basic style guide ([#1229](https://github.com/awslabs/aws-cdk/issues/1229)) ([5ffa7e2](https://github.com/awslabs/aws-cdk/commit/5ffa7e2)), closes [awslabs/cdk-ops#177](https://github.com/awslabs/cdk-ops/issues/177)
+* **toolkit:** include toolkit version in AWS::CDK::Metadata ([#1287](https://github.com/awslabs/aws-cdk/issues/1287)) ([5004f50](https://github.com/awslabs/aws-cdk/commit/5004f50)), closes [#1286](https://github.com/awslabs/aws-cdk/issues/1286)
+
+
+### BREAKING CHANGES
+
+* **assert:** the behavior change of `haveResource` can cause tests to
+fail. If allowing extension of the expected values is the intended behavior, you can
+switch to the `haveResourceLike` matcher instead, which exposes the previous
+behavior.
+
+
+
+## [0.19.0](https://github.com/awslabs/aws-cdk/compare/v0.18.1...v0.19.0) (2018-12-04)
+
+
+### Bug Fixes
+
+* **aws-cdk:** add '-h' flag to bring up help ([#1274](https://github.com/awslabs/aws-cdk/issues/1274)) ([47dafb0](https://github.com/awslabs/aws-cdk/commit/47dafb0)), closes [#1259](https://github.com/awslabs/aws-cdk/issues/1259)
+* **aws-cloudfront:** Allow to disable IPv6 on cloudfront distribution ([#1244](https://github.com/awslabs/aws-cdk/issues/1244)) ([10b7092](https://github.com/awslabs/aws-cdk/commit/10b7092)), closes [#1243](https://github.com/awslabs/aws-cdk/issues/1243)
+* **aws-cloudtrail:** correct S3 bucket policy and dependency chain ([#1268](https://github.com/awslabs/aws-cdk/issues/1268)) ([0de2da8](https://github.com/awslabs/aws-cdk/commit/0de2da8)), closes [#1172](https://github.com/awslabs/aws-cdk/issues/1172)
+* **aws-ec2:** fix code generation of IcmpPing ([#1235](https://github.com/awslabs/aws-cdk/issues/1235)) ([6a13a18](https://github.com/awslabs/aws-cdk/commit/6a13a18)), closes [#1231](https://github.com/awslabs/aws-cdk/issues/1231)
+* **cdk:** don't use instanceof in App ([#1249](https://github.com/awslabs/aws-cdk/issues/1249)) ([a45c3bd](https://github.com/awslabs/aws-cdk/commit/a45c3bd)), closes [#1245](https://github.com/awslabs/aws-cdk/issues/1245)
+* **cdk init:** rename 'dotnet' to 'csharp' ([#1210](https://github.com/awslabs/aws-cdk/issues/1210)) ([da6a799](https://github.com/awslabs/aws-cdk/commit/da6a799)), closes [#1123](https://github.com/awslabs/aws-cdk/issues/1123)
+* **cdk init:** update 'app' init template ([#1209](https://github.com/awslabs/aws-cdk/issues/1209)) ([0287109](https://github.com/awslabs/aws-cdk/commit/0287109)), closes [#1124](https://github.com/awslabs/aws-cdk/issues/1124) [#1128](https://github.com/awslabs/aws-cdk/issues/1128) [#1214](https://github.com/awslabs/aws-cdk/issues/1214)
+
+
+### Features
+
+* **aws-codebuild:** allow using docker image assets as build images ([#1233](https://github.com/awslabs/aws-cdk/issues/1233)) ([72413c1](https://github.com/awslabs/aws-cdk/commit/72413c1)), closes [#1232](https://github.com/awslabs/aws-cdk/issues/1232) [#1219](https://github.com/awslabs/aws-cdk/issues/1219)
+* **aws-codebuild:** rename the Project methods for adding Actions to CodePipeline. ([#1254](https://github.com/awslabs/aws-cdk/issues/1254)) ([825e448](https://github.com/awslabs/aws-cdk/commit/825e448)), closes [#1211](https://github.com/awslabs/aws-cdk/issues/1211)
+* **aws-ecr:** add an ECR Repository source CodePipeline Action. ([#1255](https://github.com/awslabs/aws-cdk/issues/1255)) ([01cc8a2](https://github.com/awslabs/aws-cdk/commit/01cc8a2))
+* **app-delivery:** IAM policy for deploy stack (#1165) ([edc9a21](https://github.com/awslabs/aws-cdk/commit/edc9a21)), closes [#1165](https://github.com/awslabs/aws-cdk/issues/1165) [#1151](https://github.com/awslabs/aws-cdk/issues/1151)
+* Update to CloudFormation spec v2.16.0 ([#1280](https://github.com/awslabs/aws-cdk/issues/1280)) ([9df5c54](https://github.com/awslabs/aws-cdk/commit/9df5c54))
+
+
+### BREAKING CHANGES
+
+* **aws-codebuild:** `ecr.RepositoryRef` has been replaced by `ecr.IRepository`, which
+means that `RepositoryRef.import` is now `Repository.import`. Futhermore, the CDK
+Toolkit must also be upgraded since the docker asset protocol was modified.
+`IRepository.grantUseImage` was renamed to `IRepository.grantPull`.
+* **aws-codebuild:** `addBuildToPipeline` was renamed to `addToPipeline`
+and `addTestToPipeline` was renamed to `addPipelineToTest` in order to align
+with naming conventions.
+* `CloudFormationCapabilities.IAM` renamed to
+`CloudFormation.AnonymousIAM` and `PipelineCloudFormationDeployActionProps.capabilities?: CloudFormationCapabilities[]` has been changed to
+`PipelineCloudFormationDeployActionProps.capabilities?:
+CloudFormationCapabilities` no longer an array.
+`PipelineCloudFormationDeployActionProps.fullPermissions?:` has been
+renamed to `PipelineCloudFormationDeployActionProps.adminPermissions:`
+and is required instead of optional.
+
+
+
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/awslabs/aws-cdk/compare/v0.18.0...v0.18.1) (2018-11-21)
 

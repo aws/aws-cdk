@@ -1,4 +1,5 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import { Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { LogGroup, LogGroupRef } from '../lib';
@@ -30,7 +31,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 730
+      RetentionInDays: 731
     }));
 
     test.done();
@@ -118,6 +119,31 @@ export = {
     test.equal(metric.metricName, 'Field');
 
     test.done();
-  }
+  },
 
+  'grant'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    lg.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [ "logs:CreateLogStream", "logs:PutLogEvents" ],
+            Effect: "Allow",
+            Resource: { "Fn::GetAtt": [ "LogGroupF5B46931", "Arn" ] }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
+  },
 };

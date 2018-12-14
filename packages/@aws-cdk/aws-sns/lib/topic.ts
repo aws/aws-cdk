@@ -1,5 +1,5 @@
 import { Construct,  } from '@aws-cdk/cdk';
-import { cloudformation } from './sns.generated';
+import { CfnTopic } from './sns.generated';
 import { TopicRef } from './topic-ref';
 
 /**
@@ -37,7 +37,7 @@ export class Topic extends TopicRef {
   constructor(parent: Construct, name: string, props: TopicProps = {}) {
     super(parent, name);
 
-    const resource = new cloudformation.TopicResource(this, 'Resource', {
+    const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
       topicName: props.topicName
     });

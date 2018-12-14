@@ -5,7 +5,7 @@ import elbv2 = require('@aws-cdk/aws-elasticloadbalancingv2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
-import { cloudformation } from '../ecs.generated';
+import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
 /**
@@ -88,9 +88,9 @@ export abstract class BaseService extends cdk.Construct
    */
   public readonly taskDefinition: TaskDefinition;
 
-  protected loadBalancers = new Array<cloudformation.ServiceResource.LoadBalancerProperty>();
-  protected networkConfiguration?: cloudformation.ServiceResource.NetworkConfigurationProperty;
-  private readonly resource: cloudformation.ServiceResource;
+  protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
+  protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
   constructor(parent: cdk.Construct,
@@ -103,7 +103,7 @@ export abstract class BaseService extends cdk.Construct
 
     this.taskDefinition = taskDefinition;
 
-    this.resource = new cloudformation.ServiceResource(this, "Service", {
+    this.resource = new CfnService(this, "Service", {
       desiredCount: props.desiredCount,
       serviceName: props.serviceName,
       loadBalancers: new cdk.Token(() => this.loadBalancers),
@@ -111,6 +111,7 @@ export abstract class BaseService extends cdk.Construct
         maximumPercent: props.maximumPercent || 200,
         minimumHealthyPercent: props.minimumHealthyPercent || 50
       },
+      healthCheckGracePeriodSeconds: props.healthCheckGracePeriodSeconds,
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: new cdk.Token(() => this.networkConfiguration),
       ...additionalProps

@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './ec2.generated';
+import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
+import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { DEFAULT_SUBNET_NAME, subnetId  } from './util';
 import { SubnetType, VpcNetworkRef, VpcPlacementStrategy, VpcSubnetRef } from './vpc-ref';
@@ -241,7 +242,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   /**
    * The VPC resource
    */
-  private resource: cloudformation.VPCResource;
+  private resource: CfnVPC;
 
   /**
    * The NetworkBuilder
@@ -283,7 +284,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
 
     // Define a VPC using the provided CIDR range
-    this.resource = new cloudformation.VPCResource(this, 'Resource', {
+    this.resource = new CfnVPC(this, 'Resource', {
       cidrBlock,
       enableDnsHostnames,
       enableDnsSupport,
@@ -309,10 +310,11 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
-      const igw = new cloudformation.InternetGatewayResource(this, 'IGW', {
+      const igw = new CfnInternetGateway(this, 'IGW', {
         tags: new cdk.TagManager(this),
       });
-      const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
+      this.internetDependencies.push(igw);
+      const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref
       });
@@ -511,7 +513,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
-    const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
+    const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
       availabilityZone: props.availabilityZone,
@@ -519,14 +521,14 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
       tags: this.tags,
     });
     this.subnetId = subnet.subnetId;
-    const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
+    const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
       tags: new cdk.TagManager(this),
     });
     this.routeTableId = table.ref;
 
     // Associate the public route table for this subnet, to this subnet
-    const routeAssoc = new cloudformation.SubnetRouteTableAssociationResource(this, 'RouteTableAssociation', {
+    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref
     });
@@ -535,7 +537,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
   }
 
   protected addDefaultRouteToNAT(natGatewayId: string) {
-    new cloudformation.RouteResource(this, `DefaultRoute`, {
+    new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
@@ -547,9 +549,9 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
    * on the IGW's attachment to the VPC.
    */
   protected addDefaultRouteToIGW(
-    gateway: cloudformation.InternetGatewayResource,
-    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
-    const route = new cloudformation.RouteResource(this, `DefaultRoute`, {
+    gateway: CfnInternetGateway,
+    gatewayAttachment: CfnVPCGatewayAttachment) {
+    const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId: gateway.ref
@@ -571,8 +573,8 @@ export class VpcPublicSubnet extends VpcSubnet {
    * on the IGW's attachment to the VPC.
    */
   public addDefaultIGWRouteEntry(
-    gateway: cloudformation.InternetGatewayResource,
-    gatewayAttachment: cloudformation.VPCGatewayAttachmentResource) {
+    gateway: CfnInternetGateway,
+    gatewayAttachment: CfnVPCGatewayAttachment) {
     this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
@@ -583,9 +585,9 @@ export class VpcPublicSubnet extends VpcSubnet {
    */
   public addNatGateway() {
     // Create a NAT Gateway in this public subnet
-    const ngw = new cloudformation.NatGatewayResource(this, `NATGateway`, {
+    const ngw = new CfnNatGateway(this, `NATGateway`, {
       subnetId: this.subnetId,
-      allocationId: new cloudformation.EIPResource(this, `EIP`, {
+      allocationId: new CfnEIP(this, `EIP`, {
         domain: 'vpc'
       }).eipAllocationId,
       tags: new cdk.TagManager(this),

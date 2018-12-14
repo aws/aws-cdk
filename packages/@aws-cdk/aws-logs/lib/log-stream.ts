@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { CfnLogStream } from './logs.generated';
 
 /**
  * Properties for importing a LogStream
@@ -79,7 +79,7 @@ export class LogStream extends LogStreamRef {
   constructor(parent: cdk.Construct, id: string, props: LogStreamProps) {
     super(parent, id);
 
-    const resource = new cloudformation.LogStreamResource(this, 'Resource', {
+    const resource = new CfnLogStream(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       logStreamName: props.logStreamName
     });

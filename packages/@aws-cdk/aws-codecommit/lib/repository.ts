@@ -1,7 +1,7 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codecommit.generated';
+import { CfnRepository } from './codecommit.generated';
 import { CommonPipelineSourceActionProps, PipelineSourceAction } from './pipeline-action';
 
 /**
@@ -104,7 +104,7 @@ export abstract class RepositoryRef extends cdk.Construct {
 
   /**
    * Defines a CloudWatch event rule which triggers when a reference is
-   * created (i.e. a new brach/tag is created) to the repository.
+   * created (i.e. a new branch/tag is created) to the repository.
    */
   public onReferenceCreated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = this.onStateChange(name, target, options);
@@ -114,11 +114,11 @@ export abstract class RepositoryRef extends cdk.Construct {
 
   /**
    * Defines a CloudWatch event rule which triggers when a reference is
-   * updated (i.e. a commit is pushed to an existig branch) from the repository.
+   * updated (i.e. a commit is pushed to an existing or new branch) from the repository.
    */
   public onReferenceUpdated(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
     const rule = this.onStateChange(name, target, options);
-    rule.addEventPattern({ detail: { event: [ 'referenceUpdated' ] } });
+    rule.addEventPattern({ detail: { event: [ 'referenceCreated', 'referenceUpdated' ] } });
     return rule;
   }
 
@@ -222,13 +222,13 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository
  */
 export class Repository extends RepositoryRef {
-  private readonly repository: cloudformation.RepositoryResource;
-  private readonly triggers = new Array<cloudformation.RepositoryResource.RepositoryTriggerProperty>();
+  private readonly repository: CfnRepository;
+  private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(parent: cdk.Construct, name: string, props: RepositoryProps) {
     super(parent, name);
 
-    this.repository = new cloudformation.RepositoryResource(this, 'Resource', {
+    this.repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: this.triggers

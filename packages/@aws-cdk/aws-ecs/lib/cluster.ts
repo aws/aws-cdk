@@ -4,7 +4,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
-import { cloudformation } from './ecs.generated';
+import { CfnCluster } from './ecs.generated';
 
 /**
  * Properties to define an ECS cluster
@@ -62,7 +62,7 @@ export class Cluster extends cdk.Construct implements ICluster {
   constructor(parent: cdk.Construct, name: string, props: ClusterProps) {
     super(parent, name);
 
-    const cluster = new cloudformation.ClusterResource(this, 'Resource', {clusterName: props.clusterName});
+    const cluster = new CfnCluster(this, 'Resource', {clusterName: props.clusterName});
 
     this.vpc = props.vpc;
     this.clusterArn = cluster.clusterArn;

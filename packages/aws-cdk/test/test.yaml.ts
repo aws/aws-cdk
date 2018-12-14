@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { toYAML } from '../lib/serialize';
+import { fromYAML, toYAML } from '../lib/serialize';
 
 // Preferred quote of the YAML library
 const q = '"';
@@ -64,4 +64,18 @@ export = {
 
     test.done();
   },
+
+  'validate emission of very long lines'(test: Test) {
+    const template = {
+      Field: ' very long line that starts with a space. very long line that starts with a space. start on a new line'
+    };
+
+    const output = toYAML(template);
+
+    const parsed = fromYAML(output);
+
+    test.deepEqual(template, parsed);
+
+    test.done();
+  }
 };

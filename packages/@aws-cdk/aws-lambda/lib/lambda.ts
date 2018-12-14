@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation } from './lambda.generated';
+import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 
 /**
@@ -241,7 +241,7 @@ export class Function extends FunctionRef {
       this.role.addToPolicy(statement);
     }
 
-    const resource = new cloudformation.FunctionResource(this, 'Resource', {
+    const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code.toJSON()),
@@ -321,7 +321,7 @@ export class Function extends FunctionRef {
    * Returns the VpcConfig that should be added to the
    * Lambda creation properties.
    */
-  private configureVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
+  private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
       throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
     }

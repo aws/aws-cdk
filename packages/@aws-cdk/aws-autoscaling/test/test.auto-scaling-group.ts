@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
@@ -237,6 +237,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "test:SpecialName",
@@ -244,7 +245,6 @@ export = {
             Resource: "*"
           }
         ],
-        Version: "2012-10-17"
       },
     }));
     test.done();
@@ -265,17 +265,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    UpdatePolicy: {
-      AutoScalingReplacingUpdate: {
-      WillReplace: true
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+        WillReplace: true
+        }
+      },
+      CreationPolicy: {
+        AutoScalingCreationPolicy: {
+        MinSuccessfulInstancesPercent: 50
+        }
       }
-    },
-    CreationPolicy: {
-      AutoScalingCreationPolicy: {
-      MinSuccessfulInstancesPercent: 50
-      }
-    }
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -293,21 +293,21 @@ export = {
       vpc,
       updateType: autoscaling.UpdateType.RollingUpdate,
       rollingUpdateConfiguration: {
-      minSuccessfulInstancesPercent: 50,
-      pauseTimeSec: 345
+        minSuccessfulInstancesPercent: 50,
+        pauseTimeSec: 345
       }
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    UpdatePolicy: {
-      "AutoScalingRollingUpdate": {
-      "MinSuccessfulInstancesPercent": 50,
-      "WaitOnResourceSignals": true,
-      "PauseTime": "PT5M45S",
-      "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
-      },
-    }
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      UpdatePolicy: {
+        "AutoScalingRollingUpdate": {
+        "MinSuccessfulInstancesPercent": 50,
+        "WaitOnResourceSignals": true,
+        "PauseTime": "PT5M45S",
+        "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
+        },
+      }
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -328,13 +328,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    CreationPolicy: {
-      ResourceSignal: {
-      Count: 5,
-      Timeout: 'PT11M6S'
-      },
-    }
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      CreationPolicy: {
+        ResourceSignal: {
+          Count: 5,
+          Timeout: 'PT11M6S'
+        },
+      }
     }, ResourcePart.CompleteDefinition));
 
     test.done();

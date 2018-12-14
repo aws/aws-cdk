@@ -1,4 +1,113 @@
 
+# CloudFormation Resource Specification v2.16.0
+
+## New Resource Types
+
+* AWS::AppSync::FunctionConfiguration
+* AWS::CloudFormation::Macro
+* AWS::EC2::EC2Fleet
+* AWS::EC2::TransitGateway
+* AWS::EC2::TransitGatewayAttachment
+* AWS::EC2::TransitGatewayRoute
+* AWS::EC2::TransitGatewayRouteTable
+* AWS::EC2::TransitGatewayRouteTableAssociation
+* AWS::EC2::TransitGatewayRouteTablePropagation
+* AWS::Kinesis::StreamConsumer
+* AWS::Route53Resolver::ResolverEndpoint
+* AWS::Route53Resolver::ResolverRule
+* AWS::ServiceDiscovery::HttpNamespace
+* Alexa::ASK::Skill
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::ApiGateway::Stage Tags (__added__)
+* AWS::AutoScaling::AutoScalingGroup MixedInstancesPolicy (__added__)
+* AWS::Batch::JobDefinition NodeProperties (__added__)
+* AWS::Batch::JobDefinition ContainerProperties.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm MetricName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm Namespace.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::Alarm Period.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DynamoDB::Table BillingMode (__added__)
+* AWS::DynamoDB::Table ProvisionedThroughput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::EIP PublicIpv4Pool (__added__)
+* AWS::EC2::Instance ElasticInferenceAccelerators (__added__)
+* AWS::EC2::Instance LicenseSpecifications (__added__)
+* AWS::EMR::Cluster Steps (__added__)
+* AWS::IoT1Click::Placement PlacementName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT1Click::Project ProjectName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function Layers (__added__)
+* AWS::RDS::DBCluster DeletionProtection (__added__)
+* AWS::RDS::DBInstance DeleteAutomatedBackups (__added__)
+* AWS::RDS::DBInstance DeletionProtection (__added__)
+* AWS::S3::Bucket PublicAccessBlockConfiguration (__added__)
+* AWS::SNS::Topic KmsMasterKeyId (__added__)
+
+## Property Type Changes
+
+* AWS::AutoScaling::AutoScalingGroup.InstancesDistribution (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplate (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides (__added__)
+* AWS::AutoScaling::AutoScalingGroup.MixedInstancesPolicy (__added__)
+* AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification (__added__)
+* AWS::Batch::JobDefinition.NodeProperties (__added__)
+* AWS::Batch::JobDefinition.NodeRangeProperty (__added__)
+* AWS::EC2::Instance.ElasticInferenceAccelerator (__added__)
+* AWS::EC2::Instance.LicenseSpecification (__added__)
+* AWS::EMR::Cluster.HadoopJarStepConfig (__added__)
+* AWS::EMR::Cluster.KeyValue (__added__)
+* AWS::EMR::Cluster.StepConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.RedirectConfig (__added__)
+* AWS::S3::Bucket.PublicAccessBlockConfiguration (__added__)
+* AWS::ApiGateway::Deployment.StageDescription Tags (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources LaunchTemplate (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources PlacementGroup (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties InstanceType (__added__)
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ProvisionedThroughput.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::Cluster.JobFlowInstancesConfig KeepJobFlowAliveWhenNoSteps (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action Order (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action TargetGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateCognitoConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action AuthenticateOidcConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action FixedResponseConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action Order (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action RedirectConfig (__added__)
+* AWS::ElasticLoadBalancingV2::ListenerRule.Action TargetGroupArn.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 
 
 # CloudFormation Resource Specification v2.13.0

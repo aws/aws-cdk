@@ -1,7 +1,8 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogStream } from './log-stream';
-import { cloudformation } from './logs.generated';
+import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
@@ -110,6 +111,26 @@ export abstract class LogGroupRef extends cdk.Construct {
 
     return new cloudwatch.Metric({ metricName, namespace: metricNamespace });
   }
+
+  /**
+   * Give permissions to write to create and write to streams in this log group
+   */
+  public grantWrite(principal?: iam.IPrincipal) {
+    this.grant(principal, 'logs:CreateLogStream', 'logs:PutLogEvents');
+  }
+
+  /**
+   * Give the indicated permissions on this log group and all streams
+   */
+  public grant(principal?: iam.IPrincipal, ...actions: string[]) {
+    if (!principal) { return; }
+
+    principal.addToPolicy(new iam.PolicyStatement()
+      .addActions(...actions)
+      // This ARN includes a ':*' at the end to include the log streams.
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
+      .addResource(`${this.logGroupArn}`));
+  }
 }
 
 /**
@@ -128,7 +149,7 @@ export interface LogGroupProps {
    *
    * To retain all logs, set this value to Infinity.
    *
-   * @default 730 days (2 years)
+   * @default 731 days (2 years)
    */
   retentionDays?: number;
 
@@ -163,14 +184,14 @@ export class LogGroup extends LogGroupRef {
     super(parent, id);
 
     let retentionInDays = props.retentionDays;
-    if (retentionInDays === undefined) { retentionInDays = 730; }
+    if (retentionInDays === undefined) { retentionInDays = 731; }
     if (retentionInDays === Infinity) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && retentionInDays <= 0) {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
-    const resource = new cloudformation.LogGroupResource(this, 'Resource', {
+    const resource = new CfnLogGroup(this, 'Resource', {
       logGroupName: props.logGroupName,
       retentionInDays,
     });

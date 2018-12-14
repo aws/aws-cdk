@@ -41,6 +41,30 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 7. Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
    commit message.
 
+## Design Process
+
+In order to enable efficient collaboration over design documents, the following process should be followed:
+
+1. Open an issue describing the requirements and constraints the design must satisfy
+   + Provide a clear list of use-cases that the design intends to address
+2. Open a pull request with a Markdown document describing the proposed design. The document should be placed in the
+   `design` directory at the root of the repository.
+   + Design discussions are tracked using the comment stream of the pull request
+   + The design document will be merged in and retained as if it were code
+
+## Style Guide
+
+### Markdown
+
+* Adhere to the [GitHub Flavored Markdown](https://github.github.com/gfm/) syntax
+* `120` character lines
+* ATX style headings (e.g: `## H2 heading`)
+
+### Typescript and Javascript
+
+* `2` space indentation
+* `120` character lines
+
 ## Tools
 
 The CDK is a big project, and, at the moment, all of the CDK modules are mastered in a single monolithic repository
@@ -169,6 +193,27 @@ $ nodeunit test/test.*.js
 <BOOM>
 ```
 
+### Running integration tests in parallel
+
+Integration tests may take a long time to complete. We can speed this up by running them in parallel
+in different regions.
+
+```shell
+# Install GNU parallel (may require uninstall 'moreutils' if you have it)
+$ apt-get install parallel
+$ brew install parallel
+
+$ scripts/run-integ-parallel @aws-cdk/aws-ec2 @aws-cdk/aws-autoscaling ...
+```
+
+### Visualizing dependencies in a CloudFormation Template
+
+Use GraphViz with `template-deps-to-dot`:
+
+```shell
+$ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > deps.png
+```
+
 ### Build Documentation Only
 
 The CDK documentation source is hosted under [`./docs/src`](./docs/src). Module reference documentation is gathered
@@ -200,7 +245,7 @@ Guidelines:
    updates to automatically be picked up.
  * Make sure `package-lock.json` files are included in your commit.
 
-### Finding Dependency Cycles
+### Finding dependency cycles between packages
 
 You can use `find-cycles` to print a list of internal dependency cycles:
 

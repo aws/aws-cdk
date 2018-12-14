@@ -2,7 +2,7 @@ import appscaling = require('@aws-cdk/aws-applicationautoscaling');
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Construct, TagManager, Tags, Token } from '@aws-cdk/cdk';
-import { cloudformation as dynamodb } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
 
@@ -41,15 +41,27 @@ export interface TableProps {
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
+   *
+   * Can only be provided if billingMode is Provisioned.
+   *
    * @default 5
    */
   readCapacity?: number;
   /**
    * The write capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
+   *
+   * Can only be provided if billingMode is Provisioned.
+   *
    * @default 5
    */
   writeCapacity?: number;
+
+  /**
+   * Specify how you are charged for read and write throughput and how you manage capacity.
+   * @default Provisioned
+   */
+  billingMode?: BillingMode;
 
   /**
    * Enforces a particular physical table name.
@@ -134,12 +146,18 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
 
   /**
    * The read capacity for the global secondary index.
+   *
+   * Can only be provided if table billingMode is Provisioned or undefined.
+   *
    * @default 5
    */
   readCapacity?: number;
 
   /**
    * The write capacity for the global secondary index.
+   *
+   * Can only be provided if table billingMode is Provisioned or undefined.
+   *
    * @default 5
    */
   writeCapacity?: number;
@@ -160,12 +178,12 @@ export class Table extends Construct {
   public readonly tableName: string;
   public readonly tableStreamArn: string;
 
-  private readonly table: dynamodb.TableResource;
+  private readonly table: CfnTable;
 
-  private readonly keySchema = new Array<dynamodb.TableResource.KeySchemaProperty>();
-  private readonly attributeDefinitions = new Array<dynamodb.TableResource.AttributeDefinitionProperty>();
-  private readonly globalSecondaryIndexes = new Array<dynamodb.TableResource.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Array<dynamodb.TableResource.LocalSecondaryIndexProperty>();
+  private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
+  private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
+  private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
+  private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
   private readonly secondaryIndexNames: string[] = [];
   private readonly nonKeyAttributes: string[] = [];
@@ -173,6 +191,7 @@ export class Table extends Construct {
   private tablePartitionKey?: Attribute;
   private tableSortKey?: Attribute;
 
+  private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
@@ -180,14 +199,21 @@ export class Table extends Construct {
   constructor(parent: Construct, name: string, props: TableProps = {}) {
     super(parent, name);
 
-    this.table = new dynamodb.TableResource(this, 'Resource', {
+    this.billingMode = props.billingMode || BillingMode.Provisioned;
+    this.validateProvisioning(props);
+
+    this.table = new CfnTable(this, 'Resource', {
       tableName: props.tableName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: new Token(() => this.globalSecondaryIndexes.length > 0 ? this.globalSecondaryIndexes : undefined),
       localSecondaryIndexes: new Token(() => this.localSecondaryIndexes.length > 0 ? this.localSecondaryIndexes : undefined),
       pointInTimeRecoverySpecification: props.pitrEnabled ? { pointInTimeRecoveryEnabled: props.pitrEnabled } : undefined,
-      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 },
+      billingMode: this.billingMode === BillingMode.PayPerRequest ? this.billingMode : undefined,
+      provisionedThroughput: props.billingMode === BillingMode.PayPerRequest ? undefined : {
+        readCapacityUnits: props.readCapacity || 5,
+        writeCapacityUnits: props.writeCapacity || 5
+      },
       sseSpecification: props.sseEnabled ? { sseEnabled: props.sseEnabled } : undefined,
       streamSpecification: props.streamSpecification ? { streamViewType: props.streamSpecification } : undefined,
       tags: new TagManager(this, { initialTags: props.tags }),
@@ -246,6 +272,7 @@ export class Table extends Construct {
       throw new RangeError('a maximum number of global secondary index per table is 5');
     }
 
+    this.validateProvisioning(props);
     this.validateIndexName(props.indexName);
 
     // build key schema and projection for index
@@ -257,7 +284,10 @@ export class Table extends Construct {
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,
-      provisionedThroughput: { readCapacityUnits: props.readCapacity || 5, writeCapacityUnits: props.writeCapacity || 5 }
+      provisionedThroughput: this.billingMode === BillingMode.PayPerRequest ? undefined : {
+        readCapacityUnits: props.readCapacity || 5,
+        writeCapacityUnits: props.writeCapacity || 5
+      }
     });
 
     this.indexScaling.set(props.indexName, {});
@@ -301,6 +331,9 @@ export class Table extends Construct {
     if (this.tableScaling.scalableReadAttribute) {
       throw new Error('Read AutoScaling already enabled for this table');
     }
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
 
     return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
@@ -320,6 +353,9 @@ export class Table extends Construct {
     if (this.tableScaling.scalableWriteAttribute) {
       throw new Error('Write AutoScaling already enabled for this table');
     }
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
 
     return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DynamoDb,
@@ -336,6 +372,9 @@ export class Table extends Construct {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
       throw new Error(`No global secondary index with name ${indexName}`);
@@ -359,6 +398,9 @@ export class Table extends Construct {
    * @returns An object to configure additional AutoScaling settings for this attribute
    */
   public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
+    }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
       throw new Error(`No global secondary index with name ${indexName}`);
@@ -446,6 +488,19 @@ export class Table extends Construct {
   }
 
   /**
+   * Validate read and write capacity are not specified for on-demand tables (billing mode PAY_PER_REQUEST).
+   *
+   * @param props read and write capacity properties
+   */
+  private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number}): void {
+    if (this.billingMode === BillingMode.PayPerRequest) {
+      if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
+        throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
+      }
+    }
+  }
+
+  /**
    * Validate index name to check if a duplicate name already exists.
    *
    * @param indexName a name of global or local secondary index
@@ -481,9 +536,9 @@ export class Table extends Construct {
     });
   }
 
-  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): dynamodb.TableResource.KeySchemaProperty[] {
+  private buildIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute): CfnTable.KeySchemaProperty[] {
     this.registerAttribute(partitionKey);
-    const indexKeySchema: dynamodb.TableResource.KeySchemaProperty[] = [
+    const indexKeySchema: CfnTable.KeySchemaProperty[] = [
       { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE }
     ];
 
@@ -495,7 +550,7 @@ export class Table extends Construct {
     return indexKeySchema;
   }
 
-  private buildIndexProjection(props: SecondaryIndexProps): dynamodb.TableResource.ProjectionProperty {
+  private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.Include && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
       throw new Error(`non-key attributes should be specified when using ${ProjectionType.Include} projection type`);
@@ -573,6 +628,20 @@ export enum AttributeType {
   Binary = 'B',
   Number = 'N',
   String = 'S',
+}
+
+/**
+ * DyanmoDB's Read/Write capacity modes.
+ */
+export enum BillingMode {
+  /**
+   * Pay only for what you use. You don't configure Read/Write capacity units.
+   */
+  PayPerRequest = 'PAY_PER_REQUEST',
+  /**
+   * Explicitly specified Read/Write capacity units.
+   */
+  Provisioned = 'PROVISIONED',
 }
 
 export enum ProjectionType {

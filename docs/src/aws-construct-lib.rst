@@ -122,9 +122,9 @@ the AWS Construct and patch the underlying resources.
 
 AWS constructs, such as :py:class:`Topic <@aws-cdk/aws-sns.Topic>`, encapsulate
 one or more AWS CloudFormation resources behind their APIs. These resources are
-also represented as constructs under the ``cloudformation`` namespace in each
+also represented as ``CfnXxx`` constructs in each
 library. For example, the :py:class:`@aws-cdk/aws-s3.Bucket` construct
-encapsulates the :py:class:`@aws-cdk/aws-s3.cloudformation.BucketResource`. When
+encapsulates the :py:class:`@aws-cdk/aws-s3.CfnBucket`. When
 a stack that includes an AWS construct is synthesized, the CloudFormation
 definition of the underlying resources are included in the resulting template.
 
@@ -167,11 +167,11 @@ given an :py:class:`s3.Bucket <@aws-cdk/s3.Bucket>` construct:
    const bucket = new s3.Bucket(this, 'MyBucket');
 
    // we use our knowledge that the main construct is called "Resource" and
-   // that it's actual type is s3.cloudformation.BucketResource; const
-   const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
+   // that it's actual type is s3.CfnBucket; const
+   const bucketResource = bucket.findChild('Resource') as s3.CfnBucket;
 
 At this point, ``bucketResource`` represents the low-level CloudFormation resource of type
-:py:class:`s3.cloudformation.BucketResource <@aws-cdk/aws-s3.cloudformation.BucketResource>`
+:py:class:`s3.CfnBucket <@aws-cdk/aws-s3.CfnBucket>`
 encapsulated by our bucket.
 
 :py:meth:`construct.findChild(id) <@aws-cdk/cdk.Construct.findChild>` will fail
@@ -186,7 +186,7 @@ type:
 
    const bucketResource =
       bucket.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket')
-      as s3.cloudformation.BucketResource;
+      as s3.CfnBucket;
 
 From that point, users are interacting with CloudFormation resource classes
 (which extend :py:class:`cdk.Resource <@aws-cdk/cdk.Resource>`), so we will look
@@ -203,7 +203,7 @@ For example, this code:
 
 .. code-block:: ts
 
-   const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
+   const bucketResource = bucket.findChild('Resource') as s3.CfnBucket;
 
    bucketResource.options.metadata = { MetadataKey: 'MetadataValue' };
    bucketResource.options.updatePolicy = {
@@ -321,7 +321,7 @@ to delete values:
       encryption: s3.BucketEncryption.KmsManaged
    });
 
-   const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
+   const bucketResource = bucket.findChild('Resource') as s3.CfnBucket;
    bucketResource.addPropertyOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.EncryptEverythingAndAlways', true);
    bucketResource.addPropertyDeletionOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.ServerSideEncryptionByDefault');
 
@@ -329,39 +329,40 @@ Synthesizes to:
 
 .. code-block:: json
 
-   "MyBucketF68F3FF0": {
-      "Type": "AWS::S3::Bucket",
-      "Properties": {
-         "BucketEncryption": {
-            "ServerSideEncryptionConfiguration": [
-               {
-                  "EncryptEverythingAndAlways": true
-               }
-            ]
-         },
-         "VersioningConfiguration": {
-            "Status": "Enabled"
-         }
-      }
-   }
+    {
+       "MyBucketF68F3FF0": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+             "BucketEncryption": {
+                "ServerSideEncryptionConfiguration": [
+                   {
+                      "EncryptEverythingAndAlways": true
+                   }
+                ]
+             },
+             "VersioningConfiguration": {
+                "Status": "Enabled"
+             }
+          }
+       }
+     }
 
 Directly Defining CloudFormation Resources
 -------------------------------------------
 
 It is also possible to explicitly define CloudFormation resources in your stack.
-To that end, instantiate one of the constructs under the ``cloudformation``
-namespace of the dedicated library.
+To that end, instantiate one of the ``CfnXxx`` constructs of the dedicated library.
 
 .. code-block:: ts
 
-   new s3.cloudformation.BucketResource(this, 'MyBucket', {
+   new s3.CfnBucket(this, 'MyBucket', {
       analyticsConfigurations: [
          // ...
       ]
    });
 
 In the rare case where you want to define a resource that doesn't have a
-corresponding ``cloudformation`` class (such as a new resource that was not yet
+corresponding ``CfnXxx`` class (such as a new resource that was not yet
 published in the CloudFormation resource specification), you can instantiate the
 :py:class:`cdk.Resource <@aws-cdk/cdk.Resource>` object:
 

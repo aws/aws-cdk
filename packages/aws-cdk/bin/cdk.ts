@@ -10,10 +10,10 @@ import yargs = require('yargs');
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
 import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
-import { printStackDiff } from '../lib/diff';
+import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { deserializeStructure, serializeStructure } from '../lib/serialize';
@@ -22,6 +22,7 @@ import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
+const confirm = util.promisify(promptly.confirm);
 
 const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
@@ -53,6 +54,7 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' })
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
@@ -67,6 +69,7 @@ async function parseCommandLineArguments() {
     .version(VERSION)
     .demandCommand(1, '') // just print help
     .help()
+    .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
@@ -90,7 +93,7 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const configuration = new Configuration(argumentsToSettings());
+  const configuration = new Configuration(argv);
   await configuration.load();
   configuration.logDefaults();
 
@@ -156,7 +159,7 @@ async function initCommandLine() {
         return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn);
+        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']));
 
       case 'destroy':
         return await cliDestroy(args.STACKS, args.force, args.roleArn);
@@ -285,7 +288,9 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined) {
+  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, requireApproval: RequireApproval) {
+    if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
+
     const stacks = await appStacks.selectStacks(...stackNames);
     renames.validateSelectedStacks(stacks);
 
@@ -297,6 +302,14 @@ async function initCommandLine() {
       }
       const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
       const deployName = renames.finalName(stack.name);
+
+      if (requireApproval !== RequireApproval.Never) {
+        const currentTemplate = await readCurrentTemplate(stack);
+        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          if (!confirmed) { throw new Error('Aborted by user'); }
+        }
+      }
 
       if (deployName !== stack.name) {
         print('%s: deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
@@ -337,7 +350,7 @@ async function initCommandLine() {
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await util.promisify(promptly.confirm)(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -375,8 +388,10 @@ async function initCommandLine() {
       const fileContent = await fs.readFile(templatePath, { encoding: 'UTF-8' });
       return parseTemplate(fileContent);
     } else {
-      const cfn = await aws.cloudFormation(stack.environment, Mode.ForReading);
       const stackName = renames.finalName(stack.name);
+      debug(`Reading existing template for stack ${stackName}.`);
+
+      const cfn = await aws.cloudFormation(stack.environment, Mode.ForReading);
       try {
         const response = await cfn.getTemplate({ StackName: stackName }).promise();
         return (response.TemplateBody && parseTemplate(response.TemplateBody)) || {};
@@ -407,36 +422,6 @@ async function initCommandLine() {
     }
 
     return stacks[0].name;
-  }
-
-  /** Convert the command-line arguments into a Settings object */
-  function argumentsToSettings() {
-    const context: any = {};
-
-    // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      context,
-      language: argv.language,
-      plugin: argv.plugin,
-      toolkitStackName: argv.toolkitStackName,
-      versionReporting: argv.versionReporting,
-      pathMetadata: argv.pathMetadata,
-    });
   }
 
   function toJsonOrYaml(object: any): string {

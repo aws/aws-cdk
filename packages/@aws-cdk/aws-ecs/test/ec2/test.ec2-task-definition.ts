@@ -1,6 +1,6 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { Protocol } from '@aws-cdk/aws-ec2';
-// import iam = require('@aws-cdk/aws-iam'); // importing this is throwing a really weird error in line 11?
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import ecs = require('../../lib');
@@ -116,7 +116,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           MountPoints: [
@@ -166,7 +166,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
         Family: "Ec2TaskDef",
         ContainerDefinitions: [{
           MountPoints: [
@@ -216,45 +216,26 @@ export = {
       test.done();
     },
 
-    // "correctly sets taskRole"(test: Test) {
-    //   // GIVEN
-    //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-    //     taskRole: new iam.Role(this, 'TaskRole', {
-    //       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    //     })
-    //   });
+    "correctly sets taskRole"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        })
+      });
 
-    //   taskDefinition.addContainer("web", {
-    //     image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
-    //     memoryLimitMiB: 512
-    //   });
+      taskDefinition.addContainer("web", {
+        image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
+        memoryLimitMiB: 512
+      });
 
-    //   // THEN
-    //   expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-    //     TaskRole: "roleArn"
-    //   }));
+      // THEN
+      expect(stack).to(haveResourceLike("AWS::ECS::TaskDefinition", {
+        TaskRoleArn: cdk.resolve(taskDefinition.taskRole.roleArn)
+      }));
 
-    //   test.done();
-    // },
-
-    // "correctly sets taskExecutionRole if containerDef uses ECR"(test: Test) {
-    //   // GIVEN
-    //   const stack = new cdk.Stack();
-    //   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {});
-    //   const container = taskDefinition.addContainer("web", {
-    //     image: ecs.ContainerImage.fromDockerHub("amazon/amazon-ecs-sample"),
-    //     memoryLimitMiB: 512 // add validation?
-    //   });
-
-    //   container.useEcrImage();
-
-    //   // THEN
-    //   expect(stack).to(haveResource("AWS::ECS::TaskDefinition", {
-    //     TaskExecutionRole: "roleArn"
-    //   }));
-
-    //   test.done();
-    // },
+      test.done();
+    },
   }
 };
