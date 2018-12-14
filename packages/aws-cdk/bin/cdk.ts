@@ -13,7 +13,7 @@ import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
 import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
 import { deserializeStructure, serializeStructure } from '../lib/serialize';
@@ -93,7 +93,7 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const configuration = new Configuration(argumentsToSettings());
+  const configuration = new Configuration(argv);
   await configuration.load();
   configuration.logDefaults();
 
@@ -422,37 +422,6 @@ async function initCommandLine() {
     }
 
     return stacks[0].name;
-  }
-
-  /** Convert the command-line arguments into a Settings object */
-  function argumentsToSettings() {
-    const context: any = {};
-
-    // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      context,
-      language: argv.language,
-      plugin: argv.plugin,
-      toolkitStackName: argv.toolkitStackName,
-      versionReporting: argv.versionReporting,
-      requireApproval: argv.requireApproval,
-      pathMetadata: argv.pathMetadata,
-    });
   }
 
   function toJsonOrYaml(object: any): string {
