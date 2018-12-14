@@ -79,7 +79,7 @@ Resource Attributes
 To reference the runtime attributes of CloudFormation resources,
 use one of the properties available on the resource object.
 
-The following example configures a |LAM| function's dead letter queue to use a
+The following example configures a |LAM| function's dead letter queue to use
 the ARN of an |SQS| queue resource.
 
 .. code-block:: ts
