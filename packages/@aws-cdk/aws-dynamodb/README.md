@@ -15,6 +15,24 @@ const table = new dynamodb.Table(stack, 'Table', {
 You can either specify `partitionKey` and/or `sortKey` when you initialize the
 table, or call `addPartitionKey` and `addSortKey` after initialization.
 
+### Billing Mode
+
+DynamoDB supports two billing modes:
+* PROVISIONED - the default mode where the table and global secondary indexes have configured read and write capacity.
+* PAY_PER_REQUEST - on-demand pricing and scaling. You only pay for what you use and there is no read and write capacity for the table or its gloal secondary indexes.
+
+```ts
+import dynamodb = require('@aws-cdk/aws-dynamodb');
+
+const table = new dynamodb.Table(stack, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.String },
+  billingMode: dynamodb.BillingMode.PayPerRequest
+});
+```
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
+
 ### Configure AutoScaling for your table
 
 You can have DynamoDB automatically raise and lower the read and write capacities
@@ -24,6 +42,9 @@ times of the day:
 
 [Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
 
+Auto-scaling only works with the billing mode, PROVISIONED.
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
-https://aws.amazon.com/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
+https://aws.amazon.
+htmlcom/blogs/database/how-to-use-aws-cloudformation-to-configure-auto-scaling-for-amazon-dynamodb-tables-and-indexes/
