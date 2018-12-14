@@ -631,11 +631,11 @@ export enum AttributeType {
 }
 
 /**
- * DyanmoDB's two Read/Write capacity mode.
+ * DyanmoDB's Read/Write capacity modes.
  */
 export enum BillingMode {
   /**
-   * Pay only for what you use. You don't have to specify Read/Write capacity units.
+   * Pay only for what you use. You don't configure Read/Write capacity units.
    */
   PayPerRequest = 'PAY_PER_REQUEST',
   /**

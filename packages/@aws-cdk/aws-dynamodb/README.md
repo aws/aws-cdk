@@ -40,9 +40,9 @@ of your table by setting up autoscaling. You can use this to either keep your
 tables at a desired utilization level, or by scaling up and down at preconfigured
 times of the day:
 
-[Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
+Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
 
-Auto-scaling only works with the billing mode, PROVISIONED.
+[Example of configuring autoscaling](test/integ.autoscaling.lit.ts)
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html
