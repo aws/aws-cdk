@@ -84,6 +84,7 @@ export class PipelineInvokeAction extends codepipeline.Action {
   constructor(scope: cdk.Construct, id: string, props: PipelineInvokeActionProps) {
     super(scope, id, {
       stage: props.stage,
+      actionRole: props.actionRole,
       runOrder: props.runOrder,
       category: codepipeline.ActionCategory.Invoke,
       provider: 'Lambda',

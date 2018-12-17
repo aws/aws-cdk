@@ -59,8 +59,7 @@ export abstract class PipelineCloudFormationAction extends codepipeline.Action {
 
   constructor(scope: cdk.Construct, id: string, props: PipelineCloudFormationActionProps, configuration?: any) {
     super(scope, id, {
-      stage: props.stage,
-      runOrder: props.runOrder,
+      ...props,
       region: props.region,
       artifactBounds: {
         minInputs: 0,

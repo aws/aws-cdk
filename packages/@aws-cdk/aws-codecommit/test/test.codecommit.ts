@@ -1,6 +1,6 @@
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Repository, RepositoryProps } from '../lib';
+import { Repository, RepositoryProps  } from '../lib';
 
 export = {
   'default properties': {
@@ -49,7 +49,7 @@ export = {
       test.throws(() => myRepository.notify('myTrigger'));
 
       test.done();
-    }
+    },
   }
 };
 
