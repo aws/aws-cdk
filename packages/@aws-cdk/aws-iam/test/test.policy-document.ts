@@ -257,7 +257,7 @@ export = {
       ],
       Version: '2012-10-17'
     });
-    
+
     test.done();
   },
 
