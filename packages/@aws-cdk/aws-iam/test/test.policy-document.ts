@@ -1,6 +1,7 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, PrincipalPolicyFragment } from '../lib';
+import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, AnyPrincipal, Policy } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {
   'the Permission class is a programming model for iam'(test: Test) {
@@ -206,18 +207,57 @@ export = {
     test.done();
   },
 
-  'the { AWS: "*" } principal is represented as "*"'(test: Test) {
-    const p = new PolicyDocument().addStatement(new PolicyStatement().addPrincipal(new Anyone()));
-    test.deepEqual(resolve(p), { Statement: [{ Effect: 'Allow', Principal: '*' }], Version: '2012-10-17' });
+  'the { AWS: "*" } principal is represented as `Anyone` or `AnyPrincipal`'(test: Test) {
+    const p = new PolicyDocument();
+
+    p.addStatement(new PolicyStatement().addPrincipal(new Anyone()));
+    p.addStatement(new PolicyStatement().addPrincipal(new AnyPrincipal()));
+    p.addStatement(new PolicyStatement().addAnyPrincipal());
+
+    test.deepEqual(resolve(p), {
+      Statement: [
+        { Effect: 'Allow', Principal: '*' },
+        { Effect: 'Allow', Principal: '*' },
+        { Effect: 'Allow', Principal: '*' }
+      ],
+      Version: '2012-10-17'
+    });
     test.done();
   },
 
-  'addPrincipal prohibits mixing principal types'(test: Test) {
-    const s = new PolicyStatement().addAccountRootPrincipal();
-    test.throws(() => { s.addServicePrincipal('rds.amazonaws.com'); },
-                /Attempted to add principal key Service/);
-    test.throws(() => { s.addFederatedPrincipal('federation', { ConditionOp: { ConditionKey: 'ConditionValue' } }); },
-                /Attempted to add principal key Federated/);
+  'addAwsPrincipal/addArnPrincipal are the aliases'(test: Test) {
+    const p = new PolicyDocument();
+
+    p.addStatement(new PolicyStatement().addAwsPrincipal('111222-A'));
+    p.addStatement(new PolicyStatement().addArnPrincipal('111222-B'));
+    p.addStatement(new PolicyStatement().addPrincipal(new ArnPrincipal('111222-C')));
+
+    test.deepEqual(resolve(p), {
+      Statement: [ {
+        Effect: 'Allow', Principal: { AWS: '111222-A' } },
+        { Effect: 'Allow', Principal: { AWS: '111222-B' } },
+        { Effect: 'Allow', Principal: { AWS: '111222-C' } }
+      ],
+      Version: '2012-10-17'
+    });
+
+    test.done();
+  },
+
+  'addCanonicalUserPrincipal can be used to add cannonical user principals'(test: Test) {
+    const p = new PolicyDocument();
+
+    p.addStatement(new PolicyStatement().addCanonicalUserPrincipal('cannonical-user-1'));
+    p.addStatement(new PolicyStatement().addPrincipal(new CanonicalUserPrincipal('cannonical-user-2')));
+
+    test.deepEqual(resolve(p), {
+      Statement: [
+        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-1' } },
+        { Effect: 'Allow', Principal: { CanonicalUser: 'cannonical-user-2' } }
+      ],
+      Version: '2012-10-17'
+    });
+    
     test.done();
   },
 
@@ -238,5 +278,78 @@ export = {
       }
     });
     test.done();
+  },
+
+  // https://github.com/awslabs/aws-cdk/issues/1201
+  'policy statements with multiple principal types can be created using multiple addPrincipal calls'(test: Test) {
+    const s = new PolicyStatement()
+      .addAwsPrincipal('349494949494')
+      .addServicePrincipal('ec2.amazonaws.com')
+      .addResource('resource')
+      .addAction('action');
+
+    test.deepEqual(resolve(s), {
+      Action: 'action',
+      Effect: 'Allow',
+      Principal: { AWS: '349494949494', Service: 'ec2.amazonaws.com' },
+      Resource: 'resource'
+    });
+
+    test.done();
+  },
+
+  'CompositePrincipal can be used to represent a principal that has multiple types': {
+
+    'with a single principal'(test: Test) {
+      const p = new CompositePrincipal(new ArnPrincipal('i:am:an:arn'));
+      const statement = new PolicyStatement().addPrincipal(p);
+      test.deepEqual(resolve(statement), { Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
+      test.done();
+    },
+
+    'principals and conditions are a big nice merge'(test: Test) {
+      // add via ctor
+      const p = new CompositePrincipal(
+        new ArnPrincipal('i:am:an:arn'),
+        new ServicePrincipal('amazon.com'));
+
+      // add via `addPrincipals` (with condition)
+      p.addPrincipals(
+        new FederatedPrincipal('federated', { condition: 'value' }),
+        new Anyone(),
+        new ServicePrincipal('another.service')
+      );
+
+      const statement = new PolicyStatement().addPrincipal(p);
+
+      // add via policy statement
+      statement.addAwsPrincipal('aws-principal-3');
+      statement.addCondition('cond2', { boom: 123 });
+
+      test.deepEqual(resolve(statement), {
+        Condition: {
+          condition: 'value',
+          cond2: { boom: 123 }
+        },
+        Effect: 'Allow',
+        Principal: {
+          AWS: [ 'i:am:an:arn', '*', 'aws-principal-3' ],
+          Service: [ 'amazon.com', 'another.service' ],
+          Federated: 'federated'
+        }
+      });
+      test.done();
+    },
+
+    'cannot mix types of assumeRoleAction in a single composite'(test: Test) {
+      // GIVEN
+      const p = new CompositePrincipal(new ArnPrincipal('arn')); // assumeRoleAction is "sts:AssumeRule"
+
+      // THEN
+      test.throws(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')),
+        /Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+
+      test.done();
+    }
   },
 };

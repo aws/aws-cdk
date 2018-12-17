@@ -49,7 +49,7 @@ export abstract class PolicyPrincipal {
   /**
    * When this Principal is used in an AssumeRole policy, the action to use.
    */
-  public readonly assumeRoleAction: string = 'sts:AssumeRole';
+  public assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
    * Return the policy fragment that identifies this principal in a Policy.
@@ -65,8 +65,8 @@ export abstract class PolicyPrincipal {
  */
 export class PrincipalPolicyFragment {
   constructor(
-    public readonly principalJson: { [key: string]: any },
-    public readonly conditions: {[key: string]: any} = {}) {
+    public readonly principalJson: { [key: string]: string[] },
+    public readonly conditions: { [key: string]: any } = { }) {
   }
 }
 
@@ -76,7 +76,7 @@ export class ArnPrincipal extends PolicyPrincipal {
   }
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ AWS: this.arn });
+    return new PrincipalPolicyFragment({ AWS: [ this.arn ] });
   }
 }
 
@@ -95,7 +95,7 @@ export class ServicePrincipal extends PolicyPrincipal {
   }
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Service: this.service });
+    return new PrincipalPolicyFragment({ Service: [ this.service ] });
   }
 }
 
@@ -113,25 +113,25 @@ export class ServicePrincipal extends PolicyPrincipal {
  *
  */
 export class CanonicalUserPrincipal extends PolicyPrincipal {
-  constructor(public readonly canonicalUserId: any) {
+  constructor(public readonly canonicalUserId: string) {
     super();
   }
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ CanonicalUser: this.canonicalUserId });
+    return new PrincipalPolicyFragment({ CanonicalUser: [ this.canonicalUserId ] });
   }
 }
 
 export class FederatedPrincipal extends PolicyPrincipal {
   constructor(
-    public readonly federated: any,
+    public readonly federated: string,
     public readonly conditions: {[key: string]: any},
     public readonly assumeRoleAction: string = 'sts:AssumeRole') {
     super();
   }
 
   public policyFragment(): PrincipalPolicyFragment {
-    return new PrincipalPolicyFragment({ Federated: this.federated }, this.conditions);
+    return new PrincipalPolicyFragment({ Federated: [ this.federated ] }, this.conditions);
   }
 }
 
@@ -143,10 +143,56 @@ export class AccountRootPrincipal extends AccountPrincipal {
 
 /**
  * A principal representing all identities in all accounts
+ * @deprecated use `AnyPrincipal`
  */
 export class Anyone extends ArnPrincipal {
   constructor() {
     super('*');
+  }
+}
+
+/**
+ * A principal representing all identities in all accounts
+ */
+export class AnyPrincipal extends Anyone {
+
+}
+
+export class CompositePrincipal extends PolicyPrincipal {
+  private readonly principals = new Array<PolicyPrincipal>();
+
+  constructor(principal: PolicyPrincipal, ...additionalPrincipals: PolicyPrincipal[]) {
+    super();
+    this.assumeRoleAction = principal.assumeRoleAction;
+    this.addPrincipals(principal);
+    this.addPrincipals(...additionalPrincipals);
+  }
+
+  public addPrincipals(...principals: PolicyPrincipal[]) {
+    for (const p of principals) {
+      if (p.assumeRoleAction !== this.assumeRoleAction) {
+        throw new Error(
+          `Cannot add multiple principals with different "assumeRoleAction". ` +
+          `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
+      }
+      this.principals.push(p);
+    }
+  }
+
+  public policyFragment(): PrincipalPolicyFragment {
+    const principalJson: { [key: string]: string[] } = { };
+    const conditions: { [key: string]: any } = { };
+    for (const p of this.principals) {
+      const fragment = p.policyFragment();
+
+      mergePrincipal(principalJson, fragment.principalJson);
+
+      Object.keys(fragment.conditions).map(key => {
+        conditions[key] = fragment.conditions[key];
+      });
+    }
+
+    return new PrincipalPolicyFragment(principalJson, conditions);
   }
 }
 
@@ -193,24 +239,17 @@ export class PolicyStatement extends Token {
 
   public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
     const fragment = principal.policyFragment();
-    for (const key of Object.keys(fragment.principalJson)) {
-      if (Object.keys(this.principal).length > 0 && !(key in this.principal)) {
-        throw new Error(`Attempted to add principal key ${key} in principal of type ${Object.keys(this.principal)[0]}`);
-      }
-      this.principal[key] = this.principal[key] || [];
-      const value = fragment.principalJson[key];
-      if (Array.isArray(value)) {
-        this.principal[key].push(...value);
-      } else {
-        this.principal[key].push(value);
-      }
-    }
+    mergePrincipal(this.principal, fragment.principalJson);
     this.addConditions(fragment.conditions);
     return this;
   }
 
   public addAwsPrincipal(arn: string): PolicyStatement {
     return this.addPrincipal(new ArnPrincipal(arn));
+  }
+
+  public addArnPrincipal(arn: string): PolicyStatement {
+    return this.addAwsPrincipal(arn);
   }
 
   public addAwsAccountPrincipal(accountId: string): PolicyStatement {
@@ -227,6 +266,14 @@ export class PolicyStatement extends Token {
 
   public addAccountRootPrincipal(): PolicyStatement {
     return this.addPrincipal(new AccountRootPrincipal());
+  }
+
+  public addCanonicalUserPrincipal(canonicalUserId: string): PolicyStatement {
+    return this.addPrincipal(new CanonicalUserPrincipal(canonicalUserId));
+  }
+
+  public addAnyPrincipal() {
+    return this.addPrincipal(new Anyone());
   }
 
   //
@@ -385,4 +432,19 @@ export class PolicyStatement extends Token {
 export enum PolicyStatementEffect {
   Allow = 'Allow',
   Deny = 'Deny',
+}
+
+function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+  for (const key of Object.keys(source)) {
+    target[key] = target[key] || [];
+
+    const value = source[key];
+    if (!Array.isArray(value)) {
+      throw new Error(`Principal value must be an array (it will be normalized later): ${value}`);
+    }
+
+    target[key].push(...value);
+  }
+
+  return target;
 }
