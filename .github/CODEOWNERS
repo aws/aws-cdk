@@ -10,3 +10,4 @@
 *                               @awslabs/aws-cdk-team
 /docs/                          @awslabs/aws-cdk-team @Doug-AWS
 /packages/@aws-cdk/aws-code*/   @awslabs/aws-cdk-team @RomainMuller @skinny85
+/packages/@aws-cdk/aws-ecs/     @awslabs/aws-cdk-team @SoManyHs
