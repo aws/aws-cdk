@@ -121,6 +121,31 @@ export = {
     test.done();
   },
 
+  'extractMetric allows passing in namespaces with "/"'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    const metric = lg.extractMetric('$.myField', 'MyNamespace/MyService', 'Field');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+      FilterPattern: "{ $.myField = \"*\" }",
+      MetricTransformations: [
+        {
+          MetricName: "Field",
+          MetricNamespace: "MyNamespace/MyService",
+          MetricValue: "$.myField"
+        }
+      ]
+    }));
+    test.equal(metric.namespace, 'MyNamespace/MyService');
+    test.equal(metric.metricName, 'Field');
+
+    test.done();
+  },
+
   'grant'(test: Test) {
     // GIVEN
     const stack = new Stack();

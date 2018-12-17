@@ -114,7 +114,7 @@ export class Stack extends Construct {
     this.env = this.parseEnvironment(props);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = name || 'Stack';
+    this.name = this.id;
   }
 
   /**
@@ -236,7 +236,7 @@ export class Stack extends Construct {
    * character classes, and we don't allow one of the magic markers.
    */
   protected _validateId(name: string) {
-    if (!Stack.VALID_STACK_NAME_REGEX.test(name)) {
+    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }

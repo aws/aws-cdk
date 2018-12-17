@@ -1,6 +1,6 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
-import { Construct, Root } from '../../lib';
+import { Construct, Root, Token } from '../../lib';
 
 // tslint:disable:variable-name
 // tslint:disable:max-line-length
@@ -47,8 +47,29 @@ export = {
     new Construct(root, 'in-Valid' );
     new Construct(root, 'in\\Valid' );
     new Construct(root, 'in.Valid' );
+    test.done();
+  },
 
-    test.throws(() => new Construct(root, 'in/Valid' ), Error, 'backslashes are not allowed');
+  'if construct id contains path seperators, they will be replaced by double-dash'(test: Test) {
+    const root = new Root();
+    const c = new Construct(root, 'Boom/Boom/Bam');
+    test.deepEqual(c.id, 'Boom--Boom--Bam');
+    test.done();
+  },
+
+  'if "undefined" is forcefully used as an "id", it will be treated as an empty string'(test: Test) {
+    const c = new Construct(undefined as any, undefined as any);
+    test.deepEqual(c.id, '');
+    test.done();
+  },
+
+  "dont allow unresolved tokens to be used in construct IDs"(test: Test) {
+    // GIVEN
+    const root = new Root();
+    const token = new Token(() => 'lazy');
+
+    // WHEN + THEN
+    test.throws(() => new Construct(root, `MyID: ${token}`), /ID components may not include unresolved tokens: MyID: \${Token/);
     test.done();
   },
 
