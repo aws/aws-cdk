@@ -17,7 +17,7 @@ export = {
     app.setContext(DEFAULT_ACCOUNT_CONTEXT_KEY, 'my-default-account');
     app.setContext(DEFAULT_REGION_CONTEXT_KEY, 'my-default-region');
 
-    const stack = new Stack(app);
+    const stack = new Stack(app, 'my-stack');
 
     test.equal(stack.env.account, 'my-default-account');
     test.equal(stack.env.region, 'my-default-region');
