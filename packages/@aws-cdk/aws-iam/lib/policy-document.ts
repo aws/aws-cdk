@@ -173,6 +173,14 @@ export class CompositePrincipal extends PolicyPrincipal {
           `Cannot add multiple principals with different "assumeRoleAction". ` +
           `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
       }
+
+      const fragment = p.policyFragment();
+      if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
+        throw new Error(
+          `Components of a CompositePrincipal must not have conditions. ` +
+          `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
+      }
+
       this.principals.push(p);
     }
 
@@ -181,18 +189,12 @@ export class CompositePrincipal extends PolicyPrincipal {
 
   public policyFragment(): PrincipalPolicyFragment {
     const principalJson: { [key: string]: string[] } = { };
-    const conditions: { [key: string]: any } = { };
+
     for (const p of this.principals) {
-      const fragment = p.policyFragment();
-
-      mergePrincipal(principalJson, fragment.principalJson);
-
-      Object.keys(fragment.conditions).map(key => {
-        conditions[key] = fragment.conditions[key];
-      });
+      mergePrincipal(principalJson, p.policyFragment().principalJson);
     }
 
-    return new PrincipalPolicyFragment(principalJson, conditions);
+    return new PrincipalPolicyFragment(principalJson);
   }
 }
 

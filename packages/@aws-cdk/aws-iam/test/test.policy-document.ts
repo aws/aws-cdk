@@ -307,6 +307,14 @@ export = {
       test.done();
     },
 
+    'conditions are not allowed on individual principals of a composite'(test: Test) {
+      const p = new CompositePrincipal(new ArnPrincipal('i:am'));
+      test.throws(() => p.addPrincipals(new FederatedPrincipal('federated', { condition: 1 })),
+        /Components of a CompositePrincipal must not have conditions/);
+
+      test.done();
+    },
+
     'principals and conditions are a big nice merge'(test: Test) {
       // add via ctor
       const p = new CompositePrincipal(
@@ -315,7 +323,6 @@ export = {
 
       // add via `addPrincipals` (with condition)
       p.addPrincipals(
-        new FederatedPrincipal('federated', { condition: 'value' }),
         new Anyone(),
         new ServicePrincipal('another.service')
       );
@@ -328,14 +335,12 @@ export = {
 
       test.deepEqual(resolve(statement), {
         Condition: {
-          condition: 'value',
           cond2: { boom: 123 }
         },
         Effect: 'Allow',
         Principal: {
           AWS: [ 'i:am:an:arn', '*', 'aws-principal-3' ],
           Service: [ 'amazon.com', 'another.service' ],
-          Federated: 'federated'
         }
       });
       test.done();
