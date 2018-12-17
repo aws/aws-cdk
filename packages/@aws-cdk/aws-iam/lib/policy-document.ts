@@ -126,7 +126,7 @@ export class FederatedPrincipal extends PolicyPrincipal {
   constructor(
     public readonly federated: string,
     public readonly conditions: {[key: string]: any},
-    public readonly assumeRoleAction: string = 'sts:AssumeRole') {
+    public assumeRoleAction: string = 'sts:AssumeRole') {
     super();
   }
 
