@@ -306,7 +306,13 @@ async function initCommandLine() {
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
-          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+
+          // only talk to user if we STDIN is a terminal (otherwise, fail)
+          let confirmed = false;
+          if (process.stdin.isTTY) {
+            confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          }
+
           if (!confirmed) { throw new Error('Aborted by user'); }
         }
       }
