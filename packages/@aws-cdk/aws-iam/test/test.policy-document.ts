@@ -1,6 +1,6 @@
 import { FnConcat, resolve } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Anyone, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement, AnyPrincipal, Policy } from '../lib';
+import { Anyone, AnyPrincipal, CanonicalUserPrincipal, PolicyDocument, PolicyPrincipal, PolicyStatement } from '../lib';
 import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PrincipalPolicyFragment, ServicePrincipal } from '../lib';
 
 export = {

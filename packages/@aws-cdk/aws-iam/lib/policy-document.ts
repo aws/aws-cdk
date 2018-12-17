@@ -143,9 +143,8 @@ export class AccountRootPrincipal extends AccountPrincipal {
 
 /**
  * A principal representing all identities in all accounts
- * @deprecated use `AnyPrincipal`
  */
-export class Anyone extends ArnPrincipal {
+export class AnyPrincipal extends ArnPrincipal {
   constructor() {
     super('*');
   }
@@ -153,10 +152,9 @@ export class Anyone extends ArnPrincipal {
 
 /**
  * A principal representing all identities in all accounts
+ * @deprecated use `AnyPrincipal`
  */
-export class AnyPrincipal extends Anyone {
-
-}
+export class Anyone extends AnyPrincipal { }
 
 export class CompositePrincipal extends PolicyPrincipal {
   private readonly principals = new Array<PolicyPrincipal>();
@@ -168,7 +166,7 @@ export class CompositePrincipal extends PolicyPrincipal {
     this.addPrincipals(...additionalPrincipals);
   }
 
-  public addPrincipals(...principals: PolicyPrincipal[]) {
+  public addPrincipals(...principals: PolicyPrincipal[]): this {
     for (const p of principals) {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
@@ -177,6 +175,8 @@ export class CompositePrincipal extends PolicyPrincipal {
       }
       this.principals.push(p);
     }
+
+    return this;
   }
 
   public policyFragment(): PrincipalPolicyFragment {
@@ -237,42 +237,42 @@ export class PolicyStatement extends Token {
     return Object.keys(this.principal).length > 0;
   }
 
-  public addPrincipal(principal: PolicyPrincipal): PolicyStatement {
+  public addPrincipal(principal: PolicyPrincipal): this {
     const fragment = principal.policyFragment();
     mergePrincipal(this.principal, fragment.principalJson);
     this.addConditions(fragment.conditions);
     return this;
   }
 
-  public addAwsPrincipal(arn: string): PolicyStatement {
+  public addAwsPrincipal(arn: string): this {
     return this.addPrincipal(new ArnPrincipal(arn));
   }
 
-  public addArnPrincipal(arn: string): PolicyStatement {
+  public addArnPrincipal(arn: string): this {
     return this.addAwsPrincipal(arn);
   }
 
-  public addAwsAccountPrincipal(accountId: string): PolicyStatement {
+  public addAwsAccountPrincipal(accountId: string): this {
     return this.addPrincipal(new AccountPrincipal(accountId));
   }
 
-  public addServicePrincipal(service: string): PolicyStatement {
+  public addServicePrincipal(service: string): this {
     return this.addPrincipal(new ServicePrincipal(service));
   }
 
-  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): PolicyStatement {
+  public addFederatedPrincipal(federated: any, conditions: {[key: string]: any}): this {
     return this.addPrincipal(new FederatedPrincipal(federated, conditions));
   }
 
-  public addAccountRootPrincipal(): PolicyStatement {
+  public addAccountRootPrincipal(): this {
     return this.addPrincipal(new AccountRootPrincipal());
   }
 
-  public addCanonicalUserPrincipal(canonicalUserId: string): PolicyStatement {
+  public addCanonicalUserPrincipal(canonicalUserId: string): this {
     return this.addPrincipal(new CanonicalUserPrincipal(canonicalUserId));
   }
 
-  public addAnyPrincipal() {
+  public addAnyPrincipal(): this {
     return this.addPrincipal(new Anyone());
   }
 
