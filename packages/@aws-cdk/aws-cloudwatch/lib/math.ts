@@ -23,14 +23,36 @@ export class ExpressionContext {
     return id;
   }
 
-  // public toAlarmProps(): AlarmProps {
-  //   return {
-  //     metric
-  //   }
-  // }
+  public toMetrics(): any {
+    const metrics: any[] = [];
+    Object.keys(this.metrics).forEach(id => {
+      const metric = this.metrics[id];
+      metrics.push({
+        id,
+        metric: {
+          metricName: metric.metricName,
+          namespace: metric.namespace,
+          dimensions: metric.dimensions
+        },
+        period: metric.periodSec,
+        stat: metric.statistic,
+        unit: metric.unit
+      });
+    });
+    return metrics;
+  }
 }
 
 export abstract class Expression {
+  public compile(): any {
+    const context = new ExpressionContext();
+    const expression = this.render(context);
+    return {
+      expression,
+      metrics: context.toMetrics()
+    };
+  }
+
   public abstract render(context: ExpressionContext): string;
 
   public plus(expression: Expression | number): Plus {

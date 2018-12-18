@@ -2,39 +2,6 @@ import { Test } from 'nodeunit';
 import cloudwatch = require('../lib');
 
 export = {
-  'm1 * 100'(test: Test) {
-    const expression = new cloudwatch.TimeSeries('m1').multiply(100).render(new cloudwatch.ExpressionContext());
-
-    test.equals(expression, 'm1 * 100');
-    test.done();
-  },
-
-  'SUM(m1)'(test: Test) {
-    const m1 = new cloudwatch.Metric({
-      metricName: 'NumberOfPublishedMessages',
-      namespace: 'AWS/SNS',
-    });
-    const expression = new cloudwatch.Sum(m1).render(new cloudwatch.ExpressionContext());
-
-    test.equals(expression, 'SUM(m1)');
-    test.done();
-  },
-
-  'SUM([m1,m2])'(test: Test) {
-    const m1 = new cloudwatch.Metric({
-      metricName: 'NumberOfPublishedMessages',
-      namespace: 'AWS/SNS',
-    });
-    const m2 = new cloudwatch.Metric({
-      metricName: 'Errors',
-      namespace: 'Custom',
-    });
-    const expression = new cloudwatch.Sum(m1, m2).render(new cloudwatch.ExpressionContext());
-
-    test.equals(expression, 'SUM([m1,m2])');
-    test.done();
-  },
-
   'SUM([m1,m2]) * 100'(test: Test) {
     const m1 = new cloudwatch.Metric({
       metricName: 'NumberOfPublishedMessages',
@@ -43,11 +10,40 @@ export = {
     const m2 = new cloudwatch.Metric({
       metricName: 'Errors',
       namespace: 'Custom',
+      dimensions: {
+        a: '1',
+        b: '2'
+      }
     });
-    const expression = new cloudwatch.Sum(m1, m2).multiply(100)
-      .render(new cloudwatch.ExpressionContext());
+    const math = new cloudwatch.Sum(m1, m2).multiply(100);
 
-    test.equals(expression, 'SUM([m1,m2]) * 100');
+    test.deepEqual(math.compile(), {
+      expression: 'SUM([m1,m2]) * 100',
+      metrics: [{
+        id: 'm1',
+        metric: {
+          metricName: 'NumberOfPublishedMessages',
+          namespace: 'AWS/SNS',
+          dimensions: undefined
+        },
+        period: 300,
+        stat: 'Average',
+        unit: undefined
+      }, {
+        id: 'm2',
+        metric: {
+          metricName: 'Errors',
+          namespace: 'Custom',
+          dimensions: {
+            a: '1',
+            b: '2'
+          }
+        },
+        period: 300,
+        stat: 'Average',
+        unit: undefined
+      }]
+    });
     test.done();
   }
 };
