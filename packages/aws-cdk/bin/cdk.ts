@@ -315,9 +315,7 @@ async function initCommandLine() {
           }
 
           const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
-          if (!confirmed) { 
-            throw new Error('Aborted by user');
-          }
+          if (!confirmed) {  throw new Error('Aborted by user'); }
         }
       }
 
