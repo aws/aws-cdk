@@ -51,7 +51,7 @@ export interface PipelineDeployStackActionProps {
    *
    * @default A fresh role with admin or no permissions (depending on the value of `adminPermissions`).
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -97,7 +97,7 @@ export class PipelineDeployStackAction extends cdk.Construct {
   /**
    * The role used by CloudFormation for the deploy action
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   private readonly stack: cdk.Stack;
 
