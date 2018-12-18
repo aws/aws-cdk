@@ -43,7 +43,7 @@ export class Mapping extends Referenceable {
     return new FnFindInMap(this.logicalId, key1, key2);
   }
 
-  protected renderCloudFormation(): object {
+  public toCloudFormation(): object {
     return {
       Mappings: {
         [this.logicalId]: this.mapping

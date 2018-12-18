@@ -42,8 +42,6 @@ export class App extends Root {
       return;
     }
 
-    this.freezeConstructTree();
-
     const result: cxapi.SynthesizeResponse = {
       version: cxapi.PROTO_RESPONSE_VERSION,
       stacks: this.synthesizeStacks(Object.keys(this.stacks)),
@@ -125,18 +123,7 @@ export class App extends Root {
     }
   }
 
-  /**
-   * Freeze all constructs in the tree
-   */
-  public freezeConstructTree() {
-    // This is a two-step operation since you generally want the guarantee
-    // that at "frozen=true" a construct does not change anymore, but it may
-    // still be changed by siblings calling mutating operations.
-    //
-    // Only after all constructs in the tree have finished freezing do we
-    // consider a construct truly frozen (and can it be sythesized).
-    this.freeze();
-    this.markFrozen();
+  public applyCrossEnvironmentReferences() {
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {

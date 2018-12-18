@@ -107,6 +107,14 @@ export class Stack extends Construct {
   private readonly dependsOnStacks = new Set<Stack>();
 
   /**
+   * A construct to hold cross-stack exports
+   * 
+   * This mostly exists to trigger LogicalID munging, which would be
+   * disabled if we parented constructs directly under Stack.
+   */
+  private crossStackExports?: Construct;
+
+  /**
    * Creates a new stack.
    *
    * @param parent Parent of this stack, usually a Program instance.
@@ -144,33 +152,35 @@ export class Stack extends Construct {
    * the tree and invoking toCloudFormation() on all Entity objects.
    */
   public toCloudFormation() {
-    // We must double-check to see that our stack is frozen here, and
-    // perform the freezing if not. This is to support unit tests that only
-    // work at the level of Stacks.
-    if (!this.frozen) {
-      this.freeze();
-      this.markFrozen();
+    // before we begin synthesis, we shall lock this stack, so children cannot be added
+    this.lock();
+
+    try {
+      const template: any = {
+        Description: this.templateOptions.description,
+        Transform: this.templateOptions.transform,
+        AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
+        Metadata: this.templateOptions.metadata
+      };
+
+      const elements = stackElements(this);
+      const fragments = elements.map(e => e.toCloudFormation());
+
+      // merge in all CloudFormation fragments collected from the tree
+      for (const fragment of fragments) {
+        merge(template, fragment);
+      }
+
+      // resolve all tokens and remove all empties
+      const ret = resolve(template) || { };
+
+      this.logicalIds.assertAllRenamesApplied();
+
+      return ret;
+    } finally {
+      // allow mutations after synthesis is finished.
+      this.unlock();
     }
-
-    const template: any = {
-      Description: this.templateOptions.description,
-      Transform: this.templateOptions.transform,
-      AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata
-    };
-
-    const elements = stackElements(this);
-    const fragments = elements.map(e => e.toCloudFormation());
-
-    // merge in all CloudFormation fragments collected from the tree
-    for (const fragment of fragments) {
-      merge(template, fragment);
-    }
-
-    this.logicalIds.assertAllRenamesApplied();
-
-    // FIXME: should use removeEmpty() instead of resolve()
-    return resolve(template);
   }
 
   /**
@@ -254,9 +264,12 @@ export class Stack extends Construct {
     // Ensure a singleton Output for this value
     const resolved = resolve(tokenValue);
     const id = 'Output' + JSON.stringify(resolved);
-    let output = this.tryFindChild(id) as Output;
+    if (this.crossStackExports === undefined) {
+      this.crossStackExports = new Construct(this, 'Exports');
+    }
+    let output = this.crossStackExports.tryFindChild(id) as Output;
     if (!output) {
-      output = new Output(this, id, { value: tokenValue });
+      output = new Output(this.crossStackExports, id, { value: tokenValue });
     }
     return output.makeImportValue();
   }
@@ -369,8 +382,6 @@ export abstract class StackElement extends Construct implements IDependable {
    */
   protected stack: Stack;
 
-  private frozenRepresentation?: object;
-
   /**
    * Creates an entity and binds it to a tree.
    * Note that the root of the tree must be a Stack object (not just any Root).
@@ -439,23 +450,7 @@ export abstract class StackElement extends Construct implements IDependable {
    *   }
    * }
    */
-  public toCloudFormation(): object {
-    if (!this.frozen) {
-      throw new Error('StackElement must be frozen before it is synthesized');
-    }
-    return this.frozenRepresentation!;
-  }
-
-  protected abstract renderCloudFormation(): object;
-
-  protected freeze() {
-    this.freezeChildren();
-
-    const stack = Stack.find(this);
-    this.frozenRepresentation = resolve(this.renderCloudFormation(), {
-        context: { stack }
-    });
-  }
+  public abstract toCloudFormation(): object;
 }
 
 /**

@@ -184,7 +184,7 @@ export = {
 
     // THEN
     // Need to freeze manually now, because we want to test using JUST the stacks.
-    app.freezeConstructTree();
+    app.applyCrossEnvironmentReferences();
 
     test.deepEqual(stack1.toCloudFormation(), {
       Output: {

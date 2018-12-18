@@ -371,7 +371,11 @@ export = {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        this.markFrozen();
+        this.lock();
+      }
+
+      public unlockMe() {
+        this.unlock();
       }
     }
 
@@ -390,6 +394,12 @@ export = {
     test.throws(() => new Construct(c0a, 'fail1'), /Cannot add children to "c0a" during synthesis/);
     test.throws(() => new Construct(c1a, 'fail2'), /Cannot add children to "c0a\/c1a" during synthesis/);
     test.throws(() => new Construct(c1b, 'fail3'), /Cannot add children to "c0a\/c1b" during synthesis/);
+
+    c0a.unlockMe();
+
+    new Construct(c0a, 'c0aZ');
+    new Construct(c1a, 'c1aZ');
+    new Construct(c1b, 'c1bZ');
 
     test.done();
   }

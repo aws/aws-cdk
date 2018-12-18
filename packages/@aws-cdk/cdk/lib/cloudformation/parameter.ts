@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { ContextMap, Token } from '../core/tokens';
+import { Token } from '../core/tokens';
 import { Ref, Referenceable } from './stack';
 
 export interface ParameterProps {
@@ -92,15 +92,7 @@ export class Parameter extends Referenceable {
     this.value = new Ref(this);
   }
 
-  /**
-   * Allows using parameters as tokens without the need to dereference them.
-   * This implicitly implements Token, until we make it an interface.
-   */
-  public resolve(_context: ContextMap): any {
-    return this.value;
-  }
-
-  protected renderCloudFormation(): object {
+  public toCloudFormation(): object {
     return {
       Parameters: {
         [this.logicalId]: {

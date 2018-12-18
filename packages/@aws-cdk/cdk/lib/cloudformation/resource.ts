@@ -178,7 +178,7 @@ export class Resource extends Referenceable {
   /**
    * Emits CloudFormation for this resource.
    */
-  protected renderCloudFormation(): object {
+  public toCloudFormation(): object {
     try {
       // merge property overrides onto properties and then render (and validate).
       const properties = this.renderProperties(deepMerge(this.properties || { }, this.untypedPropertyOverrides));

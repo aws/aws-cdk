@@ -25,7 +25,7 @@ export class Condition extends Referenceable {
     this.expression = props && props.expression;
   }
 
-  protected renderCloudFormation(): object {
+  public toCloudFormation(): object {
     return {
       Conditions: {
         [this.logicalId]: this.expression

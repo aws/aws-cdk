@@ -107,7 +107,7 @@ export class Output extends StackElement {
     return new FnImportValue(this.export);
   }
 
-  protected renderCloudFormation(): object {
+  public toCloudFormation(): object {
     return {
       Outputs: {
         [this.logicalId]: {
