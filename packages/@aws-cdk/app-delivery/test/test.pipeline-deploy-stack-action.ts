@@ -188,7 +188,7 @@ export = nodeunit.testCase({
       adminPermissions: false,
       role
     });
-    test.deepEqual(role.id, deployAction.role.id);
+    test.same(deployAction.role, role);
     test.done();
   },
   'users can specify IAM permissions for the deploy action'(test: nodeunit.Test) {
