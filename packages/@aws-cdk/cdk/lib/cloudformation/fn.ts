@@ -1,4 +1,4 @@
-import { resolve, Token, unresolved, ContextMap } from '../core/tokens';
+import { resolve, Token, unresolved } from '../core/tokens';
 import { CloudFormationToken, isIntrinsic } from './cloudformation-token';
 // tslint:disable:max-line-length
 
@@ -107,12 +107,12 @@ export class FnJoin extends Fn {
     this.canOptimize = true;
   }
 
-  public resolve(context: ContextMap): any {
+  public resolve(): any {
     const resolved = this.resolveValues();
     if (this.canOptimize && resolved.length === 1) {
       return resolved[0];
     }
-    return super.resolve(context);
+    return super.resolve();
   }
 
   /**

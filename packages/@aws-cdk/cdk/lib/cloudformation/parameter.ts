@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { Token, ContextMap } from '../core/tokens';
+import { Token } from '../core/tokens';
 import { Ref, Referenceable, Stack } from './stack';
 
 export interface ParameterProps {
@@ -120,7 +120,7 @@ export class Parameter extends Referenceable {
    * Allows using parameters as tokens without the need to dereference them.
    * This implicitly implements Token, until we make it an interface.
    */
-  public resolve(_context: ContextMap): any {
+  public resolve(): any {
     return this.value;
   }
 }

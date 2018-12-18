@@ -1,5 +1,5 @@
 import { Construct } from '@aws-cdk/cdk';
-import { ContextMap, Token } from '@aws-cdk/cdk';
+import { Token } from '@aws-cdk/cdk';
 import { AwsAccountId, AwsPartition } from '@aws-cdk/cdk';
 
 export class PolicyDocument extends Token {
@@ -325,7 +325,7 @@ export class PolicyStatement extends Token {
   // Serialization
   //
 
-  public resolve(_context: ContextMap): any {
+  public resolve(): any {
     return this.toJson();
   }
 
