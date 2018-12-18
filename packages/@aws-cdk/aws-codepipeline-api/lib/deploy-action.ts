@@ -9,7 +9,7 @@ export interface DeployActionProps extends CommonActionProps, CommonActionConstr
 
   artifactBounds: ActionArtifactBounds;
 
-  inputArtifact?: Artifact;
+  inputArtifact: Artifact;
 
   configuration?: any;
 }

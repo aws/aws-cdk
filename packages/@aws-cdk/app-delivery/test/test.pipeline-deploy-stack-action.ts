@@ -309,7 +309,7 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
 
   // simple source
   const bucket = s3.Bucket.import( pipeline, 'PatternBucket', { bucketArn: 'arn:aws:s3:::totally-fake-bucket' });
-  new s3.PipelineSourceAction(pipeline, 'S3Source', {
+  const sourceAction = new s3.PipelineSourceAction(pipeline, 'S3Source', {
     bucket,
     bucketKey: 'the-great-key',
     stage: pipeline.addStage('source'),
@@ -317,7 +317,9 @@ function createSelfUpdatingStack(pipelineStack: cdk.Stack): SelfUpdatingPipeline
 
   const project = new codebuild.PipelineProject(pipelineStack, 'CodeBuild');
   const buildStage = pipeline.addStage('build');
-  const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
+  const buildAction = project.addToPipeline(buildStage, 'CodeBuild', {
+    inputArtifact: sourceAction.outputArtifact,
+  });
   const synthesizedApp = buildAction.outputArtifact;
   return {synthesizedApp, pipeline};
 }

@@ -172,13 +172,15 @@ const project = new codebuild.PipelineProject(this, 'MyProject');
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 
 const sourceStage = pipeline.addStage('Source');
-repository.addToPipeline(sourceStage, 'CodeCommit');
+const sourceAction = repository.addToPipeline(sourceStage, 'CodeCommit');
 
 const buildStage = pipeline.addStage('Build');
-new codebuild.PipelineBuildAction(this, 'CodeBuild', {
+const buildAction = new codebuild.PipelineBuildAction(this, 'CodeBuild', {
   stage: buildStage,
   project,
+  inputArtifact: sourceAction.outputArtifact,
 });
+// use `buildAction.outputArtifact` as the `inputArtifact` to later Actions...
 ```
 
 The `PipelineProject` utility class is a simple sugar around the `Project`
@@ -196,7 +198,9 @@ You can also add the Project to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const buildAction = project.addToPipeline(buildStage, 'CodeBuild');
+const buildAction = project.addToPipeline(buildStage, 'CodeBuild', {
+  inputArtifact: sourceAction.outputArtifact,
+});
 ```
 
 In addition to the build Action, there is also a test Action. It works very
@@ -209,6 +213,7 @@ Examples:
 new codebuild.PipelineTestAction(this, 'IntegrationTest', {
   stage: buildStage,
   project,
+  inputArtifact: sourceAction.outputArtifact,
   // outputArtifactName is optional - if you don't specify it,
   // the Action will have an undefined `outputArtifact` property
   outputArtifactName: 'IntegrationTestOutput',
@@ -216,8 +221,9 @@ new codebuild.PipelineTestAction(this, 'IntegrationTest', {
 
 // equivalent to the code above:
 project.addToPipelineAsTest(buildStage, 'IntegrationTest', {
-    // of course, this property is optional here as well
-    outputArtifactName: 'IntegrationTestOutput',
+  inputArtifact: sourceAction.outputArtifact,
+  // of course, this property is optional here as well
+  outputArtifactName: 'IntegrationTestOutput',
 });
 ```
 

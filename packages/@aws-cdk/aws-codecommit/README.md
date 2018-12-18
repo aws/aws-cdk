@@ -32,7 +32,9 @@ const sourceStage = pipeline.addStage('Source');
 const sourceAction = new codecommit.PipelineSourceAction(this, 'CodeCommit', {
     stage: sourceStage,
     repository: repo,
+    outputArtifactName: 'SourceOutput', // optional - by default, a name will be auto-generated
 });
+// use `sourceAction.outputArtifact` as the `inputArtifact` to later Actions...
 ```
 
 You can also add the Repository to the Pipeline directly:

@@ -29,10 +29,8 @@ export interface CommonPipelineBuildActionProps extends CommonCodeBuildActionPro
     codepipeline.CommonActionProps {
   /**
    * The source to use as input for this build.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 
   /**
    * The name of the build's output artifact.
@@ -115,10 +113,8 @@ export interface CommonPipelineTestActionProps extends CommonCodeBuildActionProp
     codepipeline.CommonActionProps {
   /**
    * The source to use as input for this test.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 
   /**
    * The optional name of the primary output artifact.

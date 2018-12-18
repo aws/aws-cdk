@@ -9,7 +9,7 @@ export interface BuildActionProps extends CommonActionProps, CommonActionConstru
   /**
    * The source to use as input for this build.
    */
-  inputArtifact?: Artifact;
+  inputArtifact: Artifact;
 
   /**
    * The service provider that the action calls. For example, a valid provider for Source actions is CodeBuild.

@@ -100,7 +100,9 @@ const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
     stage: sourceStage,
     bucket: sourceBucket,
     bucketKey: 'path/to/file.zip',
+    outputArtifactName: 'SourceOutput', // optional - by default, a name will be auto-generated
 });
+// use `sourceAction.outputArtifact` as the `inputArtifact` to later Actions...
 ```
 
 You can also add the Bucket to the Pipeline directly:

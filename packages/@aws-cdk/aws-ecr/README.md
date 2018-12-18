@@ -40,6 +40,7 @@ const sourceAction = new ecr.PipelineSourceAction(this, 'ECR', {
   imageTag: 'some-tag', // optional, default: 'latest'
   outputArtifactName: 'SomeName', // optional
 });
+// use `sourceAction.outputArtifact` as the `inputArtifact` to later Actions...
 ```
 
 You can also add the Repository to the Pipeline directly:

@@ -94,7 +94,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineBuildAction} build Action
    */
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps = {}): PipelineBuildAction {
+  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps): PipelineBuildAction {
     return new PipelineBuildAction(this, name, {
       stage,
       project: this,
@@ -111,7 +111,7 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineBuildAction} test Action
    */
-  public addToPipelineAsTest(stage: codepipeline.IStage, name: string, props: CommonPipelineTestActionProps = {}): PipelineTestAction {
+  public addToPipelineAsTest(stage: codepipeline.IStage, name: string, props: CommonPipelineTestActionProps): PipelineTestAction {
     return new PipelineTestAction(this, name, {
       stage,
       project: this,

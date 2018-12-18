@@ -326,10 +326,6 @@ class StageDouble implements cpapi.IStage, cpapi.IInternalStage {
   public _generateOutputArtifactName(): string {
     throw new Error('Unsupported');
   }
-
-  public _findInputArtifact(): cpapi.Artifact {
-    throw new Error('Unsupported');
-  }
 }
 
 class RoleDouble extends iam.Role {

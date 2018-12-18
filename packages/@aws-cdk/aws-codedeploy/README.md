@@ -175,6 +175,7 @@ const deployStage = pipeline.addStage('Deploy');
 new codedeploy.PipelineDeployAction(this, 'CodeDeploy', {
     stage: deployStage,
     deploymentGroup,
+    inputArtifact: buildAction.outputArtifact,
 });
 ```
 
@@ -182,5 +183,7 @@ You can also add the Deployment Group to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
+deploymentGroup.addToPipeline(deployStage, 'CodeDeploy', {
+    inputArtifact: buildAction.outputArtifact,
+});
 ```

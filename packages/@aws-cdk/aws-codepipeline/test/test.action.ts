@@ -72,11 +72,13 @@ export = {
       repositoryName: 'Repo',
     });
     const sourceStage = pipeline.addStage('Source');
-    repo.addToPipeline(sourceStage, 'CodeCommit');
+    const sourceAction = repo.addToPipeline(sourceStage, 'CodeCommit');
 
     const project = new codebuild.PipelineProject(stack, 'Project');
     const buildStage = pipeline.addStage('Build');
-    project.addToPipeline(buildStage, 'CodeBuild');
+    project.addToPipeline(buildStage, 'CodeBuild', {
+      inputArtifact: sourceAction.outputArtifact,
+    });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "Stages": [

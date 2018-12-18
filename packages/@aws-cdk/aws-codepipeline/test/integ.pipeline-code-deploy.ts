@@ -31,12 +31,14 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 });
 
 const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
-bucket.addToPipeline(sourceStage, 'S3Source', {
+const sourceAction = bucket.addToPipeline(sourceStage, 'S3Source', {
   bucketKey: 'application.zip',
   outputArtifactName: 'SourceOutput',
 });
 
 const deployStage = new codepipeline.Stage(stack, 'Deploy', { pipeline });
-deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
+deploymentGroup.addToPipeline(deployStage, 'CodeDeploy', {
+  inputArtifact: sourceAction.outputArtifact,
+});
 
 app.run();

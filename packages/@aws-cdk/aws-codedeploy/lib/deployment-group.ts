@@ -93,7 +93,7 @@ export abstract class ServerDeploymentGroupRef extends cdk.Construct {
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineDeployAction} deploy Action
    */
-  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineDeployActionProps = {}):
+  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineDeployActionProps):
       PipelineDeployAction {
     return new PipelineDeployAction(this, name, {
       deploymentGroup: this,

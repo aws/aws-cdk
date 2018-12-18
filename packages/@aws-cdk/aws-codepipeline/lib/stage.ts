@@ -145,10 +145,6 @@ export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInterna
     return (this.pipeline as any)._generateOutputArtifactName(this, action);
   }
 
-  public _findInputArtifact(action: cpapi.Action): cpapi.Artifact {
-    return (this.pipeline as any)._findInputArtifact(this, action);
-  }
-
   private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
     return {
       name: action.id,

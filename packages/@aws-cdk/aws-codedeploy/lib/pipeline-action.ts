@@ -11,10 +11,8 @@ import { ServerDeploymentGroupRef } from './deployment-group';
 export interface CommonPipelineDeployActionProps extends codepipeline.CommonActionProps {
   /**
    * The source to use as input for deployment.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: codepipeline.Artifact;
+  inputArtifact: codepipeline.Artifact;
 }
 
 /**

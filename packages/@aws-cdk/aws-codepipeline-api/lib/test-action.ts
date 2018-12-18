@@ -8,10 +8,8 @@ import { Artifact } from "./artifact";
 export interface TestActionProps extends CommonActionProps, CommonActionConstructProps {
   /**
    * The source to use as input for this test.
-   *
-   * @default CodePipeline will use the output of the last Action from a previous Stage as input
    */
-  inputArtifact?: Artifact;
+  inputArtifact: Artifact;
 
   /**
    * The optional name of the output artifact.

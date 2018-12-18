@@ -54,17 +54,6 @@ export interface IInternalStage {
    * @param action the Action to generate the output artifact name for
    */
   _generateOutputArtifactName(action: Action): string;
-
-  /**
-   * Finds an input artifact for the given Action.
-   * The chosen artifact will be the output artifact of the
-   * last Action in the Pipeline
-   * (up to the Stage this Action belongs to)
-   * with the highest runOrder that has an output artifact.
-   *
-   * @param action the Action to find the input artifact for
-   */
-  _findInputArtifact(action: Action): Artifact;
 }
 
 /**
@@ -281,7 +270,7 @@ export abstract class Action extends cdk.Construct {
     return artifact;
   }
 
-  protected addInputArtifact(artifact: Artifact = this.stage._internal._findInputArtifact(this)): Action {
+  protected addInputArtifact(artifact: Artifact): Action {
     this.inputArtifacts.push(artifact);
     return this;
   }
