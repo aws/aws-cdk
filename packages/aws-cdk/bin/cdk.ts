@@ -310,7 +310,7 @@ async function initCommandLine() {
           // only talk to user if we STDIN is a terminal (otherwise, fail)
           if (!process.stdin.isTTY) {
             throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' + 
+              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
               'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
