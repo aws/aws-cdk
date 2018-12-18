@@ -67,7 +67,7 @@ Logical IDs remain unchanged across updates
 
 The |cdk| applies some heuristics to improve the human-friendliness of the prefix:
 
-- If a path component is **Default**, is is hidden completely from the logical ID
+- If a path component is **Default**, it is hidden completely from the logical ID
   computation. You will generally want to use this if you create a new construct
   that wraps an existing one. By naming the inner construct **Default**, you
   ensure that the logical identifiers of resources in already-deployed copy of

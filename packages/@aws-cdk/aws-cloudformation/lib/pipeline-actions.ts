@@ -123,7 +123,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
    *
    * @default A fresh role with full or no permissions (depending on the value of `adminPermissions`).
    */
-  role?: iam.Role;
+  role?: iam.IRole;
 
   /**
    * Acknowledge certain changes made as part of deployment
@@ -194,7 +194,7 @@ export interface PipelineCloudFormationDeployActionProps extends PipelineCloudFo
  * Base class for all CloudFormation actions that execute or stage deployments.
  */
 export abstract class PipelineCloudFormationDeployAction extends PipelineCloudFormationAction {
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
   constructor(parent: cdk.Construct, id: string, props: PipelineCloudFormationDeployActionProps, configuration: any) {
     const capabilities = props.adminPermissions && props.capabilities === undefined ? CloudFormationCapabilities.NamedIAM : props.capabilities;
@@ -450,7 +450,7 @@ class SingletonPolicy extends cdk.Construct {
     }).addResource(stackArnFromProps(props));
   }
 
-  public grantPassRole(role: iam.Role): void {
+  public grantPassRole(role: iam.IRole): void {
     this.statementFor({ actions: ['iam:PassRole'] }).addResource(role.roleArn);
   }
 
