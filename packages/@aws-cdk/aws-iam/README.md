@@ -22,6 +22,60 @@ an `ExternalId` works like this:
 
 [supplying an external ID](test/example.external-id.lit.ts)
 
+### IAM Principals
+
+When defining policy statements as part of an AssumeRole policy or as part of a
+resource policy, statements would usually refer to a specific IAM principal
+under `Principal`.
+
+IAM principals are modeled as classes that derive from the `iam.PolicyPrincipal`
+abstract class. Principal objects include principal type (string) and value
+(array of string), optional set of conditions and the action that this principal
+requires when it is used in an assume role policy document.
+
+To add a principal to a policy statement you can either use the abstract
+`statement.addPrincipal`, one of the concrete `addXxxPrincipal` methods:
+
+* `addAwsPrincipal`, `addArnPrincipal` or `new ArnPrincipal(arn)` for `{ "AWS": arn }`
+* `addAwsAccountPrincipal` or `new AccountPrincipal(accountId)` for `{ "AWS": account-arn }`
+* `addServicePrincipal` or `new ServicePrincipal(service)` for `{ "Service": service }`
+* `addAccountRootPrincipal` or `new AccountRootPrincipal()` for `{ "AWS": { "Ref: "AWS::AccountId" } }`
+* `addCanonicalUserPrincipal` or `new CanonicalUserPrincipal(id)` for `{ "CanonicalUser": id }`
+* `addFederatedPrincipal` or `new FederatedPrincipal(federated, conditions, assumeAction)` for
+  `{ "Federated": arn }` and a set of optional conditions and the assume role action to use.
+* `addAnyPrincipal` or `new AnyPrincipal` for `{ "AWS": "*" }`
+
+If multiple principals are added to the policy statement, they will be merged together:
+
+```ts
+const statement = new PolicyStatement();
+statement.addServicePrincipal('cloudwatch.amazonaws.com');
+statement.addServicePrincipal('ec2.amazonaws.com');
+statement.addAwsPrincipal('arn:aws:boom:boom');
+```
+
+Will result in:
+
+```json
+{
+  "Principal": {
+    "Service": [ "cloudwatch.amazonaws.com", "ec2.amazonaws.com" ],
+    "AWS": "arn:aws:boom:boom"
+  }
+}
+```
+
+The `CompositePrincipal` class can also be used to define complex principals, for example:
+
+```ts
+const role = new iam.Role(this, 'MyRole', {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('ec2.amazonawas.com'),
+    new iam.AccountPrincipal('1818188181818187272')
+  )
+});
+```
+
 ### Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
