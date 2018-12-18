@@ -1,12 +1,11 @@
 import cfn = require('@aws-cdk/aws-cloudformation');
-import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { ServicePrincipal } from '@aws-cdk/cdk';
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
@@ -15,10 +14,11 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
+  removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 const source = new s3.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   bucket,
   bucketKey: 'key',
 });
@@ -37,7 +37,8 @@ new cfn.PipelineCreateReplaceChangeSetAction(stack, 'DeployCFN', {
   changeSetName,
   stackName,
   role,
-  templatePath: new ArtifactPath(source.artifact, 'test.yaml')
+  templatePath: source.outputArtifact.atPath('test.yaml'),
+  adminPermissions: false,
 });
 
-process.stdout.write(app.run());
+app.run();

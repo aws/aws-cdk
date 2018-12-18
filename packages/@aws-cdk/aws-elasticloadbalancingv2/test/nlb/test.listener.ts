@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -109,6 +109,36 @@ export = {
       HealthCheckPath: "/test",
       HealthCheckTimeoutSeconds: 3600,
     }));
+
+    test.done();
+  },
+
+  'Enable taking a dependency on an NLB target group\'s load balancer'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.VpcNetwork(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 443 });
+    const group = listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)]
+    });
+
+    // WHEN
+    const resource = new cdk.Resource(stack, 'MyResource', {
+      type: 'SomeResource',
+    });
+    resource.addDependency(group.loadBalancerDependency());
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        MyResource: {
+          Type: "SomeResource",
+          DependsOn: [ "LBListener49E825B4" ]
+        }
+      }
+    }, MatchStyle.SUPERSET);
 
     test.done();
   },

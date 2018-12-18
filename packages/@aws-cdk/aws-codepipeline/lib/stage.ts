@@ -1,8 +1,7 @@
-import actions = require('@aws-cdk/aws-codepipeline-api');
+import cpapi = require('@aws-cdk/aws-codepipeline-api');
 import events = require('@aws-cdk/aws-events');
-import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { Pipeline } from './pipeline';
 
 /**
@@ -72,14 +71,20 @@ export interface StageProps extends CommonStageProps {
  *     pipeline: myPipeline,
  *   });
  */
-export class Stage extends cdk.Construct implements actions.IStage {
+export class Stage extends cdk.Construct implements cpapi.IStage, cpapi.IInternalStage {
   /**
    * The Pipeline this Stage is a part of.
    */
-  public readonly pipeline: Pipeline;
+  public readonly pipeline: cpapi.IPipeline;
   public readonly name: string;
 
-  private readonly _actions = new Array<actions.Action>();
+  /**
+   * The API of Stage used internally by the CodePipeline Construct.
+   * You should never need to call any of the methods inside of it yourself.
+   */
+  public readonly _internal = this;
+
+  private readonly _actions = new Array<cpapi.Action>();
 
   /**
    * Create a new Stage.
@@ -88,7 +93,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
     super(parent, name);
     this.name = name;
     this.pipeline = props.pipeline;
-    actions.validateName('Stage', name);
+    cpapi.validateName('Stage', name);
 
     (this.pipeline as any)._attachStage(this, props.placement);
   }
@@ -96,7 +101,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
   /**
    * Get a duplicate of this stage's list of actions.
    */
-  public get actions(): actions.Action[] {
+  public get actions(): cpapi.Action[] {
     return this._actions.slice();
   }
 
@@ -104,11 +109,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
     return this.validateHasActions();
   }
 
-  public grantPipelineBucketReadWrite(identity: iam.IPrincipal): void {
-    this.pipeline.artifactBucket.grantReadWrite(identity);
-  }
-
-  public render(): cloudformation.PipelineResource.StageDeclarationProperty {
+  public render(): CfnPipeline.StageDeclarationProperty {
     return {
       name: this.id,
       actions: this._actions.map(action => this.renderAction(action)),
@@ -116,7 +117,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
   }
 
   public onStateChange(name: string, target?: events.IEventRuleTarget, options?: events.EventRuleProps) {
-    const rule = new events.EventRule(this.pipeline, name, options);
+    const rule = new events.EventRule(this, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
       detailType: [ 'CodePipeline Stage Execution State Change' ],
@@ -129,27 +130,29 @@ export class Stage extends cdk.Construct implements actions.IStage {
     return rule;
   }
 
-  public get pipelineArn(): string {
-    return this.pipeline.pipelineArn;
-  }
-
-  public get pipelineRole(): iam.Role {
-    return this.pipeline.role;
-  }
-
   // can't make this method private like Pipeline#_attachStage,
   // as it comes from the IStage interface
-  public _attachAction(action: actions.Action): void {
+  public _attachAction(action: cpapi.Action): void {
     // _attachAction should be idempotent in case a customer ever calls it directly
     if (!this._actions.includes(action)) {
       this._actions.push(action);
+
+      (this.pipeline as any)._attachActionToRegion(this, action);
     }
   }
 
-  private renderAction(action: actions.Action): cloudformation.PipelineResource.ActionDeclarationProperty {
+  public _generateOutputArtifactName(action: cpapi.Action): string {
+    return (this.pipeline as any)._generateOutputArtifactName(this, action);
+  }
+
+  public _findInputArtifact(action: cpapi.Action): cpapi.Artifact {
+    return (this.pipeline as any)._findInputArtifact(this, action);
+  }
+
+  private renderAction(action: cpapi.Action): CfnPipeline.ActionDeclarationProperty {
     return {
       name: action.id,
-      inputArtifacts: action.inputArtifacts.map(a => ({ name: a.name })),
+      inputArtifacts: action._inputArtifacts.map(a => ({ name: a.name })),
       actionTypeId: {
         category: action.category.toString(),
         version: action.version,
@@ -157,7 +160,7 @@ export class Stage extends cdk.Construct implements actions.IStage {
         provider: action.provider,
       },
       configuration: action.configuration,
-      outputArtifacts: action.outputArtifacts.map(a => ({ name: a.name })),
+      outputArtifacts: action._outputArtifacts.map(a => ({ name: a.name })),
       runOrder: action.runOrder,
     };
   }

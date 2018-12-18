@@ -3,7 +3,7 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codedeploy');
 
@@ -15,7 +15,7 @@ const deploymentConfig = new codedeploy.ServerDeploymentConfig(stack, 'CustomDep
   minHealthyHostCount: 0,
 });
 
-new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
+const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   application,
   deploymentGroupName: 'IntegTestDeploymentGroup',
   deploymentConfig,
@@ -23,6 +23,7 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
 
 const bucket = new s3.Bucket(stack, 'CodeDeployPipelineIntegTest', {
   versioned: true,
+  removalPolicy: cdk.RemovalPolicy.Destroy,
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -30,17 +31,12 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
 });
 
 const sourceStage = new codepipeline.Stage(stack, 'Source', { pipeline });
-const sourceAction = bucket.addToPipeline(sourceStage, 'S3Source', {
+bucket.addToPipeline(sourceStage, 'S3Source', {
   bucketKey: 'application.zip',
-  artifactName: 'SourceOutput',
+  outputArtifactName: 'SourceOutput',
 });
 
 const deployStage = new codepipeline.Stage(stack, 'Deploy', { pipeline });
-new codedeploy.PipelineDeployAction(stack, 'CodeDeploy', {
-  stage: deployStage,
-  inputArtifact: sourceAction.artifact,
-  applicationName: 'IntegTestDeployApp',
-  deploymentGroupName: 'IntegTestDeploymentGroup',
-});
+deploymentGroup.addToPipeline(deployStage, 'CodeDeploy');
 
-process.stdout.write(app.run());
+app.run();

@@ -1,10 +1,13 @@
-import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
+// tslint:disable-next-line:max-line-length
+import { ASSET_METADATA, ASSET_PREFIX_SEPARATOR, AssetMetadataEntry, FileAssetMetadataEntry, StackMetadata, SynthesizedStack } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import colors = require('colors');
 import fs = require('fs-extra');
 import os = require('os');
 import path = require('path');
 import { ToolkitInfo } from './api/toolkit-info';
 import { zipDirectory } from './archive';
+import { prepareContainerAsset } from './docker';
 import { debug, success } from './logging';
 
 export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
@@ -14,7 +17,8 @@ export async function prepareAssets(stack: SynthesizedStack, toolkitInfo?: Toolk
   }
 
   if (!toolkitInfo) {
-    throw new Error('Since this stack uses assets, the toolkit stack must be deployed to the environment ("cdk bootstrap")');
+    // tslint:disable-next-line:max-line-length
+    throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue("cdk bootstrap " + stack.environment!.name)}")`);
   }
 
   debug('Preparing assets');
@@ -35,12 +39,15 @@ async function prepareAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo)
       return await prepareZipAsset(asset, toolkitInfo);
     case 'file':
       return await prepareFileAsset(asset, toolkitInfo);
+    case 'container-image':
+      return await prepareContainerAsset(asset, toolkitInfo);
     default:
-      throw new Error(`Unsupported packaging type: ${asset.packaging}`);
+      // tslint:disable-next-line:max-line-length
+      throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);
   }
 }
 
-async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
+async function prepareZipAsset(asset: FileAssetMetadataEntry, toolkitInfo: ToolkitInfo): Promise<CloudFormation.Parameter[]> {
   debug('Preparing zip asset from directory:', asset.path);
   const staging = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-assets'));
   try {
@@ -60,7 +67,7 @@ async function prepareZipAsset(asset: AssetMetadataEntry, toolkitInfo: ToolkitIn
  * @param contentType Content-type to use when uploading to S3 (none will be specified by default)
  */
 async function prepareFileAsset(
-    asset: AssetMetadataEntry,
+    asset: FileAssetMetadataEntry,
     toolkitInfo: ToolkitInfo,
     filePath?: string,
     contentType?: string): Promise<CloudFormation.Parameter[]> {
@@ -78,11 +85,14 @@ async function prepareFileAsset(
     contentType
   });
 
+  const relativePath = path.relative(process.cwd(), asset.path);
+
   const s3url = `s3://${toolkitInfo.bucketName}/${key}`;
+  debug(`S3 url for ${relativePath}: ${s3url}`);
   if (changed) {
-    success(` 👑  Asset ${asset.path} (${asset.packaging}) uploaded: ${s3url}`);
+    success(`Updated: ${colors.bold(relativePath)} (${asset.packaging})`);
   } else {
-    debug(` 👑  Asset ${asset.path} (${asset.packaging}) is up-to-date: ${s3url}`);
+    debug(`Up-to-date: ${colors.bold(relativePath)} (${asset.packaging})`);
   }
 
   return [

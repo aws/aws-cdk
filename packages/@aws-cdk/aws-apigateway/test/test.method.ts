@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -45,12 +45,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        ApiKeyRequired: true,
-        OperationName: "MyOperation"
-      }
-    }, ResourcePart.CompleteDefinition));
+      ApiKeyRequired: true,
+      OperationName: "MyOperation"
+    }));
 
     test.done();
   },
@@ -69,23 +66,20 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
-      Type: "AWS::ApiGateway::Method",
-      Properties: {
-        Integration: {
-          IntegrationHttpMethod: "POST",
-          Type: "AWS",
-          Uri: {
-            "Fn::Join": [
-            "",
-            [
-              "arn", ":", { Ref: "AWS::Partition" }, ":", "apigateway", ":",
-              { Ref: "AWS::Region" }, ":", "s3", ":", "path", "/", "bucket/key"
-            ]
-            ]
-          }
+      Integration: {
+        IntegrationHttpMethod: "POST",
+        Type: "AWS",
+        Uri: {
+          "Fn::Join": [
+          "",
+          [
+            "arn:", { Ref: "AWS::Partition" }, ":apigateway:",
+            { Ref: "AWS::Region" }, ":s3:path/bucket/key"
+          ]
+          ]
         }
       }
-    }, ResourcePart.CompleteDefinition));
+    }));
 
     test.done();
   },
@@ -133,19 +127,17 @@ export = {
       "Fn::Join": [
         "",
         [
-        "arn",
-        ":",
+        "arn:",
         { Ref: "AWS::Partition" },
-        ":",
-        "execute-api",
-        ":",
+        ":execute-api:",
         { Ref: "AWS::Region" },
         ":",
         { Ref: "AWS::AccountId" },
         ":",
         { Ref: "testapiD6451F70" },
         "/",
-        { "Fn::Join": [ "", [ { Ref: "testapiDeploymentStageprod5C9E92A4" }, "/POST/" ] ] }
+        { Ref: "testapiDeploymentStageprod5C9E92A4" },
+        "/POST/"
         ]
       ]
     });
@@ -169,19 +161,15 @@ export = {
       "Fn::Join": [
         "",
         [
-        "arn",
-        ":",
+        "arn:",
         { Ref: "AWS::Partition" },
-        ":",
-        "execute-api",
-        ":",
+        ":execute-api:",
         { Ref: "AWS::Region" },
         ":",
         { Ref: "AWS::AccountId" },
         ":",
         { Ref: "testapiD6451F70" },
-        "/",
-        "test-invoke-stage/POST/"
+        "/test-invoke-stage/POST/"
         ]
       ]
     });
@@ -197,7 +185,7 @@ export = {
 
     // WHEN + THEN
     test.throws(() => method.methodArn,
-      /There is no stage associated with this restApi. Either use `autoDeploy` or explicitly assign `deploymentStage`/);
+      /Unable to determine ARN for method "my-method" since there is no stage associated with this API./);
 
     test.done();
   },
@@ -206,7 +194,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
+    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // WHEN
     api.root.addMethod('GET', new apigateway.Integration({
@@ -217,7 +205,7 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
         Credentials: { "Fn::GetAtt": [ "MyRoleF48FFE04", "Arn" ] }
       }
@@ -239,9 +227,9 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       Integration: {
-        Credentials: { "Fn::Join": [ "", [ "arn", ":", { Ref: "AWS::Partition" }, ":", "iam", ":", "", ":", "*", ":", "user", "/", "*" ] ] }
+        Credentials: { "Fn::Join": [ "", [ "arn:", { Ref: "AWS::Partition" }, ":iam::*:user/*" ] ] }
       }
     }));
     test.done();
@@ -251,7 +239,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'test-api', { deploy: false });
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new cdk.ServicePrincipal('foo') });
+    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
 
     // WHEN
     const integration = new apigateway.Integration({

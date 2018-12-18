@@ -71,7 +71,7 @@ to instantiate the ``StorageLayer`` construct.
 When you initialize a construct,
 add the construct to the construct tree by specifying the parent construct as the first initializer parameter,
 an identifier for the construct as the second parameter,
-and an set of properties for the final parameter,
+and a set of properties for the final parameter,
 as shown in the following example.
 
 .. code-block:: js
@@ -116,30 +116,43 @@ Use the following operations to inspect the construct tree.
 
 .. _construct_names:
 
-Construct Names
-===============
+Construct Identifiers
+=====================
 
-Every construct in a CDK app must have a **name** unique among its siblings.
-Names are used to track constructs in the construct hierarchy, and to allocate
+Every construct in a CDK app must have an identifier unique among its siblings.
+Identifiers are used to track constructs in the construct hierarchy, and to allocate
 logical IDs so that |CFN| can keep track of the generated resources.
 
-When a construct is created, its name is specified as the second
+When a construct is created, its identifier is specified as the second
 initializer argument:
 
 .. code-block:: js
 
    const c1 = new MyBeautifulConstruct(this, 'OneBeautiful');
    const c2 = new MyBeautifulConstruct(this, 'TwoBeautiful');
-   assert(c1.name === 'OneBeautiful');
-   assert(c2.name === 'TwoBeautiful');
+   assert(c1.id === 'OneBeautiful');
+   assert(c2.id === 'TwoBeautiful');
 
 Use the :py:attr:`aws-cdk.Construct.path` property to get the path of this
 construct from the root of the tree.
 
-Note that the name of a construct does not directly map onto the physical name
-of the resource when it is created! If you want to give a physical name to a bucket or table,
-specify the physical name using use the appropriate
-property, such as ``bucketName`` or ``tableName``. Example:
+When you synthesize an |cdk| tree into an |CFN| template, the |CFN| logical ID
+for each resource in the template is allocated according to the path of that
+resource in the construct tree. For more information, see :ref:`logical_ids`.
+
+Construct IDs may be any string with the following caveats:
+
+* Path separators (``/``s) will be replaced by double-dashes ``--``. This means
+  that if you are trying to look up a child construct that may have a path separator,
+  you will need to manually replace it with ``--``.
+* Construct IDs may not include unresolved tokens (such as `new AwsRegion()`). This is
+  because those tokens are only resolved during deployment, and therefore cannot be used
+  to render a stable logical ID for any resources in this tree.
+
+Note that the ID of a construct does not directly map onto the physical name of
+the resource when it is created! If you want to give a physical name to a bucket
+or table, specify the physical name using use the appropriate property, such as
+``bucketName`` or ``tableName``. Example:
 
 .. code-block:: js
 
@@ -154,10 +167,6 @@ to discover the generated names.
 
 .. and pass them to your application's runtime
    code, as described in :ref:`creating_runtime_value`.
-
-When you synthesize an |cdk| tree into an |CFN| template, the |CFN| logical ID
-for each resource in the template is allocated according to the path of that
-resource in the construct tree. For more information, see :ref:`logical_ids`.
 
 .. _construct_properties:
 

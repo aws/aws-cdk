@@ -53,8 +53,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -168,7 +167,11 @@
                   }
                 ],
                 "Name": "CodeBuildAction",
-                "OutputArtifacts": [],
+                "OutputArtifacts": [
+                  {
+                    "Name": "Artifact_awscdkpipelineeventtargetCodeBuildAction37D411C2"
+                  }
+                ],
                 "RunOrder": 1
               }
             ],
@@ -196,14 +199,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -238,7 +238,7 @@
         ]
       }
     },
-    "MyPipelineOnSourceStateChange7DC39EE9": {
+    "SourceOnSourceStateChangeEF8EB16D": {
       "Type": "AWS::Events::Rule",
       "Properties": {
         "EventPattern": {
@@ -253,14 +253,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -308,14 +305,11 @@
               "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                     "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "codepipeline",
-                  ":",
+                  ":codepipeline:",
                   {
                     "Ref": "AWS::Region"
                   },
@@ -395,14 +389,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -410,19 +401,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "BuildProject097C5DB7"
-                            }
-                          ]
-                        ]
+                        "Ref": "BuildProject097C5DB7"
                       }
                     ]
                   ]
@@ -431,14 +412,11 @@
                   "Fn::Join": [
                     "",
                     [
-                      "arn",
-                      ":",
+                      "arn:",
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":",
-                      "logs",
-                      ":",
+                      ":logs:",
                       {
                         "Ref": "AWS::Region"
                       },
@@ -446,19 +424,9 @@
                       {
                         "Ref": "AWS::AccountId"
                       },
-                      ":",
-                      "log-group",
-                      ":",
+                      ":log-group:/aws/codebuild/",
                       {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "/aws/codebuild/",
-                            {
-                              "Ref": "BuildProject097C5DB7"
-                            }
-                          ]
-                        ]
+                        "Ref": "BuildProject097C5DB7"
                       },
                       ":*"
                     ]
@@ -493,8 +461,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }

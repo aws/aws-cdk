@@ -1,6 +1,7 @@
+import route53 = require('@aws-cdk/aws-route53');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './cloudfront.generated';
+import { CfnCloudFrontOriginAccessIdentity, CfnDistribution } from './cloudfront.generated';
 
 export enum HttpVersion {
   HTTP1_1 = "http1.1",
@@ -101,17 +102,28 @@ export enum SecurityPolicyProtocol {
 }
 
 /**
- * CloudFront supports logging of incoming requests and can log details to a given S3 Bucket.
- *
- * If you wish to configure logging you can configure details about it.
- *
- * @default bucket: if you do not pass a bucket for logging - we'll create one
- * @default includeCookies: false by default
- * @default prefix: no prefix is set by default.
+ * Logging configuration for incoming requests
  */
 export interface LoggingConfiguration {
+  /**
+   * Bucket to log requests to
+   *
+   * @default A logging bucket is automatically created
+   */
   readonly bucket?: s3.BucketRef,
+
+  /**
+   * Whether to include the cookies in the logs
+   *
+   * @default false
+   */
   readonly includeCookies?: boolean,
+
+  /**
+   * Where in the bucket to store logs
+   *
+   * @default No prefix
+   */
   readonly prefix?: string
 }
 
@@ -152,7 +164,7 @@ export interface SourceConfiguration {
    *
    * @default no additional headers are passed
    */
-  readonly originHeaders?: {[key: string]: string};
+  readonly originHeaders?: { [key: string]: string };
 }
 
 /**
@@ -230,7 +242,7 @@ export interface S3OriginConfig {
   /**
    * The optional origin identity cloudfront will use when calling your s3 bucket.
    */
-  readonly originAccessIdentity?: cloudformation.CloudFrontOriginAccessIdentityResource
+  readonly originAccessIdentity?: CfnCloudFrontOriginAccessIdentity
 }
 
 /**
@@ -316,7 +328,7 @@ export interface Behavior {
    * @default none (no cookies - no headers)
    *
    */
-  forwardedValues?: cloudformation.DistributionResource.ForwardedValuesProperty;
+  forwardedValues?: CfnDistribution.ForwardedValuesProperty;
 
   /**
    * The minimum amount of time that you want objects to stay in the cache
@@ -419,7 +431,13 @@ export interface CloudFrontWebDistributionProps {
   /**
    * How CloudFront should handle requests that are no successful (eg PageNotFound)
    */
-  errorConfigurations?: cloudformation.DistributionResource.CustomErrorResponseProperty[];
+  errorConfigurations?: CfnDistribution.CustomErrorResponseProperty[];
+
+  /**
+   * Optional AWS WAF WebACL to associate with this CloudFront distribution
+   */
+  webACLId?: string;
+
 }
 
 /**
@@ -459,7 +477,7 @@ interface BehaviorWithOrigin extends Behavior {
  *
  *
  */
-export class CloudFrontWebDistribution extends cdk.Construct {
+export class CloudFrontWebDistribution extends cdk.Construct implements route53.IAliasRecordTarget {
 
   /**
    * The hosted zone Id if using an alias record in Route53.
@@ -479,6 +497,11 @@ export class CloudFrontWebDistribution extends cdk.Construct {
    * (In Route53, you could create an ALIAS record to this value, for example. )
    */
   public readonly domainName: string;
+
+  /**
+   * The distribution ID for this distribution.
+   */
+  public readonly distributionId: string;
 
   /**
    * Maps our methods to the string arrays they are
@@ -503,20 +526,21 @@ export class CloudFrontWebDistribution extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: CloudFrontWebDistributionProps) {
     super(parent, name);
 
-    const distributionConfig: cloudformation.DistributionResource.DistributionConfigProperty = {
+    const distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
       defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : "index.html",
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PriceClass100,
-      ipv6Enabled: props.enableIpV6 || true,
+      ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
       // tslint:disable-next-line:max-line-length
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
+      webAclId: props.webACLId,
     };
 
     const behaviors: BehaviorWithOrigin[] = [];
 
-    const origins: cloudformation.DistributionResource.OriginProperty[] = [];
+    const origins: CfnDistribution.OriginProperty[] = [];
 
     let originIndex = 1;
     for (const originConfig of props.originConfigs) {
@@ -528,10 +552,10 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         throw new Error("There cannot be both an s3OriginSource and a customOriginSource in the same SourceConfiguration.");
       }
 
-      const originHeaders: cloudformation.DistributionResource.OriginCustomHeaderProperty[] = [];
+      const originHeaders: CfnDistribution.OriginCustomHeaderProperty[] = [];
       if (originConfig.originHeaders) {
         Object.keys(originConfig.originHeaders).forEach(key => {
-          const oHeader: cloudformation.DistributionResource.OriginCustomHeaderProperty = {
+          const oHeader: CfnDistribution.OriginCustomHeaderProperty = {
             headerName: key,
             headerValue: originConfig.originHeaders![key]
           };
@@ -539,7 +563,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         });
       }
 
-      const originProperty: cloudformation.DistributionResource.OriginProperty = {
+      const originProperty: CfnDistribution.OriginProperty = {
         id: originId,
         domainName: originConfig.s3OriginSource ?
           originConfig.s3OriginSource.s3BucketSource.domainName :
@@ -569,7 +593,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
         };
       }
       for (const behavior of originConfig.behaviors) {
-        behaviors.push({...behavior, targetOriginId: originId});
+        behaviors.push({ ...behavior, targetOriginId: originId });
       }
       origins.push(originProperty);
       originIndex++;
@@ -587,12 +611,12 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       throw new Error("There can only be one default behavior across all sources. [ One default behavior per distribution ].");
     }
     distributionConfig.defaultCacheBehavior = this.toBehavior(defaultBehaviors[0]);
-    const otherBehaviors: cloudformation.DistributionResource.CacheBehaviorProperty[] = [];
+    const otherBehaviors: CfnDistribution.CacheBehaviorProperty[] = [];
     for (const behavior of behaviors.filter(b => !b.isDefaultBehavior)) {
       if (!behavior.pathPattern) {
         throw new Error("pathPattern is required for all non-default behaviors");
       }
-      otherBehaviors.push(this.toBehavior(behavior) as cloudformation.DistributionResource.CacheBehaviorProperty);
+      otherBehaviors.push(this.toBehavior(behavior) as CfnDistribution.CacheBehaviorProperty);
     }
     distributionConfig.cacheBehaviors = otherBehaviors;
 
@@ -622,18 +646,34 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       };
     }
 
-    const distribution = new cloudformation.DistributionResource(this, 'CFDistribution', {distributionConfig});
-    this.domainName = distribution.distributionDomainName;
+    if (props.loggingConfig) {
+      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, `LoggingBucket`);
+      distributionConfig.logging = {
+        bucket: this.loggingBucket.domainName,
+        includeCookies: props.loggingConfig.includeCookies || false,
+        prefix: props.loggingConfig.prefix
+      };
+    }
 
+    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig });
+    this.domainName = distribution.distributionDomainName;
+    this.distributionId = distribution.distributionId;
+  }
+
+  public asAliasRecordTarget(): route53.AliasRecordTargetProps {
+    return {
+      hostedZoneId: this.aliasHostedZoneId,
+      dnsName: this.domainName
+    };
   }
 
   private toBehavior(input: BehaviorWithOrigin, protoPolicy?: ViewerProtocolPolicy) {
-    let toReturn =  {
+    let toReturn = {
       allowedMethods: this.METHOD_LOOKUP_MAP[input.allowedMethods || CloudFrontAllowedMethods.GET_HEAD],
       cachedMethods: this.METHOD_LOOKUP_MAP[input.cachedMethods || CloudFrontAllowedCachedMethods.GET_HEAD],
       compress: input.compress,
       defaultTtl: input.defaultTtlSeconds,
-      forwardedValues: input.forwardedValues || { queryString: false, cookies: {forward: "none"} },
+      forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: "none" } },
       maxTtl: input.maxTtlSeconds,
       minTtl: input.minTtlSeconds,
       trustedSigners: input.trustedSigners,
@@ -641,7 +681,7 @@ export class CloudFrontWebDistribution extends cdk.Construct {
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.RedirectToHTTPS,
     };
     if (!input.isDefaultBehavior) {
-      toReturn = Object.assign(toReturn, {pathPattern: input.pathPattern});
+      toReturn = Object.assign(toReturn, { pathPattern: input.pathPattern });
     }
     return toReturn;
   }

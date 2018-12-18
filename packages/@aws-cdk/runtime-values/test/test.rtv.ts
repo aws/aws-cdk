@@ -23,13 +23,13 @@ class RuntimeValueTest extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string) {
     super(parent, name);
 
-    const queue = new sqs.cloudformation.QueueResource(this, 'Queue', {});
+    const queue = new sqs.CfnQueue(this, 'Queue', {});
 
     const role = new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
-    new lambda.cloudformation.FunctionResource(this, 'Function', {
+    new lambda.CfnFunction(this, 'Function', {
       runtime: 'nodejs6.10',
       handler: 'index.handler',
       code: {
@@ -42,7 +42,7 @@ class RuntimeValueTest extends cdk.Construct {
       role: role.roleArn,
       environment: {
         variables: {
-          [RuntimeValue.ENV_NAME]: RuntimeValue.ENV_VALUE
+          [RuntimeValue.ENV_NAME]: new cdk.AwsStackName(this)
         }
       }
     });

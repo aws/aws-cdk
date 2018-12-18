@@ -217,10 +217,10 @@ export = {
         displayName: 'displayName'
       });
 
-      const fction = new lambda.InlineJavaScriptFunction(stack, 'MyFunc', {
-        handler: {
-          fn: (_event, _context, callback) => callback()
-        }
+      const fction = new lambda.Function(stack, 'MyFunc', {
+        runtime: lambda.Runtime.NodeJS610,
+        handler: 'index.handler',
+        code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
 
       topic.subscribeLambda(fction);
@@ -265,8 +265,7 @@ export = {
             "Version": "2012-10-17"
           },
           "ManagedPolicyArns": [
-            { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
-              "service-role/AWSLambdaBasicExecutionRole"]]}
+            { "Fn::Join": ["", ["arn:", {"Ref": "AWS::Partition"}, ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"]]}
           ]
           }
         },
@@ -274,7 +273,7 @@ export = {
           "Type": "AWS::Lambda::Function",
           "Properties": {
           "Code": {
-            "ZipFile": "exports.handler = (_event, _context, callback) => callback()"
+            "ZipFile": "exports.handler = function(e, c, cb) { return cb() }"
           },
           "Handler": "index.handler",
           "Role": {
@@ -283,8 +282,7 @@ export = {
             "Arn"
             ]
           },
-          "Runtime": "nodejs6.10",
-          "Timeout": 30
+          "Runtime": "nodejs6.10"
           },
           "DependsOn": [
           "MyFuncServiceRole54065130"
@@ -353,10 +351,10 @@ export = {
       });
 
       const queue = new sqs.Queue(stack, 'MyQueue');
-      const func = new lambda.InlineJavaScriptFunction(stack, 'MyLambda', {
-        handler: {
-          fn: (_event, _context, callback: any) => callback()
-        }
+      const func = new lambda.Function(stack, 'MyFunc', {
+        runtime: lambda.Runtime.NodeJS610,
+        handler: 'index.handler',
+        code: lambda.Code.inline('exports.handler = function(e, c, cb) { return cb() }')
       });
 
       topic.subscribeQueue(queue);
@@ -364,135 +362,144 @@ export = {
 
       expect(stack).toMatch({
         "Resources": {
-        "MyTopic86869434": {
-          "Type": "AWS::SNS::Topic",
-          "Properties": {
-          "DisplayName": "displayName",
-          "TopicName": "topicName"
-          }
-        },
-        "MyTopicMyQueueSubscription3245B11E": {
-          "Type": "AWS::SNS::Subscription",
-          "Properties": {
-          "Endpoint": {
-            "Fn::GetAtt": [
-            "MyQueueE6CA6235",
-            "Arn"
-            ]
+          "MyTopic86869434": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+              "DisplayName": "displayName",
+              "TopicName": "topicName"
+            }
           },
-          "Protocol": "sqs",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
-          }
-          }
-        },
-        "MyTopicMyLambdaSubscription3591BC1E": {
-          "Type": "AWS::SNS::Subscription",
-          "Properties": {
-          "Endpoint": {
-            "Fn::GetAtt": [
-            "MyLambdaCCE802FB",
-            "Arn"
-            ]
-          },
-          "Protocol": "lambda",
-          "TopicArn": {
-            "Ref": "MyTopic86869434"
-          }
-          }
-        },
-        "MyQueueE6CA6235": {
-          "Type": "AWS::SQS::Queue"
-        },
-        "MyQueuePolicy6BBEDDAC": {
-          "Type": "AWS::SQS::QueuePolicy",
-          "Properties": {
-          "PolicyDocument": {
-            "Statement": [
-            {
-              "Action": "sqs:SendMessage",
-              "Condition": {
-              "ArnEquals": {
-                "aws:SourceArn": {
+          "MyTopicMyQueueSubscription3245B11E": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+              "Endpoint": {
+                "Fn::GetAtt": [
+                  "MyQueueE6CA6235",
+                  "Arn"
+                ]
+              },
+              "Protocol": "sqs",
+              "TopicArn": {
                 "Ref": "MyTopic86869434"
+              }
+            }
+          },
+          "MyTopicMyFuncSubscriptionEAF54A3F": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+              "Endpoint": {
+                "Fn::GetAtt": [
+                  "MyFunc8A243A2C",
+                  "Arn"
+                ]
+              },
+              "Protocol": "lambda",
+              "TopicArn": {
+                "Ref": "MyTopic86869434"
+              }
+            }
+          },
+          "MyQueueE6CA6235": {
+            "Type": "AWS::SQS::Queue"
+          },
+          "MyQueuePolicy6BBEDDAC": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+              "PolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "sqs:SendMessage",
+                    "Condition": {
+                      "ArnEquals": {
+                        "aws:SourceArn": {
+                          "Ref": "MyTopic86869434"
+                        }
+                      }
+                    },
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "sns.amazonaws.com"
+                    },
+                    "Resource": {
+                      "Fn::GetAtt": [
+                        "MyQueueE6CA6235",
+                        "Arn"
+                      ]
+                    }
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "Queues": [
+                {
+                  "Ref": "MyQueueE6CA6235"
                 }
-              }
-              },
-              "Effect": "Allow",
-              "Principal": {
-              "Service": "sns.amazonaws.com"
-              },
-              "Resource": {
-              "Fn::GetAtt": [
-                "MyQueueE6CA6235",
-                "Arn"
               ]
-              }
             }
-            ],
-            "Version": "2012-10-17"
           },
-          "Queues": [
-            {
-            "Ref": "MyQueueE6CA6235"
+          "MyFuncServiceRole54065130": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Action": "sts:AssumeRole",
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": "lambda.amazonaws.com"
+                    }
+                  }
+                ],
+                "Version": "2012-10-17"
+              },
+              "ManagedPolicyArns": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                    ]
+                  ]
+                }
+              ]
             }
-          ]
-          }
-        },
-        "MyLambdaServiceRole4539ECB6": {
-          "Type": "AWS::IAM::Role",
-          "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-              "Service": "lambda.amazonaws.com"
-              }
-            }
-            ],
-            "Version": "2012-10-17"
           },
-          "ManagedPolicyArns": [
-            { "Fn::Join": ["", ["arn", ":", {"Ref": "AWS::Partition"}, ":", "iam", ":", "", ":", "aws", ":", "policy", "/",
-              "service-role/AWSLambdaBasicExecutionRole"]]}
-          ]
-          }
-        },
-        "MyLambdaCCE802FB": {
-          "Type": "AWS::Lambda::Function",
-          "Properties": {
-          "Code": {
-            "ZipFile": "exports.handler = (_event, _context, callback) => callback()"
-          },
-          "Handler": "index.handler",
-          "Role": {
-            "Fn::GetAtt": [
-            "MyLambdaServiceRole4539ECB6",
-            "Arn"
+          "MyFunc8A243A2C": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "ZipFile": "exports.handler = function(e, c, cb) { return cb() }"
+              },
+              "Handler": "index.handler",
+              "Role": {
+                "Fn::GetAtt": [
+                  "MyFuncServiceRole54065130",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs6.10"
+            },
+            "DependsOn": [
+              "MyFuncServiceRole54065130"
             ]
           },
-          "Runtime": "nodejs6.10",
-          "Timeout": 30
-          },
-          "DependsOn": [
-          "MyLambdaServiceRole4539ECB6"
-          ]
-        },
-        "MyLambdaMyTopic96470869": {
-          "Type": "AWS::Lambda::Permission",
-          "Properties": {
-          "Action": "lambda:InvokeFunction",
-          "FunctionName": {
-            "Ref": "MyLambdaCCE802FB"
-          },
-          "Principal": "sns.amazonaws.com",
-          "SourceArn": {
-            "Ref": "MyTopic86869434"
+          "MyFuncMyTopicC77D8FAB": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "Action": "lambda:InvokeFunction",
+              "FunctionName": {
+                "Ref": "MyFunc8A243A2C"
+              },
+              "Principal": "sns.amazonaws.com",
+              "SourceArn": {
+                "Ref": "MyTopic86869434"
+              }
+            }
           }
-          }
-        }
         }
       });
 
@@ -506,15 +513,17 @@ export = {
     const topic = new sns.Topic(stack, 'Topic');
 
     // WHEN
-    topic.addToResourcePolicy(new cdk.PolicyStatement()
+    topic.addToResourcePolicy(new iam.PolicyStatement()
       .addAllResources()
       .addActions('sns:*')
-      .addPrincipal(new cdk.ArnPrincipal('arn')));
+      .addPrincipal(new iam.ArnPrincipal('arn')));
 
     // THEN
     expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
     PolicyDocument: {
+      Version: '2012-10-17',
       Statement: [{
+        "Sid": "0",
         "Action": "sns:*",
         "Effect": "Allow",
         "Principal": { "AWS": "arn" },
@@ -538,6 +547,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
     "PolicyDocument": {
+      Version: '2012-10-17',
       "Statement": [
       {
         "Action": "sns:Publish",
@@ -618,8 +628,8 @@ export = {
 
     const topic = new sns.Topic(stack, 'MyTopic');
 
-    topic.addToResourcePolicy(new cdk.PolicyStatement().addAction('statement0'));
-    topic.addToResourcePolicy(new cdk.PolicyStatement().addAction('statement1'));
+    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement0'));
+    topic.addToResourcePolicy(new iam.PolicyStatement().addAction('statement1'));
 
     expect(stack).toMatch({
       "Resources": {
@@ -675,20 +685,22 @@ export = {
     "TopicArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" },
     }));
     expect(stack2).to(haveResource('AWS::SQS::QueuePolicy', {
-    "PolicyDocument": {
-      "Statement": [
-      {
-        "Action": "sqs:SendMessage",
-        "Condition": {
-        "ArnEquals": {
-          "aws:SourceArn": { "Fn::ImportValue": "TopicTopicArnB66B79C2" }
-        }
-        },
-        "Principal": { "Service": "sns.amazonaws.com" },
-        "Effect": "Allow",
-      }
-      ],
-    },
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            "Action": "sqs:SendMessage",
+            "Condition": {
+              "ArnEquals": {
+                "aws:SourceArn": resolve(imported.topicArn)
+              }
+            },
+            "Principal": { "Service": "sns.amazonaws.com" },
+            "Resource": resolve(queue.queueArn),
+            "Effect": "Allow",
+          }
+        ],
+      },
     }));
 
     test.done();

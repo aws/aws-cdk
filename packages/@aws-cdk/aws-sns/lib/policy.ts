@@ -1,5 +1,6 @@
-import { Construct, IDependable, PolicyDocument } from '@aws-cdk/cdk';
-import { cloudformation } from './sns.generated';
+import { PolicyDocument } from '@aws-cdk/aws-iam';
+import { Construct, IDependable } from '@aws-cdk/cdk';
+import { CfnTopicPolicy } from './sns.generated';
 import { TopicRef } from './topic-ref';
 
 export interface TopicPolicyProps {
@@ -26,7 +27,7 @@ export class TopicPolicy extends Construct implements IDependable {
   constructor(parent: Construct, name: string, props: TopicPolicyProps) {
     super(parent, name);
 
-    const resource = new cloudformation.TopicPolicyResource(this, 'Resource', {
+    const resource = new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,
       topics: props.topics.map(t => t.topicArn)
     });

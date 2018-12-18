@@ -15,7 +15,7 @@ class ResourceOverridesExample extends cdk.Stack {
             encryption: s3.BucketEncryption.KmsManaged
         });
 
-        const bucketResource2 = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
+        const bucketResource2 = bucket.findChild('Resource') as s3.CfnBucket;
         bucketResource2.addPropertyOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.EncryptEverythingAndAlways', true);
         bucketResource2.addPropertyDeletionOverride('BucketEncryption.ServerSideEncryptionConfiguration.0.ServerSideEncryptionByDefault');
 
@@ -25,8 +25,8 @@ class ResourceOverridesExample extends cdk.Stack {
         // Accessing the L1 bucket resource from an L2 bucket
         //
 
-        const bucketResource = bucket.findChild('Resource') as s3.cloudformation.BucketResource;
-        const anotherWay = bucket.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket') as s3.cloudformation.BucketResource;
+        const bucketResource = bucket.findChild('Resource') as s3.CfnBucket;
+        const anotherWay = bucket.children.find(c => (c as cdk.Resource).resourceType === 'AWS::S3::Bucket') as s3.CfnBucket;
         assert.equal(bucketResource, anotherWay);
 
         //
@@ -108,11 +108,11 @@ class ResourceOverridesExample extends cdk.Stack {
         // need to consule the codebase or use the `.map.find` method above
         //
 
-        const lc = asg.findChild('LaunchConfig') as autoscaling.cloudformation.LaunchConfigurationResource;
+        const lc = asg.findChild('LaunchConfig') as autoscaling.CfnLaunchConfiguration;
         lc.addPropertyOverride('Foo.Bar', 'Hello');
     }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 new ResourceOverridesExample(app, 'resource-overrides');
-process.stdout.write(app.run());
+app.run();

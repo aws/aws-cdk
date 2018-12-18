@@ -1,7 +1,7 @@
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
-import cloudformation = require('../lib');
+import { CustomResource } from '../lib';
 
 interface DemoResourceProps {
   /**
@@ -21,7 +21,7 @@ class DemoResource extends cdk.Construct {
   constructor(parent: cdk.Construct, name: string, props: DemoResourceProps) {
     super(parent, name);
 
-    const resource = new cloudformation.CustomResource(this, 'Resource', {
+    const resource = new CustomResource(this, 'Resource', {
       lambdaProvider: new lambda.SingletonFunction(this, 'Singleton', {
         uuid: 'f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc',
         // This makes the demo only work as top-level TypeScript program, but that's fine for now
@@ -55,8 +55,8 @@ class SucceedingStack extends cdk.Stack {
     });
   }
 }
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new SucceedingStack(app, 'SucceedingStack');
 
-process.stdout.write(app.run());
+app.run();

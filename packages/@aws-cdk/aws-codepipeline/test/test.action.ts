@@ -1,4 +1,7 @@
 // import { validateArtifactBounds, validateSourceAction } from '../lib/validation';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
+import codebuild = require('@aws-cdk/aws-codebuild');
+import codecommit = require('@aws-cdk/aws-codecommit');
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -61,35 +64,59 @@ export = {
     },
   },
 
-  'standard action with artifacts'(test: Test) {
+  'automatically assigns artifact names to the Actions'(test: Test) {
     const stack = new cdk.Stack();
     const pipeline = new codepipeline.Pipeline(stack, 'pipeline');
-    const stage = new codepipeline.Stage(stack, 'stage', { pipeline });
-    const action = new TestAction(stack, 'TestAction', {
-      stage,
-      artifactBounds: actions.defaultBounds(),
-      category: actions.ActionCategory.Source,
-      provider: 'test provider',
-      configuration: { blah: 'bleep' }
-    });
-    new actions.Artifact(action, 'TestOutput');
 
-    test.deepEqual((stage.render().actions as any)[0], {
-      name: 'TestAction',
-      inputArtifacts: [],
-      actionTypeId:
-        {
-          category: 'Source',
-          version: '1',
-          owner: 'AWS',
-          provider: 'test provider'
-        },
-      configuration: { blah: 'bleep' },
-      outputArtifacts: [{ name: 'TestOutput' }],
-      runOrder: 1
+    const repo = new codecommit.Repository(stack, 'Repo', {
+      repositoryName: 'Repo',
     });
+    const sourceStage = pipeline.addStage('Source');
+    repo.addToPipeline(sourceStage, 'CodeCommit');
+
+    const project = new codebuild.PipelineProject(stack, 'Project');
+    const buildStage = pipeline.addStage('Build');
+    project.addToPipeline(buildStage, 'CodeBuild');
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      "Stages": [
+        {
+          "Name": "Source",
+          "Actions": [
+            {
+              "Name": "CodeCommit",
+              "InputArtifacts": [],
+              "OutputArtifacts": [
+                {
+                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                },
+              ],
+            }
+          ],
+        },
+        {
+          "Name": "Build",
+          "Actions": [
+            {
+              "Name": "CodeBuild",
+              "InputArtifacts": [
+                {
+                  "Name": "Artifact_RepoCodeCommit7910F5F9",
+                }
+              ],
+              "OutputArtifacts": [
+                {
+                  "Name": "Artifact_ProjectCodeBuildE34AD2EC",
+                },
+              ],
+            }
+          ],
+        },
+      ],
+    }));
+
     test.done();
-  }
+  },
 };
 
 function boundsValidationResult(numberOfArtifacts: number, min: number, max: number): string[] {

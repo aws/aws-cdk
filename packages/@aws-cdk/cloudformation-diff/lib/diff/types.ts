@@ -1,64 +1,260 @@
+import cfnspec = require('@aws-cdk/cfnspec');
 import { AssertionError } from 'assert';
+import { IamChanges } from '../iam/iam-changes';
+import { SecurityGroupChanges } from '../network/security-group-changes';
 import { deepEqual } from './util';
+
+export type PropertyMap = {[key: string]: any };
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
-  public readonly awsTemplateFormatVersion?: Difference<string>;
-  public readonly description?: Difference<string>;
-  public readonly transform?: Difference<string>;
-  public readonly conditions: DifferenceCollection<Condition, ConditionDifference>;
-  public readonly mappings: DifferenceCollection<Mapping, MappingDifference>;
-  public readonly metadata: DifferenceCollection<Metadata, MetadataDifference>;
-  public readonly outputs: DifferenceCollection<Output, OutputDifference>;
-  public readonly parameters: DifferenceCollection<Parameter, ParameterDifference>;
-  public readonly resources: DifferenceCollection<Resource, ResourceDifference>;
+  public awsTemplateFormatVersion?: Difference<string>;
+  public description?: Difference<string>;
+  public transform?: Difference<string>;
+  public conditions: DifferenceCollection<Condition, ConditionDifference>;
+  public mappings: DifferenceCollection<Mapping, MappingDifference>;
+  public metadata: DifferenceCollection<Metadata, MetadataDifference>;
+  public outputs: DifferenceCollection<Output, OutputDifference>;
+  public parameters: DifferenceCollection<Parameter, ParameterDifference>;
+  public resources: DifferenceCollection<Resource, ResourceDifference>;
   /** The differences in unknown/unexpected parts of the template */
-  public readonly unknown: DifferenceCollection<any, Difference<any>>;
+  public unknown: DifferenceCollection<any, Difference<any>>;
 
-  public readonly count: number;
+  /**
+   * Changes to IAM policies
+   */
+  public readonly iamChanges: IamChanges;
+
+  /**
+   * Changes to Security Group ingress and egress rules
+   */
+  public readonly securityGroupChanges: SecurityGroupChanges;
 
   constructor(args: ITemplateDiff) {
-    let count = 0;
     if (args.awsTemplateFormatVersion !== undefined) {
       this.awsTemplateFormatVersion = args.awsTemplateFormatVersion;
-      count += 1;
     }
     if (args.description !== undefined) {
       this.description = args.description;
-      count += 1;
     }
     if (args.transform !== undefined) {
       this.transform = args.transform;
-      count += 1;
     }
 
     this.conditions = args.conditions || new DifferenceCollection({});
-    count += this.conditions.count;
-
     this.mappings = args.mappings || new DifferenceCollection({});
-    count += this.mappings.count;
-
     this.metadata = args.metadata || new DifferenceCollection({});
-    count += this.metadata.count;
-
     this.outputs = args.outputs || new DifferenceCollection({});
-    count += this.outputs.count;
-
     this.parameters = args.parameters || new DifferenceCollection({});
-    count += this.parameters.count;
-
     this.resources = args.resources || new DifferenceCollection({});
-    count += this.resources.count;
-
     this.unknown = args.unknown || new DifferenceCollection({});
+
+    this.iamChanges = new IamChanges({
+      propertyChanges: this.scrutinizablePropertyChanges(IamChanges.IamPropertyScrutinies),
+      resourceChanges: this.scrutinizableResourceChanges(IamChanges.IamResourceScrutinies),
+    });
+
+    this.securityGroupChanges = new SecurityGroupChanges({
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.EgressRules]),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.IngressRules]),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.EgressRuleResource]),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.IngressRuleResource]),
+    });
+  }
+
+  public get count() {
+    let count = 0;
+
+    if (this.awsTemplateFormatVersion !== undefined) {
+      count += 1;
+    }
+    if (this.description !== undefined) {
+      count += 1;
+    }
+    if (this.transform !== undefined) {
+      count += 1;
+    }
+
+    count += this.conditions.count;
+    count += this.mappings.count;
+    count += this.metadata.count;
+    count += this.outputs.count;
+    count += this.parameters.count;
+    count += this.resources.count;
     count += this.unknown.count;
 
-    this.count = count;
+    return count;
   }
 
   public get isEmpty(): boolean {
     return this.count === 0;
   }
+
+  /**
+   * Return true if any of the permissions objects involve a broadening of permissions
+   */
+  public get permissionsBroadened(): boolean {
+    return this.iamChanges.permissionsBroadened || this.securityGroupChanges.rulesAdded;
+  }
+
+  /**
+   * Return true if any of the permissions objects have changed
+   */
+  public get permissionsAnyChanges(): boolean {
+    return this.iamChanges.hasChanges || this.securityGroupChanges.hasChanges;
+  }
+
+  /**
+   * Return all property changes of a given scrutiny type
+   *
+   * We don't just look at property updates; we also look at resource additions and deletions (in which
+   * case there is no further detail on property values), and resource type changes.
+   */
+  private scrutinizablePropertyChanges(scrutinyTypes: cfnspec.schema.PropertyScrutinyType[]): PropertyChange[] {
+    const ret = new Array<PropertyChange>();
+
+    for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
+      if (!resourceChange) { continue; }
+
+      const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
+      for (const propertyName of props) {
+        ret.push({
+          resourceLogicalId, propertyName,
+          resourceType: resourceChange.resourceType,
+          scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
+          oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],
+          newValue: resourceChange.newProperties && resourceChange.newProperties[propertyName],
+        });
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+   * Return all resource changes of a given scrutiny type
+   *
+   * We don't just look at resource updates; we also look at resource additions and deletions (in which
+   * case there is no further detail on property values), and resource type changes.
+   */
+  private scrutinizableResourceChanges(scrutinyTypes: cfnspec.schema.ResourceScrutinyType[]): ResourceChange[] {
+    const ret = new Array<ResourceChange>();
+
+    const scrutinizableTypes = new Set(cfnspec.scrutinizableResourceTypes(scrutinyTypes));
+
+    for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
+      if (!resourceChange) { continue; }
+
+      const commonProps = {
+        oldProperties: resourceChange.oldProperties,
+        newProperties: resourceChange.newProperties,
+        resourceLogicalId
+      };
+
+      // Even though it's not physically possible in CFN, let's pretend to handle a change of 'Type'.
+      if (resourceChange.resourceTypeChanged) {
+        // Treat as DELETE+ADD
+        if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
+          ret.push({
+            ...commonProps,
+            newProperties: undefined,
+            resourceType: resourceChange.oldResourceType!,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.oldResourceType!).ScrutinyType!,
+          });
+        }
+        if (scrutinizableTypes.has(resourceChange.newResourceType!)) {
+          ret.push({
+            ...commonProps,
+            oldProperties: undefined,
+            resourceType: resourceChange.newResourceType!,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.newResourceType!).ScrutinyType!,
+          });
+        }
+      } else {
+        if (scrutinizableTypes.has(resourceChange.resourceType)) {
+          ret.push({
+            ...commonProps,
+            resourceType: resourceChange.resourceType,
+            scrutinyType: cfnspec.resourceSpecification(resourceChange.resourceType).ScrutinyType!,
+          });
+        }
+      }
+    }
+
+    return ret;
+  }
+}
+
+/**
+ * A change in property values
+ *
+ * Not necessarily an update, it could be that there used to be no value there
+ * because there was no resource, and now there is (or vice versa).
+ *
+ * Therefore, we just contain plain values and not a PropertyDifference<any>.
+ */
+export interface PropertyChange {
+  /**
+   * Logical ID of the resource where this property change was found
+   */
+  resourceLogicalId: string;
+
+  /**
+   * Type of the resource
+   */
+  resourceType: string;
+
+  /**
+   * Scrutiny type for this property change
+   */
+  scrutinyType: cfnspec.schema.PropertyScrutinyType;
+
+  /**
+   * Name of the property that is changing
+   */
+  propertyName: string;
+
+  /**
+   * The old property value
+   */
+  oldValue?: any;
+
+  /**
+   * The new property value
+   */
+  newValue?: any;
+}
+
+/**
+ * A resource change
+ *
+ * Either a creation, deletion or update.
+ */
+export interface ResourceChange {
+  /**
+   * Logical ID of the resource where this property change was found
+   */
+  resourceLogicalId: string;
+
+  /**
+   * Scrutiny type for this resource change
+   */
+  scrutinyType: cfnspec.schema.ResourceScrutinyType;
+
+  /**
+   * The type of the resource
+   */
+  resourceType: string;
+
+  /**
+   * The old properties value (might be undefined in case of creation)
+   */
+  oldProperties?: PropertyMap;
+
+  /**
+   * The new properties value (might be undefined in case of deletion)
+   */
+  newProperties?: PropertyMap;
 }
 
 /**
@@ -117,10 +313,57 @@ export class DifferenceCollection<V, T extends Difference<V>> {
     return Object.keys(this.changes);
   }
 
-  public forEach(cb: (logicalId: string, change: T) => any): void {
-    for (const logicalId of this.logicalIds) {
-      cb(logicalId, this.changes[logicalId]!);
+  /**
+   * Returns a new TemplateDiff which only contains changes for which `predicate`
+   * returns `true`.
+   */
+  public filter(predicate: (diff: T | undefined) => boolean): DifferenceCollection<V, T> {
+    const newChanges: { [logicalId: string]: T | undefined } = { };
+    for (const id of Object.keys(this.changes)) {
+      const diff = this.changes[id];
+
+      if (predicate(diff)) {
+        newChanges[id] = diff;
+      }
     }
+
+    return new DifferenceCollection<V, T>(newChanges);
+  }
+
+  /**
+   * Invokes `cb` for all changes in this collection.
+   *
+   * Changes will be sorted as follows:
+   *  - Removed
+   *  - Added
+   *  - Updated
+   *  - Others
+   *
+   * @param cb
+   */
+  public forEach(cb: (logicalId: string, change: T) => any): void {
+    const removed = new Array<{ logicalId: string, change: T }>();
+    const added = new Array<{ logicalId: string, change: T }>();
+    const updated = new Array<{ logicalId: string, change: T }>();
+    const others = new Array<{ logicalId: string, change: T }>();
+
+    for (const logicalId of this.logicalIds) {
+      const change: T = this.changes[logicalId]!;
+      if (change.isAddition) {
+        added.push({ logicalId, change });
+      } else if (change.isRemoval) {
+        removed.push({ logicalId, change });
+      } else if (change.isUpdate) {
+        updated.push({ logicalId, change });
+      } else {
+        others.push({ logicalId, change });
+      }
+    }
+
+    removed.forEach(v => cb(v.logicalId, v.change));
+    added.forEach(v => cb(v.logicalId, v.change));
+    updated.forEach(v => cb(v.logicalId, v.change));
+    others.forEach(v => cb(v.logicalId, v.change));
   }
 }
 
@@ -209,49 +452,101 @@ export interface Resource {
 
   [key: string]: any;
 }
+
 export class ResourceDifference extends Difference<Resource> {
-  /** The resource type (or old and new type if it has changed) */
-  public readonly resourceType: string | { readonly oldType: string, readonly newType: string };
+  /**
+   * Old property values
+   */
+  public readonly oldProperties?: PropertyMap;
+
+  /**
+   * New property values
+   */
+  public readonly newProperties?: PropertyMap;
+
   /** Property-level changes on the resource */
-  public readonly propertyChanges: { [key: string]: PropertyDifference<any> };
+  public readonly propertyUpdates: { [key: string]: PropertyDifference<any> };
   /** Changes to non-property level attributes of the resource */
   public readonly otherChanges: { [key: string]: Difference<any> };
+
+  /** The resource type (or old and new type if it has changed) */
+  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
 
   constructor(oldValue: Resource | undefined,
               newValue: Resource | undefined,
               args: {
-          resourceType: string | { oldType: string, newType: string },
-          propertyChanges: { [key: string]: Difference<any> },
+          resourceType: { oldType?: string, newType?: string },
+          oldProperties?: PropertyMap,
+          newProperties?: PropertyMap,
+          propertyUpdates: { [key: string]: PropertyDifference<any> },
           otherChanges: { [key: string]: Difference<any> }
         }
   ) {
     super(oldValue, newValue);
-    this.resourceType = args.resourceType;
-    this.propertyChanges = args.propertyChanges;
+    this.resourceTypes = args.resourceType;
+    this.propertyUpdates = args.propertyUpdates;
     this.otherChanges = args.otherChanges;
+    this.oldProperties = args.oldProperties;
+    this.newProperties = args.newProperties;
+  }
+
+  public get oldResourceType(): string | undefined {
+    return this.resourceTypes.oldType;
+  }
+
+  public get newResourceType(): string | undefined {
+    return this.resourceTypes.newType;
+  }
+
+  /**
+   * Return whether the resource type was changed in this diff
+   *
+   * This is not a valid operation in CloudFormation but to be defensive we're going
+   * to be aware of it anyway.
+   */
+  public get resourceTypeChanged(): boolean {
+    return (this.resourceTypes.oldType !== undefined
+        && this.resourceTypes.newType !== undefined
+        && this.resourceTypes.oldType !== this.resourceTypes.newType);
+  }
+
+  /**
+   * Return the resource type if it was unchanged
+   *
+   * If the resource type was changed, it's an error to call this.
+   */
+  public get resourceType(): string {
+    if (this.resourceTypeChanged) {
+      throw new Error('Cannot get .resourceType, because the type was changed');
+    }
+    return this.resourceTypes.oldType || this.resourceTypes.newType!;
   }
 
   public get changeImpact(): ResourceImpact {
-    if (Object.keys(this.propertyChanges).length === 0) {
-      if (typeof this.resourceType !== 'string') { return ResourceImpact.WILL_REPLACE; }
-      if (!this.oldValue) { return ResourceImpact.WILL_CREATE; }
-      return this.oldValue.DeletionPolicy === 'Retain'
-        ? ResourceImpact.WILL_ORPHAN
-        : ResourceImpact.WILL_DESTROY;
+    // Check the Type first
+    if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
+      if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }
+      if (this.resourceTypes.newType === undefined) {
+        return this.oldValue!.DeletionPolicy === 'Retain'
+          ? ResourceImpact.WILL_ORPHAN
+          : ResourceImpact.WILL_DESTROY;
+      }
+      return ResourceImpact.WILL_REPLACE;
     }
-    return Object.values(this.propertyChanges)
+
+    return Object.values(this.propertyUpdates)
            .map(elt => elt.changeImpact)
            .reduce(worstImpact, ResourceImpact.WILL_UPDATE);
   }
 
   public get count(): number {
-    return Object.keys(this.propertyChanges).length
+    return Object.keys(this.propertyUpdates).length
       + Object.keys(this.otherChanges).length;
   }
 
   public forEach(cb: (type: 'Property' | 'Other', name: string, value: Difference<any> | PropertyDifference<any>) => any) {
-    for (const key of Object.keys(this.propertyChanges).sort()) {
-      cb('Property', key, this.propertyChanges[key]);
+    for (const key of Object.keys(this.propertyUpdates).sort()) {
+      cb('Property', key, this.propertyUpdates[key]);
     }
     for (const key of Object.keys(this.otherChanges).sort()) {
       cb('Other', key, this.otherChanges[key]);

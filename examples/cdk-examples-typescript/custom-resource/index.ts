@@ -1,6 +1,6 @@
 import { CustomResource } from '@aws-cdk/aws-cloudformation';
 import lambda = require('@aws-cdk/aws-lambda');
-import { cloudformation as s3 } from '@aws-cdk/aws-s3';
+import { CfnBucket } from '@aws-cdk/aws-s3';
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 
@@ -86,7 +86,7 @@ class FailAfterCreatingStack extends cdk.Stack {
     });
 
     // Bucket with an invalid name will fail the deployment and cause a rollback
-    const bucket = new s3.BucketResource(this, 'FailingBucket', {
+    const bucket = new CfnBucket(this, 'FailingBucket', {
       bucketName: 'hello!@#$^'
     });
 
@@ -95,10 +95,10 @@ class FailAfterCreatingStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new SucceedingStack(app, 'SucceedingStack');
 new FailCreationStack(app, 'FailCreationStack');
 new FailAfterCreatingStack(app, 'FailAfterCreatingStack');
 
-process.stdout.write(app.run());
+app.run();

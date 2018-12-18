@@ -73,7 +73,7 @@ export class AlarmWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new AwsRegion(undefined),
         annotations: {
           alarms: [this.props.alarm.alarmArn]
         },
@@ -130,7 +130,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
 }
 
 /**
- * A dashboard widget that displays MarkDown
+ * A dashboard widget that displays metrics
  */
 export class GraphWidget extends ConcreteWidget {
   private readonly props: GraphWidgetProps;
@@ -150,7 +150,7 @@ export class GraphWidget extends ConcreteWidget {
       properties: {
         view: 'timeSeries',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new AwsRegion(undefined),
         metrics: (this.props.left || []).map(m => metricJson(m, 'left')).concat(
              (this.props.right || []).map(m => metricJson(m, 'right'))),
         annotations: {
@@ -197,7 +197,7 @@ export class SingleValueWidget extends ConcreteWidget {
       properties: {
         view: 'singleValue',
         title: this.props.title,
-        region: this.props.region || new AwsRegion(),
+        region: this.props.region || new AwsRegion(undefined),
         metrics: this.props.metrics.map(m => metricJson(m, 'left'))
       }
     }];

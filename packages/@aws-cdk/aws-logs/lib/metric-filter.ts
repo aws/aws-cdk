@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { CfnMetricFilter } from './logs.generated';
 import { IFilterPattern } from './pattern';
 
 /**
@@ -67,7 +67,7 @@ export class MetricFilter extends cdk.Construct {
     // > transformations, you must specify multiple metric filters.
     //
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-metricfilter.html
-    new cloudformation.MetricFilterResource(this, 'Resource', {
+    new CfnMetricFilter(this, 'Resource', {
       logGroupName: props.logGroup.logGroupName,
       filterPattern: props.filterPattern.logPatternString,
       metricTransformations: [{

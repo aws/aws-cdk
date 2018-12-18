@@ -1,8 +1,9 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './ec2.generated';
+import { CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute } from './ec2.generated';
+import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
-import { DEFAULT_SUBNET_NAME, subnetId } from './util';
-import { SubnetType, VpcNetworkRef, VpcSubnetRef } from './vpc-ref';
+import { DEFAULT_SUBNET_NAME, subnetId  } from './util';
+import { SubnetType, VpcNetworkRef, VpcPlacementStrategy, VpcSubnetRef } from './vpc-ref';
 
 /**
  * Name tag constant
@@ -61,16 +62,23 @@ export interface VpcNetworkProps {
   maxAZs?: number;
 
   /**
-   * Define the maximum number of NAT Gateways for this VPC
+   * The number of NAT Gateways to create.
    *
-   * Setting this number enables a VPC to trade availability for the cost of
-   * running a NAT Gateway. For example, if set this to 1 and your subnet
-   * configuration is for 3 Public subnets with natGateway = `true` then only
-   * one of the Public subnets will have a gateway and all Private subnets
-   * will route to this NAT Gateway.
+   * For example, if set this to 1 and your subnet configuration is for 3 Public subnets then only
+   * one of the Public subnets will have a gateway and all Private subnets will route to this NAT Gateway.
    * @default maxAZs
    */
   natGateways?: number;
+
+  /**
+   * Configures the subnets which will have NAT Gateways
+   *
+   * You can pick a specific group of subnets by specifying the group name;
+   * the picked subnets must be public subnets.
+   *
+   * @default All public subnets
+   */
+  natGatewayPlacement?: VpcPlacementStrategy;
 
   /**
    * Configure the subnets to build for each AZ
@@ -232,16 +240,9 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
   public readonly tags: cdk.TagManager;
 
   /**
-   * Maximum Number of NAT Gateways used to control cost
-   *
-   * @default {VpcNetworkProps.maxAZs}
-   */
-  private readonly natGateways: number;
-
-  /**
    * The VPC resource
    */
-  private resource: cloudformation.VPCResource;
+  private resource: CfnVPC;
 
   /**
    * The NetworkBuilder
@@ -283,7 +284,7 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
 
     // Define a VPC using the provided CIDR range
-    this.resource = new cloudformation.VPCResource(this, 'Resource', {
+    this.resource = new CfnVPC(this, 'Resource', {
       cidrBlock,
       enableDnsHostnames,
       enableDnsSupport,
@@ -301,11 +302,6 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
     this.dependencyElements.push(this.resource);
 
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, VpcNetwork.DEFAULT_SUBNETS);
-    const useNatGateway = this.subnetConfiguration.filter(
-      subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
-    this.natGateways = ifUndefined(props.natGateways,
-      useNatGateway ? this.availabilityZones.length : 0);
-
     // subnetConfiguration and natGateways must be set before calling createSubnets
     this.createSubnets();
 
@@ -314,18 +310,22 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound) {
-      const igw = new cloudformation.InternetGatewayResource(this, 'IGW', {
+      const igw = new CfnInternetGateway(this, 'IGW', {
         tags: new cdk.TagManager(this),
       });
-      const att = new cloudformation.VPCGatewayAttachmentResource(this, 'VPCGW', {
+      this.internetDependencies.push(igw);
+      const att = new CfnVPCGatewayAttachment(this, 'VPCGW', {
         internetGatewayId: igw.ref,
         vpcId: this.resource.ref
       });
+      this.dependencyElements.push(igw, att);
+
       (this.publicSubnets as VpcPublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultIGWRouteEntry(igw.ref);
+        publicSubnet.addDefaultIGWRouteEntry(igw, att);
       });
 
-      this.dependencyElements.push(igw, att);
+      // if gateways are needed create them
+      this.createNatGateways(props.natGateways, props.natGatewayPlacement);
 
       (this.privateSubnets as VpcPrivateSubnet[]).forEach((privateSubnet, i) => {
         let ngwId = this.natGatewayByAZ[privateSubnet.availabilityZone];
@@ -344,6 +344,32 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
    */
   public get cidr(): string {
     return this.resource.getAtt("CidrBlock").toString();
+  }
+
+  private createNatGateways(gateways?: number, placement?: VpcPlacementStrategy): void {
+    const useNatGateway = this.subnetConfiguration.filter(
+      subnet => (subnet.subnetType === SubnetType.Private)).length > 0;
+
+    const natCount = ifUndefined(gateways,
+      useNatGateway ? this.availabilityZones.length : 0);
+
+    let natSubnets: VpcPublicSubnet[];
+    if (placement) {
+      const subnets = this.subnets(placement);
+      for (const sub of subnets) {
+        if (!this.isPublicSubnet(sub)) {
+          throw new Error(`natGatewayPlacement ${placement} contains non public subnet ${sub}`);
+        }
+      }
+      natSubnets = subnets as VpcPublicSubnet[];
+    } else {
+      natSubnets =  this.publicSubnets as VpcPublicSubnet[];
+    }
+
+    natSubnets = natSubnets.slice(0, natCount);
+    for (const sub of natSubnets) {
+      this.natGatewayByAZ[sub.availabilityZone] = sub.addNatGateway();
+    }
   }
 
   /**
@@ -383,27 +409,43 @@ export class VpcNetwork extends VpcNetworkRef implements cdk.ITaggable {
         tags: subnetConfig.tags,
       };
 
+      let subnet: VpcSubnet;
       switch (subnetConfig.subnetType) {
         case SubnetType.Public:
           const publicSubnet = new VpcPublicSubnet(this, name, subnetProps);
-          if (this.natGateways > 0) {
-            const ngwArray = Array.from(Object.values(this.natGatewayByAZ));
-            if (ngwArray.length < this.natGateways) {
-              this.natGatewayByAZ[zone] = publicSubnet.addNatGateway();
-            }
-          }
           this.publicSubnets.push(publicSubnet);
+          subnet = publicSubnet;
           break;
         case SubnetType.Private:
           const privateSubnet = new VpcPrivateSubnet(this, name, subnetProps);
           this.privateSubnets.push(privateSubnet);
+          subnet = privateSubnet;
           break;
         case SubnetType.Isolated:
           const isolatedSubnet = new VpcPrivateSubnet(this, name, subnetProps);
+          isolatedSubnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType));
           this.isolatedSubnets.push(isolatedSubnet);
+          subnet = isolatedSubnet;
           break;
+        default:
+          throw new Error(`Unrecognized subnet type: ${subnetConfig.subnetType}`);
       }
+
+      // These values will be used to recover the config upon provider import
+      subnet.tags.setTag(SUBNETNAME_TAG, subnetConfig.name, { propagate: false });
+      subnet.tags.setTag(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { propagate: false });
     });
+  }
+}
+
+const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
+const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+
+function subnetTypeTagValue(type: SubnetType) {
+  switch (type) {
+    case SubnetType.Public: return 'Public';
+    case SubnetType.Private: return 'Private';
+    case SubnetType.Isolated: return 'Isolated';
   }
 }
 
@@ -471,7 +513,7 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
     this.tags.setTag(NAME_TAG, this.path, {overwrite: false});
 
     this.availabilityZone = props.availabilityZone;
-    const subnet = new cloudformation.SubnetResource(this, 'Subnet', {
+    const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
       availabilityZone: props.availabilityZone,
@@ -479,14 +521,14 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
       tags: this.tags,
     });
     this.subnetId = subnet.subnetId;
-    const table = new cloudformation.RouteTableResource(this, 'RouteTable', {
+    const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
       tags: new cdk.TagManager(this),
     });
     this.routeTableId = table.ref;
 
     // Associate the public route table for this subnet, to this subnet
-    const routeAssoc = new cloudformation.SubnetRouteTableAssociationResource(this, 'RouteTableAssociatioin', {
+    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref
     });
@@ -495,19 +537,26 @@ export class VpcSubnet extends VpcSubnetRef implements cdk.ITaggable {
   }
 
   protected addDefaultRouteToNAT(natGatewayId: string) {
-    new cloudformation.RouteResource(this, `DefaultRoute`, {
+    new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
       natGatewayId
     });
   }
 
-  protected addDefaultRouteToIGW(gatewayId: string) {
-    new cloudformation.RouteResource(this, `DefaultRoute`, {
+  /**
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
+   */
+  protected addDefaultRouteToIGW(
+    gateway: CfnInternetGateway,
+    gatewayAttachment: CfnVPCGatewayAttachment) {
+    const route = new CfnRoute(this, `DefaultRoute`, {
       routeTableId: this.routeTableId,
       destinationCidrBlock: '0.0.0.0/0',
-      gatewayId
+      gatewayId: gateway.ref
     });
+    route.addDependency(gatewayAttachment);
   }
 }
 
@@ -520,10 +569,13 @@ export class VpcPublicSubnet extends VpcSubnet {
   }
 
   /**
-   * Create a default route that points to a passed IGW
+   * Create a default route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    */
-  public addDefaultIGWRouteEntry(gatewayId: string) {
-    this.addDefaultRouteToIGW(gatewayId);
+  public addDefaultIGWRouteEntry(
+    gateway: CfnInternetGateway,
+    gatewayAttachment: CfnVPCGatewayAttachment) {
+    this.addDefaultRouteToIGW(gateway, gatewayAttachment);
   }
 
   /**
@@ -533,9 +585,9 @@ export class VpcPublicSubnet extends VpcSubnet {
    */
   public addNatGateway() {
     // Create a NAT Gateway in this public subnet
-    const ngw = new cloudformation.NatGatewayResource(this, `NATGateway`, {
+    const ngw = new CfnNatGateway(this, `NATGateway`, {
       subnetId: this.subnetId,
-      allocationId: new cloudformation.EIPResource(this, `EIP`, {
+      allocationId: new CfnEIP(this, `EIP`, {
         domain: 'vpc'
       }).eipAllocationId,
       tags: new cdk.TagManager(this),
@@ -561,5 +613,5 @@ export class VpcPrivateSubnet extends VpcSubnet {
 }
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
-     return value !== undefined ? value : defaultValue;
+  return value !== undefined ? value : defaultValue;
 }

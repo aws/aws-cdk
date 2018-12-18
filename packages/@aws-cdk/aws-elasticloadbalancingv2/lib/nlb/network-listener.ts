@@ -67,6 +67,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     // New default target(s)
     for (const targetGroup of targetGroups) {
       this._addDefaultTargetGroup(targetGroup);
+      targetGroup.registerListener(this);
     }
   }
 
@@ -113,7 +114,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 /**
  * Properties to reference an existing listener
  */
-export interface INetworkListener {
+export interface INetworkListener extends cdk.IDependable {
   /**
    * ARN of the listener
    */
@@ -134,6 +135,8 @@ export interface NetworkListenerRefProps {
  * An imported Network Listener
  */
 class ImportedNetworkListener extends cdk.Construct implements INetworkListener {
+  public readonly dependencyElements: cdk.IDependable[] = [];
+
   /**
    * ARN of the listener
    */

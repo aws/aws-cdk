@@ -1,6 +1,7 @@
-import { Construct, IDependable, PolicyDocument, PolicyPrincipal, PolicyStatement, Token } from '@aws-cdk/cdk';
+import { Construct, IDependable, Token } from '@aws-cdk/cdk';
 import { Group } from './group';
-import { cloudformation } from './iam.generated';
+import { CfnPolicy } from './iam.generated';
+import { PolicyDocument, PolicyPrincipal, PolicyStatement } from './policy-document';
 import { Role } from './role';
 import { User } from './user';
 import { generatePolicyName, undefinedIfEmpty } from './util';
@@ -38,7 +39,7 @@ export interface IPrincipal {
  * @deprecated Use IPrincipal
  */
 // tslint:disable-next-line:no-empty-interface
-export interface IIdentityResource extends IPrincipal { }
+export type IIdentityResource = IPrincipal;
 
 export interface PolicyProps {
   /**
@@ -105,7 +106,7 @@ export class Policy extends Construct implements IDependable {
   constructor(parent: Construct, name: string, props: PolicyProps = {}) {
     super(parent, name);
 
-    const resource = new cloudformation.PolicyResource(this, 'Resource', {
+    const resource = new CfnPolicy(this, 'Resource', {
       policyDocument: this.document,
       policyName: new Token(() => this.policyName),
       roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),

@@ -1,5 +1,5 @@
 import { Construct, Token } from '@aws-cdk/cdk';
-import { cloudformation } from './cloudwatch.generated';
+import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { Dimension, Metric, Statistic, Unit } from './metric';
 import { parseStatistic } from './util.statistic';
@@ -122,6 +122,11 @@ export class Alarm extends Construct {
   public readonly alarmArn: string;
 
   /**
+   * Name of this alarm.
+   */
+  public readonly alarmName: string;
+
+  /**
    * The metric object this alarm was based on
    */
   public readonly metric: Metric;
@@ -140,7 +145,7 @@ export class Alarm extends Construct {
 
     const comparisonOperator = props.comparisonOperator || ComparisonOperator.GreaterThanOrEqualToThreshold;
 
-    const alarm = new cloudformation.AlarmResource(this, 'Resource', {
+    const alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
       alarmName: props.alarmName,
@@ -163,6 +168,7 @@ export class Alarm extends Construct {
     });
 
     this.alarmArn = alarm.alarmArn;
+    this.alarmName = alarm.alarmName;
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length

@@ -3,7 +3,7 @@ import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './cloudtrail.generated';
+import { CfnTrail } from './cloudtrail.generated';
 
 // AWS::CloudTrail CloudFormation Resources:
 export * from './cloudtrail.generated';
@@ -132,27 +132,27 @@ export class CloudTrail extends cdk.Construct {
     const s3bucket = new s3.Bucket(this, 'S3', {encryption: s3.BucketEncryption.Unencrypted});
     const cloudTrailPrincipal = "cloudtrail.amazonaws.com";
 
-    s3bucket.addToResourcePolicy(new cdk.PolicyStatement()
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(s3bucket.bucketArn)
       .addActions('s3:GetBucketAcl')
       .addServicePrincipal(cloudTrailPrincipal));
 
-    s3bucket.addToResourcePolicy(new cdk.PolicyStatement()
-      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('/AWSLogs/', new cdk.AwsAccountId())))
+    s3bucket.addToResourcePolicy(new iam.PolicyStatement()
+      .addResource(s3bucket.arnForObjects(new cdk.FnConcat('AWSLogs/', new cdk.AwsAccountId(this), "/*")))
       .addActions("s3:PutObject")
       .addServicePrincipal(cloudTrailPrincipal)
       .setCondition("StringEquals", {'s3:x-amz-acl': "bucket-owner-full-control"}));
 
     if (props.sendToCloudWatchLogs) {
-      const logGroup = new logs.cloudformation.LogGroupResource(this, "LogGroup", {
+      const logGroup = new logs.CfnLogGroup(this, "LogGroup", {
         retentionInDays: props.cloudWatchLogsRetentionTimeDays || LogRetention.OneYear
       });
       this.cloudWatchLogsGroupArn = logGroup.logGroupArn;
 
-      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new cdk.ServicePrincipal(cloudTrailPrincipal) });
+      const logsRole = new iam.Role(this, 'LogsRole', {assumedBy: new iam.ServicePrincipal(cloudTrailPrincipal) });
 
       const streamArn = `${this.cloudWatchLogsRoleArn}:log-stream:*`;
-      logsRole.addToPolicy(new cdk.PolicyStatement()
+      logsRole.addToPolicy(new iam.PolicyStatement()
         .addActions("logs:PutLogEvents", "logs:CreateLogStream")
         .addResource(streamArn));
       this.cloudWatchLogsRoleArn = logsRole.roleArn;
@@ -167,7 +167,7 @@ export class CloudTrail extends cdk.Construct {
     }
 
     // TODO: not all regions support validation. Use service configuration data to fail gracefully
-    const trail = new cloudformation.TrailResource(this, 'Resource', {
+    const trail = new CfnTrail(this, 'Resource', {
       isLogging: true,
       enableLogFileValidation: props.enableFileValidation == null ? true : props.enableFileValidation,
       isMultiRegionTrail: props.isMultiRegionTrail == null ? true : props.isMultiRegionTrail,
@@ -182,6 +182,8 @@ export class CloudTrail extends cdk.Construct {
       eventSelectors: this.eventSelectors
     });
     this.cloudTrailArn = trail.trailArn;
+    const s3BucketPolicy = s3bucket.findChild("Policy").findChild("Resource") as s3.CfnBucketPolicy;
+    trail.addDependency(s3BucketPolicy);
   }
 
   /**

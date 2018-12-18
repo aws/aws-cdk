@@ -36,7 +36,7 @@ export = {
         test.deepEqual(resolve(construct.tags), tagArray);
       }
 
-      test.deepEqual(resolve(ctagger2.tags).length, 0);
+      test.deepEqual(resolve(ctagger2.tags), undefined);
       test.done();
     },
     'setTag with propagate false tags do not propagate'(test: Test) {
@@ -52,7 +52,7 @@ export = {
       ctagger.tags.setTag(tag.key, tag.value, {propagate: false});
 
       for (const construct of [ctagger1, ctagger2]) {
-        test.deepEqual(resolve(construct.tags).length, 0);
+        test.deepEqual(resolve(construct.tags).length, undefined);
       }
       test.deepEqual(resolve(ctagger.tags)[0].key, 'Name');
       test.deepEqual(resolve(ctagger.tags)[0].value, 'TheCakeIsALie');
@@ -97,7 +97,7 @@ export = {
       ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
       test.deepEqual(resolve(ctagger.tags), [tag]);
       ctagger.tags.removeTag(tag.key);
-      test.deepEqual(resolve(ctagger.tags), []);
+      test.deepEqual(resolve(ctagger.tags), undefined);
       ctagger.tags.setTag(tag.key, tag.value, {propagate: true});
       test.deepEqual(resolve(ctagger.tags), [tag]);
       test.done();
@@ -116,7 +116,7 @@ export = {
       ctagger.tags.removeTag('Name');
 
       for (const construct of [ctagger, ctagger1, ctagger2]) {
-        test.deepEqual(resolve(construct.tags).length, 0);
+        test.deepEqual(resolve(construct.tags), undefined);
       }
       test.done();
     },
@@ -128,7 +128,7 @@ export = {
       ctagger1.tags.removeTag('Env', {blockPropagate: true});
       const result = resolve(ctagger.tags);
       test.deepEqual(result, [{key: 'Env', value: 'Dev'}]);
-      test.deepEqual(resolve(ctagger1.tags), []);
+      test.deepEqual(resolve(ctagger1.tags), undefined);
       test.done();
     },
     'children can override parent propagated tags'(test: Test) {

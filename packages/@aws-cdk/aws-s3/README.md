@@ -55,23 +55,31 @@ const bucket = new Bucket(this, 'Buck', {
 assert(bucket.encryptionKey == null);
 ```
 
-### Bucket Policy
+### Permissions
 
-By default, a bucket policy will be automatically created for the bucket upon the first call to `addToPolicy(statement)`:
+A bucket policy will be automatically created for the bucket upon the first call to
+`addToResourcePolicy(statement)`:
 
 ```ts
 const bucket = new Bucket(this, 'MyBucket');
-bucket.addToPolicy(statement);
-
-// we now have a policy!
+bucket.addToResourcePolicy(new iam.PolicyStatement()
+    .addActions('s3:GetObject')
+    .addAllResources());
 ```
 
-You can bring you own policy as well:
+Most of the time, you won't have to manipulate the bucket policy directly.
+Instead, buckets have "grant" methods called to give prepackaged sets of permissions
+to other resources. For example:
 
 ```ts
-const policy = new BucketPolicy(this, 'MyBucketPolicy');
-const bucket = new Bucket(this, 'MyBucket', { policy });
+const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+
+const bucket = new Bucket(this, 'MyBucket');
+bucket.grantReadWrite(lambda.role);
 ```
+
+Will give the Lambda's execution role permissions to read and write
+from the bucket.
 
 ### Buckets as sources in CodePipeline
 
@@ -87,25 +95,20 @@ const sourceBucket = new s3.Bucket(this, 'MyBucket', {
 });
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const sourceStage = new codepipeline.Stage(this, 'Source', {
-    pipeline,
-});
+const sourceStage = pipeline.addStage('Source');
 const sourceAction = new s3.PipelineSourceAction(this, 'S3Source', {
     stage: sourceStage,
     bucket: sourceBucket,
     bucketKey: 'path/to/file.zip',
-    artifactName: 'SourceOuptut', //name can be arbitrary
 });
-// use sourceAction.artifact as the inputArtifact to later Actions...
 ```
 
 You can also add the Bucket to the Pipeline directly:
 
 ```ts
 // equivalent to the code above:
-const sourceAction = sourceBucket.addToPipeline(sourceStage, 'CodeCommit', {
+const sourceAction = sourceBucket.addToPipeline(sourceStage, 'S3Source', {
     bucketKey: 'path/to/file.zip',
-    artifactName: 'SourceOutput',
 });
 ```
 
@@ -169,7 +172,7 @@ class Consumer extends Stack {
 Now, let's define our CDK app to bind these together:
 
 ```ts
-const app = new App(process.argv);
+const app = new App();
 
 const producer = new Producer(app, 'produce');
 
@@ -177,7 +180,7 @@ new Consumer(app, 'consume', {
     userBucketRef: producer.myBucketRef
 });
 
-process.stdout.write(app.run());
+app.run();
 ```
 
 ### Bucket Notifications

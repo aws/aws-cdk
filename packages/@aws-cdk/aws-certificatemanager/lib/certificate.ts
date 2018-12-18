@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { CertificateRef } from './certificate-ref';
-import { cloudformation } from './certificatemanager.generated';
+import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
 
 /**
@@ -59,7 +59,7 @@ export class Certificate extends CertificateRef {
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
-    const cert = new cloudformation.CertificateResource(this, 'Resource', {
+    const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       domainValidationOptions: allDomainNames.map(domainValidationOption),
@@ -72,7 +72,7 @@ export class Certificate extends CertificateRef {
      *
      * Closes over props.
      */
-    function domainValidationOption(domainName: string): cloudformation.CertificateResource.DomainValidationOptionProperty {
+    function domainValidationOption(domainName: string): CfnCertificate.DomainValidationOptionProperty {
       const overrideDomain = props.validationDomains && props.validationDomains[domainName];
       return {
         domainName,

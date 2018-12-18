@@ -28,6 +28,7 @@ for S in $(node -e 'console.log(require("./packages/@aws-cdk/cfnspec").namespace
 *.generated.ts
 *.js
 *.js.map
+*.snk
 .jsii
 .LAST_BUILD
 .LAST_PACKAGE
@@ -43,6 +44,7 @@ EOM
 # The basics
 *.ts
 *.tgz
+*.snk
 !*.d.ts
 !*.js
 
@@ -120,6 +122,9 @@ EOM
     "pkglint": "^${VERSION}"
   },
   "dependencies": {
+    "@aws-cdk/cdk": "^${VERSION}"
+  },
+  "peerDependencies": {
     "@aws-cdk/cdk": "^${VERSION}"
   }
 }

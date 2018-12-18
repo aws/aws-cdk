@@ -1,12 +1,16 @@
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import codepipeline = require('@aws-cdk/aws-codepipeline-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import logs = require('@aws-cdk/aws-logs');
 import s3n = require('@aws-cdk/aws-s3-notifications');
+import stepfunctions = require('@aws-cdk/aws-stepfunctions');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './lambda.generated';
+import { IEventSource } from './event-source';
+import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
+import { CommonPipelineInvokeActionProps, PipelineInvokeAction } from './pipeline-action';
 
 /**
  * Represents a Lambda function defined outside of this stack.
@@ -37,7 +41,7 @@ export interface FunctionRefProps {
 
 export abstract class FunctionRef extends cdk.Construct
   implements events.IEventRuleTarget, logs.ILogSubscriptionDestination, s3n.IBucketNotificationDestination,
-         ec2.IConnectable {
+         ec2.IConnectable, stepfunctions.IStepFunctionsTaskResource  {
 
   /**
    * Creates a Lambda function object which represents a function not defined
@@ -171,7 +175,7 @@ export abstract class FunctionRef extends cdk.Construct
     const principal = this.parsePermissionPrincipal(permission.principal);
     const action = permission.action || 'lambda:InvokeFunction';
 
-    new cloudformation.PermissionResource(this, id, {
+    new CfnPermission(this, id, {
       action,
       principal,
       functionName: this.functionName,
@@ -181,7 +185,24 @@ export abstract class FunctionRef extends cdk.Construct
     });
   }
 
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  /**
+   * Convenience method for creating a new {@link PipelineInvokeAction},
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineInvokeAction}
+   */
+  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineInvokeActionProps = {}): PipelineInvokeAction {
+    return new PipelineInvokeAction(this, name, {
+      stage,
+      lambda: this,
+      ...props,
+    });
+  }
+
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     if (!this.role) {
       return;
     }
@@ -220,7 +241,7 @@ export abstract class FunctionRef extends cdk.Construct
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
-        principal: new cdk.ServicePrincipal('events.amazonaws.com'),
+        principal: new iam.ServicePrincipal('events.amazonaws.com'),
         sourceArn: ruleArn
       });
     }
@@ -229,6 +250,17 @@ export abstract class FunctionRef extends cdk.Construct
       id: this.id,
       arn: this.functionArn,
     };
+  }
+
+  /**
+   * Grant the given identity permissions to invoke this Lambda
+   */
+  public grantInvoke(identity?: iam.IPrincipal) {
+    if (identity) {
+      identity.addToPolicy(new iam.PolicyStatement()
+        .addAction('lambda:InvokeFunction')
+        .addResource(this.functionArn));
+    }
   }
 
   /**
@@ -288,7 +320,7 @@ export abstract class FunctionRef extends cdk.Construct
       //
       // (Wildcards in principals are unfortunately not supported.
       this.addPermission('InvokedByCloudWatchLogs', {
-        principal: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        principal: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(this), '.amazonaws.com').toString()),
         sourceArn: arn
       });
       this.logSubscriptionDestinationPolicyAddedFor.push(arn);
@@ -302,8 +334,8 @@ export abstract class FunctionRef extends cdk.Construct
   public export(): FunctionRefProps {
     return {
       functionArn: new cdk.Output(this, 'FunctionArn', { value: this.functionArn }).makeImportValue().toString(),
-      securityGroupId: this._connections && this._connections.securityGroup
-          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroup.securityGroupId }).makeImportValue().toString()
+      securityGroupId: this._connections && this._connections.securityGroups[0]
+          ? new cdk.Output(this, 'SecurityGroupId', { value: this._connections.securityGroups[0].securityGroupId }).makeImportValue().toString()
           : undefined
     };
   }
@@ -316,8 +348,8 @@ export abstract class FunctionRef extends cdk.Construct
     const permissionId = `AllowBucketNotificationsFrom${bucketId}`;
     if (!this.tryFindChild(permissionId)) {
       this.addPermission(permissionId, {
-        sourceAccount: new cdk.AwsAccountId().toString(),
-        principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
+        sourceAccount: new cdk.AwsAccountId(this).toString(),
+        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucketArn,
       });
     }
@@ -333,7 +365,36 @@ export abstract class FunctionRef extends cdk.Construct
     };
   }
 
-  private parsePermissionPrincipal(principal?: cdk.PolicyPrincipal) {
+  public asStepFunctionsTaskResource(_callingTask: stepfunctions.Task): stepfunctions.StepFunctionsTaskResourceProps {
+    return {
+      resourceArn: this.functionArn,
+      metricPrefixSingular: 'LambdaFunction',
+      metricPrefixPlural: 'LambdaFunctions',
+      metricDimensions: { LambdaFunctionArn: this.functionArn },
+      policyStatements: [new iam.PolicyStatement()
+        .addResource(this.functionArn)
+        .addActions("lambda:InvokeFunction")
+      ]
+    };
+  }
+
+  /**
+   * Adds an event source to this function.
+   *
+   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
+   *
+   * The following example adds an SQS Queue as an event source:
+   *
+   *     import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   *     myFunction.addEventSource(new SqsEventSource(myQueue));
+   *
+   * @param source The event source to bind to this function
+   */
+  public addEventSource(source: IEventSource) {
+    source.bind(this);
+  }
+
+  private parsePermissionPrincipal(principal?: iam.PolicyPrincipal) {
     if (!principal) {
       return undefined;
     }
@@ -341,11 +402,11 @@ export abstract class FunctionRef extends cdk.Construct
     // use duck-typing, not instance of
 
     if ('accountId' in principal) {
-      return (principal as cdk.AccountPrincipal).accountId;
+      return (principal as iam.AccountPrincipal).accountId;
     }
 
     if (`service` in principal) {
-      return (principal as cdk.ServicePrincipal).service;
+      return (principal as iam.ServicePrincipal).service;
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${JSON.stringify(cdk.resolve(principal))}. ` +
@@ -369,9 +430,9 @@ class LambdaRefImport extends FunctionRef {
 
     if (props.securityGroupId) {
       this._connections = new ec2.Connections({
-        securityGroup: ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
+        securityGroups: [ec2.SecurityGroupRef.import(this, 'SecurityGroup', {
           securityGroupId: props.securityGroupId
-        })
+        })]
       });
     }
   }
@@ -391,6 +452,5 @@ class LambdaRefImport extends FunctionRef {
    */
   private extractNameFromArn(arn: string) {
     return new cdk.FnSelect(6, new cdk.FnSplit(':', arn)).toString();
-
   }
 }

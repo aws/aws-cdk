@@ -2,33 +2,29 @@
 import 'source-map-support/register';
 
 import cxapi = require('@aws-cdk/cx-api');
-import childProcess = require('child_process');
 import colors = require('colors/safe');
 import fs = require('fs-extra');
-import minimatch = require('minimatch');
 import util = require('util');
-import YAML = require('yamljs');
 import yargs = require('yargs');
-import cdkUtil = require('../lib/util');
 
 import { bootstrapEnvironment, deployStack, destroyStack, loadToolkitInfo, Mode, SDK } from '../lib';
-import contextplugins = require('../lib/contextplugins');
-import { printStackDiff } from '../lib/diff';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks } from '../lib/api/cxapp/environments';
+import { AppStacks, listStackNames } from '../lib/api/cxapp/stacks';
+import { printSecurityDiff, printStackDiff, RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { interactive } from '../lib/interactive';
-import { data, debug, error, highlight, print, setVerbose, success, warning } from '../lib/logging';
+import { data, debug, error, highlight, print, setVerbose, success } from '../lib/logging';
 import { PluginHost } from '../lib/plugin';
 import { parseRenames } from '../lib/renames';
-import { Settings } from '../lib/settings';
+import { deserializeStructure, serializeStructure } from '../lib/serialize';
+import { Configuration, Settings } from '../lib/settings';
 import { VERSION } from '../lib/version';
 
 // tslint:disable-next-line:no-var-requires
 const promptly = require('promptly');
+const confirm = util.promisify(promptly.confirm);
 
 const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
-
-const DEFAULTS = 'cdk.json';
-const PER_USER_DEFAULTS = '~/.cdk.json';
 
 // tslint:disable:no-shadowed-variable max-line-length
 async function parseCommandLineArguments() {
@@ -47,7 +43,9 @@ async function parseCommandLineArguments() {
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment' })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified.' })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status.' })
-    .option('version-reporting', { type: 'boolean', desc: 'Disable insersion of the CDKMetadata resource in synthesized templates', default: undefined })
+    .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
+    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined })
     .command([ 'list', 'ls' ], 'Lists all stacks in the app', yargs => yargs
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'display environment information for each stack' }))
     .command([ 'synthesize [STACKS..]', 'synth [STACKS..]' ], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
@@ -56,19 +54,22 @@ async function parseCommandLineArguments() {
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('deploy [STACKS..]', 'Deploys the stack(s) named STACKS into your AWS account', yargs => yargs
+      .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'what security-sensitive changes need manual approval' })
       .option('toolkit-stack-name', { type: 'string', desc: 'the name of the CDK toolkit stack' }))
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' }))
     .command('diff [STACK]', 'Compares the specified stack with the deployed stack or a local template file', yargs => yargs
-      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' }))
+      .option('template', { type: 'string', desc: 'the path to the CloudFormation template to compare with' })
+      .option('strict', { type: 'boolean', desc: 'do not filter out AWS::CDK::Metadata resources', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command('init [TEMPLATE]', 'Create a new, empty CDK project from a template. Invoked without TEMPLATE, the app template will be used.', yargs => yargs
       .option('language', { type: 'string', alias: 'l', desc: 'the language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanuages })
       .option('list', { type: 'boolean', desc: 'list the available templates' }))
-    .commandDir('../lib/commands', { exclude: /^_.*/, visit: decorateCommand })
+    .commandDir('../lib/commands', { exclude: /^_.*/ })
     .version(VERSION)
     .demandCommand(1, '') // just print help
     .help()
+    .alias('h', 'help')
     .epilogue([
       'If your app has a single stack, there is no need to specify the stack name',
       'If one of cdk.json or ~/.cdk.json exists, options specified there will be used as defaults. Settings in cdk.json take precedence.'
@@ -77,31 +78,13 @@ async function parseCommandLineArguments() {
 }
 // tslint:enable:no-shadowed-variable max-line-length
 
-/**
- * Decorates commands discovered by ``yargs.commandDir`` in order to apply global
- * options as appropriate.
- *
- * @param commandObject is the command to be decorated.
- * @returns a decorated ``CommandModule``.
- */
-function decorateCommand(commandObject: yargs.CommandModule): yargs.CommandModule {
-  return {
-    ...commandObject,
-    handler(args: yargs.Arguments) {
-      if (args.verbose) {
-        setVerbose();
-      }
-      return args.result = commandObject.handler(args);
-    }
-  };
-}
-
 async function initCommandLine() {
   const argv = await parseCommandLineArguments();
   if (argv.verbose) {
     setVerbose();
   }
 
+  debug('CDK toolkit version:', VERSION);
   debug('Command line arguments:', argv);
 
   const aws = new SDK({
@@ -110,23 +93,13 @@ async function initCommandLine() {
     ec2creds: argv.ec2creds,
   });
 
-  const availableContextProviders: contextplugins.ProviderMap = {
-    'availability-zones': new contextplugins.AZContextProviderPlugin(aws),
-    'ssm': new contextplugins.SSMContextProviderPlugin(aws),
-  };
+  const configuration = new Configuration(argv);
+  await configuration.load();
+  configuration.logDefaults();
 
-  const defaultConfig = new Settings({ versionReporting: true });
-  const userConfig = await new Settings().load(PER_USER_DEFAULTS);
-  const projectConfig = await new Settings().load(DEFAULTS);
-  const commandLineArguments = argumentsToSettings();
+  const appStacks = new AppStacks(argv, configuration, aws);
+
   const renames = parseRenames(argv.rename);
-
-  logDefaults(); // Ignores command-line arguments
-
-  /** Function to return the complete merged config */
-  function completeConfig(): Settings {
-    return defaultConfig.merge(userConfig).merge(projectConfig).merge(commandLineArguments);
-  }
 
   /** Function to load plug-ins, using configurations additively. */
   function loadPlugins(...settings: Settings[]) {
@@ -152,11 +125,14 @@ async function initCommandLine() {
     }
   }
 
-  loadPlugins(userConfig, projectConfig, commandLineArguments);
+  loadPlugins(configuration.combined);
 
   const cmd = argv._[0];
 
-  const returnValue = await (argv.result || main(cmd, argv));
+  // Bundle up global objects so the commands have access to them
+  const commandOptions = { args: argv, appStacks, configuration, aws };
+
+  const returnValue = argv.commandHandler ? await argv.commandHandler(commandOptions) : await main(cmd, argv);
   if (typeof returnValue === 'object') {
     return toJsonOrYaml(returnValue);
   } else if (typeof returnValue === 'string') {
@@ -166,8 +142,7 @@ async function initCommandLine() {
   }
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
-    const toolkitStackName: string = completeConfig().get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
-    const trackVersions: boolean = completeConfig().get(['versionReporting']);
+    const toolkitStackName: string = configuration.combined.get(['toolkitStackName']) || DEFAULT_TOOLKIT_STACK_NAME;
 
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
@@ -178,30 +153,30 @@ async function initCommandLine() {
         return await cliList({ long: args.long });
 
       case 'diff':
-        return await diffStack(await findStack(args.STACK), trackVersions, args.template);
+        return await diffStack(await findStack(args.STACK), args.template, args.strict);
 
       case 'bootstrap':
-        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName);
+        return await cliBootstrap(args.ENVIRONMENTS, toolkitStackName, args.roleArn);
 
       case 'deploy':
-        return await cliDeploy(args.STACKS, toolkitStackName, trackVersions);
+        return await cliDeploy(args.STACKS, toolkitStackName, args.roleArn, configuration.combined.get(['requireApproval']));
 
       case 'destroy':
-        return await cliDestroy(args.STACKS, args.force);
+        return await cliDestroy(args.STACKS, args.force, args.roleArn);
 
       case 'synthesize':
       case 'synth':
-        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json, trackVersions);
+        return await cliSynthesize(args.STACKS, args.interactive, args.output, args.json);
 
       case 'metadata':
         return await cliMetadata(await findStack(args.STACK));
 
       case 'init':
-        const language = completeConfig().get(['language']);
+        const language = configuration.combined.get(['language']);
         if (args.list) {
           return await printAvailableTemplates(language);
         } else {
-          return await cliInit(args.TEMPLATE || 'default', language);
+          return await cliInit(args.TEMPLATE, language);
         }
 
       default:
@@ -209,46 +184,9 @@ async function initCommandLine() {
     }
   }
 
-  async function cliMetadata(stack: cxapi.StackId) {
-    const s = await synthesizeStack(stack, false);
+  async function cliMetadata(stackName: string) {
+    const s = await appStacks.synthesizeStack(stackName);
     return s.metadata;
-  }
-
-  /**
-   * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
-   */
-  function processMessages(stacks: cxapi.SynthesizeResponse): { errors: boolean, warnings: boolean } {
-    let warnings = false;
-    let errors = false;
-    for (const stack of stacks.stacks) {
-      for (const id of Object.keys(stack.metadata)) {
-        const metadata = stack.metadata[id];
-        for (const entry of metadata) {
-          switch (entry.type) {
-            case cxapi.WARNING_METADATA_KEY:
-              warnings = true;
-              printMessage(warning, 'Warning', id, entry);
-              break;
-            case cxapi.ERROR_METADATA_KEY:
-              errors = true;
-              printMessage(error, 'Error', id, entry);
-              break;
-            case cxapi.INFO_METADATA_KEY:
-              printMessage(print, 'Info', id, entry);
-              break;
-          }
-        }
-      }
-    }
-    return { warnings, errors };
-  }
-
-  function printMessage(logFn: (s: string) => void, prefix: string, id: string, entry: cxapi.MetadataEntry) {
-    logFn(`[${prefix} at ${id}] ${entry.data}`);
-
-    if (argv.trace || argv.verbose) {
-      logFn(`  ${entry.trace.join('\n  ')}`);
-    }
   }
 
   /**
@@ -259,49 +197,28 @@ async function initCommandLine() {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string): Promise<void> {
-    if (environmentGlobs.length === 0) {
-      environmentGlobs = [ '**' ]; // default to ALL
-    }
-    const stackInfos = await selectStacks();
-    const availableEnvironments = distinct(stackInfos.map(stack => stack.environment)
-                             .filter(env => env !== undefined) as cxapi.Environment[]);
-    const environments = availableEnvironments.filter(env => environmentGlobs.find(glob => minimatch(env!.name, glob)));
-    if (environments.length === 0) {
-      const globs = JSON.stringify(environmentGlobs);
-      const envList = availableEnvironments.length > 0 ? availableEnvironments.map(env => env!.name).join(', ') : '<none>';
-      throw new Error(`No environments were found when selecting across ${globs} (available: ${envList})`);
-    }
+  async function cliBootstrap(environmentGlobs: string[], toolkitStackName: string, roleArn: string | undefined): Promise<void> {
+    // Two modes of operation.
+    //
+    // If there is an '--app' argument, we select the environments from the app. Otherwise we just take the user
+    // at their word that they know the name of the environment.
+
+    const app = configuration.combined.get(['app']);
+
+    const environments = app ? await globEnvironmentsFromStacks(appStacks, environmentGlobs) : environmentsFromDescriptors(environmentGlobs);
+
     await Promise.all(environments.map(async (environment) => {
-      success(' ⏳  Bootstrapping environment %s...', colors.blue(environment!.name));
+      success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await bootstrapEnvironment(environment!, aws, toolkitStackName);
-        const message = result.noOp ? ' ✅  Environment %s was already fully bootstrapped!'
-                      : ' ✅  Successfully bootstraped environment %s!';
-        success(message, colors.blue(environment!.name));
+        const result = await bootstrapEnvironment(environment, aws, toolkitStackName, roleArn);
+        const message = result.noOp ? ' ✅  Environment %s bootstrapped (no changes).'
+                      : ' ✅  Environment %s bootstrapped.';
+        success(message, colors.blue(environment.name));
       } catch (e) {
-        error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment!.name), e);
+        error(' ❌  Environment %s failed bootstrapping: %s', colors.blue(environment.name), e);
         throw e;
       }
     }));
-
-    /**
-     * De-duplicates a list of environments, such that a given account and region is only represented exactly once
-     * in the result.
-     *
-     * @param envs the possibly full-of-duplicates list of environments.
-     *
-     * @return a de-duplicated list of environments.
-     */
-    function distinct(envs: cxapi.Environment[]): cxapi.Environment[] {
-      const unique: { [id: string]: cxapi.Environment } = {};
-      for (const env of envs) {
-        const id = `${env.account || 'default'}/${env.region || 'default'}`;
-        if (id in unique) { continue; }
-        unique[id] = env;
-      }
-      return Object.values(unique);
-    }
   }
 
   /**
@@ -316,32 +233,29 @@ async function initCommandLine() {
   async function cliSynthesize(stackNames: string[],
                                doInteractive: boolean,
                                outputDir: string|undefined,
-                               json: boolean,
-                               trackVersions: boolean): Promise<void> {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+                               json: boolean): Promise<void> {
+    const stacks = await appStacks.selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
     if (doInteractive) {
-      if (stackIds.length !== 1) {
-        throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stackIds)}`);
+      if (stacks.length !== 1) {
+        throw new Error(`When using interactive synthesis, must select exactly one stack. Got: ${listStackNames(stacks)}`);
       }
-      return await interactive(stackIds[0], argv.verbose, (stack) => synthesizeStack(stack, trackVersions));
+      return await interactive(stacks[0], argv.verbose, (stack) => appStacks.synthesizeStack(stack));
     }
 
-    if (stackIds.length > 1 && outputDir == null) {
+    if (stacks.length > 1 && outputDir == null) {
       // tslint:disable-next-line:max-line-length
-      throw new Error(`Multiple stacks selected (${listStackNames(stackIds)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
+      throw new Error(`Multiple stacks selected (${listStackNames(stacks)}), but output is directed to stdout. Either select one stack, or use --output to send templates to a directory.`);
     }
-
-    const synthesizedStacks = await synthesizeStacks(stackIds, trackVersions);
 
     if (outputDir == null) {
-      return synthesizedStacks[0].template;  // Will be printed in main()
+      return stacks[0].template;  // Will be printed in main()
     }
 
     fs.mkdirpSync(outputDir);
 
-    for (const stack of synthesizedStacks) {
+    for (const stack of stacks) {
       const finalName = renames.finalName(stack.name);
       const fileName = `${outputDir}/${finalName}.template.${json ? 'json' : 'yaml'}`;
       highlight(fileName);
@@ -351,115 +265,19 @@ async function initCommandLine() {
     return undefined; // Nothing to print
   }
 
-  /**
-   * Synthesize a single stack
-   */
-  async function synthesizeStack(stack: cxapi.StackId, trackVersions: boolean): Promise<cxapi.SynthesizedStack> {
-    const resp = await synthesizeStacks([stack], trackVersions);
-    return resp[0];
-  }
-
-  /**
-   * Synthesize a set of stacks
-   */
-  async function synthesizeStacks(stacks: cxapi.StackId[], trackVersions: boolean): Promise<cxapi.SynthesizedStack[]> {
-    // We may need to run the cloud executable multiple times in order to satisfy all missing context
-    while (true) {
-      debug(`Synthesizing ${listStackNames(stacks)}`);
-      const response: cxapi.SynthesizeResponse = await execProgram({ type: 'synth', stacks: stacks.map(s => s.name) });
-      const allMissing = cdkUtil.deepMerge(...response.stacks.map(s => s.missing));
-
-      if (!cdkUtil.isEmpty(allMissing)) {
-        debug(`Some context information is missing. Fetching...`);
-
-        await contextplugins.provideContextValues(allMissing, projectConfig, availableContextProviders);
-
-        // Cache the new context to disk
-        await projectConfig.save(DEFAULTS);
-        continue;
-      }
-
-      const { errors, warnings } = processMessages(response);
-
-      if (errors && !argv.ignoreErrors) {
-        throw new Error('Found errors');
-      }
-
-      if (argv.strict && warnings) {
-        throw new Error('Found warnings (--strict mode)');
-      }
-
-      if (trackVersions && response.runtime) {
-        const modules = formatModules(response.runtime);
-        for (const stack of response.stacks) {
-          if (!stack.template.Resources) {
-            stack.template.Resources = {};
-          }
-          if (!stack.template.Resources.CDKMetadata) {
-            stack.template.Resources.CDKMetadata = {
-              Type: 'AWS::CDK::Metadata',
-              Properties: {
-                Modules: modules
-              }
-            };
-          } else {
-            warning(`The stack ${stack.name} already includes a CDKMetadata resource`);
-          }
-        }
-      }
-
-      // All good, return
-      return response.stacks;
-
-      function formatModules(runtime: cxapi.AppRuntime): string {
-        const modules = new Array<string>();
-        for (const key of Object.keys(runtime.libraries).sort()) {
-          modules.push(`${key}=${runtime.libraries[key]}`);
-        }
-        return modules.join(',');
-      }
-    }
-  }
-
-  /**
-   * List all stacks in the CX and return the selected ones
-   *
-   * It's an error if there are no stacks to select, or if one of the requested parameters
-   * refers to a nonexistant stack.
-   */
-  async function selectStacks(...stackNames: string[]): Promise<cxapi.StackInfo[]> {
-    stackNames = stackNames.filter(s => s != null); // filter null/undefined
-
-    const stackIds: cxapi.StackInfo[] = await listStacks();
-    if (stackIds.length === 0) {
-      throw new Error('This app contains no stacks');
-    }
-
-    if (stackNames.length === 0) {
-      debug('Stack name not specified, so defaulting to all available stacks: ' + listStackNames(stackIds));
-      return stackIds;
-    }
-
-    // For every selector argument, pick stacks from the list. Remove
-    // from the original list to make sure we never select the same stack twice.
-    const ret: cxapi.StackId[] = [];
-    for (const stackName of stackNames) {
-      const matched = cdkUtil.partition(stackIds, stackId => minimatch(stackId.name, stackName));
-      if (matched.length === 0) {
-        throw new Error(`No stack found matching '${stackName}'. Use "list" to print manifest`);
-      }
-      ret.push(...matched);
-    }
-
-    return ret;
-  }
-
   async function cliList(options: { long?: boolean } = { }) {
-    const stacks = await listStacks();
+    const stacks = await appStacks.listStacks();
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
     if (options.long) {
-      return stacks; // will be YAML formatted output
+      const long = [];
+      for (const stack of stacks) {
+        long.push({
+          name: stack.name,
+          environment: stack.environment
+        });
+      }
+      return long; // will be YAML formatted output
     }
 
     // just print stack names
@@ -470,19 +288,14 @@ async function initCommandLine() {
     return 0; // exit-code
   }
 
-  async function listStacks(): Promise<cxapi.StackInfo[]> {
-    const response: cxapi.ListStacksResponse = await execProgram({ type: 'list' });
-    return response.stacks;
-  }
+  async function cliDeploy(stackNames: string[], toolkitStackName: string, roleArn: string | undefined, requireApproval: RequireApproval) {
+    if (requireApproval === undefined) { requireApproval = RequireApproval.Broadening; }
 
-  async function cliDeploy(stackNames: string[], toolkitStackName: string, trackVersions: boolean) {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+    const stacks = await appStacks.selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
-    const synthesizedStacks = await synthesizeStacks(stackIds, trackVersions);
-
-    for (const stack of synthesizedStacks) {
-      if (stackIds.length !== 1) { highlight(stack.name); }
+    for (const stack of stacks) {
+      if (stacks.length !== 1) { highlight(stack.name); }
       if (!stack.environment) {
         // tslint:disable-next-line:max-line-length
         throw new Error(`Stack ${stack.name} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
@@ -490,68 +303,84 @@ async function initCommandLine() {
       const toolkitInfo = await loadToolkitInfo(stack.environment, aws, toolkitStackName);
       const deployName = renames.finalName(stack.name);
 
+      if (requireApproval !== RequireApproval.Never) {
+        const currentTemplate = await readCurrentTemplate(stack);
+        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          if (!confirmed) { throw new Error('Aborted by user'); }
+        }
+      }
+
       if (deployName !== stack.name) {
-        success(' ⏳  Starting deployment of stack %s as %s...', colors.blue(stack.name), colors.blue(deployName));
+        print('%s: deploying... (was %s)', colors.bold(deployName), colors.bold(stack.name));
       } else {
-        success(' ⏳  Starting deployment of stack %s...', colors.blue(stack.name));
+        print('%s: deploying...', colors.bold(stack.name));
       }
 
       try {
-        const result = await deployStack(stack, aws, toolkitInfo, deployName);
-        const message = result.noOp ? ` ✅  Stack was already up-to-date, it has ARN ${colors.blue(result.stackArn)}`
-                      : ` ✅  Deployment of stack %s completed successfully, it has ARN ${colors.blue(result.stackArn)}`;
-        success(message, colors.blue(stack.name));
+        const result = await deployStack({ stack, sdk: aws, toolkitInfo, deployName, roleArn });
+        const message = result.noOp
+          ? ` ✅  %s (no changes)`
+          : ` ✅  %s`;
+
+        success('\n' + message, stack.name);
+
+        if (Object.keys(result.outputs).length > 0) {
+          print('\nOutputs:');
+        }
+
         for (const name of Object.keys(result.outputs)) {
           const value = result.outputs[name];
-          print('%s.%s = %s', colors.blue(deployName), colors.blue(name), colors.green(value));
+          print('%s.%s = %s', colors.cyan(deployName), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
+
+        print('\nStack ARN:');
+
+        data(result.stackArn);
       } catch (e) {
-        error(' ❌  Deployment of stack %s failed: %s', colors.blue(stack.name), e);
+        error('\n ❌  %s failed: %s', colors.bold(stack.name), e);
         throw e;
       }
     }
   }
 
-  async function cliDestroy(stackNames: string[], force: boolean) {
-    const stackIds = await selectStacks(...stackNames);
-    renames.validateSelectedStacks(stackIds);
+  async function cliDestroy(stackNames: string[], force: boolean, roleArn: string | undefined) {
+    const stacks = await appStacks.selectStacks(...stackNames);
+    renames.validateSelectedStacks(stacks);
 
     if (!force) {
       // tslint:disable-next-line:max-line-length
-      const confirmed = await util.promisify(promptly.confirm)(`Are you sure you want to delete: ${colors.blue(stackIds.map(s => s.name).join(', '))} (y/n)?`);
+      const confirmed = await confirm(`Are you sure you want to delete: ${colors.blue(stacks.map(s => s.name).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
     }
 
-    for (const stack of stackIds) {
+    for (const stack of stacks) {
       const deployName = renames.finalName(stack.name);
 
-      success(' ⏳  Starting destruction of stack %s...', colors.blue(deployName));
+      success('%s: destroying...', colors.blue(deployName));
       try {
-        await destroyStack(stack, aws, deployName);
-        success(' ✅  Stack %s successfully destroyed.', colors.blue(deployName));
+        await destroyStack({ stack, sdk: aws, deployName, roleArn });
+        success('\n ✅  %s: destroyed', colors.blue(deployName));
       } catch (e) {
-        error(' ❌  Destruction failed: %s', colors.blue(deployName), e);
+        error('\n ❌  %s: destroy failed', colors.blue(deployName), e);
         throw e;
       }
     }
   }
 
-  async function diffStack(stack: cxapi.StackInfo, trackVersions: boolean, templatePath?: string): Promise<number> {
-    if (!stack.environment) {
-      throw new Error(`Stack ${stack.name} has no environment`);
-    }
-    const s = await synthesizeStack(stack, trackVersions);
+  async function diffStack(stackName: string, templatePath: string | undefined, strict: boolean): Promise<number> {
+    const stack = await appStacks.synthesizeStack(stackName);
     const currentTemplate = await readCurrentTemplate(stack, templatePath);
-    if (printStackDiff(currentTemplate, s) === 0) {
+    if (printStackDiff(currentTemplate, stack, strict) === 0) {
       return 0;
     } else {
       return 1;
     }
   }
 
-  async function readCurrentTemplate(stack: cxapi.StackInfo, templatePath?: string): Promise<{ [key: string]: any }> {
+  async function readCurrentTemplate(stack: cxapi.SynthesizedStack, templatePath?: string): Promise<{ [key: string]: any }> {
     if (templatePath) {
       if (!await fs.pathExists(templatePath)) {
         throw new Error(`There is no file at ${templatePath}`);
@@ -559,8 +388,10 @@ async function initCommandLine() {
       const fileContent = await fs.readFile(templatePath, { encoding: 'UTF-8' });
       return parseTemplate(fileContent);
     } else {
-      const cfn = await aws.cloudFormation(stack.environment!, Mode.ForReading);
       const stackName = renames.finalName(stack.name);
+      debug(`Reading existing template for stack ${stackName}.`);
+
+      const cfn = await aws.cloudFormation(stack.environment, Mode.ForReading);
       try {
         const response = await cfn.getTemplate({ StackName: stackName }).promise();
         return (response.TemplateBody && parseTemplate(response.TemplateBody)) || {};
@@ -575,205 +406,26 @@ async function initCommandLine() {
 
     /* Attempt to parse YAML, fall back to JSON. */
     function parseTemplate(text: string): any {
-      try {
-        return YAML.parse(text);
-      } catch (e) {
-        return JSON.parse(text);
-      }
+      return deserializeStructure(text);
     }
   }
 
   /**
    * Match a single stack from the list of available stacks
    */
-  async function findStack(name: string): Promise<cxapi.StackId> {
-    const stackIds = await selectStacks(name);
+  async function findStack(name: string): Promise<string> {
+    const stacks = await appStacks.selectStacks(name);
 
     // Could have been a glob so check that we evaluated to exactly one
-    if (stackIds.length > 1) {
-      throw new Error(`This command requires exactly one stack, '${name}' matches more than one: `);
+    if (stacks.length > 1) {
+      throw new Error(`This command requires exactly one stack and we matched more than one: ${stacks.map(x => x.name)}`);
     }
 
-    return stackIds[0];
-  }
-
-  /** Invokes the cloud executable and returns JSON output */
-  async function execProgram(request: cxapi.CXRequest): Promise<any> {
-    const config = completeConfig();
-    request.context = config.get(['context']);
-
-    await populateDefaultEnvironmentIfNeeded(request.context);
-
-    const app = config.get(['app']);
-    if (!app) {
-      throw new Error(`--app is required either in command-line, in ${DEFAULTS} or in ${PER_USER_DEFAULTS}`);
-    }
-
-    const commandLine = appToArray(app);
-
-    // encode in base64 to make it easier to pass through shell scripts without escaping-hell
-    const req = cxapi.BASE64_REQ_PREFIX + Buffer.from(JSON.stringify(request)).toString('base64');
-    commandLine.push(req);
-
-    debug(commandArrayToString(commandLine));
-
-    return new Promise<string>((ok, fail) => {
-      // We use a slightly lower-level interface to:
-      //
-      // - Pass arguments in an array instead of a string, to get around a
-      //   number of quoting issues introduced by the intermediate shell layer
-      //   (which would be different between Linux and Windows).
-      //
-      // - Inherit stderr from controlling terminal. We don't use the captured value
-      //   anway, and if the subprocess is printing to it for debugging purposes the
-      //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
-      //   processes like Maven.
-      const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
-        stdio: ['ignore', 'pipe', 'inherit'],
-        detached: false
-      });
-
-      const buf: Buffer[] = [];
-
-      proc.stdout.on('data', d => {
-        buf.push(d as Buffer);
-      });
-
-      proc.on('error', fail);
-
-      proc.on('exit', code => {
-        const stdout = Buffer.concat(buf).toString();
-
-        if (code === 0) {
-          let parsed = null;
-          try {
-            parsed = JSON.parse(stdout);
-          } catch (e) {
-            error("Invalid CDK App output. Make sure you emit the result of app.exec() to STDOUT:");
-            print(stdout);
-            return fail(new Error('Invalid CDK App output.'));
-          }
-          return ok(parsed);
-        } else {
-          error(stdout);
-          return fail(new Error('Subprocess exited with error ' + code.toString()));
-        }
-      });
-     });
-  }
-
-  function logDefaults() {
-    if (!userConfig.empty()) {
-      debug('Defaults loaded from ', PER_USER_DEFAULTS, ':', JSON.stringify(userConfig.settings, undefined, 2));
-    }
-
-    const combined = userConfig.merge(projectConfig);
-    if (!combined.empty()) {
-      debug('Defaults:', JSON.stringify(combined.settings, undefined, 2));
-    }
-  }
-
-  /** Convert the command-line arguments into a Settings object */
-  function argumentsToSettings() {
-    const context: any = {};
-
-    // Turn list of KEY=VALUE strings into an object
-    for (const assignment of (argv.context || [])) {
-      const parts = assignment.split('=', 2);
-      if (parts.length === 2) {
-        debug('CLI argument context: %s=%s', parts[0], parts[1]);
-        if (parts[0].match(/^aws:.+/)) {
-          throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
-        }
-        context[parts[0]] = parts[1];
-      } else {
-        warning('Context argument is not an assignment (key=value): %s', assignment);
-      }
-    }
-
-    return new Settings({
-      app: argv.app,
-      browser: argv.browser,
-      context,
-      language: argv.language,
-      plugin: argv.plugin,
-      toolkitStackName: argv.toolkitStackName,
-      versionReporting: argv.versionReporting,
-    });
-  }
-
-  /**
-   * Make sure the 'app' is an array
-   *
-   * If it's a string, split on spaces as a trivial way of tokenizing the command line.
-   */
-  function appToArray(app: any) {
-    return typeof app === 'string' ? app.split(' ') : app;
-  }
-
-  /**
-   * Return a properly shell-escaped version of the given command line array
-   *
-   * This is only used for debugging purposes, to show the user a command that they can
-   * pop into the shell to reproduce what we did.
-   */
-  function commandArrayToString(command: string[]): string {
-    return command.map(shellEscape).join(' ');
-  }
-
-  /**
-   * Escape a shell argument with the least amount of fuss
-   */
-  function shellEscape(x: string): string {
-    // Don't quote if the string only consists of a known safe subset of characters.
-    // Blacklisting is actually sufficient for this particular case, but whitelisting feels safer.
-    if (x.search(/[^a-z0-9_\/:.-]/i) === -1) { return x; }
-
-    // Quote with single quotes, and do '\'' to reproduce literal single quotes.
-    return `'${x.replace(/'/g, "'\\''")}'`;
-  }
-
-  /**
-   * If we don't have region/account defined in context, we fall back to the default SDK behavior
-   * where region is retreived from ~/.aws/config and account is based on default credentials provider
-   * chain and then STS is queried.
-   *
-   * This is done opportunistically: for example, if we can't acccess STS for some reason or the region
-   * is not configured, the context value will be 'null' and there could failures down the line. In
-   * some cases, synthesis does not require region/account information at all, so that might be perfectly
-   * fine in certain scenarios.
-   *
-   * @param context The context key/value bash.
-   */
-  async function populateDefaultEnvironmentIfNeeded(context: any) {
-    if (!(cxapi.DEFAULT_REGION_CONTEXT_KEY in context)) {
-      context[cxapi.DEFAULT_REGION_CONTEXT_KEY] = await aws.defaultRegion();
-      debug(`Setting "${cxapi.DEFAULT_REGION_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_REGION_CONTEXT_KEY]);
-    }
-
-    if (!(cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY in context)) {
-      context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY] = await aws.defaultAccount();
-      debug(`Setting "${cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY}" context to`, context[cxapi.DEFAULT_ACCOUNT_CONTEXT_KEY]);
-    }
-  }
-
-  /**
-   * Combine the names of a set of stacks using a comma
-   */
-  function listStackNames(stacks: cxapi.StackId[]): string {
-    return stacks.map(s => s.name).join(', ');
+    return stacks[0].name;
   }
 
   function toJsonOrYaml(object: any): string {
-    if (argv.json) {
-      const noFiltering = undefined;
-      const indentWidth = 2;
-      return JSON.stringify(object, noFiltering, indentWidth);
-    } else {
-      const inlineJsonAfterDepth = 16;
-      const indentWidth = 4;
-      return YAML.stringify(object, inlineJsonAfterDepth, indentWidth);
-    }
+    return serializeStructure(object, argv.json);
   }
 }
 

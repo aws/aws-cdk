@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import crypto = require('crypto');
-import { cloudformation } from './apigateway.generated';
+import { CfnDeployment, CfnDeploymentProps } from './apigateway.generated';
 import { RestApiRef } from './restapi-ref';
 
 export interface DeploymentProps  {
@@ -103,13 +103,13 @@ export class Deployment extends cdk.Construct implements cdk.IDependable {
   }
 }
 
-class LatestDeploymentResource extends cloudformation.DeploymentResource {
+class LatestDeploymentResource extends CfnDeployment {
   private originalLogicalId?: string;
   private lazyLogicalIdRequired: boolean;
   private lazyLogicalId?: string;
   private hashComponents = new Array<any>();
 
-  constructor(parent: cdk.Construct, id: string, props: cloudformation.DeploymentResourceProps) {
+  constructor(parent: cdk.Construct, id: string, props: CfnDeploymentProps) {
     super(parent, id, props);
 
     // from this point, don't allow accessing logical ID before synthesis
@@ -159,7 +159,7 @@ class LatestDeploymentResource extends cloudformation.DeploymentResource {
   public addToLogicalId(data: unknown) {
     // if the construct is locked, it means we are already synthesizing and then
     // we can't modify the hash because we might have already calculated it.
-    if (this.locked) {
+    if (this.frozen) {
       throw new Error('Cannot modify the logical ID when the construct is locked');
     }
 

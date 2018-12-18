@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import codecommit = require('@aws-cdk/aws-codecommit');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
@@ -53,14 +53,11 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
-                        ":",
+                        "arn:",
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":",
-                        "logs",
-                        ":",
+                        ":logs:",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -68,19 +65,9 @@ export = {
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":",
-                        "log-group",
-                        ":",
+                        ":log-group:/aws/codebuild/",
                         {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
+                          "Ref": "MyProject39F7B0AE"
                         }
                       ]
                     ]
@@ -89,14 +76,11 @@ export = {
                     "Fn::Join": [
                       "",
                       [
-                        "arn",
-                        ":",
+                        "arn:",
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":",
-                        "logs",
-                        ":",
+                        ":logs:",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -104,19 +88,9 @@ export = {
                         {
                           "Ref": "AWS::AccountId"
                         },
-                        ":",
-                        "log-group",
-                        ":",
+                        ":log-group:/aws/codebuild/",
                         {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "/aws/codebuild/",
-                              {
-                                "Ref": "MyProject39F7B0AE"
-                              }
-                            ]
-                          ]
+                          "Ref": "MyProject39F7B0AE"
                         },
                         ":*"
                       ]
@@ -168,7 +142,7 @@ export = {
 
       const repo = new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'hello-cdk' });
 
-      const source = new codebuild.CodeCommitSource(repo);
+      const source = new codebuild.CodeCommitSource({ repository: repo });
 
       new codebuild.Project(stack, 'MyProject', {
         source
@@ -227,14 +201,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -242,19 +213,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   }
                 ]
                 ]
@@ -263,14 +224,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -278,19 +236,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   },
                   ":*"
                 ]
@@ -347,7 +295,10 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
 
       new codebuild.Project(stack, 'MyProject', {
-        source: new codebuild.S3BucketSource(bucket, 'path/to/source.zip'),
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'path/to/source.zip',
+        }),
         environment: {
           buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2016_BASE,
         },
@@ -356,7 +307,8 @@ export = {
       expect(stack).toMatch({
         "Resources": {
         "MyBucketF68F3FF0": {
-          "Type": "AWS::S3::Bucket"
+          "Type": "AWS::S3::Bucket",
+          "DeletionPolicy": "Retain"
         },
         "MyProjectRole9BBE5233": {
           "Type": "AWS::IAM::Role",
@@ -404,8 +356,7 @@ export = {
                     "Arn"
                   ]
                   },
-                  "/",
-                  "*"
+                  "/*"
                 ]
                 ]
               }
@@ -423,14 +374,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -438,19 +386,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   }
                 ]
                 ]
@@ -459,14 +397,11 @@ export = {
                 "Fn::Join": [
                 "",
                 [
-                  "arn",
-                  ":",
+                  "arn:",
                   {
                   "Ref": "AWS::Partition"
                   },
-                  ":",
-                  "logs",
-                  ":",
+                  ":logs:",
                   {
                   "Ref": "AWS::Region"
                   },
@@ -474,19 +409,9 @@ export = {
                   {
                   "Ref": "AWS::AccountId"
                   },
-                  ":",
-                  "log-group",
-                  ":",
+                  ":log-group:/aws/codebuild/",
                   {
-                  "Fn::Join": [
-                    "",
-                    [
-                    "/aws/codebuild/",
-                    {
-                      "Ref": "MyProject39F7B0AE"
-                    }
-                    ]
-                  ]
+                    "Ref": "MyProject39F7B0AE"
                   },
                   ":*"
                 ]
@@ -531,8 +456,7 @@ export = {
               {
                 "Ref": "MyBucketF68F3FF0"
               },
-              "/",
-              "path/to/source.zip"
+              "/path/to/source.zip"
               ]
             ]
             },
@@ -543,7 +467,182 @@ export = {
         }
       });
       test.done();
-    }
+    },
+    'fail creating a Project when no build spec is given'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+        });
+      }, /buildSpec/);
+
+      test.done();
+    },
+  },
+
+  'using timeout and path in S3 artifacts sets it correctly'(test: Test) {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    new codebuild.Project(stack, 'Project', {
+      buildSpec: {
+        version: '0.2',
+      },
+      artifacts: new codebuild.S3BucketBuildArtifacts({
+        path: 'some/path',
+        name: 'some_name',
+        bucket,
+      }),
+      timeout: 123,
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      "Artifacts": {
+        "Path": "some/path",
+        "Name": "some_name",
+        "Type": "S3",
+      },
+      "TimeoutInMinutes": 123,
+    }));
+
+    test.done();
+  },
+
+  'secondary sources': {
+    'require providing an identifier when creating a Project'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+          buildSpec: {
+            version: '0.2',
+          },
+          secondarySources: [
+            new codebuild.CodePipelineSource(),
+          ],
+        });
+      }, /identifier/);
+
+      test.done();
+    },
+
+    'are not allowed for a Project with CodePipeline as Source'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.CodePipelineSource(),
+      });
+
+      project.addSecondarySource(new codebuild.S3BucketSource({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'some/path',
+        identifier: 'id',
+      }));
+
+      test.throws(() => {
+        expect(stack);
+      }, /secondary sources/);
+
+      test.done();
+    },
+
+    'added with an identifer after the Project has been created are rendered in the template'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondarySource(new codebuild.S3BucketSource({
+        bucket,
+        path: 'another/path',
+        identifier: 'source1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondarySources": [
+          {
+            "SourceIdentifier": "source1",
+            "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
+  },
+
+  'secondary artifacts': {
+    'require providing an identifier when creating a Project'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyProject', {
+          buildSpec: {
+            version: '0.2',
+          },
+          secondaryArtifacts: [
+            new codebuild.S3BucketBuildArtifacts({
+              bucket: new s3.Bucket(stack, 'MyBucket'),
+              path: 'some/path',
+              name: 'name',
+            }),
+          ],
+        });
+      }, /identifier/);
+
+      test.done();
+    },
+
+    'are not allowed for a Project with CodePipeline as Source'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.CodePipelineSource(),
+      });
+
+      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'some/path',
+        name: 'name',
+        identifier: 'id',
+      }));
+
+      test.throws(() => {
+        expect(stack);
+      }, /secondary artifacts/);
+
+      test.done();
+    },
+
+    'added with an identifier after the Project has been created are rendered in the template'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const project = new codebuild.Project(stack, 'MyProject', {
+        source: new codebuild.S3BucketSource({
+          bucket,
+          path: 'some/path',
+        }),
+      });
+
+      project.addSecondaryArtifact(new codebuild.S3BucketBuildArtifacts({
+        bucket,
+        path: 'another/path',
+        name: 'name',
+        identifier: 'artifact1',
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        "SecondaryArtifacts": [
+          {
+            "ArtifactIdentifier": "artifact1",
+            "Type": "S3",
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'artifacts': {
@@ -620,7 +719,9 @@ export = {
           }), /Both source and artifacts must be set to CodePipeline/);
 
           test.throws(() => new codebuild.Project(stack, 'YourProject', {
-            source: new codebuild.CodeCommitSource(new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })),
+            source: new codebuild.CodeCommitSource({
+              repository: new codecommit.Repository(stack, 'MyRepo', { repositoryName: 'boo' })
+            }),
             artifacts: new codebuild.CodePipelineBuildArtifacts()
           }), /Both source and artifacts must be set to CodePipeline/);
 
@@ -756,7 +857,7 @@ export = {
       environment: {
       environmentVariables: {
         FOO: { value: '1234' },
-        BAR: { value: new cdk.FnConcat('111', '222'), type: codebuild.BuildEnvironmentVariableType.ParameterStore }
+        BAR: { value: new cdk.FnConcat('111', { twotwotwo: '222' }), type: codebuild.BuildEnvironmentVariableType.ParameterStore }
       }
       },
       environmentVariables: {
@@ -793,7 +894,7 @@ export = {
           "",
           [
             "111",
-            "222"
+            { twotwotwo: "222" }
           ]
           ]
         },
@@ -822,7 +923,7 @@ export = {
     const metricBuilds = project.metricBuilds();
     test.same(metricBuilds.dimensions!.ProjectName, project.projectName);
     test.deepEqual(metricBuilds.namespace, 'AWS/CodeBuild');
-    test.deepEqual(metricBuilds.statistic, 'sum', 'default stat is SUM');
+    test.deepEqual(metricBuilds.statistic, 'Sum', 'default stat is SUM');
     test.deepEqual(metricBuilds.metricName, 'Builds');
 
     const metricDuration = project.metricDuration({ label: 'hello' });

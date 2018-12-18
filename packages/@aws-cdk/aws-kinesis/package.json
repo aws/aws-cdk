@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-kinesis",
-  "version": "0.10.0",
+  "version": "0.20.0",
   "description": "CDK Constructs for AWS Kinesis",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -51,16 +51,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "^0.10.0",
-    "cdk-build-tools": "^0.10.0",
-    "cfn2ts": "^0.10.0",
-    "pkglint": "^0.10.0"
+    "@aws-cdk/assert": "^0.20.0",
+    "cdk-build-tools": "^0.20.0",
+    "cfn2ts": "^0.20.0",
+    "pkglint": "^0.20.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-iam": "^0.10.0",
-    "@aws-cdk/aws-kms": "^0.10.0",
-    "@aws-cdk/aws-logs": "^0.10.0",
-    "@aws-cdk/cdk": "^0.10.0"
+    "@aws-cdk/aws-iam": "^0.20.0",
+    "@aws-cdk/aws-kms": "^0.20.0",
+    "@aws-cdk/aws-logs": "^0.20.0",
+    "@aws-cdk/cdk": "^0.20.0"
   },
-  "homepage": "https://github.com/awslabs/aws-cdk"
+  "homepage": "https://github.com/awslabs/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-iam": "^0.20.0",
+    "@aws-cdk/aws-kms": "^0.20.0",
+    "@aws-cdk/aws-logs": "^0.20.0",
+    "@aws-cdk/cdk": "^0.20.0"
+  },
+  "engines": {
+    "node": ">= 8.10.0"
+  }
 }

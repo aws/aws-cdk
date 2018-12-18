@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
@@ -85,21 +85,11 @@ export = {
             "Fn::Join": [
             "",
             [
-              "arn",
-              ":",
+              "arn:",
               {
               Ref: "AWS::Partition"
               },
-              ":",
-              "iam",
-              ":",
-              "",
-              ":",
-              "aws",
-              ":",
-              "policy",
-              "/",
-              "service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
             ]
             ]
           }
@@ -220,6 +210,27 @@ export = {
       ParentId: { Ref: "restapifooF697E056" }
     }));
 
+    test.done();
+  },
+
+  '"addResource" allows configuration of proxy paths'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'restapi', {
+      deploy: false,
+      cloudWatchRole: false,
+      restApiName: 'my-rest-api'
+    });
+
+    // WHEN
+    const proxy = api.root.addResource('{proxy+}');
+    proxy.addMethod('ANY');
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
+      PathPart: "{proxy+}",
+      ParentId: { "Fn::GetAtt": ["restapiC5611D27", "RootResourceId"] }
+    }));
     test.done();
   },
 
@@ -448,19 +459,15 @@ export = {
     // THEN
     test.deepEqual(cdk.resolve(arn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'execute-api',
-      ':',
+      ':execute-api:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },
       ':',
       { Ref: 'apiC8550315' },
-      '/',
-      'stage/method/path' ] ] });
+      '/stage/method/path' ] ] });
     test.done();
   },
 
@@ -485,19 +492,17 @@ export = {
     // THEN
     test.deepEqual(cdk.resolve(method.methodArn), { 'Fn::Join':
     [ '',
-      [ 'arn',
-      ':',
+      [ 'arn:',
       { Ref: 'AWS::Partition' },
-      ':',
-      'execute-api',
-      ':',
+      ':execute-api:',
       { Ref: 'AWS::Region' },
       ':',
       { Ref: 'AWS::AccountId' },
       ':',
       { Ref: 'apiC8550315' },
       '/',
-      { 'Fn::Join': [ '', [ { Ref: 'apiDeploymentStageprod896C8101' }, '/*/' ] ] } ] ] });
+      { Ref: 'apiDeploymentStageprod896C8101' },
+      '/*/'] ] });
     test.done();
   },
 
@@ -612,7 +617,7 @@ export = {
     // THEN
 
     // CASE #1
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'GET',
       ResourceId: { "Fn::GetAtt": [ "myapi162F20B8", "RootResourceId" ] },
       Integration: { Type: 'AWS' },
@@ -621,7 +626,7 @@ export = {
     }));
 
     // CASE #2
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'POST',
       ResourceId: { Ref: "myapichildA0A65412" },
       Integration: { Type: 'AWS' },
@@ -630,7 +635,7 @@ export = {
     }));
 
     // CASE #3
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'DELETE',
       Integration: { Type: 'MOCK' },
       AuthorizerId: 'AUTHID2',
@@ -638,7 +643,7 @@ export = {
     }));
 
     // CASE #4
-    expect(stack).to(haveResource('AWS::ApiGateway::Method', {
+    expect(stack).to(haveResourceLike('AWS::ApiGateway::Method', {
       HttpMethod: 'PUT',
       Integration: { Type: 'AWS' },
       AuthorizerId: 'AUTHID2',

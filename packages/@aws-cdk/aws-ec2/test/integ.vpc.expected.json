@@ -28,6 +28,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -46,7 +54,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet1RouteTableAssociatioin3562612E": {
+    "MyVpcPublicSubnet1RouteTableAssociation2ECEE1CB": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -56,6 +64,21 @@
           "Ref": "MyVpcPublicSubnet1SubnetF6608456"
         }
       }
+    },
+    "MyVpcPublicSubnet1DefaultRoute95FDF9EB": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyVpcIGW5C4A4F63"
+        }
+      },
+      "DependsOn": [
+        "MyVpcVPCGW488ACE0D"
+      ]
     },
     "MyVpcPublicSubnet1EIP096967CB": {
       "Type": "AWS::EC2::EIP",
@@ -83,18 +106,6 @@
         ]
       }
     },
-    "MyVpcPublicSubnet1DefaultRoute95FDF9EB": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
-        }
-      }
-    },
     "MyVpcPublicSubnet2Subnet492B6BFB": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -108,6 +119,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -126,7 +145,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet2RouteTableAssociatioin8E74FB35": {
+    "MyVpcPublicSubnet2RouteTableAssociation227DE78D": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -136,6 +155,21 @@
           "Ref": "MyVpcPublicSubnet2Subnet492B6BFB"
         }
       }
+    },
+    "MyVpcPublicSubnet2DefaultRoute052936F6": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyVpcIGW5C4A4F63"
+        }
+      },
+      "DependsOn": [
+        "MyVpcVPCGW488ACE0D"
+      ]
     },
     "MyVpcPublicSubnet2EIP8CCBA239": {
       "Type": "AWS::EC2::EIP",
@@ -163,18 +197,6 @@
         ]
       }
     },
-    "MyVpcPublicSubnet2DefaultRoute052936F6": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
-        }
-      }
-    },
     "MyVpcPublicSubnet3Subnet57EEE236": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -188,6 +210,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PublicSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
           }
         ]
       }
@@ -206,7 +236,7 @@
         ]
       }
     },
-    "MyVpcPublicSubnet3RouteTableAssociatioinA3FD1B71": {
+    "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -216,6 +246,21 @@
           "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
         }
       }
+    },
+    "MyVpcPublicSubnet3DefaultRoute3A83AB36": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "MyVpcIGW5C4A4F63"
+        }
+      },
+      "DependsOn": [
+        "MyVpcVPCGW488ACE0D"
+      ]
     },
     "MyVpcPublicSubnet3EIPC5ACADAB": {
       "Type": "AWS::EC2::EIP",
@@ -243,18 +288,6 @@
         ]
       }
     },
-    "MyVpcPublicSubnet3DefaultRoute3A83AB36": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "MyVpcIGW5C4A4F63"
-        }
-      }
-    },
     "MyVpcPrivateSubnet1Subnet5057CF7E": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
@@ -268,6 +301,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -286,7 +327,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet1RouteTableAssociatioin90CF6BAB": {
+    "MyVpcPrivateSubnet1RouteTableAssociation56D38C7E": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -322,6 +363,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -340,7 +389,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet2RouteTableAssociatioin803693C0": {
+    "MyVpcPrivateSubnet2RouteTableAssociation86A610DA": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -376,6 +425,14 @@
           {
             "Key": "Name",
             "Value": "aws-cdk-ec2-vpc/MyVpc/PrivateSubnet3"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
           }
         ]
       }
@@ -394,7 +451,7 @@
         ]
       }
     },
-    "MyVpcPrivateSubnet3RouteTableAssociatioinFB4A6FE6": {
+    "MyVpcPrivateSubnet3RouteTableAssociationD951741C": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -436,6 +493,66 @@
         },
         "InternetGatewayId": {
           "Ref": "MyVpcIGW5C4A4F63"
+        }
+      }
+    },
+    "SGADB53937": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-cdk-ec2-vpc/SG",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ICMP PING",
+            "FromPort": 8,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ICMP Type 128",
+            "FromPort": 128,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:ALL ICMP",
+            "FromPort": -1,
+            "IpProtocol": "icmp",
+            "ToPort": -1
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP ALL PORTS",
+            "FromPort": 0,
+            "IpProtocol": "udp",
+            "ToPort": 65535
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP 123",
+            "FromPort": 123,
+            "IpProtocol": "udp",
+            "ToPort": 123
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:UDP 800-801",
+            "FromPort": 800,
+            "IpProtocol": "udp",
+            "ToPort": 801
+          }
+        ],
+        "VpcId": {
+          "Ref": "MyVpcF9F0CA6F"
         }
       }
     }

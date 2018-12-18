@@ -2,7 +2,7 @@ import { Construct } from '../core/construct';
 import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
 
 export class PseudoParameter extends StackAwareCloudFormationToken {
-  constructor(anchor: Construct, name: string) {
+  constructor(anchor: Construct | undefined, name: string) {
       super(anchor, { Ref: name }, name);
   }
 }
@@ -44,7 +44,7 @@ export class AwsPartition extends PseudoParameter {
 }
 
 export class AwsRegion extends PseudoParameter {
-  constructor(anchor: Construct) {
+  constructor(anchor: Construct | undefined) {
     super(anchor, 'AWS::Region');
   }
 }

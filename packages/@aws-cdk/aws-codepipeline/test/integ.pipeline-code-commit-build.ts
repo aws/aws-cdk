@@ -3,7 +3,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
 
@@ -14,10 +14,11 @@ const repository = new codecommit.Repository(stack, 'MyRepo', {
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
-const source = new codecommit.PipelineSourceAction(stack, 'source', {
+new codecommit.PipelineSourceAction(stack, 'source', {
   stage: sourceStage,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
   repository,
+  pollForSourceChanges: true,
 });
 
 const project = new codebuild.Project(stack, 'MyBuildProject', {
@@ -25,8 +26,7 @@ const project = new codebuild.Project(stack, 'MyBuildProject', {
 });
 
 const buildStage = new codepipeline.Stage(pipeline, 'build', { pipeline });
-project.addBuildToPipeline(buildStage, 'build', {
-  inputArtifact: source.artifact,
-});
+project.addToPipeline(buildStage, 'build');
+project.addToPipelineAsTest(buildStage, 'test');
 
-process.stdout.write(app.run());
+app.run();

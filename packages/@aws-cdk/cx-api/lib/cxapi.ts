@@ -4,59 +4,55 @@
 
 import { Environment } from './environment';
 
-export const VERSION = '1';
-export const BASE64_REQ_PREFIX = 'base64:';
+/**
+ * Bump this to the library version if and only if the CX protocol changes.
+ *
+ * We could also have used 1, 2, 3, ... here to indicate protocol versions, but
+ * those then still need to be mapped to software versions to be useful. So we
+ * might as well use the software version as protocol version and immediately
+ * generate a useful error message from this.
+ *
+ * Note the following:
+ *
+ * - The versions are not compared in a semver way, they are used as
+ *    opaque ordered tokens.
+ * - The version needs to be set to the NEXT releasable version when it's
+ *   updated (as the current verison in package.json has already been released!)
+ * - The request does not have versioning yet, only the response.
+ */
+export const PROTO_RESPONSE_VERSION = '0.19.0';
 
-export interface ListStacksRequest {
-  type: 'list',
-  context?: any
-}
-
-export interface SynthesizeRequest {
-  type: 'synth',
-  stacks: string[],
-  context?: any,
-}
-
-export type CXRequest = ListStacksRequest | SynthesizeRequest;
+export const OUTFILE_NAME = 'cdk.out';
+export const OUTDIR_ENV = 'CDK_OUTDIR';
+export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
  * Represents a missing piece of context.
- * (should have been an interface, but jsii still doesn't have support for structs).
  */
 export interface MissingContext {
   provider: string;
-  scope: string[];
-  args: string[];
-}
-
-export interface ListStacksResponse {
-  stacks: StackInfo[]
+  props: {
+    account?: string;
+    region?: string;
+    [key: string]: any;
+  };
 }
 
 export interface SynthesizeResponse {
+  /**
+   * Protocol version
+   */
+  version: string;
   stacks: SynthesizedStack[];
   runtime?: AppRuntime;
 }
 
 /**
- * Identifies a single stack
- */
-export interface StackId {
-  name: string;
-}
-
-/**
- * Identifies and contains metadata about a stack
- */
-export interface StackInfo extends StackId {
-  environment?: Environment;
-}
-
-/**
  * A complete synthesized stack
  */
-export interface SynthesizedStack extends StackInfo {
+export interface SynthesizedStack {
+  name: string;
+  environment: Environment;
   missing?: { [key: string]: MissingContext };
   metadata: StackMetadata;
   template: any;
@@ -107,34 +103,6 @@ export const DEFAULT_ACCOUNT_CONTEXT_KEY = 'aws:cdk:toolkit:default-account';
  */
 export const DEFAULT_REGION_CONTEXT_KEY = 'aws:cdk:toolkit:default-region';
 
-export const ASSET_METADATA = 'aws:cdk:asset';
-export interface AssetMetadataEntry {
-  /**
-   * Path on disk to the asset
-   */
-  path: string;
-
-  /**
-   * Logical identifier for the asset
-   */
-  id: string;
-
-  /**
-   * Requested packaging style
-   */
-  packaging: 'zip' | 'file';
-
-  /**
-   * Name of parameter where S3 bucket should be passed in
-   */
-  s3BucketParameter: string;
-
-  /**
-   * Name of parameter where S3 key should be passed in
-   */
-  s3KeyParameter: string;
-}
-
 /**
  * Metadata key used to print INFO-level messages by the toolkit when an app is syntheized.
  */
@@ -149,6 +117,17 @@ export const WARNING_METADATA_KEY = 'aws:cdk:warning';
  * Metadata key used to print ERROR-level messages by the toolkit when an app is syntheized.
  */
 export const ERROR_METADATA_KEY = 'aws:cdk:error';
+
+/**
+ * The key used when CDK path is embedded in **CloudFormation template**
+ * metadata.
+ */
+export const PATH_METADATA_KEY = 'aws:cdk:path';
+
+/**
+ * Enables the embedding of the "aws:cdk:path" in CloudFormation template metadata.
+ */
+export const PATH_METADATA_ENABLE_CONTEXT = 'aws:cdk:enable-path-metadata';
 
 /**
  * Separator string that separates the prefix separator from the object key separator.

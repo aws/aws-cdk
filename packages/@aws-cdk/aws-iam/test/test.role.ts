@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { FederatedPrincipal, PolicyStatement, Resource, ServicePrincipal, Stack } from '@aws-cdk/cdk';
+import { Resource, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { Role } from '../lib';
+import { FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -21,6 +21,36 @@ export = {
               Effect: 'Allow',
               Principal: { Service: 'sns.amazonaws.com' } } ],
              Version: '2012-10-17' } } } } });
+    test.done();
+  },
+
+  'can supply externalId'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      externalId: 'SomeSecret',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Condition: {
+              StringEquals: { "sts:ExternalId": "SomeSecret" }
+            },
+            Effect: "Allow",
+            Principal: { Service: "sns.amazonaws.com" }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
     test.done();
   },
 
@@ -103,6 +133,7 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
             Principal: { Federated: "foo" },

@@ -1,15 +1,20 @@
 import assets = require('@aws-cdk/assets');
+import { DockerImageAsset, DockerImageAssetProps } from '@aws-cdk/assets-docker';
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import ecr = require('@aws-cdk/aws-ecr');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import { BuildArtifacts, CodePipelineBuildArtifacts, NoBuildArtifacts } from './artifacts';
-import { cloudformation } from './codebuild.generated';
-import { CommonPipelineBuildActionProps, PipelineBuildAction } from './pipeline-actions';
-import { BuildSource, NoSource } from './source';
+import { CfnProject } from './codebuild.generated';
+import {
+  CommonPipelineBuildActionProps, CommonPipelineTestActionProps,
+  PipelineBuildAction, PipelineTestAction
+} from './pipeline-actions';
+import { BuildSource, NoSource, SourceType } from './source';
 
 const CODEPIPELINE_TYPE = 'CODEPIPELINE';
 const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -89,8 +94,25 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
    * @param props the properties of the new Action
    * @returns the newly created {@link PipelineBuildAction} build Action
    */
-  public addBuildToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps): PipelineBuildAction {
-    return new PipelineBuildAction(this.parent!, name, {
+  public addToPipeline(stage: codepipeline.IStage, name: string, props: CommonPipelineBuildActionProps = {}): PipelineBuildAction {
+    return new PipelineBuildAction(this, name, {
+      stage,
+      project: this,
+      ...props,
+    });
+  }
+
+  /**
+   * Convenience method for creating a new {@link PipelineTestAction} test Action,
+   * and adding it to the given Stage.
+   *
+   * @param stage the Pipeline Stage to add the new Action to
+   * @param name the name of the newly created Action
+   * @param props the properties of the new Action
+   * @returns the newly created {@link PipelineBuildAction} test Action
+   */
+  public addToPipelineAsTest(stage: codepipeline.IStage, name: string, props: CommonPipelineTestActionProps = {}): PipelineTestAction {
+    return new PipelineTestAction(this, name, {
       stage,
       project: this,
       ...props,
@@ -279,10 +301,10 @@ export abstract class ProjectRef extends cdk.Construct implements events.IEventR
   public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
     if (!this.eventsRole) {
       this.eventsRole = new iam.Role(this, 'EventsRole', {
-        assumedBy: new cdk.ServicePrincipal('events.amazonaws.com')
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com')
       });
 
-      this.eventsRole.addToPolicy(new cdk.PolicyStatement()
+      this.eventsRole.addToPolicy(new iam.PolicyStatement()
         .addAction('codebuild:StartBuild')
         .addResource(this.projectArn));
     }
@@ -402,6 +424,8 @@ export interface CommonProjectProps {
 export interface ProjectProps extends CommonProjectProps {
   /**
    * The source of the build.
+   * *Note*: if {@link NoSource} is given as the source,
+   * then you need to provide an explicit `buildSpec`.
    *
    * @default NoSource
    */
@@ -414,6 +438,24 @@ export interface ProjectProps extends CommonProjectProps {
    * @default NoBuildArtifacts
    */
   artifacts?: BuildArtifacts;
+
+  /**
+   * The secondary sources for the Project.
+   * Can be also added after the Project has been created by using the {@link Project#addSecondarySource} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  secondarySources?: BuildSource[];
+
+  /**
+   * The secondary artifacts for the Project.
+   * Can also be added after the Project has been created by using the {@link Project#addSecondaryArtifact} method.
+   *
+   * @default []
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  secondaryArtifacts?: BuildArtifacts[];
 }
 
 /**
@@ -437,6 +479,8 @@ export class Project extends ProjectRef {
 
   private readonly source: BuildSource;
   private readonly buildImage: IBuildImage;
+  private readonly _secondarySources: BuildSource[];
+  private readonly _secondaryArtifacts: BuildArtifacts[];
 
   constructor(parent: cdk.Construct, name: string, props: ProjectProps) {
     super(parent, name);
@@ -446,10 +490,10 @@ export class Project extends ProjectRef {
     }
 
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new cdk.ServicePrincipal('codebuild.amazonaws.com')
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
     });
 
-    let cache: cloudformation.ProjectResource.ProjectCacheProperty | undefined;
+    let cache: CfnProject.ProjectCacheProperty | undefined;
     if (props.cacheBucket) {
       const cacheDir = props.cacheDir != null ? props.cacheDir : new cdk.AwsNoValue();
       cache = {
@@ -465,10 +509,10 @@ export class Project extends ProjectRef {
     // let source "bind" to the project. this usually involves granting permissions
     // for the code build role to interact with the source.
     this.source = props.source || new NoSource();
-    this.source.bind(this);
+    this.source._bind(this);
 
     const artifacts = this.parseArtifacts(props);
-    artifacts.bind(this);
+    artifacts._bind(this);
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
@@ -489,11 +533,23 @@ export class Project extends ProjectRef {
       // We have to pretty-print the buildspec, otherwise
       // CodeBuild will not recognize it as an inline buildspec.
       sourceJson.buildSpec = JSON.stringify(buildSpec, undefined, 2); // Literal buildspec
+    } else if (this.source.type === SourceType.None) {
+      throw new Error("If the Project's source is NoSource, you need to provide a buildSpec");
+    }
+
+    this._secondarySources = [];
+    for (const secondarySource of props.secondarySources || []) {
+      this.addSecondarySource(secondarySource);
+    }
+
+    this._secondaryArtifacts = [];
+    for (const secondaryArtifact of props.secondaryArtifacts || []) {
+      this.addSecondaryArtifact(secondaryArtifact);
     }
 
     this.validateCodePipelineSettings(artifacts);
 
-    const resource = new cloudformation.ProjectResource(this, 'Resource', {
+    const resource = new CfnProject(this, 'Resource', {
       description: props.description,
       source: sourceJson,
       artifacts: artifacts.toArtifactsJSON(),
@@ -502,7 +558,10 @@ export class Project extends ProjectRef {
       encryptionKey: props.encryptionKey && props.encryptionKey.keyArn,
       badgeEnabled: props.badge,
       cache,
-      projectName: props.projectName,
+      name: props.projectName,
+      timeoutInMinutes: props.timeout,
+      secondarySources: new cdk.Token(() => this.renderSecondarySources()),
+      secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
     });
 
     this.projectArn = resource.projectArn;
@@ -512,13 +571,59 @@ export class Project extends ProjectRef {
   }
 
   /**
+   * @override
+   */
+  public validate(): string[] {
+    const ret = new Array<string>();
+    if (this.source.type === SourceType.CodePipeline) {
+      if (this._secondarySources.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary sources. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalInputArtifacts` property instead");
+      }
+      if (this._secondaryArtifacts.length > 0) {
+        ret.push('A Project with a CodePipeline Source cannot have secondary artifacts. ' +
+          "Use the CodeBuild Pipeline Actions' `additionalOutputArtifactNames` property instead");
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Add a permission only if there's a policy attached.
    * @param statement The permissions statement to add
    */
-  public addToRolePolicy(statement: cdk.PolicyStatement) {
+  public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
       this.role.addToPolicy(statement);
     }
+  }
+
+  /**
+   * Adds a secondary source to the Project.
+   *
+   * @param secondarySource the source to add as a secondary source
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  public addSecondarySource(secondarySource: BuildSource): void {
+    if (!secondarySource.identifier) {
+      throw new Error('The identifier attribute is mandatory for secondary sources');
+    }
+    secondarySource._bind(this);
+    this._secondarySources.push(secondarySource);
+  }
+
+  /**
+   * Adds a secondary artifact to the Project.
+   *
+   * @param secondaryArtifact the artifact to add as a secondary artifact
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
+   */
+  public addSecondaryArtifact(secondaryArtifact: BuildArtifacts): any {
+    if (!secondaryArtifact.identifier) {
+      throw new Error("The identifier attribute is mandatory for secondary artifacts");
+    }
+    secondaryArtifact._bind(this);
+    this._secondaryArtifacts.push(secondaryArtifact);
   }
 
   private createLoggingPermission() {
@@ -531,7 +636,7 @@ export class Project extends ProjectRef {
 
     const logGroupStarArn = `${logGroupArn}:*`;
 
-    const p = new cdk.PolicyStatement();
+    const p = new iam.PolicyStatement();
     p.allow();
     p.addResource(logGroupArn);
     p.addResource(logGroupStarArn);
@@ -544,7 +649,7 @@ export class Project extends ProjectRef {
 
   private renderEnvironment(env: BuildEnvironment = {},
                             projectVars: { [name: string]: BuildEnvironmentVariable } = {}):
-      cloudformation.ProjectResource.EnvironmentProperty {
+      CfnProject.EnvironmentProperty {
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -576,6 +681,18 @@ export class Project extends ProjectRef {
         value: vars[name].value
       }))
     };
+  }
+
+  private renderSecondarySources(): CfnProject.SourceProperty[] | undefined {
+    return this._secondarySources.length === 0
+      ? undefined
+      : this._secondarySources.map((secondarySource) => secondarySource.toSourceJSON());
+  }
+
+  private renderSecondaryArtifacts(): CfnProject.ArtifactsProperty[] | undefined {
+    return this._secondaryArtifacts.length === 0
+      ? undefined
+      : this._secondaryArtifacts.map((secondaryArtifact) => secondaryArtifact.toArtifactsJSON());
   }
 
   private parseArtifacts(props: ProjectProps) {
@@ -682,9 +799,15 @@ export interface IBuildImage {
 
 /**
  * A CodeBuild image running Linux.
+ *
  * This class has a bunch of public constants that represent the most popular images.
- * If you need to use with an image that isn't in the named constants,
- * you can always instantiate it directly.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - LinuxBuildImage.fromDockerHub(image)
+ * - LinuxBuildImage.fromEcrRepository(repo[, tag])
+ * - LinuxBuildImage.fromAsset(parent, id, props)
+ *
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
@@ -713,10 +836,48 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_0 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.0');
   public static readonly UBUNTU_14_04_DOTNET_CORE_2_1 = new LinuxBuildImage('aws/codebuild/dot-net:core-2.1');
 
+  /**
+   * @returns a Linux build image from a Docker Hub image.
+   */
+  public static fromDockerHub(name: string): LinuxBuildImage {
+    return new LinuxBuildImage(name);
+  }
+
+  /**
+   * @returns A Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): LinuxBuildImage {
+    const image = new LinuxBuildImage(repository.repositoryUriForTag(tag));
+    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
+    return image;
+  }
+
+  /**
+   * Uses an Docker image asset as a Linux build image.
+   */
+  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): LinuxBuildImage {
+    const asset = new DockerImageAsset(parent, id, props);
+    const image = new LinuxBuildImage(asset.imageUri);
+
+    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
+    // we can't use `asset.grantUseImage()`.
+    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
+
+    return image;
+  }
+
   public readonly type = 'LINUX_CONTAINER';
   public readonly defaultComputeType = ComputeType.Small;
 
-  public constructor(public readonly imageId: string) {
+  private constructor(public readonly imageId: string) {
   }
 
   public validate(_: BuildEnvironment): string[] {
@@ -754,19 +915,61 @@ export class LinuxBuildImage implements IBuildImage {
 
 /**
  * A CodeBuild image running Windows.
+ *
  * This class has a bunch of public constants that represent the most popular images.
- * If you need to use with an image that isn't in the named constants,
- * you can always instantiate it directly.
+ *
+ * You can also specify a custom image using one of the static methods:
+ *
+ * - WindowsBuildImage.fromDockerHub(image)
+ * - WindowsBuildImage.fromEcrRepository(repo[, tag])
+ * - WindowsBuildImage.fromAsset(parent, id, props)
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class WindowsBuildImage implements IBuildImage {
   public static readonly WIN_SERVER_CORE_2016_BASE = new WindowsBuildImage('aws/codebuild/windows-base:1.0');
 
+  /**
+   * @returns a Windows build image from a Docker Hub image.
+   */
+  public static fromDockerHub(name: string): WindowsBuildImage {
+    return new WindowsBuildImage(name);
+  }
+
+  /**
+   * @returns A Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): WindowsBuildImage {
+    const image = new WindowsBuildImage(repository.repositoryUriForTag(tag));
+    repository.addToResourcePolicy(ecrAccessForCodeBuildService());
+    return image;
+  }
+
+  /**
+   * Uses an Docker image asset as a Windows build image.
+   */
+  public static fromAsset(parent: cdk.Construct, id: string, props: DockerImageAssetProps): WindowsBuildImage {
+    const asset = new DockerImageAsset(parent, id, props);
+    const image = new WindowsBuildImage(asset.imageUri);
+
+    // allow this codebuild to pull this image (CodeBuild doesn't use a role, so
+    // we can't use `asset.grantUseImage()`.
+    asset.repository.addToResourcePolicy(ecrAccessForCodeBuildService());
+
+    return image;
+  }
   public readonly type = 'WINDOWS_CONTAINER';
   public readonly defaultComputeType = ComputeType.Medium;
 
-  public constructor(public readonly imageId: string) {
+  private constructor(public readonly imageId: string) {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
@@ -854,4 +1057,15 @@ function extendBuildSpec(buildSpec: any, extend: any) {
     if (!(phase.commands)) { phase.commands = []; }
     phase.commands.push(...extend.phases[phaseName].commands);
   }
+}
+
+function ecrAccessForCodeBuildService(): iam.PolicyStatement {
+  return new iam.PolicyStatement()
+    .describe('CodeBuild')
+    .addServicePrincipal('codebuild.amazonaws.com')
+    .addActions(
+      'ecr:GetDownloadUrlForLayer',
+      'ecr:BatchGetImage',
+      'ecr:BatchCheckLayerAvailability'
+    );
 }

@@ -3,11 +3,13 @@ import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import cloudfront = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-cloudfront');
 
-const sourceBucket = new s3.Bucket(stack, 'Bucket');
+const sourceBucket = new s3.Bucket(stack, 'Bucket', {
+  removalPolicy: cdk.RemovalPolicy.Destroy
+});
 
 new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   originConfigs: [
@@ -20,4 +22,4 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ]
  });
 
-process.stdout.write(app.run());
+app.run();

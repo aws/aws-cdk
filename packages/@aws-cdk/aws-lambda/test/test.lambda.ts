@@ -32,7 +32,7 @@ export = {
           ManagedPolicyArns:
           // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
            // tslint:disable-next-line:max-line-length
-           [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
+           [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
           }},
         MyLambdaCCE802FB:
          { Type: 'AWS::Lambda::Function',
@@ -51,7 +51,7 @@ export = {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NodeJS610,
-      initialPolicy: [new cdk.PolicyStatement().addAction("*").addAllResources()]
+      initialPolicy: [new iam.PolicyStatement().addAction("*").addAllResources()]
     });
     expect(stack).toMatch({ Resources:
       { MyLambdaServiceRole4539ECB6:
@@ -65,7 +65,7 @@ export = {
              Version: '2012-10-17' },
           ManagedPolicyArns:
           // tslint:disable-next-line:max-line-length
-          [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
+          [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
         }},
         MyLambdaServiceRoleDefaultPolicy5BBC6F68: {
           Type: "AWS::IAM::Policy",
@@ -117,8 +117,8 @@ export = {
 
       fn.addPermission('S3Permission', {
         action: 'lambda:*',
-        principal: new cdk.ServicePrincipal('s3.amazonaws.com'),
-        sourceAccount: new cdk.AwsAccountId().toString(),
+        principal: new iam.ServicePrincipal('s3.amazonaws.com'),
+        sourceAccount: new cdk.AwsAccountId(stack).toString(),
         sourceArn: 'arn:aws:s3:::my_bucket'
       });
 
@@ -141,7 +141,7 @@ export = {
           },
           "ManagedPolicyArns":
           // tslint:disable-next-line:max-line-length
-          [{'Fn::Join': ['', ['arn', ':', {Ref: 'AWS::Partition'}, ':', 'iam', ':', '', ':', 'aws', ':', 'policy', '/', 'service-role/AWSLambdaBasicExecutionRole']]}],
+          [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
           }
         },
         "MyLambdaCCE802FB": {
@@ -187,11 +187,11 @@ export = {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
 
-      test.throws(() => fn.addPermission('F1', { principal: new cdk.ArnPrincipal('just:arn') }),
+      test.throws(() => fn.addPermission('F1', { principal: new iam.ArnPrincipal('just:arn') }),
         /Invalid principal type for Lambda permission statement/);
 
-      fn.addPermission('S1', { principal: new cdk.ServicePrincipal('my-service') });
-      fn.addPermission('S2', { principal: new cdk.AccountPrincipal('account') });
+      fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
+      fn.addPermission('S2', { principal: new iam.AccountPrincipal(stack, 'account') });
 
       test.done();
     },
@@ -200,9 +200,9 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'SomeRole', {
-        assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
-      role.addToPolicy(new cdk.PolicyStatement().addAction('confirm:itsthesame'));
+      role.addToPolicy(new iam.PolicyStatement().addAction('confirm:itsthesame'));
 
       // WHEN
       const fn = new lambda.Function(stack, 'Function', {
@@ -211,20 +211,21 @@ export = {
         handler: 'index.test',
         role,
         initialPolicy: [
-          new cdk.PolicyStatement().addAction('inline:inline')
+          new iam.PolicyStatement().addAction('inline:inline')
         ]
       });
 
-      fn.addToRolePolicy(new cdk.PolicyStatement().addAction('explicit:explicit'));
+      fn.addToRolePolicy(new iam.PolicyStatement().addAction('explicit:explicit'));
 
       // THEN
       expect(stack).to(haveResource('AWS::IAM::Policy', {
         "PolicyDocument": {
-        "Statement": [
-          { "Action": "confirm:itsthesame", "Effect": "Allow" },
-          { "Action": "inline:inline", "Effect": "Allow" },
-          { "Action": "explicit:explicit", "Effect": "Allow" }
-        ],
+          "Version": "2012-10-17",
+          "Statement": [
+            { "Action": "confirm:itsthesame", "Effect": "Allow" },
+            { "Action": "inline:inline", "Effect": "Allow" },
+            { "Action": "explicit:explicit", "Effect": "Allow" }
+          ],
         },
       }));
 
@@ -245,7 +246,7 @@ export = {
 
       // Can call addPermission() but it won't do anything
       imported.addPermission('Hello', {
-        principal: new cdk.ServicePrincipal('harry')
+        principal: new iam.ServicePrincipal('harry')
       });
 
       test.done();
@@ -360,21 +361,11 @@ export = {
               "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                 "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
               ]
             }
@@ -481,21 +472,11 @@ export = {
               "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                 "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
               ]
             }
@@ -601,21 +582,11 @@ export = {
             "Fn::Join": [
               "",
               [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "iam",
-              ":",
-              "",
-              ":",
-              "aws",
-              ":",
-              "policy",
-              "/",
-              "service-role/AWSLambdaBasicExecutionRole"
+              ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
             }
@@ -687,21 +658,11 @@ export = {
               "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                 "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
               ]
             }
@@ -809,21 +770,11 @@ export = {
             "Fn::Join": [
               "",
               [
-              "arn",
-              ":",
+              "arn:",
               {
                 "Ref": "AWS::Partition"
               },
-              ":",
-              "iam",
-              ":",
-              "",
-              ":",
-              "aws",
-              ":",
-              "policy",
-              "/",
-              "service-role/AWSLambdaBasicExecutionRole"
+              ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
             }
@@ -1081,6 +1032,96 @@ export = {
     test.done();
   },
 
+  'grantInvoke adds iam:InvokeFunction'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.AccountPrincipal(stack, '1234'),
+    });
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    // WHEN
+    fn.grantInvoke(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+            Resource: { "Fn::GetAtt": [ "Function76856677", "Arn" ] }
+          }
+        ]
+      }
+    }));
+
+    test.done();
+  },
+
+  'addEventSource calls bind'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Function', {
+      code: lambda.Code.inline('xxx'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+    });
+
+    let bindTarget;
+
+    class EventSourceMock implements lambda.IEventSource {
+      public bind(target: lambda.FunctionRef) {
+        bindTarget = target;
+      }
+    }
+
+    // WHEN
+    fn.addEventSource(new EventSourceMock());
+
+    // THEN
+    test.same(bindTarget, fn);
+    test.done();
+  },
+  'support inline code for Ruby runtime'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.Ruby25,
+    });
+
+    expect(stack).toMatch({ Resources:
+      { MyLambdaServiceRole4539ECB6:
+          { Type: 'AWS::IAM::Role',
+          Properties:
+          { AssumeRolePolicyDocument:
+            { Statement:
+            [ { Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'lambda.amazonaws.com' } } ],
+              Version: '2012-10-17' },
+          ManagedPolicyArns:
+          // arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            // tslint:disable-next-line:max-line-length
+            [{'Fn::Join': ['', ['arn:', {Ref: 'AWS::Partition'}, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']]}],
+          }},
+        MyLambdaCCE802FB:
+          { Type: 'AWS::Lambda::Function',
+          Properties:
+          { Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': [ 'MyLambdaServiceRole4539ECB6', 'Arn' ] },
+          Runtime: 'ruby2.5' },
+          DependsOn: [ 'MyLambdaServiceRole4539ECB6' ] } } });
+    test.done();
+  }
 };
 
 function newTestLambda(parent: cdk.Construct) {

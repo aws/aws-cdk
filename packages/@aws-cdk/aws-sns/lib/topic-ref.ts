@@ -1,3 +1,4 @@
+import autoscaling_api = require('@aws-cdk/aws-autoscaling-api');
 import cloudwatch = require('@aws-cdk/aws-cloudwatch');
 import events = require('@aws-cdk/aws-events');
 import iam = require('@aws-cdk/aws-iam');
@@ -11,7 +12,13 @@ import { Subscription, SubscriptionProtocol } from './subscription';
 /**
  * Either a new or imported Topic
  */
-export abstract class TopicRef extends cdk.Construct implements events.IEventRuleTarget, cloudwatch.IAlarmAction, s3n.IBucketNotificationDestination {
+export abstract class TopicRef extends cdk.Construct
+  implements
+    events.IEventRuleTarget,
+    cloudwatch.IAlarmAction,
+    s3n.IBucketNotificationDestination,
+    autoscaling_api.ILifecycleHookTarget {
+
   /**
    * Import a Topic defined elsewhere
    */
@@ -89,7 +96,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
 
     // add a statement to the queue resource policy which allows this topic
     // to send messages to the queue.
-    queue.addToResourcePolicy(new cdk.PolicyStatement()
+    queue.addToResourcePolicy(new iam.PolicyStatement()
       .addResource(queue.queueArn)
       .addAction('sqs:SendMessage')
       .addServicePrincipal('sns.amazonaws.com')
@@ -122,7 +129,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
 
     lambdaFunction.addPermission(this.id, {
       sourceArn: this.topicArn,
-      principal: new cdk.ServicePrincipal('sns.amazonaws.com'),
+      principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });
 
     return sub;
@@ -172,7 +179,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
    * will be automatically created upon the first call to `addToPolicy`. If
    * the topic is improted (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: cdk.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new TopicPolicy(this, 'Policy', { topics: [ this ] });
     }
@@ -190,12 +197,12 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
   /**
    * Grant topic publishing permissions to the given identity
    */
-  public grantPublish(identity?: iam.IIdentityResource) {
+  public grantPublish(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
 
-    identity.addToPolicy(new cdk.PolicyStatement()
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.topicArn)
       .addActions('sns:Publish'));
   }
@@ -208,9 +215,9 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
    */
   public asEventRuleTarget(_ruleArn: string, _ruleId: string): events.EventRuleTargetProps {
     if (!this.eventRuleTargetPolicyAdded) {
-      this.addToResourcePolicy(new cdk.PolicyStatement()
+      this.addToResourcePolicy(new iam.PolicyStatement()
         .addAction('sns:Publish')
-        .addPrincipal(new cdk.ServicePrincipal('events.amazonaws.com'))
+        .addPrincipal(new iam.ServicePrincipal('events.amazonaws.com'))
         .addResource(this.topicArn));
 
       this.eventRuleTargetPolicyAdded = true;
@@ -220,6 +227,14 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
       id: this.id,
       arn: this.topicArn,
     };
+  }
+
+  /**
+   * Allow using SNS topics as lifecycle hook targets
+   */
+  public asLifecycleHookTarget(lifecycleHook: autoscaling_api.ILifecycleHook): autoscaling_api.LifecycleHookTargetProps {
+    this.grantPublish(lifecycleHook.role);
+    return { notificationTargetArn: this.topicArn };
   }
 
   public get alarmActionArn(): string {
@@ -285,7 +300,7 @@ export abstract class TopicRef extends cdk.Construct implements events.IEventRul
     // allow this bucket to sns:publish to this topic (if it doesn't already have a permission)
     if (!this.notifyingBuckets.has(bucketId)) {
 
-      this.addToResourcePolicy(new cdk.PolicyStatement()
+      this.addToResourcePolicy(new iam.PolicyStatement()
         .addServicePrincipal('s3.amazonaws.com')
         .addAction('sns:Publish')
         .addResource(this.topicArn)

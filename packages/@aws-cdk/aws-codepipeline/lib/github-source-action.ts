@@ -1,15 +1,19 @@
 import actions = require('@aws-cdk/aws-codepipeline-api');
 import cdk = require('@aws-cdk/cdk');
+import { CfnWebhook } from './codepipeline.generated';
 
 /**
  * Construction properties of the {@link GitHubSourceAction GitHub source action}.
  */
-export interface GitHubSourceActionProps extends actions.CommonActionProps {
+export interface GitHubSourceActionProps extends actions.CommonActionProps,
+    actions.CommonActionConstructProps {
   /**
    * The name of the source's output artifact. Output artifacts are used by CodePipeline as
    * inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * The GitHub account/user that owns the repo.
@@ -34,16 +38,16 @@ export interface GitHubSourceActionProps extends actions.CommonActionProps {
    * It is recommended to use a `SecretParameter` to obtain the token from the SSM
    * Parameter Store:
    *
-   *   const oauth = new SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token });
-   *   new GitHubSource(stage, 'GH' { oauthToken: oauth });
-   *
+   *   const oauth = new cdk.SecretParameter(this, 'GitHubOAuthToken', { ssmParameter: 'my-github-token' });
+   *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth.value, ... });
    */
   oauthToken: cdk.Secret;
 
   /**
-   * Whether or not AWS CodePipeline should poll for source changes
+   * Whether AWS CodePipeline should poll for source changes.
+   * If this is `false`, the Pipeline will use a webhook to detect source changes instead.
    *
-   * @default true
+   * @default false
    */
   pollForSourceChanges?: boolean;
 }
@@ -55,6 +59,7 @@ export class GitHubSourceAction extends actions.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: GitHubSourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       owner: 'ThirdParty',
       provider: 'GitHub',
       configuration: {
@@ -62,9 +67,28 @@ export class GitHubSourceAction extends actions.SourceAction {
         Repo: props.repo,
         Branch: props.branch || "master",
         OAuthToken: props.oauthToken,
-        PollForSourceChanges: props.pollForSourceChanges || true
+        PollForSourceChanges: props.pollForSourceChanges || false,
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
+
+    if (!props.pollForSourceChanges) {
+      new CfnWebhook(this, 'WebhookResource', {
+        authentication: 'GITHUB_HMAC',
+        authenticationConfiguration: {
+          secretToken: props.oauthToken,
+        },
+        filters: [
+          {
+            jsonPath: '$.ref',
+            matchEquals: 'refs/heads/{Branch}',
+          },
+        ],
+        targetAction: this.id,
+        targetPipeline: props.stage.pipeline.pipelineName,
+        targetPipelineVersion: 1,
+        registerWithThirdParty: true,
+      });
+    }
   }
 }

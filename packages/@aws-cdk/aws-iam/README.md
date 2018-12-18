@@ -3,31 +3,24 @@
 Define a role and add permissions to it. This will automatically create and
 attach an IAM policy to the role:
 
-```ts
-const role = new Role(this, 'MyRole', {
-  assumedBy: new ServicePrincipal('sns.amazonaws.com')
-});
-role.addPermission(new Permission('*', 'lambda:InvokeFunction'));
-```
+[attaching permissions to role](test/example.role.lit.ts)
 
 Define a policy and attach it to groups, users and roles. Note that it is possible to attach
-the policy either by calling `xxx.attachPolicy(policy)` or `policy.attachToXxx(xxx)`.
+the policy either by calling `xxx.attachInlinePolicy(policy)` or `policy.attachToXxx(xxx)`.
 
-```ts
-const user = new User(this, 'MyUser', { password: '1234' });
-const group = new Group(this, 'MyGroup');
-
-const policy = new Policy(this, 'MyPolicy');
-policy.attachToUser(user);
-group.attachPolicy(policy);
-```
+[attaching policies to user and group](test/example.attaching.lit.ts)
 
 Managed policies can be attached using `xxx.attachManagedPolicy(arn)`:
 
-```ts
-const group = new Group(this, 'MyGroup');
-group.attachManagedPolicy('arn:aws:iam::aws:policy/AdministratorAccess');
-```
+[attaching managed policies](test/example.managedpolicy.lit.ts)
+
+### Configuring an ExternalId
+
+If you need to create roles that will be assumed by 3rd parties, it is generally a good idea to [require an `ExternalId`
+to assume them](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).  Configuring
+an `ExternalId` works like this:
+
+[supplying an external ID](test/example.external-id.lit.ts)
 
 ### Features
 

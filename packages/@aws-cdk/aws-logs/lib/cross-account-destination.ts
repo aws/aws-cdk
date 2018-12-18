@@ -1,7 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { LogGroupRef } from './log-group';
-import { cloudformation } from './logs.generated';
+import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestination } from './subscription-filter';
 
 export interface CrossAccountDestinationProps {
@@ -39,7 +39,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   /**
    * Policy object of this CrossAccountDestination object
    */
-  public readonly policyDocument: cdk.PolicyDocument = new cdk.PolicyDocument();
+  public readonly policyDocument: iam.PolicyDocument = new iam.PolicyDocument();
 
   /**
    * The name of this CrossAccountDestination object
@@ -54,7 +54,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
   /**
    * The inner resource
    */
-  private readonly resource: cloudformation.DestinationResource;
+  private readonly resource: CfnDestination;
 
   constructor(parent: cdk.Construct, id: string, props: CrossAccountDestinationProps) {
     super(parent, id);
@@ -62,7 +62,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     // In the underlying model, the name is not optional, but we make it so anyway.
     const destinationName = props.destinationName || new cdk.Token(() => this.generateUniqueName());
 
-    this.resource = new cloudformation.DestinationResource(this, 'Resource', {
+    this.resource = new CfnDestination(this, 'Resource', {
       destinationName,
       // Must be stringified policy
       destinationPolicy: new cdk.Token(() => this.stringifiedPolicyDocument()),
@@ -74,7 +74,7 @@ export class CrossAccountDestination extends cdk.Construct implements ILogSubscr
     this.destinationName = this.resource.destinationName;
   }
 
-  public addToPolicy(statement: cdk.PolicyStatement) {
+  public addToPolicy(statement: iam.PolicyStatement) {
     this.policyDocument.addStatement(statement);
   }
 

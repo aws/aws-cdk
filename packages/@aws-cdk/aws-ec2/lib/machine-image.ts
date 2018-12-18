@@ -25,10 +25,11 @@ export class WindowsImage implements IMachineImageSource  {
    * Return the image to use in the given context
    */
   public getImage(parent: Construct): MachineImage {
-    const ssmProvider = new SSMParameterProvider(parent);
+    const ssmProvider = new SSMParameterProvider(parent, {
+      parameterName: this.imageParameterName(this.version),
+    });
 
-    const parameterName = this.imageParameterName(this.version);
-    const ami = ssmProvider.getString(parameterName);
+    const ami = ssmProvider.parameterValue();
     return new MachineImage(ami, new WindowsOS());
   }
 
@@ -44,6 +45,13 @@ export class WindowsImage implements IMachineImageSource  {
  * Amazon Linux image properties
  */
 export interface AmazonLinuxImageProps {
+  /**
+   * What generation of Amazon Linux to use
+   *
+   * @default AmazonLinux
+   */
+  generation?: AmazonLinuxGeneration;
+
   /**
    * What edition of Amazon Linux to use
    *
@@ -72,13 +80,13 @@ export interface AmazonLinuxImageProps {
  * The AMI ID is selected using the values published to the SSM parameter store.
  */
 export class AmazonLinuxImage implements IMachineImageSource {
-  private readonly edition?: AmazonLinuxEdition;
-
-  private readonly virtualization?: AmazonLinuxVirt;
-
-  private readonly storage?: AmazonLinuxStorage;
+  private readonly generation: AmazonLinuxGeneration;
+  private readonly edition: AmazonLinuxEdition;
+  private readonly virtualization: AmazonLinuxVirt;
+  private readonly storage: AmazonLinuxStorage;
 
   constructor(props?: AmazonLinuxImageProps) {
+    this.generation = (props && props.generation) || AmazonLinuxGeneration.AmazonLinux;
     this.edition = (props && props.edition) || AmazonLinuxEdition.Standard;
     this.virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
     this.storage = (props && props.storage) || AmazonLinuxStorage.GeneralPurpose;
@@ -89,7 +97,8 @@ export class AmazonLinuxImage implements IMachineImageSource {
    */
   public getImage(parent: Construct): MachineImage {
     const parts: Array<string|undefined> = [
-      'amzn-ami',
+      this.generation,
+      'ami',
       this.edition !== AmazonLinuxEdition.Standard ? this.edition : undefined,
       this.virtualization,
       'x86_64', // No 32-bits images vended through this
@@ -98,10 +107,27 @@ export class AmazonLinuxImage implements IMachineImageSource {
 
     const parameterName = '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
 
-    const ssmProvider = new SSMParameterProvider(parent);
-    const ami = ssmProvider.getString(parameterName);
+    const ssmProvider = new SSMParameterProvider(parent, {
+      parameterName,
+    });
+    const ami = ssmProvider.parameterValue();
     return new MachineImage(ami, new LinuxOS());
   }
+}
+
+/**
+ * What generation of Amazon Linux to use
+ */
+export enum AmazonLinuxGeneration {
+  /**
+   * Amazon Linux
+   */
+  AmazonLinux = 'amzn',
+
+  /**
+   * Amazon Linux 2
+   */
+  AmazonLinux2 = 'amzn2',
 }
 
 /**

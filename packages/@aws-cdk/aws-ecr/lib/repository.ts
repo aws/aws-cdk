@@ -1,7 +1,8 @@
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './ecr.generated';
+import { CfnRepository } from './ecr.generated';
 import { CountType, LifecycleRule, TagStatus } from './lifecycle';
-import { RepositoryRef } from "./repository-ref";
+import { RepositoryBase } from "./repository-ref";
 
 export interface RepositoryProps {
   /**
@@ -40,17 +41,17 @@ export interface RepositoryProps {
 /**
  * Define an ECR repository
  */
-export class Repository extends RepositoryRef {
+export class Repository extends RepositoryBase {
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
-  private policyDocument?: cdk.PolicyDocument;
+  private policyDocument?: iam.PolicyDocument;
 
   constructor(parent: cdk.Construct, id: string, props: RepositoryProps = {}) {
     super(parent, id);
 
-    const resource = new cloudformation.RepositoryResource(this, 'Resource', {
+    const resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       // It says "Text", but they actually mean "Object".
       repositoryPolicyText: new cdk.Token(() => this.policyDocument),
@@ -70,9 +71,9 @@ export class Repository extends RepositoryRef {
     this.repositoryArn = resource.repositoryArn;
   }
 
-  public addToResourcePolicy(statement: cdk.PolicyStatement) {
+  public addToResourcePolicy(statement: iam.PolicyStatement) {
     if (this.policyDocument === undefined) {
-      this.policyDocument = new cdk.PolicyDocument();
+      this.policyDocument = new iam.PolicyDocument();
     }
     this.policyDocument.addStatement(statement);
   }
@@ -109,7 +110,7 @@ export class Repository extends RepositoryRef {
   /**
    * Render the life cycle policy object
    */
-  private renderLifecyclePolicy(): cloudformation.RepositoryResource.LifecyclePolicyProperty | undefined {
+  private renderLifecyclePolicy(): CfnRepository.LifecyclePolicyProperty | undefined {
     let lifecyclePolicyText: any;
 
     if (this.lifecycleRules.length === 0 && !this.registryId) { return undefined; }

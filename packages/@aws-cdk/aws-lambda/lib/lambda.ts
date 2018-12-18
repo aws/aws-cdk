@@ -5,7 +5,7 @@ import cdk = require('@aws-cdk/cdk');
 import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
-import { cloudformation } from './lambda.generated';
+import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 
 /**
@@ -98,7 +98,7 @@ export interface FunctionProps {
    *
    * You can call `addToRolePolicy` to the created lambda to add statements post creation.
    */
-  initialPolicy?: cdk.PolicyStatement[];
+  initialPolicy?: iam.PolicyStatement[];
 
   /**
    * Lambda execution role.
@@ -139,6 +139,16 @@ export interface FunctionProps {
    * function.
    */
   securityGroup?: ec2.SecurityGroupRef;
+
+  /**
+   * Whether to allow the Lambda to send all network traffic
+   *
+   * If set to false, you must individually add traffic rules to allow the
+   * Lambda to connect to network targets.
+   *
+   * @default true
+   */
+  allowAllOutbound?: boolean;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -223,7 +233,7 @@ export class Function extends FunctionRef {
     }
 
     this.role = props.role || new iam.Role(this, 'ServiceRole', {
-      assumedBy: new cdk.ServicePrincipal('lambda.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicyArns,
     });
 
@@ -231,7 +241,7 @@ export class Function extends FunctionRef {
       this.role.addToPolicy(statement);
     }
 
-    const resource = new cloudformation.FunctionResource(this, 'Resource', {
+    const resource = new CfnFunction(this, 'Resource', {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code.toJSON()),
@@ -311,18 +321,24 @@ export class Function extends FunctionRef {
    * Returns the VpcConfig that should be added to the
    * Lambda creation properties.
    */
-  private configureVpc(props: FunctionProps): cloudformation.FunctionResource.VpcConfigProperty | undefined {
-    if (!props.vpc) { return undefined; }
-
-    let securityGroup = props.securityGroup;
-    if (!securityGroup) {
-      securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
-        vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.uniqueId,
-      });
+  private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
+    if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
+      throw new Error(`Cannot configure 'securityGroup' or 'allowAllOutbound' without configuring a VPC`);
     }
 
-    this._connections = new ec2.Connections({ securityGroup });
+    if (!props.vpc) { return undefined; }
+
+    if (props.securityGroup && props.allowAllOutbound !== undefined) {
+      throw new Error(`Configure 'allowAllOutbound' directly on the supplied SecurityGroup.`);
+    }
+
+    const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
+      vpc: props.vpc,
+      description: 'Automatic security group for Lambda Function ' + this.uniqueId,
+      allowAllOutbound: props.allowAllOutbound
+    });
+
+    this._connections = new ec2.Connections({ securityGroups: [securityGroup] });
 
     // Pick subnets, make sure they're not Public. Routing through an IGW
     // won't work because the ENIs don't get a Public IP.
@@ -352,7 +368,7 @@ export class Function extends FunctionRef {
       retentionPeriodSec: 1209600
     });
 
-    this.addToRolePolicy(new cdk.PolicyStatement()
+    this.addToRolePolicy(new iam.PolicyStatement()
       .addAction('sqs:SendMessage')
       .addResource(deadLetterQueue.queueArn));
 
@@ -366,7 +382,7 @@ export class Function extends FunctionRef {
       return undefined;
     }
 
-    this.addToRolePolicy(new cdk.PolicyStatement()
+    this.addToRolePolicy(new iam.PolicyStatement()
       .addActions('xray:PutTraceSegments', 'xray:PutTelemetryRecords')
       .addAllResources());
 

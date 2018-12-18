@@ -2,7 +2,7 @@ import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import logs = require('@aws-cdk/aws-logs');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './kinesis.generated';
+import { CfnStream } from './kinesis.generated';
 
 /**
  * A reference to a stream. The easiest way to instantiate is to call
@@ -88,7 +88,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantRead(identity?: iam.IIdentityResource) {
+  public grantRead(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -114,7 +114,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to ues the key to decrypt the
    * contents of the stream will also be granted.
    */
-  public grantWrite(identity?: iam.IIdentityResource) {
+  public grantWrite(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -142,7 +142,7 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
    */
-  public grantReadWrite(identity?: iam.IIdentityResource) {
+  public grantReadWrite(identity?: iam.IPrincipal) {
     if (!identity) {
       return;
     }
@@ -170,10 +170,10 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
     if (!this.cloudWatchLogsRole) {
       // Create a role to be assumed by CWL that can write to this stream and pass itself.
       this.cloudWatchLogsRole = new iam.Role(this, 'CloudWatchLogsCanPutRecords', {
-        assumedBy: new cdk.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(), '.amazonaws.com').toString()),
+        assumedBy: new iam.ServicePrincipal(new cdk.FnConcat('logs.', new cdk.AwsRegion(this), '.amazonaws.com').toString()),
       });
-      this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
-      this.cloudWatchLogsRole.addToPolicy(new cdk.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
+      this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('kinesis:PutRecord').addResource(this.streamArn));
+      this.cloudWatchLogsRole.addToPolicy(new iam.PolicyStatement().addAction('iam:PassRole').addResource(this.cloudWatchLogsRole.roleArn));
     }
 
     // We've now made it possible for CloudWatch events to write to us. In case the LogGroup is in a
@@ -213,22 +213,22 @@ export abstract class StreamRef extends cdk.Construct implements logs.ILogSubscr
       role: this.cloudWatchLogsRole!
     });
 
-    dest.addToPolicy(new cdk.PolicyStatement()
+    dest.addToPolicy(new iam.PolicyStatement()
       .addAction('logs:PutSubscriptionFilter')
-      .addAwsAccountPrincipal(sourceStack.env.account)
+      .addAwsAccountPrincipal(this, sourceStack.env.account)
       .addAllResources());
 
     return dest.logSubscriptionDestination(sourceLogGroup);
   }
 
-  private grant(identity: iam.IIdentityResource, actions: { streamActions: string[], keyActions: string[] }) {
-    identity.addToPolicy(new cdk.PolicyStatement()
+  private grant(identity: iam.IPrincipal, actions: { streamActions: string[], keyActions: string[] }) {
+    identity.addToPolicy(new iam.PolicyStatement()
       .addResource(this.streamArn)
       .addActions(...actions.streamActions));
 
     // grant key permissions if there's an associated key.
     if (this.encryptionKey) {
-      identity.addToPolicy(new cdk.PolicyStatement()
+      identity.addToPolicy(new iam.PolicyStatement()
         .addResource(this.encryptionKey.keyArn)
         .addActions(...actions.keyActions));
     }
@@ -283,7 +283,7 @@ export class Stream extends StreamRef {
   public readonly streamName: string;
   public readonly encryptionKey?: kms.EncryptionKeyRef;
 
-  private readonly stream: cloudformation.StreamResource;
+  private readonly stream: CfnStream;
 
   constructor(parent: cdk.Construct, name: string, props: StreamProps = {}) {
     super(parent, name);
@@ -296,8 +296,8 @@ export class Stream extends StreamRef {
 
     const { streamEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.stream = new cloudformation.StreamResource(this, "Resource", {
-      streamName: props.streamName,
+    this.stream = new CfnStream(this, "Resource", {
+      name: props.streamName,
       retentionPeriodHours,
       shardCount,
       streamEncryption
@@ -314,7 +314,7 @@ export class Stream extends StreamRef {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: cloudformation.StreamResource.StreamEncryptionProperty,
+    streamEncryption?: CfnStream.StreamEncryptionProperty,
     encryptionKey?: kms.EncryptionKeyRef
   } {
 
@@ -335,7 +335,7 @@ export class Stream extends StreamRef {
         description: `Created by ${this.path}`
       });
 
-      const streamEncryption: cloudformation.StreamResource.StreamEncryptionProperty = {
+      const streamEncryption: CfnStream.StreamEncryptionProperty = {
         encryptionType: 'KMS',
         keyId: encryptionKey.keyArn
       };

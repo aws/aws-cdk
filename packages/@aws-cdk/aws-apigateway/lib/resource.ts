@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './apigateway.generated';
+import { CfnResource, CfnResourceProps } from './apigateway.generated';
 import { Integration } from './integration';
 import { Method, MethodOptions } from './method';
 import { RestApi } from './restapi';
@@ -44,6 +44,12 @@ export interface IRestApiResource {
    * @returns A Resource object
    */
   addResource(pathPart: string, options?: ResourceOptions): Resource;
+
+  /**
+   * Adds a greedy proxy resource ("{proxy+}") and an ANY method to this route.
+   * @param options Default integration and method options.
+   */
+  addProxy(options?: ResourceOptions): ProxyResource;
 
   /**
    * Defines a new method for this resource.
@@ -95,12 +101,12 @@ export class Resource extends cdk.Construct implements IRestApiResource {
 
     validateResourcePathPart(props.pathPart);
 
-    const resourceProps: cloudformation.ResourceProps = {
+    const resourceProps: CfnResourceProps = {
       restApiId: props.parent.resourceApi.restApiId,
       parentId: props.parent.resourceId,
       pathPart: props.pathPart
     };
-    const resource = new cloudformation.Resource(this, 'Resource', resourceProps);
+    const resource = new CfnResource(this, 'Resource', resourceProps);
 
     this.resourceId = resource.resourceId;
     this.resourceApi = props.parent.resourceApi;
@@ -132,15 +138,80 @@ export class Resource extends cdk.Construct implements IRestApiResource {
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
     return new Method(this, httpMethod, { resource: this, httpMethod, integration, options });
   }
+
+  public addProxy(options?: ResourceOptions): ProxyResource {
+    return new ProxyResource(this, '{proxy+}', { parent: this, ...options });
+  }
+}
+
+export interface ProxyResourceProps extends ResourceOptions {
+  /**
+   * The parent resource of this resource. You can either pass another
+   * `Resource` object or a `RestApi` object here.
+   */
+  parent: IRestApiResource;
+
+  /**
+   * Adds an "ANY" method to this resource. If set to `false`, you will have to explicitly
+   * add methods to this resource after it's created.
+   *
+   * @default true
+   */
+  anyMethod?: boolean;
+}
+
+/**
+ * Defines a {proxy+} greedy resource and an ANY method on a route.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html
+ */
+export class ProxyResource extends Resource {
+  /**
+   * If `props.anyMethod` is `true`, this will be the reference to the 'ANY'
+   * method associated with this proxy resource.
+   */
+  public readonly anyMethod?: Method;
+
+  private readonly parentResource: IRestApiResource;
+
+  constructor(parent: cdk.Construct, id: string, props: ProxyResourceProps) {
+    super(parent, id, {
+      parent: props.parent,
+      pathPart: '{proxy+}',
+      defaultIntegration: props.defaultIntegration,
+      defaultMethodOptions: props.defaultMethodOptions,
+    });
+
+    this.parentResource = props.parent;
+
+    const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
+    if (anyMethod) {
+      this.anyMethod = this.addMethod('ANY');
+    }
+  }
+
+  public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    // In case this proxy is mounted under the root, also add this method to
+    // the root so that empty paths are proxied as well.
+    if (this.parentResource.resourcePath === '/') {
+      this.parentResource.addMethod(httpMethod);
+    }
+    return super.addMethod(httpMethod, integration, options);
+  }
 }
 
 function validateResourcePathPart(part: string) {
   // strip {} which indicate this is a parameter
   if (part.startsWith('{') && part.endsWith('}')) {
     part = part.substr(1, part.length - 2);
+
+    // proxy resources are allowed to end with a '+'
+    if (part.endsWith('+')) {
+      part = part.substr(0, part.length - 1);
+    }
   }
 
   if (!/^[a-zA-Z0-9\.\_\-]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow a-zA-Z0-9._- and curly braces at the beginning and the end: ${part}`);
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9._-], an optional trailing '+'
+      and curly braces at the beginning and the end: ${part}`);
   }
 }

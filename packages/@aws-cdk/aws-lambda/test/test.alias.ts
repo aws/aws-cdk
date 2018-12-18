@@ -1,5 +1,6 @@
 import { beASupersetOfTemplate, expect, haveResource } from '@aws-cdk/assert';
-import { AccountPrincipal, resolve, Stack } from '@aws-cdk/cdk';
+import { AccountPrincipal } from '@aws-cdk/aws-iam';
+import { resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import lambda = require('../lib');
 
@@ -117,7 +118,7 @@ export = {
 
     // WHEN
     alias.addPermission('Perm', {
-      principal: new AccountPrincipal('123456')
+      principal: new AccountPrincipal(stack, '123456')
     });
 
     // THEN

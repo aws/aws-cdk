@@ -6,7 +6,7 @@ import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-pipeline-event-target');
 
@@ -21,12 +21,13 @@ const project = new codebuild.PipelineProject(stack, 'BuildProject');
 
 const sourceAction = new codecommit.PipelineSourceAction(pipeline, 'CodeCommitSource', {
   stage: sourceStage,
-  artifactName: 'Source',
+  outputArtifactName: 'Source',
   repository,
+  pollForSourceChanges: true,
 });
 new codebuild.PipelineBuildAction(stack, 'CodeBuildAction', {
   stage: buildStage,
-  inputArtifact: sourceAction.artifact,
+  inputArtifact: sourceAction.outputArtifact,
   project
 });
 
@@ -46,4 +47,4 @@ sourceAction.onStateChange('OnActionStateChange', topic).addEventPattern({
   detail: { state: [ 'STARTED' ] }
 });
 
-process.stdout.write(app.run());
+app.run();

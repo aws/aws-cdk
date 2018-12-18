@@ -1,6 +1,7 @@
+import cxapi = require('@aws-cdk/cx-api');
 import { Test } from 'nodeunit';
 import { applyRemovalPolicy, Condition, Construct, DeletionPolicy,
-    FnEquals, FnNot, HashedAddressingScheme, IDependable, PolicyStatement,
+    FnEquals, FnNot, HashedAddressingScheme, IDependable,
     RemovalPolicy, resolve, Resource, Root, Stack } from '../../lib';
 
 export = {
@@ -100,25 +101,21 @@ export = {
     new Resource(stack, 'MyResource2', {
       type: 'Type',
       properties: {
-        Perm: new PolicyStatement().addResource(res.arn).addActions('counter:add', 'counter:remove')
+        Perm: res.arn
       }
     });
 
     test.deepEqual(stack.toCloudFormation(), {
       Resources: {
-      MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
-      MyResource2: {
-        Type: "Type",
-        Properties: {
-        Perm: {
-          Effect: "Allow",
-          Action: [ "counter:add", "counter:remove" ],
-          Resource: {
-          "Fn::GetAtt": [ "MyResource", "Arn" ]
+        MyResource: { Type: "My::Counter", Properties: { Count: 1 } },
+        MyResource2: {
+          Type: "Type",
+          Properties: {
+            Perm: {
+              "Fn::GetAtt": [ "MyResource", "Arn" ]
+            }
           }
         }
-        }
-      }
       }
     });
 
@@ -174,7 +171,15 @@ export = {
 
     r1.options.creationPolicy = { autoScalingCreationPolicy: { minSuccessfulInstancesPercent: 10 } };
     // tslint:disable-next-line:max-line-length
-    r1.options.updatePolicy = { autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false }, autoScalingReplacingUpdate: { willReplace: true } };
+    r1.options.updatePolicy = {
+      autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: false },
+      autoScalingReplacingUpdate: { willReplace: true },
+      codeDeployLambdaAliasUpdate: {
+        applicationName: 'CodeDeployApplication',
+        deploymentGroupName: 'CodeDeployDeploymentGroup',
+        beforeAllowTrafficHook: 'lambda1',
+      },
+    };
     r1.options.deletionPolicy = DeletionPolicy.Retain;
 
     test.deepEqual(stack.toCloudFormation(), {
@@ -184,9 +189,34 @@ export = {
           CreationPolicy: { AutoScalingCreationPolicy: { MinSuccessfulInstancesPercent: 10 } },
           UpdatePolicy: {
             AutoScalingScheduledAction: { IgnoreUnmodifiedGroupSizeProperties: false },
-            AutoScalingReplacingUpdate: { WillReplace: true }
+            AutoScalingReplacingUpdate: { WillReplace: true },
+            CodeDeployLambdaAliasUpdate: {
+              ApplicationName: 'CodeDeployApplication',
+              DeploymentGroupName: 'CodeDeployDeploymentGroup',
+              BeforeAllowTrafficHook: 'lambda1',
+            },
           },
           DeletionPolicy: 'Retain'
+        }
+      }
+    });
+
+    test.done();
+  },
+
+  'update policies UseOnlineResharding flag'(test: Test) {
+    const stack = new Stack();
+    const r1 = new Resource(stack, 'Resource', { type: 'Type' });
+
+    r1.options.updatePolicy = { useOnlineResharding: true };
+
+    test.deepEqual(stack.toCloudFormation(), {
+      Resources: {
+        Resource: {
+          Type: 'Type',
+          UpdatePolicy: {
+            UseOnlineResharding: true,
+          },
         }
       }
     });
@@ -221,22 +251,6 @@ export = {
   'the "type" property is required when creating a resource'(test: Test) {
     const stack = new Stack();
     test.throws(() => new Resource(stack, 'Resource', { notypehere: true } as any));
-    test.done();
-  },
-
-  'the "name" property is deleted when synthesizing into a CloudFormation resource'(test: Test) {
-    const stack = new Stack();
-
-    new Resource(stack, 'Bla', {
-      type: 'MyResource',
-      properties: {
-        Prop1: 'value1',
-        name: 'Bla'
-      }
-    });
-
-    test.deepEqual(stack.toCloudFormation(), { Resources:
-      { Bla: { Type: 'MyResource', Properties: { Prop1: 'value1' } } } });
     test.done();
   },
 
@@ -570,6 +584,24 @@ export = {
         test.done();
       }
     }
+  },
+
+  '"aws:cdk:path" metadata is added if "aws:cdk:path-metadata" context is set to true'(test: Test) {
+    const stack = new Stack();
+    stack.setContext(cxapi.PATH_METADATA_ENABLE_CONTEXT, true);
+
+    const parent = new Construct(stack, 'Parent');
+
+    new Resource(parent, 'MyResource', {
+      type: 'MyResourceType',
+    });
+
+    test.deepEqual(stack.toCloudFormation(), { Resources:
+      { ParentMyResource4B1FDBCC:
+         { Type: 'MyResourceType',
+           Metadata: { [cxapi.PATH_METADATA_KEY]: 'Parent/MyResource' } } } });
+
+    test.done();
   }
 };
 

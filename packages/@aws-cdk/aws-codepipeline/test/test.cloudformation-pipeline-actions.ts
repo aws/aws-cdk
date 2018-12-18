@@ -1,11 +1,11 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { PipelineCreateReplaceChangeSetAction, PipelineCreateUpdateStackAction, PipelineExecuteChangeSetAction } from '@aws-cdk/aws-cloudformation';
 import { CodePipelineBuildArtifacts, CodePipelineSource, PipelineBuildAction, Project } from '@aws-cdk/aws-codebuild';
 import { PipelineSourceAction, Repository } from '@aws-cdk/aws-codecommit';
 import { ArtifactPath } from '@aws-cdk/aws-codepipeline-api';
 import { Role } from '@aws-cdk/aws-iam';
+import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import cdk = require('@aws-cdk/cdk');
-import { PolicyStatement, ServicePrincipal } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { Pipeline, Stage } from '../lib';
 
@@ -28,8 +28,9 @@ export = {
 
   const source = new PipelineSourceAction(stack, 'source', {
     stage: sourceStage,
-    artifactName: 'SourceArtifact',
+    outputArtifactName: 'SourceArtifact',
     repository: repo,
+    pollForSourceChanges: true,
   });
 
   /** Build! */
@@ -44,8 +45,8 @@ export = {
   const buildAction = new PipelineBuildAction(stack, 'build', {
     stage: buildStage,
     project,
-    inputArtifact: source.artifact,
-    artifactName: "OutputYo"
+    inputArtifact: source.outputArtifact,
+    outputArtifactName: "OutputYo"
   });
 
   /** Deploy! */
@@ -62,8 +63,9 @@ export = {
     stackName,
     changeSetName,
     role: changeSetExecRole,
-    templatePath: new ArtifactPath(buildAction.artifact!, 'template.yaml'),
-    templateConfiguration: new ArtifactPath(buildAction.artifact!, 'templateConfig.json')
+    templatePath: new ArtifactPath(buildAction.outputArtifact, 'template.yaml'),
+    templateConfiguration: new ArtifactPath(buildAction.outputArtifact, 'templateConfig.json'),
+    adminPermissions: false,
   });
 
   new PipelineExecuteChangeSetAction(stack, 'ExecuteChangeSetProd', {
@@ -72,7 +74,7 @@ export = {
     changeSetName,
   });
 
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "ArtifactStore": {
     "Location": {
       "Ref": "MagicPipelineArtifactsBucket212FE7BF"
@@ -203,14 +205,14 @@ export = {
   new PipelineCreateUpdateStackAction(stack.deployStage, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
-    fullPermissions: true,
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    adminPermissions: true,
   });
 
   const roleId = "PipelineDeployCreateUpdateRole515CB7D4";
 
   // THEN: Action in Pipeline has named IAM capabilities
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -235,12 +237,14 @@ export = {
   // THEN: Role is created with full permissions
   expect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
-    Statement: [
-      {
-      Action: "*",
-      Resource: "*"
-      }
-    ],
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: "*",
+          Effect: 'Allow',
+          Resource: "*"
+        }
+      ],
     },
     Roles: [{ Ref: roleId }]
   }));
@@ -256,12 +260,13 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     outputFileName: 'CreateResponse.json',
+    adminPermissions: false,
   });
 
   // THEN: Action has output artifacts
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -287,12 +292,13 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
     replaceOnFailure: true,
+    adminPermissions: false,
   });
 
   // THEN: Action has output artifacts
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -320,14 +326,15 @@ export = {
   new PipelineCreateUpdateStackAction(stack, 'CreateUpdate', {
     stage: stack.deployStage,
     stackName: 'MyStack',
-    templatePath: stack.source.artifact.subartifact('template.yaml'),
+    templatePath: stack.source.outputArtifact.atPath('template.yaml'),
+    adminPermissions: false,
     parameterOverrides: {
     RepoName: stack.repo.repositoryName
     }
   });
 
   // THEN
-  expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+  expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
     "Stages": [
     { "Name": "Source" /* don't care about the rest */ },
     {
@@ -371,7 +378,7 @@ class TestFixture extends cdk.Stack {
   this.repo = new Repository(this, 'MyVeryImportantRepo', { repositoryName: 'my-very-important-repo' });
   this.source = new PipelineSourceAction(this, 'Source', {
     stage: this.sourceStage,
-    artifactName: 'SourceArtifact',
+    outputArtifactName: 'SourceArtifact',
     repository: this.repo,
   });
   }

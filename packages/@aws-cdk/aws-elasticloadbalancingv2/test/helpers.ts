@@ -11,16 +11,16 @@ export class FakeSelfRegisteringTarget extends cdk.Construct implements elbv2.IA
     super(parent, id);
     this.securityGroup = new ec2.SecurityGroup(this, 'SG', { vpc });
     this.connections = new ec2.Connections({
-      securityGroup: this.securityGroup
+      securityGroups: [this.securityGroup]
     });
   }
 
   public attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
     targetGroup.registerConnectable(this);
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 
   public attachToNetworkTargetGroup(_targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    return { targetType: elbv2.TargetType.SelfRegistering };
+    return { targetType: elbv2.TargetType.Instance };
   }
 }

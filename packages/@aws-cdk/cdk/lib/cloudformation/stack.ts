@@ -35,7 +35,7 @@ export class Stack extends Construct {
    */
   public static find(node: Construct): Stack {
     let curr: Construct | undefined = node;
-    while (curr != null && !isStack(curr)) {
+    while (curr != null && !Stack.isStack(curr)) {
       curr = curr.parent;
     }
 
@@ -58,6 +58,15 @@ export class Stack extends Construct {
     construct.addMetadata('aws:cdk:physical-name', physicalName);
   }
 
+  /**
+   * Return whether the given object is a Stack.
+   *
+   * We do attribute detection since we can't reliably use 'instanceof'.
+   */
+  public static isStack(construct: Construct): construct is Stack {
+    return (construct as any)._isStack;
+  }
+
   private static readonly VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
   /**
@@ -73,11 +82,6 @@ export class Stack extends Construct {
   public readonly env: Environment;
 
   /**
-   * Used to determine if this construct is a stack.
-   */
-  public readonly isStack = true;
-
-  /**
    * Logical ID generation strategy
    */
   public readonly logicalIds: LogicalIDs;
@@ -91,6 +95,11 @@ export class Stack extends Construct {
    * The CloudFormation stack name.
    */
   public readonly name: string;
+
+  /*
+   * Used to determine if this construct is a stack.
+   */
+  protected readonly _isStack = true;
 
   /**
    * Other stacks this stack depends on
@@ -110,7 +119,7 @@ export class Stack extends Construct {
     this.env = this.parseEnvironment(props);
 
     this.logicalIds = new LogicalIDs(props && props.namingScheme ? props.namingScheme : new HashedAddressingScheme());
-    this.name = name || 'Stack';
+    this.name = this.id;
   }
 
   /**
@@ -178,6 +187,29 @@ export class Stack extends Construct {
   }
 
   /**
+   * Returns the AWS account ID of this Stack,
+   * or throws an exception if the account ID is not set in the environment.
+   *
+   * @param why more information about why is the account ID required
+   * @returns the AWS account ID of this Stack
+   */
+  public requireAccountId(why?: string): string {
+    if (!this.env.account) {
+      throw new Error(`${why ? why + '. ' : ''}Stack requires account information. ` +
+        'It can be supplied either via the "env" property when creating the Stack, or by using "aws configure"');
+    }
+
+    return this.env.account;
+  }
+
+  public parentApp(): App | undefined {
+    const parent = this.parent;
+    return parent instanceof App
+      ? parent
+      : undefined;
+  }
+
+  /**
    * Indicate that a context key was expected
    *
    * Contains instructions on how the key should be supplied.
@@ -236,7 +268,7 @@ export class Stack extends Construct {
    * character classes, and we don't allow one of the magic markers.
    */
   protected _validateId(name: string) {
-    if (!Stack.VALID_STACK_NAME_REGEX.test(name)) {
+    if (name && !Stack.VALID_STACK_NAME_REGEX.test(name)) {
       throw new Error(`Stack name must match the regular expression: ${Stack.VALID_STACK_NAME_REGEX.toString()}, got '${name}'`);
     }
   }
@@ -469,15 +501,6 @@ export abstract class Referenceable extends StackElement {
   public get ref(): string {
     return new Ref(this).toString();
   }
-}
-
-/**
- * Return whether the given object is a Stack.
- *
- * We do attribute detection since we can't reliably use 'instanceof'.
- */
-function isStack(construct: Construct): construct is Stack {
-  return (construct as any).isStack;
 }
 
 /**

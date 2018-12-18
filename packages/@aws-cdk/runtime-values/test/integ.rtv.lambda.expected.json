@@ -23,21 +23,11 @@
             "Fn::Join": [
               "",
               [
-                "arn",
-                ":",
+                "arn:",
                 {
                   "Ref": "AWS::Partition"
                 },
-                ":",
-                "iam",
-                ":",
-                "",
-                ":",
-                "aws",
-                ":",
-                "policy",
-                "/",
-                "service-role/AWSLambdaBasicExecutionRole"
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
               ]
             ]
           }
@@ -60,14 +50,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "ssm",
-                    ":",
+                    ":ssm:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -75,21 +62,11 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "parameter",
-                    "/",
+                    ":parameter//rtv/",
                     {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "/rtv/",
-                          {
-                            "Ref": "AWS::StackName"
-                          },
-                          "/com.myorg/MyQueueURL"
-                        ]
-                      ]
-                    }
+                      "Ref": "AWS::StackName"
+                    },
+                    "/com.myorg/MyQueueURL"
                   ]
                 ]
               }
@@ -125,8 +102,7 @@
               "Ref": "AWS::StackName"
             }
           }
-        },
-        "Timeout": 30
+        }
       },
       "DependsOn": [
         "MyFunctionServiceRole3C357FF2",

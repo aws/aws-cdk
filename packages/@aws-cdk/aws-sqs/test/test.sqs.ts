@@ -1,9 +1,11 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import iam = require('@aws-cdk/aws-iam');
 import kms = require('@aws-cdk/aws-kms');
 import s3 = require('@aws-cdk/aws-s3');
-import { ArnPrincipal, PolicyStatement, resolve, Stack } from '@aws-cdk/cdk';
+import { resolve, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import sqs = require('../lib');
+import { Queue } from '../lib';
 
 // tslint:disable:object-literal-key-quotes
 
@@ -55,7 +57,7 @@ export = {
   'addToPolicy will automatically create a policy for this queue'(test: Test) {
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'MyQueue');
-    queue.addToResourcePolicy(new PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new ArnPrincipal('arn')));
+    queue.addToResourcePolicy(new iam.PolicyStatement().addAllResources().addActions('sqs:*').addPrincipal(new iam.ArnPrincipal('arn')));
     expect(stack).toMatch({
       "Resources": {
         "MyQueueE6CA6235": {
@@ -90,14 +92,99 @@ export = {
   },
 
   'exporting and importing works'(test: Test) {
+    // GIVEN
     const stack = new Stack();
     const queue = new sqs.Queue(stack, 'Queue');
 
+    // WHEN
     const ref = queue.export();
+    const imports = sqs.QueueRef.import(stack, 'Imported', ref);
 
-    sqs.QueueRef.import(stack, 'Imported', ref);
+    // THEN
+
+    // "import" returns a a QueueRef bound to `Fn::ImportValue`s.
+    test.deepEqual(resolve(imports.queueArn), { 'Fn::ImportValue': 'QueueQueueArn8CF496D5' });
+    test.deepEqual(resolve(imports.queueUrl), { 'Fn::ImportValue': 'QueueQueueUrlC30FF916' });
+
+    // the exporting stack has Outputs for QueueARN and QueueURL
+    const outputs = stack.toCloudFormation().Outputs;
+    test.deepEqual(outputs.QueueQueueArn8CF496D5, { Value: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] }, Export: { Name: 'QueueQueueArn8CF496D5' } });
+    test.deepEqual(outputs.QueueQueueUrlC30FF916, { Value: { Ref: 'Queue4A7E3555' }, Export: { Name: 'QueueQueueUrlC30FF916' } });
 
     test.done();
+  },
+
+  'grants': {
+    'grantConsumeMessages'(test: Test) {
+      testGrant((q, p) => q.grantConsumeMessages(p),
+        'sqs:ReceiveMessage',
+        'sqs:ChangeMessageVisibility',
+        'sqs:ChangeMessageVisibilityBatch',
+        'sqs:GetQueueUrl',
+        'sqs:DeleteMessage',
+        'sqs:DeleteMessageBatch',
+        'sqs:GetQueueAttributes',
+      );
+      test.done();
+    },
+
+    'grantSendMessages'(test: Test) {
+      testGrant((q, p) => q.grantSendMessages(p),
+        'sqs:SendMessage',
+        'sqs:SendMessageBatch',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
+
+    'grantPurge'(test: Test) {
+      testGrant((q, p) => q.grantPurge(p),
+        'sqs:PurgeQueue',
+        'sqs:GetQueueAttributes',
+        'sqs:GetQueueUrl',
+      );
+      test.done();
+    },
+
+    'grant() is general purpose'(test: Test) {
+      testGrant((q, p) => q.grant(p, 'hello', 'world'),
+        'hello',
+        'world'
+      );
+      test.done();
+    },
+
+    'grants also work on imported queues'(test: Test) {
+      const stack = new Stack();
+      const queue = Queue.import(stack, 'Import', {
+        queueArn: 'imported-queue-arn',
+        queueUrl: 'https://queue-url'
+      });
+
+      const user = new iam.User(stack, 'User');
+
+      queue.grantPurge(user);
+
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:PurgeQueue",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Effect": "Allow",
+              "Resource": "imported-queue-arn"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }));
+
+      test.done();
+    }
   },
 
   'queue encryption': {
@@ -399,3 +486,29 @@ export = {
 
   }
 };
+
+function testGrant(action: (q: Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
+  const stack = new Stack();
+  const queue = new Queue(stack, 'MyQueue');
+  const principal = new iam.User(stack, 'User');
+
+  action(queue, principal);
+
+  expect(stack).to(haveResource('AWS::IAM::Policy', {
+    "PolicyDocument": {
+      "Statement": [
+        {
+          "Action": expectedActions,
+          "Effect": "Allow",
+          "Resource": {
+            "Fn::GetAtt": [
+              "MyQueueE6CA6235",
+              "Arn"
+            ]
+          }
+        }
+      ],
+      "Version": "2012-10-17"
+    }
+  }));
+}

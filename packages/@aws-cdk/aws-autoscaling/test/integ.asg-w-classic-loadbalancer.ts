@@ -4,8 +4,8 @@ import elb = require('@aws-cdk/aws-elasticloadbalancing');
 import cdk = require('@aws-cdk/cdk');
 import autoscaling = require('../lib');
 
-const app = new cdk.App(process.argv);
-const stack = new cdk.Stack(app, 'aws-cdk-ec2-integ');
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 
 const vpc = new ec2.VpcNetwork(stack, 'VPC', {
   maxAZs: 3
@@ -28,4 +28,4 @@ const lb = new elb.LoadBalancer(stack, 'LB', {
 lb.addTarget(asg);
 lb.addListener({ externalPort: 80 });
 
-process.stdout.write(app.run());
+app.run();

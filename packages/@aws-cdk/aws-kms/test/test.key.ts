@@ -1,5 +1,6 @@
 import { exactlyMatchTemplate, expect } from '@aws-cdk/assert';
-import { App, PolicyDocument, PolicyStatement, Stack } from '@aws-cdk/cdk';
+import { PolicyDocument, PolicyStatement } from '@aws-cdk/aws-iam';
+import { App, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
 import { EncryptionKey } from '../lib';
 
@@ -303,28 +304,34 @@ export = {
 
     expect(stack1).toMatch({
       Resources: {
-      MyKey6AB29FA6: {
-        Type: "AWS::KMS::Key",
-        Properties: {
-        KeyPolicy: {
-          Statement: [
-          {
-            Effect: "Allow",
-            Resource: "*"
-          }
-          ],
-          Version: "2012-10-17"
+        MyKey6AB29FA6: {
+          Type: "AWS::KMS::Key",
+          Properties: {
+            KeyPolicy: {
+              Statement: [
+                {
+                  Effect: "Allow",
+                  Resource: "*"
+                }
+              ],
+              Version: "2012-10-17"
+            }
+          },
+          DeletionPolicy: "Retain"
         }
-        },
-        DeletionPolicy: "Retain"
-      }
       },
       Outputs: {
-      MyKeyKeyArn317F1332: {
-        Export: {
-        Name: "MyKeyKeyArn317F1332"
+        MyKeyKeyArn317F1332: {
+          Value: {
+            "Fn::GetAtt": [
+              "MyKey6AB29FA6",
+              "Arn"
+            ]
+          },
+          Export: {
+            Name: "MyKeyKeyArn317F1332"
+          }
         }
-      }
       }
     });
 

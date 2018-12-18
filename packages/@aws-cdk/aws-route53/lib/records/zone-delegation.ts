@@ -1,6 +1,6 @@
 import { Construct } from '@aws-cdk/cdk';
 import { HostedZoneRef } from '../hosted-zone-ref';
-import { cloudformation } from '../route53.generated';
+import { CfnRecordSet } from '../route53.generated';
 import { determineFullyQualifiedDomainName } from './_util';
 
 export interface ZoneDelegationRecordProps {
@@ -38,9 +38,9 @@ export class ZoneDelegationRecord extends Construct {
 
     const ttl = props.ttl === undefined ? 172_800 : props.ttl;
 
-    new cloudformation.RecordSetResource(this, 'Resource', {
+    new CfnRecordSet(this, 'Resource', {
       hostedZoneId: parent.hostedZoneId,
-      recordSetName: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
+      name: determineFullyQualifiedDomainName(props.delegatedZoneName, parent),
       type: 'NS',
       ttl: ttl.toString(),
       comment: props.comment,

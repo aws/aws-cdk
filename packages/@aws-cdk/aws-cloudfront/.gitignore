@@ -12,3 +12,4 @@ coverage
 .LAST_BUILD
 .nycrc
 .LAST_PACKAGE
+*.snk

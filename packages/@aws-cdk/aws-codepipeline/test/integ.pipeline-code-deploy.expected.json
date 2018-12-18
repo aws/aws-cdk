@@ -48,6 +48,12 @@
             "Arn"
           ]
         },
+        "AutoRollbackConfiguration": {
+          "Enabled": true,
+          "Events": [
+            "DEPLOYMENT_FAILURE"
+          ]
+        },
         "DeploymentConfigName": {
           "Ref": "CustomDeployConfig52EEBC13"
         },
@@ -111,8 +117,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -142,8 +147,7 @@
                           "Arn"
                         ]
                       },
-                      "/",
-                      "*"
+                      "/*"
                     ]
                   ]
                 }
@@ -159,14 +163,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -174,10 +175,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "application",
-                    ":",
-                    "IntegTestDeployApp"
+                    ":application:",
+                    {
+                      "Ref": "CodeDeployApplicationE587C27C"
+                    }
                   ]
                 ]
               }
@@ -192,14 +193,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -207,10 +205,14 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "deploymentgroup",
-                    ":",
-                    "IntegTestDeployApp/IntegTestDeploymentGroup"
+                    ":deploymentgroup:",
+                    {
+                      "Ref": "CodeDeployApplicationE587C27C"
+                    },
+                    "/",
+                    {
+                      "Ref": "CodeDeployGroup58220FC8"
+                    }
                   ]
                 ]
               }
@@ -222,14 +224,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn",
-                    ":",
+                    "arn:",
                     {
                       "Ref": "AWS::Partition"
                     },
-                    ":",
-                    "codedeploy",
-                    ":",
+                    ":codedeploy:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -237,10 +236,10 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":",
-                    "deploymentconfig",
-                    ":",
-                    "*"
+                    ":deploymentconfig:",
+                    {
+                      "Ref": "CustomDeployConfig52EEBC13"
+                    }
                   ]
                 ]
               }
@@ -310,8 +309,12 @@
                   "Version": "1"
                 },
                 "Configuration": {
-                  "ApplicationName": "IntegTestDeployApp",
-                  "DeploymentGroupName": "IntegTestDeploymentGroup"
+                  "ApplicationName": {
+                    "Ref": "CodeDeployApplicationE587C27C"
+                  },
+                  "DeploymentGroupName": {
+                    "Ref": "CodeDeployGroup58220FC8"
+                  }
                 },
                 "InputArtifacts": [
                   {

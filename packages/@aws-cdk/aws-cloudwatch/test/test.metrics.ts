@@ -9,7 +9,7 @@ export = {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'SomeRole', {
-      assumedBy: new cdk.Anyone()
+      assumedBy: new iam.Anyone()
     });
 
     // WHEN
@@ -18,11 +18,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: "2012-10-17",
         Statement: [
           {
-          Action: "cloudwatch:PutMetricData",
-          Effect: "Allow",
-          Resource: "*"
+            Action: "cloudwatch:PutMetricData",
+            Effect: "Allow",
+            Resource: "*"
           }
         ],
         },

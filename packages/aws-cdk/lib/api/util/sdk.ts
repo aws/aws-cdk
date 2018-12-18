@@ -48,7 +48,6 @@ export interface SDKOptions {
 export class SDK {
   private readonly defaultAwsAccount: DefaultAWSAccount;
   private readonly credentialsCache: CredentialsCache;
-  private readonly defaultClientArgs: any = {};
   private readonly profile?: string;
 
   constructor(options: SDKOptions) {
@@ -58,7 +57,9 @@ export class SDK {
 
     // Find the package.json from the main toolkit
     const pkg = (require.main as any).require('../package.json');
-    this.defaultClientArgs.userAgent = `${pkg.name}/${pkg.version}`;
+    AWS.config.update({
+        customUserAgent: `${pkg.name}/${pkg.version}`
+    });
 
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
     if (options.proxyAddress === undefined) {
@@ -66,44 +67,54 @@ export class SDK {
     }
     if (options.proxyAddress) { // Ignore empty string on purpose
       debug('Using proxy server: %s', options.proxyAddress);
-      this.defaultClientArgs.httpOptions = {
-        agent: require('proxy-agent')(options.proxyAddress)
-      };
+      AWS.config.update({
+        httpOptions: { agent: require('proxy-agent')(options.proxyAddress) }
+      });
     }
 
-    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, this.defaultClientArgs);
+    this.defaultAwsAccount = new DefaultAWSAccount(defaultCredentialProvider, getCLICompatibleDefaultRegion(this.profile));
     this.credentialsCache = new CredentialsCache(this.defaultAwsAccount, defaultCredentialProvider);
   }
 
   public async cloudFormation(environment: Environment, mode: Mode): Promise<AWS.CloudFormation> {
     return new AWS.CloudFormation({
       region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
   public async ec2(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.EC2> {
     return new AWS.EC2({
       region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
   }
 
   public async ssm(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.SSM> {
     return new AWS.SSM({
       region,
-      credentials: await this.credentialsCache.get(awsAccountId, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(awsAccountId, mode)
     });
   }
 
   public async s3(environment: Environment, mode: Mode): Promise<AWS.S3> {
     return new AWS.S3({
       region: environment.region,
-      credentials: await this.credentialsCache.get(environment.account, mode),
-      ...this.defaultClientArgs
+      credentials: await this.credentialsCache.get(environment.account, mode)
+    });
+  }
+
+  public async route53(awsAccountId: string | undefined, region: string | undefined, mode: Mode): Promise<AWS.Route53> {
+    return new AWS.Route53({
+      region,
+      credentials: await this.credentialsCache.get(awsAccountId, mode),
+    });
+  }
+
+  public async ecr(environment: Environment, mode: Mode): Promise<AWS.ECR> {
+    return new AWS.ECR({
+      region: environment.region,
+      credentials: await this.credentialsCache.get(environment.account, mode)
     });
   }
 
@@ -132,8 +143,8 @@ class CredentialsCache {
   private readonly cache: {[key: string]: AWS.Credentials} = {};
 
   public constructor(
-      private readonly defaultAwsAccount: DefaultAWSAccount,
-      private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
+    private readonly defaultAwsAccount: DefaultAWSAccount,
+    private readonly defaultCredentialProvider: Promise<AWS.CredentialProviderChain>) {
   }
 
   public async get(awsAccountId: string | undefined, mode: Mode): Promise<AWS.Credentials> {
@@ -195,7 +206,9 @@ class DefaultAWSAccount {
   private defaultAccountId?: string = undefined;
   private readonly accountCache = new AccountAccessKeyCache();
 
-  constructor(private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>, private readonly defaultClientArgs: any) {
+  constructor(
+      private readonly defaultCredentialsProvider: Promise<AWS.CredentialProviderChain>,
+      private readonly region: Promise<string | undefined>) {
   }
 
   /**
@@ -211,6 +224,10 @@ class DefaultAWSAccount {
 
   private async lookupDefaultAccount(): Promise<string | undefined> {
     try {
+      // There just is *NO* way to do AssumeRole credentials as long as AWS_SDK_LOAD_CONFIG is not set. The SDK
+      // crash if the file does not exist though. So set the environment variable if we can find that file.
+      await setConfigVariable();
+
       debug('Resolving default credentials');
       const credentialProvider = await this.defaultCredentialsProvider;
       const creds = await credentialProvider.resolvePromise();
@@ -223,7 +240,7 @@ class DefaultAWSAccount {
       const accountId = await this.accountCache.fetch(creds.accessKeyId, async () => {
         // if we don't have one, resolve from STS and store in cache.
         debug('Looking up default account ID from STS');
-        const result = await new AWS.STS({ credentials: creds, ...this.defaultClientArgs }).getCallerIdentity().promise();
+        const result = await new AWS.STS({ credentials: creds, region: await this.region }).getCallerIdentity().promise();
         const aid = result.Account;
         if (!aid) {
           debug('STS didn\'t return an account ID');
@@ -306,10 +323,10 @@ async function getCLICompatibleDefaultRegion(profile: string | undefined): Promi
   const toCheck = [
     {filename: process.env.AWS_SHARED_CREDENTIALS_FILE },
     {isConfig: true, filename: process.env.AWS_CONFIG_FILE},
-    ];
+  ];
 
   let region = process.env.AWS_REGION || process.env.AMAZON_REGION ||
-      process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
+    process.env.AWS_DEFAULT_REGION || process.env.AMAZON_DEFAULT_REGION;
 
   while (!region && toCheck.length > 0) {
     const configFile = new SharedIniFile(toCheck.shift());
@@ -376,6 +393,15 @@ async function hasEc2Credentials() {
 
   debug(instance ? 'Looks like EC2 instance.' : 'Does not look like EC2 instance.');
   return instance;
+}
+
+async function setConfigVariable() {
+  const homeDir = process.env.HOME || process.env.USERPROFILE
+    || (process.env.HOMEPATH ? ((process.env.HOMEDRIVE || 'C:/') + process.env.HOMEPATH) : null) || os.homedir();
+
+  if (await fs.pathExists(path.resolve(homeDir, '.aws', 'config'))) {
+    process.env.AWS_SDK_LOAD_CONFIG = '1';
+  }
 }
 
 async function readIfPossible(filename: string): Promise<string | undefined> {

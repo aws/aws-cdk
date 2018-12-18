@@ -124,6 +124,18 @@ export interface UpdatePolicy {
    */
   autoScalingScheduledAction?: AutoScalingScheduledAction;
 
+  /**
+   * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
+   * use the CodeDeployLambdaAliasUpdate update policy.
+   */
+  codeDeployLambdaAliasUpdate?: CodeDeployLambdaAliasUpdate;
+
+  /**
+   * To modify a replication group's shards by adding or removing shards, rather than replacing the entire
+   * AWS::ElastiCache::ReplicationGroup resource, use the UseOnlineResharding update policy.
+   */
+  useOnlineResharding?: boolean;
+
 }
 
 /**
@@ -229,4 +241,30 @@ export interface AutoScalingScheduledAction {
   * values and updates your Auto Scaling group.
   */
   ignoreUnmodifiedGroupSizeProperties?: boolean;
+}
+
+/**
+ * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
+ * use the CodeDeployLambdaAliasUpdate update policy.
+ */
+export interface CodeDeployLambdaAliasUpdate {
+  /**
+   * The name of the AWS CodeDeploy application.
+   */
+  applicationName: string;
+
+  /**
+   * The name of the AWS CodeDeploy deployment group. This is where the traffic-shifting policy is set.
+   */
+  deploymentGroupName: string;
+
+  /**
+   * The name of the Lambda function to run before traffic routing starts.
+   */
+  beforeAllowTrafficHook?: string;
+
+  /**
+   * The name of the Lambda function to run after traffic routing completes.
+   */
+  afterAllowTrafficHook?: string;
 }

@@ -69,26 +69,26 @@ export = {
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
-      Statement: [
-        {
-        Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
-        Resource: [
-          {"Fn::Join": ["", ["arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
-          {"Fn::Join": [ "", [
-          {"Fn::Join": ["", [ "arn", ":", {Ref: "AWS::Partition"}, ":", "s3", ":", "", ":", "", ":", {Ref: "MyAssetS3Bucket68C9B344"}]]},
-          "/",
-          {"Fn::Join": ["", [
-            {"Fn::Select": [
-              0,
-              {"Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D"}]}
-            ]},
-            "*"
-          ]]}
-          ]]}
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ["s3:GetObject*", "s3:GetBucket*", "s3:List*"],
+            Effect: 'Allow',
+            Resource: [
+              { "Fn::Join": ["", ["arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"}]] },
+              { "Fn::Join": ["",
+                [
+                  "arn:", {Ref: "AWS::Partition"}, ":s3:::", {Ref: "MyAssetS3Bucket68C9B344"},
+                  "/",
+                  { "Fn::Select": [0, { "Fn::Split": [ "||", { Ref: "MyAssetS3VersionKey68E1A45D" }] }] },
+                  "*"
+                ]
+              ] }
+            ]
+          }
         ]
       }
-      ]
-    }}));
+    }));
 
     test.done();
   },
@@ -112,4 +112,33 @@ export = {
 
     test.done();
   },
+
+  'isZipArchive indicates if the asset represents a .zip file (either explicitly or via ZipDirectory packaging)'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const nonZipAsset = new FileAsset(stack, 'NonZipAsset', {
+      path: path.join(__dirname, 'sample-asset-directory', 'sample-asset-file.txt')
+    });
+
+    const zipDirectoryAsset = new ZipDirectoryAsset(stack, 'ZipDirectoryAsset', {
+      path: path.join(__dirname, 'sample-asset-directory')
+    });
+
+    const zipFileAsset = new FileAsset(stack, 'ZipFileAsset', {
+      path: path.join(__dirname, 'sample-asset-directory', 'sample-zip-asset.zip')
+    });
+
+    const jarFileAsset = new FileAsset(stack, 'JarFileAsset', {
+      path: path.join(__dirname, 'sample-asset-directory', 'sample-jar-asset.jar')
+    });
+
+    // THEN
+    test.equal(nonZipAsset.isZipArchive, false);
+    test.equal(zipDirectoryAsset.isZipArchive, true);
+    test.equal(zipFileAsset.isZipArchive, true);
+    test.equal(jarFileAsset.isZipArchive, true);
+    test.done();
+  }
 };

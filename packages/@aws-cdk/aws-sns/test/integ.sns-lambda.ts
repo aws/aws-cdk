@@ -8,24 +8,26 @@ class SnsToSqs extends cdk.Stack {
 
     const topic = new sns.Topic(this, 'MyTopic');
 
-    const fction = new lambda.InlineJavaScriptFunction(this, 'Echo', {
-      handler: {
-        fn: (event, _context, callback) => {
-          // tslint:disable:no-console
-          console.log('====================================================');
-          console.log(JSON.stringify(event, undefined, 2));
-          console.log('====================================================');
-          return callback(undefined, event);
-        }
-      }
+    const fction = new lambda.Function(this, 'Echo', {
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NodeJS810,
+      code: lambda.Code.inline(`exports.handler = ${handler.toString()}`)
     });
 
     topic.subscribeLambda(fction);
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new SnsToSqs(app, 'aws-cdk-sns-lambda');
 
-process.stdout.write(app.run());
+app.run();
+
+function handler(event: any, _context: any, callback: any) {
+  // tslint:disable:no-console
+  console.log('====================================================');
+  console.log(JSON.stringify(event, undefined, 2));
+  console.log('====================================================');
+  return callback(undefined, event);
+}

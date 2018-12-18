@@ -48,9 +48,13 @@ export class Construct {
    * Creates a new construct node.
    *
    * @param parent The parent construct
-   * @param props  Properties for this construct
+   * @param id The local logical ID of the construct. Must be unique amongst
+   * siblings. If the ID includes a path separator (`/`), then it will be
+   * replaced by double dash `--`.
    */
   constructor(parent: Construct, id: string) {
+    id = id || ''; // if undefined, convert to empty string
+
     this.id = id;
     this.parent = parent;
 
@@ -68,10 +72,11 @@ export class Construct {
       this.id = id;
     }
 
-    // Validate the name we ended up with
-    if (this.id !== '') {
-      this._validateId(this.id);
-    }
+    // escape any path separators so they don't wreck havoc
+    this.id = this._escapePathSeparator(this.id);
+
+    // allow derived classes to validate the construct id
+    this._validateId(this.id);
 
     const components = this.rootPath().map(c => c.id);
     this.path = components.join(PATH_SEP);
@@ -105,6 +110,9 @@ export class Construct {
   /**
    * Return a descendant by path, or undefined
    *
+   * Note that if the original ID of the construct you are looking for contained
+   * a '/', then it would have been replaced by '--'.
+   *
    * @param name Relative name of a direct or indirect child
    * @returns a child by path or undefined if not found.
    */
@@ -126,6 +134,9 @@ export class Construct {
    * Return a descendant by path
    *
    * Throws an exception if the descendant is not found.
+   *
+   * Note that if the original ID of the construct you are looking for contained
+   * a '/', then it would have been replaced by '--'.
    *
    * @param name Relative name of a direct or indirect child
    * @returns Child with the given path.
@@ -316,10 +327,8 @@ export class Construct {
    * Validate that the id of the construct legal.
    * Construct IDs can be any characters besides the path separator.
    */
-  protected _validateId(id: string) {
-    if (id.indexOf(PATH_SEP) !== -1) {
-      throw new Error(`Construct names cannot include '${PATH_SEP}': ${id}`);
-    }
+  protected _validateId(_id: string) {
+    // can be used by derived classes to customize ID validation.
   }
 
   /**
@@ -393,6 +402,14 @@ export class Construct {
    */
   protected get frozen() {
     return this._frozen;
+  }
+
+  /**
+   * If the construct ID contains a path separator, it is replaced by double dash (`--`).
+   */
+  private _escapePathSeparator(id: string) {
+    if (!id) { return id; }
+    return id.split(PATH_SEP).join('--');
   }
 }
 

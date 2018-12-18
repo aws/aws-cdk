@@ -5,3 +5,4 @@ spec-source
 dist
 .LAST_PACKAGE
 .LAST_BUILD
+*.snk

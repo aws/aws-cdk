@@ -1,18 +1,22 @@
 #!/bin/bash
 set -euo pipefail
 
-bail="--no-bail"
+bail="--bail"
+run_tests="true"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--bail|-b] [--force|-f]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test]"
             exit 1
             ;;
-        -b|--bail)
-            bail="--bail"
+        --no-bail)
+            bail="--no-bail"
             ;;
         -f|--force)
             export CDK_BUILD="--force"
+            ;;
+        --skip-test|--skip-tests)
+            run_tests="false"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -27,7 +31,7 @@ if [ ! -d node_modules ]; then
 fi
 
 fail() {
-  echo "❌  Last command failed. Scroll up to see errors in log."
+  echo "❌  Last command failed. Scroll up to see errors in log (search for '!!!!!!!!')."
   exit 1
 }
 
@@ -47,8 +51,10 @@ echo "==========================================================================
 echo "building..."
 time lerna run $bail --stream build || fail
 
-echo "============================================================================================="
-echo "testing..."
-lerna run $bail --stream test || fail
+if $run_tests; then
+  echo "============================================================================================="
+  echo "testing..."
+  lerna run $bail --stream test || fail
+fi
 
 touch $BUILD_INDICATOR

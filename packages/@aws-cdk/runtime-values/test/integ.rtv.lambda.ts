@@ -12,8 +12,10 @@ class TestStack extends cdk.Stack {
     super(parent, name);
 
     const queue = new sqs.Queue(this, 'MyQueue');
-    const fn = new lambda.InlineJavaScriptFunction(this, 'MyFunction', {
-      handler: { fn: runtimeCode },
+    const fn = new lambda.Function(this, 'MyFunction', {
+      code: lambda.Code.inline(`exports.handler = ${runtimeCode.toString()}`),
+      runtime: lambda.Runtime.NodeJS610,
+      handler: 'index.handler'
     });
 
     // this line defines an AWS::SSM::Parameter resource with the
@@ -29,12 +31,12 @@ class TestStack extends cdk.Stack {
 
     // adds the `RTV_STACK_NAME` to the environment of the lambda function
     // and the fleet (via user-data)
-    fn.addEnvironment(RuntimeValue.ENV_NAME, RuntimeValue.ENV_VALUE);
+    fn.addEnvironment(RuntimeValue.ENV_NAME, queueUrlRtv.envValue);
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new TestStack(app, 'aws-cdk-rtv-lambda');
 
-process.stdout.write(app.run());
+app.run();

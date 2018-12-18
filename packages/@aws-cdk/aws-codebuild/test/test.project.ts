@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import assets = require('@aws-cdk/assets');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
@@ -18,7 +18,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: 'hello.yml'
       }
@@ -34,14 +34,121 @@ export = {
     // WHEN
     new codebuild.Project(stack, 'Project', {
       source: new codebuild.CodePipelineSource(),
-      buildSpec: { phases: [ 'say hi' ] }
+      buildSpec: { phases: ['say hi'] }
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
+      }
+    }));
+
+    test.done();
+  },
+
+  'GitHub source': {
+    'has reportBuildStatus on by default'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          oauthToken: new cdk.Secret("test_oauth_token")
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        Source: {
+          Type: "GITHUB",
+          Auth: {
+            Type: 'OAUTH',
+            Resource: 'test_oauth_token'
+          },
+          Location: 'https://github.com/testowner/testrepo.git',
+          ReportBuildStatus: true,
+        }
+      }));
+
+      test.done();
+    },
+
+    'can explicitly set reportBuildStatus to false'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          oauthToken: new cdk.Secret('test_oauth_token'),
+          reportBuildStatus: false,
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Source: {
+          ReportBuildStatus: false,
+        },
+      }));
+
+      test.done();
+    },
+  },
+
+  'github enterprise auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.GitHubEnterpriseSource({
+        httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+        ignoreSslErrors: true,
+        oauthToken: new cdk.Secret("test_oauth_token")
+      })
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::CodeBuild::Project', {
       Source: {
-        BuildSpec: "{\n  \"phases\": [\n    \"say hi\"\n  ]\n}",
+        Type: "GITHUB_ENTERPRISE",
+        Auth: {
+          Type: 'OAUTH',
+          Resource: 'test_oauth_token'
+        },
+        InsecureSsl: true,
+        Location: 'https://github.testcompany.com/testowner/testrepo'
       }
+    }));
+
+    test.done();
+  },
+
+  'bitbucket auth test'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: new codebuild.BitBucketSource({
+        owner: 'testowner',
+        repo: 'testrepo',
+      })
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'BITBUCKET',
+        Location: 'https://bitbucket.org/testowner/testrepo.git',
+      },
     }));
 
     test.done();
@@ -58,7 +165,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
         ComputeType: "BUILD_GENERAL1_SMALL",
         EnvironmentVariables: [
@@ -70,10 +177,12 @@ export = {
           {
             Name: "SCRIPT_S3_KEY",
             Type: "PLAINTEXT",
-            Value: { "Fn::Join": [ "", [
-              { "Fn::Select": [ 0, { "Fn::Split": [ "||", { Ref: "AssetS3VersionKeyA852DDAE" } ] } ] },
-              { "Fn::Select": [ 1, { "Fn::Split": [ "||", { Ref: "AssetS3VersionKeyA852DDAE" } ] } ] }
-            ] ] }
+            Value: {
+              "Fn::Join": ["", [
+                { "Fn::Select": [0, { "Fn::Split": ["||", { Ref: "AssetS3VersionKeyA852DDAE" }] }] },
+                { "Fn::Select": [1, { "Fn::Split": ["||", { Ref: "AssetS3VersionKeyA852DDAE" }] }] }
+              ]]
+            }
           }
         ],
       },

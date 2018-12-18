@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import codepipeline = require('../lib');
@@ -19,7 +19,7 @@ export = {
         },
       });
 
-      expect(stack, true).to(haveResource('AWS::CodePipeline::Pipeline', {
+      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "Stages": [
           { "Name": "FirstStage" },
           { "Name": "SecondStage" },
@@ -40,7 +40,7 @@ export = {
         },
       });
 
-      expect(stack, true).to(haveResource('AWS::CodePipeline::Pipeline', {
+      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "Stages": [
           { "Name": "FirstStage" },
           { "Name": "SecondStage" },
@@ -62,7 +62,7 @@ export = {
         },
       });
 
-      expect(stack, true).to(haveResource('AWS::CodePipeline::Pipeline', {
+      expect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
         "Stages": [
           { "Name": "FirstStage" },
           { "Name": "SecondStage" },

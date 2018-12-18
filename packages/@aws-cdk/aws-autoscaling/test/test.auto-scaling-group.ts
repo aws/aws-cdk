@@ -1,5 +1,6 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import ec2 = require('@aws-cdk/aws-ec2');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Test } from 'nodeunit';
 import autoscaling = require('../lib');
@@ -26,10 +27,8 @@ export = {
             "SecurityGroupEgress": [
               {
                 "CidrIp": "0.0.0.0/0",
-                "Description": "Outbound traffic allowed by default",
-                "FromPort": -1,
+                "Description": "Allow all outbound traffic by default",
                 "IpProtocol": "-1",
-                "ToPort": -1
               }
             ],
             "SecurityGroupIngress": [],
@@ -127,6 +126,101 @@ export = {
     test.done();
   },
 
+  'can set minSize, maxSize, desiredCapacity to 0'(test: Test) {
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const vpc = mockVpc(stack);
+
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 0,
+      maxSize: 0,
+      desiredCapacity: 0
+    });
+
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "0",
+        MaxSize: "0",
+        DesiredCapacity: "0",
+      }
+    ));
+
+    test.done();
+  },
+
+  'can specify only min capacity'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      minSize: 10
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "10",
+        MaxSize: "10",
+        DesiredCapacity: "10",
+      }
+    ));
+
+    test.done();
+  },
+
+  'can specify only max capacity'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      maxSize: 10
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "1",
+        MaxSize: "10",
+        DesiredCapacity: "10",
+      }
+    ));
+
+    test.done();
+  },
+
+  'can specify only desiredCount'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      desiredCapacity: 10
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+        MinSize: "1",
+        MaxSize: "10",
+        DesiredCapacity: "10",
+      }
+    ));
+
+    test.done();
+  },
+
   'addToRolePolicy can be used to add statements to the role policy'(test: Test) {
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
@@ -137,12 +231,13 @@ export = {
       vpc
     });
 
-    fleet.addToRolePolicy(new cdk.PolicyStatement()
+    fleet.addToRolePolicy(new iam.PolicyStatement()
       .addAction('test:SpecialName')
       .addAllResources());
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
+        Version: '2012-10-17',
         Statement: [
           {
             Action: "test:SpecialName",
@@ -150,7 +245,6 @@ export = {
             Resource: "*"
           }
         ],
-        Version: "2012-10-17"
       },
     }));
     test.done();
@@ -171,17 +265,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    UpdatePolicy: {
-      AutoScalingReplacingUpdate: {
-      WillReplace: true
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      UpdatePolicy: {
+        AutoScalingReplacingUpdate: {
+        WillReplace: true
+        }
+      },
+      CreationPolicy: {
+        AutoScalingCreationPolicy: {
+        MinSuccessfulInstancesPercent: 50
+        }
       }
-    },
-    CreationPolicy: {
-      AutoScalingCreationPolicy: {
-      MinSuccessfulInstancesPercent: 50
-      }
-    }
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -199,21 +293,21 @@ export = {
       vpc,
       updateType: autoscaling.UpdateType.RollingUpdate,
       rollingUpdateConfiguration: {
-      minSuccessfulInstancesPercent: 50,
-      pauseTimeSec: 345
+        minSuccessfulInstancesPercent: 50,
+        pauseTimeSec: 345
       }
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    UpdatePolicy: {
-      "AutoScalingRollingUpdate": {
-      "MinSuccessfulInstancesPercent": 50,
-      "WaitOnResourceSignals": true,
-      "PauseTime": "PT5M45S",
-      "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
-      },
-    }
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      UpdatePolicy: {
+        "AutoScalingRollingUpdate": {
+        "MinSuccessfulInstancesPercent": 50,
+        "WaitOnResourceSignals": true,
+        "PauseTime": "PT5M45S",
+        "SuspendProcesses": [ "HealthCheck", "ReplaceUnhealthy", "AZRebalance", "AlarmNotification", "ScheduledActions" ]
+        },
+      }
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -234,13 +328,13 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
-    CreationPolicy: {
-      ResourceSignal: {
-      Count: 5,
-      Timeout: 'PT11M6S'
-      },
-    }
+    expect(stack).to(haveResourceLike("AWS::AutoScaling::AutoScalingGroup", {
+      CreationPolicy: {
+        ResourceSignal: {
+          Count: 5,
+          Timeout: 'PT11M6S'
+        },
+      }
     }, ResourcePart.CompleteDefinition));
 
     test.done();

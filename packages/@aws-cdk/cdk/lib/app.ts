@@ -1,50 +1,28 @@
 import cxapi = require('@aws-cdk/cx-api');
-import jsBase64 = require('js-base64');
+import fs = require('fs');
+import path = require('path');
 import { Stack } from './cloudformation/stack';
 import { Construct, MetadataEntry, PATH_SEP, Root } from './core/construct';
 import { resolve } from './core/tokens';
 
 /**
- * Cloud Executable interface version.
- */
-const CX_VERSION = 'CloudExecutable/1.0';
-
-/**
  * Represents a CDK program.
  */
 export class App extends Root {
-  private readonly progname?: string;
-  private readonly request?: cxapi.CXRequest;
-
-  constructor(argv?: string[]) {
+  /**
+   * Initializes a CDK application.
+   * @param request Optional toolkit request (e.g. for tests)
+   */
+  constructor() {
     super();
-
-    argv = argv || [];
-
-    if (argv.length >= 1) {
-      // if the first argument ends with "/node" or "node.exe", skip it (this is argv[0] in node programs).
-      if (/[\/\\]node(?:\.exe)?$/.test(argv[0])) {
-        argv = argv.slice(1);
-      }
-
-      this.progname = argv[0].split('/').pop()!;
-    }
-
-    if (argv.length > 1) {
-      try {
-        this.request = this.parseRequest(argv[1]);
-      } catch (e) {
-        throw new Error(`Cannot parse request '${argv[1]}': ${e.message}`);
-      }
-      this.loadContext();
-    }
+    this.loadContext();
   }
 
   private get stacks() {
     const out: { [name: string]: Stack } = { };
     for (const child of this.children) {
-      if (!(child instanceof Stack)) {
-        throw new Error(`The child ${child.toString()} of Program must be a Stack`);
+      if (!Stack.isStack(child)) {
+        throw new Error(`The child ${child.toString()} of App must be a Stack`);
       }
 
       out[child.id] = child as Stack;
@@ -53,42 +31,27 @@ export class App extends Root {
   }
 
   /**
-   * Runs the program
-   * @returns STDOUT
+   * Runs the program. Output is written to output directory as specified in the request.
    */
-  public run(): string {
-    // no arguments - print usage and exit successfully.
-    if (!this.request || !this.request.type) {
-      return this.usage;
+  public run(): void {
+    const outdir = process.env[cxapi.OUTDIR_ENV];
+    if (!outdir) {
+      process.stderr.write(`ERROR: The environment variable "${cxapi.OUTDIR_ENV}" is not defined\n`);
+      process.stderr.write('AWS CDK Toolkit (>= 0.11.0) is required in order to interact with this program.\n');
+      process.exit(1);
+      return;
     }
 
     this.freezeConstructTree();
 
-    const result = this.runCommand();
-    return JSON.stringify(result, undefined, 2);
-  }
+    const result: cxapi.SynthesizeResponse = {
+      version: cxapi.PROTO_RESPONSE_VERSION,
+      stacks: this.synthesizeStacks(Object.keys(this.stacks)),
+      runtime: this.collectRuntimeInformation()
+    };
 
-  /**
-   * @deprecated Use app.run().
-   */
-  public async exec(): Promise<string> {
-    return this.run();
-  }
-
-  /**
-   * Lists all stacks in this app.
-   */
-  public listStacks(): cxapi.StackInfo[] {
-    return Object.keys(this.stacks).map(name => {
-      const stack = this.stacks[name];
-      const region = stack.env.region;
-      const account = stack.env.account;
-      let environment: cxapi.Environment | undefined;
-      if (account && region) {
-        environment = { name: `${account}/${region}`, account, region };
-      }
-      return { name, environment };
-    });
+    const outfile = path.join(outdir, cxapi.OUTFILE_NAME);
+    fs.writeFileSync(outfile, JSON.stringify(result, undefined, 2));
   }
 
   /**
@@ -105,19 +68,20 @@ export class App extends Root {
       throw new Error(`Stack validation failed with the following errors:\n  ${errorList}`);
     }
 
-    let environment: cxapi.Environment | undefined;
-    if (stack.env.account && stack.env.region) {
-      environment = {
-        name: `${stack.env.account}/${stack.env.region}`,
-        account: stack.env.account,
-        region: stack.env.region
-      };
-    }
+    const account = stack.env.account || 'unknown-account';
+    const region = stack.env.region || 'unknown-region';
 
+    const environment: cxapi.Environment = {
+      name: `${account}/${region}`,
+      account,
+      region
+    };
+
+    const missing = Object.keys(stack.missingContext).length ? stack.missingContext : undefined;
     return {
       name: stack.id,
       environment,
-      missing: Object.keys(stack.missingContext).length ? stack.missingContext : undefined,
+      missing,
       template: stack.toCloudFormation(),
       metadata: this.collectMetadata(stack)
     };
@@ -185,6 +149,16 @@ export class App extends Root {
       }
     }
 
+    // include only libraries that are in the @aws-cdk npm scope
+    for (const name of Object.keys(libraries)) {
+      if (!name.startsWith('@aws-cdk/')) {
+        delete libraries[name];
+      }
+    }
+
+    // add jsii runtime version
+    libraries['jsii-runtime'] = getJsiiAgentVersion();
+
     return { libraries };
   }
 
@@ -200,60 +174,12 @@ export class App extends Root {
     return stack;
   }
 
-  private runCommand() {
-    switch (this.request!.type) {
-      case 'list':
-        return {
-          stacks: this.listStacks()
-        } as cxapi.ListStacksResponse;
-
-      case 'synth':
-        return {
-          stacks: this.synthesizeStacks((this.request as cxapi.SynthesizeRequest).stacks),
-          runtime: this.collectRuntimeInformation()
-        } as cxapi.SynthesizeResponse;
-
-      default:
-        throw new Error(`Invalid command: ${this.request!.type}`);
-    }
-  }
-
-  private get usage() {
-    const progname = this.progname ? this.progname + ' ' : '';
-
-    return `${CX_VERSION}
-
-Usage:
-  ${progname}REQUEST
-
-REQUEST is a JSON-encoded request object.
-`;
-  }
-
   private loadContext() {
-    const context = (this.request && this.request.context) || {};
+    const contextJson = process.env[cxapi.CONTEXT_ENV];
+    const context = !contextJson ? { } : JSON.parse(contextJson);
     for (const key of Object.keys(context)) {
       this.setContext(key, context[key]);
     }
-  }
-
-  private parseRequest(req: string): cxapi.CXRequest {
-    // allow toolkit to send request in base64 if they begin with "base64:"
-    // this is in order to avoid shell escaping issues when defining "--app"
-    // in the toolkit.
-    if (req.startsWith(cxapi.BASE64_REQ_PREFIX)) {
-      req = jsBase64.Base64.fromBase64(req.slice(cxapi.BASE64_REQ_PREFIX.length));
-    }
-
-    // parse as JSON
-    return JSON.parse(req);
-  }
-}
-
-export class Program extends App {
-  constructor(argv?: string[]) {
-    super(argv);
-    this.addWarning('"Program" is deprecated in favor of "App"');
   }
 }
 
@@ -286,8 +212,8 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
   const paths = mod.paths.map(stripNodeModules);
 
   try {
-    const path = require.resolve('package.json', { paths });
-    return require(path);
+    const packagePath = require.resolve('package.json', { paths });
+    return require(packagePath);
   } catch (e) {
     return undefined;
   }
@@ -304,4 +230,16 @@ function findNpmPackage(fileName: string): { name: string, version: string, priv
     }
     return s;
   }
+}
+
+function getJsiiAgentVersion() {
+  let jsiiAgent = process.env.JSII_AGENT;
+
+  // if JSII_AGENT is not specified, we will assume this is a node.js runtime
+  // and plug in our node.js version
+  if (!jsiiAgent) {
+    jsiiAgent = `node.js/${process.version}`;
+  }
+
+  return jsiiAgent;
 }

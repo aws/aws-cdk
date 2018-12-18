@@ -1,0 +1,22 @@
+{
+  "name": "%name%",
+  "version": "0.1.0",
+  "bin": {
+    "%name%": "bin/%name%.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk"
+  },
+  "devDependencies": {
+    "@types/node": "^8.9.4",
+    "typescript": "^3.1.2",
+    "aws-cdk": "^%cdk-version%"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-sns": "^%cdk-version%",
+    "@aws-cdk/aws-sqs": "^%cdk-version%",
+    "@aws-cdk/cdk": "^%cdk-version%"
+  }
+}

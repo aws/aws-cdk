@@ -15,19 +15,22 @@ export class CloudFormationToken extends Token {
 }
 
 export class StackAwareCloudFormationToken extends CloudFormationToken {
-  private readonly tokenStack: Stack;
+  private readonly tokenStack?: Stack;
 
-  constructor(anchor: Construct, value: any, displayName?: string) {
+  constructor(anchor: Construct | undefined, value: any, displayName?: string) {
       if (typeof(value) === 'function') {
           throw new Error('StackAwareCloudFormationToken can only contain eager values');
       }
       super(value, displayName);
-      this.tokenStack = Stack.find(anchor);
+
+      if (anchor !== undefined) {
+        this.tokenStack = Stack.find(anchor);
+      }
   }
 
   public resolve(context: ContextMap): any {
       const consumingStack = context.stack;
-      if (consumingStack && this.tokenStack !== consumingStack) {
+      if (this.tokenStack && consumingStack && this.tokenStack !== consumingStack) {
           // We're trying to resolve a cross-stack reference
           consumingStack.addStackDependency(this.tokenStack);
           return this.tokenStack.exportValue(this, consumingStack);

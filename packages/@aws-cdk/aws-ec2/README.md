@@ -100,12 +100,12 @@ import ec2 = require('@aws-cdk/aws-ec2');
 
 const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
+  natGateways: 1,
   subnetConfiguration: [
     {
       cidrMask: 26,
       name: 'Public',
       subnetType: SubnetType.Public,
-      natGateway: true,
     },
     {
       name: 'Application',
@@ -147,6 +147,7 @@ import ec2 = require('@aws-cdk/aws-ec2');
 const vpc = new ec2.VpcNetwork(stack, 'TheVPC', {
   cidr: '10.0.0.0/16',
   natGateways: 1,
+  natGatewayPlacement: {subnetName: 'Public'},
   subnetConfiguration: [
     {
       cidrMask: 26,
@@ -171,31 +172,57 @@ The `VpcNetwork` above will have the exact same subnet definitions as listed
 above. However, this time the VPC will have only 1 NAT Gateway and all
 Application subnets will route to the NAT Gateway.
 
+#### Sharing VPCs across stacks
+
+If you are creating multiple `Stack`s inside the same CDK application, you
+can reuse a VPC defined in one Stack in another by using `export()` and
+`import()`:
+
+[sharing VPCs between stacks](test/example.share-vpcs.lit.ts)
+
+If your VPC is created outside your CDK app, you can use `importFromContext()`:
+
+[importing existing VPCs](test/integ.import-default-vpc.lit.ts)
+
 ### Allowing Connections
 
-In AWS, all connections to and from EC2 instances are governed by *Security
-Groups*. You can think of these as a firewall with rules. All Constructs that
-create instances on your behalf implicitly have such a security group.
-Unless otherwise indicated using properites, the security groups start out
-empty; that is, no connections are allowed by default.
+In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
+is controlled by **Security Groups**. You can think of Security Groups as a
+firewall with a set of rules. By default, Security Groups allow no incoming
+(ingress) traffic and all outgoing (egress) traffic. You can add ingress rules
+to them to allow incoming traffic streams. To exert fine-grained control over
+egress traffic, set `allowAllOutbound: false` on the `SecurityGroup`, after
+which you can add egress traffic rules.
 
-In general, whenever you link two Constructs together (such as the load balancer and the
-fleet in the previous example), the security groups will be automatically updated to allow
-network connections between the indicated instances. In other cases, you will need to
-configure these allows connections yourself, for example if the connections you want to
-allow do not originate from instances in a CDK construct, or if you want to allow
-connections among instances inside a single security group.
-
-All Constructs with security groups have a member called `connections`, which
-can be used to configure permissible connections. In the most general case, a
-call to allow connections needs both a connection peer and the type of
-connection to allow:
+You can manipulate Security Groups directly:
 
 ```ts
-lb.connections.allowFrom(new ec2.AnyIPv4(), new ec2.TcpPort(443), 'Allow inbound');
+const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Allow ssh access to ec2 instances',
+  allowAllOutbound: true   // Can be set to false
+});
+mySecurityGroup.addIngressRule(new ec2.AnyIPv4(), new ec2.TcpPort(22), 'allow ssh access from the world');
+```
 
-// Or using a convenience function
-lb.connections.allowFromAnyIpv4(new ec2.TcpPort(443), 'Allow inbound');
+All constructs that create ENIs on your behalf (typically constructs that create
+EC2 instances or other VPC-connected resources) will all have security groups
+automatically assigned. Those constructs have an attribute called
+**connections**, which is an object that makes it convenient to update the
+security groups. If you want to allow connections between two constructs that
+have security groups, you have to add an **Egress** rule to one Security Group,
+and an **Ingress** rule to the other. The connections object will automatically
+take care of this for you:
+
+```ts
+// Allow connections from anywhere
+loadBalancer.connections.allowFromAnyIpv4(new ec2.TcpPort(443), 'Allow inbound HTTPS');
+
+// The same, but an explicit IP address
+loadBalancer.connections.allowFrom(new ec2.CidrIpv4('1.2.3.4/32'), new ec2.TcpPort(443), 'Allow inbound HTTPS');
+
+// Allow connection between AutoScalingGroups
+appFleet.connections.allowTo(dbFleet, new ec2.TcpPort(443), 'App can call database');
 ```
 
 ### Connection Peers
@@ -227,10 +254,10 @@ The connections that are allowed are specified by port ranges. A number of class
 the connection specifier:
 
 ```ts
-new ec2.TcpPort(80);
-new ec2.TcpPortRange(60000, 65535);
-new ec2.TcpAllPorts();
-new ec2.AllConnections();
+new ec2.TcpPort(80)
+new ec2.TcpPortRange(60000, 65535)
+new ec2.TcpAllPorts()
+new ec2.AllConnections()
 ```
 
 > NOTE: This set is not complete yet; for example, there is no library support for ICMP at the moment.
@@ -255,3 +282,22 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 // Port implicit in peer
 fleet.connections.allowToDefaultPort(rdsDatabase, 'Fleet can access database');
 ```
+
+### Machine Images (AMIs)
+
+AMIs control the OS that gets launched when you start your EC2 instance. The EC2
+library contains constructs to select the AMI you want to use.
+
+Depending on the type of AMI, you select it a different way.
+
+The latest version of Amazon Linux and Microsoft Windows images are
+selectable by instantiating one of these classes:
+
+[example of creating images](test/example.images.lit.ts)
+
+> NOTE: The Amazon Linux images selected will be cached in your `cdk.json`, so that your
+> AutoScalingGroups don't automatically change out from under you when you're making unrelated
+> changes. To update to the latest version of Amazon Linux, remove the cache entry from the `context`
+> section of your `cdk.json`.
+>
+> We will add command-line options to make this step easier in the future.

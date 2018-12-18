@@ -1,4 +1,5 @@
 import codepipeline = require('@aws-cdk/aws-codepipeline-api');
+import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { RepositoryRef } from './repository';
 
@@ -7,23 +8,25 @@ import { RepositoryRef } from './repository';
  * either directly, through its constructor,
  * or through {@link RepositoryRef#addToPipeline}.
  */
-export interface CommonPipelineSourceActionProps {
+export interface CommonPipelineSourceActionProps extends codepipeline.CommonActionProps {
   /**
    * The name of the source's output artifact.
    * Output artifacts are used by CodePipeline as inputs into other actions.
+   *
+   * @default a name will be auto-generated
    */
-  artifactName: string;
+  outputArtifactName?: string;
 
   /**
    * @default 'master'
    */
   branch?: string;
 
-  // TODO: use CloudWatch events instead
   /**
-   * Whether or not AWS CodePipeline should poll for source changes.
+   * Whether AWS CodePipeline should poll for source changes.
+   * If this is `false`, the Pipeline will use CloudWatch Events to detect source changes instead.
    *
-   * @default true
+   * @default false
    */
   pollForSourceChanges?: boolean;
 }
@@ -31,7 +34,8 @@ export interface CommonPipelineSourceActionProps {
 /**
  * Construction properties of the {@link PipelineSourceAction CodeCommit source CodePipeline Action}.
  */
-export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps, codepipeline.CommonActionProps {
+export interface PipelineSourceActionProps extends CommonPipelineSourceActionProps,
+    codepipeline.CommonActionConstructProps {
   /**
    * The CodeCommit repository.
    */
@@ -45,14 +49,19 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
   constructor(parent: cdk.Construct, name: string, props: PipelineSourceActionProps) {
     super(parent, name, {
       stage: props.stage,
+      runOrder: props.runOrder,
       provider: 'CodeCommit',
       configuration: {
         RepositoryName: props.repository.repositoryName,
         BranchName: props.branch || 'master',
-        PollForSourceChanges: props.pollForSourceChanges !== undefined ? props.pollForSourceChanges : true
+        PollForSourceChanges: props.pollForSourceChanges || false,
       },
-      artifactName: props.artifactName
+      outputArtifactName: props.outputArtifactName
     });
+
+    if (!props.pollForSourceChanges) {
+      props.repository.onCommit(props.stage.pipeline.uniqueId + 'EventRule', props.stage.pipeline, props.branch || 'master');
+    }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     const actions = [
@@ -63,7 +72,7 @@ export class PipelineSourceAction extends codepipeline.SourceAction {
       'codecommit:CancelUploadArchive',
     ];
 
-    props.stage.pipelineRole.addToPolicy(new cdk.PolicyStatement()
+    props.stage.pipeline.role.addToPolicy(new iam.PolicyStatement()
       .addResource(props.repository.repositoryArn)
       .addActions(...actions));
   }

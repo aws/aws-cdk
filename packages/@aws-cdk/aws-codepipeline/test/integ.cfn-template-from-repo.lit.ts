@@ -3,7 +3,7 @@ import codecommit = require('@aws-cdk/aws-codecommit');
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('../lib');
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
 /// !show
@@ -17,7 +17,8 @@ const sourceStage = new codepipeline.Stage(pipeline, 'Source', { pipeline });
 const source = new codecommit.PipelineSourceAction(stack, 'Source', {
   stage: sourceStage,
   repository: repo,
-  artifactName: 'SourceArtifact',
+  outputArtifactName: 'SourceArtifact',
+  pollForSourceChanges: true,
 });
 
 // Deployment stage: create and deploy changeset with manual approval
@@ -29,8 +30,8 @@ new cfn.PipelineCreateReplaceChangeSetAction(prodStage, 'PrepareChanges', {
   stage: prodStage,
   stackName,
   changeSetName,
-  fullPermissions: true,
-  templatePath: source.artifact.subartifact('template.yaml'),
+  adminPermissions: true,
+  templatePath: source.outputArtifact.atPath('template.yaml'),
 });
 
 new codepipeline.ManualApprovalAction(stack, 'ApproveChanges', {
@@ -44,4 +45,4 @@ new cfn.PipelineExecuteChangeSetAction(stack, 'ExecuteChanges', {
 });
 /// !hide
 
-process.stdout.write(app.run());
+app.run();

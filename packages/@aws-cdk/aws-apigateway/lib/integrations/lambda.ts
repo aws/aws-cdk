@@ -1,5 +1,5 @@
+import iam = require('@aws-cdk/aws-iam');
 import lambda = require('@aws-cdk/aws-lambda');
-import cdk = require('@aws-cdk/cdk');
 import { IntegrationOptions } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -52,7 +52,7 @@ export class LambdaIntegration extends AwsIntegration {
   }
 
   public bind(method: Method) {
-    const principal = new cdk.ServicePrincipal('apigateway.amazonaws.com');
+    const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
     const desc = `${method.httpMethod}.${method.resource.resourcePath.replace(/\//g, '.')}`;
 

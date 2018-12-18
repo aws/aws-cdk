@@ -5,14 +5,14 @@ class CloudFormationExample extends cdk.Stack {
   constructor(parent: cdk.App) {
     super(parent);
 
-    new sqs.cloudformation.QueueResource(this, 'MyQueue', {
+    new sqs.CfnQueue(this, 'MyQueue', {
       visibilityTimeout: 300
     });
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 
 new CloudFormationExample(app);
 
-process.stdout.write(app.run());
+app.run();

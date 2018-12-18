@@ -1,3 +1,4 @@
+import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import sqs = require('@aws-cdk/aws-sqs');
 import cdk = require('@aws-cdk/cdk');
@@ -19,30 +20,30 @@ class CFN extends cdk.Stack {
   constructor(parent: cdk.App, name: string) {
     super(parent, name);
 
-    const topic = new sns.cloudformation.TopicResource(this, 'MyTopic');
-    const queue = new sqs.cloudformation.QueueResource(this, 'MyQueue');
+    const topic = new sns.CfnTopic(this, 'MyTopic');
+    const queue = new sqs.CfnQueue(this, 'MyQueue');
 
-    new sns.cloudformation.SubscriptionResource(this, 'TopicToQueue', {
+    new sns.CfnSubscription(this, 'TopicToQueue', {
       topicArn: topic.ref, // ref == arn for topics
       endpoint: queue.queueName,
       protocol: 'sqs'
     });
 
-    const policyDocument = new cdk.PolicyDocument();
-    policyDocument.addStatement(new cdk.PolicyStatement()
+    const policyDocument = new iam.PolicyDocument();
+    policyDocument.addStatement(new iam.PolicyStatement()
       .addResource(queue.queueArn)
       .addAction('sqs:SendMessage')
       .addServicePrincipal('sns.amazonaws.com')
       .setCondition('ArnEquals', { 'aws:SourceArn': topic.ref }));
 
-    new sqs.cloudformation.QueuePolicyResource(this, 'MyQueuePolicy', {
+    new sqs.CfnQueuePolicy(this, 'MyQueuePolicy', {
       policyDocument,
       queues: [ queue.ref ]
     });
   }
 }
 
-const app = new cdk.App(process.argv);
+const app = new cdk.App();
 new ACL(app, 'acl');
 new CFN(app, 'cfn');
-process.stdout.write(app.run());
+app.run();

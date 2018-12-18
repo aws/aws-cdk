@@ -1,7 +1,8 @@
+import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import { AnyIPv4, Connections, IConnectable, IPortRange, SecurityGroup, SecurityGroupRef,
   TcpPort, VpcNetworkRef, VpcSubnetRef  } from '@aws-cdk/aws-ec2';
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from './elasticloadbalancing.generated';
+import { CfnLoadBalancer } from './elasticloadbalancing.generated';
 
 /**
  * Construction properties for a LoadBalancer
@@ -185,7 +186,7 @@ export enum LoadBalancingProtocol {
  *
  * Routes to a fleet of of instances in a VPC.
  */
-export class LoadBalancer extends cdk.Construct implements IConnectable {
+export class LoadBalancer extends cdk.Construct implements IConnectable, codedeploy.ILoadBalancer {
   /**
    * Control all connections from and to this load balancer
    */
@@ -196,9 +197,9 @@ export class LoadBalancer extends cdk.Construct implements IConnectable {
    */
   public readonly listenerPorts: ListenerPort[] = [];
 
-  private readonly elb: cloudformation.LoadBalancerResource;
+  private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
-  private readonly listeners: cloudformation.LoadBalancerResource.ListenersProperty[] = [];
+  private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
@@ -206,19 +207,22 @@ export class LoadBalancer extends cdk.Construct implements IConnectable {
   constructor(parent: cdk.Construct, name: string, props: LoadBalancerProps) {
     super(parent, name);
 
-    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc });
-    this.connections = new Connections({ securityGroup: this.securityGroup });
+    this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
+    this.connections = new Connections({ securityGroups: [this.securityGroup] });
 
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     const subnets: VpcSubnetRef[] = props.internetFacing ? props.vpc.publicSubnets : props.vpc.privateSubnets;
 
-    this.elb = new cloudformation.LoadBalancerResource(this, 'Resource', {
+    this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [ this.securityGroup.securityGroupId ],
       subnets: subnets.map(s => s.subnetId),
       listeners: new cdk.Token(() => this.listeners),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
     });
+    if (props.internetFacing) {
+      this.elb.addDependency(props.vpc.internetDependency());
+    }
 
     ifUndefined(props.listeners, []).forEach(b => this.addListener(b));
     ifUndefined(props.targets, []).forEach(t => this.addTarget(t));
@@ -286,6 +290,13 @@ export class LoadBalancer extends cdk.Construct implements IConnectable {
     return this.elb.loadBalancerSourceSecurityGroupOwnerAlias;
   }
 
+  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
+    return {
+      generation: codedeploy.LoadBalancerGeneration.First,
+      name: this.loadBalancerName,
+    };
+  }
+
   /**
    * Allow connections to all existing targets on new instance port
    */
@@ -334,7 +345,7 @@ export class ListenerPort implements IConnectable {
   public readonly connections: Connections;
 
   constructor(securityGroup: SecurityGroupRef, defaultPortRange: IPortRange) {
-    this.connections = new Connections({ securityGroup, defaultPortRange });
+    this.connections = new Connections({ securityGroups: [securityGroup] , defaultPortRange });
   }
 }
 
@@ -367,7 +378,7 @@ function ifUndefinedLazy<T>(x: T | undefined, def: () => T): T {
 /**
  * Turn health check parameters into a parameter blob for the LB
  */
-function healthCheckToJSON(healthCheck: HealthCheck): cloudformation.LoadBalancerResource.HealthCheckProperty {
+function healthCheckToJSON(healthCheck: HealthCheck): CfnLoadBalancer.HealthCheckProperty {
   const protocol = ifUndefined(healthCheck.protocol,
            ifUndefined(tryWellKnownProtocol(healthCheck.port),
            LoadBalancingProtocol.Tcp));

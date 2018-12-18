@@ -1,8 +1,9 @@
+import codedeploy = require('@aws-cdk/aws-codedeploy-api');
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
-import { cloudformation } from '../elasticloadbalancingv2.generated';
+import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
+import { Attributes, LazyDependable, renderAttributes } from './util';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -39,6 +40,17 @@ export interface BaseTargetGroupProps {
    * @default No health check
    */
   healthCheck?: HealthCheck;
+
+  /**
+   * The type of targets registered to this TargetGroup, either IP or Instance.
+   *
+   * All targets registered into the group must be of this type. If you
+   * register targets to the TargetGroup in the CDK app, the TargetType is
+   * determined automatically.
+   *
+   * @default Determined automatically
+   */
+  targetType?: TargetType;
 }
 
 /**
@@ -119,7 +131,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGroup {
+export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGroup, codedeploy.ILoadBalancer {
   /**
    * The ARN of the target group
    */
@@ -136,14 +148,39 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   public readonly targetGroupName: string;
 
   /**
+   * ARNs of load balancers load balancing to this TargetGroup
+   */
+  public readonly targetGroupLoadBalancerArns: string[];
+
+  /**
+   * Full name of first load balancer
+   *
+   * This identifier is emitted as a dimensions of the metrics of this target
+   * group.
+   *
+   * @example app/my-load-balancer/123456789
+   */
+  public abstract readonly firstLoadBalancerFullName: string;
+
+  /**
    * Health check for the members of this target group
    */
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  public readonly loadBalancerArns: string;
+
   public healthCheck: HealthCheck;
 
   /**
    * Default port configured for members of this target group
    */
   protected readonly defaultPort: string;
+
+  /**
+   * List of dependables that need to be depended on to ensure the TargetGroup is associated to a load balancer
+   */
+  protected readonly loadBalancerAssociationDependencies = new Array<cdk.IDependable>();
 
   /**
    * Attributes of this target group
@@ -163,7 +200,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
   /**
    * The target group resource
    */
-  private readonly resource: cloudformation.TargetGroupResource;
+  private readonly resource: CfnTargetGroup;
 
   constructor(parent: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(parent, id);
@@ -173,8 +210,9 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     }
 
     this.healthCheck = baseProps.healthCheck || {};
+    this.targetType = baseProps.targetType;
 
-    this.resource = new cloudformation.TargetGroupResource(this, 'Resource', {
+    this.resource = new CfnTargetGroup(this, 'Resource', {
       targetGroupName: baseProps.targetGroupName,
       targetGroupAttributes: new cdk.Token(() => renderAttributes(this.attributes)),
       targetType: new cdk.Token(() => this.targetType),
@@ -188,6 +226,7 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       healthCheckProtocol: new cdk.Token(() => this.healthCheck && this.healthCheck.protocol),
       healthCheckTimeoutSeconds: new cdk.Token(() => this.healthCheck && this.healthCheck.timeoutSeconds),
       healthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyThresholdCount),
+      unhealthyThresholdCount: new cdk.Token(() => this.healthCheck && this.healthCheck.unhealthyThresholdCount),
       matcher: new cdk.Token(() => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
         httpCode: this.healthCheck.healthyHttpCodes
       } : undefined),
@@ -195,8 +234,10 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
       ...additionalProps
     });
 
+    this.targetGroupLoadBalancerArns = this.resource.targetGroupLoadBalancerArns.toList();
     this.targetGroupArn = this.resource.ref;
     this.targetGroupFullName = this.resource.targetGroupFullName;
+    this.loadBalancerArns = this.resource.targetGroupLoadBalancerArns.toString();
     this.targetGroupName = this.resource.targetGroupName;
     this.defaultPort = `${additionalProps.port}`;
   }
@@ -234,19 +275,28 @@ export abstract class BaseTargetGroup extends cdk.Construct implements ITargetGr
     this.resource.addDependency(...other);
   }
 
+  public asCodeDeployLoadBalancer(): codedeploy.ILoadBalancerProps {
+    return {
+      generation: codedeploy.LoadBalancerGeneration.Second,
+      name: this.targetGroupName,
+    };
+  }
+
+  /**
+   * Return an object to depend on this TargetGroup being attached to a load balancer
+   */
+  public loadBalancerDependency(): cdk.IDependable {
+    return new LazyDependable(this.loadBalancerAssociationDependencies);
+  }
+
   /**
    * Register the given load balancing target as part of this group
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
-    if ((props.targetType === TargetType.SelfRegistering) !== (props.targetJson === undefined)) {
-      throw new Error('Load balancing target should specify targetJson if and only if TargetType is not SelfRegistering');
+    if (this.targetType !== undefined && this.targetType !== props.targetType) {
+      throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
     }
-    if (props.targetType !== TargetType.SelfRegistering) {
-      if (this.targetType !== undefined && this.targetType !== props.targetType) {
-        throw new Error(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`);
-      }
-      this.targetType = props.targetType;
-    }
+    this.targetType = props.targetType;
 
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
@@ -267,6 +317,11 @@ export interface TargetGroupRefProps {
    * Port target group is listening on
    */
   defaultPort: string;
+
+  /**
+   * A Token representing the list of ARNs for the load balancer routing to this target group
+   */
+  loadBalancerArns?: string;
 }
 
 /**
@@ -277,6 +332,16 @@ export interface ITargetGroup {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
+
+  /**
+   * A token representing a list of ARNs of the load balancers that route traffic to this target group
+   */
+  readonly loadBalancerArns: string;
+
+  /**
+   * Return an object to depend on the listeners added to this target group
+   */
+  loadBalancerDependency(): cdk.IDependable;
 }
 
 /**
@@ -290,6 +355,24 @@ export interface LoadBalancerTargetProps {
 
   /**
    * JSON representing the target's direct addition to the TargetGroup list
+   *
+   * May be omitted if the target is going to register itself later.
    */
   targetJson?: any;
+}
+
+/**
+ * Extract the full load balancer name (used for metrics) from the listener ARN:
+ *
+ * Turns
+ *
+ *     arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/app/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2
+ *
+ * Into
+ *
+ *     app/my-load-balancer/50dc6c495c0c9188
+ */
+export function loadBalancerNameFromListenerArn(listenerArn: string) {
+    const arnParts = new cdk.FnSplit('/', listenerArn);
+    return `${new cdk.FnSelect(1, arnParts)}/${new cdk.FnSelect(2, arnParts)}/${new cdk.FnSelect(3, arnParts)}`;
 }

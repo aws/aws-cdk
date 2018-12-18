@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import cloudformation = require('@aws-cdk/aws-cloudformation');
 import codebuild = require('@aws-cdk/aws-codebuild');
 import codecommit = require('@aws-cdk/aws-codecommit');
 import lambda = require('@aws-cdk/aws-lambda');
@@ -22,7 +23,7 @@ export = {
     const sourceStage = new codepipeline.Stage(pipeline, 'source', { pipeline });
     const source = new codecommit.PipelineSourceAction(stack, 'source', {
       stage: sourceStage,
-      artifactName: 'SourceArtifact',
+      outputArtifactName: 'SourceArtifact',
       repository,
     });
 
@@ -32,7 +33,7 @@ export = {
     });
     new codebuild.PipelineBuildAction(stack, 'build', {
       stage: buildStage,
-      inputArtifact: source.artifact,
+      inputArtifact: source.outputArtifact,
       project,
     });
 
@@ -51,7 +52,8 @@ export = {
     const s1 = new codepipeline.Stage(stack, 'Source', { pipeline: p });
     new codepipeline.GitHubSourceAction(stack, 'GH', {
       stage: s1,
-      artifactName: 'A',
+      runOrder: 8,
+      outputArtifactName: 'A',
       branch: 'branch',
       oauthToken: secret.value,
       owner: 'foo',
@@ -61,7 +63,7 @@ export = {
     const s2 = new codepipeline.Stage(stack, 'Two', { pipeline: p });
     new codepipeline.ManualApprovalAction(stack, 'Boo', { stage: s2 });
 
-    expect(stack).to(haveResource('AWS::CodePipeline::Pipeline', {
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
       "Location": {
         "Ref": "PArtifactsBucket5E711C12"
@@ -91,7 +93,7 @@ export = {
           "OAuthToken": {
             "Ref": "GitHubTokenParameterBB166B9D"
           },
-          "PollForSourceChanges": true
+          "PollForSourceChanges": false
           },
           "InputArtifacts": [],
           "Name": "GH",
@@ -100,7 +102,7 @@ export = {
             "Name": "A"
           }
           ],
-          "RunOrder": 1
+          "RunOrder": 8
         }
         ],
         "Name": "Source"
@@ -139,7 +141,7 @@ export = {
     const stage1 = new codepipeline.Stage(stack, 'S1', { pipeline });
     new s3.PipelineSourceAction(stack, 'A1', {
       stage: stage1,
-      artifactName: 'Artifact',
+      outputArtifactName: 'Artifact',
       bucket: new s3.Bucket(stack, 'Bucket'),
       bucketKey: 'Key'
     });
@@ -176,14 +178,11 @@ export = {
           "Fn::Join": [
           "",
           [
-            "arn",
-            ":",
+            "arn:",
             {
             "Ref": "AWS::Partition"
             },
-            ":",
-            "codepipeline",
-            ":",
+            ":codepipeline:",
             {
             "Ref": "AWS::Region"
             },
@@ -225,7 +224,7 @@ export = {
           projectName: 'MyProject',
         });
 
-        expect(stack).to(haveResource('AWS::CodeBuild::Project', {
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           "Name": "MyProject",
           "Source": {
           "Type": "CODEPIPELINE"
@@ -271,7 +270,7 @@ export = {
       userParameters: 'foo-bar/42'
     });
 
-    expect(stack, /* skip validation */ true).to(haveResource('AWS::CodePipeline::Pipeline', {
+    expect(stack, /* skip validation */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
         "Location": {
         "Ref": "PipelineArtifactsBucket22248F97"
@@ -336,33 +335,140 @@ export = {
     test.done();
   },
 
-  'polling for changes': {
-    'does not poll for changes'(test: Test) {
+  'CodeCommit Action': {
+    'does not poll for changes by default'(test: Test) {
       const stack = new cdk.Stack();
-
-      const result = new codecommit.PipelineSourceAction(stack, 'stage', {
+      const sourceAction = new codecommit.PipelineSourceAction(stack, 'stage', {
         stage: stageForTesting(stack),
-        artifactName: 'SomeArtifact',
+        outputArtifactName: 'SomeArtifact',
         repository: repositoryForTesting(stack),
-        pollForSourceChanges: false,
       });
-      test.equal(result.configuration.PollForSourceChanges, false);
+
+      test.equal(sourceAction.configuration.PollForSourceChanges, false);
+
       test.done();
     },
 
-    'polls for changes'(test: Test) {
+    'does not poll for source changes when explicitly set to false'(test: Test) {
       const stack = new cdk.Stack();
-
-      const result = new codecommit.PipelineSourceAction(stack, 'stage', {
+      const sourceAction = new codecommit.PipelineSourceAction(stack, 'stage', {
         stage: stageForTesting(stack),
-        artifactName: 'SomeArtifact',
+        outputArtifactName: 'SomeArtifact',
         repository: repositoryForTesting(stack),
-        pollForSourceChanges: true,
+        pollForSourceChanges: false,
       });
-      test.equal(result.configuration.PollForSourceChanges, true);
+
+      test.equal(sourceAction.configuration.PollForSourceChanges, false);
+
       test.done();
-    }
-  }
+    },
+  },
+
+  'cross-region Pipeline': {
+    'generates the required Action & ArtifactStores properties in the template'(test: Test) {
+      const pipelineRegion = 'us-west-2';
+      const pipelineAccount = '123';
+
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: {
+          region: pipelineRegion,
+          account: pipelineAccount,
+        },
+      });
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+        crossRegionReplicationBuckets: {
+          'us-west-1': 'sfo-replication-bucket',
+        },
+      });
+
+      const stage1 = pipeline.addStage('Stage1');
+      const sourceAction = bucket.addToPipeline(stage1, 'BucketSource', {
+        bucketKey: '/some/key',
+      });
+
+      const stage2 = pipeline.addStage('Stage2');
+      new cloudformation.PipelineCreateReplaceChangeSetAction(stack, 'Action1', {
+        stage: stage2,
+        changeSetName: 'ChangeSet',
+        templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+        stackName: 'SomeStack',
+        region: pipelineRegion,
+        adminPermissions: false,
+      });
+      new cloudformation.PipelineCreateUpdateStackAction(stack, 'Action2', {
+        stage: stage2,
+        templatePath: sourceAction.outputArtifact.atPath('template.yaml'),
+        stackName: 'OtherStack',
+        region: 'us-east-1',
+        adminPermissions: false,
+      });
+      new cloudformation.PipelineExecuteChangeSetAction(stack, 'Action3', {
+        stage: stage2,
+        changeSetName: 'ChangeSet',
+        stackName: 'SomeStack',
+        region: 'us-west-1',
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        "ArtifactStores": [
+          {
+            "Region": "us-east-1",
+            "ArtifactStore": {
+              "Type": "S3",
+            },
+          },
+          {
+            "Region": "us-west-1",
+            "ArtifactStore": {
+              "Location": "sfo-replication-bucket",
+              "Type": "S3",
+            },
+          },
+          {
+            "Region": "us-west-2",
+            "ArtifactStore": {
+              "Type": "S3",
+            },
+          },
+        ],
+        "Stages": [
+          {
+            "Name": "Stage1",
+          },
+          {
+            "Name": "Stage2",
+            "Actions": [
+              {
+                "Name": "Action1",
+                "Region": "us-west-2",
+              },
+              {
+                "Name": "Action2",
+                "Region": "us-east-1",
+              },
+              {
+                "Name": "Action3",
+                "Region": "us-west-1",
+              },
+            ],
+          },
+        ]
+      }));
+
+      test.equal(pipeline.crossRegionScaffoldStacks[pipelineRegion], undefined);
+      test.equal(pipeline.crossRegionScaffoldStacks['us-west-1'], undefined);
+
+      const usEast1ScaffoldStack = pipeline.crossRegionScaffoldStacks['us-east-1'];
+      test.notEqual(usEast1ScaffoldStack, undefined);
+      test.equal(usEast1ScaffoldStack.env.region, 'us-east-1');
+      test.equal(usEast1ScaffoldStack.env.account, pipelineAccount);
+      test.ok(usEast1ScaffoldStack.id.indexOf('us-east-1') !== -1,
+        `expected '${usEast1ScaffoldStack.id}' to contain 'us-east-1'`);
+
+      test.done();
+    },
+  },
 };
 
 function stageForTesting(stack: cdk.Stack): codepipeline.Stage {

@@ -1,7 +1,6 @@
 export * from './core/construct';
 export * from './core/tokens';
 export * from './core/tag-manager';
-export * from './core/jsx';
 
 export * from './cloudformation/cloudformation-json';
 export * from './cloudformation/cloudformation-token';
@@ -12,12 +11,12 @@ export * from './cloudformation/logical-id';
 export * from './cloudformation/mapping';
 export * from './cloudformation/output';
 export * from './cloudformation/parameter';
-export * from './cloudformation/permission';
 export * from './cloudformation/pseudo';
 export * from './cloudformation/resource';
 export * from './cloudformation/resource-policy';
 export * from './cloudformation/rule';
 export * from './cloudformation/stack';
+export * from './cloudformation/dynamic-reference';
 export * from './cloudformation/tag';
 export * from './cloudformation/removal-policy';
 export * from './cloudformation/arn';

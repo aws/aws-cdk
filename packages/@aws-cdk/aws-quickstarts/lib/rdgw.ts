@@ -1,4 +1,4 @@
-import { cloudformation } from '@aws-cdk/aws-cloudformation';
+import { CfnStack } from '@aws-cdk/aws-cloudformation';
 import ec2 = require('@aws-cdk/aws-ec2');
 import cdk = require('@aws-cdk/cdk');
 
@@ -42,7 +42,7 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
       RDGWInstanceType: props.rdgwInstanceType,
     };
 
-    const nestedStack = new cloudformation.StackResource(this, 'Resource', {
+    const nestedStack = new CfnStack(this, 'Resource', {
       templateUrl: 'https://s3.amazonaws.com/quickstart-reference/microsoft/rdgateway/latest/templates/rdgw-standalone.template',
       parameters: params
     });
@@ -52,6 +52,6 @@ export class RemoteDesktopGateway extends cdk.Construct implements ec2.IConnecta
     });
 
     const defaultPortRange = new ec2.TcpPort(RemoteDesktopGateway.PORT);
-    this.connections = new ec2.Connections({ securityGroup, defaultPortRange });
+    this.connections = new ec2.Connections({ securityGroups: [securityGroup], defaultPortRange });
   }
 }
