@@ -308,12 +308,16 @@ async function initCommandLine() {
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
 
           // only talk to user if we STDIN is a terminal (otherwise, fail)
-          let confirmed = false;
-          if (process.stdin.isTTY) {
-            confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          if (!process.stdin.isTTY) {
+            throw new Error(
+              '"--require-approval" is enabled and stack includes security-sensitive updates, ' + 
+              'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
           }
 
-          if (!confirmed) { throw new Error('Aborted by user'); }
+          const confirmed = await confirm(`Do you wish to deploy these changes (y/n)?`);
+          if (!confirmed) { 
+            throw new Error('Aborted by user');
+          }
         }
       }
 
