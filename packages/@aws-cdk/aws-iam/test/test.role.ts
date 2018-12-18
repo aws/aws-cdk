@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Resource, Stack } from '@aws-cdk/cdk';
 import { Test } from 'nodeunit';
-import { FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
+import { ArnPrincipal, CompositePrincipal, FederatedPrincipal, PolicyStatement, Role, ServicePrincipal } from '../lib';
 
 export = {
   'default role'(test: Test) {
@@ -206,6 +206,35 @@ export = {
 
       test.done();
     }
+  },
+
+  'allow role with multiple principals'(test: Test) {
+    const stack = new Stack();
+
+    new Role(stack, 'MyRole', {
+      assumedBy: new CompositePrincipal(
+        new ServicePrincipal('boom.amazonaws.com'),
+        new ArnPrincipal('1111111')
+      )
+    });
+
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: "sts:AssumeRole",
+            Effect: "Allow",
+            Principal: {
+              Service: "boom.amazonaws.com",
+              AWS: "1111111"
+            }
+          }
+        ],
+        Version: "2012-10-17"
+      }
+    }));
+
+    test.done();
   }
 
 };
