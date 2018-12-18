@@ -1,6 +1,7 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
 import { Alarm, ComparisonOperator, TreatMissingData } from './alarm';
+import { Expression, ExpressionContext } from './math';
 import { normalizeStatistic } from './util.statistic';
 
 export type DimensionHash = {[dim: string]: any};
@@ -81,7 +82,7 @@ export interface MetricProps {
  * Metric is an abstraction that makes it easy to specify metrics for use in both
  * alarms and graphs.
  */
-export class Metric {
+export class Metric extends Expression {
   /**
    * Grant permissions to the given identity to write metrics.
    *
@@ -105,6 +106,8 @@ export class Metric {
   public readonly color?: string;
 
   constructor(props: MetricProps) {
+    super();
+
     if (props.periodSec !== undefined
       && props.periodSec !== 1 && props.periodSec !== 5 && props.periodSec !== 10 && props.periodSec !== 30
       && props.periodSec % 60 !== 0) {
@@ -140,6 +143,10 @@ export class Metric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color)
     });
+  }
+
+  public render(context: ExpressionContext): string {
+    return context.metric(this);
   }
 
   /**
