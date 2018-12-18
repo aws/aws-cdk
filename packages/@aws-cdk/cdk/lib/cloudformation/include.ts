@@ -1,5 +1,5 @@
 import { Construct } from '../core/construct';
-import { StackElement } from './stack';
+import { StackElement, Stack } from './stack';
 
 export interface IncludeProps {
   /**
@@ -33,5 +33,8 @@ export class Include extends StackElement {
 
   public toCloudFormation() {
     return this.template;
+  }
+
+  public substituteCrossStackReferences(_sourceStack: Stack): void {
   }
 }

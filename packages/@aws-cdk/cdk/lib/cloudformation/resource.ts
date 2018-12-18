@@ -4,7 +4,7 @@ import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
 import { CloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement } from './stack';
+import { IDependable, Referenceable, StackElement, Stack } from './stack';
 
 export interface ResourceProps {
   /**
@@ -207,6 +207,10 @@ export class Resource extends Referenceable {
       // Re-throw
       throw e;
     }
+  }
+
+  public substituteCrossStackReferences(sourceStack: Stack): void {
+    this.deepSubCrossStackReferences(sourceStack, this.properties);
   }
 
   protected renderProperties(properties: any): { [key: string]: any } {

@@ -1,9 +1,9 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
-import { resolve, Token } from '../core/tokens';
+import { resolve, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { CloudFormationToken } from './cloudformation-token';
+import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -274,6 +274,11 @@ export class Stack extends Construct {
     return output.makeImportValue();
   }
 
+  public applyCrossEnvironmentReferences() {
+    const elements = stackElements(this);
+    elements.forEach(e => e.substituteCrossStackReferences(this));
+  }
+
   /**
    * Validate stack name
    *
@@ -451,6 +456,29 @@ export abstract class StackElement extends Construct implements IDependable {
    * }
    */
   public abstract toCloudFormation(): object;
+
+  public abstract substituteCrossStackReferences(sourceStack: Stack): void;
+
+  protected deepSubCrossStackReferences(sourceStack: Stack, x: any): any {
+    if (StackAwareCloudFormationToken.isInstance(x)) {
+      return x.substituteToken(sourceStack);
+    }
+
+    if (unresolved(x)) {
+      x = resolve(x);
+    }
+
+    if (Array.isArray(x)) {
+      return x.map(e => this.deepSubCrossStackReferences(sourceStack, e));
+    }
+    if (typeof x === 'object' && x !== null) {
+      for (const [key, value] of Object.entries(x)) {
+        x[key] = this.deepSubCrossStackReferences(sourceStack, value);
+      }
+      return x;
+    }
+    return x;
+  }
 }
 
 /**

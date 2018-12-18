@@ -53,13 +53,6 @@ export class Output extends StackElement {
   public readonly description?: string;
 
   /**
-   * The value of the property returned by the aws cloudformation describe-stacks command.
-   * The value of an output can include literals, parameter references, pseudo-parameters,
-   * a mapping value, or intrinsic functions.
-   */
-  public readonly value?: any;
-
-  /**
    * The name of the resource output to be exported for a cross-stack reference.
    * By default, the logical ID of the Output element is used as it's export name.
    */
@@ -72,6 +65,8 @@ export class Output extends StackElement {
    */
   public readonly condition?: Condition;
 
+  private _value?: any;
+
   /**
    * Creates an Output value for this stack.
    * @param parent The parent construct.
@@ -81,7 +76,7 @@ export class Output extends StackElement {
     super(parent, name);
 
     this.description = props.description;
-    this.value = props.value;
+    this._value = props.value;
     this.condition = props.condition;
 
     if (props.export) {
@@ -95,6 +90,15 @@ export class Output extends StackElement {
       this.export = stackName ? stackName + ':' : '';
       this.export += this.logicalId;
     }
+  }
+
+  /**
+   * The value of the property returned by the aws cloudformation describe-stacks command.
+   * The value of an output can include literals, parameter references, pseudo-parameters,
+   * a mapping value, or intrinsic functions.
+   */
+  public get value(): any {
+    return this._value;
   }
 
   /**
@@ -120,6 +124,10 @@ export class Output extends StackElement {
     };
   }
 
+  public substituteCrossStackReferences(sourceStack: Stack): void {
+    this._value = this.deepSubCrossStackReferences(sourceStack, this._value);
+  }
+  
   public get ref(): string {
     throw new Error('Outputs cannot be referenced');
   }

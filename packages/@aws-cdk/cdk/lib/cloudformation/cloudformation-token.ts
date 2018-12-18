@@ -1,5 +1,5 @@
 import { Construct } from "../core/construct";
-import { ContextMap, resolve, Token } from "../core/tokens";
+import { resolve, Token } from "../core/tokens";
 
 /**
  * Base class for CloudFormation built-ins
@@ -15,6 +15,12 @@ export class CloudFormationToken extends Token {
 }
 
 export class StackAwareCloudFormationToken extends CloudFormationToken {
+  public static isInstance(x: any): x is StackAwareCloudFormationToken {
+    return x && x._isStackAwareCloudFormationToken;
+  }
+
+  protected readonly _isStackAwareCloudFormationToken: boolean;
+
   private readonly tokenStack?: Stack;
 
   constructor(anchor: Construct | undefined, value: any, displayName?: string) {
@@ -22,21 +28,24 @@ export class StackAwareCloudFormationToken extends CloudFormationToken {
           throw new Error('StackAwareCloudFormationToken can only contain eager values');
       }
       super(value, displayName);
+      this._isStackAwareCloudFormationToken = true;
 
       if (anchor !== undefined) {
         this.tokenStack = Stack.find(anchor);
       }
   }
 
-  public resolve(context: ContextMap): any {
-      const consumingStack = context.stack;
-      if (this.tokenStack && consumingStack && this.tokenStack !== consumingStack) {
+  /**
+   * In a consuming context, potentially substitute this Token with a different one
+   */
+  public substituteToken(consumingStack: Stack): Token {
+      if (this.tokenStack && this.tokenStack !== consumingStack) {
           // We're trying to resolve a cross-stack reference
           consumingStack.addStackDependency(this.tokenStack);
           return this.tokenStack.exportValue(this, consumingStack);
       }
-      // Stack-local resolution
-      return super.resolve(context);
+      // In case of doubt, return same Token
+      return this;
   }
 }
 

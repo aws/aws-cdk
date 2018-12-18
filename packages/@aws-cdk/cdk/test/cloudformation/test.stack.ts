@@ -183,16 +183,25 @@ export = {
     new Parameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
     // THEN
-    // Need to freeze manually now, because we want to test using JUST the stacks.
+    // Need to do this manually now, since we're in testing mode. In a normal CDK app,
+    // this happens as part of app.run().
     app.applyCrossEnvironmentReferences();
 
     test.deepEqual(stack1.toCloudFormation(), {
-      Output: {
+      Outputs: {
+        ExportsOutputRefAWSAccountIdAD568057: {
+          Value: { Ref: 'AWS::AccountId' },
+          Export: { Name: 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
+        }
       }
     });
 
     test.deepEqual(stack2.toCloudFormation(), {
       Parameters: {
+        SomeParameter: {
+          Type: 'String',
+          Default: { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSAccountIdAD568057' }
+        }
       }
     });
 

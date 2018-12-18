@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
 import { FnCondition } from './fn';
-import { Referenceable } from './stack';
+import { Referenceable, Stack } from './stack';
 
 export interface ConditionProps {
   expression?: FnCondition;
@@ -31,5 +31,9 @@ export class Condition extends Referenceable {
         [this.logicalId]: this.expression
       }
     };
+  }
+
+  public substituteCrossStackReferences(sourceStack: Stack): void {
+    this.expression = this.deepSubCrossStackReferences(sourceStack, this.expression);
   }
 }

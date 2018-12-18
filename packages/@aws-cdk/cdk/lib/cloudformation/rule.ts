@@ -1,7 +1,7 @@
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames } from '../core/util';
 import { FnCondition } from './fn';
-import { Referenceable } from './stack';
+import { Referenceable, Stack } from './stack';
 
 /**
  * A rule can include a RuleCondition property and must include an Assertions property.
@@ -101,6 +101,9 @@ export class Rule extends Referenceable {
         }
       }
     };
+  }
+
+  public substituteCrossStackReferences(_sourceStack: Stack): void {
   }
 }
 

@@ -42,6 +42,8 @@ export class App extends Root {
       return;
     }
 
+    this.applyCrossEnvironmentReferences();
+
     const result: cxapi.SynthesizeResponse = {
       version: cxapi.PROTO_RESPONSE_VERSION,
       stacks: this.synthesizeStacks(Object.keys(this.stacks)),
@@ -124,6 +126,9 @@ export class App extends Root {
   }
 
   public applyCrossEnvironmentReferences() {
+    for (const stack of Object.values(this.stacks)) {
+      stack.applyCrossEnvironmentReferences();
+    }
   }
 
   private collectRuntimeInformation(): cxapi.AppRuntime {

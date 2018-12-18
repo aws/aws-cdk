@@ -1,6 +1,6 @@
 import { Construct } from '../core/construct';
-import { Token } from '../core/tokens';
-import { Ref, Referenceable } from './stack';
+import { Token, ContextMap } from '../core/tokens';
+import { Ref, Referenceable, Stack } from './stack';
 
 export interface ParameterProps {
   /**
@@ -110,5 +110,17 @@ export class Parameter extends Referenceable {
         }
       }
     };
+  }
+
+  public substituteCrossStackReferences(sourceStack: Stack): void {
+    this.properties = this.deepSubCrossStackReferences(sourceStack, this.properties);
+  }
+
+  /**
+   * Allows using parameters as tokens without the need to dereference them.
+   * This implicitly implements Token, until we make it an interface.
+   */
+  public resolve(_context: ContextMap): any {
+    return this.value;
   }
 }

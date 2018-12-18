@@ -52,7 +52,7 @@ export = {
       ctagger.tags.setTag(tag.key, tag.value, {propagate: false});
 
       for (const construct of [ctagger1, ctagger2]) {
-        test.deepEqual(resolve(construct.tags).length, undefined);
+        test.deepEqual(resolve(construct.tags), undefined);
       }
       test.deepEqual(resolve(ctagger.tags)[0].key, 'Name');
       test.deepEqual(resolve(ctagger.tags)[0].value, 'TheCakeIsALie');

@@ -146,7 +146,7 @@ export function unresolved(obj: any): boolean {
   } else if (Array.isArray(obj) && obj.length === 1) {
     return isListToken(obj[0]);
   } else {
-    return typeof(obj[RESOLVE_METHOD]) === 'function';
+    return obj && typeof(obj[RESOLVE_METHOD]) === 'function';
   }
 }
 
