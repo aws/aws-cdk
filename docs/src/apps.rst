@@ -33,7 +33,7 @@ as shown in the following example.
 
    app.run();
 
-A |app-construct| is a collection of |stack| objects, as shown in the following
+An |app-class| is a collection of |stack| objects, as shown in the following
 example.
 
 .. code-block:: js
