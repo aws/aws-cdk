@@ -404,7 +404,7 @@ export = {
     }));
     test.done();
   },
-  'can set custom launchconfiguration'(test: Test) {
+  'can set a custom LaunchConfiguration'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
     const vpc = mockVpc(stack);
@@ -426,6 +426,29 @@ export = {
       ImageId: 'dummy',
       InstanceType: 'm4.micro',
       SpotPrice: '1',
+    }));
+    test.done();
+  },
+  'can set a custom LaunchTemplate'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      vpc,
+      launchTemplateSpecificationProps: {
+        launchTemplateId: 'dummy',
+        version: '1',
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::AutoScalingGroup", {
+      LaunchTemplate: {
+        LaunchTemplateId: 'dummy',
+        Version: '1',
+      },
     }));
     test.done();
   },

@@ -153,6 +153,11 @@ export interface AutoScalingGroupProps {
    * When you want to use your own LaunchConfiguration resource
    */
   launchConfigurationProps?: CfnLaunchConfigurationProps;
+
+  /**
+   * When you want to use your own LaunchConfiguration resource
+   */
+  launchTemplateSpecificationProps?: CfnAutoScalingGroup.LaunchTemplateSpecificationProperty
 }
 
 /**
@@ -227,50 +232,8 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
 
     // use delayed evaluation
     const machineImage = props.machineImage !== undefined ? props.machineImage.getImage(this) : new ec2.AmazonLinuxImage().getImage(this);
-    const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
-    const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
-    const instanceType =
-      props.instanceType !== undefined
-      ? props.instanceType
-      : new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro);
 
-    const launchConfigProps =
-      props.launchConfigurationProps
-      ? props.launchConfigurationProps
-      : {
-          imageId: machineImage.imageId,
-          keyName: props.keyName,
-          instanceType: instanceType.toString(),
-          securityGroups: securityGroupsToken,
-          iamInstanceProfile: iamProfile.ref,
-          userData: userDataToken
-        };
-
-    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', launchConfigProps);
-
-    launchConfig.addDependency(this.role);
-
-    const desiredCapacity =
-        (props.desiredCapacity !== undefined ? props.desiredCapacity :
-        (props.minSize !== undefined ? props.minSize :
-        (props.maxSize !== undefined ? props.maxSize : 1)));
-    const minSize = props.minSize !== undefined ? props.minSize : 1;
-    const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
-
-    if (desiredCapacity < minSize || desiredCapacity > maxSize) {
-      throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
-    }
-
-    const asgProps: CfnAutoScalingGroupProps = {
-      cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
-      minSize: minSize.toString(),
-      maxSize: maxSize.toString(),
-      desiredCapacity: desiredCapacity.toString(),
-      launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
-      targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
-      tags: this.tags,
-    };
+    const asgProps: CfnAutoScalingGroupProps = this.generateAutoScalingGroupProps(props, iamProfile, machineImage);
 
     if (props.notificationsTopic) {
       asgProps.notificationConfigurations = [];
@@ -498,6 +461,66 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
       this.autoScalingGroup.options.creationPolicy = {};
     }
     return this.autoScalingGroup.options.creationPolicy;
+  }
+
+  private generateAutoScalingGroupProps(props: AutoScalingGroupProps, iamProfile: iam.CfnInstanceProfile, machineImage: ec2.MachineImage): CfnAutoScalingGroupProps {
+    const desiredCapacity =
+    (props.desiredCapacity !== undefined ? props.desiredCapacity :
+    (props.minSize !== undefined ? props.minSize :
+    (props.maxSize !== undefined ? props.maxSize : 1)));
+    const minSize = props.minSize !== undefined ? props.minSize : 1;
+    const maxSize = props.maxSize !== undefined ? props.maxSize : desiredCapacity;
+
+    if (props.launchTemplateSpecificationProps !== undefined) {
+      return {
+        cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
+        minSize: minSize.toString(),
+        maxSize: maxSize.toString(),
+        desiredCapacity: desiredCapacity.toString(),
+        launchTemplate: props.launchTemplateSpecificationProps,
+        loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
+        targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
+        tags: this.tags,
+      };
+    } else {
+      const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
+      const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+      const instanceType =
+        props.instanceType !== undefined
+        ? props.instanceType
+        : new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro);
+
+      const launchConfigProps =
+        props.launchConfigurationProps
+        ? props.launchConfigurationProps
+        : {
+            imageId: machineImage.imageId,
+            keyName: props.keyName,
+            instanceType: instanceType.toString(),
+            securityGroups: securityGroupsToken,
+            iamInstanceProfile: iamProfile.ref,
+            userData: userDataToken
+          };
+
+      const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', launchConfigProps);
+
+      launchConfig.addDependency(this.role);
+
+      if (desiredCapacity < minSize || desiredCapacity > maxSize) {
+        throw new Error(`Should have minSize (${minSize}) <= desiredCapacity (${desiredCapacity}) <= maxSize (${maxSize})`);
+      }
+
+      return {
+        cooldown: props.cooldownSeconds !== undefined ? `${props.cooldownSeconds}` : undefined,
+        minSize: minSize.toString(),
+        maxSize: maxSize.toString(),
+        desiredCapacity: desiredCapacity.toString(),
+        launchConfigurationName: launchConfig.ref,
+        loadBalancerNames: new cdk.Token(() => this.loadBalancerNames.length > 0 ? this.loadBalancerNames : undefined),
+        targetGroupArns: new cdk.Token(() => this.targetGroupArns.length > 0 ? this.targetGroupArns : undefined),
+        tags: this.tags,
+      };
+    }
   }
 }
 
