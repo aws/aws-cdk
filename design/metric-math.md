@@ -1,18 +1,13 @@
 # Overview
-There are two options for specifying the time-series data of a CloudWatch alarm:
-* [Single, specific metric](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudwatch-alarm-metric.html) - user provides the metric name, namespace, dimensions, units, etc.
-* [Metric-math expressions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html) - user provides a list of metrics (as described above) and mathematical expressions to compute a (single) aggregate time-series metric.
+Our L2 `Alarm` construct currently only supports specifying a specific metric to monitor - the simple case. This design discusses options for extending this construct to support metric math, a domain-specific language (DSL) of data types, operators and functions for specifying mathematical aggregations of CloudWatch metric data.
 
-Our L2 `Alarm` construct currently only supports a specific metric - the simple case. This design proposes an extension of this construct to support metric math.
-
-# Expressions
-CloudWatch metric-math is a domain-specific language (DSL) of data types, operators and functions for specifying mathematical aggregations of CloudWatch metric data.
+See the [official documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html) for a complete explanation.
 
 ## Data Types
 There are three data types in the language:
-* Scalar (or `S`) - represents a scalar number such as `2`, `-5`, `50.25`
-* Time-Series (or `TS`) - represents a single time-series metric such as CPU Utilization. Our `Metric` L2 construct can be considered a `TS` value.
-* Time-Series array (or `TS[]`) - a collection of time-series metrics (multiple lines on a graph).
+* Scalar (`S`) - represents a scalar number such as `2`, `-5`, `50.25`
+* Time-Series (`TS`) - represents a single time-series metric such as CPU Utilization (single line on a graph). Our `Metric` L2 construct is an example of a `TS` value.
+* Time-Series array (`TS[]`) - a collection of time-series metrics (multiple lines on a graph).
 ```
 // '::' denotes 'is of type'
 100      :: S
@@ -21,7 +16,7 @@ m1       :: TS
 ```
 
 ## Arithmetic Operations and Functions
-Arithmetic expressions may then be applied to these data types to compute refined time-series aggregates. There are: basic arithmetic operations such as `+`, `-`, `*`, `/` and `^`, and functions such as `SUM`, `AVG` and `STDDEV`. See the [official documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html) for a complete explanation.
+Arithmetic expressions may then be applied to these data types to compute aggregations. There are: basic arithmetic operations such as `+`, `-`, `*`, `/` and `^`, and functions such as `SUM`, `AVG` and `STDDEV`. 
 ```
 AVG(m1)           :: S
 AVG([m1, m2])     :: TS
@@ -30,51 +25,55 @@ SUM([m1, m2])     :: TS
 METRICS()         :: TS[]
 ```
 
-## Polymorphism
-Both operators and functions are polymorphic with respect to input and output types - the result type depends on the input type, like an overloaded function. This is important, because if we aim to reproduce a representation of this mathematical system in code, then we should also aim to capture and enforce those rules.
+Both operators and functions are polymorphic with respect to input and output types - the result type depends on the input type, like an overloaded function. This is important, because if we aim to reproduce a representation of this mathematical system in code, then we should also aim to capture and enforce those rules as best we can.
 
 For example, the `AVG` function returns a `S` if passed a single `TS`, while it returns a `TS` if passed a collection, `TS[]`:
 
 ```
-AVG(m1)       :: S
-AVG([m1, m2]) :: TS
+AVG(m1)       :: S // average of all data points 
+AVG([m1, m2]) :: TS // average of the series' points at each interval
 ```
 
-The consequence of this is you can not alarm on `AVG(TS)` because its type is `S`. Ideally the type system would enforce this constraint at compile time, or at least synth/run time. 
+A consequence of this is you can not alarm on `AVG(TS)` because its type is `S`.
 
-## Intermediate Computations
+## Intermediate Computation
+Metric definitions and math expressions co-exist in a list of `MetricDataQuery` objects, but only one time-series (single line) result may be compared against the alarm condition. That is to say, the result type of a `MetricDataQuery` must be `TS` for it to be valid as an Alarm.
 
-Metrics and expressons in a list of `MetricDataQuery` objects do not have to return data; so a complex expression may be reduced into smaller, simpler (and potentially re-usable) parts. In fact, a valid alarm definition *requires* that only one expression returns data. This is to say, the result type of an alarm definition must be `TS`.
+This is achieved by setting the `ReturnData` flag. When `true`, the result of that expression - whether it be a `TS` or `TS[]` - materializes as lines on a graph; setting it to `false` means the opposite. This mechanic then supports two applications: 
+* Reduction of a complex expression into smaller, simpler (and potentially re-usable) parts;
+* Identify the expression which yields the time-series result to monitor as an alarm. 
 
-# Alarm 
-
-Let's look at a simple example of computing the average number of published messages to an SNS topic. Instead of specifying the metric directly, we'll use an expression to compute the average of the `Sum` stat:
+Let's look at an example CloudFormation YAML definition of an alarm using metric-math:
 
 ```yaml
 MyAlarm:
   Type: AWS::CloudWatch::Alarm
   Properties:
     Metrics:
-      - Id: m1
+      - Id: errors
         MetricStat:
           Metric:
-            Namespace: AWS/SNS
-            MetricName: NumberOfPublishedMessages
-            Dimensions:
-              - Name: TopicName
-                Value: MyTopic
+            MetricName: Errors
           Period: 300
           Stat: Sum
         ReturnData: false
-      - Id: s1
-        Expression: AVG(m1)
+      - Id: requests
+        MetricStat:
+          Metric:
+            MetricName: Requests
+          Period: 300
+          Stat: Sum
+        ReturnData: false
+      - Id: error_rate
+        Expression: (requests - errors) * 100
         ReturnData: true
 ```
 
-Our first metric, `m1`, is not an expression. It brings the topic's metric into the scope of the expression with the ID, `m1`. Think of it like assigning a local variable. Also note how the value of `ReturnData` is `false` - as previously mentioned, only one entry in an alarm definition is permitted to return data. By specifying `false`, we are indicating that this value is an 'intermediate' value only used as part of the larger computation.
+We have requested two specific metrics, `errors` and `requests`. This brings those metrics into the scope of the query with their respective IDs. Think of it like assigning local variables for use later on. Also note how the value of `ReturnData` is `false` for these metrics - as previously mentioned, only one entry in an alarm definition is permitted to return data. By specifying `false`, we are indicating that this value is an 'intermediate' value only used as part of the larger computation. The expression, `error_rate`, then computes the error rate as a percentage using a simple expressio, `(requests - errors) * 100`.
 
-The second metric, `s1`, is a mathematical expression which averages the `m1` time-series metric 
+# Option 1 - simple
 
+The `Metric` L2 construct does a lot of work for us. Looking at the
 
 ```javascript
 [{
