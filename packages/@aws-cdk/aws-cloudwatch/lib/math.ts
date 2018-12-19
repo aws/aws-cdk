@@ -49,16 +49,22 @@ export function compileExpression(ex: IExpression) {
   return metricArr;
 }
 
+export enum DataType {
+  Scalar = 'S',
+  TimeSeries = 'TS',
+  TimeSeriesArray = 'TS[]'
+}
+
 export interface IExpression {
   render(context: ExpressionContext): string;
 }
 
 export interface IScalar extends IExpression {
-  readonly tag: 'S';
+  readonly type: DataType.Scalar;
 }
 
 export interface ITimeSeries extends IExpression {
-  readonly tag: 'TS';
+  readonly type: DataType.TimeSeries;
 
   plus(operand: number | IScalar | ITimeSeries): ITimeSeries;
   plus(operand: ITimeSeriesArray): ITimeSeriesArray;
@@ -77,7 +83,7 @@ export interface ITimeSeries extends IExpression {
 }
 
 export interface ITimeSeriesArray extends IExpression {
-  readonly tag: 'TS[]';
+  readonly type: DataType.TimeSeriesArray;
 
   plus(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
   minus(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
@@ -191,13 +197,13 @@ export abstract class AbstractExpression implements IExpression {
 }
 
 export abstract class AbstractTimeSeries extends AbstractExpression implements ITimeSeries {
-  public readonly tag = 'TS';
+  public readonly type = DataType.TimeSeries;
 
   public abstract render(context: ExpressionContext): string;
 }
 
 class Scalar extends AbstractExpression implements IScalar {
-  public readonly tag = 'S';
+  public readonly type = DataType.Scalar;
 
   constructor(private readonly value: number) {
     super();
@@ -209,7 +215,7 @@ class Scalar extends AbstractExpression implements IScalar {
 }
 
 class ScalarWrapper extends AbstractExpression implements IScalar {
-  public readonly tag = 'S';
+  public readonly type = DataType.Scalar;
 
   constructor(private readonly delegate: IExpression) {
     super();
@@ -220,9 +226,7 @@ class ScalarWrapper extends AbstractExpression implements IScalar {
   }
 }
 
-class StringLiteral implements IScalar {
-  public readonly tag = 'S';
-
+class StringLiteral implements IExpression {
   constructor(private readonly value: string) {}
 
   public render(_context: ExpressionContext): string {
@@ -231,7 +235,7 @@ class StringLiteral implements IScalar {
 }
 
 class TimeSeriesArrayRef extends AbstractExpression implements ITimeSeriesArray {
-  public readonly tag = 'TS[]';
+  public readonly type = DataType.TimeSeriesArray;
 
   constructor(private readonly array: ITimeSeries[]) {
     super();
