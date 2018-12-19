@@ -410,7 +410,6 @@ export = {
     const vpc = mockVpc(stack);
 
     // WHEN
-
     const testLaunchConfigProps = {
       imageId: 'dummy',
       instanceType: 'm4.micro',
@@ -418,8 +417,6 @@ export = {
     };
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
-      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
-      machineImage: new ec2.AmazonLinuxImage(),
       vpc,
       launchConfigurationProps: testLaunchConfigProps,
     });

@@ -24,7 +24,7 @@ export interface AutoScalingGroupProps {
   /**
    * Type of instance to launch
    */
-  instanceType: ec2.InstanceType;
+  instanceType?: ec2.InstanceType;
 
   /**
    * Minimum number of instances in the fleet
@@ -55,7 +55,7 @@ export interface AutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  machineImage: ec2.IMachineImageSource;
+  machineImage?: ec2.IMachineImageSource;
 
   /**
    * VPC to launch these instances in.
@@ -226,20 +226,25 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage.getImage(this);
+    const machineImage = props.machineImage !== undefined ? props.machineImage.getImage(this) : new ec2.AmazonLinuxImage().getImage(this);
     const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
     const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
+    const instanceType =
+      props.instanceType !== undefined
+      ? props.instanceType
+      : new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro);
 
-    const launchConfigProps = props.launchConfigurationProps
-    ? props.launchConfigurationProps
-    : {
-        imageId: machineImage.imageId,
-        keyName: props.keyName,
-        instanceType: props.instanceType.toString(),
-        securityGroups: securityGroupsToken,
-        iamInstanceProfile: iamProfile.ref,
-        userData: userDataToken
-      };
+    const launchConfigProps =
+      props.launchConfigurationProps
+      ? props.launchConfigurationProps
+      : {
+          imageId: machineImage.imageId,
+          keyName: props.keyName,
+          instanceType: instanceType.toString(),
+          securityGroups: securityGroupsToken,
+          iamInstanceProfile: iamProfile.ref,
+          userData: userDataToken
+        };
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', launchConfigProps);
 
