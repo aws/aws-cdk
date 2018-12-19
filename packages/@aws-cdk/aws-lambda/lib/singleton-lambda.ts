@@ -1,6 +1,6 @@
 import iam = require('@aws-cdk/aws-iam');
 import cdk = require('@aws-cdk/cdk');
-import { Function, FunctionProps } from './lambda';
+import { Function as LambdaFunction, FunctionProps } from './lambda';
 import { FunctionRef } from './lambda-ref';
 import { Permission } from './permission';
 
@@ -66,7 +66,7 @@ export class SingletonFunction extends FunctionRef {
       return existing as FunctionRef;
     }
 
-    return new Function(stack, constructName, props);
+    return new LambdaFunction(stack, constructName, props);
   }
 }
 
