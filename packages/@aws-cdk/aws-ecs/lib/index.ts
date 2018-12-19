@@ -25,6 +25,8 @@ export * from './images/ecr';
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/log-driver';
 
+export * from './drain-hook/instance-drain-hook';
+
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
