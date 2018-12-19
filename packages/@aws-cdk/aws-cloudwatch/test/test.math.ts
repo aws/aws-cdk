@@ -1,8 +1,9 @@
 import { Test } from 'nodeunit';
 import cloudwatch = require('../lib');
+import {sum} from '../lib';
 
 export = {
-  'SUM([m1,m2]) * 100'(test: Test) {
+  'SUM([m1,m2]) + 100'(test: Test) {
     const m1 = new cloudwatch.Metric({
       metricName: 'NumberOfPublishedMessages',
       namespace: 'AWS/SNS',
@@ -15,7 +16,7 @@ export = {
         b: '2'
       }
     });
-    const math = cloudwatch.sum(m1, m2).plus(100);
+    const math = sum(m1, m2).plus(100);
 
     test.deepEqual(cloudwatch.compileExpression(math), [{
       id: 'm1',

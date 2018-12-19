@@ -1,8 +1,8 @@
 import { Construct, Token } from '@aws-cdk/cdk';
 import { CfnAlarm } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
-import { Dimension, Metric, Statistic, Unit } from './metric';
-import { parseStatistic } from './util.statistic';
+import { compileExpression, ITimeSeries } from './math';
+import { Dimension, Statistic, Unit } from './metric';
 
 /**
  * Properties for Alarms
@@ -14,7 +14,7 @@ export interface AlarmProps {
    * Metric objects can be obtained from most resources, or you can construct
    * custom Metric objects by instantiating one.
    */
-  metric: Metric;
+  metric: ITimeSeries;
 
   /**
    * Name of the alarm
@@ -80,12 +80,12 @@ export enum ComparisonOperator {
   LessThanOrEqualToThreshold = 'LessThanOrEqualToThreshold',
 }
 
-const OPERATOR_SYMBOLS: {[key: string]: string} = {
-  GreaterThanOrEqualToThreshold: '>=',
-  GreaterThanThreshold: '>',
-  LessThanThreshold: '<',
-  LessThanOrEqualToThreshold: '>=',
-};
+// const OPERATOR_SYMBOLS: {[key: string]: string} = {
+//   GreaterThanOrEqualToThreshold: '>=',
+//   GreaterThanThreshold: '>',
+//   LessThanThreshold: '<',
+//   LessThanOrEqualToThreshold: '>=',
+// };
 
 /**
  * Specify how missing data points are treated during alarm evaluation
@@ -129,7 +129,7 @@ export class Alarm extends Construct {
   /**
    * The metric object this alarm was based on
    */
-  public readonly metric: Metric;
+  public readonly metric: ITimeSeries;
 
   private alarmActionArns?: string[];
   private insufficientDataActionArns?: string[];
@@ -164,15 +164,16 @@ export class Alarm extends Construct {
       okActions: new Token(() => this.okActionArns),
 
       // Metric
-      ...metricJson(props.metric)
+      // ...metricJson(props.metric)
     });
+    alarm.addOverride('metrics', compileExpression(props.metric));
 
     this.alarmArn = alarm.alarmArn;
     this.alarmName = alarm.alarmName;
     this.metric = props.metric;
     this.annotation = {
       // tslint:disable-next-line:max-line-length
-      label: `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
+      label: 'TODO', // `${this.metric.label || this.metric.metricName} ${OPERATOR_SYMBOLS[comparisonOperator]} ${props.threshold} for ${props.evaluationPeriods} datapoints within ${describePeriod(props.evaluationPeriods * props.metric.periodSec)}`,
       value: props.threshold,
     };
   }
@@ -242,12 +243,12 @@ export class Alarm extends Construct {
  *
  * We know the seconds are always one of a handful of allowed values.
  */
-function describePeriod(seconds: number) {
-  if (seconds === 60) { return '1 minute'; }
-  if (seconds === 1) { return '1 second'; }
-  if (seconds > 60) { return (seconds / 60) + ' minutes'; }
-  return seconds + ' seconds';
-}
+// function describePeriod(seconds: number) {
+//   if (seconds === 60) { return '1 minute'; }
+//   if (seconds === 1) { return '1 second'; }
+//   if (seconds > 60) { return (seconds / 60) + ' minutes'; }
+//   return seconds + ' seconds';
+// }
 
 /**
  * Interface for objects that can be the targets of CloudWatch alarm actions
@@ -262,21 +263,21 @@ export interface IAlarmAction {
 /**
  * Return the JSON structure which represents the given metric in an alarm.
  */
-function metricJson(metric: Metric): AlarmMetricJson {
-  const stat = parseStatistic(metric.statistic);
+// function metricJson(metric: Metric): AlarmMetricJson {
+//   const stat = parseStatistic(metric.statistic);
 
-  const dims = metric.dimensionsAsList();
+//   const dims = metric.dimensionsAsList();
 
-  return {
-    dimensions: dims.length > 0 ? dims : undefined,
-    namespace: metric.namespace,
-    metricName: metric.metricName,
-    period: metric.periodSec,
-    statistic: stat.type === 'simple' ? stat.statistic : undefined,
-    extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
-    unit: metric.unit
-  };
-}
+//   return {
+//     dimensions: dims.length > 0 ? dims : undefined,
+//     namespace: metric.namespace,
+//     metricName: metric.metricName,
+//     period: metric.periodSec,
+//     statistic: stat.type === 'simple' ? stat.statistic : undefined,
+//     extendedStatistic: stat.type === 'percentile' ? 'p' + stat.percentile : undefined,
+//     unit: metric.unit
+//   };
+// }
 
 /**
  * Properties used to construct the Metric identifying part of an Alarm

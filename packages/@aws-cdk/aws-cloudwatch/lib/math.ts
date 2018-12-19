@@ -1,28 +1,4 @@
 import { Metric } from "./metric";
-// import { Alarm, AlarmProps } from "./alarm";
-
-export interface IExpression {
-  render(context: ExpressionContext): string;
-}
-
-export interface ITimeSeries extends IExpression {
-  plus(operand: number | Scalar | ITimeSeries): ITimeSeries;
-  plus(operand: ITimeSeriesArray): ITimeSeriesArray;
-}
-
-export abstract class AbstractTimeSeries implements ITimeSeries {
-  public plus(operand: number | ITimeSeries | Scalar): ITimeSeries;
-  public plus(operand: ITimeSeriesArray): ITimeSeriesArray;
-  public plus(operand: any): any {
-    return new Plus(this, operand);
-  }
-
-  public abstract render(context: ExpressionContext): string;
-}
-
-export interface ITimeSeriesArray extends IExpression {
-  plus(operand: number | Scalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
-}
 
 export class ExpressionContext {
   private readonly metrics: { [key: string]: Metric } = {};
@@ -41,10 +17,10 @@ export class ExpressionContext {
   }
 
   public toMetrics(): any {
-    const metrics: any[] = [];
+    const metricArr: any[] = [];
     Object.keys(this.metrics).forEach(id => {
       const metric = this.metrics[id];
-      metrics.push({
+      metricArr.push({
         id,
         metric: {
           metricName: metric.metricName,
@@ -57,31 +33,196 @@ export class ExpressionContext {
         returnData: false
       });
     });
-    return metrics;
+    return metricArr;
   }
 }
 
 export function compileExpression(ex: IExpression) {
   const context = new ExpressionContext();
   const expression = ex.render(context);
-  const metrics = context.toMetrics();
-  metrics.push({
+  const metricArr = context.toMetrics();
+  metricArr.push({
     id: context.nextId(),
     expression,
     returnData: true
   });
-  return metrics;
+  return metricArr;
 }
 
-export class Scalar implements IExpression {
-  constructor(private readonly value: number) {}
+export interface IExpression {
+  render(context: ExpressionContext): string;
+}
+
+export interface IScalar extends IExpression {
+  readonly tag: 'S';
+}
+
+export interface ITimeSeries extends IExpression {
+  readonly tag: 'TS';
+
+  plus(operand: number | IScalar | ITimeSeries): ITimeSeries;
+  plus(operand: ITimeSeriesArray): ITimeSeriesArray;
+
+  minus(operand: number | IScalar | ITimeSeries): ITimeSeries;
+  minus(operand: ITimeSeriesArray): ITimeSeriesArray;
+
+  multiply(operand: number | IScalar | ITimeSeries): ITimeSeries;
+  multiply(operand: ITimeSeriesArray): ITimeSeriesArray;
+
+  divide(operand: number | IScalar | ITimeSeries): ITimeSeries;
+  divide(operand: ITimeSeriesArray): ITimeSeriesArray;
+
+  pow(operand: number | IScalar | ITimeSeries): ITimeSeries;
+  pow(operand: ITimeSeriesArray): ITimeSeriesArray;
+}
+
+export interface ITimeSeriesArray extends IExpression {
+  readonly tag: 'TS[]';
+
+  plus(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+  minus(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+  multiply(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+  divide(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+  pow(operand: number | IScalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+}
+
+export function abs(ts: ITimeSeries): IScalar;
+export function abs(...ts: ITimeSeries[]): ITimeSeries;
+export function abs(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeriesArray;
+export function abs(...ts: any[]): any {
+  return new Function('ABS', ...ts);
+}
+
+export function avg(ts: ITimeSeries): IScalar;
+export function avg(...ts: ITimeSeries[]): ITimeSeries;
+export function avg(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function avg(...ts: any[]): any {
+  return new Function('AVG', ...ts);
+}
+
+export function ceil(ts: ITimeSeries): IScalar;
+export function ceil(...ts: ITimeSeries[]): ITimeSeries;
+export function ceil(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeriesArray;
+export function ceil(...ts: any[]): any {
+  return new Function('CEIL', ...ts);
+}
+
+export function fill(ts: ITimeSeries, value: ITimeSeries | IScalar | number): ITimeSeries;
+export function fill(ts: ITimeSeries[] | ITimeSeriesArray, value: ITimeSeries | IScalar | number): ITimeSeriesArray;
+export function fill(ts: any, value: any): any {
+  return new Function('FILL', [ts, value]);
+}
+
+export function floor(ts: ITimeSeries): IScalar;
+export function floor(...ts: ITimeSeries[]): ITimeSeries;
+export function floor(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeriesArray;
+export function floor(...ts: any[]): any {
+  return new Function('FLOOR', ...ts);
+}
+
+export function max(ts: ITimeSeries): IScalar;
+export function max(...ts: ITimeSeries[]): ITimeSeries;
+export function max(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function max(...ts: any[]): any {
+  return new Function('MAX', ...ts);
+}
+
+export function metricCount(): IScalar {
+  return new Function('METRIC_COUNT', []) as any;
+}
+
+export function metrics(filter?: string): ITimeSeriesArray {
+  if (filter) {
+    return new Function('METRICS', new StringLiteral(filter)) as any;
+  }
+  return new Function('METRICS') as any;
+}
+
+export function min(ts: ITimeSeries): IScalar;
+export function min(...ts: ITimeSeries[]): ITimeSeries;
+export function min(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function min(...ts: any[]): any {
+  return new Function('MIN', ...ts);
+}
+
+export function period(ts: ITimeSeries): IScalar {
+  return new ScalarWrapper(new Function('PERIOD', ts));
+}
+
+export function rate(ts: ITimeSeries): IScalar;
+export function rate(...ts: ITimeSeries[]): ITimeSeries;
+export function rate(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeriesArray;
+export function rate(...ts: any[]): any {
+  return new Function('RATE', ...ts);
+}
+
+export function stddev(ts: ITimeSeries): IScalar;
+export function stddev(...ts: ITimeSeries[]): ITimeSeries;
+export function stddev(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function stddev(...ts: any[]): any {
+  return new Function('STDDEV', ...ts);
+}
+
+export function sum(ts: ITimeSeries): IScalar;
+export function sum(...ts: ITimeSeries[]): ITimeSeries;
+export function sum(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function sum(...ts: any[]): any {
+  return new Function('SUM', ...ts);
+}
+
+export abstract class AbstractExpression implements IExpression {
+  public plus(operand: any): any {
+    return new Operator('+', this, operand);
+  }
+  public minus(operand: any): any {
+    return new Operator('-', this, operand);
+  }
+  public multiply(operand: any): any {
+    return new Operator('*', this, operand);
+  }
+  public divide(operand: any): any {
+    return new Operator('/', this, operand);
+  }
+  public pow(operand: any): any {
+    return new Operator('^', this, operand);
+  }
+
+  public abstract render(context: ExpressionContext): string;
+}
+
+export abstract class AbstractTimeSeries extends AbstractExpression implements ITimeSeries {
+  public readonly tag = 'TS';
+
+  public abstract render(context: ExpressionContext): string;
+}
+
+class Scalar extends AbstractExpression implements IScalar {
+  public readonly tag = 'S';
+
+  constructor(private readonly value: number) {
+    super();
+  }
 
   public render(_context: ExpressionContext): string {
     return this.value.toString();
   }
 }
 
-export class Literal implements IExpression {
+class ScalarWrapper extends AbstractExpression implements IScalar {
+  public readonly tag = 'S';
+
+  constructor(private readonly delegate: IExpression) {
+    super();
+  }
+
+  public render(context: ExpressionContext): string {
+    return this.delegate.render(context);
+  }
+}
+
+class StringLiteral implements IScalar {
+  public readonly tag = 'S';
+
   constructor(private readonly value: string) {}
 
   public render(_context: ExpressionContext): string {
@@ -89,35 +230,22 @@ export class Literal implements IExpression {
   }
 }
 
-// export class TimeSeriesRef implements Expression, TimeSeries {
-//   constructor(private readonly id: string) {}
+class TimeSeriesArrayRef extends AbstractExpression implements ITimeSeriesArray {
+  public readonly tag = 'TS[]';
 
-//   public render(_context: ExpressionContext): string {
-//     return this.id;
-//   }
-
-//   public plus(operand: number | TimeSeries | Scalar): TimeSeries;
-//   public plus(operand: TimeSeriesArray): TimeSeriesArray;
-//   public plus(operand: number | TimeSeries | Scalar | TimeSeriesArray): TimeSeries | TimeSeriesArray {
-//     throw new Error("Method not implemented.");
-//   }
-// }
-
-export class TimeSeriesArrayRef implements IExpression, ITimeSeriesArray {
-  constructor(private readonly array: ITimeSeries[]) {}
+  constructor(private readonly array: ITimeSeries[]) {
+    super();
+  }
 
   public render(context: ExpressionContext): string {
     return `[${this.array.map(a => a.render(context)).join(',')}]`;
   }
-
-  public plus(_operand: number | Scalar | ITimeSeriesArray): ITimeSeriesArray {
-    throw new Error("Method not implemented.");
-  }
 }
 
-export abstract class Operator implements IExpression {
-  protected abstract readonly operator: string;
-  constructor(private readonly lhs: IExpression | number, private readonly rhs: IExpression | number) {}
+class Operator extends AbstractExpression {
+  constructor(private readonly operator: string, private readonly lhs: IExpression | number, private readonly rhs: IExpression | number) {
+    super();
+  }
 
   public render(context: ExpressionContext): string {
     const lhs = typeof this.lhs === 'number' ? new Scalar(this.lhs) : this.lhs;
@@ -126,101 +254,22 @@ export abstract class Operator implements IExpression {
   }
 }
 
-export class Plus extends Operator {
-  protected readonly operator: string = '+';
-}
-export class Minus extends Operator {
-  protected readonly operator: string = '+';
-}
-export class Multiply extends Operator {
-  protected readonly operator: string = '*';
-}
-export class Divide extends Operator {
-  protected readonly operator: string = '/';
-}
-export class Exponent extends Operator {
-  protected readonly operator: string = '^';
-}
-export abstract class Function implements IExpression {
-  protected abstract readonly name: string;
-
-  constructor(private readonly expressions: IExpression[]) {}
+class Function extends AbstractExpression {
+  private readonly expressions: IExpression[];
+  constructor(private readonly name: string, ...expressions: any[]) {
+    super();
+    if (expressions.length === 1) {
+      if (Array.isArray(expressions[0])) {
+        this.expressions = [new TimeSeriesArrayRef(expressions[0] as any)];
+      } else {
+        this.expressions = expressions;
+      }
+    } else {
+      this.expressions = [new TimeSeriesArrayRef(expressions)];
+    }
+  }
 
   public render(context: ExpressionContext): string {
     return `${this.name}(${this.expressions.map(ex => ex.render(context)).join(',')})`;
-  }
-}
-export abstract class Function1 extends Function {
-  constructor(...expression: ITimeSeries[]) {
-    if (expression.length === 1) {
-      if (Array.isArray(expression[0])) {
-        super([new TimeSeriesArrayRef(expression[0] as any)]);
-      } else {
-        super(expression);
-      }
-    } else {
-      super([new TimeSeriesArrayRef(expression)]);
-    }
-  }
-}
-export abstract class Function2 extends Function {
-  constructor(expression1: IExpression, expression2: IExpression) {
-    super([expression1, expression2]);
-  }
-}
-
-export class Abs extends Function1 {
-  protected readonly name: string = 'ABS';
-}
-export class Average extends Function1 {
-  protected readonly name: string = 'AVG';
-}
-export class Ceil extends Function1 {
-  protected readonly name: string = 'CEIL';
-}
-export class Fill extends Function2 {
-  protected readonly name: string = 'CEIL';
-}
-export class Floor extends Function1 {
-  protected readonly name: string = 'FLOOR';
-}
-export class Max extends Function1 {
-  protected readonly name: string = 'MAX';
-}
-export class MetricCount extends Function1 {
-  protected readonly name: string = 'METRIC_COUNT';
-}
-export class Metrics extends Function {
-  protected readonly name: string = 'METRICS';
-
-  constructor(filter?: string) {
-    super(filter !== undefined ? [new Literal(filter)] : []);
-  }
-}
-export class Min extends Function1 {
-  protected readonly name: string = 'MIN';
-}
-export class Period extends Function1 {
-  protected readonly name: string = 'PERIOD';
-}
-export class Rate extends Function1 {
-  protected readonly name: string = 'RATE';
-}
-export class StdDev extends Function1 {
-  protected readonly name: string = 'STDDEV';
-}
-
-export function sum(ts: ITimeSeries): Scalar;
-export function sum(...ts: ITimeSeries[]): ITimeSeries;
-export function sum(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
-export function sum(...ts: any[]): any {
-  return new Sum(...ts);
-}
-
-class Sum extends Function1 {
-  protected readonly name: string = 'SUM';
-
-  public plus(a: any): any {
-    return new Plus(this, a);
   }
 }
