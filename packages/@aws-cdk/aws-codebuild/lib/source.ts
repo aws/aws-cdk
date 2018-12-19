@@ -46,6 +46,10 @@ export abstract class BuildSource {
     };
   }
 
+  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    return undefined;
+  }
+
   protected toSourceProperty(): any {
     return {
     };
@@ -172,6 +176,13 @@ export interface GitHubSourceProps extends BuildSourceProps {
   oauthToken: cdk.Secret;
 
   /**
+   * Whether to create a webhook that will trigger a build every time a commit is pushed to the GitHub repository.
+   *
+   * @default false
+   */
+  webhook?: boolean;
+
+  /**
    * Whether to send GitHub notifications on your build's start and end.
    *
    * @default true
@@ -187,12 +198,22 @@ export class GitHubSource extends BuildSource {
   private readonly httpsCloneUrl: string;
   private readonly oauthToken: cdk.Secret;
   private readonly reportBuildStatus: boolean;
+  private readonly webhook?: boolean;
 
   constructor(props: GitHubSourceProps) {
     super(props);
     this.httpsCloneUrl = `https://github.com/${props.owner}/${props.repo}.git`;
     this.oauthToken = props.oauthToken;
+    this.webhook = props.webhook;
     this.reportBuildStatus = props.reportBuildStatus === undefined ? true : props.reportBuildStatus;
+  }
+
+  public buildTriggers(): CfnProject.ProjectTriggersProperty | undefined {
+    return this.webhook === undefined
+      ? undefined
+      : {
+        webhook: this.webhook,
+      };
   }
 
   protected toSourceProperty(): any {

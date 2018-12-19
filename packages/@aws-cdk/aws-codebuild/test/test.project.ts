@@ -100,6 +100,30 @@ export = {
 
       test.done();
     },
+
+    'can explicitly set webhook to true'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: new codebuild.GitHubSource({
+          owner: 'testowner',
+          repo: 'testrepo',
+          oauthToken: new cdk.Secret('test_oauth_token'),
+          webhook: true,
+        })
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'github enterprise auth test'(test: Test) {

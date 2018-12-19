@@ -562,6 +562,7 @@ export class Project extends ProjectRef {
       timeoutInMinutes: props.timeout,
       secondarySources: new cdk.Token(() => this.renderSecondarySources()),
       secondaryArtifacts: new cdk.Token(() => this.renderSecondaryArtifacts()),
+      triggers: this.source.buildTriggers(),
     });
 
     this.projectArn = resource.projectArn;
