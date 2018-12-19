@@ -404,6 +404,34 @@ export = {
     }));
     test.done();
   },
+  'can set custom launchconfiguration'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'MyStack', { env: { region: 'us-east-1', account: '1234' }});
+    const vpc = mockVpc(stack);
+
+    // WHEN
+
+    const testLaunchConfigProps = {
+      imageId: 'dummy',
+      instanceType: 'm4.micro',
+      spotPrice: '1',
+    };
+
+    new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+      instanceType: new ec2.InstanceTypePair(ec2.InstanceClass.M4, ec2.InstanceSize.Micro),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      launchConfigurationProps: testLaunchConfigProps,
+    });
+
+    // THEN
+    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+      ImageId: 'dummy',
+      InstanceType: 'm4.micro',
+      SpotPrice: '1',
+    }));
+    test.done();
+  },
 };
 
 function mockVpc(stack: cdk.Stack) {

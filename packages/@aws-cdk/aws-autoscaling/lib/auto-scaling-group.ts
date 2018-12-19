@@ -6,7 +6,7 @@ import iam = require('@aws-cdk/aws-iam');
 import sns = require('@aws-cdk/aws-sns');
 import cdk = require('@aws-cdk/cdk');
 
-import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
+import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration, CfnLaunchConfigurationProps } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -148,6 +148,11 @@ export interface AutoScalingGroupProps {
    * @default 300 (5 minutes)
    */
   cooldownSeconds?: number;
+
+  /**
+   * When you want to use your own LaunchConfiguration resource
+   */
+  launchConfigurationProps?: CfnLaunchConfigurationProps;
 }
 
 /**
@@ -225,14 +230,18 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     const userDataToken = new cdk.Token(() => new cdk.FnBase64((machineImage.os.createUserData(this.userDataLines))));
     const securityGroupsToken = new cdk.Token(() => this.securityGroups.map(sg => sg.securityGroupId));
 
-    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-      imageId: machineImage.imageId,
-      keyName: props.keyName,
-      instanceType: props.instanceType.toString(),
-      securityGroups: securityGroupsToken,
-      iamInstanceProfile: iamProfile.ref,
-      userData: userDataToken
-    });
+    const launchConfigProps = props.launchConfigurationProps
+    ? props.launchConfigurationProps
+    : {
+        imageId: machineImage.imageId,
+        keyName: props.keyName,
+        instanceType: props.instanceType.toString(),
+        securityGroups: securityGroupsToken,
+        iamInstanceProfile: iamProfile.ref,
+        userData: userDataToken
+      };
+
+    const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', launchConfigProps);
 
     launchConfig.addDependency(this.role);
 
