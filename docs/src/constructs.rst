@@ -36,9 +36,9 @@ The |cdk| includes two different levels of constructs:
   intent without worrying about the details too much, and the correct resources
   will automatically be defined for you.
 
-  |l2| members are found in the :py:mod:`@aws-cdk/NAMESPACE` packages,
-  where NAMESPACE is the short name for the associated service,
-  such as SQS for the |l2| for the |SQS| service.
+  Members of the |l2| are found in the :py:mod:`@aws-cdk/NAMESPACE` packages,
+  where NAMESPACE is the short form of the associated service,
+  such as SQS for the |SQS| service.
   See the :ref:`reference` section for descriptions of the |cdk|
   packages and constructs.
 
