@@ -101,6 +101,9 @@ Use the following operations to inspect the construct tree.
 
 :py:attr:`aws-cdk.Construct.parent`
    Gets the construct's parent construct.
+   
+:py:attr:`aws-cdk.Construct.path`
+   Gets the path of this construct from the root of the tree.
 
 :py:meth:`aws-cdk.Construct.getChildren`
    Gets an array of all of the contruct's children.
@@ -109,7 +112,6 @@ Use the following operations to inspect the construct tree.
    Gets the child construct with the specified ID.
 
 :py:meth:`aws-cdk.Construct.toTreeString()`
-
    Gets a string representing the construct's tree.
 
 .. We discuss the advantages of an |l2| over a |l1| in the :ref:`l2_advantages` section.
@@ -132,9 +134,6 @@ initializer argument:
    const c2 = new MyBeautifulConstruct(this, 'TwoBeautiful');
    assert(c1.id === 'OneBeautiful');
    assert(c2.id === 'TwoBeautiful');
-
-Use the :py:attr:`aws-cdk.Construct.path` property to get the path of this
-construct from the root of the tree.
 
 When you synthesize an |cdk| tree into an |CFN| template, the |CFN| logical ID
 for each resource in the template is allocated according to the path of that
