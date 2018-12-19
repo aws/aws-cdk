@@ -15,35 +15,42 @@ export = {
         b: '2'
       }
     });
-    const math = new cloudwatch.Sum(m1, m2).multiply(100);
+    const math = cloudwatch.sum(m1, m2).plus(100);
 
-    test.deepEqual(math.compile(), {
-      expression: 'SUM([m1,m2]) * 100',
-      metrics: [{
-        id: 'm1',
-        metric: {
-          metricName: 'NumberOfPublishedMessages',
-          namespace: 'AWS/SNS',
-          dimensions: undefined
-        },
-        period: 300,
-        stat: 'Average',
-        unit: undefined
-      }, {
-        id: 'm2',
-        metric: {
-          metricName: 'Errors',
-          namespace: 'Custom',
-          dimensions: {
-            a: '1',
-            b: '2'
-          }
-        },
-        period: 300,
-        stat: 'Average',
-        unit: undefined
-      }]
-    });
+    test.deepEqual(cloudwatch.compileExpression(math), [{
+      id: 'm1',
+      metric: {
+        metricName: 'NumberOfPublishedMessages',
+        namespace: 'AWS/SNS',
+        dimensions: []
+      },
+      period: 300,
+      stat: 'Average',
+      unit: undefined,
+      returnData: false
+    }, {
+      id: 'm2',
+      metric: {
+        metricName: 'Errors',
+        namespace: 'Custom',
+        dimensions: [{
+          name: 'a',
+          value: '1'
+        }, {
+          name: 'b',
+          value: '2'
+        }]
+      },
+      period: 300,
+      stat: 'Average',
+      unit: undefined,
+      returnData: false
+    }, {
+      id: 'm3',
+      expression: 'SUM([m1,m2]) + 100',
+      returnData: true
+    }]);
+
     test.done();
   }
 };

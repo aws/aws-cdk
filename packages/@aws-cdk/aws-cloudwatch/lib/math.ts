@@ -1,24 +1,41 @@
 import { Metric } from "./metric";
 // import { Alarm, AlarmProps } from "./alarm";
 
-// https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
+export interface IExpression {
+  render(context: ExpressionContext): string;
+}
 
-/*
-S represents a scalar number, such as 2, -5, or 50.25.
+export interface ITimeSeries extends IExpression {
+  plus(operand: number | Scalar | ITimeSeries): ITimeSeries;
+  plus(operand: ITimeSeriesArray): ITimeSeriesArray;
+}
 
-TS is a time series (a series of values for a single CloudWatch metric over time).
-For example, the CPUUtilization metric for instance i-1234567890abcdef0 over the last three days.
+export abstract class AbstractTimeSeries implements ITimeSeries {
+  public plus(operand: number | ITimeSeries | Scalar): ITimeSeries;
+  public plus(operand: ITimeSeriesArray): ITimeSeriesArray;
+  public plus(operand: any): any {
+    return new Plus(this, operand);
+  }
 
-TS[] is an array of time series, such as the time series for multiple metrics.
-*/
+  public abstract render(context: ExpressionContext): string;
+}
+
+export interface ITimeSeriesArray extends IExpression {
+  plus(operand: number | Scalar | ITimeSeriesArray | ITimeSeriesArray): ITimeSeriesArray;
+}
 
 export class ExpressionContext {
   private readonly metrics: { [key: string]: Metric } = {};
   private counter = 1;
 
-  public metric(metric: Metric): string {
+  public nextId(): string {
     const id = 'm' + this.counter.toString();
     this.counter += 1;
+    return id;
+  }
+
+  public metric(metric: Metric): string {
+    const id = this.nextId();
     this.metrics[id] = metric;
     return id;
   }
@@ -32,88 +49,75 @@ export class ExpressionContext {
         metric: {
           metricName: metric.metricName,
           namespace: metric.namespace,
-          dimensions: metric.dimensions
+          dimensions: metric.dimensionsAsList()
         },
         period: metric.periodSec,
         stat: metric.statistic,
-        unit: metric.unit
+        unit: metric.unit,
+        returnData: false
       });
     });
     return metrics;
   }
 }
 
-export abstract class Expression {
-  public compile(): any {
-    const context = new ExpressionContext();
-    const expression = this.render(context);
-    return {
-      expression,
-      metrics: context.toMetrics()
-    };
-  }
-
-  public abstract render(context: ExpressionContext): string;
-
-  public plus(expression: Expression | number): Plus {
-    return new Plus(this, expression);
-  }
-  public minus(expression: Expression | number): Minus {
-    return new Minus(this, expression);
-  }
-  public multiply(expression: Expression | number): Multiply {
-    return new Multiply(this, expression);
-  }
-  public divide(expression: Expression | number): Divide {
-    return new Divide(this, expression);
-  }
-  public pow(expression: Expression | number): Exponent {
-    return new Exponent(this, expression);
-  }
+export function compileExpression(ex: IExpression) {
+  const context = new ExpressionContext();
+  const expression = ex.render(context);
+  const metrics = context.toMetrics();
+  metrics.push({
+    id: context.nextId(),
+    expression,
+    returnData: true
+  });
+  return metrics;
 }
 
-export class Scalar extends Expression {
-  constructor(private readonly value: number) {
-    super();
-  }
+export class Scalar implements IExpression {
+  constructor(private readonly value: number) {}
+
   public render(_context: ExpressionContext): string {
     return this.value.toString();
   }
 }
-export class Literal extends Expression {
-  constructor(private readonly value: string) {
-    super();
-  }
+
+export class Literal implements IExpression {
+  constructor(private readonly value: string) {}
+
   public render(_context: ExpressionContext): string {
     return `"${this.value}"`;
   }
 }
 
-export class TimeSeries extends Expression {
-  constructor(private readonly id: string) {
-    super();
-  }
+// export class TimeSeriesRef implements Expression, TimeSeries {
+//   constructor(private readonly id: string) {}
 
-  public render(_context: ExpressionContext): string {
-    return this.id;
-  }
-}
+//   public render(_context: ExpressionContext): string {
+//     return this.id;
+//   }
 
-export class TimeSeriesArray extends Expression {
-  constructor(private readonly array: Expression[]) {
-    super();
-  }
+//   public plus(operand: number | TimeSeries | Scalar): TimeSeries;
+//   public plus(operand: TimeSeriesArray): TimeSeriesArray;
+//   public plus(operand: number | TimeSeries | Scalar | TimeSeriesArray): TimeSeries | TimeSeriesArray {
+//     throw new Error("Method not implemented.");
+//   }
+// }
+
+export class TimeSeriesArrayRef implements IExpression, ITimeSeriesArray {
+  constructor(private readonly array: ITimeSeries[]) {}
 
   public render(context: ExpressionContext): string {
     return `[${this.array.map(a => a.render(context)).join(',')}]`;
   }
+
+  public plus(_operand: number | Scalar | ITimeSeriesArray): ITimeSeriesArray {
+    throw new Error("Method not implemented.");
+  }
 }
 
-export abstract class Operator extends Expression {
+export abstract class Operator implements IExpression {
   protected abstract readonly operator: string;
-  constructor(private readonly lhs: Expression | number, private readonly rhs: Expression | number) {
-    super();
-  }
+  constructor(private readonly lhs: IExpression | number, private readonly rhs: IExpression | number) {}
 
   public render(context: ExpressionContext): string {
     const lhs = typeof this.lhs === 'number' ? new Scalar(this.lhs) : this.lhs;
@@ -137,29 +141,30 @@ export class Divide extends Operator {
 export class Exponent extends Operator {
   protected readonly operator: string = '^';
 }
-
-export abstract class Function extends Expression {
+export abstract class Function implements IExpression {
   protected abstract readonly name: string;
 
-  constructor(private readonly expressions: Expression[]) {
-    super();
-  }
+  constructor(private readonly expressions: IExpression[]) {}
 
   public render(context: ExpressionContext): string {
     return `${this.name}(${this.expressions.map(ex => ex.render(context)).join(',')})`;
   }
 }
 export abstract class Function1 extends Function {
-  constructor(...expression: Expression[]) {
-    if (expression.length > 1) {
-      super([new TimeSeriesArray(expression)]);
+  constructor(...expression: ITimeSeries[]) {
+    if (expression.length === 1) {
+      if (Array.isArray(expression[0])) {
+        super([new TimeSeriesArrayRef(expression[0] as any)]);
+      } else {
+        super(expression);
+      }
     } else {
-      super(expression);
+      super([new TimeSeriesArrayRef(expression)]);
     }
   }
 }
 export abstract class Function2 extends Function {
-  constructor(expression1: Expression, expression2: Expression) {
+  constructor(expression1: IExpression, expression2: IExpression) {
     super([expression1, expression2]);
   }
 }
@@ -204,6 +209,18 @@ export class Rate extends Function1 {
 export class StdDev extends Function1 {
   protected readonly name: string = 'STDDEV';
 }
-export class Sum extends Function1 {
+
+export function sum(ts: ITimeSeries): Scalar;
+export function sum(...ts: ITimeSeries[]): ITimeSeries;
+export function sum(ts: ITimeSeries[] | ITimeSeriesArray): ITimeSeries;
+export function sum(...ts: any[]): any {
+  return new Sum(...ts);
+}
+
+class Sum extends Function1 {
   protected readonly name: string = 'SUM';
+
+  public plus(a: any): any {
+    return new Plus(this, a);
+  }
 }

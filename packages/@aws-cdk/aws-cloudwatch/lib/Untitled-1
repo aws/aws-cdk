@@ -1,0 +1,4 @@
+brazil-runtime-exec get_mcm_template.py \
+--odin-creds com.amazon.credentials.isengard.785049305830.user/mcm_signing \
+-f TM-21349 \
+-d templates/cdk/release-cdk
