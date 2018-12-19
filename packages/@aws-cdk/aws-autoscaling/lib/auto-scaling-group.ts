@@ -55,7 +55,7 @@ export interface AutoScalingGroupProps {
   /**
    * AMI to launch
    */
-  machineImage?: ec2.IMachineImageSource;
+  machineImage: ec2.IMachineImageSource;
 
   /**
    * VPC to launch these instances in.
@@ -231,7 +231,7 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     });
 
     // use delayed evaluation
-    const machineImage = props.machineImage !== undefined ? props.machineImage.getImage(this) : new ec2.AmazonLinuxImage().getImage(this);
+    const machineImage = props.machineImage.getImage(this);
 
     const asgProps: CfnAutoScalingGroupProps = this.generateAutoScalingGroupProps(props, iamProfile, machineImage);
 
@@ -463,7 +463,14 @@ export class AutoScalingGroup extends cdk.Construct implements IAutoScalingGroup
     return this.autoScalingGroup.options.creationPolicy;
   }
 
-  private generateAutoScalingGroupProps(props: AutoScalingGroupProps, iamProfile: iam.CfnInstanceProfile, machineImage: ec2.MachineImage): CfnAutoScalingGroupProps {
+  private generateAutoScalingGroupProps(
+    props: AutoScalingGroupProps,
+    iamProfile: iam.CfnInstanceProfile,
+    machineImage: ec2.MachineImage): CfnAutoScalingGroupProps {
+
+    if (props.launchConfigurationProps !== undefined && props.launchTemplateSpecificationProps !== undefined) {
+      throw new Error("Can't specify both LaunchConfiguration and LaunchTemplateSpecification");
+    }
     const desiredCapacity =
     (props.desiredCapacity !== undefined ? props.desiredCapacity :
     (props.minSize !== undefined ? props.minSize :

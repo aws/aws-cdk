@@ -418,6 +418,7 @@ export = {
 
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
       launchConfigurationProps: testLaunchConfigProps,
     });
 
@@ -437,6 +438,7 @@ export = {
     // WHEN
     new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
       vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
       launchTemplateSpecificationProps: {
         launchTemplateId: 'dummy',
         version: '1',
