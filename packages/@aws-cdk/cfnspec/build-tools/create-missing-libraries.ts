@@ -6,16 +6,9 @@
  */
 
 import child_process = require('child_process');
-import fs = require('fs');
+import fs = require('fs-extra');
 import path = require('path');
-import { promisify } from 'util';
 import cfnspec = require('../lib');
-
-const exist = promisify(fs.exists);
-const mkdir = promisify(fs.mkdir);
-const writeFile = promisify(fs.writeFile);
-const readdir = promisify(fs.readdir);
-const copyFile = promisify(fs.copyFile);
 
 // don't be a prude:
 // tslint:disable:no-console
@@ -37,7 +30,7 @@ async function main() {
     const pacakgePath = path.join(root, moduleName);
 
     // we already have a module for this namesapce, move on.
-    if (await exist(pacakgePath)) {
+    if (await fs.pathExists(pacakgePath)) {
       continue;
     }
 
@@ -59,9 +52,7 @@ async function main() {
     async function write(relativePath: string, contents: string[] | string | object) {
       const fullPath = path.join(pacakgePath, relativePath);
       const dir = path.dirname(fullPath);
-      if (!(await exist(dir))) {
-        await mkdir(dir);
-      }
+      await fs.mkdirp(dir);
 
       let data;
       if (typeof contents === 'string') {
@@ -74,7 +65,7 @@ async function main() {
         throw new Error('Invalid type of contents: ' + contents);
       }
 
-      await writeFile(fullPath, data + '\n');
+      await fs.writeFile(fullPath, data + '\n');
     }
 
     console.log(`generating module for ${packageName}...`);
@@ -208,19 +199,22 @@ async function main() {
     await write('README.md', [
       `## ${namespace} Construct Library`,
       '',
+      'This module is part of the [AWS Cloud Development Kit](https://github.com/awslabs/aws-cdk) project.',
+      '',
       '```ts',
       `import ${lowcaseModuleName} = require('${packageName}');`,
       '```',
     ]);
 
     const templateDir = path.join(__dirname, 'template');
-    for (const file of await readdir(templateDir)) {
-      await copyFile(path.join(templateDir, file), path.join(pacakgePath, file));
+    for (const file of await fs.readdir(templateDir)) {
+      await fs.copy(path.join(templateDir, file), path.join(pacakgePath, file));
     }
 
     // bootstrap and build the package and all deps to ensure integrity
-    await exec(`lerna bootstrap --scope ${packageName}`);
-    await exec(`lerna run --include-filtered-dependencies --progress build --scope ${packageName}`);
+    const lerna = path.join(path.dirname(require.resolve('lerna/package.json')), 'cli.js');
+    await exec(`${lerna} bootstrap --scope ${packageName}`);
+    await exec(`${lerna} run --include-filtered-dependencies --progress build --scope ${packageName}`);
   }
 }
 
