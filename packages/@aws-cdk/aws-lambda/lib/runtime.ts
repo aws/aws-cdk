@@ -22,6 +22,7 @@ export enum RuntimeFamily {
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
+  /** A list of all the know ``Runtime``s. */
   public static readonly All = new Array<Runtime>();
 
   public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });

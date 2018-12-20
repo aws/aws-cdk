@@ -2,7 +2,6 @@ import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
 import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
-import { Function as Func } from './lambda';
 import { CfnFunction } from './lambda.generated';
 
 export abstract class Code {
@@ -103,9 +102,10 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(lambda: cdk.Construct) {
-    if (lambda instanceof Func && !lambda.runtime.supportsInlineCode) {
-      throw new Error(`Inline source not allowed for ${lambda.runtime.name}`);
+  public bind(construct: cdk.Construct) {
+    const runtime = (construct as any).runtime;
+    if (!runtime.supportsInlineCode) {
+      throw new Error(`Inline source not allowed for ${runtime && runtime.name}`);
     }
   }
 

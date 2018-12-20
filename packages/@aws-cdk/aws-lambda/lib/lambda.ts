@@ -6,7 +6,7 @@ import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
-import { LayerVersionRef } from './layer-version';
+import { LayerVersionRef } from './layers';
 import { Runtime } from './runtime';
 
 /**
@@ -180,7 +180,7 @@ export interface FunctionProps {
    *
    * @default no layers
    */
-  layerVersions?: LayerVersionRef[];
+  layers?: LayerVersionRef[];
 }
 
 /**
@@ -230,11 +230,11 @@ export class Function extends FunctionRef {
   constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
     super(parent, name);
 
-    if (props.layerVersions) {
-      if (props.layerVersions.length > 5) {
+    if (props.layers) {
+      if (props.layers.length > 5) {
         throw new Error(`A lambda function may only reference up to 5 layers at a time.`);
       }
-      for (const layerVersion of props.layerVersions) {
+      for (const layerVersion of props.layers) {
         if (layerVersion.compatibleRuntimes && layerVersion.compatibleRuntimes.indexOf(props.runtime) === -1) {
           throw new Error(`The layer version defined at ${layerVersion.path} does not support the ${props.runtime} runtime.`);
         }
@@ -266,7 +266,7 @@ export class Function extends FunctionRef {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code.toJSON()),
-      layers: props.layerVersions && props.layerVersions.map(layer => layer.layerVersionArn),
+      layers: props.layers && props.layers.map(layer => layer.layerVersionArn),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,

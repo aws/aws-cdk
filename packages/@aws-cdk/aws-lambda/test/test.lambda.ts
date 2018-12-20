@@ -1133,7 +1133,7 @@ export = {
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
-                  layerVersions: [layer],
+                  layers: [layer],
                   runtime: lambda.Runtime.NodeJS610,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'
@@ -1153,7 +1153,7 @@ export = {
 
     // THEN
     test.throws(() => new lambda.Function(stack, 'Function', {
-                  layerVersions: layers,
+                  layers,
                   runtime: lambda.Runtime.NodeJS810,
                   code: lambda.Code.inline('exports.main = function() { console.log("DONE"); }'),
                   handler: 'index.main'

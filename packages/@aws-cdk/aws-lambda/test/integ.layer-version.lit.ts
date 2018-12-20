@@ -18,16 +18,16 @@ const layer = new lambda.LayerVersion(stack, 'MyLayer', {
 });
 
 // To grant usage by other AWS accounts
-layer.grantUsage(awsAccountId);
+layer.grantUsage({ accountId: awsAccountId });
 
 // To grant usage to all accounts in some AWS Ogranization
-// layer.grantUsage('*', organizationId);
+// layer.grantUsage({ accountId: '*', organizationId });
 
 new lambda.Function(stack, 'MyLayeredLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NodeJS810,
-  layerVersions: [layer],
+  layers: [layer],
 });
 /// !hide
 

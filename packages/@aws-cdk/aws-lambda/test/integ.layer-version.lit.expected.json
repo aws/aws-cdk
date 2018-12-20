@@ -13,10 +13,10 @@
     "MyLayer38944FA5": {
       "Type": "AWS::Lambda::LayerVersion",
       "Properties": {
-        "compatibleRuntimes": [
+        "CompatibleRuntimes": [
           "nodejs8.10"
         ],
-        "content": {
+        "Content": {
           "s3Bucket": {
             "Ref": "MyLayerCodeS3Bucket20DB8EB9"
           },
@@ -54,18 +54,18 @@
             ]
           }
         },
-        "description": "A layer to test the L2 construct",
-        "licenseInfo": "Apache-2.0"
+        "Description": "A layer to test the L2 construct",
+        "LicenseInfo": "Apache-2.0"
       }
     },
     "MyLayergrantusageTokenAWSAccountId0202BA27F": {
       "Type": "AWS::Lambda::LayerVersionPermission",
       "Properties": {
-        "action": "lambda:GetLayerVersion",
-        "layerVersionArn": {
+        "Action": "lambda:GetLayerVersion",
+        "LayerVersionArn": {
           "Ref": "MyLayer38944FA5"
         },
-        "principal": {
+        "Principal": {
           "Ref": "AWS::AccountId"
         }
       }

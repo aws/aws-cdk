@@ -63,23 +63,20 @@ export abstract class LayerVersionRef extends cdk.Construct {
    * the layer (for example, a CloudFormation changeset execution role) also needs to have the
    * ``lambda:GetLayerVersion`` permission on the layer version.
    *
-   * @param awsAccountId   the AWS account ID that will be granted access to the layer, or '*' to grant usage to any/all
-   *                       AWS accounts. The default is '*'.
-   * @param organizationId when using '*' as the ``awsAccountId``, a organization ID can be procided to restrict usage
-   *                       to accounts that are memeber of a given organization.
+   * @param grantee the identification of the grantee.
    */
-  public grantUsage(awsAccountId: string = '*', organizationId?: string): this {
-    if (organizationId != null && awsAccountId !== '*') {
-      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${awsAccountId}`);
+  public grantUsage(grantee: LayerVersionUsageGrantee): LayerVersionRef {
+    if (grantee.organizationId != null && grantee.accountId !== '*') {
+      throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
 
-    new cdk.Resource(this, `grant-usage-${awsAccountId}-${organizationId || '*'}`, {
+    new cdk.Resource(this, `grant-usage-${grantee.accountId}-${grantee.organizationId || '*'}`, {
       type: 'AWS::Lambda::LayerVersionPermission',
       properties: {
         Action: 'lambda:GetLayerVersion',
         LayerVersionArn: this.layerVersionArn,
-        Principal: awsAccountId,
-        OrganizationId: organizationId,
+        Principal: grantee.accountId,
+        OrganizationId: grantee.organizationId,
       }
     });
     return this;
@@ -95,6 +92,24 @@ export abstract class LayerVersionRef extends cdk.Construct {
       compatibleRuntimes: this.compatibleRuntimes,
     };
   }
+}
+
+/**
+ * Identification of an account (or organization) that is allowed to access a Lambda Layer Version.
+ */
+export interface LayerVersionUsageGrantee {
+  /**
+   * The AWS Account id of the account that is authorized to use a Lambda Layer Version. The wild-card ``'*'`` can be
+   * used to grant access to "any" account (or any account in an organization when ``organizationId`` is specified).
+   */
+  accountId: string;
+
+  /**
+   * The ID of the AWS Organization to hwich the grant is restricted.
+   *
+   * Can only be specified if ``accountId`` is ``'*'``
+   */
+  organizationId?: string;
 }
 
 /**
@@ -159,5 +174,56 @@ class ImportedLayerVersionRef extends LayerVersionRef {
 
     this.layerVersionArn = props.layerVersionArn;
     this.compatibleRuntimes = props.compatibleRuntimes;
+  }
+}
+
+/**
+ * Properties of a Singleton Lambda Layer Version.
+ */
+export interface SingletonLayerVersionProps extends LayerVersionProps {
+  /**
+   * A unique identifier to identify this lambda layer version.
+   *
+   * The identifier should be unique across all layer providers.
+   * We recommend generating a UUID per provider.
+   */
+  uuid: string;
+}
+
+/**
+ * A Singleton Lambda Layer Version. The construct gurantees exactly one LayerVersion will be created in a given Stack
+ * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
+ * layer is created.
+ */
+export class SingletonLayerVersion extends LayerVersionRef {
+  private readonly layerVersion: LayerVersionRef;
+
+  constructor(parent: cdk.Construct, id: string, props: SingletonLayerVersionProps) {
+    super(parent, id);
+
+    this.layerVersion = this.ensureLayerVersion(props);
+  }
+
+  public get layerVersionArn(): string {
+    return this.layerVersion.layerVersionArn;
+  }
+
+  public get compatibleRuntimes(): Runtime[] | undefined {
+    return this.layerVersion.compatibleRuntimes;
+  }
+
+  public grantUsage(grantee: LayerVersionUsageGrantee): LayerVersionRef {
+    this.layerVersion.grantUsage(grantee);
+    return this;
+  }
+
+  private ensureLayerVersion(props: SingletonLayerVersionProps): LayerVersionRef {
+    const singletonId = `SingletonLayer-${props.uuid}`;
+    const stack = cdk.Stack.find(this);
+    const existing = stack.tryFindChild(singletonId);
+    if (existing) {
+      return existing as LayerVersionRef;
+    }
+    return new LayerVersion(stack, singletonId, props);
   }
 }
