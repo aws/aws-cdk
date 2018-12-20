@@ -4,6 +4,7 @@
 # later read by bundle-beta.sh.
 set -e
 export PATH=$PWD/node_modules/.bin:$PATH
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
 distdir="$PWD/dist"

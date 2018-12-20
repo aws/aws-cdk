@@ -1,5 +1,8 @@
 #!/bin/bash
 set -euo pipefail
+
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+
 scriptdir=$(cd $(dirname $0) && pwd)
 scope=$(${scriptdir}/current-scope)
 exec lerna run build --scope ${scope} --include-filtered-dependents

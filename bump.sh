@@ -6,8 +6,9 @@ if [ -z "${ver}" ]; then
   exit 1
 fi
 
-/bin/bash ./install.sh
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
+/bin/bash ./install.sh
 
 lerna publish --force-publish=* --skip-npm --skip-git --repo-version ${ver}
 
@@ -23,4 +24,3 @@ cat > /tmp/context.json <<HERE
 HERE
 
 ./node_modules/.bin/conventional-changelog -p angular -i CHANGELOG.md -s --context /tmp/context.json
-
