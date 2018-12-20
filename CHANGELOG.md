@@ -26,14 +26,10 @@
 ### BREAKING CHANGES
 
 * **aws-cloudformation:** this changes the type of the `role` property in CFN CodePipeline Actions
-from `Role` to `IRole`.
-
-This is needed to use imported Roles when creating Actions.
+from `Role` to `IRole`. This is needed to use imported Roles when creating Actions.
 * **aws-codebuild:** this changes the API of CodeBuild's GitHub and BitBucket Sources
 to take an owner/repo pair instead of an entire cloneUrl,
-to make it consistent with the GitHubSourceAction in the CodePipeline package.
-
-Also adds handling the reportBuildStatus and insecureSsl Source properties.
+to make it consistent with the GitHubSourceAction in the CodePipeline package. Also adds handling the reportBuildStatus and insecureSsl Source properties.
 * **codebuild:** the `includeBuildID` property of
 `S3BucketBuildArtifacts` was renamed to `includeBuildId` (note the
 lower-case trailing `d`).
