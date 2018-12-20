@@ -3,22 +3,26 @@
 
 ### Pull Request Checklist
 
-- [ ] Testing
-  - Unit test added
-  - __CLI change?:__ manually eun [integration tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh) and paste output as a PR comment
-  - __Init template change?:__ coordinated update of integration tests with team
+* [ ] Testing
 
-- [ ] Docs
+  - Unit test added
+  - __CLI change?:__ manually run [integration tests](https://github.com/awslabs/aws-cdk/blob/master/packages/aws-cdk/integ-tests/test.sh) and paste output as a PR comment
+  - __CLI init template change?:__ coordinated update of integration tests with team
+
+* [ ] Docs
+
   - __jsdocs__: All public APIs documented
   - __README__: README and/or documentation topic updated
 
-- [ ] Title and Description
-  - __Change type__: title prefixed with **fix**, **feat** will appear in changelog
-  - __Title format__: use lower-case and doesn't end with a period
-  - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
-  - __References__: Indicate issues fixed via: **Fixes #xxx** or **Closes #xxx**
+* [ ] Title and Description
 
-- [ ] Sensitive Modules (requires 2 PR approvers)
+  - __Change type__: title prefixed with **fix**, **feat** will appear in changelog
+  - __Title__: use lower-case and doesn't end with a period
+  - __Breaking?__: last paragraph: "BREAKING CHANGE: <describe what changed + link for details>"
+  - __Issues__: Indicate issues fixed via: "**Fixes #xxx**" or "**Closes #xxx**"
+
+* [ ] Sensitive Modules (requires 2 PR approvers)
+
   - IAM Policy Document (in @aws-cdk/aws-iam)
   - EC2 Security Groups and ACLs (in @aws-cdk/aws-ec2)
   - Grant APIs (only if not based on official documentation with a reference)
