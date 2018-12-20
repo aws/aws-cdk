@@ -83,3 +83,7 @@ export CDK_VERSION=$(../tools/pkgtools/bin/cdk-version)
 echo "Set CDK_VERSION=${CDK_VERSION} (consumed by conf.py)..."
 
 sphinx-build -b html $staging $output
+
+# required for github pages since we have already rendered the site ourselves
+echo "disable-jekyll" > $output/.nojekyll
+
