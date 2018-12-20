@@ -79,10 +79,10 @@ export abstract class LayerVersionBase extends cdk.Construct implements ILayerVe
   }
 
   /**
-   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerRef.import`` function
-   * to obtain a ``LayerRef`` in the user stack.
+   * Exports this layer for use in another Stack. The resulting object can be passed to the ``LayerVersion.import``
+   * function to obtain an ``ILayerVersion`` in the user stack.
    */
-  public export(): LayerVersionRefProps {
+  public export(): ImportedLayerVersionProps {
     return {
       layerVersionArn: new cdk.Output(this, 'LayerVersionArn', { value: this.layerVersionArn }).makeImportValue().toString(),
       compatibleRuntimes: this.compatibleRuntimes,
@@ -109,9 +109,9 @@ export interface LayerVersionUsageGrantee {
 }
 
 /**
- * Properties necessary to import a LayerRef.
+ * Properties necessary to import a LayerVersion.
  */
-export interface LayerVersionRefProps {
+export interface ImportedLayerVersionProps {
   /**
    * The ARN of the LayerVersion.
    */
@@ -134,8 +134,8 @@ export class LayerVersion extends LayerVersionBase {
    * @param id     the id of the imported layer in the construct tree.
    * @param props  the properties of the imported layer.
    */
-  public static import(parent: cdk.Construct, id: string, props: LayerVersionRefProps): ILayerVersion {
-    return new ImportedLayerVersionRef(parent, id, props);
+  public static import(parent: cdk.Construct, id: string, props: ImportedLayerVersionProps): ILayerVersion {
+    return new ImportedLayerVersion(parent, id, props);
   }
 
   public readonly layerVersionArn: string;
@@ -168,11 +168,11 @@ export class LayerVersion extends LayerVersionBase {
   }
 }
 
-class ImportedLayerVersionRef extends LayerVersionBase {
+class ImportedLayerVersion extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
-  public constructor(parent: cdk.Construct, id: string, props: LayerVersionRefProps) {
+  public constructor(parent: cdk.Construct, id: string, props: ImportedLayerVersionProps) {
     super(parent, id);
 
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
