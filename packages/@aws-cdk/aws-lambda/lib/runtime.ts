@@ -22,6 +22,8 @@ export enum RuntimeFamily {
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
  */
 export class Runtime {
+  public static readonly All = new Array<Runtime>();
+
   public static readonly NodeJS =       new Runtime('nodejs',         RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS43 =     new Runtime('nodejs4.3',      RuntimeFamily.NodeJS, { supportsInlineCode: true });
   public static readonly NodeJS610 =    new Runtime('nodejs6.10',     RuntimeFamily.NodeJS, { supportsInlineCode: true });
@@ -56,6 +58,8 @@ export class Runtime {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
+
+    Runtime.All.push(this);
   }
 
   public toString(): string {

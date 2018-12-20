@@ -1,5 +1,6 @@
 import assets = require('@aws-cdk/assets');
 import s3 = require('@aws-cdk/aws-s3');
+import cdk = require('@aws-cdk/cdk');
 import fs = require('fs');
 import { Function as Func } from './lambda';
 import { CfnFunction } from './lambda.generated';
@@ -57,10 +58,10 @@ export abstract class Code {
   public abstract toJSON(): CfnFunction.CodeProperty;
 
   /**
-   * Called when the lambda is initialized to allow this object to
+   * Called when the lambda or layer is initialized to allow this object to
    * bind to the stack, add resources and have fun.
    */
-  public bind(_lambda: Func) {
+  public bind(_construct: cdk.Construct) {
     return;
   }
 }
@@ -102,8 +103,8 @@ export class InlineCode extends Code {
     }
   }
 
-  public bind(lambda: Func) {
-    if (!lambda.runtime.supportsInlineCode) {
+  public bind(lambda: cdk.Construct) {
+    if (lambda instanceof Func && !lambda.runtime.supportsInlineCode) {
       throw new Error(`Inline source not allowed for ${lambda.runtime.name}`);
     }
   }
@@ -142,10 +143,10 @@ export class AssetCode extends Code {
     }
   }
 
-  public bind(lambda: Func) {
+  public bind(construct: cdk.Construct) {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new assets.Asset(lambda, 'Code', {
+      this.asset = new assets.Asset(construct, 'Code', {
         path: this.path,
         packaging: this.packaging
       });

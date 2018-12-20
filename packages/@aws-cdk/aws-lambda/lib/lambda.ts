@@ -6,6 +6,7 @@ import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
+import { LayerVersionRef } from './layer-version';
 import { Runtime } from './runtime';
 
 /**
@@ -171,6 +172,15 @@ export interface FunctionProps {
    * @default undefined X-Ray tracing disabled
    */
   tracing?: Tracing;
+
+  /**
+   * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
+   * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
+   * that can be used by mulitple functions.
+   *
+   * @default no layers
+   */
+  layerVersions?: LayerVersionRef[];
 }
 
 /**
@@ -220,6 +230,17 @@ export class Function extends FunctionRef {
   constructor(parent: cdk.Construct, name: string, props: FunctionProps) {
     super(parent, name);
 
+    if (props.layerVersions) {
+      if (props.layerVersions.length > 5) {
+        throw new Error(`A lambda function may only reference up to 5 layers at a time.`);
+      }
+      for (const layerVersion of props.layerVersions) {
+        if (layerVersion.compatibleRuntimes && layerVersion.compatibleRuntimes.indexOf(props.runtime) === -1) {
+          throw new Error(`The layer version defined at ${layerVersion.path} does not support the ${props.runtime} runtime.`);
+        }
+      }
+    }
+
     this.environment = props.environment || { };
 
     const managedPolicyArns = new Array<string>();
@@ -245,6 +266,7 @@ export class Function extends FunctionRef {
       functionName: props.functionName,
       description: props.description,
       code: new cdk.Token(() => props.code.toJSON()),
+      layers: props.layerVersions && props.layerVersions.map(layer => layer.layerVersionArn),
       handler: props.handler,
       timeout: props.timeout,
       runtime: props.runtime.name,
