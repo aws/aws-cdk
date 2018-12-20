@@ -1,6 +1,9 @@
 #!/bin/bash
 # Run unit tests in parallel in different regions
 set -euo pipefail
+
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+
 lerna=${LERNA:-node_modules/.bin/lerna}
 
 # Only regions that support most services

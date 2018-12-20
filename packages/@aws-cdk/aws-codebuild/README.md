@@ -84,6 +84,18 @@ CodePipeline action.
 #### `GitHubSource` and `GitHubEnterpriseSource`
 
 These source types can be used to build code from a GitHub repository.
+Example:
+
+```typescript
+const gitHubSource = new codebuild.GitHubSource({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  oauthToken: new cdk.SecretParameter(this, 'GitHubOAuthToken', {
+    ssmParameter: 'my-github-token',
+  }),
+  webhook: true, // optional, default: false
+});
+```
 
 #### `BitBucketSource`
 
