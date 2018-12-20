@@ -6,7 +6,7 @@ import { Code } from './code';
 import { FunctionRef } from './lambda-ref';
 import { FunctionVersion } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
-import { LayerVersionRef } from './layers';
+import { ILayerVersion } from './layers';
 import { Runtime } from './runtime';
 
 /**
@@ -180,7 +180,7 @@ export interface FunctionProps {
    *
    * @default no layers
    */
-  layers?: LayerVersionRef[];
+  layers?: ILayerVersion[];
 }
 
 /**
@@ -236,7 +236,7 @@ export class Function extends FunctionRef {
       }
       for (const layerVersion of props.layers) {
         if (layerVersion.compatibleRuntimes && layerVersion.compatibleRuntimes.indexOf(props.runtime) === -1) {
-          throw new Error(`The layer version defined at ${layerVersion.path} does not support the ${props.runtime} runtime.`);
+          throw new Error(`The layer version ${layerVersion} does not support the ${props.runtime} runtime.`);
         }
       }
     }

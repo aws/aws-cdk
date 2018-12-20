@@ -1126,7 +1126,7 @@ export = {
   'using an incompatible layer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layer = lambda.LayerVersionRef.import(stack, 'TestLayer', {
+    const layer = lambda.LayerVersion.import(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     });
@@ -1146,7 +1146,7 @@ export = {
   'using more than 5 layers'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack');
-    const layers = new Array(6).map(() => lambda.LayerVersionRef.import(stack, 'TestLayer', {
+    const layers = new Array(6).map(() => lambda.LayerVersion.import(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
       compatibleRuntimes: [lambda.Runtime.NodeJS810],
     }));

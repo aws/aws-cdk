@@ -32,30 +32,16 @@ export interface LayerVersionProps {
   name?: string;
 }
 
-/**
- * A reference to a Lambda Layer version.
- */
-export abstract class LayerVersionRef extends cdk.Construct {
-  /**
-   * Imports a Layer that has been defined externally.
-   *
-   * @param parent the parent Construct that will use the imported layer.
-   * @param id     the id of the imported layer in the construct tree.
-   * @param props  the properties of the imported layer.
-   */
-  public static import(parent: cdk.Construct, id: string, props: LayerVersionRefProps): LayerVersionRef {
-    return new ImportedLayerVersionRef(parent, id, props);
-  }
-
+export interface ILayerVersion {
   /**
    * The ARN of the Lambda Layer version that this Layer defines.
    */
-  public abstract readonly layerVersionArn: string;
+  readonly layerVersionArn: string;
 
   /**
    * The runtimes compatible with this Layer.
    */
-  public abstract readonly compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[];
 
   /**
    * Grants usage of this layer to specific entities. Usage within the same account where the layer is defined is always
@@ -65,7 +51,17 @@ export abstract class LayerVersionRef extends cdk.Construct {
    *
    * @param grantee the identification of the grantee.
    */
-  public grantUsage(grantee: LayerVersionUsageGrantee): LayerVersionRef {
+  grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion
+}
+
+/**
+ * A reference to a Lambda Layer version.
+ */
+export abstract class LayerVersionBase extends cdk.Construct implements ILayerVersion {
+  public abstract readonly layerVersionArn: string;
+  public abstract readonly compatibleRuntimes?: Runtime[];
+
+  public grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion {
     if (grantee.organizationId != null && grantee.accountId !== '*') {
       throw new Error(`OrganizationId can only be specified if AwsAccountId is '*', but it is ${grantee.accountId}`);
     }
@@ -130,7 +126,18 @@ export interface LayerVersionRefProps {
 /**
  * Defines a new Lambda Layer version.
  */
-export class LayerVersion extends LayerVersionRef {
+export class LayerVersion extends LayerVersionBase {
+  /**
+   * Imports a Layer that has been defined externally.
+   *
+   * @param parent the parent Construct that will use the imported layer.
+   * @param id     the id of the imported layer in the construct tree.
+   * @param props  the properties of the imported layer.
+   */
+  public static import(parent: cdk.Construct, id: string, props: LayerVersionRefProps): ILayerVersion {
+    return new ImportedLayerVersionRef(parent, id, props);
+  }
+
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
@@ -161,7 +168,7 @@ export class LayerVersion extends LayerVersionRef {
   }
 }
 
-class ImportedLayerVersionRef extends LayerVersionRef {
+class ImportedLayerVersionRef extends LayerVersionBase {
   public readonly layerVersionArn: string;
   public readonly compatibleRuntimes?: Runtime[];
 
@@ -195,8 +202,8 @@ export interface SingletonLayerVersionProps extends LayerVersionProps {
  * for the provided ``uuid``. It is recommended to use ``uuidgen`` to create a new ``uuid`` each time a new singleton
  * layer is created.
  */
-export class SingletonLayerVersion extends LayerVersionRef {
-  private readonly layerVersion: LayerVersionRef;
+export class SingletonLayerVersion extends cdk.Construct implements ILayerVersion {
+  private readonly layerVersion: ILayerVersion;
 
   constructor(parent: cdk.Construct, id: string, props: SingletonLayerVersionProps) {
     super(parent, id);
@@ -212,17 +219,17 @@ export class SingletonLayerVersion extends LayerVersionRef {
     return this.layerVersion.compatibleRuntimes;
   }
 
-  public grantUsage(grantee: LayerVersionUsageGrantee): LayerVersionRef {
+  public grantUsage(grantee: LayerVersionUsageGrantee): ILayerVersion {
     this.layerVersion.grantUsage(grantee);
     return this;
   }
 
-  private ensureLayerVersion(props: SingletonLayerVersionProps): LayerVersionRef {
+  private ensureLayerVersion(props: SingletonLayerVersionProps): ILayerVersion {
     const singletonId = `SingletonLayer-${props.uuid}`;
     const stack = cdk.Stack.find(this);
     const existing = stack.tryFindChild(singletonId);
     if (existing) {
-      return existing as LayerVersionRef;
+      return existing as unknown as ILayerVersion;
     }
     return new LayerVersion(stack, singletonId, props);
   }
