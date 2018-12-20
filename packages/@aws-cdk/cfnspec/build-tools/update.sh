@@ -6,6 +6,7 @@
 ###
 
 set -euo pipefail
+scriptdir=$(cd $(dirname $0) && pwd)
 
 function update-spec() {
     local title=$1
@@ -52,4 +53,5 @@ update-spec \
     false
 
 echo >&2 "Creating missing AWS construct libraries for new resource types..."
-(cd ../../.. && ./create-missing-libraries.sh)
+node ${scriptdir}/create-missing-libraries.js
+

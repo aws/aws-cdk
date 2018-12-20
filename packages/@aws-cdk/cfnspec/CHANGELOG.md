@@ -1,4 +1,42 @@
 
+# CloudFormation Resource Specification v2.18.0
+
+## New Resource Types
+
+* AWS::AmazonMQ::ConfigurationAssociation
+* AWS::IoTAnalytics::Channel
+* AWS::IoTAnalytics::Dataset
+* AWS::IoTAnalytics::Datastore
+* AWS::IoTAnalytics::Pipeline
+
+## Attribute Changes
+
+* AWS::AmazonMQ::Broker BrokerId (__deleted__)
+* AWS::AmazonMQ::Broker AmqpEndpoints (__added__)
+* AWS::AmazonMQ::Broker Arn (__added__)
+* AWS::AmazonMQ::Broker ConfigurationId (__added__)
+* AWS::AmazonMQ::Broker ConfigurationRevision (__added__)
+* AWS::AmazonMQ::Broker IpAddresses (__added__)
+* AWS::AmazonMQ::Broker MqttEndpoints (__added__)
+* AWS::AmazonMQ::Broker OpenWireEndpoints (__added__)
+* AWS::AmazonMQ::Broker StompEndpoints (__added__)
+* AWS::AmazonMQ::Broker WssEndpoints (__added__)
+
+## Property Changes
+
+* AWS::SageMaker::Model Containers (__added__)
+* AWS::SageMaker::Model PrimaryContainer.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ServiceDiscovery::Instance InstanceAttributes.PrimitiveType (__changed__)
+  * Old: Json
+  * New: Map
+
+## Property Type Changes
+
+* AWS::SageMaker::EndpointConfig.ProductionVariant AcceleratorType (__added__)
+
+
 # CloudFormation Resource Specification v2.16.0
 
 ## New Resource Types

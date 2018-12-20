@@ -3983,6 +3983,66 @@
         ],
         "description": "Set RefKind of Alexa::ASK::Skill to Id"
       }
+    },
+    "AWS::IoTAnalytics::Channel": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Channel to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Dataset": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Dataset to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Datastore": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Datastore to Id"
+      }
+    },
+    "AWS::IoTAnalytics::Pipeline": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::IoTAnalytics::Pipeline to Id"
+      }
+    },
+    "AWS::AmazonMQ::ConfigurationAssociation": {
+      "patch": {
+        "operations": [
+          {
+            "op": "add",
+            "path": "/RefKind",
+            "value": "Id"
+          }
+        ],
+        "description": "Set RefKind of AWS::AmazonMQ::ConfigurationAssociation to Id"
+      }
     }
   }
 }
