@@ -2,6 +2,7 @@
 set -euo pipefail
 
 export PATH=node_modules/.bin:$PATH
+export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 
 # Making sure the bare minimum packages allowing be able to test-build the generated packages is available:
 lerna exec --scope=cfn2ts                           \
