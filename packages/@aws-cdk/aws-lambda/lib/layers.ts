@@ -1,5 +1,5 @@
 import cdk = require('@aws-cdk/cdk');
-import { Code, InlineCode } from './code';
+import { Code } from './code';
 import { Runtime } from './runtime';
 
 export interface LayerVersionProps {
@@ -11,7 +11,7 @@ export interface LayerVersionProps {
   compatibleRuntimes?: Runtime[];
 
   /**
-   * The content of this Layer. Using the ``InlineCode`` class is not permitted.
+   * The content of this Layer. Using the *inline* code is not permitted.
    */
   code: Code;
 
@@ -139,7 +139,7 @@ export class LayerVersion extends LayerVersionRef {
     if (props.compatibleRuntimes && props.compatibleRuntimes.length === 0) {
       throw new Error('Attempted to define a Lambda layer that supports no runtime!');
     }
-    if (props.code instanceof InlineCode) {
+    if (props.code.isInline) {
       throw new Error('Lambda layers cannot be created from inline code');
     }
     // Allow usage of the code in this context...

@@ -51,6 +51,11 @@ export abstract class Code {
   }
 
   /**
+   * Determines whether this Code is inline code or not.
+   */
+  public abstract readonly isInline: boolean;
+
+  /**
    * Called during stack synthesis to render the CodePropery for the
    * Lambda function.
    */
@@ -69,6 +74,7 @@ export abstract class Code {
  * Lambda code from an S3 archive.
  */
 export class S3Code extends Code {
+  public readonly isInline = false;
   private bucketName: string;
 
   constructor(bucket: s3.BucketRef, private key: string, private objectVersion?: string) {
@@ -94,6 +100,8 @@ export class S3Code extends Code {
  * Lambda code from an inline string (limited to 4KiB).
  */
 export class InlineCode extends Code {
+  public readonly isInline = true;
+
   constructor(private code: string) {
     super();
 
@@ -120,6 +128,8 @@ export class InlineCode extends Code {
  * Lambda code from a local directory.
  */
 export class AssetCode extends Code {
+  public readonly isInline = false;
+
   /**
    * The asset packaging.
    */
