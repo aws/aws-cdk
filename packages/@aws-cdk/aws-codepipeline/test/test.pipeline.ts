@@ -262,15 +262,34 @@ export = {
 
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
-    // first stage must contain a Source action so we can't use it to test Lambda
-    const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
-    new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
-      stage,
-      lambda: lambdaFun,
-      userParameters: 'foo-bar/42'
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const sourceStage = pipeline.addStage('Source');
+    const source1 = bucket.addToPipeline(sourceStage, 'SourceAction1', {
+      bucketKey: 'some/key',
+      outputArtifactName: 'sourceArtifact1',
+    });
+    const source2 = bucket.addToPipeline(sourceStage, 'SourceAction2', {
+      bucketKey: 'another/key',
+      outputArtifactName: 'sourceArtifact2',
     });
 
-    expect(stack, /* skip validation */ true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    const stage = new codepipeline.Stage(stack, 'Stage', { pipeline });
+    const lambdaAction = new lambda.PipelineInvokeAction(stack, 'InvokeAction', {
+      stage,
+      lambda: lambdaFun,
+      userParameters: 'foo-bar/42',
+      inputArtifacts: [
+          source2.outputArtifact,
+          source1.outputArtifact,
+      ],
+      outputArtifactNames: [
+          'lambdaOutput1',
+          'lambdaOutput2',
+          'lambdaOutput3',
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
       "ArtifactStore": {
         "Location": {
         "Ref": "PipelineArtifactsBucket22248F97"
@@ -284,6 +303,9 @@ export = {
         ]
       },
       "Stages": [
+        {
+          "Name": "Source",
+        },
         {
         "Actions": [
           {
@@ -299,9 +321,16 @@ export = {
             },
             "UserParameters": "foo-bar/42"
           },
-          "InputArtifacts": [],
+          "InputArtifacts": [
+            { "Name": "sourceArtifact2" },
+            { "Name": "sourceArtifact1" },
+          ],
           "Name": "InvokeAction",
-          "OutputArtifacts": [],
+          "OutputArtifacts": [
+            { "Name": "lambdaOutput1" },
+            { "Name": "lambdaOutput2" },
+            { "Name": "lambdaOutput3" },
+          ],
           "RunOrder": 1
           }
         ],
@@ -309,6 +338,9 @@ export = {
         }
       ]
     }));
+
+    test.equal(lambdaAction.outputArtifacts().length, 3);
+    test.notEqual(lambdaAction.outputArtifact('lambdaOutput2'), undefined);
 
     expect(stack, /* skip validation */ true).to(haveResource('AWS::IAM::Policy', {
       "PolicyDocument": {
