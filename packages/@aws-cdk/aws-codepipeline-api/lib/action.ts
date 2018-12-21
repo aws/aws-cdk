@@ -221,8 +221,8 @@ export abstract class Action extends cdk.Construct {
   public readonly owner: string;
   public readonly version: string;
 
-  private readonly inputArtifacts = new Array<Artifact>();
-  private readonly outputArtifacts = new Array<Artifact>();
+  private readonly _actionInputArtifacts = new Array<Artifact>();
+  private readonly _actionOutputArtifacts = new Array<Artifact>();
   private readonly artifactBounds: ActionArtifactBounds;
   private readonly stage: IStage;
 
@@ -245,9 +245,9 @@ export abstract class Action extends cdk.Construct {
   }
 
   public validate(): string[] {
-    return validation.validateArtifactBounds('input', this.inputArtifacts, this.artifactBounds.minInputs,
+    return validation.validateArtifactBounds('input', this._actionInputArtifacts, this.artifactBounds.minInputs,
         this.artifactBounds.maxInputs, this.category, this.provider)
-      .concat(validation.validateArtifactBounds('output', this.outputArtifacts, this.artifactBounds.minOutputs,
+      .concat(validation.validateArtifactBounds('output', this._actionOutputArtifacts, this.artifactBounds.minOutputs,
         this.artifactBounds.maxOutputs, this.category, this.provider)
     );
   }
@@ -268,21 +268,21 @@ export abstract class Action extends cdk.Construct {
   }
 
   public get _inputArtifacts(): Artifact[] {
-    return this.inputArtifacts.slice();
+    return this._actionInputArtifacts.slice();
   }
 
   public get _outputArtifacts(): Artifact[] {
-    return this.outputArtifacts.slice();
+    return this._actionOutputArtifacts.slice();
   }
 
   protected addOutputArtifact(name: string = this.stage._internal._generateOutputArtifactName(this)): Artifact {
     const artifact = new Artifact(this, name);
-    this.outputArtifacts.push(artifact);
+    this._actionOutputArtifacts.push(artifact);
     return artifact;
   }
 
   protected addInputArtifact(artifact: Artifact = this.stage._internal._findInputArtifact(this)): Action {
-    this.inputArtifacts.push(artifact);
+    this._actionInputArtifacts.push(artifact);
     return this;
   }
 }
