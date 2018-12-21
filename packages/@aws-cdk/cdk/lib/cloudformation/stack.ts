@@ -3,7 +3,7 @@ import { App } from '../app';
 import { Construct, PATH_SEP } from '../core/construct';
 import { resolve, Token, unresolved } from '../core/tokens';
 import { Environment } from '../environment';
-import { CloudFormationToken, StackAwareCloudFormationToken } from './cloudformation-token';
+import { StackAwareCloudFormationToken } from './cloudformation-token';
 import { HashedAddressingScheme, IAddressingScheme, LogicalIDs } from './logical-id';
 import { Resource } from './resource';
 
@@ -108,7 +108,7 @@ export class Stack extends Construct {
 
   /**
    * A construct to hold cross-stack exports
-   * 
+   *
    * This mostly exists to trigger LogicalID munging, which would be
    * disabled if we parented constructs directly under Stack.
    */
@@ -549,9 +549,9 @@ function stackElements(node: Construct, into: StackElement[] = []): StackElement
 /**
  * A generic, untyped reference to a Stack Element
  */
-export class Ref extends CloudFormationToken {
+export class Ref extends StackAwareCloudFormationToken {
   constructor(element: StackElement) {
-    super({ Ref: element.logicalId }, `${element.logicalId}.Ref`);
+    super(element, { Ref: element.logicalId }, `${element.logicalId}.Ref`);
   }
 }
 

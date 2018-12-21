@@ -1,10 +1,10 @@
 import cxapi = require('@aws-cdk/cx-api');
 import { Construct } from '../core/construct';
 import { capitalizePropertyNames, ignoreEmpty } from '../core/util';
-import { CloudFormationToken } from './cloudformation-token';
+import { StackAwareCloudFormationToken } from './cloudformation-token';
 import { Condition } from './condition';
 import { CreationPolicy, DeletionPolicy, UpdatePolicy } from './resource-policy';
-import { IDependable, Referenceable, StackElement, Stack } from './stack';
+import { IDependable, Referenceable, Stack, StackElement } from './stack';
 
 export interface ResourceProps {
   /**
@@ -105,7 +105,7 @@ export class Resource extends Referenceable {
    * @param attributeName The name of the attribute.
    */
   public getAtt(attributeName: string) {
-    return new CloudFormationToken({ 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
+    return new StackAwareCloudFormationToken(this, { 'Fn::GetAtt': [this.logicalId, attributeName] }, `${this.logicalId}.${attributeName}`);
   }
 
   /**
