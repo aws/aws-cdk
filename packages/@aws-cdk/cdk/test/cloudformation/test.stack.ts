@@ -172,7 +172,7 @@ export = {
     test.done();
   },
 
-  'Pseudo values attached to one stack can be referenced in another'(test: Test) {
+  'Pseudo values attached to one stack can be referenced in another stack'(test: Test) {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -205,6 +205,26 @@ export = {
       }
     });
 
+    test.done();
+  },
+
+  'references in strings work'(test: Test) {
+    test.assert(false, 'NIMPL');
+    test.done();
+  },
+
+  'cannot create cyclic reference between stacks'(test: Test) {
+    test.assert(false, 'NIMPL');
+    test.done();
+  },
+
+  'stacks with references have an order'(test: Test) {
+    test.assert(false, 'NIMPL');
+    test.done();
+  },
+
+  'cannot create references to stacks in other regions/accounts'(test: Test) {
+    test.assert(false, 'NIMPL');
     test.done();
   },
 };
