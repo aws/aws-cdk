@@ -87,6 +87,25 @@ You can also add the Lambda to the Pipeline directly:
 fn.addToPipeline(lambdaStage, 'Lambda');
 ```
 
+The Lambda Action can have up to 5 inputs,
+and up to 5 outputs:
+
+```typescript
+const lambdaAction = fn.addToPipeline(lambdaStage, 'Lambda', {
+  inputArtifacts: [
+    sourceAction.outputArtifact,
+    buildAction.outputArtifact,
+  ],
+  outputArtifactNames: [
+    'Out1',
+    'Out2',
+  ],
+});
+
+lambdaAction.outputArtifacts(); // returns the list of output Artifacts
+lambdaAction.outputArtifact('Out2'); // returns the named output Artifact, or throws an exception if not found
+```
+
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html)
 on how to write a Lambda function invoked from CodePipeline.
 
